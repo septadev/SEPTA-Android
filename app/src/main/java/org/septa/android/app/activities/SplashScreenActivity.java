@@ -15,18 +15,15 @@ import android.support.v7.widget.GridLayout;
 import android.view.Gravity;
 import android.widget.ImageView;
 
-import org.septa.android.app.MainNavigationDrawerActivity;
 import org.septa.android.app.R;
 
 public class SplashScreenActivity extends BaseAnalyticsActivity {
-    //            private static final String TAG = SplashScreenActivity.class.getName();
-    private String[] splashscreen_icons = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splashscreen);
 
-        splashscreen_icons = getResources().getStringArray(R.array.splashscreen_icons_inorder);
+        String[] splashscreen_icons = getResources().getStringArray(R.array.splashscreen_icons_inorder);
 
         GridLayout gridLayout = (GridLayout) findViewById(R.id.splashscreen_icons_gridlayout);
 
@@ -48,6 +45,8 @@ public class SplashScreenActivity extends BaseAnalyticsActivity {
                 String resourceName = "splashscreen_".concat(splashscreen_icons[position++].toLowerCase());
 
                 Context context = imageView.getContext();
+
+                assert context != null;
                 int id = context.getResources().getIdentifier(resourceName, "drawable", context.getPackageName());
                 imageView.setImageResource(id);
 
@@ -55,12 +54,12 @@ public class SplashScreenActivity extends BaseAnalyticsActivity {
             }
         }
 
-        int secondsDelayed = 3;
-
         new Handler().postDelayed(new Runnable() {
             public void run() {
                 startActivity(new Intent(SplashScreenActivity.this,
-                        MainNavigationDrawerActivity.class));
+                        MainTabbarActivity.class));
+//                startActivity(new Intent(SplashScreenActivity.this,
+//                        MainNavigationDrawerActivity.class));
                 finish();
             }
         }, getResources().getInteger(R.integer.splashscreen_delaytime_seconds) * 1000);

@@ -58,6 +58,8 @@ public class SplashScreen_ImageAdapter extends BaseAdapter {
         Log.d(TAG, "the resource name string is " + resourceName);
 
         Context context = imageView.getContext();
+
+        assert context != null;
         int id = context.getResources().getIdentifier(resourceName, "drawable", context.getPackageName());
         imageView.setImageResource(id);
 

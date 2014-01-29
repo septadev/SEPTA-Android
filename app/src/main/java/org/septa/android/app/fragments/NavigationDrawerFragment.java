@@ -28,7 +28,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import org.septa.android.app.R;
-import org.septa.android.app.adapters.NavigationDrawerListViewItemArrayAdapter;
+import org.septa.android.app.adapters.NavigationDrawer_ListViewItem_ArrayAdapter;
 
 /**
 * Fragment used for managing interactions for and presentation of a navigation drawer.
@@ -106,7 +106,7 @@ public class NavigationDrawerFragment extends Fragment {
             }
         });
 
-        mDrawerListView.setAdapter(new NavigationDrawerListViewItemArrayAdapter(getActionBar().getThemedContext(),
+        mDrawerListView.setAdapter(new NavigationDrawer_ListViewItem_ArrayAdapter(getActionBar().getThemedContext(),
                 getResources().getStringArray(R.array.nav_main_items)));
 
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
@@ -142,8 +142,8 @@ public class NavigationDrawerFragment extends Fragment {
                 getActivity(),                    /* host Activity */
                 mDrawerLayout,                    /* DrawerLayout object */
                 R.drawable.ic_drawer,             /* nav drawer image to replace 'Up' caret */
-                R.string.navigation_drawer_open,  /* "open drawer" description for accessibility */
-                R.string.navigation_drawer_close  /* "close drawer" description for accessibility */
+                R.string.navigation_drawer_open,         /* "open drawer" description for accessibility */
+                R.string.navigation_drawer_close         /* "close drawer" description for accessibility */
         ) {
             @Override
             public void onDrawerClosed(View drawerView) {
@@ -247,11 +247,8 @@ public class NavigationDrawerFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (mDrawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
 
-        return super.onOptionsItemSelected(item);
+        return mDrawerToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
     }
 
     /**

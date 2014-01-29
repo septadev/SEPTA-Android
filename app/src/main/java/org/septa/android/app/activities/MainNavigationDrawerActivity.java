@@ -5,16 +5,18 @@
  * Copyright (c) 2014 SEPTA.  All rights reserved.
  */
 
-package org.septa.android.app;
+package org.septa.android.app.activities;
 
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import org.septa.android.app.R;
+import org.septa.android.app.fragments.NavigationDrawerFragment;
 
 public class MainNavigationDrawerActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -47,7 +49,7 @@ public class MainNavigationDrawerActivity extends ActionBarActivity
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
-        FragmentManager fragmentManager = getSupportFragmentManager();
+//        FragmentManager fragmentManager = getSupportFragmentManager();
 
         Log.d(TAG, "selected the position " + position);
 
@@ -69,13 +71,7 @@ public class MainNavigationDrawerActivity extends ActionBarActivity
     public void onSectionAttached(int position) {
         String sectionTitle = getResources().getStringArray(R.array.nav_main_items)[(position)];
 
-        mTitle = new StringBuilder()
-                .append(getResources().getString(R.string.titlebar_prefix_text))
-                .append(" ")
-                .append(getResources().getString(R.string.titlebar_text_separator))
-                .append(" ")
-                .append(sectionTitle)
-                .toString();
+        mTitle = getResources().getString(R.string.titlebar_prefix_text) + " " + getResources().getString(R.string.titlebar_text_separator) + " " + sectionTitle;
     }
 
     public void restoreActionBar() {

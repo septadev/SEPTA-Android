@@ -17,11 +17,11 @@ import android.widget.TextView;
 
 import org.septa.android.app.R;
 
-public class NavigationDrawerListViewItemArrayAdapter extends ArrayAdapter<String> {
+public class NavigationDrawer_ListViewItem_ArrayAdapter extends ArrayAdapter<String> {
     private final Context context;
     private final String[] values;
 
-    public NavigationDrawerListViewItemArrayAdapter(Context context, String[] values) {
+    public NavigationDrawer_ListViewItem_ArrayAdapter(Context context, String[] values) {
         super(context, R.layout.fragment_navigation_drawer_item, values);
         this.context = context;
         this.values = values;
@@ -33,6 +33,8 @@ public class NavigationDrawerListViewItemArrayAdapter extends ArrayAdapter<Strin
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         View rowView = inflater.inflate(R.layout.fragment_navigation_drawer_item, parent, false);
+
+        assert rowView != null;
         ImageView imageView = (ImageView) rowView.findViewById(R.id.navDrawerListViewItemIcon);
         TextView textView = (TextView) rowView.findViewById(R.id.navDrawerListViewItemText);
 
@@ -42,6 +44,8 @@ public class NavigationDrawerListViewItemArrayAdapter extends ArrayAdapter<Strin
         String resourceName = "ic_tab_".concat(tabName.toLowerCase());
 
         Context context = imageView.getContext();
+
+        assert context != null;
         int id = context.getResources().getIdentifier(resourceName, "drawable", context.getPackageName());
         imageView.setImageResource(id);
 

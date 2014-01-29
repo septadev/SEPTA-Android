@@ -30,7 +30,7 @@
     </string-array>
 
     <!-- the amount of time, in seconds, to delay the transition off of the splash screen and to the main screen -->
-    <integer name="splashscreen_delaytime_seconds">2</integer>
+    <integer name="splashscreen_delaytime_seconds">5</integer>
 
     <!--fFor the splash screen, this is the list of elements to appear in order -->
     <string-array name="splashscreen_icons_inorder">

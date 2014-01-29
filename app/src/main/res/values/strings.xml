@@ -2,6 +2,7 @@
 <resources>
 
     <string name="app_name">SEPTA</string>
+
     <string name="title_section1">Section 1</string>
     <string name="title_section2">Section 2</string>
     <string name="title_section3">Section 3</string>
@@ -9,5 +10,39 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_example">Example action</string>
     <string name="action_settings">Settings</string>
+
+    <!-- title bar prefix and text separator -->
+    <string name="titlebar_prefix_text">SEPTA</string>
+    <string name="titlebar_text_separator">|</string>
+
+    <!-- menu options for the action menus -->
+    <string name="menuoption_about_text">About</string>
+    <string name="menuoption_settings_text">Settings</string>
+
+    <!-- nav-main-options is an ordered array list of main navigation items
+         order matters, so take care with the order you list the items in. -->
+    <string-array name="nav_main_items">
+        <item>Realtime</item>
+        <item>Schedules</item>
+        <item>Map</item>
+        <!--<item>Settings</item>-->
+        <item>Connect</item>
+    </string-array>
+
+    <!-- the amount of time, in seconds, to delay the transition off of the splash screen and to the main screen -->
+    <integer name="splashscreen_delaytime_seconds">2</integer>
+
+    <!--fFor the splash screen, this is the list of elements to appear in order -->
+    <string-array name="splashscreen_icons_inorder">
+        <item>mfl</item>                           <!-- position col 1 row 1 -->
+        <item>regionalrail</item>                  <!-- position col 2 row 1 -->
+        <item>subway</item>                        <!-- position col 3 row 1 -->
+        <item>bus</item>                           <!-- position col 1 row 2 -->
+        <item>nhsl</item>                          <!-- position col 2 row 2 -->
+        <item>trolley</item>                       <!-- position col 3 row 2 -->
+        <item>tracklesstrolley</item>              <!-- position col 1 row 3 -->
+        <item>cct</item>                           <!-- position col 2 row 3 -->
+        <item>septalogowithtextandcopyright</item> <!-- position col 3 row 3 -->
+    </string-array>
 
 </resources>

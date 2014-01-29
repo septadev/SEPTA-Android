@@ -7,5 +7,62 @@
 
 package org.septa.android.app.activities;
 
-public class SplashScreenActivity {
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Handler;
+import android.support.v7.widget.GridLayout;
+import android.view.Gravity;
+import android.widget.ImageView;
+
+import org.septa.android.app.MainNavigationDrawerActivity;
+import org.septa.android.app.R;
+
+public class SplashScreenActivity extends BaseAnalyticsActivity {
+    //            private static final String TAG = SplashScreenActivity.class.getName();
+    private String[] splashscreen_icons = null;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.splashscreen);
+
+        splashscreen_icons = getResources().getStringArray(R.array.splashscreen_icons_inorder);
+
+        GridLayout gridLayout = (GridLayout) findViewById(R.id.splashscreen_icons_gridlayout);
+
+        int position = 0;
+        for (int row = 0; row < 3; row++) {
+            for (int col = 0; col < 3; col++) {
+                ImageView imageView = new ImageView(this);
+
+                GridLayout.LayoutParams param =new GridLayout.LayoutParams();
+                param.height = GridLayout.LayoutParams.WRAP_CONTENT;
+                param.width = GridLayout.LayoutParams.WRAP_CONTENT;
+                param.rightMargin = 12;
+                param.topMargin = 12;
+                param.setGravity(Gravity.CENTER);
+                param.columnSpec = GridLayout.spec(col);
+                param.rowSpec = GridLayout.spec(row);
+                imageView.setLayoutParams (param);
+
+                String resourceName = "splashscreen_".concat(splashscreen_icons[position++].toLowerCase());
+
+                Context context = imageView.getContext();
+                int id = context.getResources().getIdentifier(resourceName, "drawable", context.getPackageName());
+                imageView.setImageResource(id);
+
+                gridLayout.addView(imageView);
+            }
+        }
+
+        int secondsDelayed = 3;
+
+        new Handler().postDelayed(new Runnable() {
+            public void run() {
+                startActivity(new Intent(SplashScreenActivity.this,
+                        MainNavigationDrawerActivity.class));
+                finish();
+            }
+        }, getResources().getInteger(R.integer.splashscreen_delaytime_seconds) * 1000);
+    }
 }

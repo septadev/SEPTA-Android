@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
+<!--
+  ~ main_background.xml
+  ~ Last modified on 01-29-2014 13:06-0500 by brianhmayo
+  ~
+  ~ Copyright (c) 2014 SEPTA.  All rights reserved.
+  -->
 
-</selector>
+<bitmap xmlns:android="http://schemas.android.com/apk/res/android"
+        android:src="@drawable/background"
+        android:tileMode="repeat" />

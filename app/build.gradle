@@ -1,19 +1,11 @@
-apply plugin: 'android'
-
 def gitHash = "git rev-parse --short HEAD".execute().text.trim()
 
-def getVersionName = { ->
-    try {
-        def stdout = new ByteArrayOutputStream()
-        exec {
-            commandLine 'git', 'describe', '--tags', '--dirty'
-            standardOutput = stdout
-        }
-        return stdout.toString().trim()
-    }
-    catch (ignored) {
-        return null;
-    }
+apply plugin: 'android'
+
+dependencies {
+    compile 'com.android.support:gridlayout-v7:19.0.1'
+    compile 'com.android.support:support-v4:19.0.1'
+    compile 'com.android.support:appcompat-v7:19.0.1'
 }
 
 android {
@@ -24,7 +16,7 @@ android {
         minSdkVersion 8
         targetSdkVersion 19
         versionCode 1
-        versionName "0.1.0a-${gitHash}"
+        versionName "0.1.0d-${gitHash}"
 
         buildConfigField "String", "VERSION", "\"${versionName}\""
     }
@@ -56,13 +48,6 @@ android {
             debuggable true
             zipAlign false
         }
-        release {
-            runProguard true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
-            debuggable false
-            zipAlign true
-            signingConfig signingConfigs.release
-        }
         alpha {
             runProguard false
             debuggable true
@@ -76,11 +61,12 @@ android {
             zipAlign true
             signingConfig signingConfigs.beta
         }
+        release {
+            runProguard true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            debuggable false
+            zipAlign true
+            signingConfig signingConfigs.release
+        }
     }
-}
-
-dependencies {
-    compile 'com.android.support:gridlayout-v7:19.0.1'
-    compile 'com.android.support:support-v4:19.0.1'
-    compile 'com.android.support:appcompat-v7:19.0.1'
 }

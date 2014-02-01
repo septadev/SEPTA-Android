@@ -23,6 +23,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import org.septa.android.app.R;
+import org.septa.android.app.fragments.TransitMapImageViewFragment;
+import org.septa.android.app.fragments.TransitMapWebViewFragment;
 
 public class MainTabbarActivity extends BaseAnalyticsActionBarActivity implements ActionBar.TabListener {
     private static final String TAG = "MainTabbarActivity";
@@ -156,7 +158,9 @@ public class MainTabbarActivity extends BaseAnalyticsActionBarActivity implement
                     break;
                 case 2:
                     Log.d(TAG, "case 3, making and returning the map web view fragment");
-                    fragment = PlaceholderFragment.newInstance(position + 1);
+//                    fragment = new TransitMapImageViewFragment();
+                    fragment = new TransitMapWebViewFragment();
+//                    fragment = PlaceholderFragment.newInstance(position + 1);
 
                     break;
                 case 3:

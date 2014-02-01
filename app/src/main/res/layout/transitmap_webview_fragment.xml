@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~ transitmap_webview_fragment.xml
+  ~ Last modified on 02-01-2014 12:13-0500 by brianhmayo
+  ~
+  ~ Copyright (c) 2014 SEPTA.  All rights reserved.
+  -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical" >
+
+    <WebView android:id="@+id/webPage"
+             android:layout_height="match_parent"
+             android:layout_width="match_parent"/>
+
+</LinearLayout>

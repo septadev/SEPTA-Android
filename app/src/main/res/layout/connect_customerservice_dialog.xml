@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~ connect_customerservice_dialog.xml
+  ~ Last modified on 02-02-2014 19:06-0500 by brianhmayo
+  ~
+  ~ Copyright (c) 2014 SEPTA.  All rights reserved.
+  -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="#aaafb4">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/connect_customerservice_dialog_title_text"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center_horizontal"
+        android:padding="10dp"
+        android:id="@+id/connect_customerservice_dialog_title_textview"
+        android:background="#000000"
+        android:textColor="#ffffff"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_gravity="center_horizontal"
+        android:id="@+id/connect_customerservice_dialog_main_telephone_dial_button"
+        android:text="@string/connect_customerservice_dialog_main_button_text"
+        android:textStyle="bold"
+        android:textColor="#0000ff"
+        android:layout_margin="10dp"
+        style="@style/btnStyleBeige"
+        />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="@string/connect_customerservice_dialog_tddtty_button_text"
+        android:layout_gravity="center_horizontal"
+        android:paddingTop="2.5dp"
+        android:id="@+id/connect_customerservice_dialog_tddtty_telephone_dial_button"
+        android:textStyle="bold"
+        android:textColor="#0000ff"
+        android:layout_margin="10dp"
+        style="@style/btnStyleBeige"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="@string/connect_customerservice_dialog_cancel_button_text"
+        android:layout_gravity="center_horizontal"
+        android:id="@+id/connect_customerservice_dialog_cancel_button"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="25dp"
+        style="@style/btnStyleBeige"
+        android:textColor="#000000"/>
+
+</LinearLayout>

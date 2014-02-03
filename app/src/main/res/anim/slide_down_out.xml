@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~ slide_down_out.xml
+  ~ Last modified on 02-02-2014 19:33-0500 by brianhmayo
+  ~
+  ~ Copyright (c) 2014 SEPTA.  All rights reserved.
+  -->
+
+<translate xmlns:android="http://schemas.android.com/apk/res/android"
+           android:duration="@android:integer/config_longAnimTime"
+           android:fromYDelta="0%p"
+           android:toYDelta="100%p" />

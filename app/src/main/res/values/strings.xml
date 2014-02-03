@@ -32,7 +32,7 @@
     <!-- the amount of time, in seconds, to delay the transition off of the splash screen and to the main screen -->
     <integer name="splashscreen_delaytime_seconds">5</integer>
 
-    <!--fFor the splash screen, this is the list of elements to appear in order -->
+    <!--for the splash screen, this is the list of elements to appear in order -->
     <string-array name="splashscreen_icons_inorder">
         <item>mfl</item>                           <!-- position col 1 row 1 -->
         <item>regionalrail</item>                  <!-- position col 2 row 1 -->
@@ -44,5 +44,25 @@
         <item>cct</item>                           <!-- position col 2 row 3 -->
         <item>septalogowithtextandcopyright</item> <!-- position col 3 row 3 -->
     </string-array>
+
+    <!-- for the connect tab, the listview items -->
+    <string-array name="connectfragment_listview_items">
+        <item>Fare Information</item>
+        <item>Customer Service</item>
+        <item>Facebook</item>
+        <item>Twitter</item>
+        <item>Comments</item>
+        <item>Leave Feedback</item>
+    </string-array>
+
+    <!-- Connect Fragment -->
+    <!-- Customer Service Dialog -->
+    <string name="connect_customerservice_dialog_title_text">SEPTA\'s Customer Service</string>
+    <string name="connect_customerservice_dialog_cancel_button_text">Cancel</string>
+
+    <string name="connect_customerservice_dialog_main_button_text">Call (215) 580-7800</string>
+    <string name="connect_customerservice_dialog_tddtty_button_text">TDD/TTY (215) 580-7853</string>
+
+    <string name="connect_customerservice_dialog_fragment_tag">connect_customerservice_dialog_fragment</string>
 
 </resources>

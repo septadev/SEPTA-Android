@@ -19,6 +19,9 @@
     <string name="menuoption_about_text">About</string>
     <string name="menuoption_settings_text">Settings</string>
 
+    <!-- for phone number dialing -->
+    <string name="telephone_number_prefix">tel:</string>
+
     <!-- nav-main-options is an ordered array list of main navigation items
          order matters, so take care with the order you list the items in. -->
     <string-array name="nav_main_items">

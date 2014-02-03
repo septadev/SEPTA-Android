@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import org.septa.android.app.R;
+import org.septa.android.app.utilities.PhoneCallLaunch;
 
 public class CustomerServiceDialDialogFragment extends DialogFragment {
     public static final String TAG = CustomerServiceDialDialogFragment.class.getName();
@@ -42,8 +43,6 @@ public class CustomerServiceDialDialogFragment extends DialogFragment {
         dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         dialog.setContentView(R.layout.connect_customerservice_dialog);
-//        dialog.getWindow().setBackgroundDrawable(
-//                new ColorDrawable(Color.TRANSPARENT));
 
         // find the views by Id
         connectCustomerServiceDialogTitleTextView = (TextView) dialog.findViewById(R.id.connect_customerservice_dialog_title_textview);
@@ -63,8 +62,11 @@ public class CustomerServiceDialDialogFragment extends DialogFragment {
 
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "clicked the main telephone number dial");
+                Log.d(TAG, "clicked the main telephone number dial button.");
 
+                PhoneCallLaunch.launchPhoneCall(getActivity(), getString(R.string.main_telephone_number));
+
+                // dismiss the dialog box
                 dismiss();
             }
         });
@@ -73,8 +75,11 @@ public class CustomerServiceDialDialogFragment extends DialogFragment {
 
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "clicked the TDD/TTY telephone number dial");
+                Log.d(TAG, "clicked the tdd/tty telephone number dial button.");
 
+                PhoneCallLaunch.launchPhoneCall(getActivity(), getString(R.string.tddtty_telephone_number));
+
+                // dismiss the dialog box
                 dismiss();
             }
         });

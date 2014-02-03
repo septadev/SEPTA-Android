@@ -8,6 +8,12 @@ dependencies {
     compile 'com.android.support:appcompat-v7:19.0.1'
 }
 
+// check that the SEPTA.signing gradle property exists and that its value is the filename to a file
+//  that has the extension of gradle
+if (project.hasProperty("SEPTA.signing") && file(project.property("SEPTA.signing") + ".gradle").exists()) {
+    apply from: project.property("SEPTA.signing") + ".gradle"
+}
+
 android {
     compileSdkVersion 19
     buildToolsVersion "19.0.1"
@@ -24,21 +30,21 @@ android {
     signingConfigs {
         alpha {
             storeFile file("septaandroid.jks")
-            storePassword System.getenv("SEPTA_KEYSTORE_PASSWORD")
+            storePassword KEYSTOREpassword
             keyAlias "alpha"
-            keyPassword System.getenv("SEPTA_ALPHA_KEYSTORE_KEYALIAS_PASSWORD")
+            keyPassword ALPHA_keyaliaspassword
         }
         beta {
             storeFile file("septaandroid.jks")
-            storePassword System.getenv("SEPTA_KEYSTORE_PASSWORD")
+            storePassword KEYSTOREpassword
             keyAlias "beta"
-            keyPassword System.getenv("SEPTA_BETA_KEYSTORE_KEYALIAS_PASSWORD")
+            keyPassword BETA_keyaliaspassword
         }
         release {
             storeFile file("septaandroid.jks")
-            storePassword System.getenv("SEPTA_KEYSTORE_PASSWORD")
+            storePassword KEYSTOREpassword
             keyAlias "release"
-            keyPassword System.getenv("SEPTA_RELEASE_KEYSTORE_KEYALIAS_PASSWORD")
+            keyPassword RELEASE_keyaliaspassword
         }
     }
 

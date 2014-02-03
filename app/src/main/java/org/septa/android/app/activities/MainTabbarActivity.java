@@ -24,7 +24,6 @@ import android.widget.TextView;
 
 import org.septa.android.app.R;
 import org.septa.android.app.fragments.ConnectListFragment;
-import org.septa.android.app.fragments.TransitMapImageViewFragment;
 import org.septa.android.app.fragments.TransitMapWebViewFragment;
 
 public class MainTabbarActivity extends BaseAnalyticsActionBarActivity implements ActionBar.TabListener {

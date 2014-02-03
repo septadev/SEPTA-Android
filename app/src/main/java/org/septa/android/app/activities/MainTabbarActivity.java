@@ -73,7 +73,6 @@ public class MainTabbarActivity extends BaseAnalyticsActionBarActivity implement
         });
 
         for (String tab : getResources().getStringArray(R.array.nav_main_items)) {
-            Log.d(TAG, "doing the tabs... tab name " + tab);
             actionBar.addTab(
                     actionBar.newTab()
                             .setText(tab)

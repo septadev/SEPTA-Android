@@ -7,7 +7,7 @@
   ~ Copyright (c) 2014 SEPTA.  All rights reserved.
   -->
 
-<android.support.v4.view.ViewPager xmlns:android="http://schemas.android.com/apk/res/android"
+<org.septa.android.app.SelectiveNonSwipingViewPager xmlns:android="http://schemas.android.com/apk/res/android"
                                    xmlns:tools="http://schemas.android.com/tools"
                                    android:id="@+id/pager"
                                    android:layout_width="match_parent"

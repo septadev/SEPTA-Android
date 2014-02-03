@@ -32,6 +32,11 @@
         <item>Connect</item>
     </string-array>
 
+    <!-- this array will contain the names of the nav_main_items that are not swiping in ViewPager -->
+    <string-array name="nonswipeable_viewpager_main_items">
+        <item>Map</item>
+    </string-array>
+
     <!-- the amount of time, in seconds, to delay the transition off of the splash screen and to the main screen -->
     <integer name="splashscreen_delaytime_seconds">5</integer>
 

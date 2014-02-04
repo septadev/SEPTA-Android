@@ -37,6 +37,6 @@ public class SelectiveNonSwipingViewPager extends ViewPager {
             }
         }
 
-        return true;
+        return super.onInterceptTouchEvent(arg0);
     }
 }

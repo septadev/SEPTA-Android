@@ -53,6 +53,26 @@
         <item>septalogowithtextandcopyright</item> <!-- position col 3 row 3 -->
     </string-array>
 
+    <!--for the realtime menu, this is the list of elements to appear in order -->
+    <string-array name="realtime_menu_icons_inorder">
+        <item>nexttoarrive</item>                  <!-- position col 1 row 1 -->
+        <item>trainview</item>                     <!-- position col 2 row 1 -->
+        <item>transitview</item>                   <!-- position col 3 row 1 -->
+        <item>systemstatus</item>                  <!-- position col 1 row 2 -->
+        <item>findnearestlocation</item>           <!-- position col 2 row 2 -->
+        <item>tips</item>                          <!-- position col 3 row 2 -->
+    </string-array>
+    <!--for the realtime menu, this is the list of strings to appear in order -->
+    <string-array name="realtime_menu_strings_inorder">
+        <item>Next to Arrive</item>                <!-- position col 1 row 1 -->
+        <item>TrainView</item>                     <!-- position col 2 row 1 -->
+        <item>TransitView</item>                   <!-- position col 3 row 1 -->
+        <item>System Status</item>                 <!-- position col 1 row 2 -->
+        <item>Find Nearest\nLocation</item>        <!-- position col 2 row 2 -->
+        <item>Tips</item>                          <!-- position col 3 row 2 -->
+    </string-array>
+
+
     <!-- for the connect tab, the listview items -->
     <string-array name="connectfragment_listview_items">
         <item>Fare Information</item>

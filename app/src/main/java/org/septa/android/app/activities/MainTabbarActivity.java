@@ -24,6 +24,7 @@ import android.widget.TextView;
 
 import org.septa.android.app.R;
 import org.septa.android.app.fragments.ConnectListFragment;
+import org.septa.android.app.fragments.RealtimeMenuFragment;
 import org.septa.android.app.fragments.TransitMapWebViewFragment;
 
 public class MainTabbarActivity extends BaseAnalyticsActionBarActivity implements ActionBar.TabListener {
@@ -111,12 +112,9 @@ public class MainTabbarActivity extends BaseAnalyticsActionBarActivity implement
         // the ViewPager.
         mViewPager.setCurrentItem(tab.getPosition());
 
-        Log.d(TAG, "onTabSelected: the tab position is this "+tab.getPosition());
-
         String sectionTitle = getResources().getStringArray(R.array.nav_main_items)[(tab.getPosition())];
 
         String mTitle = getResources().getString(R.string.titlebar_prefix_text) + " " + getResources().getString(R.string.titlebar_text_separator) + " " + sectionTitle;
-        Log.d(TAG, "will change the title to " + mTitle);
 
         getSupportActionBar().setTitle(mTitle);
     }
@@ -146,8 +144,8 @@ public class MainTabbarActivity extends BaseAnalyticsActionBarActivity implement
 
             switch (position) {
                 case 0:
-                    Log.d(TAG, "case 0, making and returning a placeholder fragment");
-                    fragment = PlaceholderFragment.newInstance(position + 1);
+                    Log.d(TAG, "case 0, making and returning the realtime menu fragment");
+                       fragment = new RealtimeMenuFragment();
 
                     break;
                 case 1:

@@ -36,6 +36,14 @@
                 android:value=".activities.MainTabbarActivity" />
         </activity>
 
+        <activity android:name=".activities.SettingsActionBarActivity">
+            android:parentActivityName=".activities.MainTabbarActivity" >
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.MainTabbarActivity" />
+        </activity>
+
     </application>
 
 </manifest>

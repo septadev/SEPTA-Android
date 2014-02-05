@@ -7,6 +7,8 @@
 
 package org.septa.android.app.activities;
 
+import android.content.Intent;
+import android.media.audiofx.BassBoost;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -100,6 +102,8 @@ public class MainTabbarActivity extends BaseAnalyticsActionBarActivity implement
         } else {
             if (id == R.id.menuoption_settings) {
                 Log.d(TAG, "selected the settings menu option");
+                Intent intent = new Intent(this, SettingsActionBarActivity.class);
+                startActivity(intent);
             }
         }
 

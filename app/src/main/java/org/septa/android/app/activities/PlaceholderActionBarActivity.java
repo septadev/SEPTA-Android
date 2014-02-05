@@ -21,14 +21,20 @@ public class PlaceholderActionBarActivity extends BaseAnalyticsActionBarActivity
         super.onCreate(savedInstanceState);
 
         String titleText = getIntent().getStringExtra("titleText");
+        String iconText = getIntent().getStringExtra("iconText");
+
+        String resourceName = "ic_actionbar_".concat(iconText);
+
+        Log.d(TAG, "resource name is " + resourceName);
+
+        int id = getResources().getIdentifier(resourceName, "drawable", getPackageName());
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(titleText);
+        getSupportActionBar().setIcon(id);
 
         setContentView(R.layout.placeholderactionbaractivity);
         TextView textView = (TextView)findViewById(R.id.placeholderactionbaractivityTextView);
         textView.setText(titleText);
-
-        Log.d(TAG, "the placeholder action bar activity");
     }
 }

@@ -99,7 +99,8 @@ public class RealtimeMenuFragment extends Fragment {
                 }
 
                 // since the onClickListener is an inner class
-                final String titleText = realtime_menu_strings[position];
+                final String titleText = "| " + realtime_menu_strings[position];
+                final String iconText = realtime_menu_icons[position];
 
                 imageView.setOnClickListener(new View.OnClickListener() {
                     public void onClick(final View v) {
@@ -107,6 +108,7 @@ public class RealtimeMenuFragment extends Fragment {
                         Class intentClass = (Class)v.getTag();
                         Intent intent = new Intent(getActivity(), intentClass);
                         intent.putExtra("titleText", titleText);
+                        intent.putExtra("iconText", iconText);
                         startActivity(intent);
                     }
                 });

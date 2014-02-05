@@ -38,4 +38,18 @@
         <item name="android:windowAnimationStyle">@style/DialogAnimation</item>
     </style>
 
+    <!-- ActionBar App Name title text -->
+    <style name="ActionBar.CustomTitle.AppName" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textStyle">bold</item>
+        <item name="android:color">#FFFFFF</item>
+    </style>
+
+    <style name="ActionBar.CustomTitle.Separator" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:color">#FFFFFF</item>
+    </style>
+
+    <style name="ActionBar.CustomTitle.SectionName" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:color">#FFFFFF</item>
+    </style>
+
 </resources>

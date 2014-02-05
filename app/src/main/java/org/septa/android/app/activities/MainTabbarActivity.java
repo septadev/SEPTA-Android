@@ -30,7 +30,7 @@ import org.septa.android.app.fragments.RealtimeMenuFragment;
 import org.septa.android.app.fragments.TransitMapWebViewFragment;
 
 public class MainTabbarActivity extends BaseAnalyticsActionBarActivity implements ActionBar.TabListener {
-    private static final String TAG = "MainTabbarActivity";
+    public static final String TAG = MainTabbarActivity.class.getName();
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -55,6 +55,17 @@ public class MainTabbarActivity extends BaseAnalyticsActionBarActivity implement
         // Set up the action bar.
         final ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        actionBar.setDisplayShowCustomEnabled(true);
+        actionBar.setDisplayShowTitleEnabled(false);
+
+        View customActionBarTitleView = getLayoutInflater().inflate(R.layout.actionbar_customtitle, null);
+        TextView appNameTextView = (TextView)customActionBarTitleView.findViewById(R.id.actionbar_customtitle_appname);
+        appNameTextView.setText(getResources().getString(R.string.titlebar_prefix_text));
+
+//        TextView separatorTextView = (TextView)customActionBarTitleView.findViewById(R.id.actionbar_customtitle_separator);
+//        separatorTextView.setVisibility(View.GONE);
+
+        actionBar.setCustomView(customActionBarTitleView);
 
         // Create the adapter that will return a fragment for each of the four
         // primary sections of the activity.
@@ -118,9 +129,10 @@ public class MainTabbarActivity extends BaseAnalyticsActionBarActivity implement
 
         String sectionTitle = getResources().getStringArray(R.array.nav_main_items)[(tab.getPosition())];
 
-        String mTitle = getResources().getString(R.string.titlebar_prefix_text) + " " + getResources().getString(R.string.titlebar_text_separator) + " " + sectionTitle;
+        View customActionBarView = getSupportActionBar().getCustomView();
+        TextView sectionName = (TextView)customActionBarView.findViewById(R.id.actionbar_customtitle_sectionname);
 
-        getSupportActionBar().setTitle(mTitle);
+        sectionName.setText(sectionTitle);
     }
 
     @Override

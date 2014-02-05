@@ -20,13 +20,14 @@ public class PlaceholderActionBarActivity extends BaseAnalyticsActionBarActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        String titleText = getIntent().getStringExtra("titleText");
 
-        String text = getIntent().getStringExtra("text");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle(titleText);
 
         setContentView(R.layout.placeholderactionbaractivity);
         TextView textView = (TextView)findViewById(R.id.placeholderactionbaractivityTextView);
-        textView.setText(text);
+        textView.setText(titleText);
 
         Log.d(TAG, "the placeholder action bar activity");
     }

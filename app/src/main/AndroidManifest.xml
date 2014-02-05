@@ -2,7 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.septa.android.app" >
 
+    <!-- needed for the Connect tab to call customer service -->
     <uses-permission android:name="android.permission.CALL_PHONE" />
+
+    <!-- needed for the Realtime tab tips WebView -->
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -28,20 +32,28 @@
             android:label="@string/app_name" >
         </activity>
 
-        <activity android:name=".activities.PlaceholderActionBarActivity">
-            android:parentActivityName=".activities.MainTabbarActivity" >
+        <activity android:name=".activities.PlaceholderActionBarActivity"
+            android:parentActivityName=".activities.MainTabbarActivity">
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.MainTabbarActivity" />
+                android:value=".activities.MainTabbarActivity"/>
         </activity>
 
-        <activity android:name=".activities.SettingsActionBarActivity">
-            android:parentActivityName=".activities.MainTabbarActivity" >
+        <activity android:name=".activities.SettingsActionBarActivity"
+            android:parentActivityName=".activities.MainTabbarActivity">
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.MainTabbarActivity" />
+                android:value=".activities.MainTabbarActivity"/>
+        </activity>
+
+        <activity android:name=".activities.TipsActionBarActivity"
+            android:parentActivityName=".activities.MainTabbarActivity">
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.MainTabbarActivity"/>
         </activity>
 
     </application>

@@ -24,8 +24,11 @@ import android.widget.Toast;
 
 import org.septa.android.app.R;
 import org.septa.android.app.activities.PlaceholderActionBarActivity;
+import org.septa.android.app.activities.SettingsActionBarActivity;
 
 public class RealtimeMenuFragment extends Fragment {
+    public static final String TAG = RealtimeMenuFragment.class.getName();
+
     View.OnClickListener menuItem_OnClickListener = new View.OnClickListener() {
         public void onClick(final View v) {
             Log.d("RealtimeMenuFragment", "the view clicked is "+v.getId());
@@ -60,8 +63,9 @@ public class RealtimeMenuFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.realtime_menu_fragment, container, false);
 
-        String[] realtime_menu_icons = getResources().getStringArray(R.array.realtime_menu_icons_inorder);
-        String[] realtime_menu_strings = getResources().getStringArray(R.array.realtime_menu_strings_inorder);
+        final String[] realtime_menu_icons = getResources().getStringArray(R.array.realtime_menu_icons_inorder);
+        final String[] realtime_menu_strings = getResources().getStringArray(R.array.realtime_menu_strings_inorder);
+        final String[] realtime_menu_classnames = getResources().getStringArray(R.array.realtime_menu_classnames_inorder);
 
         GridLayout gridLayout = (GridLayout) view.findViewById(R.id.realtime_menu_icons_gridlayout);
 
@@ -87,13 +91,22 @@ public class RealtimeMenuFragment extends Fragment {
 
                 int id = getResources().getIdentifier(resourceName, "drawable", context.getPackageName());
                 imageView.setImageResource(id);
-                imageView.setTag(realtime_menu_icons[position].toLowerCase());
+
+                try {
+                    imageView.setTag(Class.forName(realtime_menu_classnames[position]));
+                } catch (ClassNotFoundException cnfe) {
+                    Log.e(TAG, "the class with the name "+realtime_menu_classnames[position]+" was not found exception.");
+                }
+
+                // since the onClickListener is an inner class
+                final String titleText = realtime_menu_strings[position];
 
                 imageView.setOnClickListener(new View.OnClickListener() {
                     public void onClick(final View v) {
                         Log.d("RealtimeMenuFragment", "the view clicked is "+v.getTag());
-                        Intent intent = new Intent(getActivity(), PlaceholderActionBarActivity.class);
-                        intent.putExtra("text", (String)v.getTag());
+                        Class intentClass = (Class)v.getTag();
+                        Intent intent = new Intent(getActivity(), intentClass);
+                        intent.putExtra("titleText", titleText);
                         startActivity(intent);
                     }
                 });

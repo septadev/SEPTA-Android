@@ -1,8 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 
+<!--
+  ~ tips.xml
+  ~ Last modified on 02-05-2014 15:19-0500 by brianhmayo
+  ~
+  ~ Copyright (c) 2014 SEPTA.  All rights reserved.
+  -->
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent">
+
+    <WebView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/tips_webview"
+        android:layout_gravity="center_horizontal"/>
 
 </LinearLayout>

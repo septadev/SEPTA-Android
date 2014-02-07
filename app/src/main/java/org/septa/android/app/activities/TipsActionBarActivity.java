@@ -19,7 +19,7 @@ public class TipsActionBarActivity extends BaseAnalyticsActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        String titleText = getIntent().getStringExtra("titleText");
+        String titleText = getIntent().getStringExtra(getString(R.string.actionbar_titletext_key));
 
         setContentView(R.layout.tips);
 

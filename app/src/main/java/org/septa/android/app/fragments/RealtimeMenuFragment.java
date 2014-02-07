@@ -29,29 +29,6 @@ import org.septa.android.app.activities.SettingsActionBarActivity;
 public class RealtimeMenuFragment extends Fragment {
     public static final String TAG = RealtimeMenuFragment.class.getName();
 
-    View.OnClickListener menuItem_OnClickListener = new View.OnClickListener() {
-        public void onClick(final View v) {
-            Log.d("RealtimeMenuFragment", "the view clicked is "+v.getId());
-
-            switch(v.getId()) {
-                case R.id.splashscreen_icons_gridlayout:
-                    //Inform the user the button1 has been clicked
-                    Toast.makeText(getActivity(), "1 clicked.", Toast.LENGTH_SHORT).show();
-                    break;
-                case R.id.realtime_menu_icons_gridlayout:
-                    //Inform the user the button2 has been clicked
-                    Toast.makeText(getActivity(), "2 clicked.", Toast.LENGTH_SHORT).show();
-                    break;
-            }
-        }
-    };
-
-    //On click event for button1
-    public void clickedthis(View v) {
-        //Inform the user the button has been clicked
-        Toast.makeText(getActivity(), "yes clicked.", Toast.LENGTH_SHORT).show();
-    }
-
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -107,8 +84,7 @@ public class RealtimeMenuFragment extends Fragment {
                         Log.d("RealtimeMenuFragment", "the view clicked is "+v.getTag());
                         Class intentClass = (Class)v.getTag();
                         Intent intent = new Intent(getActivity(), intentClass);
-                        intent.putExtra("titleText", titleText);
-                        intent.putExtra("iconText", iconText);
+                        intent.putExtra(getString(R.string.actionbar_titletext_key), titleText);
                         startActivity(intent);
                     }
                 });

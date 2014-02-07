@@ -7,6 +7,7 @@
 
 package org.septa.android.app.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
@@ -15,6 +16,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import org.septa.android.app.R;
+import org.septa.android.app.activities.AppFeedbackFormActivity;
 import org.septa.android.app.adapters.ConnectListFragmentItemsArrayAdapter;
 import org.septa.android.app.dialogs.CustomerServiceDialDialogFragment;
 import org.septa.android.app.utilities.SocialPageLaunch;
@@ -37,8 +39,6 @@ public class ConnectListFragment extends ListFragment {
         String[] values = getResources().getStringArray(R.array.connectfragment_listview_items);
         ArrayAdapter<String> adapter = new ConnectListFragmentItemsArrayAdapter(getActivity(), values);
 
-//        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
-//                android.R.layout.simple_list_item_1, values);
         setListAdapter(adapter);
     }
 
@@ -80,6 +80,9 @@ public class ConnectListFragment extends ListFragment {
 
             case 5:
                 Log.d(TAG, "launch the leave feedback activity");
+                Intent intent = new Intent(getActivity(), AppFeedbackFormActivity.class);
+                intent.putExtra(getString(R.string.actionbar_titletext_key), "| App Feedback");
+                startActivity(intent);
 
                 break;
 

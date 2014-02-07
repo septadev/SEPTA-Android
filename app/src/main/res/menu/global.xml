@@ -9,7 +9,7 @@
           android:orderInCategory="100"
           app:showAsAction="never" />
     <item android:id="@+id/menuoption_leavefeedback"
-          android:title="Leave Feedback"
+          android:title="@string/menuoption_appfeedback_text"
           android:orderInCategory="200"
           app:showAsAction="never" />
 

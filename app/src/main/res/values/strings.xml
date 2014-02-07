@@ -20,9 +20,7 @@
     <!-- menu options for the action menus -->
     <string name="menuoption_about_text">About</string>
     <string name="menuoption_settings_text">Settings</string>
-
-    <!-- for phone number dialing -->
-    <string name="telephone_number_prefix">tel:</string>
+    <string name="menuoption_appfeedback_text">Leave Feedback</string>
 
     <!-- nav-main-options is an ordered array list of main navigation items
          order matters, so take care with the order you list the items in. -->
@@ -38,88 +36,5 @@
     <string-array name="nonswipeable_viewpager_main_items">
         <item>Map</item>
     </string-array>
-
-    <!-- the amount of time, in seconds, to delay the transition off of the splash screen and to the main screen -->
-    <integer name="splashscreen_delaytime_seconds">5</integer>
-
-    <!--for the splash screen, this is the list of elements to appear in order -->
-    <string-array name="splashscreen_icons_inorder">
-        <item>mfl</item>                           <!-- position col 1 row 1 -->
-        <item>regionalrail</item>                  <!-- position col 2 row 1 -->
-        <item>subway</item>                        <!-- position col 3 row 1 -->
-        <item>bus</item>                           <!-- position col 1 row 2 -->
-        <item>nhsl</item>                          <!-- position col 2 row 2 -->
-        <item>trolley</item>                       <!-- position col 3 row 2 -->
-        <item>tracklesstrolley</item>              <!-- position col 1 row 3 -->
-        <item>cct</item>                           <!-- position col 2 row 3 -->
-        <item>septalogowithtextandcopyright</item> <!-- position col 3 row 3 -->
-    </string-array>
-
-    <!--for the realtime menu, this is the list of elements to appear in order -->
-    <string-array name="realtime_menu_icons_inorder">
-        <item>nexttoarrive</item>                  <!-- position col 1 row 1 -->
-        <item>trainview</item>                     <!-- position col 2 row 1 -->
-        <item>transitview</item>                   <!-- position col 3 row 1 -->
-        <item>systemstatus</item>                  <!-- position col 1 row 2 -->
-        <item>findnearestlocation</item>           <!-- position col 2 row 2 -->
-        <item>tips</item>                          <!-- position col 3 row 2 -->
-    </string-array>
-    <!--for the realtime menu, this is the list of strings to appear in order -->
-    <string-array name="realtime_menu_strings_inorder">
-        <item>Next to Arrive</item>                <!-- position col 1 row 1 -->
-        <item>TrainView</item>                     <!-- position col 2 row 1 -->
-        <item>TransitView</item>                   <!-- position col 3 row 1 -->
-        <item>System Status</item>                 <!-- position col 1 row 2 -->
-        <item>Find Nearest\nLocation</item>        <!-- position col 2 row 2 -->
-        <item>Tips</item>                          <!-- position col 3 row 2 -->
-    </string-array>
-    <!--for the realtime menu, this is the list of classes as string in order -->
-    <string-array name="realtime_menu_classnames_inorder">
-        <item>org.septa.android.app.activities.PlaceholderActionBarActivity</item>  <!-- position col 1 row 1 -->
-        <item>org.septa.android.app.activities.PlaceholderActionBarActivity</item>  <!-- position col 2 row 1 -->
-        <item>org.septa.android.app.activities.PlaceholderActionBarActivity</item>  <!-- position col 3 row 1 -->
-        <item>org.septa.android.app.activities.PlaceholderActionBarActivity</item>  <!-- position col 1 row 2 -->
-        <item>org.septa.android.app.activities.PlaceholderActionBarActivity</item>  <!-- position col 2 row 2 -->
-        <item>org.septa.android.app.activities.TipsActionBarActivity</item>         <!-- position col 3 row 2 -->
-    </string-array>
-
-
-    <!-- for the connect tab, the listview items -->
-    <string-array name="connectfragment_listview_items">
-        <item>Fare Information</item>
-        <item>Customer Service</item>
-        <item>Facebook</item>
-        <item>Twitter</item>
-        <item>Comments</item>
-        <item>Leave Feedback</item>
-    </string-array>
-
-    <!-- App feedback form send to email address -->
-    <string name="appfeedbackform_sendto_emailaddress">androidapp@septa.org</string>
-
-    <string name="appfeedbackform_subject_stringtemplate">SEPTA Android (%1$s) Feedback: %2$s</string>
-    <!-- App feedback form prompt string -->
-    <string name="appfeedbackform_spinner_prompt">Choose a feedback type</string>
-    <!-- App feedback form type of feedback spinner options list -->
-    <string-array name="appfeedbackform_spinner_arraylist">
-        <item>Bug</item>
-        <item>Crash</item>
-        <item>Suggestion</item>
-        <item>Bad Data</item>
-        <item>Other</item>
-    </string-array>
-
-    <!-- Connect Fragment -->
-    <!-- Customer Service Dialog -->
-    <string name="connect_customerservice_dialog_title_text">SEPTA\'s Customer Service</string>
-    <string name="connect_customerservice_dialog_cancel_button_text">Cancel</string>
-
-    <string name="connect_customerservice_dialog_main_button_text">Call (215) 580-7800</string>
-    <string name="connect_customerservice_dialog_tddtty_button_text">TDD/TTY (215) 580-7853</string>
-
-    <string name="connect_customerservice_dialog_fragment_tag">connect_customerservice_dialog_fragment</string>
-
-    <!-- on the realtime tab, the tips Url -->
-    <string name="realtime_tips_webview_url">http://www.septa.org/service/septa-app-mobile.html</string>
 
 </resources>

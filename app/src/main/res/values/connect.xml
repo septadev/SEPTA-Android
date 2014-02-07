@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ connect.xml
+  ~ Last modified on 02-07-2014 12:33-0500 by brianhmayo
+  ~
+  ~ Copyright (c) 2014 SEPTA.  All rights reserved.
+  -->
+
+<resources>
+
+    <!-- for the connect tab, the listview items -->
+    <string-array name="connectfragment_listview_items">
+        <item>Fare Information</item>
+        <item>Customer Service</item>
+        <item>Facebook</item>
+        <item>Twitter</item>
+        <item>Comments</item>
+        <item>Leave Feedback</item>
+    </string-array>
+
+    <!-- for phone number dialing -->
+    <string name="telephone_number_prefix">tel:</string>
+
+    <!-- Customer Service Dialog -->
+    <string name="connect_customerservice_dialog_title_text">SEPTA\'s Customer Service</string>
+    <string name="connect_customerservice_dialog_cancel_button_text">Cancel</string>
+
+    <string name="connect_customerservice_dialog_main_button_text">Call (215) 580-7800</string>
+    <string name="connect_customerservice_dialog_tddtty_button_text">TDD/TTY (215) 580-7853</string>
+
+    <string name="connect_customerservice_dialog_fragment_tag">connect_customerservice_dialog_fragment</string>
+
+    <!-- for the connect tab and fare Information -->
+    <string-array name="connect_fares_listview_item_text">
+        <item>Transit Cash Fare: $2.25*\n*Except Buss Routes 123, 124, 125, &amp; 150 and Norristown High Speed Line</item>
+        <item>Tokens: $1.80\nTransfer: $1.00</item>
+        <item>Weekly TransPass: $24.00\nMonthly TransPass: $91.00</item>
+        <item>Weekly and Monthly TrailPasses: Price varies according to Zone</item>
+        <item>Weekly Cross Country Pass: $29.00\nMonthly Cross Country Pass: $109.00</item>
+        <item>One Day Convenience Pass: $8.00 -good for 8 rides on any Transit route (not valid on Regional Rail)</item>
+        <item>One Day Individual Independence Pass: $12.00\nOne Day Family Independence Pass: $29.00</item>
+    </string-array>
+
+    <string-array name="connect_fares_listview_item_images">
+        <item>cash_fair</item>   <!-- TODO: fix the spelling of this word -->
+        <item>token</item>
+        <item>transpass</item>
+        <item>trailpass</item>
+        <item>cross_country_pass</item>
+        <item>convenience_pass</item>
+        <item>independence_pass</item>
+    </string-array>
+
+</resources>

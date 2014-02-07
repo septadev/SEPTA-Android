@@ -43,10 +43,6 @@ public class AppFeedbackFormActivity extends BaseAnalyticsActionBarActivity {
         final Button tapToSelectImageButton = (Button) findViewById(R.id.appfeedbackform_image_select_button);
         tapToSelectImageButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-//                Intent intent = new Intent();
-//                intent.setType("image/*");
-//                intent.setAction(Intent.ACTION_GET_CONTENT);
-//                startActivityForResult(Intent.createChooser(intent,"Select file to include "), 1);
                 Intent intent = new   Intent(Intent.ACTION_PICK,android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 startActivityForResult(intent, 1);
             }

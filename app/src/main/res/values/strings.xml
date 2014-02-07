@@ -13,6 +13,9 @@
 
     <string name="actionbar_titletext_key">actionBarTitleText</string>
 
+    <string name="actionbar_iconimage_imagename_base">ic_actionbar_</string>
+    <string name="actionbar_iconimage_imagenamesuffix_key">actionBarImageNameSuffix</string>
+
     <!-- title bar prefix and text separator -->
     <string name="titlebar_prefix_text">SEPTA</string>
     <string name="titlebar_text_separator">|</string>

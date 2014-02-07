@@ -17,6 +17,7 @@ import android.widget.ListView;
 
 import org.septa.android.app.R;
 import org.septa.android.app.activities.AppFeedbackFormActivity;
+import org.septa.android.app.activities.FareInformationActionBarActivity;
 import org.septa.android.app.adapters.ConnectListFragmentItemsArrayAdapter;
 import org.septa.android.app.dialogs.CustomerServiceDialDialogFragment;
 import org.septa.android.app.utilities.SocialPageLaunch;
@@ -44,12 +45,17 @@ public class ConnectListFragment extends ListFragment {
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-        // do something with the data
-        Log.d("me", "list item was listed, in position " + position);
-
         switch(position) {
             case 0:
                 Log.d(TAG, "launch the fare activity");
+                String connectFragmentListviewItem = getResources().getStringArray(R.array.connectfragment_listview_items)[position];
+                String actionbar_titletext = getString(R.string.titlebar_text_separator).concat(" ").concat(connectFragmentListviewItem);
+
+                Intent fareInformationIntent = new Intent(getActivity(), FareInformationActionBarActivity.class);
+                fareInformationIntent.putExtra(getString(R.string.actionbar_titletext_key), actionbar_titletext);
+                fareInformationIntent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), "fares");
+
+                startActivity(fareInformationIntent);
 
                 break;
 
@@ -80,9 +86,9 @@ public class ConnectListFragment extends ListFragment {
 
             case 5:
                 Log.d(TAG, "launch the leave feedback activity");
-                Intent intent = new Intent(getActivity(), AppFeedbackFormActivity.class);
-                intent.putExtra(getString(R.string.actionbar_titletext_key), "| App Feedback");
-                startActivity(intent);
+                Intent appFeedbackFormIntent = new Intent(getActivity(), AppFeedbackFormActivity.class);
+                appFeedbackFormIntent.putExtra(getString(R.string.actionbar_titletext_key), "| App Feedback");
+                startActivity(appFeedbackFormIntent);
 
                 break;
 

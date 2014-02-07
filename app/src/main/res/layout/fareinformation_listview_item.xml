@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~ fareinformation_listview_item.xml
+  ~ Last modified on 02-07-2014 15:37-0500 by brianhmayo
+  ~
+  ~ Copyright (c) 2014 SEPTA.  All rights reserved.
+  -->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="horizontal"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:paddingTop="1dp">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/fareInformation_front_imageView"/>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/fareInformation_background_imageView"
+        android:layout_toRightOf="@+id/fareInformation_front_imageView"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Small Text"
+        android:textColor="#FFFFFF"
+        android:textSize="12sp"
+        android:id="@+id/fareInformation_main_textView"
+        android:layout_toRightOf="@+id/fareInformation_front_imageView"
+        android:layout_marginLeft="10dp"
+        android:layout_centerInParent="true"/>
+
+
+</RelativeLayout>

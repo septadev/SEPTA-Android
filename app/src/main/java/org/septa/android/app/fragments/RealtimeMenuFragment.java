@@ -85,6 +85,7 @@ public class RealtimeMenuFragment extends Fragment {
                         Class intentClass = (Class)v.getTag();
                         Intent intent = new Intent(getActivity(), intentClass);
                         intent.putExtra(getString(R.string.actionbar_titletext_key), titleText);
+                        intent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), iconText);
                         startActivity(intent);
                     }
                 });

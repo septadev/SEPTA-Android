@@ -28,6 +28,8 @@ public class TipsActionBarActivity extends BaseAnalyticsActionBarActivity {
         getSupportActionBar().setTitle(titleText);
 
         WebView tipsWebView = (WebView)findViewById(R.id.tips_webview);
+        tipsWebView.getSettings().setJavaScriptEnabled(true);
+
         tipsWebView.loadUrl(getString(R.string.realtime_tips_webview_url));
     }
 }

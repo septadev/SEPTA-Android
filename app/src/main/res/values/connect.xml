@@ -30,8 +30,12 @@
 
     <string name="connect_customerservice_dialog_fragment_tag">connect_customerservice_dialog_fragment</string>
 
+    <string name="fareinformation_listViewItems_imagebase">fareinformation_</string>
+    <string name="fareinformation_listViewItems_frontImage_ending">_frontimage</string>
+    <string name="fareinformation_listViewItems_background_ending">_background</string>
+
     <!-- for the connect tab and fare Information -->
-    <string-array name="connect_fares_listview_item_text">
+    <string-array name="connect_fares_listview_item_texts">
         <item>Transit Cash Fare: $2.25*\n*Except Buss Routes 123, 124, 125, &amp; 150 and Norristown High Speed Line</item>
         <item>Tokens: $1.80\nTransfer: $1.00</item>
         <item>Weekly TransPass: $24.00\nMonthly TransPass: $91.00</item>
@@ -41,14 +45,17 @@
         <item>One Day Individual Independence Pass: $12.00\nOne Day Family Independence Pass: $29.00</item>
     </string-array>
 
-    <string-array name="connect_fares_listview_item_images">
-        <item>cash_fair</item>   <!-- TODO: fix the spelling of this word -->
+    <string-array name="connect_fares_listview_item_image_suffixes">
+        <item>transitcashfare</item>   <!-- TODO: fix the spelling of this word -->
         <item>token</item>
         <item>transpass</item>
         <item>trailpass</item>
-        <item>cross_country_pass</item>
-        <item>convenience_pass</item>
-        <item>independence_pass</item>
+        <item>crosscountrypass</item>
+        <item>onedayconveniencepass</item>
+        <item>independencepass</item>
     </string-array>
+
+    <!-- on the realtime tab, the tips Url -->
+    <string name="connect_fareinformation_getmoredetails_url">http://www.septa.org/m/fares/</string>
 
 </resources>

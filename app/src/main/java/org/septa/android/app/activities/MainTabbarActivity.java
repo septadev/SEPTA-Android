@@ -107,15 +107,24 @@ public class MainTabbarActivity extends BaseAnalyticsActionBarActivity implement
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+        Intent intent;
 
-        if (id == R.id.menuoption_about) {
-            Log.d(TAG, "selected the about menu option.");
-        } else {
-            if (id == R.id.menuoption_settings) {
-                Log.d(TAG, "selected the settings menu option");
-                Intent intent = new Intent(this, SettingsActionBarActivity.class);
+        switch (id) {
+            case R.id.menuoption_about:
+                Log.d(TAG, "selected the about menu option");
+                return true;
+
+            case R.id.menuoption_settings:
+                Log.d(TAG, "selected the settings about menu option");
+                intent = new Intent(this, SettingsActionBarActivity.class);
                 startActivity(intent);
-            }
+                return true;
+
+            case R.id.menuoption_leavefeedback:
+                Log.d(TAG, "selected the leavefeedback menu option");
+                intent = new Intent(this, AppFeedbackFormActivity.class);
+                startActivity(intent);
+                return true;
         }
 
         return super.onOptionsItemSelected(item);

@@ -3,7 +3,14 @@
 
     <item android:id="@+id/menuoption_settings"
           android:title="@string/menuoption_settings_text"
+          app:showAsAction="never" />
+    <item android:id="@+id/menuoption_about"
+          android:title="@string/menuoption_about_text"
           android:orderInCategory="100"
+          app:showAsAction="never" />
+    <item android:id="@+id/menuoption_leavefeedback"
+          android:title="Leave Feedback"
+          android:orderInCategory="200"
           app:showAsAction="never" />
 
 </menu>

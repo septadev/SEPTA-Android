@@ -92,6 +92,21 @@
         <item>Leave Feedback</item>
     </string-array>
 
+    <!-- App feedback form send to email address -->
+    <string name="appfeedbackform_sendto_emailaddress">androidapp@septa.org</string>
+
+    <string name="appfeedbackform_subject_stringtemplate">SEPTA Android (%1$s) Feedback: %2$s</string>
+    <!-- App feedback form prompt string -->
+    <string name="appfeedbackform_spinner_prompt">Choose a feedback type</string>
+    <!-- App feedback form type of feedback spinner options list -->
+    <string-array name="appfeedbackform_spinner_arraylist">
+        <item>Bug</item>
+        <item>Crash</item>
+        <item>Suggestion</item>
+        <item>Bad Data</item>
+        <item>Other</item>
+    </string-array>
+
     <!-- Connect Fragment -->
     <!-- Customer Service Dialog -->
     <string name="connect_customerservice_dialog_title_text">SEPTA\'s Customer Service</string>

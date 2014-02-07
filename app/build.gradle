@@ -30,8 +30,6 @@ android {
         targetSdkVersion 19
         versionCode 1
         versionName "0.1.0"
-
-        buildConfigField "String", "VERSIONNAME", "\"${versionName}\""
     }
 
     signingConfigs {
@@ -66,16 +64,17 @@ android {
             runProguard false
             debuggable true
             zipAlign false
-            versionNameSuffix "-d" + "${getGitHash}"
-            buildConfigField "String", "VERSIONN", "\"${defaultConfig.versionName}" + "${versionNameSuffix}\""
+            signingConfig signingConfigs.prerelease
+            versionNameSuffix "d" + "${getGitHash}"
+            buildConfigField "String", "VERSIONNAME", "\"${defaultConfig.versionName}" + "${versionNameSuffix}\""
         }
         alpha {
             runProguard false
             debuggable true
             zipAlign true
             signingConfig signingConfigs.prerelease
-            versionNameSuffix "-a" + "${getGitHash}"
-            buildConfigField "String", "VERSIONN", "\"${defaultConfig.versionName}" + "${versionNameSuffix}\""
+            versionNameSuffix "a" + "${getGitHash}"
+            buildConfigField "String", "VERSIONNAME", "\"${defaultConfig.versionName}" + "${versionNameSuffix}\""
         }
         beta {
             runProguard true
@@ -83,8 +82,8 @@ android {
             debuggable false
             zipAlign true
             signingConfig signingConfigs.prerelease
-            versionNameSuffix "-b" + "${getGitHash}"
-            buildConfigField "String", "VERSIONN", "\"${defaultConfig.versionName}" + "${versionNameSuffix}\""
+            versionNameSuffix "b" + "${getGitHash}"
+            buildConfigField "String", "VERSIONNAME", "\"${defaultConfig.versionName}" + "${versionNameSuffix}\""
         }
         release {
             runProguard true
@@ -92,7 +91,7 @@ android {
             debuggable false
             zipAlign true
             signingConfig signingConfigs.release
-            buildConfigField "String", "VERSIONN", "\"${defaultConfig.versionName}\""
+            buildConfigField "String", "VERSIONNAME", "\"${defaultConfig.versionName}\""
         }
     }
 }

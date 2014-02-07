@@ -59,7 +59,7 @@ public class AppFeedbackFormActivity extends BaseAnalyticsActionBarActivity {
             public void onClick(View v) {
 
                 String subject = String.format(getString(R.string.appfeedbackform_subject_stringtemplate),
-                        BuildConfig.VERSIONN,
+                        BuildConfig.VERSIONNAME,
                         typeOfFeedbackSpinner.getSelectedItem().toString());
                 EmailLaunch.launchEmail(v.getContext(),
                         getString(R.string.appfeedbackform_sendto_emailaddress),

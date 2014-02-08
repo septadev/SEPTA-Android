@@ -7,7 +7,9 @@
 
 package org.septa.android.app.activities;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.audiofx.BassBoost;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -62,9 +64,6 @@ public class MainTabbarActivity extends BaseAnalyticsActionBarActivity implement
         TextView appNameTextView = (TextView)customActionBarTitleView.findViewById(R.id.actionbar_customtitle_appname);
         appNameTextView.setText(getResources().getString(R.string.titlebar_prefix_text));
 
-//        TextView separatorTextView = (TextView)customActionBarTitleView.findViewById(R.id.actionbar_customtitle_separator);
-//        separatorTextView.setVisibility(View.GONE);
-
         actionBar.setCustomView(customActionBarTitleView);
 
         // Create the adapter that will return a fragment for each of the four
@@ -92,6 +91,42 @@ public class MainTabbarActivity extends BaseAnalyticsActionBarActivity implement
                             .setTabListener(this)
             );
         }
+
+        SharedPreferences activityPreferences = getPreferences(Activity.MODE_PRIVATE);
+        int maintabbarSelectedSection = activityPreferences.getInt("maintabbar_selected_section", 0);
+        actionBar.setSelectedNavigationItem(maintabbarSelectedSection);
+    }
+
+    @Override
+    protected void onStop() {
+        SharedPreferences activityPreferences = getPreferences(Activity.MODE_PRIVATE);
+        SharedPreferences.Editor editor = activityPreferences.edit();
+
+        editor.putInt("maintabbar_selected_section", getSupportActionBar().getSelectedNavigationIndex());
+        editor.apply();
+
+        super.onStop();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        // Save UI state changes to the savedInstanceState.
+        // This bundle will be passed to onCreate if the process is
+        // killed and restarted.
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        // Restore UI state from the savedInstanceState.
+        // This bundle has also been passed to onCreate.
     }
 
     @Override

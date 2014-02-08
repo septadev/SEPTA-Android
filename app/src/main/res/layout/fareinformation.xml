@@ -7,17 +7,16 @@
   ~ Copyright (c) 2014 SEPTA.  All rights reserved.
   -->
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:background="@drawable/main_background">
 
-    <ListView
+    <fragment
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/fareInformation_listView"
-        android:layout_alignParentTop="true"
-        android:layout_gravity="center_horizontal"/>
+        android:layout_height="match_parent"
+        android:id="@+id/fareInformation_listView_fragment"
+        android:name="org.septa.android.app.fragments.FareInformationFragment"/>
 
-</RelativeLayout>
+</FrameLayout>

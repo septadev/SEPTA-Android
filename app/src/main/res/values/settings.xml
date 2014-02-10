@@ -7,4 +7,24 @@
   -->
 
 <resources>
+
+    <string name="settings_icon_imageBase">settings_icon_</string>
+
+    <!-- about listview items meta-data -->
+    <!-- texts, iconSuffixes, urls -->
+    <string-array name="settings_listview_items_texts">
+        <item>24-Hour Time</item>
+        <item>Update</item>
+    </string-array>
+
+    <string-array name="settings_listview_items_iconSuffixes">
+        <item>24hour</item>
+        <item>update</item>
+    </string-array>
+
+    <string-array name="settings_listview_items_urls">
+        <item></item>       <!-- blank item for the 24 hour url, which does not exist -->
+        <item></item>       <!-- blank item for the update url, which does not exist -->
+    </string-array>
+
 </resources>

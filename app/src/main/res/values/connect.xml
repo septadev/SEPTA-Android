@@ -55,6 +55,8 @@
         <item>independencepass</item>
     </string-array>
 
+    <string name="connect_fareinformation_getmoredetails_buttontext">Get More Details</string>
+
     <!-- on the realtime tab, the tips Url -->
     <string name="connect_fareinformation_getmoredetails_url">http://www.septa.org/m/fares/</string>
 

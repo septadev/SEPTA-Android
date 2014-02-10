@@ -52,7 +52,7 @@ public class FareInformationFragment extends ListFragment {
             values[i] = textImageModel;
         }
 
-        values[(values.length-1)] = new TextImageModel("Get More Details", null, null);
+        values[(values.length-1)] = new TextImageModel(getString(R.string.connect_fareinformation_getmoredetails_buttontext), null, null);
 
         ArrayAdapter<TextImageModel> adapter = new FareInformation_ListViewItem_ArrayAdapter(inflater.getContext(), values);
 

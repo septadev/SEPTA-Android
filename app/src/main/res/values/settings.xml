@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ settings.xml
+  ~ Last modified on 02-09-2014 22:21-0500 by brianhmayo
+  ~
+  ~ Copyright (c) 2014 SEPTA.  All rights reserved.
+  -->
+
+<resources>
+
+    <string name="about_icon_imageBase">about_icon_</string>
+
+    <string-array name="about_listview_items_text">
+        <item>Attributions</item>
+        <item>Source Code</item>
+        <item>Version</item>
+    </string-array>
+
+    <string-array name="about_listview_items_iconSuffixs">
+        <item>attributions</item>
+        <item>sourcecode</item>
+        <item></item> <!-- blank item for the version icon, which does not exist -->
+    </string-array>
+
+</resources>

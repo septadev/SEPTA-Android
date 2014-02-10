@@ -147,12 +147,17 @@ public class MainTabbarActivity extends BaseAnalyticsActionBarActivity implement
         switch (id) {
             case R.id.menuoption_about:
                 Log.d(TAG, "selected the about menu option");
+                intent = new Intent(this, AboutActionBarActivity.class);
+                intent.putExtra(getString(R.string.actionbar_titletext_key), "| About");
+                startActivity(intent);
+
                 return true;
 
             case R.id.menuoption_settings:
                 Log.d(TAG, "selected the settings about menu option");
                 intent = new Intent(this, SettingsActionBarActivity.class);
                 startActivity(intent);
+
                 return true;
 
             case R.id.menuoption_leavefeedback:
@@ -160,6 +165,7 @@ public class MainTabbarActivity extends BaseAnalyticsActionBarActivity implement
                 intent = new Intent(this, AppFeedbackFormActivity.class);
                 intent.putExtra(getString(R.string.actionbar_titletext_key), "| App Feedback");
                 startActivity(intent);
+
                 return true;
         }
 

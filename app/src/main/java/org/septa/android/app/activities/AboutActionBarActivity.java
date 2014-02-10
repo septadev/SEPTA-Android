@@ -8,16 +8,11 @@
 package org.septa.android.app.activities;
 
 import android.os.Bundle;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
-
-import org.septa.android.app.BuildConfig;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import org.septa.android.app.R;
-import org.septa.android.app.adapters.About_ListViewItem_ArrayAdapter;
-import org.septa.android.app.adapters.FareInformation_ListViewItem_ArrayAdapter;
-import org.septa.android.app.models.adapterhelpers.IconTextPendingIntentModel;
-import org.septa.android.app.models.adapterhelpers.TextImageModel;
+import org.septa.android.app.fragments.AboutListFragment;
 
 public class AboutActionBarActivity extends BaseAnalyticsActionBarActivity {
     public static final String TAG = AboutActionBarActivity.class.getName();
@@ -34,33 +29,20 @@ public class AboutActionBarActivity extends BaseAnalyticsActionBarActivity {
 //        getSupportActionBar().setIcon(R.drawable.ic_actionbar_tips);
         getSupportActionBar().setTitle(titleText);
 
-        ListView aboutListView = (ListView)findViewById(R.id.aboutListView);
-
-        int aboutListViewItemCount = getResources().getStringArray(R.array.about_listview_items_text).length;
-        IconTextPendingIntentModel[] values = new IconTextPendingIntentModel[aboutListViewItemCount];
-        for (int i = 0; i < aboutListViewItemCount; i++) {
-            String text = getResources().getStringArray(R.array.about_listview_items_text)[i];
-
-            if (text.equals("Version")) {
-                text = text.concat(":  " + BuildConfig.VERSIONNAME);
+        if (findViewById(R.id.fragment_container) != null) {
+            // However, if we're being restored from a previous state,
+            // then we don't need to do anything and should return or else
+            // we could end up with overlapping fragments.
+            if (savedInstanceState != null) {
+                return;
             }
 
-            String icon_ImageBase = getResources().getString(R.string.about_icon_imageBase);
-            String icon_ImageSuffix = getResources().getStringArray(R.array.about_listview_items_iconSuffixs)[i];
+            // Create a new Fragment to be placed in the activity layout
+            AboutListFragment aboutListFragment = new AboutListFragment();
 
-            IconTextPendingIntentModel iconTextPendingIntentModel = new IconTextPendingIntentModel(text,
-                    icon_ImageBase, icon_ImageSuffix, null);
-
-            values[i] = iconTextPendingIntentModel;
+            // Add the fragment to the 'fragment_container' FrameLayout
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.fragment_container, aboutListFragment, "about_fragment").commit();
         }
-
-        ArrayAdapter<IconTextPendingIntentModel> adapter = new About_ListViewItem_ArrayAdapter(this, values);
-
-        aboutListView.setAdapter(adapter);
-
-        // set the divider to null in order to allow the gradient to work
-        aboutListView.setDivider(null);
-        aboutListView.setPadding(0, 5, 0, 0);
-        aboutListView.setDividerHeight(5);
-    }
+   }
 }

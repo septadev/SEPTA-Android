@@ -17,7 +17,8 @@
     <ImageView
         android:layout_width="41dp"
         android:layout_height="wrap_content"
-        android:id="@+id/about_icon_ImageView"/>
+        android:id="@+id/about_icon_ImageView"
+        android:layout_centerVertical="true"/>
 
     <TextView
         android:layout_width="wrap_content"

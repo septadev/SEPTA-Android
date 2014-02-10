@@ -68,7 +68,8 @@
         android:id="@+id/details_editText"
         android:layout_gravity="center_horizontal"
         android:layout_below="@id/details_textView"
-        android:focusableInTouchMode="true"/>
+        android:focusableInTouchMode="true"
+        android:hint="@string/appfeedbackform_details_editText_hinttext"/>
 
     <Button
         android:layout_width="match_parent"
@@ -78,6 +79,7 @@
         android:layout_gravity="center_horizontal|bottom"
         android:focusable="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="20dp"/>
+        android:layout_marginBottom="20dp"
+        android:enabled="false"/>
 
 </RelativeLayout>

@@ -20,7 +20,7 @@ public class EmailLaunch {
     private static final String TAG = EmailLaunch.class.getName();
 
     public static void launchEmail(Context context, String sendToEmailAddress, String subject, String emailBodyText, Uri imageUri) {
-        Intent sendEmailIntent = new Intent(Intent.ACTION_SEND);
+        Intent sendEmailIntent = new Intent(Intent.ACTION_SENDTO);
         sendEmailIntent.setType("image/jpeg");
         sendEmailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{sendToEmailAddress});
         sendEmailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);

@@ -16,6 +16,8 @@
     <!-- App feedback form prompt string -->
     <string name="appfeedbackform_spinner_prompt">Choose a feedback type</string>
 
+    <string name="appfeedbackform_details_editText_hinttext">required field</string>
+
     <!-- App feedback form type of feedback spinner options list -->
     <string-array name="appfeedbackform_spinner_arraylist">
         <item>Bug</item>

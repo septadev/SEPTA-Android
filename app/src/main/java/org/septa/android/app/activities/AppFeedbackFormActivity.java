@@ -11,6 +11,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,6 +42,9 @@ public class AppFeedbackFormActivity extends BaseAnalyticsActionBarActivity {
         getSupportActionBar().setIcon(R.drawable.ic_actionbar_appfeedbackform);
         getSupportActionBar().setTitle(titleText);
 
+        final Spinner typeOfFeedbackSpinner = (Spinner)findViewById(R.id.type_of_feedback_spinner);
+        final EditText detailsEditText = (EditText)findViewById(R.id.details_editText);
+
         final Button tapToSelectImageButton = (Button) findViewById(R.id.appfeedbackform_image_select_button);
         tapToSelectImageButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -48,8 +53,6 @@ public class AppFeedbackFormActivity extends BaseAnalyticsActionBarActivity {
             }
         });
 
-        final Spinner typeOfFeedbackSpinner = (Spinner)findViewById(R.id.type_of_feedback_spinner);
-        final EditText detailsEditText = (EditText)findViewById(R.id.details_editText);
         final Button submitAppFeedbackFormButton = (Button) findViewById(R.id.submit_button);
         submitAppFeedbackFormButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -65,6 +68,18 @@ public class AppFeedbackFormActivity extends BaseAnalyticsActionBarActivity {
             }
         });
 
+        detailsEditText.addTextChangedListener(new TextWatcher(){
+            public void afterTextChanged(Editable s) { }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after){ }
+            public void onTextChanged(CharSequence s, int start, int before, int count){
+                Log.d(TAG, "onTextChanged with start, before, and count "+ start + " " + before + " " + count);
+                if (start > 0) {
+                    submitAppFeedbackFormButton.setEnabled(true);
+                } else {
+                    submitAppFeedbackFormButton.setEnabled(false);
+                }
+            }
+        });
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {

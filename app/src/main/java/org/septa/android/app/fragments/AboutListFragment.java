@@ -20,7 +20,7 @@ import org.septa.android.app.R;
 import org.septa.android.app.adapters.About_ListViewItem_ArrayAdapter;
 import org.septa.android.app.models.adapterhelpers.IconTextPendingIntentModel;
 
-public class AboutListFragment  extends ListFragment {
+public class AboutListFragment extends ListFragment {
     private static final String TAG = AboutListFragment.class.getName();
     IconTextPendingIntentModel[] values;
 
@@ -73,7 +73,7 @@ public class AboutListFragment  extends ListFragment {
             case 0:
                 fragmentTransaction = getFragmentManager().beginTransaction();
 
-                fragmentTransaction.replace(R.id.fragment_container, new AboutAttributionsListFragment(), "about_attribution_fragment");
+                fragmentTransaction.replace(R.id.about_fragment_container, new AboutAttributionsListFragment(), "about_attribution_fragment");
                 fragmentTransaction.addToBackStack("about_fragment_backstack");
 
                 fragmentTransaction.commit();
@@ -84,7 +84,7 @@ public class AboutListFragment  extends ListFragment {
                 String urlToLoad = this.values[position].getUrlToLoad();
                 fragmentTransaction = getFragmentManager().beginTransaction();
 
-                fragmentTransaction.replace(R.id.fragment_container, new AboutWebView(urlToLoad), "about_sourcecode_fragment");
+                fragmentTransaction.replace(R.id.about_fragment_container, new AboutWebView(urlToLoad), "about_sourcecode_fragment");
                 fragmentTransaction.addToBackStack("about_fragment_backstack");
 
                 fragmentTransaction.commit();

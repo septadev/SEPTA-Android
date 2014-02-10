@@ -20,6 +20,7 @@ import android.widget.ListView;
 import org.septa.android.app.BuildConfig;
 import org.septa.android.app.R;
 import org.septa.android.app.adapters.About_Attributions_ListViewItem_ArrayAdapter;
+import org.septa.android.app.adapters.About_ListViewItem_ArrayAdapter;
 import org.septa.android.app.models.adapterhelpers.IconTextPendingIntentModel;
 
 public class AboutListFragment  extends ListFragment {
@@ -41,22 +42,24 @@ public class AboutListFragment  extends ListFragment {
         IconTextPendingIntentModel[] values = new IconTextPendingIntentModel[aboutListViewItemCount];
         for (int i = 0; i < aboutListViewItemCount; i++) {
             String text = getResources().getStringArray(R.array.about_listview_items_texts)[i];
+            boolean enabled = true;
 
             // TODO: clean this up to not hard code the equation for Version
             if (text.equals("Version")) {
                 text = text.concat(":  " + BuildConfig.VERSIONNAME);
+                enabled = false;
             }
 
             String icon_ImageBase = getResources().getString(R.string.about_icon_imageBase);
             String icon_ImageSuffix = getResources().getStringArray(R.array.about_listview_items_iconSuffixes)[i];
 
             IconTextPendingIntentModel iconTextPendingIntentModel = new IconTextPendingIntentModel(text,
-                    icon_ImageBase, icon_ImageSuffix, null);
+                    icon_ImageBase, icon_ImageSuffix, null, enabled);
 
             values[i] = iconTextPendingIntentModel;
         }
 
-        ArrayAdapter<IconTextPendingIntentModel> adapter = new About_Attributions_ListViewItem_ArrayAdapter(getActivity(), values);
+        ArrayAdapter<IconTextPendingIntentModel> adapter = new About_ListViewItem_ArrayAdapter(getActivity(), values);
 
         setListAdapter(adapter);
     }

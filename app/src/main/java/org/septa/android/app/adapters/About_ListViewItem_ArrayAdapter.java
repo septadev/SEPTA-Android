@@ -8,20 +8,20 @@
 package org.septa.android.app.adapters;
 
 import android.content.Context;
-import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.septa.android.app.R;
-import org.septa.android.app.activities.FareInformationGetMoreDetailsActionBarActivity;
 import org.septa.android.app.models.adapterhelpers.IconTextPendingIntentModel;
 
 public class About_ListViewItem_ArrayAdapter extends ArrayAdapter<IconTextPendingIntentModel> {
+    public static final String TAG = About_ListViewItem_ArrayAdapter.class.getName();
+
     private final Context context;
     private final IconTextPendingIntentModel[] values;
 
@@ -33,6 +33,7 @@ public class About_ListViewItem_ArrayAdapter extends ArrayAdapter<IconTextPendin
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        Log.d(TAG, "getView in listViewItem array adapter");
         LayoutInflater inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -52,5 +53,17 @@ public class About_ListViewItem_ArrayAdapter extends ArrayAdapter<IconTextPendin
         // TODO: set up the click listen on the row if the pendingIntent is not null
 
         return rowView;
+    }
+
+    @Override
+    public boolean areAllItemsEnabled() {
+
+        return false;
+    }
+
+    @Override
+    public boolean isEnabled(int position) {
+
+        return values[position].isEnabled();
     }
 }

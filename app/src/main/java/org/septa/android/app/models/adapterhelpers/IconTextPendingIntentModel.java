@@ -14,12 +14,14 @@ public class IconTextPendingIntentModel {
     private String iconImageNameBase;
     private String iconImageNameSuffix;
     private PendingIntent pendingIntent;
+    private boolean enabled;
 
-    public IconTextPendingIntentModel(String text, String iconImageNameBase, String iconImageNameSuffix, PendingIntent pendingIntent) {
+    public IconTextPendingIntentModel(String text, String iconImageNameBase, String iconImageNameSuffix, PendingIntent pendingIntent, boolean enabled) {
         this.text = text;
         this.iconImageNameBase = iconImageNameBase;
         this.iconImageNameSuffix = iconImageNameSuffix;
         this.pendingIntent = pendingIntent;
+        this.enabled = enabled;
     }
 
     public String getText() {
@@ -37,4 +39,6 @@ public class IconTextPendingIntentModel {
     }
 
     public PendingIntent getPendingIntent() { return this.pendingIntent; }
+
+    public boolean isEnabled() { return this.enabled; }
 }

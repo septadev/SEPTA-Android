@@ -38,16 +38,11 @@ public class AboutAttributionsActionBarActiity  extends BaseAnalyticsActionBarAc
         for (int i = 0; i < aboutListViewItemCount; i++) {
             String text = getResources().getStringArray(R.array.about_listview_items_texts)[i];
 
-            // TODO: clean this up to not hard code the equation for Version
-            if (text.equals("Version")) {
-                text = text.concat(":  " + BuildConfig.VERSIONNAME);
-            }
-
             String icon_ImageBase = getResources().getString(R.string.about_icon_imageBase);
             String icon_ImageSuffix = getResources().getStringArray(R.array.about_listview_items_iconSuffixes)[i];
 
             IconTextPendingIntentModel iconTextPendingIntentModel = new IconTextPendingIntentModel(text,
-                    icon_ImageBase, icon_ImageSuffix, null);
+                    icon_ImageBase, icon_ImageSuffix, null, true);
 
             values[i] = iconTextPendingIntentModel;
         }

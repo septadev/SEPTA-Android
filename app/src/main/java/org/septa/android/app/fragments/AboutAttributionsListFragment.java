@@ -44,7 +44,7 @@ public class AboutAttributionsListFragment extends ListFragment {
             String icon_ImageSuffix = getResources().getStringArray(R.array.about_attributions_listview_items_iconSuffixes)[i];
 
             IconTextPendingIntentModel iconTextPendingIntentModel = new IconTextPendingIntentModel(text,
-                    icon_ImageBase, icon_ImageSuffix, null);
+                    icon_ImageBase, icon_ImageSuffix, null, true);
 
             values[i] = iconTextPendingIntentModel;
         }

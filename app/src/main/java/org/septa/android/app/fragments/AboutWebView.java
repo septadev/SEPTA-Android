@@ -8,12 +8,23 @@
 package org.septa.android.app.fragments;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import org.septa.android.app.activities.MainTabbarActivity;
 import org.septa.android.app.utilities.WebViewFragment;
 
-public class AboutSourceCodeWebView extends WebViewFragment {
+public class AboutWebView extends WebViewFragment {
+    public static final String TAG = AboutWebView.class.getName();
+
+    private String urlToLoad;
+
+    public AboutWebView(String urlToLoad) {
+
+        this.urlToLoad = urlToLoad;
+    }
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -25,7 +36,8 @@ public class AboutSourceCodeWebView extends WebViewFragment {
 
         getWebView().setWebViewClient(new SwAWebClient());
 
-        getWebView().loadUrl("file:///android_asset/about_sourcecode.html");
+        Log.d(TAG, "about to load the WebView with this string |"+this.urlToLoad+"|");
+        getWebView().loadUrl(this.urlToLoad);
     }
 
     private class SwAWebClient extends WebViewClient {

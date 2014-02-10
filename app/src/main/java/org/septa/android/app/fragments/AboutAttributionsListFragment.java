@@ -22,6 +22,7 @@ import org.septa.android.app.models.adapterhelpers.IconTextPendingIntentModel;
 
 public class AboutAttributionsListFragment extends ListFragment {
     private static final String TAG = AboutAttributionsListFragment.class.getName();
+    private IconTextPendingIntentModel[] values;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -42,12 +43,15 @@ public class AboutAttributionsListFragment extends ListFragment {
 
             String icon_ImageBase = getResources().getString(R.string.about_icon_imageBase);
             String icon_ImageSuffix = getResources().getStringArray(R.array.about_attributions_listview_items_iconSuffixes)[i];
+            String uri_toLoad = getResources().getStringArray(R.array.about_attributions_listview_items_urls)[i];
 
             IconTextPendingIntentModel iconTextPendingIntentModel = new IconTextPendingIntentModel(text,
-                    icon_ImageBase, icon_ImageSuffix, null, true);
+                    icon_ImageBase, icon_ImageSuffix, uri_toLoad, true);
 
             values[i] = iconTextPendingIntentModel;
         }
+
+        this.values = values;
 
         ArrayAdapter<IconTextPendingIntentModel> adapter = new About_Attributions_ListViewItem_ArrayAdapter(getActivity(), values);
 
@@ -56,26 +60,16 @@ public class AboutAttributionsListFragment extends ListFragment {
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-        switch(position) {
-            case 0:
-                Log.d(TAG, "launch 0");
+        FragmentTransaction fragmentTransaction;
 
-                break;
+        if ((this.values[position].getUrlToLoad() != null) && !this.values[position].getUrlToLoad().equals("")) {
+            fragmentTransaction = getFragmentManager().beginTransaction();
+            String urlToLoad = this.values[position].getUrlToLoad();
 
-            case 1:
-                Log.d(TAG, "launch 1");
+            fragmentTransaction.replace(R.id.fragment_container, new AboutWebView(urlToLoad), "about_attribution_webview_fragment");
+            fragmentTransaction.addToBackStack("about_attribution_fragment_backstack");
 
-                break;
-
-            case 2:
-                Log.d(TAG, "launch 2");
-
-                break;
-
-            default:
-                Log.d(TAG, "launch default");
-
-                break;
+            fragmentTransaction.commit();
         }
     }
 }

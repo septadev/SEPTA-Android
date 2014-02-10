@@ -8,19 +8,20 @@
 package org.septa.android.app.models.adapterhelpers;
 
 import android.app.PendingIntent;
+import android.net.Uri;
 
 public class IconTextPendingIntentModel {
     private String text;
     private String iconImageNameBase;
     private String iconImageNameSuffix;
-    private PendingIntent pendingIntent;
     private boolean enabled;
+    private String urlToLoad;
 
-    public IconTextPendingIntentModel(String text, String iconImageNameBase, String iconImageNameSuffix, PendingIntent pendingIntent, boolean enabled) {
+    public IconTextPendingIntentModel(String text, String iconImageNameBase, String iconImageNameSuffix, String urlToLoad, boolean enabled) {
         this.text = text;
         this.iconImageNameBase = iconImageNameBase;
         this.iconImageNameSuffix = iconImageNameSuffix;
-        this.pendingIntent = pendingIntent;
+        this.urlToLoad = urlToLoad;
         this.enabled = enabled;
     }
 
@@ -38,7 +39,7 @@ public class IconTextPendingIntentModel {
         return this.iconImageNameSuffix;
     }
 
-    public PendingIntent getPendingIntent() { return this.pendingIntent; }
-
     public boolean isEnabled() { return this.enabled; }
+
+    public String getUrlToLoad() { return this.urlToLoad; }
 }

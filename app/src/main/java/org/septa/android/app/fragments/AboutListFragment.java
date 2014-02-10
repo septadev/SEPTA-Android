@@ -7,9 +7,7 @@
 
 package org.septa.android.app.fragments;
 
-import android.app.Activity;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
@@ -19,12 +17,12 @@ import android.widget.ListView;
 
 import org.septa.android.app.BuildConfig;
 import org.septa.android.app.R;
-import org.septa.android.app.adapters.About_Attributions_ListViewItem_ArrayAdapter;
 import org.septa.android.app.adapters.About_ListViewItem_ArrayAdapter;
 import org.septa.android.app.models.adapterhelpers.IconTextPendingIntentModel;
 
 public class AboutListFragment  extends ListFragment {
     private static final String TAG = AboutListFragment.class.getName();
+    IconTextPendingIntentModel[] values;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -52,12 +50,15 @@ public class AboutListFragment  extends ListFragment {
 
             String icon_ImageBase = getResources().getString(R.string.about_icon_imageBase);
             String icon_ImageSuffix = getResources().getStringArray(R.array.about_listview_items_iconSuffixes)[i];
+            String url_toLoad = getResources().getStringArray(R.array.about_listview_items_urls)[i];
 
             IconTextPendingIntentModel iconTextPendingIntentModel = new IconTextPendingIntentModel(text,
-                    icon_ImageBase, icon_ImageSuffix, null, enabled);
+                    icon_ImageBase, icon_ImageSuffix, url_toLoad, enabled);
 
             values[i] = iconTextPendingIntentModel;
         }
+
+        this.values = values;
 
         ArrayAdapter<IconTextPendingIntentModel> adapter = new About_ListViewItem_ArrayAdapter(getActivity(), values);
 
@@ -70,8 +71,6 @@ public class AboutListFragment  extends ListFragment {
 
         switch(position) {
             case 0:
-                Log.d(TAG, "launch 0");
-
                 fragmentTransaction = getFragmentManager().beginTransaction();
 
                 fragmentTransaction.replace(R.id.fragment_container, new AboutAttributionsListFragment(), "about_attribution_fragment");
@@ -82,19 +81,13 @@ public class AboutListFragment  extends ListFragment {
                 break;
 
             case 1:
-                Log.d(TAG, "launch 1");
-
+                String urlToLoad = this.values[position].getUrlToLoad();
                 fragmentTransaction = getFragmentManager().beginTransaction();
 
-                fragmentTransaction.replace(R.id.fragment_container, new AboutSourceCodeWebView(), "about_sourcecode_fragment");
+                fragmentTransaction.replace(R.id.fragment_container, new AboutWebView(urlToLoad), "about_sourcecode_fragment");
                 fragmentTransaction.addToBackStack("about_fragment_backstack");
 
                 fragmentTransaction.commit();
-
-                break;
-
-            case 2:
-                Log.d(TAG, "launch 2");
 
                 break;
 

@@ -40,9 +40,10 @@ public class AboutAttributionsActionBarActiity  extends BaseAnalyticsActionBarAc
 
             String icon_ImageBase = getResources().getString(R.string.about_icon_imageBase);
             String icon_ImageSuffix = getResources().getStringArray(R.array.about_listview_items_iconSuffixes)[i];
+            String uri_toLoad = getResources().getStringArray(R.array.about_attributions_listview_items_urls)[i];
 
             IconTextPendingIntentModel iconTextPendingIntentModel = new IconTextPendingIntentModel(text,
-                    icon_ImageBase, icon_ImageSuffix, null, true);
+                    icon_ImageBase, icon_ImageSuffix, uri_toLoad, true);
 
             values[i] = iconTextPendingIntentModel;
         }

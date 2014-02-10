@@ -25,8 +25,9 @@
     </string-array>
 
     <string-array name="about_listview_items_urls">
-        <item></item>       <!-- blank item for the url where it does not exist -->
+        <item></item>       <!-- blank item for the attributes url, which does not exist -->
         <item>file:///android_asset/about_sourcecode.html</item>
+        <item></item>       <!-- blank item for the version url, which does not exist -->
     </string-array>
 
 

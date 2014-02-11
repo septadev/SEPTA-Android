@@ -36,6 +36,8 @@ import android.view.ViewGroup.LayoutParams;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
 
+import org.septa.android.app.fragments.AboutWebView;
+
 /**
  * A fragment that displays a WebView.
  * <p>
@@ -45,14 +47,15 @@ public class WebViewFragment extends Fragment {
     private WebView mWebView;
     private FrameLayout mLayout;
     private boolean mIsWebViewAvailable;
-    private String mUrlToLoad;
+    private String urlToLoad;
 
-    public WebViewFragment() {
+    public static WebViewFragment newInstance(String urlToLoad) {
+        WebViewFragment webViewFragment = new WebViewFragment();
+        Bundle args = new Bundle();
+        args.putString("urlToLoad", urlToLoad);
+        webViewFragment.setArguments(args);
 
-    }
-
-    public WebViewFragment(String urlToLoad) {
-        mUrlToLoad = urlToLoad;
+        return webViewFragment;
     }
 
     /**
@@ -71,8 +74,8 @@ public class WebViewFragment extends Fragment {
         mWebView.getSettings().setJavaScriptEnabled(true);
 
         /** check if we have already set the Url to load, if yes, load it */
-        if (mUrlToLoad != null && !mUrlToLoad.trim().equals("")) {
-            mWebView.loadUrl(mUrlToLoad);
+        if (urlToLoad != null && !urlToLoad.trim().equals("")) {
+            mWebView.loadUrl(urlToLoad);
         }
 
         mLayout.addView(mWebView, LayoutParams.MATCH_PARENT);
@@ -133,7 +136,7 @@ public class WebViewFragment extends Fragment {
 
     public void setUrlToLoad(String urlToLoad) {
 
-        this.mUrlToLoad = urlToLoad;
-        mWebView.loadUrl(mUrlToLoad);
+        this.urlToLoad = urlToLoad;
+        mWebView.loadUrl(urlToLoad);
     }
 }

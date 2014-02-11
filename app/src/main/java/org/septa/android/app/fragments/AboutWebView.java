@@ -17,12 +17,27 @@ import org.septa.android.app.utilities.WebViewFragment;
 
 public class AboutWebView extends WebViewFragment {
     public static final String TAG = AboutWebView.class.getName();
+    public Bundle arguments;
 
     private String urlToLoad;
 
-    public AboutWebView(String urlToLoad) {
+    public static AboutWebView newInstance(String urlToLoad) {
+        AboutWebView aboutWebView = new AboutWebView();
+        Bundle args = new Bundle();
+        args.putString("urlToLoad", urlToLoad);
+        aboutWebView.setArguments(args);
 
-        this.urlToLoad = urlToLoad;
+        return aboutWebView;
+    }
+
+    /**
+     * When creating, retrieve this instance's number from its arguments.
+     */
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        urlToLoad = getArguments() != null ? getArguments().getString("urlToLoad") : null;
     }
 
     @Override

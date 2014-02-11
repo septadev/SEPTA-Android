@@ -84,7 +84,7 @@ public class AboutListFragment extends ListFragment {
                 String urlToLoad = this.values[position].getUrlToLoad();
                 fragmentTransaction = getFragmentManager().beginTransaction();
 
-                fragmentTransaction.replace(R.id.about_fragment_container, new AboutWebView(urlToLoad), "about_sourcecode_fragment");
+                fragmentTransaction.replace(R.id.about_fragment_container, AboutWebView.newInstance(urlToLoad), "about_sourcecode_fragment");
                 fragmentTransaction.addToBackStack("about_fragment_backstack");
 
                 fragmentTransaction.commit();

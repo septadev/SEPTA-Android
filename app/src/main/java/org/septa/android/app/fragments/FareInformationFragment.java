@@ -70,7 +70,7 @@ public class FareInformationFragment extends ListFragment {
             FragmentManager fm = getFragmentManager();
             FragmentTransaction ft = fm.beginTransaction();
 
-            WebViewFragment getMoreDetailsWebViewFragment = new WebViewFragment(getString(R.string.connect_fareinformation_getmoredetails_url));
+            WebViewFragment getMoreDetailsWebViewFragment = WebViewFragment.newInstance(getString(R.string.connect_fareinformation_getmoredetails_url));
             ft.replace(R.id.container, getMoreDetailsWebViewFragment, "getMoreDetailsWebViewFragment");
             ft.commit();
         }

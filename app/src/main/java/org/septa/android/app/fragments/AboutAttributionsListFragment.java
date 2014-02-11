@@ -66,7 +66,7 @@ public class AboutAttributionsListFragment extends ListFragment {
             fragmentTransaction = getFragmentManager().beginTransaction();
             String urlToLoad = this.values[position].getUrlToLoad();
 
-            fragmentTransaction.replace(R.id.about_fragment_container, new AboutWebView(urlToLoad), "about_attribution_webview_fragment");
+            fragmentTransaction.replace(R.id.about_fragment_container, AboutWebView.newInstance(urlToLoad), "about_attribution_webview_fragment");
             fragmentTransaction.addToBackStack("about_attribution_fragment_backstack");
 
             fragmentTransaction.commit();

@@ -18,17 +18,16 @@ __**__ _replace \<username> with your username_
 5. In the file titled <code>SEPTASigning</code>, create the lines, which will look like below:
 
 		project.ext {
+	        SEPTA_DEVELOPMENT_KEYSTORE_FILE = '../../SEPTA-Keystores/septaandroid_development.jks'
+   	  		SEPTA_PRODUCTION_KEYSTORE_FILE  = '../../SEPTA-Keystores/septaandroid_production.jks'
 
-    	    SEPTA_Development_Keystore_File = '../../SEPTA-Keystores/septaandroid_development.jks'
-        	SEPTA_Production_Keystore_File = '../../SEPTA-Keystores/septaandroid_production.jks'
+	        SEPTA_DEVELOPMENT_KEYSTORE_PASSWORD = 'na'
+	        SEPTA_PRODUCTION_KEYSTORE_PASSWORD  = 'na'
 
-   	 	    SEPTA_Development_KEYSTOREpassword = ''
-    	    SEPTA_Production_KEYSTOREpassword = ''
-
-      	  ALPHA_keyaliaspassword = ''
-      	  PRERELEASE_keyaliaspassword = ''
-      	  BETA_keyaliaspassword = ''
-       	 RELEASE_keyaliaspassword = ''
+	        ALPHA_KEYALIAS_PASSWORD = 'na'
+	        PRERELEASE_KEYALIAS_PASSWORD = 'na'
+	        BETA_KEYALIAS_PASSWORD = 'na'
+	        RELEASE_KEYALIAS_PASSWORD = 'na'
 		}
 
 6. Create a directory titled <code>SEPTA-Keystores</code>, which will be located in the parent directory of this project.
@@ -59,17 +58,16 @@ Once you have created the keystore files, add the password to the <code>SEPTASig
 <dd>
 
 	project.ext {
+        SEPTA_DEVELOPMENT_KEYSTORE_FILE = '../../SEPTA-Keystores/septaandroid_development.jks'
+        SEPTA_PRODUCTION_KEYSTORE_FILE  = '../../SEPTA-Keystores/septaandroid_production.jks'
 
- 	    SEPTA_Development_Keystore_File = '../../SEPTA-Keystores/septaandroid_development.jks'
-       	SEPTA_Production_Keystore_File = '../../SEPTA-Keystores/septaandroid_production.jks'
+        SEPTA_DEVELOPMENT_KEYSTORE_PASSWORD = 'na'
+        SEPTA_PRODUCTION_KEYSTORE_PASSWORD  = 'na'
 
-	    SEPTA_Development_KEYSTOREpassword = ''
-   	    SEPTA_Production_KEYSTOREpassword = ''
-
-   	    ALPHA_keyaliaspassword = ''
-        PRERELEASE_keyaliaspassword = ''
-        BETA_keyaliaspassword = ''
-      	RELEASE_keyaliaspassword = ''
-    }
+        ALPHA_KEYALIAS_PASSWORD = 'na'
+        PRERELEASE_KEYALIAS_PASSWORD = 'na'
+        BETA_KEYALIAS_PASSWORD = 'na'
+        RELEASE_KEYALIAS_PASSWORD = 'na'
+	}
 </dd>
 </dl>

@@ -34,7 +34,7 @@ android {
 
     signingConfigs {
         prerelease {
-            storeFile file("${SEPTA_Development_Keystore_File}")
+            storeFile file("${SEPTA_DEVELOPMENT_KEYSTORE_FILE}")
             storePassword SEPTA_DEVELOPMENT_KEYSTORE_PASSWORD
             keyAlias "prerelease"
             keyPassword PRERELEASE_KEYALIAS_PASSWORD

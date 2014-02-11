@@ -21,6 +21,14 @@ if (project.hasProperty("SEPTA.signing") && file(project.property("SEPTA.signing
     apply from: project.property("SEPTA.signing") + ".gradle"
 }
 
+def getSprintRound = { ->
+    if (project.hasProperty("SPRINT_ROUND")) {
+        return project.property("SPRINT_ROUND")
+    } else {
+        return ''
+    }
+}
+
 android {
     compileSdkVersion 19
     buildToolsVersion "19.0.1"
@@ -65,7 +73,7 @@ android {
             debuggable true
             zipAlign false
             signingConfig signingConfigs.prerelease
-            versionNameSuffix "d" + "${getGitHash}"
+            versionNameSuffix "d" + "${getSprintRound}" + "${getGitHash}"
             buildConfigField "String", "VERSIONNAME", "\"${defaultConfig.versionName}" + "${versionNameSuffix}\""
         }
         alpha {
@@ -73,7 +81,7 @@ android {
             debuggable true
             zipAlign true
             signingConfig signingConfigs.prerelease
-            versionNameSuffix "a" + "${getGitHash}"
+            versionNameSuffix "a" + "${getSprintRound}" + "${getGitHash}"
             buildConfigField "String", "VERSIONNAME", "\"${defaultConfig.versionName}" + "${versionNameSuffix}\""
         }
         beta {
@@ -82,7 +90,7 @@ android {
             debuggable false
             zipAlign true
             signingConfig signingConfigs.prerelease
-            versionNameSuffix "b" + "${getGitHash}"
+            versionNameSuffix "b" + "${getSprintRound}" + "${getGitHash}"
             buildConfigField "String", "VERSIONNAME", "\"${defaultConfig.versionName}" + "${versionNameSuffix}\""
         }
         release {

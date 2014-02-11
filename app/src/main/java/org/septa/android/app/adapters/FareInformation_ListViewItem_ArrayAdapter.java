@@ -81,4 +81,17 @@ public class FareInformation_ListViewItem_ArrayAdapter extends ArrayAdapter<Text
 
         return rowView;
     }
+
+    @Override
+    public boolean areAllItemsEnabled() {
+
+        return false;
+    }
+
+    @Override
+    public boolean isEnabled(int position) {
+
+        /** if the position is the last in the list, it must be the button */
+        return values.length == (position + 1);
+    }
 }

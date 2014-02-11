@@ -35,27 +35,27 @@ android {
     signingConfigs {
         prerelease {
             storeFile file("${SEPTA_Development_Keystore_File}")
-            storePassword KEYSTOREpassword
+            storePassword SEPTA_DEVELOPMENT_KEYSTORE_PASSWORD
             keyAlias "prerelease"
-            keyPassword PRERELEASE_keyaliaspassword
+            keyPassword PRERELEASE_KEYALIAS_PASSWORD
         }
         alpha {
-            storeFile file("${SEPTA_Development_Keystore_File}")
-            storePassword KEYSTOREpassword
+            storeFile file("${SEPTA_DEVELOPMENT_KEYSTORE_FILE}")
+            storePassword SEPTA_DEVELOPMENT_KEYSTORE_PASSWORD
             keyAlias "alpha"
-            keyPassword ALPHA_keyaliaspassword
+            keyPassword ALPHA_KEYALIAS_PASSWORD
         }
         beta {
-            storeFile file("${SEPTA_Development_Keystore_File}")
-            storePassword KEYSTOREpassword
+            storeFile file("${SEPTA_DEVELOPMENT_KEYSTORE_FILE}")
+            storePassword SEPTA_DEVELOPMENT_KEYSTORE_PASSWORD
             keyAlias "beta"
-            keyPassword BETA_keyaliaspassword
+            keyPassword BETA_KEYALIAS_PASSWORD
         }
         release {
-            storeFile file("${SEPTA_Production_Keystore_File}")
-            storePassword KEYSTOREpassword
+            storeFile file("${SEPTA_PRODUCTION_KEYSTORE_FILE}")
+            storePassword SEPTA_PRODUCTION_KEYSTORE_PASSWORD
             keyAlias "release"
-            keyPassword RELEASE_keyaliaspassword
+            keyPassword RELEASE_KEYALIAS_PASSWORD
         }
     }
 

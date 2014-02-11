@@ -78,7 +78,7 @@ android {
         }
         alpha {
             runProguard false
-            debuggable true
+            debuggable false
             zipAlign true
             signingConfig signingConfigs.prerelease
             versionNameSuffix "a" + "${getSprintRound}" + "${getGitHash}"

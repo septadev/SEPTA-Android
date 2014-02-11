@@ -7,6 +7,14 @@ def getGitHash = { ->
     return '-'+stdout.toString().trim()
 }
 
+def getSprintRound = { ->
+    if (project.hasProperty("SPRINT_ROUND")) {
+        return project.property("SPRINT_ROUND")
+    } else {
+        return ''
+    }
+}
+
 apply plugin: 'android'
 
 dependencies {
@@ -21,12 +29,20 @@ if (project.hasProperty("SEPTA.signing") && file(project.property("SEPTA.signing
     apply from: project.property("SEPTA.signing") + ".gradle"
 }
 
-def getSprintRound = { ->
-    if (project.hasProperty("SPRINT_ROUND")) {
-        return project.property("SPRINT_ROUND")
-    } else {
-        return ''
+android.applicationVariants.all { variant ->
+    println "*********" + variant.description + "**********";
+//    def variants = variant.baseName.split("-");
+    def apkName = "SEPTA-";
+    apkName += variant.buildType.name;
+    apkName += "-v" + android.defaultConfig.versionName + "${getGitHash}";
+    if (!variant.zipAlign) {
+        apkName += "-unaligned";
     }
+
+    apkName += ".apk";
+
+    println "*********" + "$project.buildDir/apk/" + apkName + "**********";
+    variant.outputFile = file("$project.buildDir/apk/" + apkName)
 }
 
 android {
@@ -75,6 +91,7 @@ android {
             signingConfig signingConfigs.prerelease
             versionNameSuffix "d" + "${getSprintRound}" + "${getGitHash}"
             buildConfigField "String", "VERSIONNAME", "\"${defaultConfig.versionName}" + "${versionNameSuffix}\""
+
         }
         alpha {
             runProguard false

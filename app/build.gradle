@@ -34,25 +34,25 @@ android {
 
     signingConfigs {
         prerelease {
-            storeFile file("../septaandroid.jks")
+            storeFile file("${SEPTA_Development_Keychain_File}")
             storePassword KEYSTOREpassword
             keyAlias "prerelease"
             keyPassword PRERELEASE_keyaliaspassword
         }
         alpha {
-            storeFile file("../septaandroid.jks")
+            storeFile file("${SEPTA_Development_Keychain_File}")
             storePassword KEYSTOREpassword
             keyAlias "alpha"
             keyPassword ALPHA_keyaliaspassword
         }
         beta {
-            storeFile file("../septaandroid.jks")
+            storeFile file("${SEPTA_Development_Keychain_File}")
             storePassword KEYSTOREpassword
             keyAlias "beta"
             keyPassword BETA_keyaliaspassword
         }
         release {
-            storeFile file("../septaandroid.jks")
+            storeFile file("${SEPTA_Production_Keychain_File}")
             storePassword KEYSTOREpassword
             keyAlias "release"
             keyPassword RELEASE_keyaliaspassword

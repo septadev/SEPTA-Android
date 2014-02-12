@@ -15,7 +15,7 @@
     <string-array name="splashscreen_icons_inorder">
         <item>mfl</item>                           <!-- position col 1 row 1 -->
         <item>regionalrail</item>                  <!-- position col 2 row 1 -->
-        <item>subway</item>                        <!-- position col 3 row 1 -->
+        <item>bsl</item>                        <!-- position col 3 row 1 -->
         <item>bus</item>                           <!-- position col 1 row 2 -->
         <item>nhsl</item>                          <!-- position col 2 row 2 -->
         <item>trolley</item>                       <!-- position col 3 row 2 -->

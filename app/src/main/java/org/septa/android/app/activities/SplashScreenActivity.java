@@ -35,8 +35,8 @@ public class SplashScreenActivity extends BaseAnalyticsActivity {
                 GridLayout.LayoutParams param =new GridLayout.LayoutParams();
                 param.height = GridLayout.LayoutParams.WRAP_CONTENT;
                 param.width = GridLayout.LayoutParams.WRAP_CONTENT;
-                param.rightMargin = 12;
-                param.topMargin = 12;
+                param.rightMargin = 4;
+                param.topMargin = 4;
                 param.setGravity(Gravity.CENTER);
                 param.columnSpec = GridLayout.spec(col);
                 param.rowSpec = GridLayout.spec(row);

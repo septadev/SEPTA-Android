@@ -11,7 +11,7 @@
               android:orientation="horizontal"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:background="@drawable/about_listviewitem_background"
+              android:background="@drawable/general_black_listviewitem_background"
               android:layout_marginBottom="10dp">
 
     <ImageView

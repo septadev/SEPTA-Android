@@ -11,7 +11,7 @@
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/main_background"
+                android:background="@drawable/general_black_listviewitem_background"
                 android:layout_marginBottom="10dp">
 
     <ImageView
@@ -33,7 +33,6 @@
         android:layout_marginRight="20dp"
         android:layout_centerVertical="true"/>
 
-    <include layout="@layout/settings_24hour_control"
-        android:layout_toRightOf="@id/settings_text_TextView"/>
+    <include layout="@layout/settings_24hour_control" />
 
 </RelativeLayout>

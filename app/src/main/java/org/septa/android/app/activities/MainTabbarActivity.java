@@ -156,6 +156,7 @@ public class MainTabbarActivity extends BaseAnalyticsActionBarActivity implement
             case R.id.menuoption_settings:
                 Log.d(TAG, "selected the settings about menu option");
                 intent = new Intent(this, SettingsActionBarActivity.class);
+                intent.putExtra(getString(R.string.actionbar_titletext_key), "| Settings");
                 startActivity(intent);
 
                 return true;

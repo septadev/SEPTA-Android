@@ -8,9 +8,6 @@
 package org.septa.android.app.activities;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import org.septa.android.app.R;
 import org.septa.android.app.fragments.AboutListFragment;
 

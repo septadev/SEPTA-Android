@@ -7,13 +7,18 @@
 
 package org.septa.android.app.adapters;
 
+import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.content.Context;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import org.septa.android.app.R;
@@ -31,6 +36,7 @@ public class Settings_ListViewItem_ArrayAdapter extends ArrayAdapter<IconTextPen
         this.values = values;
     }
 
+    @SuppressLint("NewApi")   // suppress the lint warnings about the Switch.setChecked calls
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         LayoutInflater inflater = (LayoutInflater) context
@@ -50,11 +56,33 @@ public class Settings_ListViewItem_ArrayAdapter extends ArrayAdapter<IconTextPen
         icon_imageView.setImageResource(id);
 
         if (values[position].getText().equals("Update")) {
+
             rowView.findViewById(R.id.settings_24hour_control).setVisibility(View.INVISIBLE);
         } else{
             rowView.findViewById(R.id.settings_24hour_control).setVisibility(View.VISIBLE);
+
+            if (DateFormat.is24HourFormat(context)) {
+                if (rowView.findViewById(R.id.settings_24hour_control) instanceof Switch) {
+                    Switch hourControlSwitch = (Switch)rowView.findViewById(R.id.settings_24hour_control);
+                    hourControlSwitch.setChecked(true);
+                } else {
+                    CheckBox hourControlSwitch = (CheckBox)rowView.findViewById(R.id.settings_24hour_control);
+                    hourControlSwitch.setChecked(true);
+                }
+
+                Log.d(TAG, "user settings is 24 hour");
+            } else {
+                if (rowView.findViewById(R.id.settings_24hour_control) instanceof Switch) {
+                    Switch hourControlSwitch = (Switch)rowView.findViewById(R.id.settings_24hour_control);
+                    hourControlSwitch.setChecked(false);
+                } else {
+                    CheckBox hourControlSwitch = (CheckBox)rowView.findViewById(R.id.settings_24hour_control);
+                    hourControlSwitch.setChecked(false);
+                }
+
+                Log.d(TAG, "user settings is not 24 hour");
+            }
         }
-        // TODO: set up the click listen on the row if the pendingIntent is not null
 
         return rowView;
     }

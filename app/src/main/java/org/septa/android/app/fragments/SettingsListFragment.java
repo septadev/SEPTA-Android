@@ -18,6 +18,7 @@ import android.widget.ListView;
 import org.septa.android.app.BuildConfig;
 import org.septa.android.app.R;
 import org.septa.android.app.adapters.About_ListViewItem_ArrayAdapter;
+import org.septa.android.app.adapters.Settings_ListViewItem_ArrayAdapter;
 import org.septa.android.app.models.adapterhelpers.IconTextPendingIntentModel;
 
 public class SettingsListFragment extends ListFragment {
@@ -54,7 +55,7 @@ public class SettingsListFragment extends ListFragment {
 
         this.values = values;
 
-        ArrayAdapter<IconTextPendingIntentModel> adapter = new About_ListViewItem_ArrayAdapter(getActivity(), values);
+        ArrayAdapter<IconTextPendingIntentModel> adapter = new Settings_ListViewItem_ArrayAdapter(getActivity(), values);
 
         setListAdapter(adapter);
     }

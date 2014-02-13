@@ -7,6 +7,8 @@
 
 package org.septa.android.app.fragments;
 
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.ListFragment;
@@ -14,11 +16,17 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import org.septa.android.app.BuildConfig;
 import org.septa.android.app.R;
 import org.septa.android.app.adapters.About_ListViewItem_ArrayAdapter;
 import org.septa.android.app.models.adapterhelpers.IconTextPendingIntentModel;
+
+import java.io.File;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class AboutListFragment extends ListFragment {
     private static final String TAG = AboutListFragment.class.getName();
@@ -40,12 +48,12 @@ public class AboutListFragment extends ListFragment {
         IconTextPendingIntentModel[] values = new IconTextPendingIntentModel[aboutListViewItemCount];
         for (int i = 0; i < aboutListViewItemCount; i++) {
             String text = getResources().getStringArray(R.array.about_listview_items_texts)[i];
+
             boolean enabled = true;
 
             // TODO: clean this up to not hard code the equation for Version
             if (text.equals("Version")) {
                 text = text.concat(":  " + BuildConfig.VERSIONNAME);
-                enabled = false;
             }
 
             String icon_ImageBase = getResources().getString(R.string.about_icon_imageBase);
@@ -90,6 +98,17 @@ public class AboutListFragment extends ListFragment {
                 fragmentTransaction.commit();
 
                 break;
+
+            case 2:
+                long lastUpdateTimeInMillis = 0;
+                try {
+                    String appFile = getActivity().getPackageManager().getApplicationInfo("org.septa.android.app", 0).sourceDir;
+                    lastUpdateTimeInMillis = new File(appFile).lastModified(); //Epoch Time
+                } catch (PackageManager.NameNotFoundException nnfe) {
+                    Log.e(TAG, "name not found exception");
+                }
+                String toastMessageString = "Last update: " + DateFormat.getDateTimeInstance().format(new Date(lastUpdateTimeInMillis));
+                Toast.makeText(getActivity(), toastMessageString, Toast.LENGTH_LONG).show();
 
             default:
                 Log.d(TAG, "launch default");

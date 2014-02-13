@@ -58,7 +58,7 @@ public class About_ListViewItem_ArrayAdapter extends ArrayAdapter<IconTextPendin
     @Override
     public boolean areAllItemsEnabled() {
 
-        return false;
+        return true;
     }
 
     @Override

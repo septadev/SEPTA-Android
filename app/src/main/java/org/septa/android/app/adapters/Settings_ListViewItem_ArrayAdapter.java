@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -55,47 +56,42 @@ public class Settings_ListViewItem_ArrayAdapter extends ArrayAdapter<IconTextPen
         int id = context.getResources().getIdentifier(resourceName, "drawable", context.getPackageName());
         icon_imageView.setImageResource(id);
 
+        rowView.setTag(values[position]);
+
         if (values[position].getText().equals("Update")) {
 
-            rowView.findViewById(R.id.settings_24hour_control).setVisibility(View.INVISIBLE);
-        } else{
+            rowView.findViewById(R.id.settings_24hour_control).setVisibility(View.GONE);
+        } else {
             rowView.findViewById(R.id.settings_24hour_control).setVisibility(View.VISIBLE);
 
+            CompoundButton twentyFourHoursControl = (CompoundButton) rowView.findViewById(R.id.settings_24hour_control);
             if (DateFormat.is24HourFormat(context)) {
-                if (rowView.findViewById(R.id.settings_24hour_control) instanceof Switch) {
-                    Switch hourControlSwitch = (Switch)rowView.findViewById(R.id.settings_24hour_control);
-                    hourControlSwitch.setChecked(true);
-                } else {
-                    CheckBox hourControlSwitch = (CheckBox)rowView.findViewById(R.id.settings_24hour_control);
-                    hourControlSwitch.setChecked(true);
-                }
 
-                Log.d(TAG, "user settings is 24 hour");
+                twentyFourHoursControl.setChecked(true);
             } else {
-                if (rowView.findViewById(R.id.settings_24hour_control) instanceof Switch) {
-                    Switch hourControlSwitch = (Switch)rowView.findViewById(R.id.settings_24hour_control);
-                    hourControlSwitch.setChecked(false);
-                } else {
-                    CheckBox hourControlSwitch = (CheckBox)rowView.findViewById(R.id.settings_24hour_control);
-                    hourControlSwitch.setChecked(false);
-                }
 
-                Log.d(TAG, "user settings is not 24 hour");
+                twentyFourHoursControl.setChecked(false);
+
             }
+
+            twentyFourHoursControl.setClickable(false);
+            twentyFourHoursControl.setFocusable(false);
+            twentyFourHoursControl.setFocusableInTouchMode(false);
         }
 
         return rowView;
     }
-
-    @Override
-    public boolean areAllItemsEnabled() {
-
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled(int position) {
-
-        return values[position].isEnabled();
-    }
+//
+//    @Override
+//    public boolean areAllItemsEnabled() {
+//
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean isEnabled(int position) {
+//    Log.d(TAG, "checking position " + position + " to see if click is enabled");
+//        Log.d(TAG, "is it??? " + values[position].isEnabled());
+//        return values[position].isEnabled();
+//    }
 }

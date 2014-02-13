@@ -7,22 +7,31 @@
 
 package org.septa.android.app.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.provider.Settings;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.ListFragment;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ListView;
+import android.widget.Switch;
+import android.widget.TextView;
 
-import org.septa.android.app.BuildConfig;
 import org.septa.android.app.R;
-import org.septa.android.app.adapters.About_ListViewItem_ArrayAdapter;
 import org.septa.android.app.adapters.Settings_ListViewItem_ArrayAdapter;
 import org.septa.android.app.models.adapterhelpers.IconTextPendingIntentModel;
 
 public class SettingsListFragment extends ListFragment {
     private static final String TAG = SettingsListFragment.class.getName();
+
+    public static Handler mainActivityHandler;
     IconTextPendingIntentModel[] values;
 
     @Override
@@ -61,12 +70,20 @@ public class SettingsListFragment extends ListFragment {
     }
 
     @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        Log.d(TAG, "on activity result is back with requestCode of " + requestCode + " and result code " + resultCode);
+    }
+
+    @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         FragmentTransaction fragmentTransaction;
 
         switch(position) {
             case 0:
                 Log.d(TAG, "transition the user to the system setting to update");
+                startActivityForResult(new Intent(Settings.ACTION_DATE_SETTINGS), 2332);
 
                 break;
 

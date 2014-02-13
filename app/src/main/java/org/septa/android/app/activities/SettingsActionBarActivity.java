@@ -7,7 +7,9 @@
 
 package org.septa.android.app.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import org.septa.android.app.R;
 import org.septa.android.app.fragments.SettingsListFragment;
@@ -42,5 +44,11 @@ public class SettingsActionBarActivity extends BaseAnalyticsActionBarActivity {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.settings_fragment_container, settingsListFragment, "settings_fragment").commit();
         }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(TAG, "onActityResult with resultCode of "+resultCode);
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

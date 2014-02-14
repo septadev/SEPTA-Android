@@ -262,6 +262,7 @@
             android:layout_height="wrap_content"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
+            android:layout_marginTop="3dp"
             android:layout_marginLeft="5dp"
             android:id="@+id/commentsForm_commentType_spinner"
             android:entries="@array/commentsForm_commentType_spinner_arraylist"

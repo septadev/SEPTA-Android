@@ -1,3 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ commentsform.xml
+  ~ Last modified on 02-14-2014 14:20-0500 by brianhmayo
+  ~
+  ~ Copyright (c) 2014 SEPTA.  All rights reserved.
+  -->
+
 <resources>
+    <string name="formPost_content_type">application/x-www-form-urlencoded</string>
+
+    <string name="recipient">cservice@septa.org</string>
+    <string name="wl_tp">Employee,Comments</string>
+    <string name="subject">Inquiry+from+www.septa.org</string>
+    <string name="required">Name,email,phone</string>
 </resources>

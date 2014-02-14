@@ -1,3 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ networking.xml
+  ~ Last modified on 02-14-2014 14:16-0500 by brianhmayo
+  ~
+  ~ Copyright (c) 2014 SEPTA.  All rights reserved.
+  -->
+
 <resources>
+    <string name="base_septa.org_url_protocol">http</string>
+    <string name="base_septa.org_url">www.septa.org</string>
+
+    <string name="commentsForm_submitPath">/cs/comment/FormMail.cgi</string>
 </resources>

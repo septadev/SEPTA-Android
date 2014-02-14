@@ -7,34 +7,377 @@
   ~ Copyright (c) 2014 SEPTA.  All rights reserved.
   -->
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                  android:orientation="vertical"
+                  android:layout_width="match_parent"
+                  android:layout_height="match_parent"
+                  android:background="@android:color/white" >
+
+        <TextView style="@style/commentsForm_dividerBox"
+            android:id="@+id/commentsForm_dividerBox1_view"/>
+        <View style="@style/commentsForm_dividerLine"
+              android:id="@+id/commentsForm_dividerLine1_view"
+              android:layout_below="@id/commentsForm_dividerBox1_view"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/commentsForm_name_layout"
+            android:layout_below="@id/commentsForm_dividerLine1_view">
+            <TextView style="@style/commentsForm_rows"
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:textAppearance="?android:attr/textAppearanceMedium"
+                      android:text="Name"
+                      android:textColor="@android:color/black"
+                      android:id="@+id/commentsForm_name_textView"/>
+            <EditText style="@style/commentsForm_row_editText"
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:id="@+id/commentsForm_name_editText"
+                      android:layout_toRightOf="@+id/commentsForm_name_textView"
+                      android:layout_marginLeft="24dp"/>
+        </RelativeLayout>
+
+        <View style="@style/commentsForm_dividerLine_innerForm"
+              android:id="@+id/commentsForm_dividerLine2_textView"
+              android:layout_below="@id/commentsForm_name_layout"/>
+
+        <TextView style="@style/commentsForm_rows"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Phone"
+            android:textColor="@android:color/black"
+            android:id="@+id/commentsForm_phone_textView"
+            android:layout_below="@id/commentsForm_dividerLine2_textView"/>
+        <EditText style="@style/commentsForm_row_editText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:lines="1"
+            android:singleLine="true"
+            android:id="@+id/commentsForm_phone_editText"
+            android:layout_toRightOf="@+id/commentsForm_phone_textView"
+            android:layout_alignBaseline="@id/commentsForm_phone_textView"
+            android:layout_marginLeft="20dp"/>
+
+        <View style="@style/commentsForm_dividerLine_innerForm"
+            android:id="@+id/commentsForm_dividerLine3_textView"
+            android:layout_below="@id/commentsForm_phone_textView"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/commentsForm_email_layout"
+            android:layout_below="@id/commentsForm_dividerLine3_textView">
+            <TextView style="@style/commentsForm_rows"
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:textAppearance="?android:attr/textAppearanceMedium"
+                      android:text="Email"
+                      android:textColor="@android:color/black"
+                      android:id="@+id/commentsForm_email_textView"/>
+            <EditText style="@style/commentsForm_row_editText"
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:id="@+id/commentsForm_email_editText"
+                      android:layout_toRightOf="@+id/commentsForm_email_textView"
+                      android:layout_marginLeft="25dp"/>
+        </RelativeLayout>
+
+        <View style="@style/commentsForm_dividerLine"
+              android:id="@+id/commentsForm_dividerLine14_textView"
+              android:layout_below="@id/commentsForm_email_layout"/>
+
+        <TextView style="@style/commentsForm_dividerBox"
+                  android:id="@+id/commentsForm_dividerBox2_view"
+                  android:layout_below="@id/commentsForm_dividerLine14_textView"/>
+
+        <View style="@style/commentsForm_dividerLine"
+              android:id="@+id/commentsForm_dividerLine4_textView"
+              android:layout_below="@id/commentsForm_dividerBox2_view"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/commentsForm_location_layout"
+            android:layout_below="@id/commentsForm_dividerLine4_textView">
+            <TextView style="@style/commentsForm_rows"
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:textAppearance="?android:attr/textAppearanceMedium"
+                      android:text="Location"
+                      android:textColor="@android:color/black"
+                      android:id="@+id/commentsForm_location_textView"/>
+            <EditText style="@style/commentsForm_row_editText"
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:id="@+id/commentsForm_location_editText"
+                      android:hint="Location"
+                      android:layout_toRightOf="@+id/commentsForm_location_textView"
+                      android:layout_marginLeft="38dp"/>
+        </RelativeLayout>
+
+        <View style="@style/commentsForm_dividerLine_innerForm"
+              android:id="@+id/commentsForm_dividerLine5_textView"
+              android:layout_below="@id/commentsForm_location_layout"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/commentsForm_destination_layout"
+            android:layout_below="@id/commentsForm_dividerLine5_textView">
+            <TextView style="@style/commentsForm_rows"
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:textAppearance="?android:attr/textAppearanceMedium"
+                      android:text="Destination"
+                      android:textColor="@android:color/black"
+                      android:id="@+id/commentsForm_destination_textView"/>
+            <EditText style="@style/commentsForm_row_editText"
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:id="@+id/commentsForm_destination_editText"
+                      android:hint="Destination"
+                      android:layout_toRightOf="@+id/commentsForm_destination_textView"
+                      android:layout_marginLeft="16dp"/>
+        </RelativeLayout>
+
+        <View style="@style/commentsForm_dividerLine_innerForm"
+              android:id="@+id/commentsForm_dividerLine6_textView"
+              android:layout_below="@id/commentsForm_destination_layout"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/commentsForm_route_layout"
+            android:layout_below="@id/commentsForm_dividerLine6_textView">
+            <TextView style="@style/commentsForm_rows"
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:textAppearance="?android:attr/textAppearanceMedium"
+                      android:text="Route"
+                      android:textColor="@android:color/black"
+                      android:id="@+id/commentsForm_route_textView"/>
+            <EditText style="@style/commentsForm_row_editText"
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:id="@+id/commentsForm_route_editText"
+                      android:hint="Route"
+                      android:layout_toRightOf="@+id/commentsForm_route_textView"
+                      android:layout_marginLeft="62dp"/>
+        </RelativeLayout>
+
+        <View style="@style/commentsForm_dividerLine_innerForm"
+              android:id="@+id/commentsForm_dividerLine7_textView"
+              android:layout_below="@id/commentsForm_route_layout"/>
+
+        <TextView style="@style/commentsForm_rows"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Vehicle #"
+            android:textColor="@android:color/black"
+            android:id="@+id/commentsForm_vehicle_textView"
+            android:layout_below="@id/commentsForm_dividerLine7_textView"/>
+        <EditText style="@style/commentsForm_row_editText"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:id="@+id/commentsForm_vehicle_editText"
+                  android:lines="1"
+                  android:singleLine="true"
+                  android:layout_toRightOf="@+id/commentsForm_vehicle_textView"
+                  android:layout_alignBaseline="@id/commentsForm_vehicle_textView"
+                  android:hint="Vehicle #"
+                  android:layout_marginLeft="34dp"/>
+
+        <View style="@style/commentsForm_dividerLine_innerForm"
+              android:id="@+id/commentsForm_dividerLine8_textView"
+              android:layout_below="@id/commentsForm_vehicle_textView"/>
+
+        <TextView style="@style/commentsForm_rows"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Block #"
+            android:textColor="@android:color/black"
+            android:id="@+id/commentsForm_block_textView"
+            android:layout_below="@id/commentsForm_dividerLine8_textView"/>
+        <EditText style="@style/commentsForm_row_editText"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:id="@+id/commentsForm_block_editText"
+                  android:lines="1"
+                  android:singleLine="true"
+                  android:layout_toRightOf="@+id/commentsForm_block_textView"
+                  android:layout_alignBaseline="@id/commentsForm_block_textView"
+                  android:hint="Block #"
+                  android:layout_alignLeft="@id/commentsForm_vehicle_editText"/>
+
+        <View style="@style/commentsForm_dividerLine_innerForm"
+              android:id="@+id/commentsForm_dividerLine9_textView"
+              android:layout_below="@id/commentsForm_block_textView"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/commentsForm_direction_layout"
+            android:layout_below="@id/commentsForm_dividerLine9_textView">
+            <TextView style="@style/commentsForm_rows"
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:textAppearance="?android:attr/textAppearanceMedium"
+                      android:text="Direction"
+                      android:textColor="@android:color/black"
+                      android:id="@+id/commentsForm_direction_textView"/>
+            <EditText style="@style/commentsForm_row_editText"
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:id="@+id/commentsForm_direction_editText"
+                      android:hint="Direction Of Travel"
+                      android:layout_toRightOf="@+id/commentsForm_direction_textView"
+                      android:layout_marginLeft="35dp"/>
+        </RelativeLayout>
+
+        <View style="@style/commentsForm_dividerLine"
+              android:id="@+id/commentsForm_dividerLine17_textView"
+              android:layout_below="@id/commentsForm_direction_layout"/>
 
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Medium Text"
-        android:id="@+id/commentsForm_name_textView"
-        android:hint="required"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Medium Text"
-        android:id="@+id/commentsForm_phone_textView"
-        android:hint="required"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Medium Text"
-        android:id="@+id/commentsForm_email_textView"
-        android:hint="required"/>
+        <TextView style="@style/commentsForm_dividerBox"
+            android:text="PLEASE CHOOSE YOUR COMMENT TYPE"
+            android:gravity="bottom|center_horizontal"
+            android:id="@+id/commentsForm_dividerBox3_textView"
+            android:layout_below="@id/commentsForm_dividerLine17_textView"/>
+
+        <View style="@style/commentsForm_dividerLine"
+              android:id="@+id/commentsForm_dividerLine19_textView"
+              android:layout_below="@id/commentsForm_dividerBox3_textView"/>
+
+        <Spinner
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:layout_marginLeft="5dp"
+            android:id="@+id/commentsForm_commentType_spinner"
+            android:entries="@array/commentsForm_commentType_spinner_arraylist"
+            android:prompt="@string/commentsForm_commentType_spinner_prompt"
+            android:layout_below="@id/commentsForm_dividerLine19_textView"
+            android:layout_gravity="center_horizontal"/>
+
+        <View style="@style/commentsForm_dividerLine"
+              android:id="@+id/commentsForm_dividerLine18_textView"
+              android:layout_below="@id/commentsForm_commentType_spinner"/>
 
 
+        <TextView style="@style/commentsForm_dividerBox"
+            android:layout_height="85dp"
+            android:text="IF THE REASON FOR CONTACT INVOLVES SEPTA PERSONNEL, PLEASE PROVIDE NAME, EMPLOYEE NUMBER, OR GIVE A BRIEF PYSICAL DESCRIPTION"
+            android:gravity="bottom"
+            android:id="@+id/commentsForm_dividerBox4_textView"
+            android:layout_below="@id/commentsForm_dividerLine18_textView"/>
 
-</RelativeLayout>
+        <View style="@style/commentsForm_dividerLine"
+              android:id="@+id/commentsForm_dividerLine10_textView"
+              android:layout_below="@id/commentsForm_dividerBox4_textView"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/commentsForm_description_layout"
+            android:layout_below="@id/commentsForm_dividerLine10_textView">
+            <TextView style="@style/commentsForm_rows"
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:textAppearance="?android:attr/textAppearanceMedium"
+                      android:text="Description"
+                      android:textColor="@android:color/black"
+                      android:id="@+id/commentsForm_description_textView"/>
+            <EditText style="@style/commentsForm_row_editText"
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:id="@+id/commentsForm_description_editText"
+                      android:hint="Personnel Description"
+                      android:layout_toRightOf="@+id/commentsForm_description_textView"
+                      android:layout_marginLeft="16dp"/>
+        </RelativeLayout>
+
+        <View style="@style/commentsForm_dividerLine"
+              android:id="@+id/commentsForm_dividerLine16_textView"
+              android:layout_below="@id/commentsForm_description_layout"/>
+
+        <TextView style="@style/commentsForm_dividerBox"
+                  android:layout_height="40dp"
+                  android:text="DETAILS"
+                  android:gravity="bottom"
+                  android:id="@+id/commentsForm_dividerBox5_textView"
+                  android:layout_below="@id/commentsForm_dividerLine16_textView"
+                  android:paddingLeft="10dp"/>
+
+        <View style="@style/commentsForm_dividerLine"
+              android:id="@+id/commentsForm_dividerLine11_textView"
+              android:layout_below="@id/commentsForm_dividerBox5_textView"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/commentsForm_details_layout"
+            android:layout_below="@id/commentsForm_dividerLine11_textView">
+            <TextView style="@style/commentsForm_rows"
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:textAppearance="?android:attr/textAppearanceMedium"
+                      android:text="Details"
+                      android:textColor="@android:color/black"
+                      android:id="@+id/commentsForm_details_textView"/>
+            <EditText style="@style/commentsForm_row_editText"
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:id="@+id/commentsForm_details_editText"
+                      android:hint="Comment Details"
+                      android:layout_toRightOf="@+id/commentsForm_details_textView"
+                      android:layout_marginLeft="52dp"/>
+        </RelativeLayout>
+
+        <View style="@style/commentsForm_dividerLine"
+              android:id="@+id/commentsForm_dividerLine15_textView"
+              android:layout_below="@id/commentsForm_details_layout"/>
+
+        <TextView style="@style/commentsForm_dividerBox"
+                  android:layout_height="50dp"
+                  android:id="@+id/commentsForm_dividerBox6_textView"
+                  android:layout_below="@id/commentsForm_dividerLine15_textView"/>
+        <View style="@style/commentsForm_dividerLine"
+              android:id="@+id/commentsForm_dividerLine12_textView"
+              android:layout_below="@id/commentsForm_dividerBox6_textView"/>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:id="@+id/commentsForm_submit_button"
+            android:text="Submit"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:background="#FFFF6428"
+            android:layout_below="@id/commentsForm_dividerLine12_textView"/>
+
+        <View style="@style/commentsForm_dividerLine"
+              android:id="@+id/commentsForm_dividerLine13_textView"
+              android:layout_below="@id/commentsForm_submit_button"/>
+
+
+        <TextView style="@style/commentsForm_dividerBox"
+                  android:layout_height="50dp"
+                  android:id="@+id/commentsForm_dividerBox7_textView"
+                  android:layout_below="@id/commentsForm_dividerLine13_textView"
+                  android:layout_marginLeft="10dp"/>
+
+
+    </RelativeLayout>
+
+</ScrollView>

@@ -62,4 +62,40 @@
         <item name="android:shadowDy">1</item>
     </style>
 
+    <style name="commentsForm_rows">
+        <item name="android:paddingTop">10dp</item>
+        <item name="android:paddingBottom">10dp</item>
+        <item name="android:layout_marginLeft">16dp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="commentsForm_row_editText">
+        <item name="android:paddingTop">10dp</item>
+        <item name="android:paddingBottom">10dp</item>
+        <item name="android:background">@null</item>
+        <item name="android:hint">required</item>
+        <item name="android:layout_marginRight">5dp</item>
+    </style>
+
+    <style name="commentsForm_dividerLine">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">@android:color/darker_gray</item>
+    </style>
+
+    <style name="commentsForm_dividerLine_innerForm">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:layout_marginLeft">16dp</item>
+        <item name="android:background">@android:color/darker_gray</item>
+    </style>
+
+    <style name="commentsForm_dividerBox">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="android:background">#EFEFF4</item>
+        <item name="android:paddingLeft">10dp</item>
+        <item name="android:paddingRight">10dp</item>
+    </style>
+
 </resources>

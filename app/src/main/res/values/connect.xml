@@ -60,4 +60,14 @@
     <!-- on the realtime tab, the tips Url -->
     <string name="connect_fareinformation_getmoredetails_url">http://www.septa.org/m/fares/</string>
 
+    <string name="commentsForm_commentType_spinner_prompt">Description</string>
+
+    <string-array name="commentsForm_commentType_spinner_arraylist">
+        <item>Compliement</item>
+        <item>Concern</item>
+        <item>Inquiry</item>
+        <item>Suggestion</item>
+        <item>Website</item>
+    </string-array>
+
 </resources>

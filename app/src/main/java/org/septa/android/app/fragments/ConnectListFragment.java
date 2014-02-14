@@ -17,6 +17,7 @@ import android.widget.ListView;
 
 import org.septa.android.app.R;
 import org.septa.android.app.activities.AppFeedbackFormActivity;
+import org.septa.android.app.activities.CommentsFormActionBarActivity;
 import org.septa.android.app.activities.FareInformationActionBarActivity;
 import org.septa.android.app.adapters.ConnectListFragmentItemsArrayAdapter;
 import org.septa.android.app.dialogs.CustomerServiceDialDialogFragment;
@@ -45,11 +46,14 @@ public class ConnectListFragment extends ListFragment {
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
+        String connectFragmentListviewItem;
+        String actionbar_titletext;
+
         switch(position) {
             case 0:
                 Log.d(TAG, "launch the fare activity");
-                String connectFragmentListviewItem = getResources().getStringArray(R.array.connectfragment_listview_items)[position];
-                String actionbar_titletext = getString(R.string.titlebar_text_separator).concat(" ").concat(connectFragmentListviewItem);
+                connectFragmentListviewItem = getResources().getStringArray(R.array.connectfragment_listview_items)[position];
+                actionbar_titletext = getString(R.string.titlebar_text_separator).concat(" ").concat(connectFragmentListviewItem);
 
                 Intent fareInformationIntent = new Intent(getActivity(), FareInformationActionBarActivity.class);
                 fareInformationIntent.putExtra(getString(R.string.actionbar_titletext_key), actionbar_titletext);
@@ -81,6 +85,14 @@ public class ConnectListFragment extends ListFragment {
 
             case 4:
                 Log.d(TAG, "launch the comments activity");
+                connectFragmentListviewItem = getResources().getStringArray(R.array.connectfragment_listview_items)[position];
+                actionbar_titletext = getString(R.string.titlebar_text_separator).concat(" ").concat(connectFragmentListviewItem);
+
+                Intent commentsFormIntent = new Intent(getActivity(), CommentsFormActionBarActivity.class);
+                commentsFormIntent.putExtra(getString(R.string.actionbar_titletext_key), actionbar_titletext);
+                commentsFormIntent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), "comments");
+
+                startActivity(commentsFormIntent);
 
                 break;
 

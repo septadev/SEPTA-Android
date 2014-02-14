@@ -34,7 +34,7 @@
     <!-- about attributions listview items meta-data -->
     <!-- texts, iconSuffixes, urls -->
     <string-array name="about_attributions_listview_items_texts">
-        <item>FMDB (delete this)</item>
+        <item>OkHttp</item>
     </string-array>
 
     <string-array name="about_attributions_listview_items_iconSuffixes">
@@ -42,7 +42,7 @@
     </string-array>
 
     <string-array name="about_attributions_listview_items_urls">
-        <item>https://github.com/ccgus/fmdb/blob/master/LICENSE.txt</item>
+        <item>https://github.com/square/okhttp/blob/master/LICENSE.txt</item>
     </string-array>
 
 </resources>

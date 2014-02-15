@@ -7,10 +7,11 @@
   -->
 
 <resources>
+    <string name="commentsForm_submitPath">/cs/comment/FormMail.cgi</string>
     <string name="formPost_content_type">application/x-www-form-urlencoded</string>
 
-    <string name="recipient">cservice@septa.org</string>
-    <string name="wl_tp">Employee,Comments</string>
-    <string name="subject">Inquiry+from+www.septa.org</string>
-    <string name="required">Name,email,phone</string>
+    <string name="commentsForm_recipient">cservice@septa.org</string>
+    <string name="commentsForm_wl_tp">Employee,Comments</string>
+    <string name="commentsForm_subject">Inquiry from www.septa.org</string>
+    <string name="commentsForm_required">Name,email,phone</string>
 </resources>

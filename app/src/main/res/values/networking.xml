@@ -7,8 +7,7 @@
   -->
 
 <resources>
-    <string name="base_septa.org_url_protocol">http</string>
-    <string name="base_septa.org_url">www.septa.org</string>
+    <string name="network_base_septa.org_url_protocol">http</string>
+    <string name="network_base_septa.org_url">www.septa.org</string>
 
-    <string name="commentsForm_submitPath">/cs/comment/FormMail.cgi</string>
 </resources>

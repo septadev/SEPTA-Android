@@ -65,11 +65,13 @@ public class Settings_ListViewItem_ArrayAdapter extends ArrayAdapter<IconTextPen
             rowView.findViewById(R.id.settings_24hour_control).setVisibility(View.VISIBLE);
 
             CompoundButton twentyFourHoursControl = (CompoundButton) rowView.findViewById(R.id.settings_24hour_control);
-            if (DateFormat.is24HourFormat(context)) {
 
+            Log.d(TAG, "evaluating the is25HourFormat...");
+            if (DateFormat.is24HourFormat(context)) {
+                Log.d(TAG, "setting the value to checked for true.");
                 twentyFourHoursControl.setChecked(true);
             } else {
-
+                Log.d(TAG, "settings the value to unchecked for false.");
                 twentyFourHoursControl.setChecked(false);
 
             }

@@ -32,7 +32,8 @@ public class SettingsListFragment extends ListFragment {
     private static final String TAG = SettingsListFragment.class.getName();
 
     public static Handler mainActivityHandler;
-    IconTextPendingIntentModel[] values;
+    IconTextPendingIntentModel[] _values;
+    ArrayAdapter<IconTextPendingIntentModel> _adapter;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -62,18 +63,20 @@ public class SettingsListFragment extends ListFragment {
             values[i] = iconTextPendingIntentModel;
         }
 
-        this.values = values;
+        this._values = values;
 
-        ArrayAdapter<IconTextPendingIntentModel> adapter = new Settings_ListViewItem_ArrayAdapter(getActivity(), values);
+        _adapter = new Settings_ListViewItem_ArrayAdapter(getActivity(), values);
 
-        setListAdapter(adapter);
+        setListAdapter(_adapter);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        Log.d(TAG, "on activity result is back with requestCode of " + requestCode + " and result code " + resultCode);
+        // now that we have returned from the global settings activity,
+        //  notify a data set change in case the user changed the setting
+        _adapter.notifyDataSetChanged();
     }
 
     @Override

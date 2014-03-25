@@ -19,7 +19,7 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
 
         String titleText = getIntent().getStringExtra(getString(R.string.actionbar_titletext_key));
 
-        setContentView(R.layout.activity_find_nearest_location_action_bar);
+        setContentView(R.layout.findnearestlocation);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setIcon(R.drawable.ic_actionbar_findnearestlocation);

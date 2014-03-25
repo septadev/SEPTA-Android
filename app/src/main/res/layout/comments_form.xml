@@ -13,7 +13,7 @@
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                   android:orientation="vertical"
                   android:layout_width="match_parent"
-                  android:layout_height="match_parent"
+                  android:layout_height="wrap_content"
                   android:background="@android:color/white" >
 
         <TextView style="@style/commentsForm_dividerBox"
@@ -31,7 +31,7 @@
                       android:layout_width="wrap_content"
                       android:layout_height="wrap_content"
                       android:textAppearance="?android:attr/textAppearanceMedium"
-                      android:text="Name"
+                      android:text="@string/nameText"
                       android:textColor="@android:color/black"
                       android:id="@+id/commentsForm_name_textView"/>
             <EditText style="@style/commentsForm_row_editText"
@@ -50,7 +50,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Phone"
+            android:text="@string/phoneText"
             android:textColor="@android:color/black"
             android:id="@+id/commentsForm_phone_textView"
             android:layout_below="@id/commentsForm_dividerLine2_textView"/>
@@ -62,7 +62,8 @@
             android:id="@+id/commentsForm_phone_editText"
             android:layout_toRightOf="@+id/commentsForm_phone_textView"
             android:layout_alignBaseline="@id/commentsForm_phone_textView"
-            android:layout_marginLeft="20dp"/>
+            android:layout_marginLeft="20dp"
+            android:inputType="phone"/>
 
         <View style="@style/commentsForm_dividerLine_innerForm"
             android:id="@+id/commentsForm_dividerLine3_textView"
@@ -179,7 +180,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Vehicle #"
+            android:text="@string/vehicleText"
             android:textColor="@android:color/black"
             android:id="@+id/commentsForm_vehicle_textView"
             android:layout_below="@id/commentsForm_dividerLine7_textView"/>
@@ -191,7 +192,7 @@
                   android:singleLine="true"
                   android:layout_toRightOf="@+id/commentsForm_vehicle_textView"
                   android:layout_alignBaseline="@id/commentsForm_vehicle_textView"
-                  android:hint="Vehicle #"
+                  android:hint="@string/vehicleText"
                   android:layout_marginLeft="34dp"/>
 
         <View style="@style/commentsForm_dividerLine_innerForm"
@@ -202,7 +203,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Block #"
+            android:text="@string/blockText"
             android:textColor="@android:color/black"
             android:id="@+id/commentsForm_block_textView"
             android:layout_below="@id/commentsForm_dividerLine8_textView"/>
@@ -214,7 +215,7 @@
                   android:singleLine="true"
                   android:layout_toRightOf="@+id/commentsForm_block_textView"
                   android:layout_alignBaseline="@id/commentsForm_block_textView"
-                  android:hint="Block #"
+                  android:hint="@string/blockText"
                   android:layout_alignLeft="@id/commentsForm_vehicle_editText"/>
 
         <View style="@style/commentsForm_dividerLine_innerForm"
@@ -248,7 +249,7 @@
 
 
         <TextView style="@style/commentsForm_dividerBox"
-            android:text="PLEASE CHOOSE YOUR COMMENT TYPE"
+            android:text="@string/commentTypeText"
             android:gravity="bottom|center_horizontal"
             android:id="@+id/commentsForm_dividerBox3_textView"
             android:layout_below="@id/commentsForm_dividerLine17_textView"/>
@@ -277,7 +278,7 @@
 
         <TextView style="@style/commentsForm_dividerBox"
             android:layout_height="85dp"
-            android:text="IF THE REASON FOR CONTACT INVOLVES SEPTA PERSONNEL, PLEASE PROVIDE NAME, EMPLOYEE NUMBER, OR GIVE A BRIEF PYSICAL DESCRIPTION"
+            android:text="@string/reasonPersonnelText"
             android:gravity="bottom"
             android:id="@+id/commentsForm_dividerBox4_textView"
             android:layout_below="@id/commentsForm_dividerLine18_textView"/>
@@ -313,7 +314,7 @@
 
         <TextView style="@style/commentsForm_dividerBox"
                   android:layout_height="40dp"
-                  android:text="DETAILS"
+                  android:text="@string/detailTextAllCaps"
                   android:gravity="bottom"
                   android:id="@+id/commentsForm_dividerBox5_textView"
                   android:layout_below="@id/commentsForm_dividerLine16_textView"
@@ -360,7 +361,7 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:id="@+id/commentsForm_submit_button"
-            android:text="Submit"
+            android:text="@string/submitText"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textStyle="bold"
             android:gravity="center"

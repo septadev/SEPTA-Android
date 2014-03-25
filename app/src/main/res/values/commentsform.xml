@@ -14,4 +14,24 @@
     <string name="commentsForm_wl_tp">Employee,Comments</string>
     <string name="commentsForm_subject">Inquiry from www.septa.org</string>
     <string name="commentsForm_required">Name,email,phone</string>
+
+    <string name="nameText">Name</string>
+    <string name="phoneText">Phone</string>
+    <string name="emailText">Email</string>
+    <string name="locationText">Location</string>
+    <string name="destinationText">Destination</string>
+    <string name="routeText">Route</string>
+
+    <string name="vehicleText">Vehicle #</string>
+    <string name="blockText">Block #</string>
+    <string name="directionText">Direction</string>
+
+    <string name="descriptionText">Description</string>
+    <string name="detailsText">Details</string>
+
+    <string name="detailTextAllCaps">DETAILS</string>
+    <string name="reasonPersonnelText">IF THE REASON FOR CONTACT INVOLVES SEPTA PERSONNEL, PLEASE PROVIDE NAME, EMPLOYEE NUMBER, OR GIVE A BRIEF PYSICAL DESCRIPTION</string>
+    <string name="commentTypeText">PLEASE CHOOSE YOUR COMMENT TYPE</string>
+
+    <string name="submitText">Submit</string>
 </resources>

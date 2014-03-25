@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ findnearestlocation.xml
+  ~ Last modified on 03-25-2014 14:54-0400 by brianhmayo
+  ~
+  ~ Copyright (c) 2014 SEPTA.  All rights reserved.
+  -->
+
+<resources>
+
+    <string name="title_activity_find_nearest_location_action_bar">FindNearestLocationActionBarActivity</string>
+
+</resources>

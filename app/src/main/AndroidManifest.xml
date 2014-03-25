@@ -8,10 +8,10 @@
     <!-- needed for the Realtime tab tips WebView -->
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <!--<uses-permission android:name="android.permission.CAMERA" />-->
-    <!--<uses-feature android:name="android.hardware.camera" />-->
-    <!--<uses-feature android:name="android.hardware.camera.autofocus" />-->
-    <!--<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />-->
+    <!-- <uses-permission android:name="android.permission.CAMERA" /> -->
+    <!-- <uses-feature android:name="android.hardware.camera" /> -->
+    <!-- <uses-feature android:name="android.hardware.camera.autofocus" /> -->
+    <!-- <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> -->
 
     <application
         android:allowBackup="true"
@@ -19,7 +19,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".activities.SplashScreenActivity"
+            android:name="org.septa.android.app.activities.SplashScreenActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,81 +27,90 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".activities.MainTabbarActivity"
-                  android:label="SEPTA" >
-        </activity>
-
         <activity
-            android:name=".activities.MainNavigationDrawerActivity"
+            android:name="org.septa.android.app.activities.MainTabbarActivity"
+            android:label="SEPTA" >
+        </activity>
+        <activity
+            android:name="org.septa.android.app.activities.MainNavigationDrawerActivity"
             android:label="@string/app_name" >
         </activity>
+        <activity
+            android:name="org.septa.android.app.activities.PlaceholderActionBarActivity"
+            android:parentActivityName="org.septa.android.app.activities.MainTabbarActivity" >
 
-        <activity android:name=".activities.PlaceholderActionBarActivity"
-            android:parentActivityName=".activities.MainTabbarActivity">
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.MainTabbarActivity"/>
+                android:value=".activities.MainTabbarActivity" />
         </activity>
+        <activity
+            android:name="org.septa.android.app.activities.SettingsActionBarActivity"
+            android:parentActivityName="org.septa.android.app.activities.MainTabbarActivity" >
 
-        <activity android:name=".activities.SettingsActionBarActivity"
-            android:parentActivityName=".activities.MainTabbarActivity">
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.MainTabbarActivity"/>
+                android:value=".activities.MainTabbarActivity" />
         </activity>
+        <activity
+            android:name="org.septa.android.app.activities.TipsActionBarActivity"
+            android:parentActivityName="org.septa.android.app.activities.MainTabbarActivity" >
 
-        <activity android:name=".activities.TipsActionBarActivity"
-            android:parentActivityName=".activities.MainTabbarActivity">
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.MainTabbarActivity"/>
+                android:value=".activities.MainTabbarActivity" />
         </activity>
+        <activity
+            android:name="org.septa.android.app.activities.AppFeedbackFormActivity"
+            android:parentActivityName="org.septa.android.app.activities.MainTabbarActivity" >
 
-        <activity android:name=".activities.AppFeedbackFormActivity"
-                  android:parentActivityName=".activities.MainTabbarActivity">
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.MainTabbarActivity"/>
+                android:value=".activities.MainTabbarActivity" />
         </activity>
+        <activity
+            android:name="org.septa.android.app.activities.FareInformationActionBarActivity"
+            android:parentActivityName="org.septa.android.app.activities.MainTabbarActivity" >
 
-        <activity android:name=".activities.FareInformationActionBarActivity"
-                  android:parentActivityName=".activities.MainTabbarActivity">
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.MainTabbarActivity"/>
+                android:value=".activities.MainTabbarActivity" />
         </activity>
+        <activity
+            android:name="org.septa.android.app.activities.FareInformationGetMoreDetailsActionBarActivity"
+            android:parentActivityName="org.septa.android.app.activities.MainTabbarActivity" >
 
-        <activity android:name=".activities.FareInformationGetMoreDetailsActionBarActivity"
-                  android:parentActivityName=".activities.MainTabbarActivity">
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.MainTabbarActivity"/>
+                android:value=".activities.MainTabbarActivity" />
         </activity>
+        <activity
+            android:name="org.septa.android.app.activities.AboutActionBarActivity"
+            android:parentActivityName="org.septa.android.app.activities.MainTabbarActivity" >
 
-        <activity android:name=".activities.AboutActionBarActivity"
-                  android:parentActivityName=".activities.MainTabbarActivity">
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.MainTabbarActivity"/>
+                android:value=".activities.MainTabbarActivity" />
         </activity>
+        <activity
+            android:name="org.septa.android.app.activities.CommentsFormActionBarActivity"
+            android:parentActivityName="org.septa.android.app.activities.MainTabbarActivity" >
 
-        <activity android:name=".activities.CommentsFormActionBarActivity"
-                  android:parentActivityName=".activities.MainTabbarActivity">
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.MainTabbarActivity"/>
+                android:value=".activities.MainTabbarActivity" />
         </activity>
-
-
+        <activity
+            android:name="org.septa.android.app.activities.FindNearestLocationActionBarActivity"
+            android:label="@string/title_activity_find_nearest_location_action_bar" >
+        </activity>
     </application>
 
 </manifest>

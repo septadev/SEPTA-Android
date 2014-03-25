@@ -51,7 +51,6 @@ public class AboutWebView extends WebViewFragment {
 
         getWebView().setWebViewClient(new SwAWebClient());
 
-        Log.d(TAG, "about to load the WebView with this string |"+this.urlToLoad+"|");
         getWebView().loadUrl(this.urlToLoad);
     }
 

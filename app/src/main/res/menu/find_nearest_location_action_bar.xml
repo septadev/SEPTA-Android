@@ -1,0 +1,17 @@
+<!--
+  ~ find_nearest_location_action_bar.xml
+  ~ Last modified on 03-25-2014 14:52-0400 by brianhmayo
+  ~
+  ~ Copyright (c) 2014 SEPTA.  All rights reserved.
+  -->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="org.septa.android.app.activities.FindNearestLocationActionBarActivity" >
+    
+    <item android:id="@+id/action_settings"
+        android:title="@string/action_settings"
+        android:orderInCategory="100"
+        app:showAsAction="never" />
+</menu>

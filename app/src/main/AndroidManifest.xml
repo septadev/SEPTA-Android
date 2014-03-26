@@ -18,6 +18,10 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+
+        <!--<meta-data android:name="com.google.android.gms.version"-->
+                   <!--android:value="@integer/google_play_services_version" />-->
+
         <activity
             android:name="org.septa.android.app.activities.SplashScreenActivity"
             android:label="@string/app_name" >
@@ -109,7 +113,12 @@
         </activity>
         <activity
             android:name="org.septa.android.app.activities.FindNearestLocationActionBarActivity"
-            android:label="@string/title_activity_find_nearest_location_action_bar" >
+            android:parentActivityName="org.septa.android.app.activities.MainTabbarActivity" >
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.MainTabbarActivity" />
         </activity>
     </application>
 

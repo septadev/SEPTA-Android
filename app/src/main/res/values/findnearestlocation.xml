@@ -10,4 +10,6 @@
 
     <string name="title_activity_find_nearest_location_action_bar">FindNearestLocationActionBarActivity</string>
 
+    <string name="map_zoom_level_float">14.0</string>
+
 </resources>

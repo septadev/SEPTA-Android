@@ -20,7 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"
-        android:name="com.google.android.gms.maps.MapFragment"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
         android:id="@+id/nearestLocationMapFragment"
         android:layout_alignParentTop="true"/>
 

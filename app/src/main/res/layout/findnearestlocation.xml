@@ -4,19 +4,33 @@
   ~ Copyright (c) 2014 SEPTA.  All rights reserved.
   -->
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:orientation="vertical"
     tools:context="org.septa.android.app.activities.FindNearestLocationActionBarActivity">
 
-    <TextView
-        android:text="word"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    <!--android:paddingLeft="@dimen/activity_horizontal_margin"-->
+    <!--android:paddingRight="@dimen/activity_horizontal_margin"-->
+    <!--android:paddingTop="@dimen/activity_vertical_margin"-->
+    <!--android:paddingBottom="@dimen/activity_vertical_margin"-->
 
-</RelativeLayout>
+    <fragment
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:name="com.google.android.gms.maps.MapFragment"
+        android:id="@+id/nearestLocationMapFragment"
+        android:layout_alignParentTop="true"/>
+
+    <fragment
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:name="android.support.v4.app.ListFragment"
+        android:id="@+id/nearestLocationListFragment"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"/>
+
+</LinearLayout>

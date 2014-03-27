@@ -25,13 +25,9 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.septa.android.app.R;
-import org.septa.android.app.services.adaptors.LocationAdaptor;
-import org.septa.android.app.services.apiinterfaces.LocationService;
 import org.septa.android.app.services.apiproxies.LocationServiceProxy;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;

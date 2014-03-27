@@ -25,6 +25,17 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.septa.android.app.R;
+import org.septa.android.app.services.adaptors.LocationAdaptor;
+import org.septa.android.app.services.apiinterfaces.LocationService;
+import org.septa.android.app.services.apiproxies.LocationServiceProxy;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBarActivity implements
         LocationListener,
@@ -40,12 +51,12 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
 
     private static final int MILLISECONDS_PER_SECOND = 1000;
 
-    public static final int UPDATE_INTERVAL_IN_SECONDS = 5;
+    public static final int UPDATE_INTERVAL_IN_SECONDS = 10;
 
     private static final long UPDATE_INTERVAL =
             MILLISECONDS_PER_SECOND * UPDATE_INTERVAL_IN_SECONDS;
 
-    private static final int FASTEST_INTERVAL_IN_SECONDS = 1;
+    private static final int FASTEST_INTERVAL_IN_SECONDS = 10;
     private static final long FASTEST_INTERVAL =
             MILLISECONDS_PER_SECOND * FASTEST_INTERVAL_IN_SECONDS;
 
@@ -78,9 +89,36 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
         Log.d(TAG, "new location lon "+newLocation.getLongitude());
         Log.d(TAG, "with location accuracy " + newLocation.getAccuracy());
 
-        LatLng currentLocation = new LatLng(newLocation.getLatitude(), newLocation.getLongitude());
+        // TODO: find a different way to tell if we should make our network calls, with a timer.
+        // TODO: find a better way to shut off the updates and resume when it makes sense
+        if (newLocation.getAccuracy()< 16.0) {
+            mLocationClient.disconnect();
+            LatLng currentLocation = new LatLng(newLocation.getLatitude(), newLocation.getLongitude());
 
-        map.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, Float.parseFloat(getString(R.string.map_zoom_level_float))));
+            map.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, Float.parseFloat(getString(R.string.map_zoom_level_float))));
+
+
+            Callback callback = new Callback() {
+                @Override
+                public void success(Object o, Response response) {
+                    Log.d(TAG, "successfully ended location service call with " + ((ArrayList<Location>) o).size());
+                }
+
+                @Override
+                public void failure(RetrofitError retrofitError) {
+                    try {
+                        Log.d(TAG, "A failure in the call to location service with body |" + retrofitError.getResponse().getBody().in() + "|");
+                    } catch (Exception ex) {
+                        Log.d(TAG, "blah... what is going on?");
+                    }
+                }
+            };
+
+            Log.d(TAG, "stating location service call...");
+            LocationServiceProxy locationServiceProxy = new LocationServiceProxy();
+            locationServiceProxy.getLocation(newLocation.getLongitude(), newLocation.getLatitude(),2.5F, "bus_stops", callback);
+            Log.d(TAG, "ended the call, now wait for the callback");
+        }
     }
 
     /*

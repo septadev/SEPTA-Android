@@ -76,7 +76,7 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
         Log.d(TAG, "heard a location change");
         Log.d(TAG, "new location lat "+newLocation.getLatitude());
         Log.d(TAG, "new location lon "+newLocation.getLongitude());
-        Log.d(TAG, "with location accuracy" + newLocation.getAccuracy());
+        Log.d(TAG, "with location accuracy " + newLocation.getAccuracy());
 
         LatLng currentLocation = new LatLng(newLocation.getLatitude(), newLocation.getLongitude());
 

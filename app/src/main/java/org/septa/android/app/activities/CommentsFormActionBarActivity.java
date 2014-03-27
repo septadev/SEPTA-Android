@@ -53,7 +53,7 @@ public class CommentsFormActionBarActivity extends BaseAnalyticsActionBarActivit
         formValuesList.add(new BasicNameValuePair("phone", phoneEditText.getText().toString()));
         formValuesList.add(new BasicNameValuePair("email", emailEditText.getText().toString()));
         formValuesList.add(new BasicNameValuePair("Incident Date", ""));  // TODO: confirm this is correct, it is empty in the iOS code
-        formValuesList.add(new BasicNameValuePair("Boarding Location", locationEditText.getText().toString()));
+        formValuesList.add(new BasicNameValuePair("Boarding LocationModel", locationEditText.getText().toString()));
         formValuesList.add(new BasicNameValuePair("route", routeEditText.getText().toString()));
         formValuesList.add(new BasicNameValuePair("vehicle", vehicleEditText.getText().toString()));
         formValuesList.add(new BasicNameValuePair("block", blockEditText.getText().toString()));

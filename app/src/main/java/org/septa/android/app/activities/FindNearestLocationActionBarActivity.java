@@ -10,7 +10,6 @@ package org.septa.android.app.activities;
 import android.content.IntentSender;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
 import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -23,9 +22,11 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.septa.android.app.R;
 import org.septa.android.app.services.apiproxies.LocationServiceProxy;
+import org.septa.android.app.models.LocationModel;
 
 import java.util.ArrayList;
 
@@ -39,7 +40,7 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
         GooglePlayServicesClient.OnConnectionFailedListener {
     public static final String TAG = FindNearestLocationActionBarActivity.class.getName();
 
-    private GoogleMap map;
+    private GoogleMap mMap;
 
     final int RQS_GooglePlayServices = 1;
 
@@ -68,12 +69,14 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
         getSupportActionBar().setIcon(R.drawable.ic_actionbar_findnearestlocation);
         getSupportActionBar().setTitle(titleText);
 
-        FragmentManager myFragmentManager = getSupportFragmentManager();
-        SupportMapFragment mySupportMapFragment
-                = (SupportMapFragment)myFragmentManager.findFragmentById(R.id.nearestLocationMapFragment);
-        map = mySupportMapFragment.getMap();
+//        FragmentManager myFragmentManager = getSupportFragmentManager();
+//        SupportMapFragment mySupportMapFragment
+//                = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.nearestLocationMapFragment);
+        mMap = ((SupportMapFragment)getSupportFragmentManager().
+                                        findFragmentById(R.id.nearestLocationMapFragment)).
+                                        getMap();
 
-        map.setMyLocationEnabled(true);
+        mMap.setMyLocationEnabled(true);
 
         mLocationClient = new LocationClient(this, this, this);
     }
@@ -91,13 +94,22 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
             mLocationClient.disconnect();
             LatLng currentLocation = new LatLng(newLocation.getLatitude(), newLocation.getLongitude());
 
-            map.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, Float.parseFloat(getString(R.string.map_zoom_level_float))));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, Float.parseFloat(getString(R.string.map_zoom_level_float))));
 
 
             Callback callback = new Callback() {
                 @Override
                 public void success(Object o, Response response) {
-                    Log.d(TAG, "successfully ended location service call with " + ((ArrayList<Location>) o).size());
+                    Log.d(TAG, "successfully ended location service call with " + ((ArrayList<LocationModel>) o).size());
+                    GoogleMap map = ((SupportMapFragment)getSupportFragmentManager().
+                            findFragmentById(R.id.nearestLocationMapFragment)).
+                            getMap();
+
+                    for (LocationModel location: (ArrayList<LocationModel>)o) {
+                        map.addMarker(new MarkerOptions()
+                                .position(new LatLng(location.getLocationLatitude(), location.getLocationLongitude()))
+                                .title(location.getLocationName()));
+                    }
                 }
 
                 @Override
@@ -118,7 +130,7 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
     }
 
     /*
-     * Called by Location Services when the request to connect the
+     * Called by LocationModel Services when the request to connect the
      * client finishes successfully. At this point, you can
      * request the current location or start periodic updates
      */
@@ -136,7 +148,7 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
     }
 
     /*
-     * Called by Location Services if the connection to the
+     * Called by LocationModel Services if the connection to the
      * location client drops because of an error.
      */
     @Override
@@ -146,8 +158,8 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
     }
 
     /*
-     * Called by Location Services if the attempt to
-     * Location Services fails.
+     * Called by LocationModel Services if the attempt to
+     * LocationModel Services fails.
      */
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {

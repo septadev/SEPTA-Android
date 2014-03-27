@@ -7,7 +7,7 @@
 
 package org.septa.android.app.services.apiproxies;
 
-import org.septa.android.app.models.Location;
+import org.septa.android.app.models.LocationModel;
 import org.septa.android.app.services.adaptors.LocationAdaptor;
 import org.septa.android.app.services.apiinterfaces.LocationService;
 
@@ -19,7 +19,7 @@ import java.util.Map;
 
 public class LocationServiceProxy {
 
-    public void getLocation(double longitude, double latitiude, float radiusInMiles, String type, Callback<ArrayList<Location>> callBack) {
+    public void getLocation(double longitude, double latitiude, float radiusInMiles, String type, Callback<ArrayList<LocationModel>> callBack) {
         LocationService locationService = LocationAdaptor.getLocationService();
 
         Map<String, String> options = new HashMap<String, String>();

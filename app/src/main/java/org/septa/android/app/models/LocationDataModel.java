@@ -7,7 +7,7 @@
 
 package org.septa.android.app.models;
 
-public class LocationData {
+public class LocationDataModel {
 
     public String address1;
     public String address2;

@@ -7,7 +7,7 @@
 
 package org.septa.android.app.services.apiinterfaces;
 
-import org.septa.android.app.models.Location;
+import org.septa.android.app.models.LocationModel;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -19,6 +19,6 @@ public interface LocationService {
     @GET("/hackathon/locations/get_locations.php")
     void location (
             @QueryMap Map<String, String> options,
-            Callback<ArrayList<Location>> callback
+            Callback<ArrayList<LocationModel>> callback
     );
 }

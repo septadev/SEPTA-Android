@@ -69,9 +69,6 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
         getSupportActionBar().setIcon(R.drawable.ic_actionbar_findnearestlocation);
         getSupportActionBar().setTitle(titleText);
 
-//        FragmentManager myFragmentManager = getSupportFragmentManager();
-//        SupportMapFragment mySupportMapFragment
-//                = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.nearestLocationMapFragment);
         mMap = ((SupportMapFragment)getSupportFragmentManager().
                                         findFragmentById(R.id.nearestLocationMapFragment)).
                                         getMap();
@@ -96,19 +93,18 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
 
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, Float.parseFloat(getString(R.string.map_zoom_level_float))));
 
-
             Callback callback = new Callback() {
                 @Override
                 public void success(Object o, Response response) {
                     Log.d(TAG, "successfully ended location service call with " + ((ArrayList<LocationModel>) o).size());
-                    GoogleMap map = ((SupportMapFragment)getSupportFragmentManager().
-                            findFragmentById(R.id.nearestLocationMapFragment)).
-                            getMap();
-
                     for (LocationModel location: (ArrayList<LocationModel>)o) {
-                        map.addMarker(new MarkerOptions()
-                                .position(new LatLng(location.getLocationLatitude(), location.getLocationLongitude()))
-                                .title(location.getLocationName()));
+                        // check to make sure that mMap is not null
+                        if (mMap != null) {
+                            mMap.addMarker(new MarkerOptions()
+                                    .position(new LatLng(location.getLocationLatitude(), location.getLocationLongitude()))
+                                    .title(location.getLocationName())
+                                    .snippet("Route: "));
+                        }
                     }
                 }
 
@@ -124,7 +120,7 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
 
             Log.d(TAG, "stating location service call...");
             LocationServiceProxy locationServiceProxy = new LocationServiceProxy();
-            locationServiceProxy.getLocation(newLocation.getLongitude(), newLocation.getLatitude(),2.5F, "bus_stops", callback);
+            locationServiceProxy.getLocation(newLocation.getLongitude(), newLocation.getLatitude(), 2.5F, "bus_stops", callback);
             Log.d(TAG, "ended the call, now wait for the callback");
         }
     }

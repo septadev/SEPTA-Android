@@ -19,16 +19,16 @@
     <fragment
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
-        android:layout_weight="1"
+        android:layout_weight="2"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:id="@+id/nearestLocationMapFragment"
         android:layout_alignParentTop="true"/>
 
     <fragment
         android:layout_width="match_parent"
-        android:layout_height="fill_parent"
-        android:layout_weight="1"
-        android:name="android.support.v4.app.ListFragment"
+        android:layout_height="match_parent"
+        android:layout_weight="3"
+        android:name="org.septa.android.app.fragments.FindNearestLocationsListFragment"
         android:id="@+id/nearestLocationListFragment"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"/>

@@ -19,7 +19,7 @@
         android:id="@+id/fareInformation_front_imageView"/>
 
     <ImageView
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:id="@+id/fareInformation_background_imageView"
         android:layout_toRightOf="@+id/fareInformation_front_imageView"/>

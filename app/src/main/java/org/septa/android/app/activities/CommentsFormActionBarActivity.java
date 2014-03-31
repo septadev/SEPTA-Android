@@ -26,23 +26,23 @@ import java.util.List;
 public class CommentsFormActionBarActivity extends BaseAnalyticsActionBarActivity {
     public static final String TAG = CommentsFormActionBarActivity.class.getName();
 
+    private EditText nameEditText;
+    private EditText phoneEditText;
+    private EditText emailEditText ;
+
+    private EditText locationEditText;
+    private EditText destinationEditText ;
+    private EditText routeEditText ;
+    private EditText vehicleEditText;
+    private EditText blockEditText;
+    private EditText directionEditText;
+
+    private Spinner commentTypeSpinner;
+
+    private EditText descriptionEditText;
+    private EditText detailsEditText;
+
     private List collectFormFieldValues() {
-        final EditText nameEditText = (EditText) findViewById(R.id.commentsForm_name_editText);
-        final EditText phoneEditText = (EditText) findViewById(R.id.commentsForm_phone_editText);
-        final EditText emailEditText = (EditText) findViewById(R.id.commentsForm_email_editText);
-
-        final EditText locationEditText = (EditText) findViewById(R.id.commentsForm_location_editText);
-        final EditText destinationEditText = (EditText) findViewById(R.id.commentsForm_destination_editText);
-        final EditText routeEditText = (EditText) findViewById(R.id.commentsForm_route_editText);
-        final EditText vehicleEditText = (EditText) findViewById(R.id.commentsForm_vehicle_editText);
-        final EditText blockEditText = (EditText) findViewById(R.id.commentsForm_block_editText);
-        final EditText directionEditText = (EditText) findViewById(R.id.commentsForm_direction_editText);
-
-        final Spinner commentTypeSpinner = (Spinner) findViewById(R.id.commentsForm_commentType_spinner);
-
-        final EditText descriptionEditText = (EditText) findViewById(R.id.commentsForm_description_editText);
-        final EditText detailsEditText = (EditText) findViewById(R.id.commentsForm_details_editText);
-
         List formValuesList = new ArrayList();
         formValuesList.add(new BasicNameValuePair("recipient", getString(R.string.commentsForm_recipient)));
         formValuesList.add(new BasicNameValuePair("wl_tp", getString(R.string.commentsForm_wl_tp)));
@@ -69,7 +69,6 @@ public class CommentsFormActionBarActivity extends BaseAnalyticsActionBarActivit
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate... what's up?");
         super.onCreate(savedInstanceState);
 
         String actionBarTitleText = getIntent().getStringExtra(getString(R.string.actionbar_titletext_key));
@@ -95,12 +94,27 @@ public class CommentsFormActionBarActivity extends BaseAnalyticsActionBarActivit
                 Log.d(TAG, "about to execute the network call with the form field values...");
                 new CommentsFormSubmissionStrategy(getApplicationContext()).execute(collectFormFieldValues());
                 Log.d(TAG, "executed the network call with the form field values");
+
+                // TODO: do better checking to see if the form posted successfully before clearing it out.
+                resetFormFields();
             }
         });
 
-        final EditText nameEditText = (EditText) findViewById(R.id.commentsForm_name_editText);
-        final EditText phoneEditText = (EditText) findViewById(R.id.commentsForm_phone_editText);
-        final EditText emailEditText = (EditText) findViewById(R.id.commentsForm_email_editText);
+        nameEditText = (EditText) findViewById(R.id.commentsForm_name_editText);
+        phoneEditText = (EditText) findViewById(R.id.commentsForm_phone_editText);
+        emailEditText = (EditText) findViewById(R.id.commentsForm_email_editText);
+
+        locationEditText = (EditText) findViewById(R.id.commentsForm_location_editText);
+        destinationEditText = (EditText) findViewById(R.id.commentsForm_destination_editText);
+        routeEditText = (EditText) findViewById(R.id.commentsForm_route_editText);
+        vehicleEditText = (EditText) findViewById(R.id.commentsForm_vehicle_editText);
+        blockEditText = (EditText) findViewById(R.id.commentsForm_block_editText);
+        directionEditText = (EditText) findViewById(R.id.commentsForm_direction_editText);
+
+        commentTypeSpinner = (Spinner) findViewById(R.id.commentsForm_commentType_spinner);
+
+        descriptionEditText = (EditText) findViewById(R.id.commentsForm_description_editText);
+        detailsEditText = (EditText) findViewById(R.id.commentsForm_details_editText);
 
         TextWatcher editTextFieldWatcher = new TextWatcher(){
             public void afterTextChanged(Editable s) { }
@@ -122,5 +136,25 @@ public class CommentsFormActionBarActivity extends BaseAnalyticsActionBarActivit
         nameEditText.addTextChangedListener(editTextFieldWatcher);
         phoneEditText.addTextChangedListener(editTextFieldWatcher);
         emailEditText.addTextChangedListener(editTextFieldWatcher);
+    }
+
+    private void resetFormFields() {
+        nameEditText.setText("");
+        phoneEditText.setText("");
+        emailEditText.setText("");
+
+        locationEditText.setText("");
+        destinationEditText.setText("");
+        routeEditText.setText("");
+        vehicleEditText.setText("");
+        blockEditText.setText("");
+        directionEditText.setText("");
+
+        commentTypeSpinner.setSelection(0);
+
+        descriptionEditText.setText("");
+        detailsEditText.setText("");
+
+        nameEditText.requestFocus();
     }
 }

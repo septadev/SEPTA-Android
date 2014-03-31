@@ -7,9 +7,11 @@
 
 package org.septa.android.app.activities;
 
+import android.app.Activity;
 import android.content.IntentSender;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -87,6 +89,10 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
         Log.d(TAG, "creating the menu in find nearest location actionbar activity");
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.find_nearest_location_action_bar, menu);
+
+        menu.findItem(R.id.actionmenu_findnearestlocationactionbar_changeradius).setVisible(!inChangeRadiusMode);
+        menu.findItem(R.id.actionmenu_findnearestlocationactionbar_changeradius_done).setVisible(inChangeRadiusMode);
+
         return true;
     }
 
@@ -102,8 +108,17 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
         switch (item.getItemId()) {
             case R.id.actionmenu_findnearestlocationactionbar_changeradius:
                 Log.d(TAG, "heard the change radius action item pressed");
+
                 inChangeRadiusMode = true;
-                // do whatever
+                ActivityCompat.invalidateOptionsMenu(this);
+
+                return true;
+            case R.id.actionmenu_findnearestlocationactionbar_changeradius_done:
+                Log.d(TAG, "heard the done change radius action item pressed");
+
+                inChangeRadiusMode = false;
+                ActivityCompat.invalidateOptionsMenu(this);
+
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

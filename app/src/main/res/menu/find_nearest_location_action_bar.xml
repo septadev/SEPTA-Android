@@ -23,6 +23,7 @@
     <item android:id="@+id/actionmenu_findnearestlocationactionbar_changeradius_done"
           android:icon="@drawable/ic_menu_done"
           android:title="@string/ic_menu_done_title"
+          android:visible="false"
           app:showAsAction="always"/>
 
 </menu>

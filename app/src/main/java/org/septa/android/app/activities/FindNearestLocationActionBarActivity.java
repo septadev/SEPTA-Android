@@ -11,6 +11,8 @@ import android.content.IntentSender;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
@@ -39,6 +41,8 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
         GooglePlayServicesClient.ConnectionCallbacks,
         GooglePlayServicesClient.OnConnectionFailedListener {
     public static final String TAG = FindNearestLocationActionBarActivity.class.getName();
+
+    private boolean inChangeRadiusMode = false;
 
     private GoogleMap mMap;
 
@@ -76,6 +80,34 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
         mMap.setMyLocationEnabled(true);
 
         mLocationClient = new LocationClient(this, this, this);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        Log.d(TAG, "creating the menu in find nearest location actionbar activity");
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.find_nearest_location_action_bar, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        Log.d(TAG, "onPrepareOptionsMenu");
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.actionmenu_findnearestlocationactionbar_changeradius:
+                Log.d(TAG, "heard the change radius action item pressed");
+                inChangeRadiusMode = true;
+                // do whatever
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override

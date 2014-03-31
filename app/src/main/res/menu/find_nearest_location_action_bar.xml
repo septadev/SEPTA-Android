@@ -10,8 +10,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="org.septa.android.app.activities.FindNearestLocationActionBarActivity" >
     
-    <item android:id="@+id/action_settings"
-        android:title="@string/action_settings"
-        android:orderInCategory="100"
-        app:showAsAction="never" />
+    <!--<item android:id="@+id/action_settings"-->
+        <!--android:title="@string/action_settings"-->
+        <!--android:orderInCategory="100"-->
+        <!--app:showAsAction="never" />-->
+
+    <item android:id="@+id/actionmenu_findnearestlocationactionbar_changeradius"
+        android:icon="@drawable/ic_menu_distance"
+        android:title="@string/ic_menu_distance_title"
+        app:showAsAction="always"/>
+
+    <item android:id="@+id/actionmenu_findnearestlocationactionbar_changeradius_done"
+          android:icon="@drawable/ic_menu_done"
+          android:title="@string/ic_menu_done_title"
+          app:showAsAction="always"/>
+
 </menu>

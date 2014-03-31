@@ -20,6 +20,7 @@ import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import org.septa.android.app.BuildConfig;
 import org.septa.android.app.R;
@@ -29,6 +30,9 @@ public class AppFeedbackFormActivity extends BaseAnalyticsActionBarActivity {
     public static final String TAG = AppFeedbackFormActivity.class.getName();
 
     private Uri selectedImageUri;
+
+    private final int OBTAIN_IMAGE_REQUESTCODE = 1;
+    private final int SEND_EMAIL_REQUESTCODE = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +53,7 @@ public class AppFeedbackFormActivity extends BaseAnalyticsActionBarActivity {
         tapToSelectImageButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent intent = new   Intent(Intent.ACTION_PICK,android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(intent, 1);
+                startActivityForResult(intent, OBTAIN_IMAGE_REQUESTCODE);
             }
         });
 
@@ -60,11 +64,21 @@ public class AppFeedbackFormActivity extends BaseAnalyticsActionBarActivity {
                 String subject = String.format(getString(R.string.appfeedbackform_subject_stringtemplate),
                         BuildConfig.VERSIONNAME,
                         typeOfFeedbackSpinner.getSelectedItem().toString());
-                EmailLaunch.launchEmail(v.getContext(),
+
+                Intent intent = EmailLaunch.launchEmail(v.getContext(),
                         getString(R.string.appfeedbackform_sendto_emailaddress),
                         subject,
                         detailsEditText.getText().toString(),
                         selectedImageUri);
+
+                try {
+
+                    startActivityForResult(Intent.createChooser(intent, getString(R.string.mailto_chooser_text)),2);
+                } catch (android.content.ActivityNotFoundException ex) {
+
+                    Toast.makeText(AppFeedbackFormActivity.this, "There are no email clients installed.", Toast.LENGTH_SHORT).show();
+                }
+
             }
         });
 
@@ -84,12 +98,28 @@ public class AppFeedbackFormActivity extends BaseAnalyticsActionBarActivity {
 
     protected void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
         super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
-        switch(requestCode) {
-            case 1:
-                if(resultCode == RESULT_OK){
 
+        switch(requestCode) {
+            case OBTAIN_IMAGE_REQUESTCODE:
+                if(resultCode == RESULT_OK){
+                    Log.d(TAG, "received a result ok for the activity result to obtain an image");
                     this.selectedImageUri = imageReturnedIntent.getData();
+                } else {
+                    Log.d(TAG, "receive a result of not okay for the activity result to obtain an image");
                 }
+
+                break;
+            case SEND_EMAIL_REQUESTCODE:
+                Log.d(TAG, "result code of "+resultCode);
+                final Spinner typeOfFeedbackSpinner = (Spinner)findViewById(R.id.type_of_feedback_spinner);
+                typeOfFeedbackSpinner.setSelection(0);
+                final EditText detailsEditText = (EditText)findViewById(R.id.details_editText);
+                detailsEditText.setText("");
+                this.selectedImageUri = null;
+
+                break;
+            default:
+                Log.d(TAG, "a request code of "+requestCode+" was seen but not anticipated");
                 break;
         }
     }

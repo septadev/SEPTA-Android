@@ -7,51 +7,40 @@
 
 package org.septa.android.app.fragments;
 
+import android.graphics.PointF;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import org.septa.android.app.R;
-import org.septa.android.app.TouchImageView;
+import org.septa.android.app.SubsamplingScaleImageView;
+
+import java.io.IOException;
 
 public class TransitMapImageViewFragment extends Fragment {
-//    @Override
-//    public void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        //setContentView(R.layout.activity_main);
-//
-//        TouchImageView img = new TouchImageView(getActivity());
-//        img.setImageResource(R.drawable.system_map);
-//        img.setMaxZoom(4f);
-//        setContentView(img);
-//    }
+    private static final String TAG = TransitMapImageViewFragment.class.getName();
+
+    private static final String STATE_SCALE = "state-scale";
+    private static final String STATE_CENTER_X = "state-center-x";
+    private static final String STATE_CENTER_Y = "state-center-y";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-//        mDrawerListView = (ListView) inflater.inflate(
-//                R.layout.fragment_navigation_drawer, container, false);
-//        mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                selectItem(position);
-//            }
-//        });
-//
-//        mDrawerListView.setAdapter(new NavigationDrawer_ListViewItem_ArrayAdapter(getActionBar().getThemedContext(),
-//                getResources().getStringArray(R.array.nav_main_items)));
-//
-//        mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_main);
 
-        TouchImageView img = new TouchImageView(getActivity());
-        img.setImageResource(R.drawable.system_map);
-        img.setMaxZoom(4f);
+        View theView = inflater.inflate(R.layout.fragment_transitmap, container, false);
 
-        return img;
-//        return mDrawerListView;
+        try {
+            SubsamplingScaleImageView imageView = (SubsamplingScaleImageView)theView.findViewById(R.id.imageView);
+            imageView.setImageAsset("system-map.png");
+        } catch (IOException e) {
+            Log.e(TransitMapImageViewFragment.class.getSimpleName(), "Could not load asset", e);
+        }
+
+        return theView;
     }
 }

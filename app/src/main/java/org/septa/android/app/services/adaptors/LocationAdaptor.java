@@ -52,6 +52,8 @@ class MyErrorHandler implements ErrorHandler {
 
         Log.d(TAG, "cause? "+cause.getMessage());
 
+        Log.d(TAG, "url? "+cause.getUrl());
+
         Response r = cause.getResponse();
         if (r != null) {
 

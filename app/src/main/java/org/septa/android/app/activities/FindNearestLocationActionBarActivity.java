@@ -15,6 +15,7 @@ import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
@@ -68,6 +69,9 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
         super.onCreate(savedInstanceState);
 
         String titleText = getIntent().getStringExtra(getString(R.string.actionbar_titletext_key));
+
+        // enables the activity indicator in the action bar
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 
         setContentView(R.layout.findnearestlocation);
 
@@ -144,6 +148,9 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
                 @Override
                 public void success(Object o, Response response) {
                     Log.d(TAG, "successfully ended location service call with " + ((ArrayList<LocationModel>) o).size());
+                    setProgressBarIndeterminateVisibility(Boolean.FALSE);
+                    ActivityCompat.invalidateOptionsMenu(FindNearestLocationActionBarActivity.this);
+
                     for (LocationModel location: (ArrayList<LocationModel>)o) {
                         // check to make sure that mMap is not null
                         if (mMap != null) {
@@ -157,6 +164,9 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
 
                 @Override
                 public void failure(RetrofitError retrofitError) {
+                    setProgressBarIndeterminateVisibility(Boolean.FALSE);
+                    ActivityCompat.invalidateOptionsMenu(FindNearestLocationActionBarActivity.this);
+
                     try {
                         Log.d(TAG, "A failure in the call to location service with body |" + retrofitError.getResponse().getBody().in() + "|");
                     } catch (Exception ex) {
@@ -167,6 +177,9 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
 
             Log.d(TAG, "stating location service call...");
             LocationServiceProxy locationServiceProxy = new LocationServiceProxy();
+
+            setProgressBarIndeterminateVisibility(Boolean.TRUE);
+
             locationServiceProxy.getLocation(newLocation.getLongitude(), newLocation.getLatitude(), 2.5F, "bus_stops", callback);
             Log.d(TAG, "ended the call, now wait for the callback");
         }

@@ -42,7 +42,7 @@ android.applicationVariants.all { variant ->
 //    def variants = variant.baseName.split("-");
     def apkName = "SEPTA-";
     apkName += variant.buildType.name;
-    apkName += "-v" + android.defaultConfig.versionName + "${getGitHash}";
+    apkName += "-v" + android.defaultConfig.versionName + "${getSprintRound}" + "${getGitHash}";
     if (!variant.zipAlign) {
         apkName += "-unaligned";
     }

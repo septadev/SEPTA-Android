@@ -7,6 +7,7 @@
 
 package org.septa.android.app.fragments;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
@@ -30,6 +31,7 @@ public class FindNearestLocationsListFragment extends ListFragment {
         ArrayAdapter<String> adapter=new ArrayAdapter<String>(getActivity(), R.layout.findnearestlocations_listview_item,R.id.findnearestlocations_listView_items_locationName_textView,array);
 
         setListAdapter(adapter);
+
         return super.onCreateView(i,container,savedInstanceState);
     }
     public void onActivityCreated(Bundle savedInstanceState){
@@ -43,5 +45,8 @@ public class FindNearestLocationsListFragment extends ListFragment {
                 Toast.makeText(getActivity(), (CharSequence) listview.getItemAtPosition(i), Toast.LENGTH_LONG).show();
             }
         });
+
+        // TODO: extract this to a theme instead of hard coded here.
+        getView().setBackgroundColor(Color.BLACK);
     }
 }

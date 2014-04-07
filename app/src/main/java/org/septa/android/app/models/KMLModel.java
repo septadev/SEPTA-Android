@@ -7,21 +7,28 @@
 
 package org.septa.android.app.models;
 
+import com.google.android.gms.internal.id;
+
+import org.simpleframework.xml.Attribute;
+import org.simpleframework.xml.Element;
+import org.simpleframework.xml.ElementList;
+import org.simpleframework.xml.Root;
+
+@Root(strict=false)
 public class KMLModel {
+    @Element(name="Document")
     private Document document;
 
+    @Root
     static class Document {
+        @Element
         private String name;
+        @Element
         private Style style;
+        @Element(name="Folder")
         private Folder folder;
+        @ElementList(required=false)
         private Placemark[] placemarks;
-
-        void Document(String name, Style style, Folder folder, Placemark[] placemarks) {
-            this.name = name;
-            this.style = style;
-            this.folder = folder;
-            this.placemarks = placemarks;
-        }
 
         public String getName() {
             return name;
@@ -55,14 +62,22 @@ public class KMLModel {
             this.placemarks = placemarks;
         }
 
-
+        @Root
         static class Style {
+            @Attribute
+            private String id;
+
+            @Element
             private LabelStyle labelStyle;
+            @Element
             private LineStyle lineStyle;
 
-            void Style(LabelStyle labelStyle, LineStyle lineStyle) {
-                this.labelStyle = labelStyle;
-                this.lineStyle = lineStyle;
+            public String getId() {
+                return id;
+            }
+
+            public void setId(String id) {
+                this.id = id;
             }
 
             public LabelStyle getLabelStyle() {
@@ -81,15 +96,12 @@ public class KMLModel {
                 this.lineStyle = lineStyle;
             }
 
-
+            @Root
             static class LabelStyle {
+                @Element
                 private String color;
+                @Element
                 private String style;
-
-                void LabelStyle(String color, String style) {
-                    this.color = color;
-                    this.style = style;
-                }
 
                 public String getColor() {
                     return color;
@@ -108,14 +120,12 @@ public class KMLModel {
                 }
             }
 
+            @Root
             static class LineStyle {
+                @Element
                 private String color;
+                @Element
                 private String style;
-
-                void LineStyle(String color, String style) {
-                    this.color = color;
-                    this.style = style;
-                }
 
                 public String getColor() {
                     return color;
@@ -135,19 +145,27 @@ public class KMLModel {
             }
         }
 
+        @Root
         static class Folder {
+            @Attribute
+            private String id;
+
+            @Element
             private String name;
+            @Element
             private boolean open;
+            @Element
             private Snippet snippet;
+            @Element
             private Placemark[] placemarks;
 
-            void Folder(String name, boolean open, Snippet snippet, Placemark[] placemarks) {
-                this.name = name;
-                this.open = open;
-                this.snippet = snippet;
-                this.placemarks = placemarks;
+            public String getId() {
+                return id;
             }
 
+            public void setId(String id) {
+                this.id = id;
+            }
 
             public String getName() {
                 return name;
@@ -182,13 +200,22 @@ public class KMLModel {
             }
         }
 
+        @Root
         static class Snippet {
+            @Attribute
+            private String id;
+
+            @Element
             private int maxLines;
+            @Element
             private String snippet;
 
-            void Snipper(int maxLines, String snippet) {
-                this.maxLines = maxLines;
-                this.snippet = snippet;
+            public String getId() {
+                return id;
+            }
+
+            public void setId(String id) {
+                this.id = id;
             }
 
             public int getMaxLines() {
@@ -208,18 +235,16 @@ public class KMLModel {
             }
         }
 
+        @Root
         static class Placemark {
+            @Element
             private String name;
+            @Element
             private Snippet snippet;
+            @Element
             private String styleUrl;
+            @Element
             private MultiGeometry multiGeometry;
-
-            void Placemark(String name, Snippet snippet, String styleUrl, MultiGeometry multiGeometry) {
-                this.name = name;
-                this.snippet = snippet;
-                this.styleUrl = styleUrl;
-                this.multiGeometry = multiGeometry;
-            }
 
             public String getName() {
                 return name;
@@ -254,17 +279,17 @@ public class KMLModel {
             }
         }
 
+        @Root
         static class MultiGeometry {
+            @Element
             private LineString lineString;
 
+            @Root
             static class LineString {
+                @Element
                 private int tessellate;
+                @Element
                 private Coordinate[] coordinates;
-
-                void LineString(int tessellate, Coordinate[] coordinates) {
-                    this.tessellate = tessellate;
-                    this.coordinates = coordinates;
-                }
 
                 public int getTessellate() {
                     return tessellate;
@@ -282,17 +307,14 @@ public class KMLModel {
                     this.coordinates = coordinates;
                 }
 
-
+                @Root
                 static class Coordinate {
+                    @Element
                     private double latitude;
+                    @Element
                     private double longitude;
+                    @Element
                     private int notsure;
-
-                    void Coordinate(double latitude, double longitude, int notsure) {
-                        this.latitude = latitude;
-                        this.longitude = longitude;
-                        this.notsure = notsure;
-                    }
 
                     public double getLatitude() {
                         return latitude;

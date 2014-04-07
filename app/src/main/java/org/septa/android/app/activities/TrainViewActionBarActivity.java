@@ -10,6 +10,7 @@ package org.septa.android.app.activities;
 import android.os.Bundle;
 
 import org.septa.android.app.R;
+import org.septa.android.app.utilities.KMLSAXXMLProcessor;
 
 public class TrainViewActionBarActivity extends BaseAnalyticsActionBarActivity {
     public static final String TAG = TrainViewActionBarActivity.class.getName();
@@ -30,5 +31,8 @@ public class TrainViewActionBarActivity extends BaseAnalyticsActionBarActivity {
         getSupportActionBar().setIcon(id);
 
         setContentView(R.layout.trainview);
+
+        KMLSAXXMLProcessor processor = new KMLSAXXMLProcessor(getAssets());
+        processor.readKMLFile("kml/train/regionalrail.kml");
     }
 }

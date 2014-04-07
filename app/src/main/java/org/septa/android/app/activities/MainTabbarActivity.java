@@ -223,7 +223,6 @@ public class MainTabbarActivity extends BaseAnalyticsActionBarActivity implement
                 case 2:
                     Log.d(TAG, "case 3, making and returning the map web view fragment");
                     fragment = new TransitMapImageViewFragment();
-//                    fragment = new TransitMapWebViewFragment();
 
                     break;
                 case 3:

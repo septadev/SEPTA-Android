@@ -7,57 +7,57 @@
 
 package org.septa.android.app.utilities;
 
+import android.content.res.AssetManager;
+import android.util.Log;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.io.StringReader;
+
 import org.septa.android.app.models.KMLModel;
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
+import org.simpleframework.xml.Serializer;
+import org.simpleframework.xml.core.Persister;
 
-public class KMLSAXXMLProcessor extends DefaultHandler {
+public class KMLSAXXMLProcessor {
+    public static final String TAG = KMLSAXXMLProcessor.class.getName();
+
     private KMLModel kmlModel;
+    private AssetManager assetManager;
 
-    private String tempVal;
+    private String contentsOfKMLFile;
 
-    private String previousElement;
-
-    public KMLSAXXMLProcessor() {
-        kmlModel = new KMLModel();
+    public KMLSAXXMLProcessor(AssetManager assetManager) {
+        this.assetManager = assetManager;
     }
 
-    public KMLModel getKmlModel() {
-        return kmlModel;
-    }
+    public void readKMLFile(String kmlFileName) {
+        // To load text file
+        InputStream input;
+        try {
+            input = assetManager.open(kmlFileName);
 
-    // Event Handlers
-    public void startElement(String uri, String localName, String qName,
-                             Attributes attributes) throws SAXException {
-        // reset
-        tempVal = "";
-        if (qName.equalsIgnoreCase("kml")) {
-            // create a new instance of employee
-            tempEmp = new Employee();
+            int size = input.available();
+            Log.d(TAG, "reporting the size as "+size);
+            byte[] buffer = new byte[size];
+            input.read(buffer);
+
+            input.close();
+
+            // byte buffer into a string
+            contentsOfKMLFile = new String(buffer);
+
+            Serializer serializer = new Persister();
+            Reader reader = new StringReader(contentsOfKMLFile);
+
+            KMLModel kmlModel = serializer.read(KMLModel.class, reader, false);
+        } catch (IOException ioEx) {
+            ioEx.printStackTrace();
+        } catch (Exception ex) {
+            ex.printStackTrace();;
         }
+
+        Log.d(TAG, "successfully read the file as:|"+contentsOfKMLFile+"|");
     }
 
-    public void characters(char[] ch, int start, int length)
-            throws SAXException {
-        tempVal = new String(ch, start, length);
-    }
-
-    public void endElement(String uri, String localName, String qName)
-            throws SAXException {
-        if (qName.equalsIgnoreCase("employee")) {
-            // add it to the list
-            employees.add(tempEmp);
-        } else if (qName.equalsIgnoreCase("id")) {
-            tempEmp.setId(Integer.parseInt(tempVal));
-        } else if (qName.equalsIgnoreCase("name")) {
-            tempEmp.setName(tempVal);
-        } else if (qName.equalsIgnoreCase("department")) {
-            tempEmp.setDepartment(tempVal);
-        } else if (qName.equalsIgnoreCase("type")) {
-            tempEmp.setType(tempVal);
-        } else if (qName.equalsIgnoreCase("email")) {
-            tempEmp.setEmail(tempVal);
-        }
-    }
 }

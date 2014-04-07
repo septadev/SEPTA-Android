@@ -30,12 +30,12 @@
 
     <!--for the realtime menu, this is the list of classes as string in order -->
     <string-array name="realtime_menu_classnames_inorder">
-        <item>org.septa.android.app.activities.PlaceholderActionBarActivity</item>  <!-- position col 1 row 1 -->
-        <item>org.septa.android.app.activities.PlaceholderActionBarActivity</item>  <!-- position col 2 row 1 -->
-        <item>org.septa.android.app.activities.TrainViewActionBarActivity</item>  <!-- position col 3 row 1 -->
-        <item>org.septa.android.app.activities.PlaceholderActionBarActivity</item>  <!-- position col 1 row 2 -->
-        <item>org.septa.android.app.activities.FindNearestLocationActionBarActivity</item>  <!-- position col 2 row 2 -->
-        <item>org.septa.android.app.activities.TipsActionBarActivity</item>         <!-- position col 3 row 2 -->
+        <item>org.septa.android.app.activities.PlaceholderActionBarActivity</item>  <!-- Next to Arrive : position col 1 row 1 -->
+        <item>org.septa.android.app.activities.TrainViewActionBarActivity</item>  <!-- TrainView : position col 2 row 1 -->
+        <item>org.septa.android.app.activities.PlaceholderActionBarActivity</item>  <!-- TransitView : position col 3 row 1 -->
+        <item>org.septa.android.app.activities.PlaceholderActionBarActivity</item>  <!-- System Status : position col 1 row 2 -->
+        <item>org.septa.android.app.activities.FindNearestLocationActionBarActivity</item>  <!-- Find Nearest Location : position col 2 row 2 -->
+        <item>org.septa.android.app.activities.TipsActionBarActivity</item>         <!-- Tips : position col 3 row 2 -->
     </string-array>
 
     <!-- on the realtime tab, the tips Url -->

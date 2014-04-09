@@ -9,8 +9,6 @@ package org.septa.android.app.models;
 
 import android.util.Log;
 
-import com.ekito.simpleKML.model.Coordinate;
-
 import java.util.ArrayList;
 import java.util.List;
 

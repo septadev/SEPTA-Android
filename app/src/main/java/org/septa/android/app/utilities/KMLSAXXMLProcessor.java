@@ -8,10 +8,10 @@
 package org.septa.android.app.utilities;
 
 import android.content.res.AssetManager;
-import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 
 import org.septa.android.app.models.KMLModel;
 
@@ -39,11 +39,16 @@ public class KMLSAXXMLProcessor {
         this.assetManager = assetManager;
     }
 
+    public KMLModel getKMLModel() {
+
+        return kmlModel;
+    }
+
     public void readKMLFile(String kmlFileName) {
         Document xmlDocument = null;
-        KMLModel kmlModel = new KMLModel();
-        kmlModel.createDocument();
 
+        kmlModel = new KMLModel();
+        KMLModel.Document document = kmlModel.createDocument();
         try {
             // using the asset manager, get the input stream to the KML file.
             InputStream input = assetManager.open(kmlFileName);
@@ -56,9 +61,6 @@ public class KMLSAXXMLProcessor {
             // create the xPath object.
             XPath xPath=XPathFactory.newInstance().newXPath();
 
-
-            // get and set the style color on the line style from the Document
-            KMLModel.Document document = kmlModel.getDocument();
             document.createStyle();
             document.getStyle().createLineStyle();
             XPathExpression tag_id = xPath.compile("/kml/Document/Style/LineStyle/color");
@@ -67,10 +69,8 @@ public class KMLSAXXMLProcessor {
             tag_id = xPath.compile("//Placemark");
             NodeList placemarkNodeList = (NodeList) tag_id.evaluate(xmlDocument, XPathConstants.NODESET);
 
-            Log.d(TAG, "the size of the placemarkNodeList is "+placemarkNodeList.getLength());
-            document.createPlacemarks();
+            ArrayList<KMLModel.Document.Placemark> placemarks = (ArrayList<KMLModel.Document.Placemark>) document.createPlacemarkList();
             for (int i = 0; i < placemarkNodeList.getLength(); i++) {
-                Log.d(TAG, "in placemark node list loop");
                 KMLModel.Document.Placemark placemark = new KMLModel.Document.Placemark();
 
                 Node n = placemarkNodeList.item(i);
@@ -82,19 +82,18 @@ public class KMLSAXXMLProcessor {
                 tag_id = xPath.compile("MultiGeometry/LineString/coordinates");
                 NodeList coordinatesNodeList = (NodeList) tag_id.evaluate(n, XPathConstants.NODESET);
 
-                placemark.createMultiGeometry();
-
-                KMLModel.Document.MultiGeometry.LineString lineString = placemark.getMultiGeometry().createLineString();
+                ArrayList<KMLModel.Document.MultiGeometry.LineString> lineStrings = (ArrayList<KMLModel.Document.MultiGeometry.LineString>) placemark.createMultiGeometry().createLineStringList();
                 for (int j = 0; j < coordinatesNodeList.getLength(); j++) {
-                    Log.d(TAG, "in coordinates node list loop");
+                    KMLModel.Document.MultiGeometry.LineString lineString = new KMLModel.Document.MultiGeometry.LineString();
                     String coordinatesString = coordinatesNodeList.item(j).getFirstChild().getNodeValue();
-                    Log.d(TAG, "coordinates string value is "+coordinatesString);
                     lineString.setRawCoordinateString(coordinatesString.trim());
 
                     lineString.processRawCoordinatesString();
+
+                    lineStrings.add(lineString);
                 }
 
-                document.getPlacemarks().add(placemark);
+                placemarks.add(placemark);
             }
         } catch (IOException ioEx) {
             ioEx.printStackTrace();

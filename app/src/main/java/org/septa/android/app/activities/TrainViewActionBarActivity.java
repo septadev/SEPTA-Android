@@ -8,9 +8,13 @@
 package org.septa.android.app.activities;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import org.septa.android.app.R;
+import org.septa.android.app.models.KMLModel;
 import org.septa.android.app.utilities.KMLSAXXMLProcessor;
+
+import java.util.List;
 
 public class TrainViewActionBarActivity extends BaseAnalyticsActionBarActivity {
     public static final String TAG = TrainViewActionBarActivity.class.getName();
@@ -34,5 +38,16 @@ public class TrainViewActionBarActivity extends BaseAnalyticsActionBarActivity {
 
         KMLSAXXMLProcessor processor = new KMLSAXXMLProcessor(getAssets());
         processor.readKMLFile("kml/train/regionalrail.kml");
+
+        KMLModel kmlModel = processor.getKMLModel();
+
+        if (kmlModel.getDocument().getCoordinates() != null) {
+            Log.d(TAG, "coordinatelist is not null");
+        } else {
+            Log.d(TAG, "the coordinatelist is null");
+        }
+
+        List<KMLModel.Document.MultiGeometry.LineString.Coordinate> coordinateList = kmlModel.getDocument().getCoordinates();
+        Log.d(TAG, "corodinateList is this long "+coordinateList.size());
     }
 }

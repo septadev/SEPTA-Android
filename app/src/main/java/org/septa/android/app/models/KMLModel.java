@@ -9,10 +9,14 @@ package org.septa.android.app.models;
 
 import android.util.Log;
 
+import org.septa.android.app.utilities.SAXXMLHandler;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class KMLModel {
+    private static final String TAG = KMLModel.class.getName();
+
     private Document document;
 
     public Document getDocument() {
@@ -23,8 +27,10 @@ public class KMLModel {
         this.document = document;
     }
 
-    public void createDocument() {
+    public Document createDocument() {
         this.document = new Document();
+
+        return document;
     }
 
     public static class Document {
@@ -69,10 +75,27 @@ public class KMLModel {
             this.placemarks = placemarks;
         }
 
-        public List<Placemark> createPlacemarks() {
+        public List<Placemark> createPlacemarkList() {
             this.placemarks = new ArrayList<Placemark>();
 
             return placemarks;
+        }
+
+        public List<MultiGeometry.LineString.Coordinate> getCoordinates() {
+            List<MultiGeometry.LineString.Coordinate> coordinates = new ArrayList<MultiGeometry.LineString.Coordinate>();
+
+            List<Placemark> placemarkList = getPlacemarks();
+            Log.d(TAG, "number of placemarks is "+placemarkList.size());
+            for (Placemark placemark : placemarkList) {
+
+                ArrayList<MultiGeometry.LineString> lineStrings = (ArrayList<MultiGeometry.LineString>) placemark.getMultiGeometry().getLineStrings();
+                Log.d(TAG, "number of lineStrings is "+lineStrings.size());
+                for (MultiGeometry.LineString lineString : lineStrings) {
+                    coordinates.add(lineString.getCoordinate());
+                }
+            }
+
+            return coordinates;
         }
 
         public static class Style {
@@ -271,20 +294,20 @@ public class KMLModel {
         }
 
         public static class MultiGeometry {
-            private LineString lineString;
+            private List<LineString> lineStrings;
 
-            public LineString getLineString() {
-                return lineString;
+            public List<LineString> getLineStrings() {
+                return lineStrings;
             }
 
-            public void setLineString(LineString lineString) {
-                this.lineString = lineString;
+            public void setLineString(List<LineString> lineStrings) {
+                this.lineStrings = getLineStrings();
             }
 
-            public LineString createLineString() {
-                this.lineString = new LineString();
+            public List<LineString> createLineStringList() {
+                this.lineStrings = new ArrayList<LineString>();
 
-                return lineString;
+                return lineStrings;
             }
 
             public static class LineString {

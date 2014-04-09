@@ -7,28 +7,33 @@
 
 package org.septa.android.app.models;
 
-import com.google.android.gms.internal.id;
+import android.util.Log;
 
-import org.simpleframework.xml.Attribute;
-import org.simpleframework.xml.Element;
-import org.simpleframework.xml.ElementList;
-import org.simpleframework.xml.Root;
+import com.ekito.simpleKML.model.Coordinate;
 
-@Root(strict=false)
+import java.util.ArrayList;
+import java.util.List;
+
 public class KMLModel {
-    @Element(name="Document")
     private Document document;
 
-    @Root
-    static class Document {
-        @Element
+    public Document getDocument() {
+        return document;
+    }
+
+    public void setDocument(Document document) {
+        this.document = document;
+    }
+
+    public void createDocument() {
+        this.document = new Document();
+    }
+
+    public static class Document {
         private String name;
-        @Element
         private Style style;
-        @Element(name="Folder")
         private Folder folder;
-        @ElementList(required=false)
-        private Placemark[] placemarks;
+        private List<Placemark> placemarks;
 
         public String getName() {
             return name;
@@ -46,6 +51,10 @@ public class KMLModel {
             this.style = style;
         }
 
+        public void createStyle() {
+            this.style = new Style();
+        }
+
         public Folder getFolder() {
             return folder;
         }
@@ -54,22 +63,24 @@ public class KMLModel {
             this.folder = folder;
         }
 
-        public Placemark[] getPlacemarks() {
+        public List<Placemark> getPlacemarks() {
             return placemarks;
         }
 
-        public void setPlacemarks(Placemark[] placemarks) {
+        public void setPlacemarks(List<Placemark>placemarks) {
             this.placemarks = placemarks;
         }
 
-        @Root
-        static class Style {
-            @Attribute
+        public List<Placemark> createPlacemarks() {
+            this.placemarks = new ArrayList<Placemark>();
+
+            return placemarks;
+        }
+
+        public static class Style {
             private String id;
 
-            @Element
             private LabelStyle labelStyle;
-            @Element
             private LineStyle lineStyle;
 
             public String getId() {
@@ -96,12 +107,15 @@ public class KMLModel {
                 this.lineStyle = lineStyle;
             }
 
-            @Root
-            static class LabelStyle {
-                @Element
+            public LineStyle createLineStyle() {
+                this.lineStyle = new LineStyle();
+
+                return lineStyle;
+            }
+
+            public static class LabelStyle {
                 private String color;
-                @Element
-                private String style;
+                private int scale;
 
                 public String getColor() {
                     return color;
@@ -111,20 +125,17 @@ public class KMLModel {
                     this.color = color;
                 }
 
-                public String getStyle() {
-                    return style;
+                public int getScale() {
+                    return scale;
                 }
 
-                public void setStyle(String style) {
-                    this.style = style;
+                public void setScale(int scale) {
+                    this.scale = scale;
                 }
             }
 
-            @Root
-            static class LineStyle {
-                @Element
+            public static class LineStyle {
                 private String color;
-                @Element
                 private String style;
 
                 public String getColor() {
@@ -145,19 +156,13 @@ public class KMLModel {
             }
         }
 
-        @Root
         static class Folder {
-            @Attribute
             private String id;
 
-            @Element
             private String name;
-            @Element
             private boolean open;
-            @Element
             private Snippet snippet;
-            @Element
-            private Placemark[] placemarks;
+            private List<Placemark> placemarks;
 
             public String getId() {
                 return id;
@@ -191,32 +196,15 @@ public class KMLModel {
                 this.snippet = snippet;
             }
 
-            public Placemark[] getPlacemarks() {
+            public List getPlacemarks() {
                 return placemarks;
-            }
-
-            public void setPlacemarks(Placemark[] placemarks) {
-                this.placemarks = placemarks;
             }
         }
 
-        @Root
         static class Snippet {
-            @Attribute
-            private String id;
-
-            @Element
             private int maxLines;
-            @Element
-            private String snippet;
 
-            public String getId() {
-                return id;
-            }
-
-            public void setId(String id) {
-                this.id = id;
-            }
+            private String text;
 
             public int getMaxLines() {
                 return maxLines;
@@ -226,24 +214,23 @@ public class KMLModel {
                 this.maxLines = maxLines;
             }
 
-            public String getSnippet() {
-                return snippet;
+            public void setText(String text) {
+                this.text = text;
             }
 
-            public void setSnippet(String snippet) {
-                this.snippet = snippet;
+            public String getText() {
+                return text;
+            }
+
+            public String getSnippet() {
+                return text;
             }
         }
 
-        @Root
-        static class Placemark {
-            @Element
+        public static class Placemark {
             private String name;
-            @Element
             private Snippet snippet;
-            @Element
             private String styleUrl;
-            @Element
             private MultiGeometry multiGeometry;
 
             public String getName() {
@@ -277,19 +264,36 @@ public class KMLModel {
             public void setMultiGeometry(MultiGeometry multiGeometry) {
                 this.multiGeometry = multiGeometry;
             }
+
+            public MultiGeometry createMultiGeometry() {
+                this.multiGeometry = new MultiGeometry();
+
+                return multiGeometry;
+            }
         }
 
-        @Root
-        static class MultiGeometry {
-            @Element
+        public static class MultiGeometry {
             private LineString lineString;
 
-            @Root
-            static class LineString {
-                @Element
+            public LineString getLineString() {
+                return lineString;
+            }
+
+            public void setLineString(LineString lineString) {
+                this.lineString = lineString;
+            }
+
+            public LineString createLineString() {
+                this.lineString = new LineString();
+
+                return lineString;
+            }
+
+            public static class LineString {
                 private int tessellate;
-                @Element
-                private Coordinate[] coordinates;
+                private String rawCoordinateString;
+
+                private Coordinate coordinate;
 
                 public int getTessellate() {
                     return tessellate;
@@ -299,21 +303,43 @@ public class KMLModel {
                     this.tessellate = tessellate;
                 }
 
-                public Coordinate[] getCoordinates() {
-                    return coordinates;
+                public String getRawCoordinateString() {
+                    return rawCoordinateString;
                 }
 
-                public void setCoordinates(Coordinate[] coordinates) {
-                    this.coordinates = coordinates;
+                public void setRawCoordinateString(String rawCoordinateString) {
+                    this.rawCoordinateString = rawCoordinateString;
                 }
 
-                @Root
-                static class Coordinate {
-                    @Element
+                public Coordinate getCoordinate() {
+                    return coordinate;
+                }
+
+                public void setCoordinates(Coordinate coordinate) {
+                    this.coordinate = coordinate;
+                }
+
+                public void processRawCoordinatesString() {
+                    if (rawCoordinateString != null && !rawCoordinateString.isEmpty()) {
+                        String[] splitRawCoordinate = this.rawCoordinateString.split(" ");
+
+                        for (String coordinatePairPlus : splitRawCoordinate) {
+                            String[] coordinateParts = coordinatePairPlus.split(",");
+                            if (coordinateParts.length != 3) {
+                                Log.d(KMLModel.class.getName(), "an error has occured processing the raw coordinates");
+                            } else {
+                                coordinate = new Coordinate();
+                                coordinate.setLatitude(Double.parseDouble(coordinateParts[0]));
+                                coordinate.setLongitude(Double.parseDouble(coordinateParts[1]));
+                                coordinate.setNotsure(Integer.parseInt(coordinateParts[2]));
+                            }
+                        }
+                    }
+                }
+
+                public static class Coordinate {
                     private double latitude;
-                    @Element
                     private double longitude;
-                    @Element
                     private int notsure;
 
                     public double getLatitude() {

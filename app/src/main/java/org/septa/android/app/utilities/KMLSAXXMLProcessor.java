@@ -12,8 +12,6 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringReader;
-import java.util.Stack;
 
 import org.septa.android.app.models.KMLModel;
 
@@ -87,7 +85,7 @@ public class KMLSAXXMLProcessor {
                 placemark.createMultiGeometry();
 
                 KMLModel.Document.MultiGeometry.LineString lineString = placemark.getMultiGeometry().createLineString();
-                for (int j = 0; j < coordinatesNodeList.getLength(); i++) {
+                for (int j = 0; j < coordinatesNodeList.getLength(); j++) {
                     Log.d(TAG, "in coordinates node list loop");
                     String coordinatesString = coordinatesNodeList.item(j).getFirstChild().getNodeValue();
                     Log.d(TAG, "coordinates string value is "+coordinatesString);

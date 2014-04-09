@@ -41,13 +41,6 @@ public class TrainViewActionBarActivity extends BaseAnalyticsActionBarActivity {
 
         KMLModel kmlModel = processor.getKMLModel();
 
-        if (kmlModel.getDocument().getCoordinates() != null) {
-            Log.d(TAG, "coordinatelist is not null");
-        } else {
-            Log.d(TAG, "the coordinatelist is null");
-        }
-
         List<KMLModel.Document.MultiGeometry.LineString.Coordinate> coordinateList = kmlModel.getDocument().getCoordinates();
-        Log.d(TAG, "corodinateList is this long "+coordinateList.size());
     }
 }

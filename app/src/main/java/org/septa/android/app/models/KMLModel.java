@@ -9,6 +9,8 @@ package org.septa.android.app.models;
 
 import android.util.Log;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import org.septa.android.app.utilities.SAXXMLHandler;
 
 import java.util.ArrayList;
@@ -79,23 +81,6 @@ public class KMLModel {
             this.placemarks = new ArrayList<Placemark>();
 
             return placemarks;
-        }
-
-        public List<MultiGeometry.LineString.Coordinate> getCoordinates() {
-            List<MultiGeometry.LineString.Coordinate> coordinates = new ArrayList<MultiGeometry.LineString.Coordinate>();
-
-            List<Placemark> placemarkList = getPlacemarks();
-            Log.d(TAG, "number of placemarks is "+placemarkList.size());
-            for (Placemark placemark : placemarkList) {
-
-                ArrayList<MultiGeometry.LineString> lineStrings = (ArrayList<MultiGeometry.LineString>) placemark.getMultiGeometry().getLineStrings();
-                Log.d(TAG, "number of lineStrings is "+lineStrings.size());
-                for (MultiGeometry.LineString lineString : lineStrings) {
-                    coordinates.add(lineString.getCoordinate());
-                }
-            }
-
-            return coordinates;
         }
 
         public static class Style {
@@ -291,6 +276,19 @@ public class KMLModel {
 
                 return multiGeometry;
             }
+
+            public List<LatLng> getLatLngCoordinates() {
+                List<LatLng> latLngList = new ArrayList<LatLng>();
+                List<MultiGeometry.LineString> lineStrings = getMultiGeometry().getLineStrings();
+                for (MultiGeometry.LineString lineString : lineStrings) {
+                    List<MultiGeometry.LineString.Coordinate> coordinates = lineString.getCoordinateList();
+                    for (MultiGeometry.LineString.Coordinate coordinate : coordinates) {
+                        latLngList.add(coordinate.getLatLong());
+                    }
+                }
+
+                return latLngList;
+            }
         }
 
         public static class MultiGeometry {
@@ -314,7 +312,7 @@ public class KMLModel {
                 private int tessellate;
                 private String rawCoordinateString;
 
-                private Coordinate coordinate;
+                private List<Coordinate> coordinateList;
 
                 public int getTessellate() {
                     return tessellate;
@@ -332,51 +330,53 @@ public class KMLModel {
                     this.rawCoordinateString = rawCoordinateString;
                 }
 
-                public Coordinate getCoordinate() {
-                    return coordinate;
+                public List<Coordinate> getCoordinateList() {
+                    if (coordinateList == null) {
+                        coordinateList = createCoordinateList();
+                    }
+
+                    return coordinateList;
                 }
 
-                public void setCoordinates(Coordinate coordinate) {
-                    this.coordinate = coordinate;
+                public void setCoordinateList(Coordinate coordinateList) {
+                    this.coordinateList = coordinateList;
+                }
+
+                public List<Coordinate> createCoordinateList() {
+                    return new ArrayList<Coordinate>();
                 }
 
                 public void processRawCoordinatesString() {
                     if (rawCoordinateString != null && !rawCoordinateString.isEmpty()) {
+                        Coordinate coordinate = null;
                         String[] splitRawCoordinate = this.rawCoordinateString.split(" ");
 
                         for (String coordinatePairPlus : splitRawCoordinate) {
                             String[] coordinateParts = coordinatePairPlus.split(",");
                             if (coordinateParts.length != 3) {
-                                Log.d(KMLModel.class.getName(), "an error has occured processing the raw coordinates");
+                                Log.d(KMLModel.class.getName(), "an error has occurred processing the raw coordinates");
                             } else {
                                 coordinate = new Coordinate();
-                                coordinate.setLatitude(Double.parseDouble(coordinateParts[0]));
-                                coordinate.setLongitude(Double.parseDouble(coordinateParts[1]));
+                                coordinate.setLatLong(new LatLng(Double.parseDouble(coordinateParts[1]),
+                                                                 Double.parseDouble(coordinateParts[0])));
                                 coordinate.setNotsure(Integer.parseInt(coordinateParts[2]));
                             }
+
+                            getCoordinateList().add(coordinate);
                         }
                     }
                 }
 
                 public static class Coordinate {
-                    private double latitude;
-                    private double longitude;
+                    private LatLng latLong;
                     private int notsure;
 
-                    public double getLatitude() {
-                        return latitude;
+                    public LatLng getLatLong() {
+                        return latLong;
                     }
 
-                    public void setLatitude(double latitude) {
-                        this.latitude = latitude;
-                    }
-
-                    public double getLongitude() {
-                        return longitude;
-                    }
-
-                    public void setLongitude(double longitude) {
-                        this.longitude = longitude;
+                    public void setLatLong(LatLng latLong) {
+                        this.latLong = latLong;
                     }
 
                     public int getNotsure() {
@@ -386,6 +386,9 @@ public class KMLModel {
                     public void setNotsure(int notsure) {
                         this.notsure = notsure;
                     }
+
+
+
                 }
             }
         }

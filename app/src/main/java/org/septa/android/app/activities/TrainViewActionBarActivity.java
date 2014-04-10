@@ -7,8 +7,23 @@
 
 package org.septa.android.app.activities;
 
+import android.graphics.Color;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.location.LocationClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.septa.android.app.R;
 import org.septa.android.app.models.KMLModel;
@@ -16,8 +31,30 @@ import org.septa.android.app.utilities.KMLSAXXMLProcessor;
 
 import java.util.List;
 
-public class TrainViewActionBarActivity extends BaseAnalyticsActionBarActivity {
+public class TrainViewActionBarActivity extends BaseAnalyticsActionBarActivity implements
+        LocationListener,
+        GooglePlayServicesClient.ConnectionCallbacks,
+        GooglePlayServicesClient.OnConnectionFailedListener{
     public static final String TAG = TrainViewActionBarActivity.class.getName();
+
+    KMLModel kmlModel;
+
+    private GoogleMap mMap;
+
+    final int RQS_GooglePlayServices = 1;
+
+    LocationClient mLocationClient;
+
+    private static final int MILLISECONDS_PER_SECOND = 1000;
+
+    public static final int UPDATE_INTERVAL_IN_SECONDS = 10;
+
+    private static final long UPDATE_INTERVAL =
+            MILLISECONDS_PER_SECOND * UPDATE_INTERVAL_IN_SECONDS;
+
+    private static final int FASTEST_INTERVAL_IN_SECONDS = 10;
+    private static final long FASTEST_INTERVAL =
+            MILLISECONDS_PER_SECOND * FASTEST_INTERVAL_IN_SECONDS;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,11 +73,131 @@ public class TrainViewActionBarActivity extends BaseAnalyticsActionBarActivity {
 
         setContentView(R.layout.trainview);
 
+        mMap = ((SupportMapFragment)getSupportFragmentManager().
+                findFragmentById(R.id.trainview_map_fragment)).
+                getMap();
+
+        mMap.setMyLocationEnabled(true);
+        mLocationClient = new LocationClient(this, this, this);
+
         KMLSAXXMLProcessor processor = new KMLSAXXMLProcessor(getAssets());
         processor.readKMLFile("kml/train/regionalrail.kml");
 
-        KMLModel kmlModel = processor.getKMLModel();
+        kmlModel = processor.getKMLModel();
 
-        List<KMLModel.Document.MultiGeometry.LineString.Coordinate> coordinateList = kmlModel.getDocument().getCoordinates();
+        Log.d(TAG, "about to draw the lines");
+        // Instantiates a new Polyline object and adds points to define the shape
+        PolylineOptions lineOptions = new PolylineOptions()
+                .addAll(kmlModel.getDocument().getLatLngCoordinates())
+                .color(Color.BLACK)
+                .width(2.5f)
+                .visible(true);
+
+        // Get back the mutable Polyline
+        Polyline polyline = mMap.addPolyline(lineOptions);
+        Log.d(TAG, "drew the lines");
+    }
+
+
+    @Override
+    public void onLocationChanged(Location newLocation) {
+        // TODO: find a different way to tell if we should make our network calls, with a timer.
+        // TODO: find a better way to shut off the updates and resume when it makes sense
+        if (newLocation.getAccuracy()< 16.0) {
+            mLocationClient.disconnect();
+            LatLng currentLocation = new LatLng(newLocation.getLatitude(), newLocation.getLongitude());
+
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, Float.parseFloat(getString(R.string.map_zoom_level_float))));
+
+
+        }
+    }
+
+    /*
+     * Called by LocationModel Services when the request to connect the
+     * client finishes successfully. At this point, you can
+     * request the current location or start periodic updates
+     */
+    @Override
+    public void onConnected(Bundle dataBundle) {
+        // Display the connection status
+        Log.d(TAG, "location services connected");
+
+        LocationRequest mLocationRequest = LocationRequest.create();
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        mLocationRequest.setInterval(UPDATE_INTERVAL);
+        mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
+
+        mLocationClient.requestLocationUpdates(mLocationRequest, this);
+    }
+
+    /*
+     * Called by LocationModel Services if the connection to the
+     * location client drops because of an error.
+     */
+    @Override
+    public void onDisconnected() {
+        // Display the connection status
+        Log.d(TAG, "location services disconnected.");
+    }
+
+    /*
+     * Called by LocationModel Services if the attempt to
+     * LocationModel Services fails.
+     */
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        /*
+         * Google Play services can resolve some errors it detects.
+         * If the error has a resolution, try sending an Intent to
+         * start a Google Play services activity that can resolve
+         * error.
+         */
+        if (connectionResult.hasResolution()) {
+//            try {
+                // Start an Activity that tries to resolve the error
+//                connectionResult.startResolutionForResult(
+//                        this,
+//                        9000);
+                /*
+                 * Thrown if Google Play services canceled the original
+                 * PendingIntent
+                 */
+//            } catch (IntentSender.SendIntentException e) {
+//                // Log the error
+//                e.printStackTrace();
+//            }
+        } else {
+            /*
+             * If no resolution is available, display a dialog to the
+             * user with the error.
+             */
+            Log.d(TAG, "location services error: " + connectionResult.getErrorCode());
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Connect the client.
+        mLocationClient.connect();
+    }
+
+    @Override
+    protected void onStop() {
+        // Disconnecting the client invalidates it.
+        mLocationClient.disconnect();
+        super.onStop();
+    }
+
+    @Override
+    protected void onResume() {
+        // TODO Auto-generated method stub
+        super.onResume();
+
+        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getApplicationContext());
+        if (resultCode != ConnectionResult.SUCCESS){
+            GooglePlayServicesUtil.getErrorDialog(resultCode, this, RQS_GooglePlayServices);
+        }
     }
 }

@@ -131,11 +131,6 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
 
     @Override
     public void onLocationChanged(Location newLocation) {
-        Log.d(TAG, "heard a location change");
-        Log.d(TAG, "new location lat "+newLocation.getLatitude());
-        Log.d(TAG, "new location lon "+newLocation.getLongitude());
-        Log.d(TAG, "with location accuracy " + newLocation.getAccuracy());
-
         // TODO: find a different way to tell if we should make our network calls, with a timer.
         // TODO: find a better way to shut off the updates and resume when it makes sense
         if (newLocation.getAccuracy()< 16.0) {
@@ -226,19 +221,19 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
          * error.
          */
         if (connectionResult.hasResolution()) {
-            try {
+//            try {
                 // Start an Activity that tries to resolve the error
-                connectionResult.startResolutionForResult(
-                        this,
-                        9000);
+//                connectionResult.startResolutionForResult(
+//                        this,
+//                        9000);
                 /*
                  * Thrown if Google Play services canceled the original
                  * PendingIntent
                  */
-            } catch (IntentSender.SendIntentException e) {
-                // Log the error
-                e.printStackTrace();
-            }
+//            } catch (IntentSender.SendIntentException e) {
+//                // Log the error
+//                e.printStackTrace();
+//            }
         } else {
             /*
              * If no resolution is available, display a dialog to the

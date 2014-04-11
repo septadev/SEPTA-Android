@@ -11,7 +11,16 @@
 			<color>ff73a100</color>
 		</LineStyle>
 	</Style>
-	<Folder id="FeatureLayer0">
+	<Style id="AmtrakTerritory">
+		<LabelStyle>
+			<color>00000000</color>
+			<scale>0</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ff0000ff</color>
+		</LineStyle>
+	</Style>
+		<Folder id="FeatureLayer0">
 		<name>Vector.SEPTAGIS.Regional_Rail_Lines_LR</name>
 		<open>1</open>
 		<Snippet maxLines="2"></Snippet>
@@ -30,7 +39,7 @@
 		<Placemark>
 			<name>R2 Newark</name>
 			<Snippet maxLines="2"></Snippet>
-			<styleUrl>#LineStyle00</styleUrl>
+			<styleUrl>#AmtrakTerritory</styleUrl>
 			<MultiGeometry>
 				<LineString>
 					<tessellate>1</tessellate>
@@ -100,7 +109,7 @@
 		<Placemark>
 			<name>R5 Thorndale</name>
 			<Snippet maxLines="2"></Snippet>
-			<styleUrl>#LineStyle00</styleUrl>
+			<styleUrl>#AmtrakTerritory</styleUrl>
 			<MultiGeometry>
 				<LineString>
 					<tessellate>1</tessellate>
@@ -148,7 +157,7 @@
 		<Placemark>
 			<name>R7 Trenton</name>
 			<Snippet maxLines="2"></Snippet>
-			<styleUrl>#LineStyle00</styleUrl>
+			<styleUrl>#AmtrakTerritory</styleUrl>
 			<MultiGeometry>
 				<LineString>
 					<tessellate>1</tessellate>

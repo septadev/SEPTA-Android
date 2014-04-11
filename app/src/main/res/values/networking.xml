@@ -10,4 +10,6 @@
     <string name="network_base_septa.org_url_protocol">http</string>
     <string name="network_base_septa.org_url">www.septa.org</string>
 
+    <string name="network_base_api_septa.org_url_protocol">http</string>
+    <string name="network_base_api_septa.org_url">www3.septa.org</string>
 </resources>

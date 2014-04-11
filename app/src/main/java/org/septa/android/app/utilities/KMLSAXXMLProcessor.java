@@ -8,6 +8,8 @@
 package org.septa.android.app.utilities;
 
 import android.content.res.AssetManager;
+import android.nfc.Tag;
+import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,8 +34,6 @@ public class KMLSAXXMLProcessor {
 
     private KMLModel kmlModel;
     private AssetManager assetManager;
-
-    private String contentsOfKMLFile;
 
     public KMLSAXXMLProcessor(AssetManager assetManager) {
         this.assetManager = assetManager;
@@ -61,10 +61,24 @@ public class KMLSAXXMLProcessor {
             // create the xPath object.
             XPath xPath=XPathFactory.newInstance().newXPath();
 
-            document.createStyle();
-            document.getStyle().createLineStyle();
-            XPathExpression tag_id = xPath.compile("/kml/Document/Style/LineStyle/color");
-            document.getStyle().getLineStyle().setColor(tag_id.evaluate(xmlDocument));
+            document.createStyleList();
+
+            //document/style
+            XPathExpression tag_id = xPath.compile("/kml/Document/Style");
+            NodeList styleNodeList = (NodeList) tag_id.evaluate(xmlDocument, XPathConstants.NODESET);
+            for (int i = 0; i < styleNodeList.getLength(); i++) {
+                KMLModel.Document.Style style = new KMLModel.Document.Style();
+                Node n = styleNodeList.item(i);
+
+                String id = n.getAttributes().getNamedItem("id").getNodeValue();
+                style.setId(id);
+
+                tag_id = xPath.compile("LineStyle/color");
+                String lineStyleColor = tag_id.evaluate(n);
+                style.createLineStyle().setColor(lineStyleColor);
+
+                document.getStyleList().add(style);
+            }
 
             tag_id = xPath.compile("//Placemark");
             NodeList placemarkNodeList = (NodeList) tag_id.evaluate(xmlDocument, XPathConstants.NODESET);
@@ -78,6 +92,10 @@ public class KMLSAXXMLProcessor {
                 tag_id = xPath.compile("name");
                 String name = tag_id.evaluate(n);
                 placemark.setName(name);
+
+                tag_id = xPath.compile("styleUrl");
+                String styleUrl = tag_id.evaluate(n).substring(1);
+                placemark.setStyleUrl(styleUrl);
 
                 tag_id = xPath.compile("MultiGeometry/LineString/coordinates");
                 NodeList coordinatesNodeList = (NodeList) tag_id.evaluate(n, XPathConstants.NODESET);

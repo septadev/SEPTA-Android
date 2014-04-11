@@ -15,6 +15,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.internal.bind.DateTypeAdapter;
 
+import org.septa.android.app.services.ServiceErrorHandler;
 import org.septa.android.app.services.apiinterfaces.LocationService;
 
 import java.net.Proxy;
@@ -38,7 +39,7 @@ public class LocationAdaptor {
         RestAdapter restAdapter = new RestAdapter.Builder()
                 .setEndpoint("http://www3.septa.org")       // The base API endpoint.
                 .setConverter(new GsonConverter(gson))
-                .setErrorHandler(new MyErrorHandler())
+                .setErrorHandler(new ServiceErrorHandler())
                 .build();
 
         return restAdapter.create(LocationService.class);

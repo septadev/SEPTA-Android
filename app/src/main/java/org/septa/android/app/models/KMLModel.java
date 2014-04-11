@@ -37,9 +37,9 @@ public class KMLModel {
 
     public static class Document {
         private String name;
-        private Style style;
+        private List<Style> styleList;
         private Folder folder;
-        private List<Placemark> placemarks;
+        private List<Placemark> placemarkList;
 
         public String getName() {
             return name;
@@ -49,16 +49,16 @@ public class KMLModel {
             this.name = name;
         }
 
-        public Style getStyle() {
-            return style;
+        public List<Style> getStyleList() {
+            return styleList;
         }
 
-        public void setStyle(Style style) {
-            this.style = style;
+        public void setStyleList(List<Style> styleList) {
+            this.styleList = styleList;
         }
 
-        public void createStyle() {
-            this.style = new Style();
+        public void createStyleList() {
+            this.styleList = new ArrayList<Style>();
         }
 
         public Folder getFolder() {
@@ -69,18 +69,29 @@ public class KMLModel {
             this.folder = folder;
         }
 
-        public List<Placemark> getPlacemarks() {
-            return placemarks;
+        public List<Placemark> getPlacemarkList() {
+            return placemarkList;
         }
 
         public void setPlacemarks(List<Placemark>placemarks) {
-            this.placemarks = placemarks;
+            this.placemarkList = placemarks;
         }
 
         public List<Placemark> createPlacemarkList() {
-            this.placemarks = new ArrayList<Placemark>();
+            this.placemarkList = new ArrayList<Placemark>();
 
-            return placemarks;
+            return placemarkList;
+        }
+
+        public String getColorForStyleId(String styleId) {
+            List<Style> styleList = getStyleList();
+            for (Style style : styleList) {
+                if (style.getId().equals(styleId)) {
+                    return style.getLineStyle().getColor();
+                }
+            }
+
+            return null;
         }
 
         public static class Style {
@@ -279,7 +290,7 @@ public class KMLModel {
 
             public List<LatLng> getLatLngCoordinates() {
                 List<LatLng> latLngList = new ArrayList<LatLng>();
-                List<MultiGeometry.LineString> lineStrings = getMultiGeometry().getLineStrings();
+                List<MultiGeometry.LineString> lineStrings = getMultiGeometry().getLineStringList();
                 for (MultiGeometry.LineString lineString : lineStrings) {
                     List<MultiGeometry.LineString.Coordinate> coordinates = lineString.getCoordinateList();
                     for (MultiGeometry.LineString.Coordinate coordinate : coordinates) {
@@ -292,20 +303,20 @@ public class KMLModel {
         }
 
         public static class MultiGeometry {
-            private List<LineString> lineStrings;
+            private List<LineString> lineStringList;
 
-            public List<LineString> getLineStrings() {
-                return lineStrings;
+            public List<LineString> getLineStringList() {
+                return lineStringList;
             }
 
-            public void setLineString(List<LineString> lineStrings) {
-                this.lineStrings = getLineStrings();
+            public void setLineStringList(List<LineString> lineStringList) {
+                this.lineStringList = lineStringList;
             }
 
             public List<LineString> createLineStringList() {
-                this.lineStrings = new ArrayList<LineString>();
+                this.lineStringList = new ArrayList<LineString>();
 
-                return lineStrings;
+                return lineStringList;
             }
 
             public static class LineString {
@@ -338,7 +349,17 @@ public class KMLModel {
                     return coordinateList;
                 }
 
-                public void setCoordinateList(Coordinate coordinateList) {
+                public List<LatLng> getLatLngCoordinates() {
+                    List<LatLng> latLngList = new ArrayList<LatLng>();
+                        List<Coordinate> coordinates = getCoordinateList();
+                        for (Coordinate coordinate : coordinates) {
+                            latLngList.add(coordinate.getLatLong());
+                        }
+
+                    return latLngList;
+                }
+
+                public void setCoordinateList(List<Coordinate> coordinateList) {
                     this.coordinateList = coordinateList;
                 }
 
@@ -386,9 +407,6 @@ public class KMLModel {
                     public void setNotsure(int notsure) {
                         this.notsure = notsure;
                     }
-
-
-
                 }
             }
         }

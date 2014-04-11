@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ trainviewactionbaractivity.xml
+  ~ Last modified on 04-10-2014 15:42-0400 by brianhmayo
+  ~
+  ~ Copyright (c) 2014 SEPTA.  All rights reserved.
+  -->
+
+<resources>
+
+    <string name="trainviewactionbaractivity_map_zoom_level_float">10.0</string>
+
+</resources>

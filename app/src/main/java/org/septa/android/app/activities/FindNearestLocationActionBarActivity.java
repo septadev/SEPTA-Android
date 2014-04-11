@@ -137,7 +137,7 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
             mLocationClient.disconnect();
             LatLng currentLocation = new LatLng(newLocation.getLatitude(), newLocation.getLongitude());
 
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, Float.parseFloat(getString(R.string.map_zoom_level_float))));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, Float.parseFloat(getString(R.string.findnearestlocation_map_zoom_level_float))));
 
             Callback callback = new Callback() {
                 @Override
@@ -165,6 +165,7 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
                     try {
                         Log.d(TAG, "A failure in the call to location service with body |" + retrofitError.getResponse().getBody().in() + "|");
                     } catch (Exception ex) {
+                        // TODO: clean this up
                         Log.d(TAG, "blah... what is going on?");
                     }
                 }
@@ -172,9 +173,7 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
 
             Log.d(TAG, "stating location service call...");
             LocationServiceProxy locationServiceProxy = new LocationServiceProxy();
-
             setProgressBarIndeterminateVisibility(Boolean.TRUE);
-
             locationServiceProxy.getLocation(newLocation.getLongitude(), newLocation.getLatitude(), 2.5F, "bus_stops", callback);
             Log.d(TAG, "ended the call, now wait for the callback");
         }

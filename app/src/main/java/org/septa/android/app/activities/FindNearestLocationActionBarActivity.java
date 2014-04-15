@@ -7,8 +7,8 @@
 
 package org.septa.android.app.activities;
 
-import android.app.Activity;
-import android.content.IntentSender;
+import com.google.android.gms.common.GooglePlayServicesClient;
+
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
@@ -18,7 +18,6 @@ import android.view.MenuItem;
 import android.view.Window;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.location.LocationListener;
@@ -69,9 +68,6 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
         super.onCreate(savedInstanceState);
 
         String titleText = getIntent().getStringExtra(getString(R.string.actionbar_titletext_key));
-
-        // enables the activity indicator in the action bar
-        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 
         setContentView(R.layout.findnearestlocation);
 
@@ -159,7 +155,7 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
 
                 @Override
                 public void failure(RetrofitError retrofitError) {
-                    setProgressBarIndeterminateVisibility(Boolean.FALSE);
+                    setSupportProgressBarIndeterminateVisibility(Boolean.FALSE);
                     ActivityCompat.invalidateOptionsMenu(FindNearestLocationActionBarActivity.this);
 
                     try {
@@ -173,7 +169,7 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
 
             Log.d(TAG, "stating location service call...");
             LocationServiceProxy locationServiceProxy = new LocationServiceProxy();
-            setProgressBarIndeterminateVisibility(Boolean.TRUE);
+            setSupportProgressBarIndeterminateVisibility(Boolean.TRUE);
             locationServiceProxy.getLocation(newLocation.getLongitude(), newLocation.getLatitude(), 2.5F, "bus_stops", callback);
             Log.d(TAG, "ended the call, now wait for the callback");
         }

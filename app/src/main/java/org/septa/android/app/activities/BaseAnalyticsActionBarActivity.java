@@ -7,9 +7,19 @@
 
 package org.septa.android.app.activities;
 
+import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.view.Window;
 
 public class BaseAnalyticsActionBarActivity extends ActionBarActivity {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // enables the activity indicator in the action bar
+        supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+    }
+
     @Override
     protected void onStart() {
         super.onStart();

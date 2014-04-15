@@ -1,17 +1,27 @@
 /*
- * TrainViewActionBarActivity.java
- * Last modified on 04-03-2014 16:41-0400 by brianhmayo
+ * TransitViewActionBarActivity.java
+ * Last modified on 04-11-2014 17:13-0400 by brianhmayo
  *
  * Copyright (c) 2014 SEPTA.  All rights reserved.
  */
 
 package org.septa.android.app.activities;
 
+import android.app.FragmentTransaction;
 import android.graphics.Color;
 import android.location.Location;
+import android.nfc.Tag;
 import android.os.Bundle;
+import android.support.v4.app.ListFragment;
 import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
 import android.view.Window;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
@@ -42,7 +52,7 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class TrainViewActionBarActivity extends BaseAnalyticsActionBarActivity implements
+public class TransitViewActionBarActivity extends BaseAnalyticsActionBarActivity implements
         LocationListener,
         GooglePlayServicesClient.ConnectionCallbacks,
         GooglePlayServicesClient.OnConnectionFailedListener{
@@ -68,6 +78,13 @@ public class TrainViewActionBarActivity extends BaseAnalyticsActionBarActivity i
             MILLISECONDS_PER_SECOND * FASTEST_INTERVAL_IN_SECONDS;
 
     @Override
+    public boolean onTouchEvent(MotionEvent e) {
+        Log.d(TAG, "touch event heard");
+
+        return true;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -82,10 +99,10 @@ public class TrainViewActionBarActivity extends BaseAnalyticsActionBarActivity i
         getSupportActionBar().setTitle(actionBarTitleText);
         getSupportActionBar().setIcon(id);
 
-        setContentView(R.layout.trainview);
+        setContentView(R.layout.transitview);
 
         mMap = ((SupportMapFragment)getSupportFragmentManager().
-                findFragmentById(R.id.trainview_map_fragment)).
+                findFragmentById(R.id.transitview_map_fragment)).
                 getMap();
 
         mMap.setMyLocationEnabled(true);
@@ -105,18 +122,38 @@ public class TrainViewActionBarActivity extends BaseAnalyticsActionBarActivity i
                 List<LatLng> latLngCoordinateList = lineString.getLatLngCoordinates();
 
                 PolylineOptions lineOptions = new PolylineOptions().addAll(latLngCoordinateList)
-                                                                   .color(Color.parseColor(color))
-                                                                   .width(3.0f)
-                                                                   .visible(true);
+                        .color(Color.parseColor(color))
+                        .width(3.0f)
+                        .visible(true);
                 mMap.addPolyline(lineOptions);
             }
         }
 
         Log.d(TAG, "drew the lines");
 
-        Log.d(TAG, "about to fetch the trainview data");
+        Log.d(TAG, "about to fetch the transitview data");
         this.fetchTrainViewData();
-        Log.d(TAG, "did the fetch the trainview data");
+        Log.d(TAG, "did the fetch the transitview data");
+
+        RelativeLayout ll1 = (RelativeLayout) findViewById(R.id.map_fragment_view);
+        Animation anim = AnimationUtils.loadAnimation(this, R.anim.slide_right_to_left);
+        anim.setInterpolator((new
+                AccelerateDecelerateInterpolator()));
+        anim.setFillAfter(true);
+        ll1.setAnimation(anim);
+
+        View mapOuterView = (View)findViewById(R.id.transitview_map_outerview);
+        mapOuterView.setEnabled(false);
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.transitview_map_fragment);
+        mapFragment.getView().setEnabled(false);
+        mapFragment.getView().setClickable(false);
+        mapFragment.getMap().getUiSettings().setAllGesturesEnabled(false);
+//        ll1.setVisibility(View.INVISIBLE);
+
+        ListFragment lf = (ListFragment) getSupportFragmentManager().findFragmentById(R.id.transitview_list_fragment);
+        lf.getListView().setEnabled(true);
+        lf.getListView().setClickable(true);
     }
 
 
@@ -175,7 +212,7 @@ public class TrainViewActionBarActivity extends BaseAnalyticsActionBarActivity i
          */
         if (connectionResult.hasResolution()) {
 //            try {
-                // Start an Activity that tries to resolve the error
+            // Start an Activity that tries to resolve the error
 //                connectionResult.startResolutionForResult(
 //                        this,
 //                        9000);

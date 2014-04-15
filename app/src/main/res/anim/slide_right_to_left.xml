@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~ slide_right_to_left.xml
+  ~ Last modified on 04-15-2014 00:26-0400 by brianhmayo
+  ~
+  ~ Copyright (c) 2014 SEPTA.  All rights reserved.
+  -->
+
+<set xmlns:android="http://schemas.android.com/apk/res/android">
+    <translate android:fromXDelta="0%p"
+               android:toXDelta="-75%p"
+               android:duration="1000"
+               android:zAdjustment="top"/>
+</set>

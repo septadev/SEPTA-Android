@@ -17,6 +17,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/trainview_map_fragment"
-        android:name="org.septa.android.app.fragments.TrainViewMapFragment"/>
+        android:name="com.google.android.gms.maps.SupportMapFragment"/>
 
 </FrameLayout>

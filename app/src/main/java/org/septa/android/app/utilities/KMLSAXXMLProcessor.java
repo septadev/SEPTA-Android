@@ -75,7 +75,13 @@ public class KMLSAXXMLProcessor {
 
                 tag_id = xPath.compile("LineStyle/color");
                 String lineStyleColor = tag_id.evaluate(n);
-                style.createLineStyle().setColor(lineStyleColor);
+
+                String repositionedColorString = lineStyleColor.substring(0,2) +
+                                                 lineStyleColor.substring(6,8) +
+                                                 lineStyleColor.substring(4,6) +
+                                                 lineStyleColor.substring(2,4);
+
+                style.createLineStyle().setColor(repositionedColorString);
 
                 document.getStyleList().add(style);
             }

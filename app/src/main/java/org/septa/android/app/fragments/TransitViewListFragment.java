@@ -14,7 +14,9 @@ import android.provider.Settings;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -74,6 +76,18 @@ public class TransitViewListFragment extends ListFragment {
         // now that we have returned from the global settings activity,
         //  notify a data set change in case the user changed the setting
         _adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        Log.d(TAG, "on view created in the list fragment");
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.d(TAG, "on create view in the list fragment");
+        return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     @Override

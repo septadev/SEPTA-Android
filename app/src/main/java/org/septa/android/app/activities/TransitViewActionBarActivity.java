@@ -12,6 +12,7 @@ import android.graphics.Color;
 import android.location.Location;
 import android.nfc.Tag;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -21,6 +22,7 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -128,34 +130,31 @@ public class TransitViewActionBarActivity extends BaseAnalyticsActionBarActivity
                 mMap.addPolyline(lineOptions);
             }
         }
-
-        Log.d(TAG, "drew the lines");
-
-        Log.d(TAG, "about to fetch the transitview data");
         this.fetchTrainViewData();
-        Log.d(TAG, "did the fetch the transitview data");
 
         RelativeLayout ll1 = (RelativeLayout) findViewById(R.id.map_fragment_view);
-        Animation anim = AnimationUtils.loadAnimation(this, R.anim.slide_right_to_left);
-        anim.setInterpolator((new
-                AccelerateDecelerateInterpolator()));
+        Log.d(TAG, "about to run the animation");
+        Animation anim = AnimationUtils.loadAnimation(getApplication(), R.anim.slide_right_to_left);
+
+        anim.setAnimationListener(new Animation.AnimationListener(){
+            @Override
+            public void onAnimationStart(Animation arg0) {
+            }
+            @Override
+            public void onAnimationRepeat(Animation arg0) {
+            }
+            @Override
+            public void onAnimationEnd(Animation arg0) {
+                Log.d(TAG, "brining ll2 to front");
+                LinearLayout ll2 = (LinearLayout) findViewById(R.id.back_frame);
+                ll2.bringToFront();
+            }
+        });
+
+        anim.setInterpolator((new AccelerateDecelerateInterpolator()));
         anim.setFillAfter(true);
         ll1.setAnimation(anim);
-
-        View mapOuterView = (View)findViewById(R.id.transitview_map_outerview);
-        mapOuterView.setEnabled(false);
-
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.transitview_map_fragment);
-        mapFragment.getView().setEnabled(false);
-        mapFragment.getView().setClickable(false);
-        mapFragment.getMap().getUiSettings().setAllGesturesEnabled(false);
-//        ll1.setVisibility(View.INVISIBLE);
-
-        ListFragment lf = (ListFragment) getSupportFragmentManager().findFragmentById(R.id.transitview_list_fragment);
-        lf.getListView().setEnabled(true);
-        lf.getListView().setClickable(true);
     }
-
 
     @Override
     public void onLocationChanged(Location newLocation) {

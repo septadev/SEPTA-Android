@@ -14,16 +14,33 @@
              android:layout_height="match_parent"
              android:background="@drawable/main_background">
 
-    <RelativeLayout
-        android:id="@+id/back_frame"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <fragment
-            android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/back_frame"
+        android:orientation="horizontal">
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_weight="25"
             android:layout_height="match_parent"
-            android:id="@+id/transitview_list_fragment"
-            android:name="org.septa.android.app.fragments.TransitViewListFragment"/>
-    </RelativeLayout>
+            android:id="@+id/leftPaddingFrame">
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/back_frame2"
+            android:layout_width="0dp"
+            android:layout_weight="75"
+            android:layout_height="match_parent"
+            android:layout_toRightOf="@id/leftPaddingFrame">
+            <fragment
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/transitview_list_fragment"
+                android:name="org.septa.android.app.fragments.TransitViewListFragment"/>
+        </RelativeLayout>
+
+    </LinearLayout>
 
     <RelativeLayout
         android:id="@+id/map_fragment_view"

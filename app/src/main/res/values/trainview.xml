@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ trainview.xml
+  ~ Last modified on 04-17-2014 14:35-0400 by brianhmayo
+  ~
+  ~ Copyright (c) 2014 SEPTA.  All rights reserved.
+  -->
+
+<resources>
+
+    <string name="ic_menu_secondmenu_title">Second Menu</string>
+</resources>

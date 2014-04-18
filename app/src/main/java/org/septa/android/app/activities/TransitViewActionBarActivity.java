@@ -12,9 +12,12 @@ import android.graphics.Color;
 import android.location.Location;
 import android.nfc.Tag;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -58,7 +61,7 @@ public class TransitViewActionBarActivity extends BaseAnalyticsActionBarActivity
         LocationListener,
         GooglePlayServicesClient.ConnectionCallbacks,
         GooglePlayServicesClient.OnConnectionFailedListener{
-    public static final String TAG = TrainViewActionBarActivity.class.getName();
+    public static final String TAG = TransitViewActionBarActivity.class.getName();
 
     KMLModel kmlModel;
 
@@ -78,6 +81,8 @@ public class TransitViewActionBarActivity extends BaseAnalyticsActionBarActivity
     private static final int FASTEST_INTERVAL_IN_SECONDS = 10;
     private static final long FASTEST_INTERVAL =
             MILLISECONDS_PER_SECOND * FASTEST_INTERVAL_IN_SECONDS;
+
+    private boolean listviewRevealed = false;
 
     @Override
     public boolean onTouchEvent(MotionEvent e) {
@@ -131,10 +136,27 @@ public class TransitViewActionBarActivity extends BaseAnalyticsActionBarActivity
             }
         }
         this.fetchTrainViewData();
+    }
 
-        RelativeLayout ll1 = (RelativeLayout) findViewById(R.id.map_fragment_view);
-        Log.d(TAG, "about to run the animation");
-        Animation anim = AnimationUtils.loadAnimation(getApplication(), R.anim.slide_right_to_left);
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        Log.d(TAG, "creating the menu in find nearest location actionbar activity");
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.trainsitview_action_bar, menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        Log.d(TAG, "onPrepareOptionsMenu");
+
+        return true;
+    }
+
+    private void revealListView() {
+        final RelativeLayout ll1 = (RelativeLayout) findViewById(R.id.map_fragment_view);
+        Animation anim = AnimationUtils.loadAnimation(this, R.anim.slide_right_to_left);
 
         anim.setAnimationListener(new Animation.AnimationListener(){
             @Override
@@ -153,7 +175,57 @@ public class TransitViewActionBarActivity extends BaseAnalyticsActionBarActivity
 
         anim.setInterpolator((new AccelerateDecelerateInterpolator()));
         anim.setFillAfter(true);
-        ll1.setAnimation(anim);
+        ll1.startAnimation(anim);
+    }
+
+    private void hideListView() {
+        Log.d(TAG, "slideMapViewOver");
+        final RelativeLayout ll1 = (RelativeLayout) findViewById(R.id.map_fragment_view);
+        Animation anim = AnimationUtils.loadAnimation(this, R.anim.slide_left_to_right);
+        ll1.bringToFront();
+
+        anim.setAnimationListener(new Animation.AnimationListener(){
+            @Override
+            public void onAnimationStart(Animation arg0) {
+            }
+            @Override
+            public void onAnimationRepeat(Animation arg0) {
+            }
+            @Override
+            public void onAnimationEnd(Animation arg0) {
+//                RelativeLayout ll2 = (RelativeLayout) findViewById(R.id.back_frame);
+//                ll1.bringToFront();
+            }
+        });
+
+        anim.setInterpolator((new AccelerateDecelerateInterpolator()));
+        anim.setFillAfter(true);
+        ll1.startAnimation(anim);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.actionmenu_transitview_reveallistview:
+                Log.d(TAG, "heard the reveal list view in transitview");
+
+                if (listviewRevealed) {
+                    Log.d(TAG, "the list view is revealed, pull the map view back on top");
+                    listviewRevealed = false;
+
+                    hideListView();
+                } else {
+                    Log.d(TAG, "the list view is hidden, reveal it.");
+                    listviewRevealed = true;
+
+                    revealListView();
+                }
+
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override

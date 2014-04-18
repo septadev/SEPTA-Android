@@ -112,11 +112,7 @@ public class TrainViewActionBarActivity extends BaseAnalyticsActionBarActivity i
             }
         }
 
-        Log.d(TAG, "drew the lines");
-
-        Log.d(TAG, "about to fetch the trainview data");
         this.fetchTrainViewData();
-        Log.d(TAG, "did the fetch the trainview data");
     }
 
 
@@ -246,7 +242,6 @@ public class TrainViewActionBarActivity extends BaseAnalyticsActionBarActivity i
 
                     // check to make sure that mMap is not null
                     if (mMap != null) {
-                        Log.d(TAG, "adding the marker to the map");
                         mMap.addMarker(new MarkerOptions()
                                 .position(trainView.getLatLng())
                                 .title(title)

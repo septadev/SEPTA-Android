@@ -7,7 +7,7 @@
 
 package org.septa.android.app.services.apiproxies;
 
-import org.septa.android.app.models.TrainViewModel;
+import org.septa.android.app.models.servicemodels.TrainViewModel;
 import org.septa.android.app.services.adaptors.TrainViewAdaptor;
 import org.septa.android.app.services.apiinterfaces.TrainViewService;
 

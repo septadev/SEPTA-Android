@@ -43,7 +43,7 @@
     </LinearLayout>
 
     <RelativeLayout
-        android:id="@+id/map_fragment_view"
+        android:id="@+id/transitview_map_fragment_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <fragment

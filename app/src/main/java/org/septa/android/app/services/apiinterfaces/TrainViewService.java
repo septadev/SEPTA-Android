@@ -7,7 +7,7 @@
 
 package org.septa.android.app.services.apiinterfaces;
 
-import org.septa.android.app.models.TrainViewModel;
+import org.septa.android.app.models.servicemodels.TrainViewModel;
 
 import java.util.ArrayList;
 

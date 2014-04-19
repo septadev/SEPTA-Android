@@ -31,9 +31,6 @@ public class FareInformationFragment extends ListFragment {
 
     }
 
-    /**
-     * Called to instantiate the view. Creates and returns the WebView.
-     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

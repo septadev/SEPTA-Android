@@ -7,24 +7,16 @@
 
 package org.septa.android.app.activities;
 
-import android.app.FragmentTransaction;
 import android.graphics.Color;
 import android.location.Location;
-import android.nfc.Tag;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
-import android.view.View;
-import android.view.Window;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
@@ -46,7 +38,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import org.septa.android.app.R;
 import org.septa.android.app.models.KMLModel;
 import org.septa.android.app.models.LocationModel;
-import org.septa.android.app.models.TrainViewModel;
+import org.septa.android.app.models.servicemodels.TrainViewModel;
 import org.septa.android.app.services.apiproxies.TrainViewServiceProxy;
 import org.septa.android.app.utilities.KMLSAXXMLProcessor;
 
@@ -155,7 +147,7 @@ public class TransitViewActionBarActivity extends BaseAnalyticsActionBarActivity
     }
 
     private void revealListView() {
-        final RelativeLayout ll1 = (RelativeLayout) findViewById(R.id.map_fragment_view);
+        final RelativeLayout ll1 = (RelativeLayout) findViewById(R.id.transitview_map_fragment_view);
         Animation anim = AnimationUtils.loadAnimation(this, R.anim.slide_right_to_left);
 
         anim.setAnimationListener(new Animation.AnimationListener(){
@@ -180,7 +172,7 @@ public class TransitViewActionBarActivity extends BaseAnalyticsActionBarActivity
 
     private void hideListView() {
         Log.d(TAG, "slideMapViewOver");
-        final RelativeLayout ll1 = (RelativeLayout) findViewById(R.id.map_fragment_view);
+        final RelativeLayout ll1 = (RelativeLayout) findViewById(R.id.transitview_map_fragment_view);
         Animation anim = AnimationUtils.loadAnimation(this, R.anim.slide_left_to_right);
         ll1.bringToFront();
 

@@ -5,20 +5,21 @@
  * Copyright (c) 2014 SEPTA.  All rights reserved.
  */
 
-package org.septa.android.app.models;
+package org.septa.android.app.models.servicemodels;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.annotations.SerializedName;
+import org.septa.android.app.utilities.Core;
 
 public class TrainViewModel {
 
     @SerializedName("lat") private double latitude;
     @SerializedName("lon") private double longitude;
 
-    @SerializedName("trainno") private int trainNumber;
+    @SerializedName("trainno") private String trainNumber;
     @SerializedName("dest") private String destination;
     @SerializedName("nextstop") private String nextStop;
-    private int late;
+    @SerializedName("late") private int late;
     @SerializedName("SOURCE") private String source;
 
     public double getLatitude() {
@@ -37,11 +38,11 @@ public class TrainViewModel {
         this.longitude = longitude;
     }
 
-    public int getTrainNumber() {
+    public String getTrainNumber() {
         return trainNumber;
     }
 
-    public void setTrainNumber(int trainNumber) {
+    public void setTrainNumber(String trainNumber) {
         this.trainNumber = trainNumber;
     }
 
@@ -86,7 +87,17 @@ public class TrainViewModel {
     }
 
     public boolean isSouthBound() {
-        return (trainNumber % 2 == 0);
+        int localTrainNumber = 0;
+
+        char lastChar = trainNumber.charAt(trainNumber.length() - 1);
+        if (Core.isInteger("" + lastChar)) {
+            localTrainNumber = Integer.parseInt(trainNumber);
+        } else {
+            String trainNumberString = trainNumber.substring(0,trainNumber.length() - 1);
+            localTrainNumber = Integer.parseInt(trainNumberString);
+        }
+
+        return (localTrainNumber % 2 == 0);
     }
 
 }

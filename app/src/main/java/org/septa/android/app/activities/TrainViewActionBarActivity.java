@@ -11,7 +11,13 @@ import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Window;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
@@ -29,9 +35,10 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.septa.android.app.R;
+import org.septa.android.app.fragments.TrainViewListFragment;
 import org.septa.android.app.models.KMLModel;
 import org.septa.android.app.models.LocationModel;
-import org.septa.android.app.models.TrainViewModel;
+import org.septa.android.app.models.servicemodels.TrainViewModel;
 import org.septa.android.app.services.apiproxies.TrainViewServiceProxy;
 import org.septa.android.app.utilities.KMLSAXXMLProcessor;
 
@@ -66,6 +73,8 @@ public class TrainViewActionBarActivity extends BaseAnalyticsActionBarActivity i
     private static final int FASTEST_INTERVAL_IN_SECONDS = 10;
     private static final long FASTEST_INTERVAL =
             MILLISECONDS_PER_SECOND * FASTEST_INTERVAL_IN_SECONDS;
+
+    private boolean listviewRevealed = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,6 +124,90 @@ public class TrainViewActionBarActivity extends BaseAnalyticsActionBarActivity i
         this.fetchTrainViewData();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        Log.d(TAG, "creating the menu in find nearest location actionbar activity");
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.trainsitview_action_bar, menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        Log.d(TAG, "onPrepareOptionsMenu");
+
+        return true;
+    }
+
+    private void revealListView() {
+        final RelativeLayout ll1 = (RelativeLayout) findViewById(R.id.trainview_map_fragment_view);
+        Animation anim = AnimationUtils.loadAnimation(this, R.anim.slide_right_to_left);
+
+        anim.setAnimationListener(new Animation.AnimationListener(){
+            @Override
+            public void onAnimationStart(Animation arg0) {
+            }
+            @Override
+            public void onAnimationRepeat(Animation arg0) {
+            }
+            @Override
+            public void onAnimationEnd(Animation arg0) {
+                LinearLayout ll2 = (LinearLayout) findViewById(R.id.back_frame);
+                ll2.bringToFront();
+            }
+        });
+
+        anim.setInterpolator((new AccelerateDecelerateInterpolator()));
+        anim.setFillAfter(true);
+        ll1.startAnimation(anim);
+    }
+
+    private void hideListView() {
+        final RelativeLayout ll1 = (RelativeLayout) findViewById(R.id.trainview_map_fragment_view);
+        Animation anim = AnimationUtils.loadAnimation(this, R.anim.slide_left_to_right);
+        ll1.bringToFront();
+
+        anim.setAnimationListener(new Animation.AnimationListener(){
+            @Override
+            public void onAnimationStart(Animation arg0) {
+            }
+            @Override
+            public void onAnimationRepeat(Animation arg0) {
+            }
+            @Override
+            public void onAnimationEnd(Animation arg0) {
+//                RelativeLayout ll2 = (RelativeLayout) findViewById(R.id.back_frame);
+//                ll1.bringToFront();
+            }
+        });
+
+        anim.setInterpolator((new AccelerateDecelerateInterpolator()));
+        anim.setFillAfter(true);
+        ll1.startAnimation(anim);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.actionmenu_transitview_reveallistview:
+
+                if (listviewRevealed) {
+                    listviewRevealed = false;
+
+                    hideListView();
+                } else {
+                    listviewRevealed = true;
+
+                    revealListView();
+                }
+
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
     @Override
     public void onLocationChanged(Location newLocation) {
@@ -223,6 +316,9 @@ public class TrainViewActionBarActivity extends BaseAnalyticsActionBarActivity i
             public void success(Object o, Response response) {
                 Log.d(TAG, "successfully ended trainview service call with " + ((ArrayList<LocationModel>) o).size());
                 setProgressBarIndeterminateVisibility(Boolean.FALSE);
+
+                TrainViewListFragment listFragment = (TrainViewListFragment) getSupportFragmentManager().findFragmentById(R.id.trainview_list_fragment);
+                listFragment.setTrainViewModels((ArrayList<TrainViewModel>)o);
 
                 for (TrainViewModel trainView: (ArrayList<TrainViewModel>)o) {
                     BitmapDescriptor trainIcon;

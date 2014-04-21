@@ -35,14 +35,17 @@
     <!-- texts, iconSuffixes, urls -->
     <string-array name="about_attributions_listview_items_texts">
         <item>OkHttp</item>
+        <item>Android-SQLite-Asset-Helper</item>
     </string-array>
 
     <string-array name="about_attributions_listview_items_iconSuffixes">
+        <item>notepad</item>
         <item>notepad</item>
     </string-array>
 
     <string-array name="about_attributions_listview_items_urls">
         <item>https://github.com/square/okhttp/blob/master/LICENSE.txt</item>
+        <item>https://github.com/jgilfelt/android-sqlite-asset-helper/blob/master/LICENSE</item>
     </string-array>
 
 </resources>

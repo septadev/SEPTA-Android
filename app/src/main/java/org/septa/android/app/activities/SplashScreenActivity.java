@@ -12,12 +12,20 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.widget.GridLayout;
+import android.util.Log;
 import android.view.Gravity;
 import android.widget.ImageView;
 
 import org.septa.android.app.R;
+import org.septa.android.app.tasks.LoadDatabaseTask;
+
+import java.io.File;
 
 public class SplashScreenActivity extends BaseAnalyticsActivity {
+    public static final String TAG = SplashScreenActivity.class.getName();
+
+    private static final String DATABASE_NAME = "SEPTA.sqlite";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,5 +71,11 @@ public class SplashScreenActivity extends BaseAnalyticsActivity {
                 finish();
             }
         }, getResources().getInteger(R.integer.splashscreen_delaytime_seconds) * 1000);
+
+        File databaseFileName = new File(this.getApplicationInfo().dataDir+"/"+DATABASE_NAME);
+        if (!databaseFileName.exists()) {
+
+            new LoadDatabaseTask(this).execute(this, null, null);
+        }
     }
 }

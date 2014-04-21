@@ -3,6 +3,18 @@ SEPTA-Android
 
 ## Project Setup
 
+### SQLite Database Preparation
+
+1. Rename the id field of your table to “_id”. It can be easily done by clicking the Modify Table button, and then choosing the necessary table and field names.
+
+2. Add the android_metadata table. To do that, open the Execute SQL tab and paste this simple code into the SQL string field:
+
+    CREATE TABLE android_metadata (locale TEXT);
+
+    INSERT INTO android_metadata VALUES ('en_US');
+    
+3. Compress the SQLite database file and put it into the "assets" directory for the app.
+
 ### App Signing Set-up
 1. In your user local home directory, create a file named <code>gradle.properties</code> in the <code>.gradle</code> directory.
 This file is read by Android Studio upon startup

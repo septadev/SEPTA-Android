@@ -206,27 +206,22 @@ public class MainTabbarActivity extends BaseAnalyticsActionBarActivity implement
 
         @Override
         public Fragment getItem(int position) {
-            Log.d(TAG, "in getItem with position" + position);
             Fragment fragment = null;
 
             switch (position) {
                 case 0:
-                    Log.d(TAG, "case 0, making and returning the realtime menu fragment");
                        fragment = new RealtimeMenuFragment();
 
                     break;
                 case 1:
-                    Log.d(TAG, "case 1, making and returning a placeholder fragment");
                     fragment = PlaceholderFragment.newInstance(position + 1);
 
                     break;
                 case 2:
-                    Log.d(TAG, "case 3, making and returning the map web view fragment");
                     fragment = new TransitMapImageViewFragment();
 
                     break;
                 case 3:
-                    Log.d(TAG, "case 4, making and returning the connect list fragment");
                     fragment = new ConnectListFragment();
 
                     break;

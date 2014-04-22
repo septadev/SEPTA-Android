@@ -21,13 +21,18 @@ public class TransitViewActionBarActivity extends BaseAnalyticsActionBarActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        String titleText = getIntent().getStringExtra(getString(R.string.actionbar_titletext_key));
+        String actionBarTitleText = getIntent().getStringExtra(getString(R.string.actionbar_titletext_key));
+        String iconImageNameSuffix = getIntent().getStringExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key));
 
-        setContentView(R.layout.transitview);
+        String resourceName = getString(R.string.actionbar_iconimage_imagename_base).concat(iconImageNameSuffix);
+
+        int id = getResources().getIdentifier(resourceName, "drawable", getPackageName());
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-//        getSupportActionBar().setIcon(R.drawable.ic_actionbar_tips);
-        getSupportActionBar().setTitle(titleText);
+        getSupportActionBar().setTitle(actionBarTitleText);
+        getSupportActionBar().setIcon(id);
+
+        setContentView(R.layout.transitview);
 
         if (findViewById(R.id.transitview_fragment_container) != null) {
             // However, if we're being restored from a previous state,

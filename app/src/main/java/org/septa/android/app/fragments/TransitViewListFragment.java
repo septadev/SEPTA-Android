@@ -11,18 +11,19 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import org.septa.android.app.R;
+import org.septa.android.app.activities.TransitViewMapAndRouteListActionBarActivity;
 import org.septa.android.app.adapters.TransitView_ListViewItem_ArrayAdapter;
 import org.septa.android.app.databases.SEPTADatabase;
 import org.septa.android.app.models.BusRouteModel;
 import org.septa.android.app.models.MinMaxHoursModel;
-import org.septa.android.app.models.servicemodels.BusRoutesModel;
+import org.septa.android.app.models.BusRoutesModel;
 
 import java.util.Collections;
 import java.util.List;
@@ -31,6 +32,7 @@ public class TransitViewListFragment extends ListFragment {
     private static final String TAG = SettingsListFragment.class.getName();
 
     ArrayAdapter<BusRouteModel> _adapter;
+    List<BusRouteModel> busRouteModelList;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -44,9 +46,9 @@ public class TransitViewListFragment extends ListFragment {
         // TODO: fix this, this is not the right way to perform a database query.  Make it async.
         BusRoutesModel busRoutesModel = loadTransitViewData();
 
-        List<BusRouteModel>busRouteModels = busRoutesModel.getBusRouteModels();
-        Collections.sort(busRouteModels);
-        _adapter = new TransitView_ListViewItem_ArrayAdapter(getActivity(), busRouteModels);
+        busRouteModelList = busRoutesModel.getBusRouteModels();
+        Collections.sort(busRouteModelList);
+        _adapter = new TransitView_ListViewItem_ArrayAdapter(getActivity(), busRouteModelList);
 
         setListAdapter(_adapter);
     }
@@ -60,14 +62,11 @@ public class TransitViewListFragment extends ListFragment {
         Cursor cursor = database.rawQuery("SELECT s.route_id, r.route_short_name, r.route_type, s.service_id, MIN(min) as min, MAX(max) as max FROM serviceHours s JOIN routes_bus r ON r.route_short_name = s.route_short_name GROUP BY s.route_id, service_id ORDER BY s.route_id", null);
         if (cursor != null) {
             busRoutes = new BusRoutesModel(cursor.getCount());
-            Log.d(TAG, "the cursor is not null");
             if (cursor.moveToFirst()) {
-                Log.d(TAG, "moved the first");
                 do {
                     BusRouteModel busRoute = busRoutes.getBusRouteByRouteId(cursor.getString(0));
 
                     if (busRoute == null) {
-                        Log.d(TAG, "first time seeing this route id, make a new bus route");
                         busRoute = new BusRouteModel();
 
                         busRoute.setRouteShortName(cursor.getString(1));
@@ -86,30 +85,25 @@ public class TransitViewListFragment extends ListFragment {
             Log.d(TAG, "cursor is null");
         }
 
-        Log.d(TAG, "the count of bus routes is " + busRoutes.getBusRoutesCount());
-
         return busRoutes;
     }
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-        FragmentTransaction fragmentTransaction;
+        final String[] realtime_menu_icons = getResources().getStringArray(R.array.realtime_menu_icons_inorder);
 
-        switch(position) {
-            case 0:
-                Log.d(TAG, "transition 1");
+        Log.d(TAG, "onListItemClick in transitviewlistfragment");
+        BusRouteModel busRouteModel = busRouteModelList.get(position);
 
-                break;
+        Log.d(TAG, "clicked on the route with short name "+busRouteModel.getRouteShortName());
 
-            case 1:
-                Log.d(TAG, "transition 2");
+        Intent intent = new Intent(getActivity(), TransitViewMapAndRouteListActionBarActivity.class);
+        intent.putExtra(getString(R.string.actionbar_titletext_key), getActivity().getTitle());
 
-                break;
+        // 2 is the position for the transitview
+        intent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), realtime_menu_icons[2]);
 
-            default:
-                Log.d(TAG, "transition default");
-
-                break;
-        }
+        intent.putExtra("route_short_name", busRouteModel.getRouteShortName());
+        startActivity(intent);
     }
 }

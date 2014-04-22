@@ -7,8 +7,7 @@
 
 package org.septa.android.app.activities;
 
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
+import android.content.Intent;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
@@ -38,14 +37,14 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.septa.android.app.R;
-import org.septa.android.app.databases.SEPTADatabase;
-import org.septa.android.app.models.BusRouteModel;
 import org.septa.android.app.models.KMLModel;
 import org.septa.android.app.models.LocationModel;
-import org.septa.android.app.models.MinMaxHoursModel;
-import org.septa.android.app.models.servicemodels.BusRoutesModel;
+import org.septa.android.app.models.BusRoutesModel;
 import org.septa.android.app.models.servicemodels.TrainViewModel;
+import org.septa.android.app.models.servicemodels.TransitViewModel;
+import org.septa.android.app.models.servicemodels.TransitViewVehicleModel;
 import org.septa.android.app.services.apiproxies.TrainViewServiceProxy;
+import org.septa.android.app.services.apiproxies.TransitViewServiceProxy;
 import org.septa.android.app.utilities.KMLSAXXMLProcessor;
 
 import java.util.ArrayList;
@@ -83,6 +82,7 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
     private boolean listviewRevealed = false;
 
     private BusRoutesModel busRoutes;
+    private String routeShortName;
 
     @Override
     public boolean onTouchEvent(MotionEvent e) {
@@ -97,8 +97,13 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
 
         Log.d(TAG, "onCreate for transit view heard");
 
+        Intent intent = getIntent();
+        String routeShortName = intent.getStringExtra("route_short_name");
+        Log.d(TAG, "launched from an intent with route_short_name of "+routeShortName);
+
         String actionBarTitleText = getIntent().getStringExtra(getString(R.string.actionbar_titletext_key));
         String iconImageNameSuffix = getIntent().getStringExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key));
+        routeShortName = getIntent().getStringExtra("route_short_name");
 
         String resourceName = getString(R.string.actionbar_iconimage_imagename_base).concat(iconImageNameSuffix);
 
@@ -118,7 +123,7 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
         mLocationClient = new LocationClient(this, this, this);
 
         KMLSAXXMLProcessor processor = new KMLSAXXMLProcessor(getAssets());
-        processor.readKMLFile("kml/train/regionalrail.kml");
+        processor.readKMLFile("kml/transit/"+routeShortName+".kml");
 
         kmlModel = processor.getKMLModel();
 
@@ -137,46 +142,7 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
                 mMap.addPolyline(lineOptions);
             }
         }
-        busRoutes = this.loadTransitViewData();
-    }
-
-    private BusRoutesModel loadTransitViewData() {
-        BusRoutesModel busRoutes = null;
-
-        SEPTADatabase septaDatabase = new SEPTADatabase(this);
-        SQLiteDatabase database = septaDatabase.getReadableDatabase();
-
-        Cursor cursor = database.rawQuery("SELECT s.route_id, r.route_type, s.service_id, MIN(min) as min, MAX(max) as max FROM serviceHours s JOIN routes_bus r ON r.route_short_name = s.route_short_name GROUP BY s.route_id, service_id ORDER BY s.route_id", null);
-        if (cursor != null) {
-            busRoutes = new BusRoutesModel(cursor.getCount());
-            Log.d(TAG, "the cursor is not null");
-            if (cursor.moveToFirst()) {
-                Log.d(TAG, "moved the first");
-                do {
-                    BusRouteModel busRoute = busRoutes.getBusRouteByRouteId(cursor.getString(0));
-
-                    if (busRoute == null) {
-                        Log.d(TAG, "first time seeing this route id, make a new bus route");
-                        busRoute = new BusRouteModel();
-
-                        busRoute.setRouteId(cursor.getString(0));
-                        busRoute.setRouteType(Integer.valueOf(cursor.getString(1)));
-                    }
-
-                    MinMaxHoursModel minMaxHours = new MinMaxHoursModel(Integer.valueOf(cursor.getString(3)), Integer.valueOf(cursor.getString(4)));
-
-                    busRoute.addMinMaxHoursToRoute(cursor.getString(2), minMaxHours);
-
-                    busRoutes.setBusRouteByRouteId(cursor.getString(0), busRoute);
-                } while (cursor.moveToNext());
-            }
-        } else {
-            Log.d(TAG, "cursor is null");
-        }
-
-        Log.d(TAG, "the count of bus routes is " + busRoutes.getBusRoutesCount());
-
-        return busRoutes;
+        this.fetchTransitViewDataForRoute(routeShortName);
     }
 
     @Override
@@ -370,37 +336,36 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
         }
     }
 
-    private void fetchTrainViewData() {
+    private void fetchTransitViewDataForRoute(String routeShortName) {
         Callback callback = new Callback() {
             @Override
             public void success(Object o, Response response) {
-                Log.d(TAG, "successfully ended trainview service call with " + ((ArrayList<LocationModel>) o).size());
                 setProgressBarIndeterminateVisibility(Boolean.FALSE);
 
-                for (TrainViewModel trainView: (ArrayList<TrainViewModel>)o) {
-                    BitmapDescriptor trainIcon;
-                    if (trainView.isSouthBound()) {
-                        trainIcon = BitmapDescriptorFactory.fromResource(R.drawable.ic_trainview_rrl_red);
-                    } else {
-                        trainIcon = BitmapDescriptorFactory.fromResource(R.drawable.ic_trainview_rrl_blue);
-                    }
+                List<TransitViewVehicleModel>transitViewVehicleModelList = ((TransitViewModel)o).getVehicleModelList();
+                for (TransitViewVehicleModel transitViewVehicle: transitViewVehicleModelList) {
+//                    BitmapDescriptor trainIcon;
+//                    if (trainView.isSouthBound()) {
+//                        trainIcon = BitmapDescriptorFactory.fromResource(R.drawable.ic_trainview_rrl_red);
+//                    } else {
+//                        trainIcon = BitmapDescriptorFactory.fromResource(R.drawable.ic_trainview_rrl_blue);
+//                    }
 
-                    String title = "Train #" + trainView.getTrainNumber() + " ";
-                    if (trainView.isLate()) {
-                        title += "(" + trainView.getLate()+ " min late)";
-                    } else {
-                        title += "(on time)";
-                    }
-                    String snippet = trainView.getSource() + " to " + trainView.getDestination();
+//                    String title = "Train #" + trainView.getTrainNumber() + " ";
+//                    if (trainView.isLate()) {
+//                        title += "(" + trainView.getLate()+ " min late)";
+//                    } else {
+//                        title += "(on time)";
+//                    }
+//                    String snippet = trainView.getSource() + " to " + trainView.getDestination();
 
                     // check to make sure that mMap is not null
                     if (mMap != null) {
-                        Log.d(TAG, "adding the marker to the map");
+                        Log.d(TAG, "adding the marker to the map at lat of "+transitViewVehicle.getLatitude()+" and long of "+transitViewVehicle.getLongitude());
                         mMap.addMarker(new MarkerOptions()
-                                .position(trainView.getLatLng())
-                                .title(title)
-                                .icon(trainIcon)
-                                .snippet(snippet));
+                                .position(transitViewVehicle.getLatLng())
+                                .title("title")
+                                .snippet("snippet"));
                     }
                 }
             }
@@ -418,8 +383,8 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
             }
         };
 
-        TrainViewServiceProxy trainViewServiceProxy = new TrainViewServiceProxy();
+        TransitViewServiceProxy transitViewServiceProxy = new TransitViewServiceProxy();
         setProgressBarIndeterminateVisibility(Boolean.TRUE);
-        trainViewServiceProxy.getTrainView(callback);
+        transitViewServiceProxy.getTransitViewForRoute(routeShortName, callback);
     }
 }

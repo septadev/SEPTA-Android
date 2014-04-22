@@ -5,7 +5,7 @@
  * Copyright (c) 2014 SEPTA.  All rights reserved.
  */
 
-package org.septa.android.app.models.servicemodels;
+package org.septa.android.app.models;
 
 import java.util.ArrayList;
 import java.util.HashMap;

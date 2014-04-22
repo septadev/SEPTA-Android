@@ -7,9 +7,13 @@
 
 package org.septa.android.app.models;
 
+import android.util.Log;
+
 import java.util.HashMap;
 
 public class BusRouteModel implements Comparable<BusRouteModel> {
+    private static final String TAG = BusRouteModel.class.getName();
+
     private String routeId;
     private String routeShortName;
     private Number routeType;
@@ -65,7 +69,59 @@ public class BusRouteModel implements Comparable<BusRouteModel> {
 
     @Override
     public int compareTo(BusRouteModel other){
+        int result = 0;
+        Integer thisRouteShortName = null;
+        Integer otherRouteShortName = null;
+        boolean thisIsString = false;
+        boolean otherIsString = false;
 
-        return this.routeShortName.compareTo(other.routeShortName);
+        Log.d(TAG, "comparing "+this.routeShortName+" to "+other.routeShortName);
+
+        // we assume a route short name is either a number (only numerics), a number with a trailing character, or
+        //  not a number (all characters.
+        // first check if it is a number, then remove the last character and check for a number
+        // if those two fail, it must not be or have a number
+        try {
+            thisRouteShortName = Integer.valueOf(this.routeShortName);
+        } catch (NumberFormatException nfe) {
+            thisIsString = true;
+//            try {
+//                thisRouteShortName = Integer.valueOf(this.routeShortName.substring(0, (this.routeShortName.length() - 1)));
+//            } catch (NumberFormatException nfe2) {
+//                  thisIsString = true;
+//            }
+        }
+
+        try {
+            otherRouteShortName = Integer.valueOf(other.routeShortName);
+        } catch (NumberFormatException nfe) {
+            otherIsString = true;
+//            try {
+//                otherRouteShortName = Integer.valueOf(other.routeShortName.substring(0, (other.routeShortName.length() - 1)));
+//            } catch (NumberFormatException nfe2) {
+//                otherIsString = true;
+//            }
+        }
+
+        // this is a string and other is not, thus other comes first
+        if (thisIsString && !otherIsString) {
+
+            return 1;
+        }
+
+        // this is not a string and other is, thus this comes first
+        if (!thisIsString && otherIsString) {
+
+            return -1;
+        }
+
+        // both are strings, just compare outright;
+        if (thisIsString && otherIsString) {
+
+            return this.routeShortName.compareTo(other.routeShortName);
+        }
+
+        // if we got here, we converted both to Integers and can compare outright.
+        return thisRouteShortName.compareTo(otherRouteShortName);
     }
 }

@@ -113,16 +113,4 @@ public class TransitView_ListViewItem_ArrayAdapter extends ArrayAdapter<BusRoute
 
         return rowView;
     }
-
-    @Override
-    public boolean areAllItemsEnabled() {
-
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled(int position) {
-
-        return false;
-    }
 }

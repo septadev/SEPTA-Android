@@ -50,10 +50,4 @@ public class TransitViewActionBarActivity extends BaseAnalyticsActionBarActivity
                     .add(R.id.transitview_fragment_container, transitViewListFragment, "transitview_fragment").commit();
         }
     }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d(TAG, "onActityResult with resultCode of " + resultCode);
-        super.onActivityResult(requestCode, resultCode, data);
-    }
 }

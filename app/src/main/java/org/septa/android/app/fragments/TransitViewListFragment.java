@@ -91,6 +91,7 @@ public class TransitViewListFragment extends ListFragment {
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         final String[] realtime_menu_icons = getResources().getStringArray(R.array.realtime_menu_icons_inorder);
+        final String[] realtime_menu_titles = getResources().getStringArray(R.array.realtime_menu_strings_inorder);
 
         Log.d(TAG, "onListItemClick in transitviewlistfragment");
         BusRouteModel busRouteModel = busRouteModelList.get(position);
@@ -98,10 +99,11 @@ public class TransitViewListFragment extends ListFragment {
         Log.d(TAG, "clicked on the route with short name "+busRouteModel.getRouteShortName());
 
         Intent intent = new Intent(getActivity(), TransitViewMapAndRouteListActionBarActivity.class);
-        intent.putExtra(getString(R.string.actionbar_titletext_key), getActivity().getTitle());
 
         // 2 is the position for the transitview
+        Log.d(TAG, "setting the extra intent value for titles as "+realtime_menu_titles[2]);
         intent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), realtime_menu_icons[2]);
+        intent.putExtra(getString(R.string.actionbar_titletext_key), "| "+realtime_menu_titles[2]);
 
         intent.putExtra("route_short_name", busRouteModel.getRouteShortName());
         startActivity(intent);

@@ -75,8 +75,6 @@ public class BusRouteModel implements Comparable<BusRouteModel> {
         boolean thisIsString = false;
         boolean otherIsString = false;
 
-        Log.d(TAG, "comparing "+this.routeShortName+" to "+other.routeShortName);
-
         // we assume a route short name is either a number (only numerics), a number with a trailing character, or
         //  not a number (all characters.
         // first check if it is a number, then remove the last character and check for a number
@@ -85,22 +83,12 @@ public class BusRouteModel implements Comparable<BusRouteModel> {
             thisRouteShortName = Integer.valueOf(this.routeShortName);
         } catch (NumberFormatException nfe) {
             thisIsString = true;
-//            try {
-//                thisRouteShortName = Integer.valueOf(this.routeShortName.substring(0, (this.routeShortName.length() - 1)));
-//            } catch (NumberFormatException nfe2) {
-//                  thisIsString = true;
-//            }
         }
 
         try {
             otherRouteShortName = Integer.valueOf(other.routeShortName);
         } catch (NumberFormatException nfe) {
             otherIsString = true;
-//            try {
-//                otherRouteShortName = Integer.valueOf(other.routeShortName.substring(0, (other.routeShortName.length() - 1)));
-//            } catch (NumberFormatException nfe2) {
-//                otherIsString = true;
-//            }
         }
 
         // this is a string and other is not, thus other comes first

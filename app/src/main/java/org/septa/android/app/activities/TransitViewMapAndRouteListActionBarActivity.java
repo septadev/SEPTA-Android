@@ -344,12 +344,17 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
 
                 List<TransitViewVehicleModel>transitViewVehicleModelList = ((TransitViewModel)o).getVehicleModelList();
                 for (TransitViewVehicleModel transitViewVehicle: transitViewVehicleModelList) {
-//                    BitmapDescriptor trainIcon;
-//                    if (trainView.isSouthBound()) {
-//                        trainIcon = BitmapDescriptorFactory.fromResource(R.drawable.ic_trainview_rrl_red);
-//                    } else {
-//                        trainIcon = BitmapDescriptorFactory.fromResource(R.drawable.ic_trainview_rrl_blue);
-//                    }
+                    BitmapDescriptor transitIcon;
+
+                    // check if the destination is blank, meaning the bus just went out of service
+                    if (transitViewVehicle.getDestination().trim().equals("")) {
+                        break;
+                    }
+                    if (transitViewVehicle.isSouthBound()) {
+                        transitIcon = BitmapDescriptorFactory.fromResource(R.drawable.ic_transitview_bus_red);
+                    } else {
+                        transitIcon = BitmapDescriptorFactory.fromResource(R.drawable.ic_transitview_bus_blue);
+                    }
 
 //                    String title = "Train #" + trainView.getTrainNumber() + " ";
 //                    if (trainView.isLate()) {
@@ -364,8 +369,9 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
                         Log.d(TAG, "adding the marker to the map at lat of "+transitViewVehicle.getLatitude()+" and long of "+transitViewVehicle.getLongitude());
                         mMap.addMarker(new MarkerOptions()
                                 .position(transitViewVehicle.getLatLng())
-                                .title("title")
-                                .snippet("snippet"));
+                                .title("Vehicle: "+transitViewVehicle.getVehicleId())
+                                .icon(transitIcon)
+                                .snippet("Destination: "+ transitViewVehicle.getDestination()));
                     }
                 }
             }

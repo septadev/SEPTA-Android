@@ -10,6 +10,8 @@ package org.septa.android.app.models.servicemodels;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.annotations.SerializedName;
 
+import org.septa.android.app.utilities.Core;
+
 public class TransitViewVehicleModel {
     @SerializedName("BlockID")
     private int blockId;
@@ -95,5 +97,10 @@ public class TransitViewVehicleModel {
 
     public LatLng getLatLng() {
         return new LatLng(getLatitude(), getLongitude());
+    }
+
+    public boolean isSouthBound() {
+
+        return (vehicleId % 2 == 0);
     }
 }

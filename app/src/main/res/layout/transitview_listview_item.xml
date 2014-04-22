@@ -15,12 +15,12 @@
 
     <RelativeLayout
         android:id="@+id/transitview_left_bus_route_id_with_icon"
-        android:layout_width="99dp"
-        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentLeft="true" >
         <ImageView
             android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
+            android:layout_height="wrap_content"
             android:id="@+id/transitview_left_bus_route_icon_ImageView" />
         <TextView
             android:id="@+id/transitview_left_bus_route_route_id_TextView"
@@ -39,12 +39,12 @@
 
     <RelativeLayout
         android:id="@+id/transitview_right_bus_route_status"
-        android:layout_width="fill_parent"
-        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_toRightOf="@id/transitview_left_bus_route_id_with_icon">
         <ImageView
-            android:layout_width="fill_parent"
-            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:id="@+id/transitview_right_bus_route_status_ImageView" />
         <TextView
             android:id="@+id/transitview_right_bus_route_status_TextView"

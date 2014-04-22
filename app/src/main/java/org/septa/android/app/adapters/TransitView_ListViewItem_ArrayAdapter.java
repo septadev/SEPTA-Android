@@ -8,7 +8,6 @@
 package org.septa.android.app.adapters;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +19,6 @@ import android.widget.TextView;
 import org.septa.android.app.R;
 import org.septa.android.app.models.BusRouteModel;
 
-import java.util.Collections;
 import java.util.List;
 
 public class TransitView_ListViewItem_ArrayAdapter extends ArrayAdapter<BusRouteModel> {
@@ -67,9 +65,16 @@ public class TransitView_ListViewItem_ArrayAdapter extends ArrayAdapter<BusRoute
 
                return rowView;
            } else {
-               if (busRouteModel.getRouteShortName().equals("LUCYGO")||busRouteModel.getRouteShortName().equals("LUCYGR")) {
+               if (busRouteModel.getRouteShortName().equals("LUCYGO") || busRouteModel.getRouteShortName().equals("LUCYGR")) {
                    transitViewBusRouteRouteTypeImageView.setImageResource(R.drawable.transitview_listitem_lucy);
-                   transitViewBusRouteRouteIdTextView.setTextSize(12.0f);
+
+                   if (busRouteModel.getRouteShortName().equals("LUCYGO")) {
+                       transitViewBusRouteRouteIdTextView.setText("GOLD");
+                       transitViewBusRouteRouteIdTextView.setTextSize(16.0f);
+                   } else {
+                       transitViewBusRouteRouteIdTextView.setText("GREEN");
+                       transitViewBusRouteRouteIdTextView.setTextSize(14.0f);
+                   }
 
                    return rowView;
                } else {

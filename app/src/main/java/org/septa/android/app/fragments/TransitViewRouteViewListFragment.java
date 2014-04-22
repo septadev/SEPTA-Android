@@ -1,40 +1,34 @@
 /*
- * TrainViewListFragment.java
- * Last modified on 04-18-2014 10:10-0400 by brianhmayo
+ * TransitViewListFragment.java
+ * Last modified on 04-12-2014 18:15-0400 by brianhmayo
  *
  * Copyright (c) 2014 SEPTA.  All rights reserved.
  */
 
 package org.septa.android.app.fragments;
 
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 
 import org.septa.android.app.R;
 import org.septa.android.app.adapters.TrainView_ListViewItem_ArrayAdapter;
 import org.septa.android.app.models.servicemodels.TrainViewModel;
-import org.septa.android.app.utilities.WebViewFragment;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TrainViewListFragment extends ListFragment {
+public class TransitViewRouteViewListFragment extends ListFragment {
     public static final String TAG = TrainViewListFragment.class.getName();
 
-    private List<TrainViewModel>trainViewModels;
+    private List<TrainViewModel> trainViewModels;
 
-    public TrainViewListFragment() {
+    public TransitViewRouteViewListFragment() {
         // instanciate an empty array list for the TrainViewModels
         trainViewModels = new ArrayList<TrainViewModel>(0);
     }

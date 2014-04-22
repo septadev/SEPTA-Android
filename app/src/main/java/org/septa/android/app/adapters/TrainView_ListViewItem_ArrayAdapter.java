@@ -61,12 +61,6 @@ public class TrainView_ListViewItem_ArrayAdapter extends ArrayAdapter<TrainViewM
         }
 
         if (trainInformation.isLate()) {
-            Log.d(TAG, "train is late at position "+position);
-        } else {
-            Log.d(TAG, "train is not late at position "+position);
-        }
-
-        if (trainInformation.isLate()) {
             if (trainInformation.getLate() > 1) {
                 trainTimingTextView.setText(""+trainInformation.getLate()+" mins");
             } else {

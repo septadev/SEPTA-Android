@@ -10,4 +10,5 @@
     <string name="SEPTA_database_filename">SEPTA.sqlite</string>
 
     <string name="database_loading_message">Loading database...</string>
+
 </resources>

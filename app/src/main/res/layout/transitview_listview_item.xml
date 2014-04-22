@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~ transitview_listview_item.xml
+  ~ Last modified on 04-21-2014 21:16-0400 by brianhmayo
+  ~
+  ~ Copyright (c) 2014 SEPTA.  All rights reserved.
+  -->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/white">
+
+    <RelativeLayout
+        android:id="@+id/transitview_left_bus_route_id_with_icon"
+        android:layout_width="99dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true" >
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:id="@+id/transitview_left_bus_route_icon_ImageView" />
+        <TextView
+            android:id="@+id/transitview_left_bus_route_route_id_TextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/transitview_left_bus_route_icon_ImageView"
+            android:layout_alignTop="@id/transitview_left_bus_route_icon_ImageView"
+            android:layout_alignRight="@id/transitview_left_bus_route_icon_ImageView"
+            android:layout_alignBottom="@id/transitview_left_bus_route_icon_ImageView"
+            android:gravity="right|center_vertical"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_marginRight="10dp"
+            android:textColor="@android:color/white" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/transitview_right_bus_route_status"
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:layout_toRightOf="@id/transitview_left_bus_route_id_with_icon">
+        <ImageView
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/transitview_right_bus_route_status_ImageView" />
+        <TextView
+            android:id="@+id/transitview_right_bus_route_status_TextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/transitview_right_bus_route_status_ImageView"
+            android:layout_alignTop="@id/transitview_right_bus_route_status_ImageView"
+            android:layout_alignRight="@id/transitview_right_bus_route_status_ImageView"
+            android:layout_alignBottom="@id/transitview_right_bus_route_status_ImageView"
+            android:gravity="left|center_vertical"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_marginLeft="10dp"
+            android:text="In Service"
+            android:textColor="@android:color/white" />
+    </RelativeLayout>
+
+</RelativeLayout>

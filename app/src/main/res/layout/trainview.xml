@@ -28,7 +28,6 @@
     </RelativeLayout>
 
     <RelativeLayout
-        android:id="@+id/back_frame"
         android:layout_width="0dp"
         android:layout_weight="75"
         android:layout_height="match_parent"

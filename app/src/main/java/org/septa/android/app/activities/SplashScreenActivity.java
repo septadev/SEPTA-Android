@@ -8,6 +8,7 @@
 package org.septa.android.app.activities;
 
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -71,10 +72,10 @@ public class SplashScreenActivity extends BaseAnalyticsActivity {
                 finish();
             }
         }, getResources().getInteger(R.integer.splashscreen_delaytime_seconds) * 1000);
-
-        File databaseFileName = new File(this.getApplicationInfo().dataDir+"/"+DATABASE_NAME);
+Log.d(TAG, "the database path is "+this.getDatabasePath(DATABASE_NAME));
+        File databaseFileName = new File(this.getApplicationInfo().dataDir+"/databases/"+DATABASE_NAME);
         if (!databaseFileName.exists()) {
-
+            Log.d(TAG, "did not find the database file");
             new LoadDatabaseTask(this).execute(this, null, null);
         }
     }

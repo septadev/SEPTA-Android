@@ -141,7 +141,7 @@ public class TrainViewActionBarActivity extends BaseAnalyticsActionBarActivity i
     }
 
     private void revealListView() {
-        final LinearLayout rl1 = (LinearLayout) findViewById(R.id.trainview_map_fragment_view);
+        final RelativeLayout rl1 = (RelativeLayout) findViewById(R.id.trainview_map_fragment_view);
         Animation anim = AnimationUtils.loadAnimation(this, R.anim.slide_right_to_left);
 
         anim.setAnimationListener(new Animation.AnimationListener(){
@@ -164,7 +164,7 @@ public class TrainViewActionBarActivity extends BaseAnalyticsActionBarActivity i
     }
 
     private void hideListView() {
-        final LinearLayout rl1 = (LinearLayout) findViewById(R.id.trainview_map_fragment_view);
+        final RelativeLayout rl1 = (RelativeLayout) findViewById(R.id.trainview_map_fragment_view);
         Animation anim = AnimationUtils.loadAnimation(this, R.anim.slide_left_to_right);
         rl1.bringToFront();
 

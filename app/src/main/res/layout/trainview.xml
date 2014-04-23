@@ -46,16 +46,21 @@
         android:id="@+id/trainview_map_fragment_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <fragment
-            android:id="@+id/trainview_map_fragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:name="com.google.android.gms.maps.SupportMapFragment"/>
+        <LinearLayout
+                android:id="@+id/trainview_map_fragment_innerview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+            <fragment
+                android:id="@+id/trainview_map_fragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:name="com.google.android.gms.maps.SupportMapFragment"/>
+        </LinearLayout>
         <View
                 android:layout_width="10dp"
                 android:layout_height="match_parent"
-                android:layout_alignEnd="@id/trainview_map_fragment"
-                android:layout_marginRight="10dp"
-                android:background="#FFFF3344" />
+                android:layout_alignParentEnd="true"
+                android:layout_marginRight="-10dp"
+                android:background="@drawable/right_shadow" />
     </RelativeLayout>
 </FrameLayout>

@@ -7,11 +7,14 @@
 
 package org.septa.android.app.models.servicemodels;
 
+import android.util.Log;
+
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.annotations.SerializedName;
 import org.septa.android.app.utilities.Core;
 
 public class TrainViewModel {
+    public static final String TAG = TrainViewModel.class.getName();
 
     @SerializedName("lat") private double latitude;
     @SerializedName("lon") private double longitude;
@@ -94,6 +97,13 @@ public class TrainViewModel {
             localTrainNumber = Integer.parseInt(trainNumber);
         } else {
             String trainNumberString = trainNumber.substring(0,trainNumber.length() - 1);
+
+            // TODO: this is a workaround until I get an answer to what a trainno can be.
+            if (!Core.isInteger(trainNumberString)) {
+                Log.d(TAG, "this train number could be all string");
+                return false;
+            }
+
             localTrainNumber = Integer.parseInt(trainNumberString);
         }
 

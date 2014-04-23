@@ -9,48 +9,53 @@
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
              android:id="@+id/main_screen"
-             android:orientation="vertical"
+             android:orientation="horizontal"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
              android:background="@drawable/main_background">
 
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:id="@+id/back_frame"
-    android:orientation="horizontal">
-
-    <RelativeLayout
-        android:layout_width="0dp"
-        android:layout_weight="25"
-        android:layout_height="match_parent"
-        android:id="@+id/left_padding_frame">
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_width="0dp"
-        android:layout_weight="75"
-        android:layout_height="match_parent"
-        android:background="@android:color/white"
-        android:layout_toRightOf="@id/left_padding_frame">
-        <fragment
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/trainview_list_fragment"
-            android:name="org.septa.android.app.fragments.TrainViewListFragment"/>
-    </RelativeLayout>
-
-</LinearLayout>
-
-<RelativeLayout
-    android:id="@+id/trainview_map_fragment_view"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <fragment
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/trainview_map_fragment"
-        android:name="com.google.android.gms.maps.SupportMapFragment"/>
-</RelativeLayout>
+        android:id="@+id/back_frame"
+        android:orientation="horizontal">
 
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_weight="25"
+            android:layout_height="match_parent"
+            android:id="@+id/left_padding_frame">
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_weight="75"
+            android:layout_height="match_parent"
+            android:background="@android:color/white"
+            android:layout_toRightOf="@id/left_padding_frame">
+            <fragment
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/trainview_list_fragment"
+                android:name="org.septa.android.app.fragments.TrainViewListFragment"/>
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/trainview_map_fragment_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <fragment
+            android:id="@+id/trainview_map_fragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:name="com.google.android.gms.maps.SupportMapFragment"/>
+        <View
+                android:layout_width="10dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="right"
+                android:layout_marginRight="10dp"
+                android:background="#FFFF3344" />
+    </LinearLayout>
 </FrameLayout>

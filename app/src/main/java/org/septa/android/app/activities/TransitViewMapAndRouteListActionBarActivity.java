@@ -119,30 +119,35 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
                 findFragmentById(R.id.transitview_map_fragment)).
                 getMap();
 
-        mMap.setMyLocationEnabled(true);
-        mLocationClient = new LocationClient(this, this, this);
+        if (mMap != null) {
+            mMap.setMyLocationEnabled(true);
+            mLocationClient = new LocationClient(this, this, this);
 
-        KMLSAXXMLProcessor processor = new KMLSAXXMLProcessor(getAssets());
-        processor.readKMLFile("kml/transit/"+routeShortName+".kml");
+            KMLSAXXMLProcessor processor = new KMLSAXXMLProcessor(getAssets());
+            processor.readKMLFile("kml/transit/" + routeShortName + ".kml");
 
-        kmlModel = processor.getKMLModel();
+            kmlModel = processor.getKMLModel();
 
-        // loop through the placemarks
-        List<KMLModel.Document.Placemark> placemarkList = kmlModel.getDocument().getPlacemarkList();
-        for (KMLModel.Document.Placemark placemark : placemarkList) {
-            List<KMLModel.Document.MultiGeometry.LineString> lineStringList = placemark.getMultiGeometry().getLineStringList();
-            for (KMLModel.Document.MultiGeometry.LineString lineString : lineStringList) {
-                String color = "#" + kmlModel.getDocument().getColorForStyleId(placemark.getStyleUrl());
-                List<LatLng> latLngCoordinateList = lineString.getLatLngCoordinates();
+            // loop through the placemarks
+            List<KMLModel.Document.Placemark> placemarkList = kmlModel.getDocument().getPlacemarkList();
+            for (KMLModel.Document.Placemark placemark : placemarkList) {
+                List<KMLModel.Document.MultiGeometry.LineString> lineStringList = placemark.getMultiGeometry().getLineStringList();
+                for (KMLModel.Document.MultiGeometry.LineString lineString : lineStringList) {
+                    String color = "#" + kmlModel.getDocument().getColorForStyleId(placemark.getStyleUrl());
+                    List<LatLng> latLngCoordinateList = lineString.getLatLngCoordinates();
 
-                PolylineOptions lineOptions = new PolylineOptions().addAll(latLngCoordinateList)
-                        .color(Color.parseColor(color))
-                        .width(3.0f)
-                        .visible(true);
-                mMap.addPolyline(lineOptions);
+                    PolylineOptions lineOptions = new PolylineOptions().addAll(latLngCoordinateList)
+                            .color(Color.parseColor(color))
+                            .width(3.0f)
+                            .visible(true);
+                    mMap.addPolyline(lineOptions);
+                }
             }
+
+            this.fetchTransitViewDataForRoute(routeShortName);
+        } else {
+            Log.d(TAG, "map was null, map Google Play servies is not installed");
         }
-        this.fetchTransitViewDataForRoute(routeShortName);
     }
 
     @Override
@@ -315,13 +320,18 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
     protected void onStart() {
         super.onStart();
         // Connect the client.
-        mLocationClient.connect();
+        if (mLocationClient != null) {
+            mLocationClient.connect();
+        }
     }
 
     @Override
     protected void onStop() {
         // Disconnecting the client invalidates it.
-        mLocationClient.disconnect();
+        if (mLocationClient != null) {
+            mLocationClient.disconnect();
+        }
+
         super.onStop();
     }
 

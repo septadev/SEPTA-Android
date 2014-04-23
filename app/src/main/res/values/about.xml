@@ -36,9 +36,15 @@
     <string-array name="about_attributions_listview_items_texts">
         <item>OkHttp</item>
         <item>Android-SQLite-Asset-Helper</item>
+        <item>GSON</item>
+        <item>Retrofit</item>
+        <item>Simple-XML</item>
     </string-array>
 
     <string-array name="about_attributions_listview_items_iconSuffixes">
+        <item>notepad</item>
+        <item>notepad</item>
+        <item>notepad</item>
         <item>notepad</item>
         <item>notepad</item>
     </string-array>
@@ -46,6 +52,9 @@
     <string-array name="about_attributions_listview_items_urls">
         <item>https://github.com/square/okhttp/blob/master/LICENSE.txt</item>
         <item>https://github.com/jgilfelt/android-sqlite-asset-helper/blob/master/LICENSE</item>
+        <item>https://code.google.com/p/google-gson/source/browse/trunk/gson/LICENSE?r=369</item>
+        <item>http://square.github.io/retrofit/#license</item>
+        <item>https://www.apache.org/licenses/LICENSE-2.0.txt</item>
     </string-array>
 
 </resources>

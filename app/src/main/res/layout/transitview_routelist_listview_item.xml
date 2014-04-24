@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~ transitview_routelist_listview_item.xml
+  ~ Last modified on 04-24-2014 11:08-0400 by brianhmayo
+  ~
+  ~ Copyright (c) 2014 SEPTA.  All rights reserved.
+  -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/transitview_listview_item_row"
+              android:orientation="horizontal"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:paddingTop="0dp">
+
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="3"
+        android:orientation="vertical"
+        android:layout_marginLeft="5dp"
+        android:layout_alignParentLeft="true">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="24dp"
+            android:textStyle="bold"
+            android:textSize="22sp"
+            android:id="@+id/transitview_listview_item_train_number_textview"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="15dp"
+            android:textStyle="bold"
+            android:textSize="13sp"
+            android:layout_below="@id/transitview_listview_item_train_number_textview"
+            android:id="@+id/transitview_listview_item_train_timing_textview"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="2"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="15sp"
+            android:id="@+id/transitview_listview_item_startlabel_textview"
+            android:text="Start:"
+            android:gravity="right"
+            android:textColor="@android:color/black"/>
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="15sp"
+            android:layout_below="@id/transitview_listview_item_startlabel_textview"
+            android:id="@+id/transitview_listview_item_endlabel_textview"
+            android:text="End:"
+            android:gravity="right"
+            android:textColor="@android:color/black"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="8"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="15sp"
+            android:id="@+id/transitview_listview_item_start_textview"
+            android:text="testing start stop"
+            android:textColor="@android:color/black"/>
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="15sp"
+            android:layout_below="@id/transitview_listview_item_start_textview"
+            android:id="@+id/transitview_listview_item_end_textview"
+            android:text="testing end stop"
+            android:textColor="@android:color/black"/>
+
+    </RelativeLayout>
+
+</LinearLayout>

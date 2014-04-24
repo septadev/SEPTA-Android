@@ -21,18 +21,19 @@
         android:orientation="horizontal">
 
         <RelativeLayout
+            android:id="@+id/routeListLeftPaddingFrame"
             android:layout_width="0dp"
             android:layout_weight="25"
-            android:layout_height="match_parent"
-            android:id="@+id/leftPaddingFrame">
+            android:layout_height="match_parent">
         </RelativeLayout>
 
         <RelativeLayout
-            android:id="@+id/back_frame2"
+            android:id="@+id/routeListRightContentFrame"
             android:layout_width="0dp"
             android:layout_weight="75"
             android:layout_height="match_parent"
-            android:layout_toRightOf="@id/leftPaddingFrame">
+            android:background="@android:color/white"
+            android:layout_toRightOf="@id/routeListLeftPaddingFrame">
             <fragment
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -42,15 +43,27 @@
 
     </LinearLayout>
 
-    <RelativeLayout
+    <FrameLayout
         android:id="@+id/transitview_map_fragment_view"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent">
-        <fragment
-            android:layout_width="match_parent"
+        <View
+            android:id="@+id/transitview_map_fragmet_view_shadow"
+            android:layout_width="5dp"
             android:layout_height="match_parent"
-            android:id="@+id/transitview_map_fragment"
-            android:name="com.google.android.gms.maps.SupportMapFragment"/>
-    </RelativeLayout>
+            android:layout_gravity="right"
+            android:visibility="invisible"
+            android:background="@drawable/right_shadow" />
+        <LinearLayout
+            android:id="@+id/trainview_map_fragment_innerview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <fragment
+                android:id="@+id/transitview_map_fragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:name="com.google.android.gms.maps.SupportMapFragment"/>
+        </LinearLayout>
+    </FrameLayout>
 
 </FrameLayout>

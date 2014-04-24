@@ -15,11 +15,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
@@ -37,17 +38,14 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.septa.android.app.R;
+import org.septa.android.app.fragments.TransitViewRouteViewListFragment;
 import org.septa.android.app.models.KMLModel;
-import org.septa.android.app.models.LocationModel;
 import org.septa.android.app.models.BusRoutesModel;
-import org.septa.android.app.models.servicemodels.TrainViewModel;
 import org.septa.android.app.models.servicemodels.TransitViewModel;
 import org.septa.android.app.models.servicemodels.TransitViewVehicleModel;
-import org.septa.android.app.services.apiproxies.TrainViewServiceProxy;
 import org.septa.android.app.services.apiproxies.TransitViewServiceProxy;
 import org.septa.android.app.utilities.KMLSAXXMLProcessor;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import retrofit.Callback;
@@ -95,11 +93,8 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Log.d(TAG, "onCreate for transit view heard");
-
         Intent intent = getIntent();
         String routeShortName = intent.getStringExtra("route_short_name");
-        Log.d(TAG, "launched from an intent with route_short_name of "+routeShortName);
 
         String actionBarTitleText = getIntent().getStringExtra(getString(R.string.actionbar_titletext_key));
         String iconImageNameSuffix = getIntent().getStringExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key));
@@ -146,7 +141,7 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
 
             this.fetchTransitViewDataForRoute(routeShortName);
         } else {
-            Log.d(TAG, "map was null, map Google Play servies is not installed");
+            Log.d(TAG, "map was null, map Google Play services is not installed");
         }
     }
 
@@ -167,19 +162,21 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
     }
 
     private void revealListView() {
-        final RelativeLayout ll1 = (RelativeLayout) findViewById(R.id.transitview_map_fragment_view);
+        final FrameLayout fl1 = (FrameLayout) findViewById(R.id.transitview_map_fragment_view);
         Animation anim = AnimationUtils.loadAnimation(this, R.anim.slide_right_to_left);
 
         anim.setAnimationListener(new Animation.AnimationListener(){
             @Override
             public void onAnimationStart(Animation arg0) {
+                final View shadowView = (View) findViewById(R.id.transitview_map_fragmet_view_shadow);
+                shadowView.setVisibility(View.VISIBLE);
+                shadowView.bringToFront();
             }
             @Override
             public void onAnimationRepeat(Animation arg0) {
             }
             @Override
             public void onAnimationEnd(Animation arg0) {
-                Log.d(TAG, "brining ll2 to front");
                 LinearLayout ll2 = (LinearLayout) findViewById(R.id.back_frame);
                 ll2.bringToFront();
             }
@@ -187,14 +184,13 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
 
         anim.setInterpolator((new AccelerateDecelerateInterpolator()));
         anim.setFillAfter(true);
-        ll1.startAnimation(anim);
+        fl1.startAnimation(anim);
     }
 
     private void hideListView() {
-        Log.d(TAG, "slideMapViewOver");
-        final RelativeLayout ll1 = (RelativeLayout) findViewById(R.id.transitview_map_fragment_view);
+        final FrameLayout fl1 = (FrameLayout) findViewById(R.id.transitview_map_fragment_view);
         Animation anim = AnimationUtils.loadAnimation(this, R.anim.slide_left_to_right);
-        ll1.bringToFront();
+        fl1.bringToFront();
 
         anim.setAnimationListener(new Animation.AnimationListener(){
             @Override
@@ -205,29 +201,27 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
             }
             @Override
             public void onAnimationEnd(Animation arg0) {
-//                RelativeLayout ll2 = (RelativeLayout) findViewById(R.id.back_frame);
-//                ll1.bringToFront();
+                View shadowView = (View) findViewById(R.id.transitview_map_fragmet_view_shadow);
+                shadowView.setVisibility(View.INVISIBLE);
+                LinearLayout mapView = (LinearLayout) findViewById(R.id.trainview_map_fragment_innerview);
+                mapView.bringToFront();
             }
         });
 
         anim.setInterpolator((new AccelerateDecelerateInterpolator()));
         anim.setFillAfter(true);
-        ll1.startAnimation(anim);
+        fl1.startAnimation(anim);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.actionmenu_transitview_reveallistview:
-                Log.d(TAG, "heard the reveal list view in transitview_mapandroutelistview");
-
                 if (listviewRevealed) {
-                    Log.d(TAG, "the list view is revealed, pull the map view back on top");
                     listviewRevealed = false;
 
                     hideListView();
                 } else {
-                    Log.d(TAG, "the list view is hidden, reveal it.");
                     listviewRevealed = true;
 
                     revealListView();
@@ -352,27 +346,28 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
             public void success(Object o, Response response) {
                 setProgressBarIndeterminateVisibility(Boolean.FALSE);
 
-                List<TransitViewVehicleModel>transitViewVehicleModelList = ((TransitViewModel)o).getVehicleModelList();
-                for (TransitViewVehicleModel transitViewVehicle: transitViewVehicleModelList) {
+                List<TransitViewVehicleModel> transitViewVehicleList = ((TransitViewModel)o).getActiveVehicleModelList();
+
+                TransitViewRouteViewListFragment listFragment1 = (TransitViewRouteViewListFragment) getSupportFragmentManager().findFragmentById(R.id.transitview_list_fragment);
+                listFragment1.setTrainViewModels(transitViewVehicleList);
+
+                for (TransitViewVehicleModel transitViewVehicle: transitViewVehicleList) {
                     BitmapDescriptor transitIcon;
 
                     // check if the destination is blank, meaning the bus just went out of service
                     if (transitViewVehicle.getDestination().trim().equals("")) {
                         break;
                     }
-                    if (transitViewVehicle.isSouthBound()) {
+
+                    Log.d(TAG, "bound here "+transitViewVehicle.getDirection());
+
+                    if (transitViewVehicle.isSouthBound() || transitViewVehicle.isWestBound()) {
+                        Log.d(TAG, "setting bus map icon color to red");
                         transitIcon = BitmapDescriptorFactory.fromResource(R.drawable.ic_transitview_bus_red);
                     } else {
+                        Log.d(TAG, "setting bus map icon color to blue");
                         transitIcon = BitmapDescriptorFactory.fromResource(R.drawable.ic_transitview_bus_blue);
                     }
-
-//                    String title = "Train #" + trainView.getTrainNumber() + " ";
-//                    if (trainView.isLate()) {
-//                        title += "(" + trainView.getLate()+ " min late)";
-//                    } else {
-//                        title += "(on time)";
-//                    }
-//                    String snippet = trainView.getSource() + " to " + trainView.getDestination();
 
                     // check to make sure that mMap is not null
                     if (mMap != null) {

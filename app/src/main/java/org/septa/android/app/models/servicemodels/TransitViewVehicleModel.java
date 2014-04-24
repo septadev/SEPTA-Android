@@ -7,12 +7,18 @@
 
 package org.septa.android.app.models.servicemodels;
 
+import android.util.Log;
+
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.annotations.SerializedName;
 
+import org.septa.android.app.R;
+import org.septa.android.app.activities.TransitViewMapAndRouteListActionBarActivity;
 import org.septa.android.app.utilities.Core;
 
 public class TransitViewVehicleModel {
+    public static final String TAG = TransitViewVehicleModel.class.getName();
+
     @SerializedName("BlockID")
     private int blockId;
     @SerializedName("Direction")
@@ -49,6 +55,14 @@ public class TransitViewVehicleModel {
 
     public int getOffset() {
         return offset;
+    }
+
+    public int getLate() {
+        return offset;
+    }
+
+    public boolean isLate() {
+        return (offset > 0);
     }
 
     public void setOffset(int offset) {
@@ -99,8 +113,23 @@ public class TransitViewVehicleModel {
         return new LatLng(getLatitude(), getLongitude());
     }
 
+    public boolean isNorthBound() {
+
+        return direction.equals("NorthBound");
+    }
+
     public boolean isSouthBound() {
 
-        return (vehicleId % 2 == 0);
+        return direction.equals("SouthBound");
+    }
+
+    public boolean isEastBound() {
+
+        return direction.equals("Eastbound");
+    }
+
+    public boolean isWestBound() {
+
+        return direction.equals("WestBound");
     }
 }

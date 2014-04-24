@@ -17,26 +17,26 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import org.septa.android.app.R;
-import org.septa.android.app.adapters.TrainView_ListViewItem_ArrayAdapter;
-import org.septa.android.app.models.servicemodels.TrainViewModel;
+import org.septa.android.app.adapters.TransitView_RouteList_ListViewItem_ArrayAdapter;
+import org.septa.android.app.models.servicemodels.TransitViewVehicleModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class TransitViewRouteViewListFragment extends ListFragment {
-    public static final String TAG = TrainViewListFragment.class.getName();
+    public static final String TAG = TransitViewRouteViewListFragment.class.getName();
 
-    private List<TrainViewModel> trainViewModels;
+    private List<TransitViewVehicleModel> transitViewVehicleList;
 
     public TransitViewRouteViewListFragment() {
         // instanciate an empty array list for the TrainViewModels
-        trainViewModels = new ArrayList<TrainViewModel>(0);
+        transitViewVehicleList = new ArrayList<TransitViewVehicleModel>(0);
     }
 
-    public void setTrainViewModels(List<TrainViewModel>trainViewModels) {
-        this.trainViewModels = trainViewModels;
+    public void setTrainViewModels(List<TransitViewVehicleModel>transitViewVehicleList) {
+        this.transitViewVehicleList = transitViewVehicleList;
 
-        ArrayAdapter<TrainViewModel> adapter = new TrainView_ListViewItem_ArrayAdapter(getActivity(), trainViewModels);
+        ArrayAdapter<TransitViewVehicleModel> adapter = new TransitView_RouteList_ListViewItem_ArrayAdapter(getActivity(), transitViewVehicleList);
         setListAdapter(adapter);
 
         // after the list has been update, invalidate the list view to re-render
@@ -66,7 +66,7 @@ public class TransitViewRouteViewListFragment extends ListFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        ArrayAdapter<TrainViewModel> adapter = new TrainView_ListViewItem_ArrayAdapter(inflater.getContext(), trainViewModels);
+        ArrayAdapter<TransitViewVehicleModel> adapter = new TransitView_RouteList_ListViewItem_ArrayAdapter(inflater.getContext(), transitViewVehicleList);
         setListAdapter(adapter);
 
         Log.d(TAG, "about to call super from the onCreateView in TrainViewListFragment");
@@ -77,16 +77,6 @@ public class TransitViewRouteViewListFragment extends ListFragment {
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         Log.d(TAG, "detected a listfragment item being clicked");
-//        if (v instanceof Button) {
-//            Log.d(TAG, "it is an instance of Button, must be get more details.");
-//            // we clicked the button, swap the fragments
-//            FragmentManager fm = getFragmentManager();
-//            FragmentTransaction ft = fm.beginTransaction();
-//
-//            WebViewFragment getMoreDetailsWebViewFragment = WebViewFragment.newInstance(getString(R.string.connect_fareinformation_getmoredetails_url));
-//            ft.replace(R.id.container, getMoreDetailsWebViewFragment, "getMoreDetailsWebViewFragment");
-//            ft.commit();
-//        }
     }
 
     /**

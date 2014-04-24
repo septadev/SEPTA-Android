@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ trainandtransitview.xml
+  ~ Last modified on 04-24-2014 10:38-0400 by brianhmayo
+  ~
+  ~ Copyright (c) 2014 SEPTA.  All rights reserved.
+  -->
+
+<resources>
+
+    <string name="ontime">On-time</string>
+    <string name="mins">mins</string>
+    <string name="min">min</string>
+
+    <string name="field_separator">:</string>
+
+</resources>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ transitview.xml
+  ~ Last modified on 04-24-2014 10:34-0400 by brianhmayo
+  ~
+  ~ Copyright (c) 2014 SEPTA.  All rights reserved.
+  -->
+
+<resources>
+
+    <string name="southbound">SouthBound</string>
+    <string name="eastbound">EastBound</string>
+    <string name="northbound">NorthBound</string>
+    <string name="westbound">WestBound</string>
+    <string name="dir">Dir</string>
+    <string name="dest">Dest</string>
+
+</resources>

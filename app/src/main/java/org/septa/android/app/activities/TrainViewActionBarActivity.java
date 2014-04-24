@@ -7,15 +7,19 @@
 
 package org.septa.android.app.activities;
 
+import android.app.ActionBar;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
@@ -141,12 +145,15 @@ public class TrainViewActionBarActivity extends BaseAnalyticsActionBarActivity i
     }
 
     private void revealListView() {
-        final RelativeLayout rl1 = (RelativeLayout) findViewById(R.id.trainview_map_fragment_view);
+        final FrameLayout rl1 = (FrameLayout) findViewById(R.id.trainview_map_fragment_view);
         Animation anim = AnimationUtils.loadAnimation(this, R.anim.slide_right_to_left);
 
         anim.setAnimationListener(new Animation.AnimationListener(){
             @Override
             public void onAnimationStart(Animation arg0) {
+                final View shadowView = (View) findViewById(R.id.trainview_map_fragmet_view_shadow);
+                shadowView.setVisibility(View.VISIBLE);
+                shadowView.bringToFront();
             }
             @Override
             public void onAnimationRepeat(Animation arg0) {
@@ -164,7 +171,7 @@ public class TrainViewActionBarActivity extends BaseAnalyticsActionBarActivity i
     }
 
     private void hideListView() {
-        final RelativeLayout rl1 = (RelativeLayout) findViewById(R.id.trainview_map_fragment_view);
+        final FrameLayout rl1 = (FrameLayout) findViewById(R.id.trainview_map_fragment_view);
         Animation anim = AnimationUtils.loadAnimation(this, R.anim.slide_left_to_right);
         rl1.bringToFront();
 
@@ -177,8 +184,10 @@ public class TrainViewActionBarActivity extends BaseAnalyticsActionBarActivity i
             }
             @Override
             public void onAnimationEnd(Animation arg0) {
-//                RelativeLayout ll2 = (RelativeLayout) findViewById(R.id.back_frame);
-//                ll1.bringToFront();
+                View shadowView = (View) findViewById(R.id.trainview_map_fragmet_view_shadow);
+                shadowView.setVisibility(View.INVISIBLE);
+                LinearLayout mapView = (LinearLayout) findViewById(R.id.trainview_map_fragment_innerview);
+                mapView.bringToFront();
             }
         });
 

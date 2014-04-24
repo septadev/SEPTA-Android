@@ -42,10 +42,17 @@
 
     </LinearLayout>
 
-    <RelativeLayout
+    <FrameLayout
         android:id="@+id/trainview_map_fragment_view"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent">
+        <View
+            android:id="@+id/trainview_map_fragmet_view_shadow"
+            android:layout_width="5dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="right"
+            android:visibility="invisible"
+            android:background="@drawable/right_shadow" />
         <LinearLayout
                 android:id="@+id/trainview_map_fragment_innerview"
                 android:layout_width="match_parent"
@@ -56,11 +63,5 @@
                 android:layout_height="match_parent"
                 android:name="com.google.android.gms.maps.SupportMapFragment"/>
         </LinearLayout>
-        <View
-                android:layout_width="10dp"
-                android:layout_height="match_parent"
-                android:layout_alignParentEnd="true"
-                android:layout_marginRight="-10dp"
-                android:background="@drawable/right_shadow" />
-    </RelativeLayout>
+    </FrameLayout>
 </FrameLayout>

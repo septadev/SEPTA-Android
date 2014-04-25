@@ -16,27 +16,28 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:id="@+id/back_frame"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:visibility="invisible">
 
         <RelativeLayout
             android:id="@+id/routeListLeftPaddingFrame"
             android:layout_width="0dp"
             android:layout_weight="25"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
         </RelativeLayout>
 
         <RelativeLayout
             android:id="@+id/routeListRightContentFrame"
             android:layout_width="0dp"
             android:layout_weight="75"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:background="@android:color/white"
             android:layout_toRightOf="@id/routeListLeftPaddingFrame">
             <fragment
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:id="@+id/transitview_list_fragment"
                 android:name="org.septa.android.app.fragments.TransitViewRouteViewListFragment"/>
         </RelativeLayout>

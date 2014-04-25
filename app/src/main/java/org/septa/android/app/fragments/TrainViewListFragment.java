@@ -7,24 +7,18 @@
 
 package org.septa.android.app.fragments;
 
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 
 import org.septa.android.app.R;
 import org.septa.android.app.adapters.TrainView_ListViewItem_ArrayAdapter;
 import org.septa.android.app.models.servicemodels.TrainViewModel;
-import org.septa.android.app.utilities.WebViewFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,17 +76,8 @@ public class TrainViewListFragment extends ListFragment {
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
+
         Log.d(TAG, "detected a listfragment item being clicked");
-//        if (v instanceof Button) {
-//            Log.d(TAG, "it is an instance of Button, must be get more details.");
-//            // we clicked the button, swap the fragments
-//            FragmentManager fm = getFragmentManager();
-//            FragmentTransaction ft = fm.beginTransaction();
-//
-//            WebViewFragment getMoreDetailsWebViewFragment = WebViewFragment.newInstance(getString(R.string.connect_fareinformation_getmoredetails_url));
-//            ft.replace(R.id.container, getMoreDetailsWebViewFragment, "getMoreDetailsWebViewFragment");
-//            ft.commit();
-//        }
     }
 
     /**

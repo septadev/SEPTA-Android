@@ -162,6 +162,9 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
     }
 
     private void revealListView() {
+        final LinearLayout backFrame = (LinearLayout) findViewById(R.id.back_frame);
+        backFrame.setVisibility(View.VISIBLE);
+
         final FrameLayout fl1 = (FrameLayout) findViewById(R.id.transitview_map_fragment_view);
         Animation anim = AnimationUtils.loadAnimation(this, R.anim.slide_right_to_left);
 
@@ -205,6 +208,9 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
                 shadowView.setVisibility(View.INVISIBLE);
                 LinearLayout mapView = (LinearLayout) findViewById(R.id.trainview_map_fragment_innerview);
                 mapView.bringToFront();
+
+                final LinearLayout backFrame = (LinearLayout) findViewById(R.id.back_frame);
+                backFrame.setVisibility(View.INVISIBLE);
             }
         });
 
@@ -374,7 +380,7 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
                         Log.d(TAG, "adding the marker to the map at lat of "+transitViewVehicle.getLatitude()+" and long of "+transitViewVehicle.getLongitude());
                         mMap.addMarker(new MarkerOptions()
                                 .position(transitViewVehicle.getLatLng())
-                                .title("Vehicle: "+transitViewVehicle.getVehicleId())
+                                .title("Vehicle: "+transitViewVehicle.getVehicleId()+ " (updated: x min)")
                                 .icon(transitIcon)
                                 .snippet("Destination: "+ transitViewVehicle.getDestination()));
                     }

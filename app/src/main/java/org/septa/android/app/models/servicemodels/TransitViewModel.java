@@ -23,7 +23,7 @@ public class TransitViewModel {
     public List<TransitViewVehicleModel> getActiveVehicleModelList() {
         List<TransitViewVehicleModel> vehicleList = new ArrayList<TransitViewVehicleModel>(0);
         for (TransitViewVehicleModel vehicle : vehicleModelList) {
-            if (!vehicle.getDirection().isEmpty()) {
+            if (!vehicle.getDirection().trim().isEmpty()) {
                 vehicleList.add(vehicle);
             }
         }

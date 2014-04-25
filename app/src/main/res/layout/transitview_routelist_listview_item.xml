@@ -75,7 +75,7 @@
         android:orientation="vertical">
 
         <TextView
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textStyle="bold"
             android:textSize="15sp"
@@ -84,10 +84,13 @@
             android:textColor="@android:color/black"/>
 
         <TextView
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textStyle="bold"
             android:textSize="15sp"
+            android:minLines="1"
+            android:maxLines="1"
+            android:ellipsize="middle"
             android:layout_below="@id/transitview_listview_item_start_textview"
             android:id="@+id/transitview_listview_item_end_textview"
             android:text="testing end stop"

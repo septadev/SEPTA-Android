@@ -26,6 +26,8 @@
         <string name="menuoption_settings_text">Settings</string>
         <string name="menuoption_appfeedback_text">Leave Feedback</string>
 
+        <string name="no_data_available">No data is available.</string>
+
         <!--
              nav-main-options is an ordered array list of main navigation items
              order matters, so take care with the order you list the items in.

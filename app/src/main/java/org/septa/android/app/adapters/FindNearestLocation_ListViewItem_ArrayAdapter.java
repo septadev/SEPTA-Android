@@ -19,17 +19,18 @@ import org.septa.android.app.R;
 import org.septa.android.app.activities.FareInformationGetMoreDetailsActionBarActivity;
 import org.septa.android.app.models.LocationModel;
 
+import java.util.List;
+
 public class FindNearestLocation_ListViewItem_ArrayAdapter extends ArrayAdapter<LocationModel> {
     public static final String TAG = FindNearestLocation_ListViewItem_ArrayAdapter.class.getName();
 
     private final Context context;
-    private final LocationModel[] values;
+    private final List<LocationModel> values;
 
-    public FindNearestLocation_ListViewItem_ArrayAdapter(Context context, LocationModel[] values) {
+    public FindNearestLocation_ListViewItem_ArrayAdapter(Context context, List<LocationModel> values) {
         super(context, R.layout.findnearestlocations_listview_item, values);
         this.context = context;
         this.values = values;
-        Log.d(TAG, "findnearestLocation_listviewitem_arrayadapter...");
     }
 
     @Override
@@ -40,7 +41,7 @@ public class FindNearestLocation_ListViewItem_ArrayAdapter extends ArrayAdapter<
         View rowView = null;
 
         if (values != null) {
-            LocationModel location = values[position];
+            LocationModel location = values.get(position);
 
             rowView = inflater.inflate(R.layout.findnearestlocations_listview_item, parent, false);
 

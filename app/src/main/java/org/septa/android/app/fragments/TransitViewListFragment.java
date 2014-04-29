@@ -29,7 +29,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class TransitViewListFragment extends ListFragment {
-    private static final String TAG = SettingsListFragment.class.getName();
+    private static final String TAG = TransitViewListFragment.class.getName();
 
     ArrayAdapter<BusRouteModel> _adapter;
     List<BusRouteModel> busRouteModelList;
@@ -81,9 +81,13 @@ public class TransitViewListFragment extends ListFragment {
                     busRoutes.setBusRouteByRouteId(cursor.getString(0), busRoute);
                 } while (cursor.moveToNext());
             }
+
+            cursor.close();
         } else {
             Log.d(TAG, "cursor is null");
         }
+
+        database.close();
 
         return busRoutes;
     }

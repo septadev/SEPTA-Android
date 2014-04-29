@@ -7,6 +7,11 @@
 
 package org.septa.android.app.models;
 
+import android.util.Log;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class LocationModel {
 
     public float distance;
@@ -16,6 +21,12 @@ public class LocationModel {
     public float location_lon;
     public String location_name;
     public String location_type;
+    public List<String> routes;
+
+    public LocationModel() {
+
+        this.routes = new ArrayList<String>();
+    }
 
     public float getDistance() {
         return distance;
@@ -43,5 +54,33 @@ public class LocationModel {
 
     public String getLocationType() {
         return location_type;
+    }
+
+    public List<String> getRoutes() {
+        return routes;
+    }
+
+    public void addRoute(String routeShortName) {
+
+        this.routes.add(routeShortName);
+    }
+
+    public String print() {
+        String output = "";
+        output += "distance:"+distance;
+        output += " locationId:"+location_id;
+        output += " locationLatitude:"+location_lat;
+        output += " locationLongitude:"+location_lon;
+        output += " locationName:"+location_name;
+        output += " locationType:"+location_type;
+
+        if (routes.size()>0) {
+            output += " routes:";
+            for (String route : routes) {
+                output += route + ",";
+            }
+        }
+
+        return output;
     }
 }

@@ -7,21 +7,20 @@
 
 package org.septa.android.app.models;
 
-import android.util.Log;
-
 import java.util.HashMap;
 
-public class BusRouteModel implements Comparable<BusRouteModel> {
-    private static final String TAG = BusRouteModel.class.getName();
+public class RouteModel implements Comparable<RouteModel> {
+    private static final String TAG = RouteModel.class.getName();
 
     private String routeId;
     private String routeShortName;
+    private String routeLongName;
     private Number routeType;
 
     private HashMap<String, MinMaxHoursModel> hours;
 
     public String print() {
-        String objectValue = "route_id:"+routeId+", route_short_name:"+routeShortName+", route_type:"+routeType;
+        String objectValue = "route_id:"+routeId+", route_short_name:"+routeShortName+", route_long_name:"+routeLongName+", route_type:"+routeType;
         for (MinMaxHoursModel minMaxHours : hours.values()) {
             objectValue +=", minMaxHours: min:"+minMaxHours.getMinimum()+", max:"+minMaxHours.getMaximum();
         }
@@ -29,7 +28,7 @@ public class BusRouteModel implements Comparable<BusRouteModel> {
         return objectValue;
     }
 
-    public BusRouteModel() {
+    public RouteModel() {
 
         this.hours = new HashMap<String, MinMaxHoursModel>();
     }
@@ -59,6 +58,14 @@ public class BusRouteModel implements Comparable<BusRouteModel> {
         this.routeShortName = routeShortName;
     }
 
+    public String getRouteLongName() {
+        return routeLongName;
+    }
+
+    public void setRouteLongName(String routeLongName) {
+        this.routeLongName = routeLongName;
+    }
+
     public Number getRouteType() {
         return routeType;
     }
@@ -68,7 +75,7 @@ public class BusRouteModel implements Comparable<BusRouteModel> {
     }
 
     @Override
-    public int compareTo(BusRouteModel other){
+    public int compareTo(RouteModel other){
         int result = 0;
         Integer thisRouteShortName = null;
         Integer otherRouteShortName = null;

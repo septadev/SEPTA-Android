@@ -15,7 +15,6 @@ import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.Window;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -29,6 +28,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.septa.android.app.R;
+import org.septa.android.app.fragments.FindNearestLocationsListFragment;
 import org.septa.android.app.services.apiproxies.LocationServiceProxy;
 import org.septa.android.app.models.LocationModel;
 
@@ -141,6 +141,9 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
                     Log.d(TAG, "successfully ended location service call with " + ((ArrayList<LocationModel>) o).size());
                     setProgressBarIndeterminateVisibility(Boolean.FALSE);
                     ActivityCompat.invalidateOptionsMenu(FindNearestLocationActionBarActivity.this);
+
+                    FindNearestLocationsListFragment listFragment = (FindNearestLocationsListFragment) getSupportFragmentManager().findFragmentById(R.id.nearestLocationListFragment);
+                    listFragment.setLocationList((ArrayList<LocationModel>)o);
 
                     for (LocationModel location: (ArrayList<LocationModel>)o) {
                         // check to make sure that mMap is not null

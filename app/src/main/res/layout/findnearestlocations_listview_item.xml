@@ -10,54 +10,62 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="horizontal"
               android:layout_width="match_parent"
-              android:layout_height="match_parent">
+              android:layout_height="match_parent"
+              android:background="@android:color/black">
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_marginLeft="15dp"
-        android:layout_weight="4">
+        android:layout_marginLeft="15dp">
             <TextView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="20dp"
                 android:layout_marginTop="10dp"
+                android:layout_gravity="center_vertical"
                 android:id="@+id/findnearestlocations_listView_items_distance_textView"
-                android:textStyle="bold"
-                android:text="1.25"
+                android:textStyle="normal"
+                android:textColor="@android:color/white"
                 android:layout_weight="1"/>
             <TextView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="20dp"
                 android:layout_marginBottom="10dp"
+                android:layout_gravity="center_vertical"
                 android:id="@+id/findnearestlocations_listView_items_milesLabel_textView"
-                android:textStyle="bold"
+                android:textStyle="normal"
+                android:textColor="@android:color/white"
                 android:text="miles"
                 android:layout_weight="1"/>
 
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <View
+        android:layout_width="1dp"
         android:layout_height="match_parent"
+        android:layout_marginLeft="5dp"
+        android:background="@android:color/white" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_weight="1">
+        android:layout_marginLeft="5dp">
         <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:id="@+id/findnearestlocations_listView_items_locationName_textView"
-            android:textStyle="bold"
-            android:text="Wayne Ave. &amp; 3rd"
-            android:layout_weight="1"/>
-        <TextView
+            android:textStyle="normal"
+            android:textColor="@android:color/white" />
+
+        <LinearLayout
+            android:id="@+id/findnearestlocations_listView_routesView_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="10dp"
-            android:id="@+id/findnearestlocations_listView_items_routes_textView"
-            android:textStyle="bold"
-            android:text="routes go here"
-            android:layout_weight="1"/>
+            android:orientation="horizontal">
+
+        </LinearLayout>
 
     </LinearLayout>
 

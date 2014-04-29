@@ -40,7 +40,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import org.septa.android.app.R;
 import org.septa.android.app.fragments.TransitViewRouteViewListFragment;
 import org.septa.android.app.models.KMLModel;
-import org.septa.android.app.models.BusRoutesModel;
+import org.septa.android.app.models.RoutesModel;
 import org.septa.android.app.models.servicemodels.TransitViewModel;
 import org.septa.android.app.models.servicemodels.TransitViewVehicleModel;
 import org.septa.android.app.services.apiproxies.TransitViewServiceProxy;
@@ -79,7 +79,7 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
 
     private boolean listviewRevealed = false;
 
-    private BusRoutesModel busRoutes;
+    private RoutesModel busRoutes;
     private String routeShortName;
 
     @Override

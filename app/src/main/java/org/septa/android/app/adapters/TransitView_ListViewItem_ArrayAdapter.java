@@ -17,17 +17,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.septa.android.app.R;
-import org.septa.android.app.models.BusRouteModel;
+import org.septa.android.app.models.RouteModel;
 
 import java.util.List;
 
-public class TransitView_ListViewItem_ArrayAdapter extends ArrayAdapter<BusRouteModel> {
+public class TransitView_ListViewItem_ArrayAdapter extends ArrayAdapter<RouteModel> {
     public static final String TAG = TransitView_ListViewItem_ArrayAdapter.class.getName();
 
     private final Context context;
-    private final List<BusRouteModel> values;
+    private final List<RouteModel> values;
 
-    public TransitView_ListViewItem_ArrayAdapter(Context context, List<BusRouteModel> values) {
+    public TransitView_ListViewItem_ArrayAdapter(Context context, List<RouteModel> values) {
         super(context, R.layout.transitview_listview_item, values);
         this.context = context;
         this.values = values;
@@ -40,7 +40,7 @@ public class TransitView_ListViewItem_ArrayAdapter extends ArrayAdapter<BusRoute
 
         View rowView = null;
 
-        BusRouteModel busRouteModel = values.get(position);
+        RouteModel busRouteModel = values.get(position);
 
         rowView = inflater.inflate(R.layout.transitview_listview_item, parent, false);
 

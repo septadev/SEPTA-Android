@@ -7,23 +7,22 @@
 
 package org.septa.android.app.fragments;
 
-import android.graphics.Color;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
-import org.septa.android.app.R;
 import org.septa.android.app.adapters.FindNearestLocation_ListViewItem_ArrayAdapter;
-import org.septa.android.app.adapters.TransitView_RouteList_ListViewItem_ArrayAdapter;
+import org.septa.android.app.databases.SEPTADatabase;
 import org.septa.android.app.models.LocationModel;
-import org.septa.android.app.models.servicemodels.TransitViewVehicleModel;
+import org.septa.android.app.models.ObjectFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,11 +40,8 @@ public class FindNearestLocationsListFragment extends ListFragment {
     public void setLocationList(List<LocationModel>locationList) {
         this.locationList = locationList;
 
-        ArrayAdapter<LocationModel> adapter = new FindNearestLocation_ListViewItem_ArrayAdapter(getActivity(), locationList);
-        setListAdapter(adapter);
-
-        // after the list has been update, invalidate the list view to re-render
-        this.getListView().invalidate();
+        RouteStopIdLoader routeStopIdLoader = new RouteStopIdLoader(this.getListView());
+        routeStopIdLoader.execute(locationList);
     }
 
     @Override
@@ -56,9 +52,6 @@ public class FindNearestLocationsListFragment extends ListFragment {
 
         ListView lv = getListView();
         lv.setFastScrollEnabled(true);
-
-        lv.setDivider(getActivity().getResources().getDrawable(R.drawable.list_item_separator_gradient));
-        lv.setDividerHeight(3);
 
         lv.setScrollingCacheEnabled(false);
         lv.setSmoothScrollbarEnabled(false);
@@ -74,7 +67,6 @@ public class FindNearestLocationsListFragment extends ListFragment {
         ArrayAdapter<LocationModel> adapter = new FindNearestLocation_ListViewItem_ArrayAdapter(inflater.getContext(), locationList);
         setListAdapter(adapter);
 
-        Log.d(TAG, "about to call super from the onCreateView in TrainViewListFragment");
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
@@ -86,8 +78,8 @@ public class FindNearestLocationsListFragment extends ListFragment {
     @Override
     public void onStart() {
         super.onStart();
-        ListView lv = getListView();
-        lv.setEmptyView(View.inflate(getActivity(), R.layout.row_empty_view, (ViewGroup)getListView().getParent()));
+//        ListView lv = getListView();
+//        lv.setEmptyView(View.inflate(getActivity(), R.layout.row_empty_view, (ViewGroup)getListView().getParent()));
     }
 
     /**
@@ -125,5 +117,60 @@ public class FindNearestLocationsListFragment extends ListFragment {
     public void onDestroy() {
 
         super.onDestroy();
+    }
+
+    private class RouteStopIdLoader extends AsyncTask<List<LocationModel>, Integer, Boolean> {
+        ListView listView = null;
+
+        public RouteStopIdLoader(ListView listView) {
+
+            this.listView = listView;
+        }
+
+        private void loadRoutesPerStop(List<LocationModel>locationList) {
+            Log.d(TAG, "processing routes per stop with a location list size of "+locationList.size());
+            SEPTADatabase septaDatabase = new SEPTADatabase(getActivity());
+            SQLiteDatabase database = septaDatabase.getReadableDatabase();
+
+            for (LocationModel location : locationList) {
+                String queryString = "SELECT route_short_name, stop_id FROM stopIDRouteLookup WHERE stop_id=" + location.getLocationId();
+                Cursor cursor = database.rawQuery(queryString, null);
+                if (cursor != null) {
+                    if (cursor.moveToFirst()) {
+                        do {
+                            location.addRoute(cursor.getString(0));
+                        } while (cursor.moveToNext());
+                    }
+
+                    cursor.close();
+                } else {
+                    Log.d(TAG, "cursor is null");
+                }
+            }
+
+            database.close();
+        }
+
+        @Override
+        protected Boolean doInBackground(List<LocationModel>... params) {
+            List<LocationModel>locationList = params[0];
+
+            loadRoutesPerStop(locationList);
+
+            ObjectFactory.getInstance().getBusRoutes().loadRoutes(getActivity());
+
+            return false;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean b) {
+            super.onPostExecute(b);
+
+            ArrayAdapter<LocationModel> adapter = new FindNearestLocation_ListViewItem_ArrayAdapter(getActivity(), locationList);
+            setListAdapter(adapter);
+
+            // after the list has been updated, invalidate the list view to re-render
+            listView.invalidate();
+        }
     }
 }

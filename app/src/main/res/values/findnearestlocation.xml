@@ -11,5 +11,30 @@
     <string name="title_activity_find_nearest_location_action_bar">FindNearestLocationActionBarActivity</string>
 
     <string name="findnearestlocation_map_zoom_level_float">12.0</string>
+    <string name="distance_miles">miles</string>
+
+    case kSEPTATypeTracklessTrolley:
+    return [UIColor colorWithRed:56.0f/255.0f green:61.0f/255.0f blue:66.0f/255.0f alpha: alpha];
+    <color name="route_view_tracklesstrolley">#383D42</color>
+
+    case kSEPTATypeRail:
+    return [UIColor colorWithRed:69.0f/255.0f green:99.0f/255.0f blue:122.0f/255.0f alpha: alpha];
+    <color name="route_view_rail">#45637A</color>
+
+    case kSEPTATypeMFL:
+    return [UIColor colorWithRed:0.0f/255.0f green:125.0f/255.0f blue:195.0f/255.0f alpha: alpha];
+    <color name="route_view_MFL">#007DC3</color>
+
+    case kSEPTATypeBSL:
+    return [UIColor colorWithRed:245.0f/255.0f green:132.0f/255.0f blue:38.0f/255.0f alpha: alpha];
+    <color name="route_view_BSL">#F58426</color>
+
+    case kSEPTATypeNHSL:
+    return [UIColor colorWithRed:121.0f/255.0f green:29.0f/255.0f blue:126.0f/255.0f alpha: alpha];
+    <color name="route_view_NHSL">#791D7E</color>
+
+    case kSEPTATypeTrolley:
+    return [UIColor colorWithRed:77.0f/255.0f green:121.0f/255.0f blue:0.0f/255.0f alpha: alpha];
+    <color name="route_view_trolley">#4D7900</color>
 
 </resources>

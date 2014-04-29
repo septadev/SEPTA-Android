@@ -22,10 +22,11 @@ public class LoadDatabaseTask extends AsyncTask<Context, Void, Void> {
 
     // Provide a constructor so we can get a Context to use to create
     // the ProgressDialog.
-    public LoadDatabaseTask(Context context) {
+    public LoadDatabaseTask(Context context, ProgressDialog progressDialog) {
         super();
 
         mContext = context;
+        mDialog = progressDialog;
     }
 
     @Override
@@ -33,7 +34,6 @@ public class LoadDatabaseTask extends AsyncTask<Context, Void, Void> {
         super.onPreExecute();
 
         // create a show the dialog announcing the loading of the database file.
-        mDialog = new ProgressDialog(mContext);
         mDialog.setMessage(mContext.getString(R.string.database_loading_message));
         mDialog.show();
     }
@@ -49,7 +49,8 @@ public class LoadDatabaseTask extends AsyncTask<Context, Void, Void> {
     @Override
     protected void onPostExecute(Void result) {
         super.onPostExecute(result);
-
-        mDialog.dismiss();
+        if (mDialog != null) {
+            mDialog.dismiss();
+        }
     }
 }

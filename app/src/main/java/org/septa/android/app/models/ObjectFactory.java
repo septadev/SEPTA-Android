@@ -7,7 +7,10 @@
 
 package org.septa.android.app.models;
 
+import android.content.Context;
 import android.util.Log;
+
+import java.util.HashMap;
 
 public class ObjectFactory {
     private static final String TAG = ObjectFactory.class.getName();
@@ -20,34 +23,29 @@ public class ObjectFactory {
     private static RoutesModel railRoutesSignleton = null;
     private static Object railRoutesMutex = new Object();
 
+    private static HashMap<String, KMLModel> kmlModels = new HashMap<String, KMLModel>();
+    private static Object kmlModelMutex = new Object();
+
     private ObjectFactory(){
     }
 
     public static ObjectFactory getInstance(){
-        Log.v(TAG, "getInstance in the ObjectFactory");
         if(instance==null){
-            Log.d(TAG, "the ObjectFactory is null, instanciate");
             synchronized (mutex){
                 if(instance==null) instance= new ObjectFactory();
             }
-        } else {
-            Log.d(TAG, "the ObjectFactor is not null, return the instance");
         }
 
         return instance;
     }
 
     public RoutesModel getBusRoutes() {
-        Log.d(TAG, "getBusRoutes in the ObjectFactory");
         if (busRoutesSignleton == null) {
-            Log.d(TAG, "busRoutesSingleton is null, instanciate");
             synchronized (busRoutesMutex) {
                 if (busRoutesSignleton == null) {
                     busRoutesSignleton = new RoutesModel(RoutesModel.RouteType.BUS_ROUTE);
                 }
             }
-        } else {
-            Log.d(TAG, "the busRoutesSingleton is not null, return the instance");
         }
 
         return busRoutesSignleton;
@@ -63,5 +61,20 @@ public class ObjectFactory {
         }
 
         return railRoutesSignleton;
+    }
+
+    public KMLModel getKMLModel(Context context, String kmlFileName) {
+        KMLModel model = kmlModels.get(kmlFileName);
+
+        if (model == null) {
+            synchronized (kmlModelMutex) {
+                if (model == null) {
+                    model = KMLModel.processKMLFile(context, kmlFileName);
+                }
+            }
+        }
+
+        kmlModels.put(kmlFileName, model);
+        return model;
     }
 }

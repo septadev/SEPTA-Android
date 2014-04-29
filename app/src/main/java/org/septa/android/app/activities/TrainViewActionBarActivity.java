@@ -42,6 +42,7 @@ import org.septa.android.app.R;
 import org.septa.android.app.fragments.TrainViewListFragment;
 import org.septa.android.app.models.KMLModel;
 import org.septa.android.app.models.LocationModel;
+import org.septa.android.app.models.ObjectFactory;
 import org.septa.android.app.models.servicemodels.TrainViewModel;
 import org.septa.android.app.services.apiproxies.TrainViewServiceProxy;
 import org.septa.android.app.utilities.KMLSAXXMLProcessor;
@@ -104,10 +105,12 @@ public class TrainViewActionBarActivity extends BaseAnalyticsActionBarActivity i
         mMap.setMyLocationEnabled(true);
         mLocationClient = new LocationClient(this, this, this);
 
-        KMLSAXXMLProcessor processor = new KMLSAXXMLProcessor(getAssets());
-        processor.readKMLFile("kml/train/regionalrail.kml");
+//        KMLSAXXMLProcessor processor = new KMLSAXXMLProcessor(getAssets());
+//        processor.readKMLFile("kml/train/regionalrail.kml");
+//
+//        kmlModel = processor.getKMLModel();
 
-        kmlModel = processor.getKMLModel();
+        kmlModel = ObjectFactory.getInstance().getKMLModel(this, "kml/train/regionalrail.kml");
 
         // loop through the placemarks
         List<KMLModel.Document.Placemark> placemarkList = kmlModel.getDocument().getPlacemarkList();

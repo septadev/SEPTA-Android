@@ -45,6 +45,7 @@ public class FindNearestLocation_ListViewItem_ArrayAdapter extends ArrayAdapter<
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        Log.d(TAG, "getView for the find nearest location row with position "+position);
         LayoutInflater inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 

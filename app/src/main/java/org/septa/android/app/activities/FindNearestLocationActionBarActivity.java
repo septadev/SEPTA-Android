@@ -127,9 +127,10 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
 
     @Override
     public void onLocationChanged(Location newLocation) {
+        Log.d(TAG, "location changed with accuracy of "+newLocation.getAccuracy());
         // TODO: find a different way to tell if we should make our network calls, with a timer.
         // TODO: find a better way to shut off the updates and resume when it makes sense
-        if (newLocation.getAccuracy()< 16.0) {
+        if (newLocation.getAccuracy()< 100.0) {
             mLocationClient.disconnect();
             LatLng currentLocation = new LatLng(newLocation.getLatitude(), newLocation.getLongitude());
 
@@ -170,11 +171,9 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
                 }
             };
 
-            Log.d(TAG, "stating location service call...");
             LocationServiceProxy locationServiceProxy = new LocationServiceProxy();
             setSupportProgressBarIndeterminateVisibility(Boolean.TRUE);
             locationServiceProxy.getLocation(newLocation.getLongitude(), newLocation.getLatitude(), 2.5F, "bus_stops", callback);
-            Log.d(TAG, "ended the call, now wait for the callback");
         }
     }
 

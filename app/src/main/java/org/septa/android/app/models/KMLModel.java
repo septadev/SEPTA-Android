@@ -7,10 +7,12 @@
 
 package org.septa.android.app.models;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import org.septa.android.app.utilities.KMLSAXXMLProcessor;
 import org.septa.android.app.utilities.SAXXMLHandler;
 
 import java.util.ArrayList;
@@ -351,10 +353,10 @@ public class KMLModel {
 
                 public List<LatLng> getLatLngCoordinates() {
                     List<LatLng> latLngList = new ArrayList<LatLng>();
-                        List<Coordinate> coordinates = getCoordinateList();
-                        for (Coordinate coordinate : coordinates) {
-                            latLngList.add(coordinate.getLatLong());
-                        }
+                    List<Coordinate> coordinates = getCoordinateList();
+                    for (Coordinate coordinate : coordinates) {
+                        latLngList.add(coordinate.getLatLong());
+                    }
 
                     return latLngList;
                 }
@@ -379,7 +381,7 @@ public class KMLModel {
                             } else {
                                 coordinate = new Coordinate();
                                 coordinate.setLatLong(new LatLng(Double.parseDouble(coordinateParts[1]),
-                                                                 Double.parseDouble(coordinateParts[0])));
+                                        Double.parseDouble(coordinateParts[0])));
                                 coordinate.setNotsure(Integer.parseInt(coordinateParts[2]));
                             }
 
@@ -410,6 +412,12 @@ public class KMLModel {
                 }
             }
         }
+    }
 
+    public static KMLModel processKMLFile(Context context, String kmlFileName) {
+        KMLSAXXMLProcessor processor = new KMLSAXXMLProcessor(context.getAssets());
+        processor.readKMLFile(kmlFileName);
+
+        return processor.getKMLModel();
     }
 }

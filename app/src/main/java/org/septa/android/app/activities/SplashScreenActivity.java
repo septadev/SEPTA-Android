@@ -7,6 +7,7 @@
 
 package org.septa.android.app.activities;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
@@ -14,11 +15,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.widget.GridLayout;
 import android.util.Log;
+import android.util.TimingLogger;
 import android.view.Gravity;
 import android.widget.ImageView;
 
 import org.septa.android.app.R;
+import org.septa.android.app.models.ObjectFactory;
 import org.septa.android.app.tasks.LoadDatabaseTask;
+import org.septa.android.app.tasks.LoadKMLFileTask;
 
 import java.io.File;
 
@@ -63,8 +67,13 @@ public class SplashScreenActivity extends BaseAnalyticsActivity {
             }
         }
 
+        final ProgressDialog progressDialog = new ProgressDialog(this);
+
         new Handler().postDelayed(new Runnable() {
             public void run() {
+                if (progressDialog != null) {
+                    progressDialog.dismiss();
+                }
                 startActivity(new Intent(SplashScreenActivity.this,
                         MainTabbarActivity.class));
 //                startActivity(new Intent(SplashScreenActivity.this,
@@ -72,11 +81,15 @@ public class SplashScreenActivity extends BaseAnalyticsActivity {
                 finish();
             }
         }, getResources().getInteger(R.integer.splashscreen_delaytime_seconds) * 1000);
-Log.d(TAG, "the database path is "+this.getDatabasePath(DATABASE_NAME));
+
         File databaseFileName = new File(this.getApplicationInfo().dataDir+"/databases/"+DATABASE_NAME);
         if (!databaseFileName.exists()) {
-            Log.d(TAG, "did not find the database file");
-            new LoadDatabaseTask(this).execute(this, null, null);
+            new LoadDatabaseTask(this, progressDialog).execute(this, null, null);
         }
+
+        // since the regional rail KML file is rather large, pre-load it via an AsyncTask using
+        //  the factory and held in a singleton until it is needed.
+        LoadKMLFileTask loadKMLFileTask = new LoadKMLFileTask(this, "kml/train/regionalrail.kml");
+        loadKMLFileTask.execute(this);
     }
 }

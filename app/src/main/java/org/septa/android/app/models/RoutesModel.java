@@ -25,6 +25,8 @@ public class RoutesModel {
     private HashMap<String, RouteModel> busRoutesByRouteShortName;
     private RouteType routeType;
 
+    private boolean loaded = false;
+
     public enum RouteType { BUS_ROUTE, RAIL_ROUTE }
 
     public RoutesModel(RouteType routeType) {
@@ -75,6 +77,8 @@ public class RoutesModel {
     }
 
     public void loadRoutes(Context context) {
+        if (loaded) return;
+
         TimingLogger timings = new TimingLogger("RoutesModel", "loadRoutes");
 
         SEPTADatabase septaDatabase = new SEPTADatabase(context);
@@ -116,6 +120,7 @@ public class RoutesModel {
             }
 
             cursor.close();
+            loaded = true;
         } else {
             Log.d(TAG, "cursor is null");
         }
@@ -123,5 +128,10 @@ public class RoutesModel {
         database.close();
 
         timings.dumpToLog();
+    }
+
+    public void reset() {
+
+        this.loaded = false;
     }
 }

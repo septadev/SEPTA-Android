@@ -105,11 +105,6 @@ public class TrainViewActionBarActivity extends BaseAnalyticsActionBarActivity i
         mMap.setMyLocationEnabled(true);
         mLocationClient = new LocationClient(this, this, this);
 
-//        KMLSAXXMLProcessor processor = new KMLSAXXMLProcessor(getAssets());
-//        processor.readKMLFile("kml/train/regionalrail.kml");
-//
-//        kmlModel = processor.getKMLModel();
-
         kmlModel = ObjectFactory.getInstance().getKMLModel(this, "kml/train/regionalrail.kml");
 
         // loop through the placemarks

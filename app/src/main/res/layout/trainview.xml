@@ -19,14 +19,12 @@
         android:layout_height="match_parent"
         android:id="@+id/back_frame"
         android:orientation="horizontal">
-
         <RelativeLayout
             android:layout_width="0dp"
             android:layout_weight="25"
             android:layout_height="match_parent"
             android:id="@+id/left_padding_frame">
         </RelativeLayout>
-
         <RelativeLayout
             android:layout_width="0dp"
             android:layout_weight="75"
@@ -39,7 +37,6 @@
                 android:id="@+id/trainview_list_fragment"
                 android:name="org.septa.android.app.fragments.TrainViewListFragment"/>
         </RelativeLayout>
-
     </LinearLayout>
 
     <FrameLayout
@@ -64,4 +61,5 @@
                 android:name="com.google.android.gms.maps.SupportMapFragment"/>
         </LinearLayout>
     </FrameLayout>
+
 </FrameLayout>

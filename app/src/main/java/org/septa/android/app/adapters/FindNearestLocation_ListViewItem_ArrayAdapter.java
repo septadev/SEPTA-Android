@@ -76,20 +76,18 @@ public class FindNearestLocation_ListViewItem_ArrayAdapter extends ArrayAdapter<
 
                 TextView routeTextView = new TextView(context);
 
-                int width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 34, context.getResources().getDisplayMetrics());
+                int width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 38, context.getResources().getDisplayMetrics());
                 LinearLayout.LayoutParams textViewLayoutParams = new LinearLayout.LayoutParams(width,
                                                                                                ViewGroup.LayoutParams.WRAP_CONTENT);
-                textViewLayoutParams.setMargins(5, 5, 0, 0); // llp.setMargins(left, top, right, bottom);
+                textViewLayoutParams.setMargins(0, 0, 5, 0); // llp.setMargins(left, top, right, bottom);
                 routeTextView.setLayoutParams(textViewLayoutParams);
-                routeTextView.setPadding(5, 5, 0, 0);
+                routeTextView.setPadding(5, 5, 5, 5);
                 routeTextView.setGravity(Gravity.CENTER);
 
                 routeTextView.setBackgroundResource(R.drawable.findnearestlocation_roundedbutton_corners);
 
                 RoutesModel busRoutesModel = ObjectFactory.getInstance().getBusRoutes();
                 busRoutesModel.loadRoutes(context);
-
-//                int routeType = (int)busRoutesModel.getRouteByRouteShortName(route.getRouteShortName()).getRouteType().intValue();
 
                 GradientDrawable drawable = (GradientDrawable) routeTextView.getBackground();
                 switch (route.getRouteType()) {

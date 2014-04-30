@@ -45,21 +45,3 @@ public class LocationAdaptor {
         return restAdapter.create(LocationService.class);
     }
 }
-
-class MyErrorHandler implements ErrorHandler {
-    public static final String TAG = LocationAdaptor.class.getName();
-    @Override
-    public Throwable handleError(RetrofitError cause) {
-
-        Log.d(TAG, "cause? "+cause.getMessage());
-
-        Log.d(TAG, "url? "+cause.getUrl());
-
-        Response r = cause.getResponse();
-        if (r != null) {
-
-            return new Exception("a service call exception");
-        }
-        return cause;
-    }
-}

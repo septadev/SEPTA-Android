@@ -368,16 +368,13 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
                     Log.d(TAG, "bound here "+transitViewVehicle.getDirection());
 
                     if (transitViewVehicle.isSouthBound() || transitViewVehicle.isWestBound()) {
-                        Log.d(TAG, "setting bus map icon color to red");
                         transitIcon = BitmapDescriptorFactory.fromResource(R.drawable.ic_transitview_bus_red);
                     } else {
-                        Log.d(TAG, "setting bus map icon color to blue");
                         transitIcon = BitmapDescriptorFactory.fromResource(R.drawable.ic_transitview_bus_blue);
                     }
 
                     // check to make sure that mMap is not null
                     if (mMap != null) {
-                        Log.d(TAG, "adding the marker to the map at lat of "+transitViewVehicle.getLatitude()+" and long of "+transitViewVehicle.getLongitude());
                         mMap.addMarker(new MarkerOptions()
                                 .position(transitViewVehicle.getLatLng())
                                 .title("Vehicle: "+transitViewVehicle.getVehicleId()+ " (updated: x min)")

@@ -12,21 +12,60 @@
     android:background="@drawable/main_background"
     tools:context="org.septa.android.app.activities.FindNearestLocationActionBarActivity">
 
-    <fragment
-        android:layout_width="match_parent"
-        android:layout_height="fill_parent"
-        android:layout_weight="2"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
-        android:id="@+id/nearestLocationMapFragment"
-        android:layout_alignParentTop="true"/>
-
-    <fragment
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="3"
-        android:name="org.septa.android.app.fragments.FindNearestLocationsListFragment"
-        android:id="@+id/nearestLocationListFragment"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"/>
+        android:layout_weight="2">
+        <fragment
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:id="@+id/nearestLocationMapFragment"
+            android:layout_alignParentTop="true"/>
+    </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_weight="3">
+        <fragment
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:name="org.septa.android.app.fragments.FindNearestLocationsListFragment"
+            android:id="@+id/nearestLocationListFragment"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"/>
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                      android:id="@+id/row_empty_view"
+                      android:orientation="horizontal"
+                      android:layout_width="match_parent"
+                      android:layout_height="match_parent"
+                      android:background="@drawable/main_background">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/black">
+
+                <TextView
+                    android:id="@+id/rowemptyview_textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="20dp"
+                    android:paddingBottom="20dp"
+                    android:layout_marginLeft="10dp"
+                    android:text="@string/no_data_available"
+                    android:background="@android:color/black"
+                    android:textColor="@android:color/white"
+                    android:textStyle="bold"/>
+
+                <ProgressBar
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@id/rowemptyview_textview"
+                    android:visibility="invisible"/>
+
+            </RelativeLayout>
+        </LinearLayout>
+    </LinearLayout>
 </LinearLayout>

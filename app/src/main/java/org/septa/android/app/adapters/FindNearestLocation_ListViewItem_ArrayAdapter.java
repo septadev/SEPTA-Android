@@ -45,7 +45,6 @@ public class FindNearestLocation_ListViewItem_ArrayAdapter extends ArrayAdapter<
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        Log.d(TAG, "getView for the find nearest location row with position "+position);
         LayoutInflater inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -70,7 +69,6 @@ public class FindNearestLocation_ListViewItem_ArrayAdapter extends ArrayAdapter<
 
             int routeCount = 1;
             for (String route : location.getRoutes()) {
-                Log.d(TAG, "the route...  "+location.print());
                 // for the view, we can fit 10 routes comfortably
                 if (routeCount==10) break;
 
@@ -94,7 +92,6 @@ public class FindNearestLocation_ListViewItem_ArrayAdapter extends ArrayAdapter<
 
                 Log.d(TAG, "for this route, the type is "+routeType);
 
-                //
                 drawable.setColor(Color.BLUE);
 
                 routeTextView.setText(route);

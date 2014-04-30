@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import org.septa.android.app.R;
 import org.septa.android.app.adapters.FindNearestLocation_ListViewItem_ArrayAdapter;
 import org.septa.android.app.databases.SEPTADatabase;
 import org.septa.android.app.models.LocationModel;
@@ -33,7 +34,7 @@ public class FindNearestLocationsListFragment extends ListFragment {
     private List<LocationModel> locationList;
 
     public FindNearestLocationsListFragment() {
-        // instanciate an empty array list for the TrainViewModels
+        // instantiate an empty array list for the TrainViewModels
         locationList = new ArrayList<LocationModel>(0);
     }
 
@@ -52,6 +53,8 @@ public class FindNearestLocationsListFragment extends ListFragment {
 
         ListView lv = getListView();
         lv.setFastScrollEnabled(true);
+
+        lv.setEmptyView(lv.findViewById(R.id.row_empty_view));
 
         lv.setScrollingCacheEnabled(false);
         lv.setSmoothScrollbarEnabled(false);

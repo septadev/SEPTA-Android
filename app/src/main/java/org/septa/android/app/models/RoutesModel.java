@@ -27,7 +27,7 @@ public class RoutesModel {
 
     private boolean loaded = false;
 
-    public enum RouteType { BUS_ROUTE, RAIL_ROUTE }
+    public enum RouteType { BUS_ROUTE, RAIL_ROUTE, TROLLEY_ROUTE }
 
     public RoutesModel(RouteType routeType) {
 

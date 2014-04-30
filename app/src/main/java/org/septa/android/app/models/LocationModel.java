@@ -64,11 +64,12 @@ public class LocationModel {
         return new ArrayList(routes.values());
     }
 
-    public void addRoute(String routeShortName, LocationBasedRouteModel.DirectionCode direction) {
+    public void addRoute(String routeShortName, LocationBasedRouteModel.DirectionCode direction, int routeType) {
         LocationBasedRouteModel routeModel = routes.containsKey(routeShortName)?routes.get(routeShortName):new LocationBasedRouteModel();
 
         routeModel.setDirectionBinaryPower(routeModel.getDirectionBinaryPower()+(int)Math.pow(2, direction.ordinal()));
         routeModel.setRouteShortName(routeShortName);
+        routeModel.setRouteType(routeType);
 
         this.routes.put(routeShortName, routeModel);
     }

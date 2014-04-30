@@ -25,6 +25,7 @@ import org.septa.android.app.databases.SEPTADatabase;
 import org.septa.android.app.models.LocationBasedRouteModel;
 import org.septa.android.app.models.LocationModel;
 import org.septa.android.app.models.ObjectFactory;
+import org.septa.android.app.models.RoutesModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,10 +40,22 @@ public class FindNearestLocationsListFragment extends ListFragment {
         locationList = new ArrayList<LocationModel>(0);
     }
 
-    public void setLocationList(List<LocationModel>locationList) {
-        this.locationList = locationList;
+    public void setLocationList(List<LocationModel>locationList, String type) {
+        RoutesModel routesModel = null;
 
-        RouteStopIdLoader routeStopIdLoader = new RouteStopIdLoader(this.getListView());
+        Log.d(TAG, "setting the location list for type " + type);
+
+        this.locationList.addAll(locationList);
+
+        if (type.equals("bus")) {
+            routesModel = ObjectFactory.getInstance().getBusRoutes();
+        } else if (type.equals("rail")) {
+            routesModel = ObjectFactory.getInstance().getRailRoutes();
+        } else {
+            routesModel = ObjectFactory.getInstance().getTrolleyRoutes();
+        }
+
+        RouteStopIdLoader routeStopIdLoader = new RouteStopIdLoader(this.getListView(), routesModel);
         routeStopIdLoader.execute(locationList);
     }
 
@@ -125,10 +138,12 @@ public class FindNearestLocationsListFragment extends ListFragment {
 
     private class RouteStopIdLoader extends AsyncTask<List<LocationModel>, Integer, Boolean> {
         ListView listView = null;
+        RoutesModel routesModel = null;
 
-        public RouteStopIdLoader(ListView listView) {
+        public RouteStopIdLoader(ListView listView, RoutesModel routesModel) {
 
             this.listView = listView;
+            this.routesModel = routesModel;
         }
 
         private void loadRoutesPerStop(List<LocationModel>locationList) {
@@ -137,12 +152,12 @@ public class FindNearestLocationsListFragment extends ListFragment {
             SQLiteDatabase database = septaDatabase.getReadableDatabase();
 
             for (LocationModel location : locationList) {
-                String queryString = "SELECT route_short_name, stop_id, Direction, dircode FROM stopIDRouteLookup WHERE stop_id=" + location.getLocationId();
+                String queryString = "SELECT route_short_name, stop_id, Direction, dircode, route_type FROM stopIDRouteLookup WHERE stop_id=" + location.getLocationId();
                 Cursor cursor = database.rawQuery(queryString, null);
                 if (cursor != null) {
                     if (cursor.moveToFirst()) {
                         do {
-                            location.addRoute(cursor.getString(0), LocationBasedRouteModel.DirectionCode.valueOf(cursor.getString(2)));
+                            location.addRoute(cursor.getString(0), LocationBasedRouteModel.DirectionCode.valueOf(cursor.getString(2)), cursor.getInt(4));
                         } while (cursor.moveToNext());
                     }
 
@@ -161,7 +176,8 @@ public class FindNearestLocationsListFragment extends ListFragment {
 
             loadRoutesPerStop(locationList);
 
-            ObjectFactory.getInstance().getBusRoutes().loadRoutes(getActivity());
+//            ObjectFactory.getInstance().getBusRoutes().loadRoutes(getActivity());
+            routesModel.loadRoutes(getActivity());
 
             return false;
         }

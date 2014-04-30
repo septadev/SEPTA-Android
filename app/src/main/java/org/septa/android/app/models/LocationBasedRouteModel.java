@@ -10,6 +10,7 @@ package org.septa.android.app.models;
 public class LocationBasedRouteModel {
         private String routeShortName;
         private int directionBinaryPower = 0;
+        private int routeType = 0;
 
     public int getDirectionBinaryPower() {
         return directionBinaryPower;
@@ -19,8 +20,16 @@ public class LocationBasedRouteModel {
         this.directionBinaryPower = directionBinaryPower;
     }
 
+    public int getRouteType() {
+        return routeType;
+    }
+
+    public void setRouteType(int routeType) {
+        this.routeType = routeType;
+    }
+
     public enum DirectionCode {
-        N, S, E, W
+        N, S, E, W, X
     }
 
     public String getRouteShortName() {

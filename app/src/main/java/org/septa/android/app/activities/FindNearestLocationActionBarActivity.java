@@ -136,7 +136,8 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
 
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, Float.parseFloat(getString(R.string.findnearestlocation_map_zoom_level_float))));
 
-            Callback callback = new Callback() {
+            // TODO: refactor this to support both bus and rail
+            Callback busStopsCallback = new Callback() {
                 @Override
                 public void success(Object o, Response response) {
                     Log.d(TAG, "successfully ended location service call with " + ((ArrayList<LocationModel>) o).size());
@@ -144,7 +145,7 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
                     ActivityCompat.invalidateOptionsMenu(FindNearestLocationActionBarActivity.this);
 
                     FindNearestLocationsListFragment listFragment = (FindNearestLocationsListFragment) getSupportFragmentManager().findFragmentById(R.id.nearestLocationListFragment);
-                    listFragment.setLocationList((ArrayList<LocationModel>)o);
+                    listFragment.setLocationList((ArrayList<LocationModel>)o, "bus");
 
                     for (LocationModel location: (ArrayList<LocationModel>)o) {
                         // check to make sure that mMap is not null
@@ -171,9 +172,87 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
                 }
             };
 
-            LocationServiceProxy locationServiceProxy = new LocationServiceProxy();
+            Callback railStopsCallBack = new Callback() {
+                @Override
+                public void success(Object o, Response response) {
+                    Log.d(TAG, "successfully ended location service call with " + ((ArrayList<LocationModel>) o).size());
+                    setProgressBarIndeterminateVisibility(Boolean.FALSE);
+                    ActivityCompat.invalidateOptionsMenu(FindNearestLocationActionBarActivity.this);
+
+                    FindNearestLocationsListFragment listFragment = (FindNearestLocationsListFragment) getSupportFragmentManager().findFragmentById(R.id.nearestLocationListFragment);
+                    listFragment.setLocationList((ArrayList<LocationModel>)o, "rail");
+
+                    for (LocationModel location: (ArrayList<LocationModel>)o) {
+                        // check to make sure that mMap is not null
+                        if (mMap != null) {
+                            mMap.addMarker(new MarkerOptions()
+                                    .position(new LatLng(location.getLocationLatitude(), location.getLocationLongitude()))
+                                    .title(location.getLocationName())
+                                    .snippet("Route: "));
+                        }
+                    }
+                }
+
+                @Override
+                public void failure(RetrofitError retrofitError) {
+                    setSupportProgressBarIndeterminateVisibility(Boolean.FALSE);
+                    ActivityCompat.invalidateOptionsMenu(FindNearestLocationActionBarActivity.this);
+
+                    try {
+                        Log.d(TAG, "A failure in the call to location service with body |" + retrofitError.getResponse().getBody().in() + "|");
+                    } catch (Exception ex) {
+                        // TODO: clean this up
+                        Log.d(TAG, "blah... what is going on?");
+                    }
+                }
+            };
+
+            Callback trolleyStopsCallBack = new Callback() {
+                @Override
+                public void success(Object o, Response response) {
+                    Log.d(TAG, "successfully ended location service call with " + ((ArrayList<LocationModel>) o).size());
+                    setProgressBarIndeterminateVisibility(Boolean.FALSE);
+                    ActivityCompat.invalidateOptionsMenu(FindNearestLocationActionBarActivity.this);
+
+                    FindNearestLocationsListFragment listFragment = (FindNearestLocationsListFragment) getSupportFragmentManager().findFragmentById(R.id.nearestLocationListFragment);
+                    listFragment.setLocationList((ArrayList<LocationModel>)o, "trolley");
+
+                    for (LocationModel location: (ArrayList<LocationModel>)o) {
+                        // check to make sure that mMap is not null
+                        if (mMap != null) {
+                            mMap.addMarker(new MarkerOptions()
+                                    .position(new LatLng(location.getLocationLatitude(), location.getLocationLongitude()))
+                                    .title(location.getLocationName())
+                                    .snippet("Route: "));
+                        }
+                    }
+                }
+
+                @Override
+                public void failure(RetrofitError retrofitError) {
+                    setSupportProgressBarIndeterminateVisibility(Boolean.FALSE);
+                    ActivityCompat.invalidateOptionsMenu(FindNearestLocationActionBarActivity.this);
+
+                    try {
+                        Log.d(TAG, "A failure in the call to location service with body |" + retrofitError.getResponse().getBody().in() + "|");
+                    } catch (Exception ex) {
+                        // TODO: clean this up
+                        Log.d(TAG, "blah... what is going on?");
+                    }
+                }
+            };
+
+//            LocationServiceProxy busStopsLocationServiceProxy = new LocationServiceProxy();
+//            setSupportProgressBarIndeterminateVisibility(Boolean.TRUE);
+//            busStopsLocationServiceProxy.getLocation(newLocation.getLongitude(), newLocation.getLatitude(), 2.58F, "bus_stops", busStopsCallback);
+
+            LocationServiceProxy railStopsLocationServiceProxy = new LocationServiceProxy();
             setSupportProgressBarIndeterminateVisibility(Boolean.TRUE);
-            locationServiceProxy.getLocation(newLocation.getLongitude(), newLocation.getLatitude(), 2.5F, "bus_stops", callback);
+            railStopsLocationServiceProxy.getLocation(newLocation.getLongitude(), newLocation.getLatitude(), 2.58F, "rail_stops", railStopsCallBack);
+
+//            LocationServiceProxy trolleyStopsLocationServiceProxy = new LocationServiceProxy();
+//            setSupportProgressBarIndeterminateVisibility(Boolean.TRUE);
+//            trolleyStopsLocationServiceProxy.getLocation(newLocation.getLongitude(), newLocation.getLatitude(), 2.58F, "trolley_stops", trolleyStopsCallBack);
         }
     }
 

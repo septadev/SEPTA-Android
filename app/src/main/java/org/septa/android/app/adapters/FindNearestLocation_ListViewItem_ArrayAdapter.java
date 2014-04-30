@@ -85,16 +85,57 @@ public class FindNearestLocation_ListViewItem_ArrayAdapter extends ArrayAdapter<
                 routeTextView.setGravity(Gravity.CENTER);
 
                 routeTextView.setBackgroundResource(R.drawable.findnearestlocation_roundedbutton_corners);
-                GradientDrawable drawable = (GradientDrawable) routeTextView.getBackground();
 
                 RoutesModel busRoutesModel = ObjectFactory.getInstance().getBusRoutes();
                 busRoutesModel.loadRoutes(context);
 
-                int routeType = (int)busRoutesModel.getRouteByRouteShortName(route.getRouteShortName()).getRouteType().intValue();
+//                int routeType = (int)busRoutesModel.getRouteByRouteShortName(route.getRouteShortName()).getRouteType().intValue();
 
-                Log.d(TAG, "for this route, the type is "+routeType);
-                // TODO: set the correct color for the oval
-                drawable.setColor(Color.BLUE);
+                GradientDrawable drawable = (GradientDrawable) routeTextView.getBackground();
+                switch (route.getRouteType()) {
+                    case 0: {   // trolley
+                        if (route.getRouteShortName().equals("NHSL")) {
+                            drawable.setColor(0xFF791D7E);
+                        } else {
+                            drawable.setColor(0xFF4D7900);
+                        }
+                        break;
+                    }
+                    case 1: {   // subway
+                        if (route.getRouteShortName().equals("BSS")) {
+                            drawable.setColor(0xFFF58426);
+                        } else {
+                            if (route.getRouteShortName().equals("MFL")) {
+                                drawable.setColor(0xFF007DC3);
+                            } else {
+                                drawable.setColor(0xFF000000);
+                            }
+                        }
+                        break;
+                    }
+                    case 2: {   // rail
+                        drawable.setColor(0xFF45637A);
+
+                        break;
+                    }
+                    case 3: {   // bus
+                        if (route.getRouteShortName().equals("MFO")) {
+                            drawable.setColor(0xFF007DC3);
+                        } else {
+                            if (route.getRouteShortName().equals("BSO")) {
+                                drawable.setColor(0xFFF58426);
+                            } else { // bus
+                                drawable.setColor(0xFF383D42);
+                            }
+                        }
+                        break;
+                    }
+                    default: {
+                        Log.d(TAG, "this should not be a value option");
+
+                        break;
+                    }
+                }
 
                 String routeText = "";
                 switch (route.getDirectionBinaryPower()) {
@@ -110,7 +151,7 @@ public class FindNearestLocation_ListViewItem_ArrayAdapter extends ArrayAdapter<
                         routeText = route.getRouteShortName() + "E";
                     }
                     case 8: {
-                        routeText = route.getRouteShortName()+"W";
+                        routeText = route.getRouteShortName() + "W";
                         break;
                     }
                     default: {
@@ -118,7 +159,6 @@ public class FindNearestLocation_ListViewItem_ArrayAdapter extends ArrayAdapter<
                         break;
                     }
                 }
-
                 routeTextView.setText(routeText);
                 routeTextView.setTextColor(Color.WHITE);
                 routeTextView.setTextSize(12.0f);

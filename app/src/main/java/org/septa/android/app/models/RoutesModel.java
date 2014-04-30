@@ -21,8 +21,8 @@ import org.septa.android.app.databases.SEPTADatabase;
 
 public class RoutesModel {
     private static final String TAG = RoutesModel.class.getName();
-    private HashMap<String, RouteModel> busRoutesByRouteId;
-    private HashMap<String, RouteModel> busRoutesByRouteShortName;
+    private HashMap<String, RouteModel> routesByRouteId;
+    private HashMap<String, RouteModel> routesByRouteShortName;
     private RouteType routeType;
 
     private boolean loaded = false;
@@ -31,49 +31,49 @@ public class RoutesModel {
 
     public RoutesModel(RouteType routeType) {
 
-        this.busRoutesByRouteId = new HashMap<String, RouteModel>();
-        this.busRoutesByRouteShortName = new HashMap<String, RouteModel>();
+        this.routesByRouteId = new HashMap<String, RouteModel>();
+        this.routesByRouteShortName = new HashMap<String, RouteModel>();
 
         this.routeType = routeType;
     }
 
     public RoutesModel(RouteType routeType, int size) {
-        this.busRoutesByRouteId = new HashMap<String, RouteModel>(size);
-        this.busRoutesByRouteShortName = new HashMap<String, RouteModel>(size);
+        this.routesByRouteId = new HashMap<String, RouteModel>(size);
+        this.routesByRouteShortName = new HashMap<String, RouteModel>(size);
 
         this.routeType = routeType;
     }
 
-    public List<RouteModel>getBusRouteModels() {
+    public List<RouteModel>getRouteModels() {
 
-        ArrayList<RouteModel> arrayList = new ArrayList<RouteModel>(this.busRoutesByRouteId.values());
+        ArrayList<RouteModel> arrayList = new ArrayList<RouteModel>(this.routesByRouteId.values());
 
         return arrayList;
     }
 
-    public RouteModel getBusRouteByRouteShortName(String routeShortName) {
+    public RouteModel getRouteByRouteShortName(String routeShortName) {
 
-        return busRoutesByRouteShortName.get(routeShortName);
+        return routesByRouteShortName.get(routeShortName);
     }
 
-    public void setBusRouteByRouteShortName(String routeShortName, RouteModel busRoute) {
+    public void setRouteByRouteShortName(String routeShortName, RouteModel busRoute) {
 
-        busRoutesByRouteShortName.put(routeShortName, busRoute);
+        routesByRouteShortName.put(routeShortName, busRoute);
     }
 
-    public RouteModel getBusRouteByRouteId(String routeId) {
+    public RouteModel getRouteByRouteId(String routeId) {
 
-        return busRoutesByRouteId.get(routeId);
+        return routesByRouteId.get(routeId);
     }
 
-    public void setBusRouteByRouteId(String routeId, RouteModel busRoute) {
+    public void setRouteByRouteId(String routeId, RouteModel busRoute) {
 
-        busRoutesByRouteId.put(routeId, busRoute);
+        routesByRouteId.put(routeId, busRoute);
     }
 
-    public int getBusRoutesCount() {
+    public int getRoutesCount() {
 
-        return busRoutesByRouteId.size();
+        return routesByRouteId.size();
     }
 
     public void loadRoutes(Context context) {
@@ -98,7 +98,7 @@ public class RoutesModel {
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 do {
-                    RouteModel busRoute = getBusRouteByRouteId(cursor.getString(0));
+                    RouteModel busRoute = getRouteByRouteId(cursor.getString(0));
 
                     if (busRoute == null) {
                         busRoute = new RouteModel();
@@ -113,8 +113,8 @@ public class RoutesModel {
 
                     busRoute.addMinMaxHoursToRoute(cursor.getString(3), minMaxHours);
 
-                    setBusRouteByRouteId(cursor.getString(0), busRoute);
-                    setBusRouteByRouteShortName(cursor.getString(1), busRoute);
+                    setRouteByRouteId(cursor.getString(0), busRoute);
+                    setRouteByRouteShortName(cursor.getString(1), busRoute);
                     timings.addSplit("      processed a record...");
                 } while (cursor.moveToNext());
             }

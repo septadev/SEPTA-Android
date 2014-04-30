@@ -10,22 +10,26 @@ package org.septa.android.app.models;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class LocationModel {
+    public static final String TAG = LocationModel.class.getName();
 
-    public float distance;
-    public LocationDataModel location_data;
-    public int location_id;
-    public float location_lat;
-    public float location_lon;
-    public String location_name;
-    public String location_type;
-    public List<String> routes;
+    private float distance;
+    private LocationDataModel location_data;
+    private int location_id;
+    private float location_lat;
+    private float location_lon;
+    private String location_name;
+    private String location_type;
+    private HashMap<String, LocationBasedRouteModel> routes;
+    private HashMap<String, Number> directionBinary;
 
     public LocationModel() {
 
-        this.routes = new ArrayList<String>();
+        this.routes = new HashMap<String, LocationBasedRouteModel>();
+        directionBinary = new HashMap<String, Number>();
     }
 
     public float getDistance() {
@@ -56,13 +60,17 @@ public class LocationModel {
         return location_type;
     }
 
-    public List<String> getRoutes() {
-        return routes;
+    public List<LocationBasedRouteModel> getRoutes() {
+        return new ArrayList(routes.values());
     }
 
-    public void addRoute(String routeShortName) {
+    public void addRoute(String routeShortName, LocationBasedRouteModel.DirectionCode direction) {
+        LocationBasedRouteModel routeModel = routes.containsKey(routeShortName)?routes.get(routeShortName):new LocationBasedRouteModel();
 
-        this.routes.add(routeShortName);
+        routeModel.setDirectionBinaryPower(routeModel.getDirectionBinaryPower()+(int)Math.pow(2, direction.ordinal()));
+        routeModel.setRouteShortName(routeShortName);
+
+        this.routes.put(routeShortName, routeModel);
     }
 
     public String print() {
@@ -76,8 +84,8 @@ public class LocationModel {
 
         if (routes.size()>0) {
             output += " routes:";
-            for (String route : routes) {
-                output += route + ",";
+            for (LocationBasedRouteModel route : routes.values()) {
+                output += route.getRouteShortName() + ",";
             }
         }
 

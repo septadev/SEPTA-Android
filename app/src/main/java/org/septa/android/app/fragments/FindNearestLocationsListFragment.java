@@ -22,6 +22,7 @@ import android.widget.ListView;
 import org.septa.android.app.R;
 import org.septa.android.app.adapters.FindNearestLocation_ListViewItem_ArrayAdapter;
 import org.septa.android.app.databases.SEPTADatabase;
+import org.septa.android.app.models.LocationBasedRouteModel;
 import org.septa.android.app.models.LocationModel;
 import org.septa.android.app.models.ObjectFactory;
 
@@ -136,12 +137,12 @@ public class FindNearestLocationsListFragment extends ListFragment {
             SQLiteDatabase database = septaDatabase.getReadableDatabase();
 
             for (LocationModel location : locationList) {
-                String queryString = "SELECT route_short_name, stop_id FROM stopIDRouteLookup WHERE stop_id=" + location.getLocationId();
+                String queryString = "SELECT route_short_name, stop_id, Direction, dircode FROM stopIDRouteLookup WHERE stop_id=" + location.getLocationId();
                 Cursor cursor = database.rawQuery(queryString, null);
                 if (cursor != null) {
                     if (cursor.moveToFirst()) {
                         do {
-                            location.addRoute(cursor.getString(0));
+                            location.addRoute(cursor.getString(0), LocationBasedRouteModel.DirectionCode.valueOf(cursor.getString(2)));
                         } while (cursor.moveToNext());
                     }
 

@@ -21,6 +21,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.septa.android.app.R;
+import org.septa.android.app.models.LocationBasedRouteModel;
 import org.septa.android.app.models.LocationModel;
 import org.septa.android.app.models.ObjectFactory;
 import org.septa.android.app.models.RoutesModel;
@@ -68,13 +69,14 @@ public class FindNearestLocation_ListViewItem_ArrayAdapter extends ArrayAdapter<
             LinearLayout routesViewLayout = (LinearLayout)rowView.findViewById(R.id.findnearestlocations_listView_routesView_layout);
 
             int routeCount = 1;
-            for (String route : location.getRoutes()) {
+
+            for (LocationBasedRouteModel route : location.getRoutes()) {
                 // for the view, we can fit 10 routes comfortably
                 if (routeCount==10) break;
 
                 TextView routeTextView = new TextView(context);
 
-                int width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 30, context.getResources().getDisplayMetrics());
+                int width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 34, context.getResources().getDisplayMetrics());
                 LinearLayout.LayoutParams textViewLayoutParams = new LinearLayout.LayoutParams(width,
                                                                                                ViewGroup.LayoutParams.WRAP_CONTENT);
                 textViewLayoutParams.setMargins(5, 5, 0, 0); // llp.setMargins(left, top, right, bottom);
@@ -88,13 +90,36 @@ public class FindNearestLocation_ListViewItem_ArrayAdapter extends ArrayAdapter<
                 RoutesModel busRoutesModel = ObjectFactory.getInstance().getBusRoutes();
                 busRoutesModel.loadRoutes(context);
 
-                int routeType = (int)busRoutesModel.getBusRouteByRouteShortName(route).getRouteType().intValue();
+                int routeType = (int)busRoutesModel.getRouteByRouteShortName(route.getRouteShortName()).getRouteType().intValue();
 
                 Log.d(TAG, "for this route, the type is "+routeType);
-
+                // TODO: set the correct color for the oval
                 drawable.setColor(Color.BLUE);
 
-                routeTextView.setText(route);
+                String routeText = "";
+                switch (route.getDirectionBinaryPower()) {
+                    case 1: {
+                        routeText = route.getRouteShortName() + "N";
+                        break;
+                    }
+                    case 2: {
+                        routeText = route.getRouteShortName() + "S";
+                        break;
+                    }
+                    case 4: {
+                        routeText = route.getRouteShortName() + "E";
+                    }
+                    case 8: {
+                        routeText = route.getRouteShortName()+"W";
+                        break;
+                    }
+                    default: {
+                        routeText = route.getRouteShortName();
+                        break;
+                    }
+                }
+
+                routeTextView.setText(routeText);
                 routeTextView.setTextColor(Color.WHITE);
                 routeTextView.setTextSize(12.0f);
 

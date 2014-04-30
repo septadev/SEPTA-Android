@@ -56,7 +56,7 @@ public class TransitViewListFragment extends ListFragment {
         busRoutesModel.loadRoutes(getActivity());
         Log.d(TAG, "loaded routes");
 
-        busRouteModelList = busRoutesModel.getBusRouteModels();
+        busRouteModelList = busRoutesModel.getRouteModels();
         Collections.sort(busRouteModelList);
         _adapter = new TransitView_ListViewItem_ArrayAdapter(getActivity(), busRouteModelList);
 

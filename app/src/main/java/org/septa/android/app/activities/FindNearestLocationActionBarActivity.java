@@ -9,6 +9,7 @@ package org.septa.android.app.activities;
 
 import com.google.android.gms.common.GooglePlayServicesClient;
 
+import android.content.DialogInterface;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
@@ -110,18 +111,21 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.actionmenu_findnearestlocationactionbar_changeradius:
-                Log.d(TAG, "heard the change radius action item pressed");
-
                 inChangeRadiusMode = true;
                 ActivityCompat.invalidateOptionsMenu(this);
 
-                findNearestLocationEditRadiusDialog = new FindNearestLocationEditRadiusDialog(this, R.style.editradius_diaglog);
+                findNearestLocationEditRadiusDialog = new FindNearestLocationEditRadiusDialog(this);
+                findNearestLocationEditRadiusDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        inChangeRadiusMode = false;
+                        ActivityCompat.invalidateOptionsMenu(FindNearestLocationActionBarActivity.this);
+                    }
+                });
                 findNearestLocationEditRadiusDialog.show();
 
                 return true;
             case R.id.actionmenu_findnearestlocationactionbar_changeradius_done:
-                Log.d(TAG, "heard the done change radius action item pressed");
-
                 findNearestLocationEditRadiusDialog.dismiss();
 
                 inChangeRadiusMode = false;

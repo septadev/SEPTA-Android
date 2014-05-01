@@ -10,11 +10,9 @@ package org.septa.android.app.dialogs;
 import android.app.Activity;
 import android.app.Dialog;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.TextView;
 
 import org.septa.android.app.R;
 
@@ -35,12 +33,10 @@ public class FindNearestLocationEditRadiusDialog extends Dialog {
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-        setCanceledOnTouchOutside(true);
+        setCanceledOnTouchOutside(false);
         setCancelable(true);
 
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL, WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH, WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH);
 
         setContentView(R.layout.findnearestlocation_editradius_dialog);
@@ -49,9 +45,7 @@ public class FindNearestLocationEditRadiusDialog extends Dialog {
     @Override
     public boolean onTouchEvent(MotionEvent event)
     {
-        Log.d(TAG, "received a motion event as "+event.toString());
         if(event.getAction() == MotionEvent.ACTION_OUTSIDE){
-            Log.d(TAG, "touched outside the modal");
 
             this.dismiss();
         }

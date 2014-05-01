@@ -40,8 +40,6 @@ public class CustomerServiceDialDialogFragment extends DialogFragment {
 
         dialog.setCanceledOnTouchOutside(true);
 
-        dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         dialog.setContentView(R.layout.connect_customerservice_dialog);
 
         // find the views by Id

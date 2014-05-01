@@ -28,6 +28,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.septa.android.app.R;
+import org.septa.android.app.dialogs.FindNearestLocationEditRadiusDialog;
 import org.septa.android.app.fragments.FindNearestLocationsListFragment;
 import org.septa.android.app.services.apiproxies.LocationServiceProxy;
 import org.septa.android.app.models.LocationModel;
@@ -62,6 +63,8 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
     private static final int FASTEST_INTERVAL_IN_SECONDS = 10;
     private static final long FASTEST_INTERVAL =
             MILLISECONDS_PER_SECOND * FASTEST_INTERVAL_IN_SECONDS;
+
+    private FindNearestLocationEditRadiusDialog findNearestLocationEditRadiusDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,9 +115,14 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
                 inChangeRadiusMode = true;
                 ActivityCompat.invalidateOptionsMenu(this);
 
+                findNearestLocationEditRadiusDialog = new FindNearestLocationEditRadiusDialog(this, R.style.editradius_diaglog);
+                findNearestLocationEditRadiusDialog.show();
+
                 return true;
             case R.id.actionmenu_findnearestlocationactionbar_changeradius_done:
                 Log.d(TAG, "heard the done change radius action item pressed");
+
+                findNearestLocationEditRadiusDialog.dismiss();
 
                 inChangeRadiusMode = false;
                 ActivityCompat.invalidateOptionsMenu(this);

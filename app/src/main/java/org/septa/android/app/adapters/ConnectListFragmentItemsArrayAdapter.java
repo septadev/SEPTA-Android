@@ -41,7 +41,6 @@ public class ConnectListFragmentItemsArrayAdapter extends ArrayAdapter<String> {
         textView.setText(values[position]);
 
         String resourceName = "ic_connect_".concat(values[position].toLowerCase().replaceAll("\\s+", ""));
-        Log.d(TAG, "resource name for connect listfragment item is "+resourceName);
 
         Context context = imageView.getContext();
         int id = context.getResources().getIdentifier(resourceName, "drawable", context.getPackageName());

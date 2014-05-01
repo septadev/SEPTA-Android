@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:paddingLeft="10dp"
+              android:paddingRight="10dp"
+              android:paddingTop="10dp"
+              android:paddingBottom="10dp"
+              android:background="@android:color/darker_gray">
+    <TextView
+        android:id="@+id/findnearestlocations_editradius_dialog_title_textview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Distance from your current location to search:"
+        android:gravity="left"
+        android:textSize="8dp"
+        android:textColor="#ffffff"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/radiusedit_textview_ones"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:textSize="24dp"
+            android:inputType="number"
+            android:maxLength="1"
+            android:textColor="#FFFFFFFF"/>
+        <TextView
+            android:id="@+id/radiusedit_textview_decimal"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:textSize="24dp"
+            android:editable="false"
+            android:textColor="#FFFFFFFF"
+            android:text="."/>
+
+        <EditText
+            android:id="@+id/radiusedit_textview_tenths"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:textSize="24dp"
+            android:inputType="number"
+            android:maxLength="1"
+            android:textColor="#FFFFFFFF"/>
+        <EditText
+            android:id="@+id/radiusedit_textview_hundredths"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:textSize="24dp"
+            android:inputType="number"
+            android:maxLength="1"
+            android:textColor="#FFFFFFFF"/>
+        <EditText
+            android:id="@+id/radiusedit_textview_thounsandths"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:textSize="24dp"
+            android:inputType="number"
+            android:maxLength="1"
+            android:textColor="#FFFFFFFF"/>
+        </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:gravity="right"
+        android:text="miles"
+        android:textSize="12sp"
+        android:textColor="#FFFFFFFF"/>
+
+</LinearLayout>

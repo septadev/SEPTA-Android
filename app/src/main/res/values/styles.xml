@@ -98,4 +98,10 @@
         <item name="android:paddingRight">10dp</item>
     </style>
 
+
+    <style name="editradius_diaglog" parent="@android:style/Theme.Dialog">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">true</item>
+    </style>
+
 </resources>

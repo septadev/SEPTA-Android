@@ -28,6 +28,8 @@ import org.septa.android.app.models.ObjectFactory;
 import org.septa.android.app.models.RoutesModel;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class FindNearestLocationsListFragment extends ListFragment {
@@ -46,6 +48,11 @@ public class FindNearestLocationsListFragment extends ListFragment {
         Log.d(TAG, "setting the location list for type " + type);
 
         this.locationList.addAll(locationList);
+        Collections.sort(this.locationList, new Comparator<LocationModel>() {
+            public int compare(LocationModel location1, LocationModel location2) {
+                return new Float(location1.getDistance()).compareTo(new Float(location2.getDistance()));
+            }
+        });
 
         if (type.equals("bus")) {
             routesModel = ObjectFactory.getInstance().getBusRoutes();

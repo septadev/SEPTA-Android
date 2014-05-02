@@ -22,6 +22,7 @@ import android.view.WindowManager;
 import android.widget.EditText;
 
 import org.septa.android.app.R;
+import org.septa.android.app.utilities.PixelHelper;
 
 public class FindNearestLocationEditRadiusDialog extends Dialog {
     public static final String TAG = FindNearestLocationEditRadiusDialog.class.getName();
@@ -124,8 +125,8 @@ public class FindNearestLocationEditRadiusDialog extends Dialog {
         Window window = getWindow();
         WindowManager.LayoutParams windowsLayoutParams = window.getAttributes();
         windowsLayoutParams.gravity = Gravity.TOP | Gravity.RIGHT;
-        windowsLayoutParams.x = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, activity.getResources().getDisplayMetrics());   //x position
-        windowsLayoutParams.y = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 50, activity.getResources().getDisplayMetrics());;   //y position
+        windowsLayoutParams.x = PixelHelper.pixelsToDensityIndependentPixels(getContext(), 10);   //x position
+        windowsLayoutParams.y = PixelHelper.pixelsToDensityIndependentPixels(getContext(), 50);   //y position
         window.setAttributes(windowsLayoutParams);
 
         setContentView(R.layout.findnearestlocation_editradius_dialog);

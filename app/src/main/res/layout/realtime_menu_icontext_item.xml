@@ -22,14 +22,13 @@
         android:clickable="true"/>
 
     <TextView
+        android:id="@+id/realtime_menu_icontext_item_textView"
         android:layout_width="wrap_content"
-        android:layout_height="24dp"
+        android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textSize="10sp"
         android:textColor="#FFFFFF"
-        android:text="Test Text"
         android:gravity="center"
-        android:id="@+id/realtime_menu_icontext_item_textView"
         android:layout_gravity="bottom|center_horizontal"
         android:layout_marginBottom="5dp"/>
 

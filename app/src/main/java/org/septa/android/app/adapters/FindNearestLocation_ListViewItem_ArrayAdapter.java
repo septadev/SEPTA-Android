@@ -25,6 +25,7 @@ import org.septa.android.app.models.LocationBasedRouteModel;
 import org.septa.android.app.models.LocationModel;
 import org.septa.android.app.models.ObjectFactory;
 import org.septa.android.app.models.RoutesModel;
+import org.septa.android.app.utilities.PixelHelper;
 
 import java.util.List;
 
@@ -76,7 +77,7 @@ public class FindNearestLocation_ListViewItem_ArrayAdapter extends ArrayAdapter<
 
                 TextView routeTextView = new TextView(context);
 
-                int width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 38, context.getResources().getDisplayMetrics());
+                int width = PixelHelper.pixelsToDensityIndependentPixels(context, 38);
                 LinearLayout.LayoutParams textViewLayoutParams = new LinearLayout.LayoutParams(width,
                                                                                                ViewGroup.LayoutParams.WRAP_CONTENT);
                 textViewLayoutParams.setMargins(0, 0, 5, 0); // llp.setMargins(left, top, right, bottom);

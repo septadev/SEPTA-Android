@@ -81,7 +81,6 @@ public class RealtimeMenuFragment extends Fragment {
 
                 imageView.setOnClickListener(new View.OnClickListener() {
                     public void onClick(final View v) {
-                        Log.d("RealtimeMenuFragment", "the view clicked is "+v.getTag());
                         Class intentClass = (Class)v.getTag();
                         Intent intent = new Intent(getActivity(), intentClass);
                         intent.putExtra(getString(R.string.actionbar_titletext_key), titleText);

@@ -16,6 +16,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 
 import org.septa.android.app.R;
+import org.septa.android.app.utilities.PixelHelper;
 
 public class SplashScreen_ImageAdapter extends BaseAdapter {
     private static final String TAG = SplashScreen_ImageAdapter.class.getName();
@@ -46,10 +47,13 @@ public class SplashScreen_ImageAdapter extends BaseAdapter {
         if (convertView == null) {  // if it's not recycled, initialize some attributes
             imageView = new ImageView(mContext);
 
-            imageView.setLayoutParams(new GridView.LayoutParams(85, 85));
+            imageView.setLayoutParams(new GridView.LayoutParams(PixelHelper.pixelsToDensityIndependentPixels(mContext ,85),
+                                                                PixelHelper.pixelsToDensityIndependentPixels(mContext ,85)));
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            imageView.setPadding(8, 8, 8, 8);
-
+            imageView.setPadding(PixelHelper.pixelsToDensityIndependentPixels(mContext ,8),
+                                 PixelHelper.pixelsToDensityIndependentPixels(mContext ,8),
+                                 PixelHelper.pixelsToDensityIndependentPixels(mContext ,8),
+                                 PixelHelper.pixelsToDensityIndependentPixels(mContext ,8));
         } else {
             imageView = (ImageView) convertView;
         }

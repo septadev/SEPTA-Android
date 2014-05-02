@@ -10,6 +10,8 @@ package org.septa.android.app.models;
 import android.content.Context;
 import android.util.Log;
 
+import org.septa.android.app.managers.SharedPreferencesManager;
+
 import java.util.HashMap;
 
 public class ObjectFactory {
@@ -24,6 +26,9 @@ public class ObjectFactory {
     private static Object railRoutesMutex = new Object();
     private static RoutesModel trolleyRoutesSignleton = null;
     private static Object trolleyRoutesMutex = new Object();
+
+    private static SharedPreferencesManager sharedPreferencesManagerSingleton = null;
+    private static Object sharedPreferencesManagerMutex = new Object();
 
 
     private static HashMap<String, KMLModel> kmlModels = new HashMap<String, KMLModel>();
@@ -91,5 +96,17 @@ public class ObjectFactory {
 
         kmlModels.put(kmlFileName, model);
         return model;
+    }
+
+    public SharedPreferencesManager getSharedPreferencesManager(Context context) {
+        if (sharedPreferencesManagerSingleton == null) {
+            synchronized (sharedPreferencesManagerMutex) {
+                if (sharedPreferencesManagerSingleton == null) {
+                    sharedPreferencesManagerSingleton = new SharedPreferencesManager(context);
+                }
+            }
+        }
+
+        return sharedPreferencesManagerSingleton;
     }
 }

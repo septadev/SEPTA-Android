@@ -7,9 +7,7 @@
 
 package org.septa.android.app.activities;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -29,6 +27,7 @@ import org.septa.android.app.R;
 import org.septa.android.app.fragments.ConnectListFragment;
 import org.septa.android.app.fragments.RealtimeMenuFragment;
 import org.septa.android.app.fragments.TransitMapImageViewFragment;
+import org.septa.android.app.models.ObjectFactory;
 
 public class MainTabbarActivity extends BaseAnalyticsActionBarActivity implements ActionBar.TabListener {
     public static final String TAG = MainTabbarActivity.class.getName();
@@ -91,18 +90,18 @@ public class MainTabbarActivity extends BaseAnalyticsActionBarActivity implement
             );
         }
 
-        SharedPreferences activityPreferences = getPreferences(Activity.MODE_PRIVATE);
-        int maintabbarSelectedSection = activityPreferences.getInt("maintabbar_selected_section", 0);
+        int maintabbarSelectedSection = ObjectFactory.getInstance()
+                .getSharedPreferencesManager(this)
+                .getMainTabbarSelectedSection();
+
         actionBar.setSelectedNavigationItem(maintabbarSelectedSection);
     }
 
     @Override
     protected void onStop() {
-        SharedPreferences activityPreferences = getPreferences(Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = activityPreferences.edit();
-
-        editor.putInt("maintabbar_selected_section", getSupportActionBar().getSelectedNavigationIndex());
-        editor.apply();
+        ObjectFactory.getInstance().getSharedPreferencesManager(this)
+                .setMainTabbarSelectedSection(getSupportActionBar()
+                .getSelectedNavigationIndex());
 
         super.onStop();
     }

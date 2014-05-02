@@ -13,6 +13,7 @@ import android.content.DialogInterface;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -72,6 +73,18 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
 
     private Location existingLocation = null;
 
+    private float mapSearchRadius;
+
+    private float getMapSearchRadius() {
+
+        return mapSearchRadius;
+    }
+
+    private void setMapSearchRadius(float mapSearchRadius) {
+
+        this.mapSearchRadius = mapSearchRadius;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,6 +104,8 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
         mMap.setMyLocationEnabled(true);
 
         mLocationClient = new LocationClient(this, this, this);
+
+        mapSearchRadius = ObjectFactory.getInstance().getSharedPreferencesManager(this).getNearestLocationMapSearchRadius();
     }
 
     @Override
@@ -126,10 +141,18 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
                     public void onDismiss(DialogInterface dialog) {
                         inChangeRadiusMode = false;
                         ActivityCompat.invalidateOptionsMenu(FindNearestLocationActionBarActivity.this);
-                        Log.d(TAG, "heard the modal being dismissed, the new value of the radius is " + findNearestLocationEditRadiusDialog.getMapSearchRadius());
 
-                        ObjectFactory.getInstance().getSharedPreferencesManager(FindNearestLocationActionBarActivity.this).setNearestLocationMapSearchRadius(findNearestLocationEditRadiusDialog.getMapSearchRadius());
-                        loadMapAndListView(existingLocation, findNearestLocationEditRadiusDialog.getMapSearchRadius());
+                        Log.d(TAG, "performing the eval of the map search radius");
+                        if (getMapSearchRadius() != findNearestLocationEditRadiusDialog.getMapSearchRadius()) {
+                            Log.d(TAG, "found them to be unequal, do work");
+
+                            setMapSearchRadius(mapSearchRadius);
+
+                            ObjectFactory.getInstance().getSharedPreferencesManager(FindNearestLocationActionBarActivity.this).setNearestLocationMapSearchRadius(findNearestLocationEditRadiusDialog.getMapSearchRadius());
+                            loadMapAndListView(existingLocation, findNearestLocationEditRadiusDialog.getMapSearchRadius());
+                        } else {
+                            Log.d(TAG, "radius are equal, nothing");
+                        }
                     }
                 });
 
@@ -149,11 +172,17 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
     }
 
     private void loadMapAndListView(Location newLocation, float mapSearchRadius) {
-        // TODO: refactor this to support both bus and rail
+        if (mMap != null) {
+            mMap.clear();
+        }
+
+        FindNearestLocationsListFragment findNearestLocationsListFragment = (FindNearestLocationsListFragment) getSupportFragmentManager().
+                findFragmentById(R.id.nearestLocationListFragment);
+        findNearestLocationsListFragment.clearLocationLists();
+
         Callback busStopsCallback = new Callback() {
             @Override
             public void success(Object o, Response response) {
-                Log.d(TAG, "successfully ended location service call with " + ((ArrayList<LocationModel>) o).size());
                 if (--locationServiceCalls < 1) {
                     setProgressBarIndeterminateVisibility(Boolean.FALSE);
                 }
@@ -192,7 +221,6 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
         Callback railStopsCallBack = new Callback() {
             @Override
             public void success(Object o, Response response) {
-                Log.d(TAG, "successfully ended location service call with " + ((ArrayList<LocationModel>) o).size());
                 if (--locationServiceCalls < 1) {
                     setProgressBarIndeterminateVisibility(Boolean.FALSE);
                 }
@@ -231,7 +259,6 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
         Callback trolleyStopsCallBack = new Callback() {
             @Override
             public void success(Object o, Response response) {
-                Log.d(TAG, "successfully ended location service call with " + ((ArrayList<LocationModel>) o).size());
                 if (--locationServiceCalls < 1) {
                     setProgressBarIndeterminateVisibility(Boolean.FALSE);
                 }
@@ -266,12 +293,6 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
                 }
             }
         };
-
-        if (mMap != null) {
-            mMap.clear();
-        }
-
-        Log.d(TAG, "map search radius is "+ mapSearchRadius+" now.");
 
         LocationServiceProxy busStopsLocationServiceProxy = new LocationServiceProxy();
         setSupportProgressBarIndeterminateVisibility(Boolean.TRUE);

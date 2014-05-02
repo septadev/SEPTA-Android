@@ -10,8 +10,13 @@ package org.septa.android.app.managers;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
+
+import org.septa.android.app.fragments.FindNearestLocationsListFragment;
 
 public class SharedPreferencesManager {
+    public static final String TAG = FindNearestLocationsListFragment.class.getName();
+
     private SharedPreferences sharedPreferences = null;
     private int mainTabbarSelectedSection = 0;    // the default starting value is 0
     private float nearestLocationMapSearchRadius = 2.5f;    // the default starting value is 2.5 miles
@@ -35,6 +40,7 @@ public class SharedPreferencesManager {
     }
 
     private void readFromPreferencesMainTabbarSelectedSection() {
+
         mainTabbarSelectedSection = sharedPreferences.getInt("maintabbar_selected_section", mainTabbarSelectedSection);
     }
 
@@ -51,6 +57,7 @@ public class SharedPreferencesManager {
 
     public void setNearestLocationMapSearchRadius(float nearestLocationMapSearchRadius) {
         this.nearestLocationMapSearchRadius = nearestLocationMapSearchRadius;
+        writePreferenceForNearestLocationMapSearchRedius();
     }
 
     private void readFromPreferencesNearestLocationMapSearchRadius() {

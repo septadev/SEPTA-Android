@@ -42,6 +42,12 @@ public class FindNearestLocationsListFragment extends ListFragment {
         locationList = new ArrayList<LocationModel>(0);
     }
 
+    public void clearLocationLists() {
+
+        this.locationList = new ArrayList<LocationModel>(0);
+        this.getListView().invalidate();
+    }
+
     public void setLocationList(List<LocationModel>locationList, String type) {
         RoutesModel routesModel = null;
 
@@ -183,7 +189,6 @@ public class FindNearestLocationsListFragment extends ListFragment {
 
             loadRoutesPerStop(locationList);
 
-//            ObjectFactory.getInstance().getBusRoutes().loadRoutes(getActivity());
             routesModel.loadRoutes(getActivity());
 
             return false;

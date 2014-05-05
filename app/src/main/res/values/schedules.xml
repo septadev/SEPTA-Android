@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ schedules.xml
+  ~ Last modified on 05-05-2014 15:40-0400 by brianhmayo
+  ~
+  ~ Copyright (c) 2014 SEPTA.  All rights reserved.
+  -->
+
+<resources>
+
+    <!-- for the connect tab, the listview items -->
+    <string-array name="schedulesfragment_listview_items">
+        <item>Regional Rail Line</item>
+        <item>Market-Frankford Line</item>
+        <item>Broad Street Line</item>
+        <item>Trolley Lines</item>
+        <item>Norristown High Speed Line</item>
+        <item>Buses</item>
+    </string-array>
+
+    <string name="schedulesfragment_listview_leftimage_startname">ic_schedules_</string>
+    <string name="schedulesfragment_listview_rightimage_startname">bg_schedules_</string>
+    <string-array name="schedulesfragment_listview_bothimage_endnames">
+        <item>rrl</item>
+        <item>mfl</item>
+        <item>bsl</item>
+        <item>trolley</item>
+        <item>nhsl</item>
+        <item>bus</item>
+    </string-array>
+
+</resources>

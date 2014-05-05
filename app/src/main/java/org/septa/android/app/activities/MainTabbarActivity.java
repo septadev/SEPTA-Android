@@ -26,6 +26,7 @@ import android.widget.TextView;
 import org.septa.android.app.R;
 import org.septa.android.app.fragments.ConnectListFragment;
 import org.septa.android.app.fragments.RealtimeMenuFragment;
+import org.septa.android.app.fragments.SchedulesListFragment;
 import org.septa.android.app.fragments.TransitMapImageViewFragment;
 import org.septa.android.app.models.ObjectFactory;
 
@@ -208,19 +209,19 @@ public class MainTabbarActivity extends BaseAnalyticsActionBarActivity implement
             Fragment fragment = null;
 
             switch (position) {
-                case 0:
-                       fragment = new RealtimeMenuFragment();
+                case 0: // Realtime
+                    fragment = new RealtimeMenuFragment();
 
                     break;
-                case 1:
-                    fragment = PlaceholderFragment.newInstance(position + 1);
+                case 1: // Schedules
+                    fragment = new SchedulesListFragment();
 
                     break;
-                case 2:
+                case 2: // Transit Map
                     fragment = new TransitMapImageViewFragment();
 
                     break;
-                case 3:
+                case 3: // Connect
                     fragment = new ConnectListFragment();
 
                     break;

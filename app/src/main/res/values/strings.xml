@@ -36,7 +36,7 @@
             <item>Realtime</item>
             <item>Schedules</item>
             <item>Map</item>
-            <!-- <item>Settings</item> -->
+            <!-- <item>Settings</item> -->   <!-- leaving this option commented out as we entertain the settings in the overflow menu -->
             <item>Connect</item>
         </string-array>
 

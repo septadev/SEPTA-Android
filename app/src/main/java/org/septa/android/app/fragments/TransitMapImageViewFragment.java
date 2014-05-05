@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 
 import org.septa.android.app.R;
 import org.septa.android.app.SubsamplingScaleImageView;
+import org.septa.android.app.models.ObjectFactory;
 
 import java.io.IOException;
 
@@ -26,6 +27,8 @@ public class TransitMapImageViewFragment extends Fragment {
     private static final String STATE_CENTER_X = "state-center-x";
     private static final String STATE_CENTER_Y = "state-center-y";
 
+    private SubsamplingScaleImageView imageView;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -34,12 +37,19 @@ public class TransitMapImageViewFragment extends Fragment {
         View theView = inflater.inflate(R.layout.fragment_transitmap, container, false);
 
         try {
-            SubsamplingScaleImageView imageView = (SubsamplingScaleImageView) theView.findViewById(R.id.imageView);
+            imageView = (SubsamplingScaleImageView) theView.findViewById(R.id.imageView);
             imageView.setImageAsset("system-map.png");
         } catch (IOException e) {
             Log.e(TransitMapImageViewFragment.class.getSimpleName(), "Could not load asset", e);
         }
 
         return theView;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        ObjectFactory.getInstance().getSharedPreferencesManager(getActivity()).setTransitMapScale(imageView.getScale());
     }
 }

@@ -20,7 +20,6 @@ public class SharedPreferencesManager {
     private SharedPreferences sharedPreferences = null;
     private int mainTabbarSelectedSection = 0;    // the default starting value is 0
     private float nearestLocationMapSearchRadius = 2.5f;    // the default starting value is 2.5 miles
-    private float transitMapScale = 0f;
 
     public SharedPreferencesManager(Context context) {
 
@@ -28,7 +27,6 @@ public class SharedPreferencesManager {
 
         readFromPreferencesMainTabbarSelectedSection();
         readFromPreferencesNearestLocationMapSearchRadius();
-        readFromPreferencesTransitMapScale();
     }
 
     public int getMainTabbarSelectedSection() {
@@ -53,7 +51,7 @@ public class SharedPreferencesManager {
     }
 
     public float getNearestLocationMapSearchRadius() {
-
+        Log.d(TAG, "returning "+ nearestLocationMapSearchRadius +"for the nearest location map search radius");
         return nearestLocationMapSearchRadius;
     }
 
@@ -72,26 +70,4 @@ public class SharedPreferencesManager {
         editor.putFloat("findnearestlocation_mapsearch_radius", nearestLocationMapSearchRadius);
         editor.apply();
     }
-
-    public float getTransitMapScale() {
-
-        return transitMapScale;
-    }
-
-    public void setTransitMapScale(float transitMapScale) {
-        this.transitMapScale = transitMapScale;
-        writePreferenceForTransitMapScale();
-    }
-
-    private void readFromPreferencesTransitMapScale() {
-
-        nearestLocationMapSearchRadius = sharedPreferences.getFloat("transitmap_scale", transitMapScale);
-    }
-
-    private void writePreferenceForTransitMapScale() {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putFloat("transitmap_scale", nearestLocationMapSearchRadius);
-        editor.apply();
-    }
-
 }

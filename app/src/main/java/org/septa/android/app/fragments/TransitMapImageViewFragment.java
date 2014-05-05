@@ -49,7 +49,5 @@ public class TransitMapImageViewFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-
-        ObjectFactory.getInstance().getSharedPreferencesManager(getActivity()).setTransitMapScale(imageView.getScale());
     }
 }

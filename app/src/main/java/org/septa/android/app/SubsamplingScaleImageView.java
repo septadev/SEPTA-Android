@@ -163,18 +163,19 @@ public class SubsamplingScaleImageView extends View implements OnTouchListener {
             }
         }
 
+        // TODO: adjust the way the density dpi is being used against the buckets.
         switch (context.getResources().getDisplayMetrics().densityDpi) {
-            case 1: {   // mdpi
+            case 160: {   // mdpi
                 scale = .1036f;
                 break;
             }
 
-            case 2: {  // xhdpi
+            case 320: {  // xhdpi
                 scale = .314f;
                 break;
             }
 
-            case 3: {  // xxhdpi
+            case 480: {  // xxhdpi
                 scale = .474f;
                 break;
             }

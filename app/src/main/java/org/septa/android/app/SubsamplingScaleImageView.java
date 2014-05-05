@@ -162,8 +162,29 @@ public class SubsamplingScaleImageView extends View implements OnTouchListener {
                 }
             }
         }
-        scale = .314f;
-        scaleStart = .314f;
+
+        switch (context.getResources().getDisplayMetrics().densityDpi) {
+            case 1: {   // mdpi
+                scale = .1036f;
+                break;
+            }
+
+            case 2: {  // xhdpi
+                scale = .314f;
+                break;
+            }
+
+            case 3: {  // xxhdpi
+                scale = .474f;
+                break;
+            }
+
+            default: {
+                scale = .254f;
+            }
+        }
+
+        scaleStart = scale;
         vTranslate = null;
         vTranslateStart = null;
         pendingScale = 0f;
@@ -240,6 +261,10 @@ public class SubsamplingScaleImageView extends View implements OnTouchListener {
                     vTranslateStart = new PointF(vTranslate.x, vTranslate.y);
                     vCenterStart = new PointF((event.getX(0) + event.getX(1))/2, (event.getY(0) + event.getY(1))/2);
                     isZooming = true;
+                    Log.d(TAG, "scale: "+scaleStart);
+                    Log.d(TAG, "device density dpi: "+context.getResources().getDisplayMetrics().densityDpi);
+                    Log.d(TAG, "device density: "+context.getResources().getDisplayMetrics().density);
+                    Log.d(TAG, "device scaled density: "+context.getResources().getDisplayMetrics().scaledDensity);
                 } else {
                     // Start one-finger pan
                     vTranslateStart = new PointF(vTranslate.x, vTranslate.y);

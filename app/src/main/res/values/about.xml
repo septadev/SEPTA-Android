@@ -39,9 +39,11 @@
         <item>GSON</item>
         <item>Retrofit</item>
         <item>Simple-XML</item>
+        <item>QuickScroll</item>
     </string-array>
 
     <string-array name="about_attributions_listview_items_iconSuffixes">
+        <item>notepad</item>
         <item>notepad</item>
         <item>notepad</item>
         <item>notepad</item>
@@ -55,6 +57,7 @@
         <item>https://code.google.com/p/google-gson/source/browse/trunk/gson/LICENSE?r=369</item>
         <item>http://square.github.io/retrofit/#license</item>
         <item>https://www.apache.org/licenses/LICENSE-2.0.txt</item>
+        <item>https://github.com/andraskindler/quickscroll/blob/master/README.md#license</item>
     </string-array>
 
 </resources>

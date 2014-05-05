@@ -34,6 +34,7 @@ dependencies {
     compile group: 'com.squareup.retrofit', name: 'retrofit', version: '1.5.0'
     compile group: 'org.simpleframework', name: 'simple-xml', version: '2.6.3'
     compile group: 'com.readystatesoftware.sqliteasset', name: 'sqliteassethelper', version: '+'
+    compile group: 'com.andraskindler.quickscroll', name: 'quickscroll', version: '0.9.8'
 }
 
 // check that the SEPTA.signing gradle property exists and that its value is the filename to a file

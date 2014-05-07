@@ -9,21 +9,18 @@ package org.septa.android.app.adapters;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.SectionIndexer;
 import android.widget.TextView;
 
 import org.septa.android.app.R;
-import org.septa.android.app.activities.CommentsFormActionBarActivity;
 import org.septa.android.app.models.FavoriteModel;
 import org.septa.android.app.models.RecentlyViewedModel;
-import org.septa.android.app.models.RouteModel;
+import org.septa.android.app.models.RouteTypes;
 import org.septa.android.app.models.SchedulesRouteModel;
 
 import java.util.ArrayList;
@@ -44,12 +41,12 @@ public class SchedulesRouteSelectionListViewItemArrayAdapter extends BaseAdapter
     String leftImageStartName;
     String rightImageBackgroundName;
 
-    String routeType = null;
+    RouteTypes routeType = null;
 
     private int[] mSectionIndices = {0,1,2};
     private String[] sectionTitles = new String[]{ "Favorites", "Recently Viewed", "Routes"};
 
-    public SchedulesRouteSelectionListViewItemArrayAdapter(Context context, String routeType) {
+    public SchedulesRouteSelectionListViewItemArrayAdapter(Context context, RouteTypes routeType) {
         mContext = context;
         mInflater = LayoutInflater.from(context);
 
@@ -163,16 +160,18 @@ public class SchedulesRouteSelectionListViewItemArrayAdapter extends BaseAdapter
                     transparentView.setVisibility(View.GONE);
                 }
             } else{
+                String[] routeTypeLabels = mContext.getResources().getStringArray(R.array.schedulesfragment_listview_bothimage_endnames);
+
                 SchedulesRouteModel rtm = (SchedulesRouteModel)getItem(position);
                 rowView = mInflater.inflate(R.layout.schedules_routeselection_routes_listview_item, parent, false);
                 ImageView leftIconImageView = (ImageView)rowView.findViewById(R.id.schedules_routeselect_item_leftImageView);
                 ImageView rightBackgroundImageView = (ImageView)rowView.findViewById(R.id.schedules_routeselection_item_rightImageBackgroundview);
                 TextView rightTextView = (TextView)rowView.findViewById(R.id.schedules_routeselection_item_rightTextView);
 
-                int id = mContext.getResources().getIdentifier(leftImageStartName + routeType + "_small", "drawable", mContext.getPackageName());
+                int id = mContext.getResources().getIdentifier(leftImageStartName + routeTypeLabels[routeType.ordinal()] + "_small", "drawable", mContext.getPackageName());
                 leftIconImageView.setImageResource(id);
 
-                id = mContext.getResources().getIdentifier(rightImageBackgroundName + routeType, "drawable", mContext.getPackageName());
+                id = mContext.getResources().getIdentifier(rightImageBackgroundName + routeTypeLabels[routeType.ordinal()], "drawable", mContext.getPackageName());
                 rightBackgroundImageView.setImageResource(id);
 
                 // TODO: given the travel type, set the left icon image and the right background color
@@ -180,7 +179,6 @@ public class SchedulesRouteSelectionListViewItemArrayAdapter extends BaseAdapter
                     rightTextView.setText("NN | : " + position + " name here");
                 } else {
                     int routePosition = position - favorites.size() - recentlyViewed.size();
-                    Log.d(TAG, "not sure why rightTextView is null... blah, but I have route title of "+routes.get(routePosition).getRouteTitle());
                 }
             }
         }
@@ -210,7 +208,10 @@ public class SchedulesRouteSelectionListViewItemArrayAdapter extends BaseAdapter
                 holder.text.setBackgroundColor(Color.parseColor("#990DA44A"));
             } else {
                 holder.text.setText(sectionTitles[2]);
-                holder.text.setBackgroundColor(Color.parseColor("#99553344"));
+
+                // get the color from the looking array given the ordinal position of the route type
+                String color = mContext.getResources().getStringArray(R.array.schedules_routeselection_routesheader_colors)[routeType.ordinal()];
+                holder.text.setBackgroundColor(Color.parseColor(color));
             }
         }
 

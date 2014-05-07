@@ -18,7 +18,9 @@ import android.widget.AdapterView;
 
 import org.septa.android.app.R;
 import org.septa.android.app.adapters.SchedulesRouteSelectionListViewItemArrayAdapter;
+import org.septa.android.app.models.RouteTypes;
 
+import roboguice.util.Ln;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
 public class SchedulesRouteSelectionActionBarActivity extends BaseAnalyticsActionBarActivity implements
@@ -29,7 +31,7 @@ public class SchedulesRouteSelectionActionBarActivity extends BaseAnalyticsActio
     private SchedulesRouteSelectionListViewItemArrayAdapter mAdapter;
     private boolean fadeHeader = true;
 
-    private String travelType = null;
+    private RouteTypes travelType;
 
     private StickyListHeadersListView stickyList;
 
@@ -42,13 +44,15 @@ public class SchedulesRouteSelectionActionBarActivity extends BaseAnalyticsActio
         String iconImageNameSuffix = getIntent().getStringExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key));
         String resourceName = getString(R.string.actionbar_iconimage_imagename_base).concat(iconImageNameSuffix);
 
+        Ln.d("resource name is to be "+resourceName);
+
         int id = getResources().getIdentifier(resourceName, "drawable", getPackageName());
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("|" + actionBarTitleText);
         getSupportActionBar().setIcon(id);
 
-        travelType = getIntent().getStringExtra(getString(R.string.schedules_routeselect_travelType));
+        travelType = RouteTypes.valueOf(getIntent().getStringExtra(getString(R.string.schedules_routeselect_travelType)));
 
         mAdapter = new SchedulesRouteSelectionListViewItemArrayAdapter(this, travelType);
 

@@ -40,9 +40,11 @@
         <item>Retrofit</item>
         <item>Simple-XML</item>
         <item>QuickScroll</item>
+        <item>RoboGuice</item>
     </string-array>
 
     <string-array name="about_attributions_listview_items_iconSuffixes">
+        <item>notepad</item>
         <item>notepad</item>
         <item>notepad</item>
         <item>notepad</item>
@@ -58,6 +60,7 @@
         <item>http://square.github.io/retrofit/#license</item>
         <item>https://www.apache.org/licenses/LICENSE-2.0.txt</item>
         <item>https://github.com/andraskindler/quickscroll/blob/master/README.md#license</item>
+        <item>https://github.com/roboguice/roboguice/blob/master/LICENSE</item>
     </string-array>
 
 </resources>

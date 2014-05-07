@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~ schedules_routeselection_listview_itemem.xml
+  ~ Last modified on 05-05-2014 16:52-0400 by brianhmayo
+  ~
+  ~ Copyright (c) 2014 SEPTA.  All rights reserved.
+  -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+          android:orientation="vertical"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent">
+    <RelativeLayout
+                  android:orientation="horizontal"
+                  android:layout_width="match_parent"
+                  android:layout_height="match_parent"
+                  android:background="@android:color/white">
+
+        <TextView
+            android:id="@+id/schedulesrouteselection_favoriterecentlyviewed_routeid_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"/>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_toRightOf="@id/schedulesrouteselection_favoriterecentlyviewed_routeid_textview">
+
+            <TextView
+                android:id="@+id/schedulesrouteselection_favoriterecentlyviewed_start_textview"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"/>
+            <TextView
+                android:id="@+id/schedulesrouteselection_favoriterecentlyviewed_end_textview"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@drawable/gradient_black_to_white_right_to_left"/>
+
+    <View
+        android:id="@+id/schedules_routeselection_favoriteandrecentlyviewed_transparentview"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:background="@android:color/transparent"
+        android:visibility="gone"/>
+
+</LinearLayout>

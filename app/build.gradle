@@ -35,6 +35,7 @@ dependencies {
     compile group: 'org.simpleframework', name: 'simple-xml', version: '2.6.3'
     compile group: 'com.readystatesoftware.sqliteasset', name: 'sqliteassethelper', version: '+'
     compile group: 'com.andraskindler.quickscroll', name: 'quickscroll', version: '0.9.8'
+    compile group: 'se.emilsjolander', name: 'stickylistheaders', version: '+'
 }
 
 // check that the SEPTA.signing gradle property exists and that its value is the filename to a file

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~ gradient_black_to_white_right_to_left.xml
+  ~ Last modified on 05-06-2014 21:40-0400 by brianhmayo
+  ~
+  ~ Copyright (c) 2014 SEPTA.  All rights reserved.
+  -->
+
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+       android:shape="rectangle">
+    <gradient
+        android:startColor="#FF000000"
+        android:endColor="#FFFFFFFF"
+        android:angle="0" />
+</shape>

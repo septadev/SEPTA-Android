@@ -29,4 +29,6 @@
         <item>bus</item>
     </string-array>
 
+    <string name="schedules_routeselect_travelType">schedules_routeselect_travelType</string>
+
 </resources>

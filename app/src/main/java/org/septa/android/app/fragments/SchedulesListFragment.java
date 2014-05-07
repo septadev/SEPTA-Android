@@ -16,6 +16,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import org.septa.android.app.R;
+import org.septa.android.app.activities.SchedulesRouteSelectionActionBarActivity;
 import org.septa.android.app.adapters.Schedules_ListFragment_ArrayAdapter;
 
 public class SchedulesListFragment extends ListFragment {
@@ -41,35 +42,73 @@ public class SchedulesListFragment extends ListFragment {
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
+        Intent schedulesRouteSelectionIntent = null;
 
         switch(position) {
-            case 0:
-                Log.d(TAG, "position 0");
+            case 0: // regional rail line
+
+                schedulesRouteSelectionIntent = new Intent(getActivity(), SchedulesRouteSelectionActionBarActivity.class);
+                schedulesRouteSelectionIntent.putExtra(getString(R.string.actionbar_titletext_key), "Regional Rail Line");
+                schedulesRouteSelectionIntent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), "schedules_routeselection_rrl");
+                schedulesRouteSelectionIntent.putExtra(getString(R.string.schedules_routeselect_travelType),
+                        getActivity().getResources().getStringArray(R.array.schedulesfragment_listview_bothimage_endnames)[position]);
+
+                startActivity(schedulesRouteSelectionIntent);
 
                 break;
 
             case 1:
-                Log.d(TAG, "position 1");
+                schedulesRouteSelectionIntent = new Intent(getActivity(), SchedulesRouteSelectionActionBarActivity.class);
+                schedulesRouteSelectionIntent.putExtra(getString(R.string.actionbar_titletext_key), "Market-Frankford Line");
+                schedulesRouteSelectionIntent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), "schedules_routeselection_mfl");
+                schedulesRouteSelectionIntent.putExtra(getString(R.string.schedules_routeselect_travelType),
+                        getActivity().getResources().getStringArray(R.array.schedulesfragment_listview_bothimage_endnames)[position]);
+
+                startActivity(schedulesRouteSelectionIntent);
 
                 break;
 
             case 2:
-                Log.d(TAG, "position 2");
+                schedulesRouteSelectionIntent = new Intent(getActivity(), SchedulesRouteSelectionActionBarActivity.class);
+                schedulesRouteSelectionIntent.putExtra(getString(R.string.actionbar_titletext_key), "Borad Street Line");
+                schedulesRouteSelectionIntent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), "schedules_routeselection_bsl");
+                schedulesRouteSelectionIntent.putExtra(getString(R.string.schedules_routeselect_travelType),
+                        getActivity().getResources().getStringArray(R.array.schedulesfragment_listview_bothimage_endnames)[position]);
+
+                startActivity(schedulesRouteSelectionIntent);
 
                 break;
 
             case 3:
-                Log.d(TAG, "position 3");
+                schedulesRouteSelectionIntent = new Intent(getActivity(), SchedulesRouteSelectionActionBarActivity.class);
+                schedulesRouteSelectionIntent.putExtra(getString(R.string.actionbar_titletext_key), "Trolley");
+                schedulesRouteSelectionIntent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), "schedules_routeselection_trolley");
+                schedulesRouteSelectionIntent.putExtra(getString(R.string.schedules_routeselect_travelType),
+                        getActivity().getResources().getStringArray(R.array.schedulesfragment_listview_bothimage_endnames)[position]);
+
+                startActivity(schedulesRouteSelectionIntent);
 
                 break;
 
             case 4:
-                Log.d(TAG, "position 4");
+                schedulesRouteSelectionIntent = new Intent(getActivity(), SchedulesRouteSelectionActionBarActivity.class);
+                schedulesRouteSelectionIntent.putExtra(getString(R.string.actionbar_titletext_key), "NHSL");
+                schedulesRouteSelectionIntent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), "schedules_routeselection_nhsl");
+                schedulesRouteSelectionIntent.putExtra(getString(R.string.schedules_routeselect_travelType),
+                        getActivity().getResources().getStringArray(R.array.schedulesfragment_listview_bothimage_endnames)[position]);
+
+                startActivity(schedulesRouteSelectionIntent);
 
                 break;
 
             case 5:
-                Log.d(TAG, "position 5");
+                schedulesRouteSelectionIntent = new Intent(getActivity(), SchedulesRouteSelectionActionBarActivity.class);
+                schedulesRouteSelectionIntent.putExtra(getString(R.string.actionbar_titletext_key), "Bus");
+                schedulesRouteSelectionIntent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), "schedules_routeselection_bus");
+                schedulesRouteSelectionIntent.putExtra(getString(R.string.schedules_routeselect_travelType),
+                        getActivity().getResources().getStringArray(R.array.schedulesfragment_listview_bothimage_endnames)[position]);
+
+                startActivity(schedulesRouteSelectionIntent);
 
                 break;
 

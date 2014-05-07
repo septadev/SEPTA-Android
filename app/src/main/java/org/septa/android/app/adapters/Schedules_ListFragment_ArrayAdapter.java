@@ -24,7 +24,6 @@ public class Schedules_ListFragment_ArrayAdapter  extends ArrayAdapter<String> {
     private final String[] values;
 
     String[] resourceEndNames;
-    String[] transportationNames;
     String leftImageStartName;
     String rightImageBackgroundName;
 

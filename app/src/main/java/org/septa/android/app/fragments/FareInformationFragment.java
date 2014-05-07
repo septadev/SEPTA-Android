@@ -72,42 +72,4 @@ public class FareInformationFragment extends ListFragment {
             ft.commit();
         }
     }
-
-    /**
-     * Called when the fragment is visible to the user and actively running. Resumes the WebView.
-     */
-    @Override
-    public void onPause() {
-
-        super.onPause();
-    }
-
-    /**
-     * Called when the fragment is no longer resumed. Pauses the WebView.
-     */
-    @Override
-    public void onResume() {
-
-        super.onResume();
-    }
-
-    /**
-     * Called when the WebView has been detached from the fragment.
-     * The WebView is no longer available after this time.
-     */
-    @Override
-    public void onDestroyView() {
-
-        super.onDestroyView();
-    }
-
-    /**
-     * Called when the fragment is no longer in use. Destroys the internal state of the WebView.
-     */
-    @Override
-    public void onDestroy() {
-
-        super.onDestroy();
-    }
-
 }

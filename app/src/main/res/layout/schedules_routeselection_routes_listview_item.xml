@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~ schedules_routeselection_routes_listview_item.xml
+  ~ Last modified on 05-06-2014 15:39-0400 by brianhmayo
+  ~
+  ~ Copyright (c) 2014 SEPTA.  All rights reserved.
+  -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="horizontal"
+              android:layout_width="match_parent"
+              android:layout_height="38dp">
+
+    <ImageView
+        android:id="@+id/schedules_routeselect_item_leftImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="33dp"
+        android:layout_gravity="left|center_vertical"/>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="33dp"
+        android:layout_gravity="center_vertical">
+
+        <ImageView
+            android:id="@+id/schedules_routeselection_item_rightImageBackgroundview"
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="left|center_vertical"
+            android:scaleType="fitXY"
+            android:layout_marginLeft="1dp"/>
+
+        <TextView
+            android:id="@+id/schedules_routeselection_item_rightTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:layout_gravity="left|center_vertical"
+            android:layout_marginLeft="15dp"/>
+
+    </FrameLayout>
+
+</LinearLayout>

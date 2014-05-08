@@ -19,7 +19,7 @@
         android:layout_gravity="left|center_vertical"/>
 
     <FrameLayout
-        android:layout_width="match_parent"
+        android:layout_width="fill_parent"
         android:layout_height="33dp"
         android:layout_gravity="center_vertical">
 
@@ -33,8 +33,10 @@
 
         <TextView
             android:id="@+id/schedules_routeselection_item_rightTextView"
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:ellipsize="middle"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="#FFFFFF"
             android:textStyle="bold"

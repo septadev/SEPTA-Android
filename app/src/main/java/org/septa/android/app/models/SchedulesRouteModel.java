@@ -3,9 +3,10 @@ package org.septa.android.app.models;
 import java.lang.String;
 
 public class SchedulesRouteModel {
-    private String routeType;
+    private int routeType;
     private String routeId;
-    private String routeTitle;
+    private String routeShortName;
+    private String routeLongName;
     private String routeStart;
     private String routeEnd;
     private int routeStartStopId;
@@ -13,21 +14,29 @@ public class SchedulesRouteModel {
 
     public SchedulesRouteModel() { };
 
-    public SchedulesRouteModel(String travelType, String routeId, String routeTitle, String routeStart, String routeEnd, int routeStartStopId, int routeEndStopId) {
-        this.setRouteType(travelType);
+    public SchedulesRouteModel(int routeType,
+                               String routeId,
+                               String routeShortName,
+                               String routeLongName,
+                               String routeStart,
+                               String routeEnd,
+                               int routeStartStopId,
+                               int routeEndStopId) {
+        this.setRouteType(routeType);
         this.setRouteId(routeId);
-        this.setRouteTitle(routeTitle);
+        this.setRouteShortName(routeShortName);
+        this.setRouteLongName(routeLongName);
         this.setRouteStart(routeStart);
         this.setRouteEnd(routeEnd);
         this.setRouteStartStopId(routeStartStopId);
         this.setRouteEndStopId(routeEndStopId);
     }
 
-    public String getRouteType() {
+    public int getRouteType() {
         return routeType;
     }
 
-    public void setRouteType(String routeType) {
+    public void setRouteType(int routeType) {
         this.routeType = routeType;
     }
 
@@ -37,14 +46,6 @@ public class SchedulesRouteModel {
 
     public void setRouteId(String routeId) {
         this.routeId = routeId;
-    }
-
-    public String getRouteTitle() {
-        return routeTitle;
-    }
-
-    public void setRouteTitle(String routeTitle) {
-        this.routeTitle = routeTitle;
     }
 
     public String getRouteStart() {
@@ -77,5 +78,21 @@ public class SchedulesRouteModel {
 
     public void setRouteEndStopId(int routeEndStopId) {
         this.routeEndStopId = routeEndStopId;
+    }
+
+    public String getRouteShortName() {
+        return routeShortName;
+    }
+
+    public void setRouteShortName(String routeShortName) {
+        this.routeShortName = routeShortName;
+    }
+
+    public String getRouteLongName() {
+        return routeLongName;
+    }
+
+    public void setRouteLongName(String routeLongName) {
+        this.routeLongName = routeLongName;
     }
 }

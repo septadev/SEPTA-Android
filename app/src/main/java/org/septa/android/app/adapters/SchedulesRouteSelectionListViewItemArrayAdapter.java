@@ -18,12 +18,13 @@ import android.widget.SectionIndexer;
 import android.widget.TextView;
 
 import org.septa.android.app.R;
-import org.septa.android.app.models.FavoriteModel;
-import org.septa.android.app.models.RecentlyViewedModel;
+import org.septa.android.app.models.SchedulesFavoriteModel;
+import org.septa.android.app.models.SchedulesRecentlyViewedModel;
 import org.septa.android.app.models.RouteTypes;
 import org.septa.android.app.models.SchedulesRouteModel;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 
@@ -33,9 +34,9 @@ public class SchedulesRouteSelectionListViewItemArrayAdapter extends BaseAdapter
     private final Context mContext;
     private LayoutInflater mInflater;
 
-    private ArrayList<FavoriteModel> favorites = new ArrayList<FavoriteModel>();
-    private ArrayList<RecentlyViewedModel> recentlyViewed = new ArrayList<RecentlyViewedModel>();
-    private ArrayList<SchedulesRouteModel> routes = new ArrayList<SchedulesRouteModel>();
+    private ArrayList<SchedulesFavoriteModel> favorites = new ArrayList<SchedulesFavoriteModel>();
+    private ArrayList<SchedulesRecentlyViewedModel> recentlyViewed = new ArrayList<SchedulesRecentlyViewedModel>();
+    protected ArrayList<SchedulesRouteModel> routes = new ArrayList<SchedulesRouteModel>();
 
     String[] resourceEndNames;
     String leftImageStartName;
@@ -56,35 +57,41 @@ public class SchedulesRouteSelectionListViewItemArrayAdapter extends BaseAdapter
         leftImageStartName = context.getString(R.string.schedulesfragment_listview_leftimage_startname);
         rightImageBackgroundName = context.getString(R.string.schedulesfragment_listview_rightimage_startname);
 
-        String[] routeTitles = new String[]{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q"};
-        for (String routeTitle : routeTitles) {
-            SchedulesRouteModel rm = new SchedulesRouteModel();
-            rm.setRouteTitle(routeTitle);
-            routes.add(rm);
-        }
+//        String[] routeTitles = new String[]{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q"};
+//        for (String routeTitle : routeTitles) {
+//            SchedulesRouteModel rm = new SchedulesRouteModel();
+//            rm.setRouteTitle(routeTitle);
+//            routes.add(rm);
+//        }
 
-        FavoriteModel fm = null;
-        RecentlyViewedModel rm = null;
+        SchedulesFavoriteModel fm = null;
+        SchedulesRecentlyViewedModel rm = null;
 
-        fm = new FavoriteModel();
-        fm.setRouteTitle("a fav 1");
-        favorites.add(fm);
-        fm = new FavoriteModel();
-        fm.setRouteTitle("a fav 2");
-        favorites.add(fm);
-        fm = new FavoriteModel();
-        fm.setRouteTitle("a fav 3");
-        favorites.add(fm);
+//        fm = new FavoriteModel();
+//        fm.setRouteTitle("a fav 1");
+//        favorites.add(fm);
+//        fm = new FavoriteModel();
+//        fm.setRouteTitle("a fav 2");
+//    g     favorites.add(fm);
+//        fm = new FavoriteModel();
+//        fm.setRouteTitle("a fav 3");
+//        favorites.add(fm);
 
-        rm = new RecentlyViewedModel();
-        rm.setRouteTitle("a recent 1");
-        recentlyViewed.add(rm);
-        rm = new RecentlyViewedModel();
-        rm.setRouteTitle("a recent 2");
-        recentlyViewed.add(rm);
-        rm = new RecentlyViewedModel();
-        rm.setRouteTitle("a recent 3");
-        recentlyViewed.add(rm);
+//        rm = new RecentlyViewedModel();
+//        rm.setRouteTitle("a recent 1");
+//        recentlyViewed.add(rm);
+//        rm = new RecentlyViewedModel();
+//        rm.setRouteTitle("a recent 2");
+//        recentlyViewed.add(rm);
+//        rm = new RecentlyViewedModel();
+//        rm.setRouteTitle("a recent 3");
+//        recentlyViewed.add(rm);
+    }
+
+    public void setSchedulesRouteModel(ArrayList<SchedulesRouteModel> routes) {
+        this.routes = routes;
+
+        notifyDataSetChanged();
     }
 
     protected Object[] getItems() {
@@ -96,12 +103,12 @@ public class SchedulesRouteSelectionListViewItemArrayAdapter extends BaseAdapter
 
     protected boolean isFavorite(int position) {
 
-        return getItems()[position] instanceof FavoriteModel;
+        return getItems()[position] instanceof SchedulesFavoriteModel;
     }
 
     protected boolean isRecentlyViewed(int position) {
 
-        return getItems()[position] instanceof RecentlyViewedModel;
+        return getItems()[position] instanceof SchedulesRecentlyViewedModel;
     }
 
     @Override
@@ -125,7 +132,7 @@ public class SchedulesRouteSelectionListViewItemArrayAdapter extends BaseAdapter
         View rowView;
 
         if (isFavorite(position)) {
-            FavoriteModel fm = (FavoriteModel)getItem(position);
+            SchedulesFavoriteModel fm = (SchedulesFavoriteModel)getItem(position);
             rowView = mInflater.inflate(R.layout.schedules_routeselection_favoriteandrecentlyviewed_listview_item, parent, false);
             TextView routeIdTextView = (TextView)rowView.findViewById(R.id.schedulesrouteselection_favoriterecentlyviewed_routeid_textview);
             TextView startRouteTextView = (TextView)rowView.findViewById(R.id.schedulesrouteselection_favoriterecentlyviewed_start_textview);
@@ -143,7 +150,7 @@ public class SchedulesRouteSelectionListViewItemArrayAdapter extends BaseAdapter
             }
         } else {
             if (isRecentlyViewed(position)) {
-                RecentlyViewedModel rm = (RecentlyViewedModel)getItem(position);
+                SchedulesRecentlyViewedModel rm = (SchedulesRecentlyViewedModel)getItem(position);
                 rowView = mInflater.inflate(R.layout.schedules_routeselection_favoriteandrecentlyviewed_listview_item, parent, false);
                 TextView routeIdTextView = (TextView)rowView.findViewById(R.id.schedulesrouteselection_favoriterecentlyviewed_routeid_textview);
                 TextView startRouteTextView = (TextView)rowView.findViewById(R.id.schedulesrouteselection_favoriterecentlyviewed_start_textview);
@@ -154,7 +161,7 @@ public class SchedulesRouteSelectionListViewItemArrayAdapter extends BaseAdapter
                 endRouteTextView.setText("End: "+position+" end route");
 
                 View transparentView = (View)rowView.findViewById(R.id.schedules_routeselection_favoriteandrecentlyviewed_transparentview);
-                if (position == (favorites.size()-1)) {
+                if (position == (recentlyViewed.size()-1)) {
                     transparentView.setVisibility(View.VISIBLE);
                 } else {
                     transparentView.setVisibility(View.GONE);
@@ -174,12 +181,8 @@ public class SchedulesRouteSelectionListViewItemArrayAdapter extends BaseAdapter
                 id = mContext.getResources().getIdentifier(rightImageBackgroundName + routeTypeLabels[routeType.ordinal()], "drawable", mContext.getPackageName());
                 rightBackgroundImageView.setImageResource(id);
 
-                // TODO: given the travel type, set the left icon image and the right background color
-                if (rightTextView != null) {
-                    rightTextView.setText("NN | : " + position + " name here");
-                } else {
-                    int routePosition = position - favorites.size() - recentlyViewed.size();
-                }
+                String text = routes.get(position).getRouteId() + " | " + routes.get(position).getRouteLongName();
+                rightTextView.setText(text);
             }
         }
 

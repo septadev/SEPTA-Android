@@ -57,7 +57,19 @@ public class SchedulesRouteSelectionListViewItemArrayAdapter extends BaseAdapter
 
         resourceEndNames = context.getResources().getStringArray(R.array.schedulesfragment_listview_bothimage_endnames);
         leftImageStartName = context.getString(R.string.schedulesfragment_listview_leftimage_startname);
-        rightImageBackgroundName = context.getString(R.string.schedulesfragment_listview_rightimage_startname);
+
+        SchedulesFavoriteModel fm = new SchedulesFavoriteModel();
+        fm.setRouteShortName("short name A");
+        fm.setRouteStart("start A");
+        fm.setRouteEnd("end A");
+        favorites.add(fm);
+
+        SchedulesRecentlyViewedModel rvm = new SchedulesRecentlyViewedModel();
+        rvm.setRouteShortName("short name B");
+        rvm.setRouteStart("start B");
+        rvm.setRouteEnd("end B");
+        recentlyViewed.add(rvm);
+
     }
 
     public void setSchedulesRouteModel(ArrayList<SchedulesRouteModel> routes) {
@@ -197,14 +209,19 @@ public class SchedulesRouteSelectionListViewItemArrayAdapter extends BaseAdapter
             holder = (HeaderViewHolder) convertView.getTag();
         }
 
-        if (position < favorites.size()) { // in the favorites part of the list
+        if (favorites.size()>0 && position<favorites.size()) {
+            // in the favorites section
+            Ln.d("in the favorites part of the list");
             holder.text.setText(sectionTitles[0]);
             holder.text.setBackgroundColor(Color.parseColor("#990DA44A"));
         } else {
-            if (favorites.size() == position) {
+            if (recentlyViewed.size()>0 && (position-favorites.size())<recentlyViewed.size()) {
+                // in the recently view section
+                Ln.d("in the recently viewed part of the list");
                 holder.text.setText(sectionTitles[1]);
                 holder.text.setBackgroundColor(Color.parseColor("#990DA44A"));
             } else {
+                Ln.d("in the routes section of the list");
                 holder.text.setText(sectionTitles[2]);
 
                 // get the color from the looking array given the ordinal position of the route type

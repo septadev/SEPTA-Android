@@ -17,11 +17,53 @@
                   android:layout_height="match_parent"
                   android:background="@android:color/white">
 
-        <TextView
-            android:id="@+id/schedulesrouteselection_favoriterecentlyviewed_routeid_textview"
+        <LinearLayout
+            android:id="@+id/schedulesrouteselection_favoriterecentlyviewed_routeid_layout"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:gravity="center"/>
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/schedulesrouteselection_favoritrecentlyviewed_tolabel_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="TO"
+                android:textSize="10sp"
+                android:gravity="center" />
+
+            <TextView
+                android:id="@+id/schedulesrouteselection_favoriterecentlyviewed_routeid_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/schedulesrouteselection_favoriterecentlyviewed_startendlabel_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/schedulesrouteselection_favoriterecentlyviewed_startlabel_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="Start"
+                android:gravity="center"/>
+            <TextView
+                android:id="@+id/schedulesrouteselection_favoriterecentlyviewed_endlabel_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/schedulesrouteselection_favoriterecentlyviewed_startendtext_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
+
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="fill_parent"

@@ -25,9 +25,7 @@ import org.septa.android.app.models.RouteTypes;
 import org.septa.android.app.models.SchedulesRouteModel;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import roboguice.util.Ln;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 
 public class SchedulesRouteSelectionListViewItemArrayAdapter extends BaseAdapter implements
@@ -46,7 +44,6 @@ public class SchedulesRouteSelectionListViewItemArrayAdapter extends BaseAdapter
 
     RouteTypes routeType = null;
 
-    private int[] mSectionIndices = {0,1,2};
     private String[] sectionTitles = new String[]{ "Favorites", "Recently Viewed", "Routes"};
 
     public SchedulesRouteSelectionListViewItemArrayAdapter(Context context, RouteTypes routeType) {
@@ -57,19 +54,6 @@ public class SchedulesRouteSelectionListViewItemArrayAdapter extends BaseAdapter
 
         resourceEndNames = context.getResources().getStringArray(R.array.schedulesfragment_listview_bothimage_endnames);
         leftImageStartName = context.getString(R.string.schedulesfragment_listview_leftimage_startname);
-
-        SchedulesFavoriteModel fm = new SchedulesFavoriteModel();
-        fm.setRouteShortName("short name A");
-        fm.setRouteStart("start A");
-        fm.setRouteEnd("end A");
-        favorites.add(fm);
-
-        SchedulesRecentlyViewedModel rvm = new SchedulesRecentlyViewedModel();
-        rvm.setRouteShortName("short name B");
-        rvm.setRouteStart("start B");
-        rvm.setRouteEnd("end B");
-        recentlyViewed.add(rvm);
-
     }
 
     public void setSchedulesRouteModel(ArrayList<SchedulesRouteModel> routes) {
@@ -116,7 +100,6 @@ public class SchedulesRouteSelectionListViewItemArrayAdapter extends BaseAdapter
         View rowView;
 
         if (isFavorite(position)) {
-            SchedulesFavoriteModel fm = (SchedulesFavoriteModel)getItem(position);
             rowView = mInflater.inflate(R.layout.schedules_routeselection_favoriteandrecentlyviewed_listview_item, parent, false);
             TextView routeIdTextView = (TextView)rowView.findViewById(R.id.schedulesrouteselection_favoriterecentlyviewed_routeid_textview);
             TextView startRouteTextView = (TextView)rowView.findViewById(R.id.schedulesrouteselection_favoriterecentlyviewed_start_textview);
@@ -128,10 +111,8 @@ public class SchedulesRouteSelectionListViewItemArrayAdapter extends BaseAdapter
 
             View transparentView = (View)rowView.findViewById(R.id.schedules_routeselection_favoriteandrecentlyviewed_transparentview);
             if (position == (favorites.size()-1)) {
-                Ln.d("making the favorites as position "+position);
                 transparentView.setVisibility(View.VISIBLE);
             } else {
-                Ln.d("making the favorites gone.");
                 transparentView.setVisibility(View.GONE);
             }
         } else {
@@ -148,10 +129,8 @@ public class SchedulesRouteSelectionListViewItemArrayAdapter extends BaseAdapter
 
                 View transparentView = (View)rowView.findViewById(R.id.schedules_routeselection_favoriteandrecentlyviewed_transparentview);
                 if (position == (recentlyViewed.size()-1)) {
-                    Ln.d("making the recently viewed as position "+position);
                     transparentView.setVisibility(View.VISIBLE);
                 } else {
-                    Ln.d("making the recently viewed gone.");
                     transparentView.setVisibility(View.GONE);
                 }
             } else{
@@ -210,18 +189,13 @@ public class SchedulesRouteSelectionListViewItemArrayAdapter extends BaseAdapter
         }
 
         if (favorites.size()>0 && position<favorites.size()) {
-            // in the favorites section
-            Ln.d("in the favorites part of the list");
             holder.text.setText(sectionTitles[0]);
             holder.text.setBackgroundColor(Color.parseColor("#990DA44A"));
         } else {
             if (recentlyViewed.size()>0 && (position-favorites.size())<recentlyViewed.size()) {
-                // in the recently view section
-                Ln.d("in the recently viewed part of the list");
                 holder.text.setText(sectionTitles[1]);
                 holder.text.setBackgroundColor(Color.parseColor("#990DA44A"));
             } else {
-                Ln.d("in the routes section of the list");
                 holder.text.setText(sectionTitles[2]);
 
                 // get the color from the looking array given the ordinal position of the route type
@@ -235,39 +209,36 @@ public class SchedulesRouteSelectionListViewItemArrayAdapter extends BaseAdapter
 
     @Override
     public long getHeaderId(int position) {
-        Ln.d("get header id for position "+position);
         if (isFavorite(position)) {
-            Ln.d("isFavorite, yes");
+
             return 0;
         } else {
             if (isRecentlyViewed(position)) {
-                Ln.d("isRecentlyViewed, yes");
+
                 return 1;
             }
         }
 
-        Ln.d("not fav nor recently viewed so return 2");
         return 2;
     }
 
     @Override
     public int getPositionForSection(int section) {
-        Ln.d("asking for position for section "+section);
         switch (section) {
             case 0: {
-                Ln.d("... returning 0");
+
                 return 0;
             }
             case 1: {
-                Ln.d("... returning fs:"+favorites.size());
+
                 return favorites.size();
             }
             case 2: {
-                Ln.d("... returning fs+rv:"+favorites.size()+recentlyViewed.size());
+
                 return favorites.size()+recentlyViewed.size();
             }
             default: {
-                Ln.d("... returning default: 0");
+
                 return 0;
             }
         }

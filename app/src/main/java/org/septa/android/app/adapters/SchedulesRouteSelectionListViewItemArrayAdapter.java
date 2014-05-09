@@ -9,6 +9,7 @@ package org.septa.android.app.adapters;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +27,7 @@ import org.septa.android.app.models.SchedulesRouteModel;
 import java.util.ArrayList;
 import java.util.List;
 
+import roboguice.util.Ln;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 
 public class SchedulesRouteSelectionListViewItemArrayAdapter extends BaseAdapter implements
@@ -56,36 +58,6 @@ public class SchedulesRouteSelectionListViewItemArrayAdapter extends BaseAdapter
         resourceEndNames = context.getResources().getStringArray(R.array.schedulesfragment_listview_bothimage_endnames);
         leftImageStartName = context.getString(R.string.schedulesfragment_listview_leftimage_startname);
         rightImageBackgroundName = context.getString(R.string.schedulesfragment_listview_rightimage_startname);
-
-//        String[] routeTitles = new String[]{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q"};
-//        for (String routeTitle : routeTitles) {
-//            SchedulesRouteModel rm = new SchedulesRouteModel();
-//            rm.setRouteTitle(routeTitle);
-//            routes.add(rm);
-//        }
-
-        SchedulesFavoriteModel fm = null;
-        SchedulesRecentlyViewedModel rm = null;
-
-//        fm = new FavoriteModel();
-//        fm.setRouteTitle("a fav 1");
-//        favorites.add(fm);
-//        fm = new FavoriteModel();
-//        fm.setRouteTitle("a fav 2");
-//    g     favorites.add(fm);
-//        fm = new FavoriteModel();
-//        fm.setRouteTitle("a fav 3");
-//        favorites.add(fm);
-
-//        rm = new RecentlyViewedModel();
-//        rm.setRouteTitle("a recent 1");
-//        recentlyViewed.add(rm);
-//        rm = new RecentlyViewedModel();
-//        rm.setRouteTitle("a recent 2");
-//        recentlyViewed.add(rm);
-//        rm = new RecentlyViewedModel();
-//        rm.setRouteTitle("a recent 3");
-//        recentlyViewed.add(rm);
     }
 
     public void setSchedulesRouteModel(ArrayList<SchedulesRouteModel> routes) {
@@ -144,8 +116,10 @@ public class SchedulesRouteSelectionListViewItemArrayAdapter extends BaseAdapter
 
             View transparentView = (View)rowView.findViewById(R.id.schedules_routeselection_favoriteandrecentlyviewed_transparentview);
             if (position == (favorites.size()-1)) {
+                Ln.d("making the favorites as position "+position);
                 transparentView.setVisibility(View.VISIBLE);
             } else {
+                Ln.d("making the favorites gone.");
                 transparentView.setVisibility(View.GONE);
             }
         } else {
@@ -162,8 +136,10 @@ public class SchedulesRouteSelectionListViewItemArrayAdapter extends BaseAdapter
 
                 View transparentView = (View)rowView.findViewById(R.id.schedules_routeselection_favoriteandrecentlyviewed_transparentview);
                 if (position == (recentlyViewed.size()-1)) {
+                    Ln.d("making the recently viewed as position "+position);
                     transparentView.setVisibility(View.VISIBLE);
                 } else {
+                    Ln.d("making the recently viewed gone.");
                     transparentView.setVisibility(View.GONE);
                 }
             } else{
@@ -173,7 +149,8 @@ public class SchedulesRouteSelectionListViewItemArrayAdapter extends BaseAdapter
                 rowView = mInflater.inflate(R.layout.schedules_routeselection_routes_listview_item, parent, false);
                 ImageView leftIconImageView = (ImageView)rowView.findViewById(R.id.schedules_routeselect_item_leftImageView);
                 ImageView rightBackgroundImageView = (ImageView)rowView.findViewById(R.id.schedules_routeselection_item_rightImageBackgroundview);
-                TextView rightTextView = (TextView)rowView.findViewById(R.id.schedules_routeselection_item_rightTextView);
+                TextView routeIdTextView = (TextView)rowView.findViewById(R.id.schedules_routeselection_item_routeid);
+                TextView routeLongNameTextView = (TextView)rowView.findViewById(R.id.schedules_routeselection_item_routelongname);
 
                 int id = mContext.getResources().getIdentifier(leftImageStartName + routeTypeLabels[routeType.ordinal()] + "_small", "drawable", mContext.getPackageName());
                 leftIconImageView.setImageResource(id);
@@ -181,8 +158,26 @@ public class SchedulesRouteSelectionListViewItemArrayAdapter extends BaseAdapter
                 id = mContext.getResources().getIdentifier(rightImageBackgroundName + routeTypeLabels[routeType.ordinal()], "drawable", mContext.getPackageName());
                 rightBackgroundImageView.setImageResource(id);
 
-                String text = routes.get(position).getRouteId() + " | " + routes.get(position).getRouteLongName();
-                rightTextView.setText(text);
+                routeIdTextView.setText(routes.get(position).getRouteId());
+
+                switch (routes.get(position).getRouteId().length()) {
+                    case 6: {
+                        routeIdTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+                        break;
+                    }
+                    case 5: {
+                        routeIdTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+                        break;
+                    }
+                    case 4: {
+                        routeIdTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+                        break;
+                    }
+                    default: {
+                    }
+                }
+
+                routeLongNameTextView.setText(routes.get(position).getRouteLongName());
             }
         }
 
@@ -223,33 +218,39 @@ public class SchedulesRouteSelectionListViewItemArrayAdapter extends BaseAdapter
 
     @Override
     public long getHeaderId(int position) {
+        Ln.d("get header id for position "+position);
         if (isFavorite(position)) {
+            Ln.d("isFavorite, yes");
             return 0;
         } else {
             if (isRecentlyViewed(position)) {
+                Ln.d("isRecentlyViewed, yes");
                 return 1;
             }
         }
 
+        Ln.d("not fav nor recently viewed so return 2");
         return 2;
     }
 
     @Override
     public int getPositionForSection(int section) {
+        Ln.d("asking for position for section "+section);
         switch (section) {
             case 0: {
-
+                Ln.d("... returning 0");
                 return 0;
             }
             case 1: {
-
+                Ln.d("... returning fs:"+favorites.size());
                 return favorites.size();
             }
             case 2: {
-
+                Ln.d("... returning fs+rv:"+favorites.size()+recentlyViewed.size());
                 return favorites.size()+recentlyViewed.size();
             }
             default: {
+                Ln.d("... returning default: 0");
                 return 0;
             }
         }
@@ -271,8 +272,7 @@ public class SchedulesRouteSelectionListViewItemArrayAdapter extends BaseAdapter
     @Override
     public Object[] getSections() {
 
-//        return sectionTitles;
-        return new Object[]{"noo", "yee", "ooo"};
+        return sectionTitles;
     }
 
     class HeaderViewHolder {
@@ -282,5 +282,4 @@ public class SchedulesRouteSelectionListViewItemArrayAdapter extends BaseAdapter
     class ViewHolder {
         TextView text;
     }
-
 }

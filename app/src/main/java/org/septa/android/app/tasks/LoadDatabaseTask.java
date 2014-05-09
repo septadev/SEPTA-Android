@@ -42,7 +42,7 @@ public class LoadDatabaseTask extends AsyncTask<Context, Void, Void> {
     protected Void doInBackground(Context... contexts) {
         // call the getReadableDatabase() method, which will either obtain the readable database or
         //  kick off a copy of the compressed database file into the private data location for the app
-        new SEPTADatabase(contexts[0]).getReadableDatabase();
+        new SEPTADatabase(contexts[0]).getReadableDatabase().close();
         return null;
     }
 

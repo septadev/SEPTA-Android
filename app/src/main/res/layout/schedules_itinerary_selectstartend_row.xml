@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~ schedules_itinerary_selectstartend_row.xml
+  ~ Last modified on 05-12-2014 12:10-0400 by brianhmayo
+  ~
+  ~ Copyright (c) 2014 SEPTA.  All rights reserved.
+  -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="horizontal"
+              android:layout_width="match_parent"
+              android:layout_height="103dp"
+              android:background="@android:color/white">
+
+    <ImageButton
+              android:id="@+id/schedules_itinerary_selectstartend_begin_button"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_gravity="center_vertical"
+              android:background="@drawable/itinerary_startend_begin"/>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/schedules_itinerary_selectstartend_start_textview"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_margin="2.5dp"
+            android:layout_marginTop="5dp"
+            android:background="#BEBEBE"
+            android:hint="Select start"
+            android:gravity="center"
+            android:onClick=""/>
+
+        <TextView
+            android:id="@+id/schedules_itinerary_selectstartend_end_textview"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_margin="2.5dp"
+            android:layout_marginBottom="5dp"
+            android:background="#BEBEBE"
+            android:hint="Select destination"
+            android:gravity="center"
+            android:onClick=""/>
+
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/schedules_itinerary_selectstartend_reverse_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:background="@drawable/itinerary_startend_reverse"/>
+
+</LinearLayout>

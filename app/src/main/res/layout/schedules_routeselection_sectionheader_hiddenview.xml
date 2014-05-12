@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~ schedules_routeselection_sectionheader_hiddenview.xml
+  ~ Last modified on 05-12-2014 14:25-0400 by brianhmayo
+  ~
+  ~ Copyright (c) 2014 SEPTA.  All rights reserved.
+  -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="0dp"
+              android:layout_height="0dp"
+              android:visibility="gone">
+
+</LinearLayout>

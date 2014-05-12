@@ -39,6 +39,17 @@
         <item>#99383D42</item>  // bus
     </string-array>
 
+    // positions are based on the RouteTypes enum
+    <string-array name="schedules_routeselection_routesheader_solid_colors">
+        <item>#FF45637A</item>  // regional rail
+        <item>#FF007DC3</item>  // mfl
+        <item>#FFF58426</item>  // bsl
+        <item>#FF4D7900</item>  // trolley
+        <item>#FF791D7E</item>  // nhsl
+        <item>#FF383D42</item>  // bus
+    </string-array>
+
     <string name="schedules_routeselect_travelType">schedules_routeselect_travelType</string>
+    <string name="schedules_itinerary_travelType">schedules_itinerary_travelType</string>
 
 </resources>

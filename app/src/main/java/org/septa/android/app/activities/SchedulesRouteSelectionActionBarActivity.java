@@ -8,6 +8,7 @@
 package org.septa.android.app.activities;
 
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -18,7 +19,6 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ListView;
 
 import org.septa.android.app.R;
 import org.septa.android.app.adapters.SchedulesRouteSelectionListViewItemArrayAdapter;
@@ -27,7 +27,6 @@ import org.septa.android.app.models.RouteTypes;
 import org.septa.android.app.models.SchedulesRouteModel;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import roboguice.util.Ln;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
@@ -43,6 +42,7 @@ public class SchedulesRouteSelectionActionBarActivity extends BaseAnalyticsActio
     private boolean fadeHeader = true;
 
     private RouteTypes travelType;
+    private String iconImageNameSuffix;
 
     private StickyListHeadersListView stickyList;
 
@@ -54,7 +54,7 @@ public class SchedulesRouteSelectionActionBarActivity extends BaseAnalyticsActio
         setContentView(R.layout.schedules_routeselection);
 
         String actionBarTitleText = getIntent().getStringExtra(getString(R.string.actionbar_titletext_key));
-        String iconImageNameSuffix = getIntent().getStringExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key));
+        iconImageNameSuffix = getIntent().getStringExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key));
         String resourceName = getString(R.string.actionbar_iconimage_imagename_base).concat(iconImageNameSuffix);
 
         Ln.d("resource name is to be "+resourceName);
@@ -113,11 +113,21 @@ public class SchedulesRouteSelectionActionBarActivity extends BaseAnalyticsActio
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position,long id) {
+        Ln.d("onItemClick occured at position "+position+" with id "+id);
+
+        Intent schedulesItineraryIntent = null;
+
+        schedulesItineraryIntent = new Intent(this, SchedulesItineraryActionBarActivity.class);
+        schedulesItineraryIntent.putExtra(getString(R.string.actionbar_titletext_key), routesModel.get(position).getRouteId());
+        schedulesItineraryIntent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), iconImageNameSuffix);
+        schedulesItineraryIntent.putExtra(getString(R.string.schedules_itinerary_travelType),
+                travelType.name());
+
+        startActivity(schedulesItineraryIntent);
     }
 
     @Override
-    public void onHeaderClick(StickyListHeadersListView l, View header,
-                              int itemPosition, long headerId, boolean currentlySticky) {
+    public void onHeaderClick(StickyListHeadersListView l, View header, int itemPosition, long headerId, boolean currentlySticky) {
 
     }
 

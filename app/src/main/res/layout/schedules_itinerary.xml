@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~ schedules_itinerary.xml
+  ~ Last modified on 05-12-2014 09:49-0400 by brianhmayo
+  ~
+  ~ Copyright (c) 2014 SEPTA.  All rights reserved.
+  -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@drawable/main_background">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@android:color/black">
+
+        <Button
+            android:id="@+id/schedules_itinerary_tab_now_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="2.5dp"
+            android:text="Now"
+            android:onClick="tabSelected"
+            android:background="@drawable/schedules_itinerary_tabbuttons_corners"/>
+
+        <Button
+            android:id="@+id/schedules_itinerary_tab_weekday_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginLeft="2.5dp"
+            android:layout_marginRight="2.5dp"
+            android:text="Weekday"
+            android:onClick="tabSelected"
+            android:background="@drawable/schedules_itinerary_tabbuttons_corners"/>
+
+        <Button
+            android:id="@+id/schedules_itinerary_tab_sat_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="2.5dp"
+            android:layout_marginRight="2.5dp"
+            android:text="Sat"
+            android:onClick="tabSelected"
+            android:background="@drawable/schedules_itinerary_tabbuttons_corners"/>
+
+        <Button
+            android:id="@+id/schedules_itinerary_tab_sun_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="2.5dp"
+            android:text="Sun"
+            android:onClick="tabSelected"
+            android:background="@drawable/schedules_itinerary_tabbuttons_corners"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/schedules_itinerary_routedirection_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white">
+
+        <TextView
+            android:id="@+id/schedules_itinerary_routedirection_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:layout_gravity="left|center_vertical"/>
+
+    </LinearLayout>
+
+    <se.emilsjolander.stickylistheaders.StickyListHeadersListView
+        android:id="@+id/list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:drawSelectorOnTop="true"
+        android:scrollbarStyle="outsideOverlay"
+        android:fastScrollEnabled="true"
+        android:overScrollMode="never"/>
+
+</LinearLayout>

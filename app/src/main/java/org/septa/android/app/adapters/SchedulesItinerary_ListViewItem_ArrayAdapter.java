@@ -88,12 +88,13 @@ public class SchedulesItinerary_ListViewItem_ArrayAdapter extends BaseAdapter im
     public void setHeaderViewText(String text) {
         if (headerView == null) {
             Ln.d("the headerView is null");
+        } else {
+            TextView textView = (TextView) headerView.findViewById(R.id.schedules_routeselection_sectionheader_textview);
+            if (textView == null) {
+                Ln.d("the textView is null");
+            }
+            textView.setText(text);
         }
-        TextView textView = (TextView)headerView.findViewById(R.id.schedules_routeselection_sectionheader_textview);
-        if (textView == null ) {
-            Ln.d("the textView is null");
-        }
-        textView.setText(text);
     }
 
     @Override

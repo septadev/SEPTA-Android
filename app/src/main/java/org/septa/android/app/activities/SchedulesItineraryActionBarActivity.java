@@ -8,6 +8,7 @@
 package org.septa.android.app.activities;
 
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -50,6 +51,9 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
 
     private ArrayList<SchedulesRouteModel> routesModel;
 
+    private String iconImageNameSuffix;
+    private String routeShortName;
+
     private final String[] tabLabels = new String[] {"REMAINING TRIPS TO TODAY", "WEEKDAY", "SATURDAY", "SUNDAY"};
     private int selectedTab = 0;
 
@@ -59,7 +63,7 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
         setContentView(R.layout.schedules_itinerary);
 
         String actionBarTitleText = getIntent().getStringExtra(getString(R.string.actionbar_titletext_key));
-        String iconImageNameSuffix = getIntent().getStringExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key));
+        iconImageNameSuffix = getIntent().getStringExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key));
         String resourceName = getString(R.string.actionbar_iconimage_imagename_base).concat(iconImageNameSuffix);
 
         Ln.d("resource name is to be " + resourceName);
@@ -71,6 +75,7 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
         getSupportActionBar().setIcon(id);
 
         travelType = valueOf(getIntent().getStringExtra(getString(R.string.schedules_itinerary_travelType)));
+        routeShortName = getIntent().getStringExtra(getString(R.string.schedules_itinerary_routeShortName));
 
         Ln.d("got the travel type as "+travelType.name());
 
@@ -87,7 +92,7 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
         stickyList.setAdapter(mAdapter);
         stickyList.setOnTouchListener(this);
 
-        stickyList.setFastScrollAlwaysVisible(true);
+//        stickyList.setFastScrollAlwaysVisible(true);
         stickyList.setFastScrollEnabled(true);
 
         stickyList.setDivider(null);
@@ -128,6 +133,27 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
         tabSatButton.setTextColor(Color.BLACK);
         sunTabButtonShapeDrawable.setColor(Color.LTGRAY);
         tabSunButton.setTextColor(Color.BLACK);
+    }
+
+
+    public void startEndSelectionSelected(View view) {
+
+        Intent itinerarySelectionIntent = null;
+
+        itinerarySelectionIntent = new Intent(this, ItinerarySelectionActionBarActivity.class);
+        itinerarySelectionIntent.putExtra(getString(R.string.actionbar_titletext_key), "Select Start");
+        itinerarySelectionIntent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), iconImageNameSuffix);
+        itinerarySelectionIntent.putExtra(getString(R.string.schedules_itinerary_travelType),
+                travelType.name());
+        itinerarySelectionIntent.putExtra(getString(R.string.schedules_itinerary_routeShortName), routeShortName);
+
+        startActivityForResult(itinerarySelectionIntent, 202);
+
+        Ln.d("start end selection selected");
+    }
+
+    public void reverseStartEndSelected(View view) {
+        Ln.d("reverse start end selected");
     }
 
     public void tabSelected(View view) {
@@ -372,7 +398,7 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
                                     0,
                                     0);
                         }
-                        routesModelList.add(routeModel);
+//                        routesModelList.add(routeModel);
                     } while (cursor.moveToNext());
                 }
 

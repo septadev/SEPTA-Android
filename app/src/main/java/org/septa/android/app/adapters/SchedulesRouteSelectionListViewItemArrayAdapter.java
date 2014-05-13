@@ -69,12 +69,12 @@ public class SchedulesRouteSelectionListViewItemArrayAdapter extends BaseAdapter
         return items.toArray();
     }
 
-    protected boolean isFavorite(int position) {
+    public boolean isFavorite(int position) {
 
         return getItems()[position] instanceof SchedulesFavoriteModel;
     }
 
-    protected boolean isRecentlyViewed(int position) {
+    public boolean isRecentlyViewed(int position) {
 
         return getItems()[position] instanceof SchedulesRecentlyViewedModel;
     }
@@ -264,10 +264,6 @@ public class SchedulesRouteSelectionListViewItemArrayAdapter extends BaseAdapter
     }
 
     class HeaderViewHolder {
-        TextView text;
-    }
-
-    class ViewHolder {
         TextView text;
     }
 }

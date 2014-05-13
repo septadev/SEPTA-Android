@@ -17,6 +17,13 @@ public class RouteModel implements Comparable<RouteModel> {
     private String routeLongName;
     private Number routeType;
 
+    private Number directionId;
+    private Number startStopId;
+    private Number endStopId;
+
+    private String startStopName;
+    private String endStopName;
+
     private HashMap<String, MinMaxHoursModel> hours;
 
     public String print() {
@@ -118,5 +125,45 @@ public class RouteModel implements Comparable<RouteModel> {
 
         // if we got here, we converted both to Integers and can compare outright.
         return thisRouteShortName.compareTo(otherRouteShortName);
+    }
+
+    public Number getDirectionId() {
+        return directionId;
+    }
+
+    public void setDirectionId(Number directionId) {
+        this.directionId = directionId;
+    }
+
+    public Number getStartStopId() {
+        return startStopId;
+    }
+
+    public void setStartStopId(Number startStopId) {
+        this.startStopId = startStopId;
+    }
+
+    public Number getEndStopId() {
+        return endStopId;
+    }
+
+    public void setEndStopId(Number endStopId) {
+        this.endStopId = endStopId;
+    }
+
+    public String getStartStopName() {
+        return startStopName;
+    }
+
+    public void setStartStopName(String startStopName) {
+        this.startStopName = startStopName;
+    }
+
+    public String getEndStopName() {
+        return endStopName;
+    }
+
+    public void setEndStopName(String endStopName) {
+        this.endStopName = endStopName;
     }
 }

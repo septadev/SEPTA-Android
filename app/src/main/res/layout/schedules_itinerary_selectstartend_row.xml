@@ -17,7 +17,9 @@
               android:id="@+id/schedules_itinerary_selectstartend_begin_button"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
+              android:layout_marginLeft="5dp"
               android:layout_gravity="center_vertical"
+              android:onClick="startEndSelectionSelected"
               android:background="@drawable/itinerary_startend_begin"/>
 
     <LinearLayout
@@ -34,6 +36,7 @@
             android:layout_margin="2.5dp"
             android:layout_marginTop="5dp"
             android:background="#BEBEBE"
+            android:textSize="24sp"
             android:hint="Select start"
             android:gravity="center"
             android:onClick=""/>
@@ -46,6 +49,7 @@
             android:layout_margin="2.5dp"
             android:layout_marginBottom="5dp"
             android:background="#BEBEBE"
+            android:textSize="24sp"
             android:hint="Select destination"
             android:gravity="center"
             android:onClick=""/>
@@ -56,7 +60,9 @@
         android:id="@+id/schedules_itinerary_selectstartend_reverse_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginRight="5dp"
         android:layout_gravity="center_vertical"
+        android:onClick="reverseStartEndSelected"
         android:background="@drawable/itinerary_startend_reverse"/>
 
 </LinearLayout>

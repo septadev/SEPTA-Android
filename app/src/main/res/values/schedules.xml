@@ -51,5 +51,6 @@
 
     <string name="schedules_routeselect_travelType">schedules_routeselect_travelType</string>
     <string name="schedules_itinerary_travelType">schedules_itinerary_travelType</string>
+    <string name="schedules_itinerary_routeShortName">schedules_itinerary_routeShortName</string>
 
 </resources>

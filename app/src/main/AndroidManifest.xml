@@ -2,6 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.septa.android.app" >
 
+    <!--<supports-screens android:smallScreens="true"-->
+                      <!--android:normalScreens="true"-->
+                      <!--android:largeScreens="true"-->
+                      <!--android:xlargeScreens="true"-->
+                      <!--android:anyDensity="true"/>-->
+
     <!-- the Google Play Services Map API v2 requires OpenGL ES v2, thus
         instruct the Google Play store not to show or install app on a device
         that does not support OpenGL ES v2 -->
@@ -167,21 +173,21 @@
                 android:value=".activities.MainTabbarActivity" />
         </activity>
 
-        <activity android:name=".activities.SchedulesRouteSelectionActionBarActivity"
+        <activity android:name=".activities.schedules.SchedulesRouteSelectionActionBarActivity"
                   android:parentActivityName="org.septa.android.app.activities.MainTabbarActivity" >
                 <!-- Parent activity meta-data to support 4.0 and lower -->
                 <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
                     android:value=".activities.MainTabbarActivity" />
         </activity>
-        <activity android:name=".activities.SchedulesItineraryActionBarActivity"
+        <activity android:name=".activities.schedules.SchedulesItineraryActionBarActivity"
                   android:parentActivityName="org.septa.android.app.activities.MainTabbarActivity" >
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.MainTabbarActivity" />
         </activity>
-        <activity android:name=".activities.ItinerarySelectionActionBarActivity"
+        <activity android:name=".activities.schedules.ItinerarySelectionActionBarActivity"
                   android:parentActivityName="org.septa.android.app.activities.MainTabbarActivity" >
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data

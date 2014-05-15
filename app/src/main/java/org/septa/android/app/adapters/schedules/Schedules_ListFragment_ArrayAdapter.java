@@ -5,7 +5,7 @@
  * Copyright (c) 2014 SEPTA.  All rights reserved.
  */
 
-package org.septa.android.app.adapters;
+package org.septa.android.app.adapters.schedules;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -16,6 +16,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.septa.android.app.R;
+
+import roboguice.util.Ln;
 
 public class Schedules_ListFragment_ArrayAdapter  extends ArrayAdapter<String> {
     private static final String TAG = Schedules_ListFragment_ArrayAdapter.class.getName();

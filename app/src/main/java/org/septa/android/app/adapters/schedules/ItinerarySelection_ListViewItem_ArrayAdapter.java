@@ -5,7 +5,7 @@
  * Copyright (c) 2014 SEPTA.  All rights reserved.
  */
 
-package org.septa.android.app.adapters;
+package org.septa.android.app.adapters.schedules;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -30,8 +30,6 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
     public static final String TAG = ItinerarySelection_ListViewItem_ArrayAdapter.class.getName();
     private final Context mContext;
     private LayoutInflater mInflater;
-
-//    protected ArrayList<SchedulesRouteModel> routes = new ArrayList<SchedulesRouteModel>();
 
     String[] resourceEndNames;
 
@@ -71,6 +69,7 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
         ArrayList<Object> items = new ArrayList<Object>();
 
         if (tripsForDirection0.size()>0) {
+            Ln.d("items for direction 0 is not 0, add 2 more");
 
             items.add(new Object());
             items.add(new Object());
@@ -78,6 +77,8 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
         }
 
         if (tripsForDirection1.size()>0) {
+            Ln.d("items for direction 1" +
+                    " is not 0, add 2 more");
             items.add(new Object());
             items.add(new Object());
             items.addAll(tripsForDirection1);
@@ -109,6 +110,7 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
         View rowView;
 
         if ((getItem(position) instanceof TripDataModel)) {
+            Ln.d("found in instance of TripDataModel at position "+position);
             rowView = mInflater.inflate(R.layout.itineraryselection_listview_route_item, parent, false);
 
             ImageView handicapImageView = (ImageView) rowView.findViewById(R.id.iterinaryselection_accessibilityicon_imageview);
@@ -122,11 +124,12 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
 
             TextView textView = (TextView) rowView.findViewById(R.id.iterinaryselection_accessibilityicon_textview);
 
-            Ln.d("setting the trip row text to be "+((TripDataModel)getItem(position)).getStartStopNameTitle());
-            textView.setText(((TripDataModel)getItem(position)).getStartStopNameTitle());
+            textView.setText(((TripDataModel)getItem(position)).getStartStopName());
         } else {
 
             rowView = mInflater.inflate(R.layout.itineraryselection_listview_locationinput_item, parent, false);
+            TextView textView = (TextView)rowView.findViewById(R.id.itineraryselection_listview_locationinput_textview);
+            textView.setText("Current Location");
         }
 
         return rowView;
@@ -136,15 +139,16 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
     public View getHeaderView(int position, View convertView, ViewGroup parent) {
         View view = null;
 
-        if (position < tripsForDirection0.size()+2) {
-            view = mInflater.inflate(R.layout.schedules_routeselection_headerview, parent, false);
-            TextView textView = (TextView) view.findViewById(R.id.schedules_routeselection_sectionheader_textview);
+        view = mInflater.inflate(R.layout.schedules_routeselection_headerview, parent, false);
+        TextView textView = (TextView) view.findViewById(R.id.schedules_routeselection_sectionheader_textview);
 
+        Ln.d("in getHeaderView with position of "+position+" and tripsForDirection0.size() is "+tripsForDirection0.size());
+
+        if (position < tripsForDirection0.size()+2) {
+Ln.d("getHeaderView will be 0");
             textView.setText(directionHeadingLabels[0]);
         } else {
-            view = mInflater.inflate(R.layout.schedules_routeselection_headerview, parent, false);
-            TextView textView = (TextView) view.findViewById(R.id.schedules_routeselection_sectionheader_textview);
-
+            Ln.d("getHeaderView will be 1");
             textView.setText(directionHeadingLabels[1]);
         }
 
@@ -164,11 +168,11 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
     public int getPositionForSection(int section) {
         switch (section) {
             case 0: {
-
+Ln.d("getPositionForSection "+section+" returning 0");
                 return 0;
             }
             case 1: {
-
+Ln.d("getPositionForSection "+section+" return "+tripsForDirection0.size()+2);
                 return tripsForDirection0.size()+2;
             }
             default: {
@@ -180,6 +184,7 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
 
     @Override
     public int getSectionForPosition(int position) {
+        Ln.d("getSectionForPosition "+position);
         if (position < tripsForDirection0.size()+2) {
 
             return 0;

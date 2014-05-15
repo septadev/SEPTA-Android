@@ -5,7 +5,7 @@
  * Copyright (c) 2014 SEPTA.  All rights reserved.
  */
 
-package org.septa.android.app.adapters;
+package org.septa.android.app.adapters.schedules;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -26,11 +26,12 @@ import org.septa.android.app.models.SchedulesRouteModel;
 
 import java.util.ArrayList;
 
+import roboguice.util.Ln;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 
-public class SchedulesRouteSelectionListViewItemArrayAdapter extends BaseAdapter implements
+public class SchedulesRouteSelection_ListViewItem_ArrayAdapter extends BaseAdapter implements
         StickyListHeadersAdapter, SectionIndexer  {
-    public static final String TAG = SchedulesRouteSelectionListViewItemArrayAdapter.class.getName();
+    public static final String TAG = SchedulesRouteSelection_ListViewItem_ArrayAdapter.class.getName();
     private final Context mContext;
     private LayoutInflater mInflater;
 
@@ -46,7 +47,7 @@ public class SchedulesRouteSelectionListViewItemArrayAdapter extends BaseAdapter
 
     private String[] sectionTitles = new String[]{ "Favorites", "Recently Viewed", "Routes"};
 
-    public SchedulesRouteSelectionListViewItemArrayAdapter(Context context, RouteTypes routeType) {
+    public SchedulesRouteSelection_ListViewItem_ArrayAdapter(Context context, RouteTypes routeType) {
         mContext = context;
         mInflater = LayoutInflater.from(context);
 
@@ -54,6 +55,7 @@ public class SchedulesRouteSelectionListViewItemArrayAdapter extends BaseAdapter
 
         resourceEndNames = context.getResources().getStringArray(R.array.schedulesfragment_listview_bothimage_endnames);
         leftImageStartName = context.getString(R.string.schedulesfragment_listview_leftimage_startname);
+        rightImageBackgroundName = context.getString(R.string.schedulesfragment_listview_rightimage_startname);
     }
 
     public void setSchedulesRouteModel(ArrayList<SchedulesRouteModel> routes) {

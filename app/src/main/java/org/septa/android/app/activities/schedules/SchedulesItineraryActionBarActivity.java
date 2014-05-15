@@ -5,7 +5,7 @@
  * Copyright (c) 2014 SEPTA.  All rights reserved.
  */
 
-package org.septa.android.app.activities;
+package org.septa.android.app.activities.schedules;
 
 import android.annotation.TargetApi;
 import android.content.Intent;
@@ -24,7 +24,8 @@ import android.widget.AdapterView;
 import android.widget.Button;
 
 import org.septa.android.app.R;
-import org.septa.android.app.adapters.SchedulesItinerary_ListViewItem_ArrayAdapter;
+import org.septa.android.app.activities.BaseAnalyticsActionBarActivity;
+import org.septa.android.app.adapters.schedules.SchedulesItinerary_ListViewItem_ArrayAdapter;
 import org.septa.android.app.databases.SEPTADatabase;
 import org.septa.android.app.models.RouteTypes;
 import org.septa.android.app.models.SchedulesRouteModel;

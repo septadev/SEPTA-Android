@@ -5,7 +5,7 @@
  * Copyright (c) 2014 SEPTA.  All rights reserved.
  */
 
-package org.septa.android.app.activities;
+package org.septa.android.app.activities.schedules;
 
 import android.annotation.TargetApi;
 import android.content.Intent;
@@ -21,7 +21,8 @@ import android.view.View;
 import android.widget.AdapterView;
 
 import org.septa.android.app.R;
-import org.septa.android.app.adapters.SchedulesRouteSelectionListViewItemArrayAdapter;
+import org.septa.android.app.activities.BaseAnalyticsActionBarActivity;
+import org.septa.android.app.adapters.schedules.SchedulesRouteSelection_ListViewItem_ArrayAdapter;
 import org.septa.android.app.databases.SEPTADatabase;
 import org.septa.android.app.models.RouteTypes;
 import org.septa.android.app.models.SchedulesRouteModel;
@@ -38,7 +39,7 @@ public class SchedulesRouteSelectionActionBarActivity extends BaseAnalyticsActio
         StickyListHeadersListView.OnStickyHeaderOffsetChangedListener,
         StickyListHeadersListView.OnStickyHeaderChangedListener, View.OnTouchListener {
 
-    private SchedulesRouteSelectionListViewItemArrayAdapter mAdapter;
+    private SchedulesRouteSelection_ListViewItem_ArrayAdapter mAdapter;
     private boolean fadeHeader = true;
 
     private RouteTypes travelType;
@@ -67,7 +68,7 @@ public class SchedulesRouteSelectionActionBarActivity extends BaseAnalyticsActio
 
         travelType = valueOf(getIntent().getStringExtra(getString(R.string.schedules_routeselect_travelType)));
 
-        mAdapter = new SchedulesRouteSelectionListViewItemArrayAdapter(this, travelType);
+        mAdapter = new SchedulesRouteSelection_ListViewItem_ArrayAdapter(this, travelType);
 
         stickyList = (StickyListHeadersListView) findViewById(R.id.list);
         stickyList.setOnItemClickListener(this);
@@ -242,10 +243,7 @@ public class SchedulesRouteSelectionActionBarActivity extends BaseAnalyticsActio
         protected Boolean doInBackground(RouteTypes... params) {
             RouteTypes routeType = params[0];
 
-            Ln.d("about to call the loadRoutes...");
             loadRoutes(routeType);
-            Ln.d("called the loadRoutes.");
-
             return false;
         }
 
@@ -253,10 +251,8 @@ public class SchedulesRouteSelectionActionBarActivity extends BaseAnalyticsActio
         protected void onPostExecute(Boolean b) {
             super.onPostExecute(b);
 
-            Ln.d("calling onPostExecute...");
             mAdapter.setSchedulesRouteModel(routesModelList);
             mAdapter.notifyDataSetChanged();
-            Ln.d("done with the onPostExecute call.");
         }
     }
 }

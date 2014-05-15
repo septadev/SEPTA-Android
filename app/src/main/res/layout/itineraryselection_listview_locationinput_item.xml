@@ -10,20 +10,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="horizontal"
               android:layout_width="match_parent"
-              android:layout_height="match_parent">
-
-    <ImageView
-        android:id="@+id/iterinaryselection_accessibilityicon_imageview"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:background="@drawable/handicap_blk"
-        android:visibility="invisible"/>
+              android:layout_height="match_parent"
+              android:background="@android:color/white">
 
     <TextView
-        android:id="@+id/iterinaryselection_accessibilityicon_textview"
-        android:layout_width="fill_parent"
+        android:id="@+id/itineraryselection_listview_locationinput_textview"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:singleLine="true"
-        android:ellipsize="middle"/>
+        android:background="@android:color/darker_gray"
+        android:gravity="center"/>
 
 </LinearLayout>

@@ -16,9 +16,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import org.septa.android.app.R;
-import org.septa.android.app.activities.SchedulesRouteSelectionActionBarActivity;
-import org.septa.android.app.adapters.Schedules_ListFragment_ArrayAdapter;
-import org.septa.android.app.models.RoutesModel;
+import org.septa.android.app.activities.schedules.SchedulesRouteSelectionActionBarActivity;
+import org.septa.android.app.adapters.schedules.Schedules_ListFragment_ArrayAdapter;
 
 public class SchedulesListFragment extends ListFragment {
     private static final String TAG = SchedulesListFragment.class.getName();

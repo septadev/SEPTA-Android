@@ -5,7 +5,7 @@
  * Copyright (c) 2014 SEPTA.  All rights reserved.
  */
 
-package org.septa.android.app.adapters;
+package org.septa.android.app.adapters.schedules;
 
 import android.content.Context;
 import android.graphics.Color;

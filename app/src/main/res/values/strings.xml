@@ -48,6 +48,9 @@
     <string name="ic_menu_distance_title">Distance</string>
     <string name="ic_menu_done_title">Done</string>
 
+    <string name="ic_menu_filter_none">No Filter</string>
+    <string name="ic_menu_filter_removemeptyrows">Filter Empty Rows</string>
+
         <!-- FONT FAIIMLY FOR Project -->
     <declare-styleable name="customfont"> <attr name="android:fontFamily"/> <attr name="android:textStyle"/> </declare-styleable>
 

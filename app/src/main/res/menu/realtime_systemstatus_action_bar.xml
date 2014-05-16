@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~ realtime_systemstatus_action_bar.xml
+  ~ Last modified on 05-16-2014 17:32-0400 by brianhmayo
+  ~
+  ~ Copyright (c) 2014 SEPTA.  All rights reserved.
+  -->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      xmlns:tools="http://schemas.android.com/tools"
+      tools:context="org.septa.android.app.activities.FindNearestLocationActionBarActivity" >
+
+    <!--<item android:id="@+id/actionmenu_activity_indicator"-->
+    <!--android:title="refresh"-->
+    <!--android:actionLayout="@layout/actionbar_indeterminate_progress_indicator"-->
+    <!--app:showAsAction="always"-->
+    <!--android:orderInCategory="1"-->
+    <!--android:visible="true"/>-->
+
+    <item android:id="@+id/actionmenu_systemstatusactionbar_filter_none"
+          android:icon="@drawable/ic_menu_filter_allrows"
+          android:title="@string/ic_menu_filter_none"
+          app:showAsAction="always"
+          android:orderInCategory="2"/>
+
+    <item android:id="@+id/actionmenu_systemstatusactionbar_filter_removeemptyrows"
+          android:icon="@drawable/ic_menu_done"
+          android:title="@string/ic_menu_filter_removemeptyrows"
+          android:visible="false"
+          app:showAsAction="always"
+          android:orderInCategory="3"/>
+
+</menu>

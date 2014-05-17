@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~ systemstatus_listview_route_item.xml
+  ~ Last modified on 05-16-2014 21:15-0400 by brianhmayo
+  ~
+  ~ Copyright (c) 2014 SEPTA.  All rights reserved.
+  -->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="horizontal"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/systemstatus_listview_route_item_route_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:contentDescription="Route icon"/>
+
+    <TextView
+        android:id="@+id/systemstatus_listview_route_item_route_text"
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:layout_toRightOf="@id/systemstatus_listview_route_item_route_icon"
+        android:layout_toLeftOf="@id/systemstatus_listview_route_item_alert_icon"
+        android:singleLine="true"
+        android:ellipsize="middle"
+        android:contentDescription="Route title text"/>
+
+    <ImageView
+        android:id="@+id/systemstatus_listview_route_item_alert_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_toLeftOf="@id/systemstatus_listview_route_item_detour_icon"
+        android:visibility="invisible"
+        android:src="@drawable/ic_system_status_alert"
+        android:contentDescription="Alert icon"/>
+
+    <ImageView
+        android:id="@+id/systemstatus_listview_route_item_detour_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_toLeftOf="@id/systemstatus_listview_route_item_advisory_icon"
+        android:visibility="invisible"
+        android:src="@drawable/ic_system_status_detour"
+        android:contentDescription="Detour icon"/>
+
+    <ImageView
+        android:id="@+id/systemstatus_listview_route_item_advisory_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentEnd="true"
+        android:visibility="invisible"
+        android:src="@drawable/ic_system_status_advisory"
+        android:contentDescription="Advisory icon"/>
+
+</RelativeLayout>

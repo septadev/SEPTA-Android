@@ -17,10 +17,28 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
-import org.septa.android.app.R;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.septa.android.app.R;
+import org.septa.android.app.adapters.SystemStatus_ListViewItem_ArrayAdapter;
+import org.septa.android.app.fragments.TrainViewListFragment;
+import org.septa.android.app.models.LocationModel;
+import org.septa.android.app.models.servicemodels.AlertModel;
+import org.septa.android.app.models.servicemodels.TrainViewModel;
+import org.septa.android.app.services.apiinterfaces.AlertsService;
+import org.septa.android.app.services.apiproxies.AlertsServiceProxy;
+import org.septa.android.app.services.apiproxies.TrainViewServiceProxy;
+
+import java.util.ArrayList;
+
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 import roboguice.util.Ln;
 
 public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivity {
@@ -47,6 +65,10 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
         getSupportActionBar().setIcon(id);
 
         setContentView(R.layout.realtime_systemstatus);
+
+        ListView listView = (ListView)findViewById(R.id.realtime_systemstatus_listview);
+        SystemStatus_ListViewItem_ArrayAdapter systemStatusListViewArrayAdapter = new SystemStatus_ListViewItem_ArrayAdapter(this, new ArrayList<AlertModel>());
+        listView.setAdapter(systemStatusListViewArrayAdapter);
     }
 
     @Override
@@ -284,6 +306,8 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
                 inChangeRadiusMode = true;
                 ActivityCompat.invalidateOptionsMenu(this);
 
+                fetchAlerts();
+
                 return true;
             case R.id.actionmenu_findnearestlocationactionbar_changeradius_done:
                 inChangeRadiusMode = false;
@@ -294,6 +318,66 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
                 return super.onOptionsItemSelected(item);
         }
     }
+
+    private void fetchAlerts() {
+        Callback callback = new Callback() {
+            @Override
+            public void success(Object o, Response response) {
+                Log.d(TAG, "successfully ended alerts service call with " + ((ArrayList<LocationModel>) o).size());
+                setProgressBarIndeterminateVisibility(Boolean.FALSE);
+
+//                TrainViewListFragment listFragment = (TrainViewListFragment) getSupportFragmentManager().findFragmentById(R.id.trainview_list_fragment);
+//                listFragment.setTrainViewModels((ArrayList<TrainViewModel>)o);
+
+//                for (TrainViewModel trainView: (ArrayList<TrainViewModel>)o) {
+//                    BitmapDescriptor trainIcon;
+//                    if (trainView.isSouthBound()) {
+//                        trainIcon = BitmapDescriptorFactory.fromResource(R.drawable.ic_trainview_rrl_red);
+//                    } else {
+//                        trainIcon = BitmapDescriptorFactory.fromResource(R.drawable.ic_trainview_rrl_blue);
+//                    }
+//
+//                    String title = "Train #" + trainView.getTrainNumber() + " ";
+//                    if (trainView.isLate()) {
+//                        title += "(" + trainView.getLate()+ " min late)";
+//                    } else {
+//                        title += "(on time)";
+//                    }
+//                    String snippet = trainView.getSource() + " to " + trainView.getDestination();
+//
+//                    // check to make sure that mMap is not null
+//                    if (mMap != null) {
+//                        mMap.addMarker(new MarkerOptions()
+//                                .position(trainView.getLatLng())
+//                                .title(title)
+//                                .icon(trainIcon)
+//                                .snippet(snippet));
+//                    }
+//                }
+
+                ArrayList<AlertModel>alertModelList = (ArrayList<AlertModel>)o;
+                Ln.d("callback called for alerts with count of "+alertModelList.size());
+            }
+
+            @Override
+            public void failure(RetrofitError retrofitError) {
+                setProgressBarIndeterminateVisibility(Boolean.FALSE);
+
+                try {
+                    Log.d(TAG, "A failure in the call to train view service with body |" + retrofitError.getResponse().getBody().in() + "|");
+                } catch (Exception ex) {
+                    // TODO: clean this up
+                    Log.d(TAG, "blah... what is going on?");
+                }
+            }
+        };
+
+        AlertsServiceProxy alertsServiceProxy = new AlertsServiceProxy();
+        setProgressBarIndeterminateVisibility(Boolean.TRUE);
+        alertsServiceProxy.getAlerts(callback);
+    }
+
+
 
     @Override
     protected void onStart() {

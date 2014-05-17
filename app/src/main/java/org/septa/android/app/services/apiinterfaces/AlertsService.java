@@ -1,0 +1,22 @@
+/*
+ * AlertsServiceProxy.java
+ * Last modified on 05-16-2014 20:23-0400 by brianhmayo
+ *
+ * Copyright (c) 2014 SEPTA.  All rights reserved.
+ */
+
+package org.septa.android.app.services.apiinterfaces;
+
+import org.septa.android.app.models.servicemodels.AlertModel;
+
+import java.util.ArrayList;
+
+import retrofit.Callback;
+import retrofit.http.GET;
+
+public interface AlertsService {
+    @GET("/hackathon/Alerts/")
+    void alerts (
+            Callback<ArrayList<AlertModel>> callback
+    );
+}

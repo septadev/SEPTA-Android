@@ -68,15 +68,12 @@ public class SystemStatus_ListViewItem_ArrayAdapter extends ArrayAdapter<AlertMo
 
         if (alertInformation.hasFlag()) {
             if (alertInformation.hasAdvisoryFlag()) {
-                Ln.d("setting the advisory flag visible");
                 advisoryImageView.setVisibility(View.VISIBLE);
             }
             if (alertInformation.hasDetourFlag()) {
-                Ln.d("setting the detour flag visible");
                 detourImageView.setVisibility(View.VISIBLE);
             }
             if (alertInformation.hasAlertFlag()) {
-                Ln.d("setting the alert flag visible");
                 alertImageView.setVisibility(View.VISIBLE);
             }
         }
@@ -93,6 +90,7 @@ public class SystemStatus_ListViewItem_ArrayAdapter extends ArrayAdapter<AlertMo
     @Override
     public boolean isEnabled(int position) {
 
-        return false;
+        // if the alert has a flag enabled, then it is selectable
+        return values.get(position).hasFlag();
     }
 }

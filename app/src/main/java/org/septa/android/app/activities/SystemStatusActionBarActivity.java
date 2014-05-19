@@ -17,36 +17,27 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.MarkerOptions;
-
 import org.septa.android.app.R;
 import org.septa.android.app.adapters.SystemStatus_ListViewItem_ArrayAdapter;
-import org.septa.android.app.fragments.TrainViewListFragment;
-import org.septa.android.app.models.LocationModel;
 import org.septa.android.app.models.servicemodels.AlertModel;
-import org.septa.android.app.models.servicemodels.TrainViewModel;
-import org.septa.android.app.services.apiinterfaces.AlertsService;
 import org.septa.android.app.services.apiproxies.AlertsServiceProxy;
-import org.septa.android.app.services.apiproxies.TrainViewServiceProxy;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 import roboguice.util.Ln;
 
-public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivity {
+public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivity implements AdapterView.OnItemClickListener{
     public static final String TAG = SystemStatusActionBarActivity.class.getName();
 
     private boolean inChangeRadiusMode = false;
@@ -74,6 +65,7 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
         // set the empty view in case we don't have any data
         LinearLayout emptyView = (LinearLayout)findViewById(R.id.empty);
         ListView listView = (ListView)findViewById(R.id.realtime_systemstatus_listview);
+        listView.setOnItemClickListener(this);
         listView.setEmptyView(emptyView);
 
         TextView loadingTextView = (TextView)findViewById(R.id.realtime_systemstatus_emptylist_textview);
@@ -81,10 +73,7 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
         loadingTextView.setText("no data to display.");
         loadingProgressBar.setVisibility(View.GONE);
 
-//        SystemStatus_ListViewItem_ArrayAdapter systemStatusListViewArrayAdapter = new SystemStatus_ListViewItem_ArrayAdapter(this, new ArrayList<AlertModel>());
-//        listView.setAdapter(systemStatusListViewArrayAdapter);
-
-//        fetchAlerts();
+        fetchAlerts();
     }
 
     @Override
@@ -108,6 +97,11 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
                 Ln.d("this should never be reached");
             }
         }
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Ln.d("detected an item click at position "+position);
     }
 
     public void tabSelected(View view) {
@@ -397,6 +391,7 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
                 }
 
                 ListView listView = (ListView)findViewById(R.id.realtime_systemstatus_listview);
+                Collections.sort(selectedAlertList);
                 SystemStatus_ListViewItem_ArrayAdapter systemStatusListViewArrayAdapter = new SystemStatus_ListViewItem_ArrayAdapter(SystemStatusActionBarActivity.this, selectedAlertList);
                 listView.setAdapter(systemStatusListViewArrayAdapter);
                 listView.invalidate();

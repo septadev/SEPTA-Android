@@ -11,7 +11,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.Date;
 
-public class AlertModel {
+public class AlertModel implements Comparable<AlertModel> {
     public static final String TAG = AlertModel.class.getName();
 
     @SerializedName("isSnow") private String isSnow;
@@ -131,5 +131,51 @@ public class AlertModel {
 
     public String getRouteName() {
         return routeName;
+    }
+
+    @Override
+    public int compareTo(AlertModel another) {
+        int result = 0;
+        Integer thisRouteName = null;
+        Integer otherRouteName = null;
+        boolean thisIsString = false;
+        boolean otherIsString = false;
+
+        // we assume a route short name is either a number (only numerics), a number with a trailing character, or
+        //  not a number (all characters.
+        // first check if it is a number, then remove the last character and check for a number
+        // if those two fail, it must not be or have a number
+        try {
+            thisRouteName = Integer.valueOf(this.routeName);
+        } catch (NumberFormatException nfe) {
+            thisIsString = true;
+        }
+
+        try {
+            otherRouteName = Integer.valueOf(another.routeName);
+        } catch (NumberFormatException nfe) {
+            otherIsString = true;
+        }
+
+        // this is a string and other is not, thus other comes first
+        if (thisIsString && !otherIsString) {
+
+            return 1;
+        }
+
+        // this is not a string and other is, thus this comes first
+        if (!thisIsString && otherIsString) {
+
+            return -1;
+        }
+
+        // both are strings, just compare outright;
+        if (thisIsString && otherIsString) {
+
+            return this.routeName.compareTo(another.routeName);
+        }
+
+        // if we got here, we converted both to Integers and can compare outright.
+        return thisRouteName.compareTo(otherRouteName);
     }
 }

@@ -7,6 +7,8 @@
 
 package org.septa.android.app.activities;
 
+import android.app.ListActivity;
+import android.app.ProgressDialog;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
@@ -17,7 +19,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.model.BitmapDescriptor;
@@ -34,6 +38,7 @@ import org.septa.android.app.services.apiinterfaces.AlertsService;
 import org.septa.android.app.services.apiproxies.AlertsServiceProxy;
 import org.septa.android.app.services.apiproxies.TrainViewServiceProxy;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import retrofit.Callback;
@@ -66,9 +71,20 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
 
         setContentView(R.layout.realtime_systemstatus);
 
+        // set the empty view in case we don't have any data
+        LinearLayout emptyView = (LinearLayout)findViewById(R.id.empty);
         ListView listView = (ListView)findViewById(R.id.realtime_systemstatus_listview);
-        SystemStatus_ListViewItem_ArrayAdapter systemStatusListViewArrayAdapter = new SystemStatus_ListViewItem_ArrayAdapter(this, new ArrayList<AlertModel>());
-        listView.setAdapter(systemStatusListViewArrayAdapter);
+        listView.setEmptyView(emptyView);
+
+        TextView loadingTextView = (TextView)findViewById(R.id.realtime_systemstatus_emptylist_textview);
+        ProgressBar loadingProgressBar = (ProgressBar)findViewById(R.id.realtime_systemstatus_emptylist_progressbar);
+        loadingTextView.setText("no data to display.");
+        loadingProgressBar.setVisibility(View.GONE);
+
+//        SystemStatus_ListViewItem_ArrayAdapter systemStatusListViewArrayAdapter = new SystemStatus_ListViewItem_ArrayAdapter(this, new ArrayList<AlertModel>());
+//        listView.setAdapter(systemStatusListViewArrayAdapter);
+
+//        fetchAlerts();
     }
 
     @Override
@@ -95,6 +111,12 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
     }
 
     public void tabSelected(View view) {
+        // first, clear out the current data and invalidate the listview to reload
+        ListView listView = (ListView)findViewById(R.id.realtime_systemstatus_listview);
+        SystemStatus_ListViewItem_ArrayAdapter systemStatusListViewArrayAdapter = new SystemStatus_ListViewItem_ArrayAdapter(SystemStatusActionBarActivity.this, new ArrayList<AlertModel>());
+        listView.setAdapter(systemStatusListViewArrayAdapter);
+        listView.invalidate();
+
         switch (view.getId()) {
             case R.id.realtime_systemstatus_tab_bustrolley_view: {
                 selectedTab = 0;
@@ -121,6 +143,8 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
                 Ln.d("not sure how we feel into this default for this switch");
             }
         }
+
+        fetchAlerts();
     }
 
     private void selectedBusTrolleyTab() {
@@ -320,48 +344,72 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
     }
 
     private void fetchAlerts() {
+        TextView loadingTextView = (TextView)findViewById(R.id.realtime_systemstatus_emptylist_textview);
+        ProgressBar loadingProgressBar = (ProgressBar)findViewById(R.id.realtime_systemstatus_emptylist_progressbar);
+        loadingTextView.setText("loading data...");
+        loadingProgressBar.setVisibility(View.VISIBLE);
+
         Callback callback = new Callback() {
             @Override
             public void success(Object o, Response response) {
-                Log.d(TAG, "successfully ended alerts service call with " + ((ArrayList<LocationModel>) o).size());
                 setProgressBarIndeterminateVisibility(Boolean.FALSE);
 
-//                TrainViewListFragment listFragment = (TrainViewListFragment) getSupportFragmentManager().findFragmentById(R.id.trainview_list_fragment);
-//                listFragment.setTrainViewModels((ArrayList<TrainViewModel>)o);
-
-//                for (TrainViewModel trainView: (ArrayList<TrainViewModel>)o) {
-//                    BitmapDescriptor trainIcon;
-//                    if (trainView.isSouthBound()) {
-//                        trainIcon = BitmapDescriptorFactory.fromResource(R.drawable.ic_trainview_rrl_red);
-//                    } else {
-//                        trainIcon = BitmapDescriptorFactory.fromResource(R.drawable.ic_trainview_rrl_blue);
-//                    }
-//
-//                    String title = "Train #" + trainView.getTrainNumber() + " ";
-//                    if (trainView.isLate()) {
-//                        title += "(" + trainView.getLate()+ " min late)";
-//                    } else {
-//                        title += "(on time)";
-//                    }
-//                    String snippet = trainView.getSource() + " to " + trainView.getDestination();
-//
-//                    // check to make sure that mMap is not null
-//                    if (mMap != null) {
-//                        mMap.addMarker(new MarkerOptions()
-//                                .position(trainView.getLatLng())
-//                                .title(title)
-//                                .icon(trainIcon)
-//                                .snippet(snippet));
-//                    }
-//                }
+                TextView loadingTextView = (TextView)findViewById(R.id.realtime_systemstatus_emptylist_textview);
+                ProgressBar loadingProgressBar = (ProgressBar)findViewById(R.id.realtime_systemstatus_emptylist_progressbar);
+                loadingTextView.setText("");
+                loadingProgressBar.setVisibility(View.GONE);
 
                 ArrayList<AlertModel>alertModelList = (ArrayList<AlertModel>)o;
                 Ln.d("callback called for alerts with count of "+alertModelList.size());
+
+                ArrayList<AlertModel>selectedAlertList = new ArrayList<AlertModel>();
+                switch (selectedTab) {
+                    case 0: {
+                        for (AlertModel alert : alertModelList) {
+                            if (alert.isBus() || alert.isTrolley()) {
+                                selectedAlertList.add(alert);
+                            }
+                        }
+
+                        break;
+                    }
+                    case 1: {
+                        for (AlertModel alert : alertModelList) {
+                            if (alert.isRegionalRail()) {
+                                selectedAlertList.add(alert);
+                            }
+                        }
+
+                        break;
+                    }
+                    case 2: {
+                        for (AlertModel alert : alertModelList) {
+                            if (alert.isMFL() || alert.isBSL() || alert.isNHSL()) {
+                                selectedAlertList.add(alert);
+                            }
+                        }
+
+                        break;
+                    }
+                    default: {
+                        Ln.d("should never get here");
+                    }
+                }
+
+                ListView listView = (ListView)findViewById(R.id.realtime_systemstatus_listview);
+                SystemStatus_ListViewItem_ArrayAdapter systemStatusListViewArrayAdapter = new SystemStatus_ListViewItem_ArrayAdapter(SystemStatusActionBarActivity.this, selectedAlertList);
+                listView.setAdapter(systemStatusListViewArrayAdapter);
+                listView.invalidate();
             }
 
             @Override
             public void failure(RetrofitError retrofitError) {
                 setProgressBarIndeterminateVisibility(Boolean.FALSE);
+
+                TextView loadingTextView = (TextView)findViewById(R.id.realtime_systemstatus_emptylist_textview);
+                ProgressBar loadingProgressBar = (ProgressBar)findViewById(R.id.realtime_systemstatus_emptylist_progressbar);
+                loadingTextView.setText("an error has occurred.");
+                loadingProgressBar.setVisibility(View.GONE);
 
                 try {
                     Log.d(TAG, "A failure in the call to train view service with body |" + retrofitError.getResponse().getBody().in() + "|");

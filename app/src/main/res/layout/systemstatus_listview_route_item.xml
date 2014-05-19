@@ -10,50 +10,61 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="horizontal"
               android:layout_width="match_parent"
-              android:layout_height="match_parent">
+              android:layout_height="match_parent"
+              android:paddingTop="5dp"
+              android:paddingBottom="5dp">
 
     <ImageView
         android:id="@+id/systemstatus_listview_route_item_route_icon"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_alignParentLeft="true"
+        android:layout_marginLeft="5dp"
+        android:gravity="center_vertical"
         android:contentDescription="Route icon"/>
 
-    <TextView
-        android:id="@+id/systemstatus_listview_route_item_route_text"
-        android:layout_width="fill_parent"
-        android:layout_height="match_parent"
-        android:layout_toRightOf="@id/systemstatus_listview_route_item_route_icon"
-        android:layout_toLeftOf="@id/systemstatus_listview_route_item_alert_icon"
-        android:singleLine="true"
-        android:ellipsize="middle"
-        android:contentDescription="Route title text"/>
-
     <ImageView
-        android:id="@+id/systemstatus_listview_route_item_alert_icon"
+        android:id="@+id/systemstatus_listview_route_item_advisory_icon"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_toLeftOf="@id/systemstatus_listview_route_item_detour_icon"
+        android:layout_marginRight="15dp"
+        android:layout_alignParentEnd="true"
+        android:gravity="center_vertical"
         android:visibility="invisible"
-        android:src="@drawable/ic_system_status_alert"
-        android:contentDescription="Alert icon"/>
+        android:src="@drawable/ic_system_status_advisory"
+        android:contentDescription="Advisory icon"/>
 
     <ImageView
         android:id="@+id/systemstatus_listview_route_item_detour_icon"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_toLeftOf="@id/systemstatus_listview_route_item_advisory_icon"
+        android:gravity="center_vertical"
         android:visibility="invisible"
         android:src="@drawable/ic_system_status_detour"
         android:contentDescription="Detour icon"/>
 
     <ImageView
-        android:id="@+id/systemstatus_listview_route_item_advisory_icon"
+        android:id="@+id/systemstatus_listview_route_item_alert_icon"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_alignParentEnd="true"
+        android:layout_toLeftOf="@id/systemstatus_listview_route_item_detour_icon"
+        android:gravity="center_vertical"
         android:visibility="invisible"
-        android:src="@drawable/ic_system_status_advisory"
-        android:contentDescription="Advisory icon"/>
+        android:src="@drawable/ic_system_status_alert"
+        android:contentDescription="Alert icon"/>
+
+    <TextView
+        android:id="@+id/systemstatus_listview_route_item_route_text"
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@id/systemstatus_listview_route_item_route_icon"
+        android:layout_toLeftOf="@id/systemstatus_listview_route_item_alert_icon"
+        android:textSize="24sp"
+        android:singleLine="true"
+        android:ellipsize="middle"
+        android:gravity="left|center_vertical"
+        android:contentDescription="Route title text"/>
 
 </RelativeLayout>

@@ -89,7 +89,7 @@ public class AlertModel {
     }
 
     public boolean hasAdvisoryFlag() {
-        if (isAdvisory.toUpperCase().equals("Y")) {
+        if (isAdvisory.toUpperCase().equals("YES")) {
             return true;
         }
 
@@ -132,8 +132,4 @@ public class AlertModel {
     public String getRouteName() {
         return routeName;
     }
-
-//    public void setRouteName(String routeName) {
-//        this.routeName = routeName;
-//    }
 }

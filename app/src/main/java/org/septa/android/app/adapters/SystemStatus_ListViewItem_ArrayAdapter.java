@@ -20,6 +20,8 @@ import org.septa.android.app.models.servicemodels.AlertModel;
 
 import java.util.List;
 
+import roboguice.util.Ln;
+
 public class SystemStatus_ListViewItem_ArrayAdapter extends ArrayAdapter<AlertModel> {
     public static final String TAG = SystemStatus_ListViewItem_ArrayAdapter.class.getName();
 
@@ -66,12 +68,15 @@ public class SystemStatus_ListViewItem_ArrayAdapter extends ArrayAdapter<AlertMo
 
         if (alertInformation.hasFlag()) {
             if (alertInformation.hasAdvisoryFlag()) {
+                Ln.d("setting the advisory flag visible");
                 advisoryImageView.setVisibility(View.VISIBLE);
             }
             if (alertInformation.hasDetourFlag()) {
+                Ln.d("setting the detour flag visible");
                 detourImageView.setVisibility(View.VISIBLE);
             }
             if (alertInformation.hasAlertFlag()) {
+                Ln.d("setting the alert flag visible");
                 alertImageView.setVisibility(View.VISIBLE);
             }
         }

@@ -102,6 +102,12 @@ public class TrainViewActionBarActivity extends BaseAnalyticsActionBarActivity i
                 findFragmentById(R.id.trainview_map_fragment)).
                 getMap();
 
+        // set the initial center point of the map on Center City, Philadelphia with a default zoom
+        double defaultLatitute = Double.parseDouble(getResources().getString(R.string.generalmap_default_location_latitude));
+        double defaultLongitude = Double.parseDouble(getResources().getString(R.string.generalmap_default_location_longitude));
+        float defaultZoomLevel = Float.parseFloat(getResources().getString(R.string.generalmap_default_zoomlevel));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(defaultLatitute, -defaultLongitude), defaultZoomLevel));
+
         mMap.setMyLocationEnabled(true);
         mLocationClient = new LocationClient(this, this, this);
 

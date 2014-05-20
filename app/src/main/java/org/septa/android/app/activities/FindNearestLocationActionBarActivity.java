@@ -97,15 +97,22 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
         getSupportActionBar().setIcon(R.drawable.ic_actionbar_findnearestlocation);
         getSupportActionBar().setTitle(titleText);
 
+        mapSearchRadius = ObjectFactory.getInstance().getSharedPreferencesManager(this).getNearestLocationMapSearchRadius();
+
         mMap = ((SupportMapFragment) getSupportFragmentManager().
                 findFragmentById(R.id.nearestLocationMapFragment)).
                 getMap();
 
+        // set the initial center point of the map on Center City, Philadelphia with a default zoom
+        double defaultLatitute = Double.parseDouble(getResources().getString(R.string.generalmap_default_location_latitude));
+        double defaultLongitude = Double.parseDouble(getResources().getString(R.string.generalmap_default_location_longitude));
+        float defaultZoomLevel = Float.parseFloat(getResources().getString(R.string.generalmap_default_zoomlevel));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(defaultLatitute, defaultLongitude), defaultZoomLevel));
+        loadMapAndListView(defaultLatitute, defaultLongitude, mapSearchRadius);
+
         mMap.setMyLocationEnabled(true);
 
         mLocationClient = new LocationClient(this, this, this);
-
-        mapSearchRadius = ObjectFactory.getInstance().getSharedPreferencesManager(this).getNearestLocationMapSearchRadius();
     }
 
     @Override
@@ -172,7 +179,15 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
     }
 
     private void loadMapAndListView(Location newLocation, float mapSearchRadius) {
+
+        loadMapAndListView(newLocation.getLatitude(), newLocation.getLongitude(), mapSearchRadius);
+    }
+
+    private void loadMapAndListView(Double latitude, Double longitude, float mapSearchRadius) {
+
+
         if (mMap != null) {
+
             mMap.clear();
         }
 
@@ -297,17 +312,17 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
         LocationServiceProxy busStopsLocationServiceProxy = new LocationServiceProxy();
         setSupportProgressBarIndeterminateVisibility(Boolean.TRUE);
         locationServiceCalls++;
-        busStopsLocationServiceProxy.getLocation(newLocation.getLongitude(), newLocation.getLatitude(), mapSearchRadius, "bus_stops", busStopsCallback);
+        busStopsLocationServiceProxy.getLocation(longitude, latitude, mapSearchRadius, "bus_stops", busStopsCallback);
 
         LocationServiceProxy railStopsLocationServiceProxy = new LocationServiceProxy();
         setSupportProgressBarIndeterminateVisibility(Boolean.TRUE);
         locationServiceCalls++;
-        railStopsLocationServiceProxy.getLocation(newLocation.getLongitude(), newLocation.getLatitude(), mapSearchRadius, "rail_stations", railStopsCallBack);
+        railStopsLocationServiceProxy.getLocation(longitude, latitude, mapSearchRadius, "rail_stations", railStopsCallBack);
 
         LocationServiceProxy trolleyStopsLocationServiceProxy = new LocationServiceProxy();
         setSupportProgressBarIndeterminateVisibility(Boolean.TRUE);
         locationServiceCalls++;
-        trolleyStopsLocationServiceProxy.getLocation(newLocation.getLongitude(), newLocation.getLatitude(), mapSearchRadius, "trolley_stops", trolleyStopsCallBack);
+        trolleyStopsLocationServiceProxy.getLocation(longitude, latitude, mapSearchRadius, "trolley_stops", trolleyStopsCallBack);
     }
 
     @Override

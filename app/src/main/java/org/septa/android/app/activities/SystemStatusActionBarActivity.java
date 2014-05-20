@@ -7,8 +7,7 @@
 
 package org.septa.android.app.activities;
 
-import android.app.ListActivity;
-import android.app.ProgressDialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
@@ -49,15 +48,12 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        String actionBarTitleText = getIntent().getStringExtra(getString(R.string.actionbar_titletext_key));
-        String iconImageNameSuffix = getIntent().getStringExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key));
-
-        String resourceName = getString(R.string.actionbar_iconimage_imagename_base).concat(iconImageNameSuffix);
+        String resourceName = getString(R.string.actionbar_iconimage_imagename_base).concat("systemstatus");
 
         int id = getResources().getIdentifier(resourceName, "drawable", getPackageName());
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle(actionBarTitleText);
+        getSupportActionBar().setTitle("System Status");
         getSupportActionBar().setIcon(id);
 
         setContentView(R.layout.realtime_systemstatus);
@@ -102,6 +98,36 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Ln.d("detected an item click at position "+position);
+
+        AlertModel alert = (AlertModel)parent.getItemAtPosition(position);
+        Ln.d("the alert model is "+ alert.getRouteId());
+
+        String displayRouteName = alert.getRouteName();
+        if (alert.isBus()) {
+            displayRouteName = "Route " + displayRouteName;
+        }
+        if (alert.isTrolley()) {
+            displayRouteName = "Trolley " + displayRouteName;
+        }
+
+        Intent systemStatusDetailsIntent;
+        systemStatusDetailsIntent = new Intent(this, SystemStatusDetailsActionBarActivity.class);
+        systemStatusDetailsIntent.putExtra(getString(R.string.actionbar_titletext_key), displayRouteName);
+        systemStatusDetailsIntent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), "systemstatus");
+
+        if (alert.hasAdvisoryFlag()) {
+            systemStatusDetailsIntent.putExtra(getString(R.string.systemstatus_details_tabenabled_advisory), true);
+        }
+        if (alert.hasAlertFlag()) {
+            systemStatusDetailsIntent.putExtra(getString(R.string.systemstatus_details_tabenabled_alerts), true);
+        }
+        if (alert.hasDetourFlag()) {
+            systemStatusDetailsIntent.putExtra(getString(R.string.systemstatus_details_tabenabled_detour), true);
+        }
+
+        systemStatusDetailsIntent.putExtra(getString(R.string.systemstatus_details_route_id), alert.getRouteId());
+
+        startActivity(systemStatusDetailsIntent);
     }
 
     public void tabSelected(View view) {
@@ -188,7 +214,7 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
 
         busTrolleyVerticalLine.setVisibility(View.VISIBLE);
         mflbslnhslVerticalLine1.setVisibility(View.INVISIBLE);
-        mflbslnhslVerticalLine1.setVisibility(View.INVISIBLE);
+        mflbslnhslVerticalLine2.setVisibility(View.INVISIBLE);
 
         tabSelectedTextView.setText(tabLabels[0]);
     }
@@ -240,7 +266,7 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
 
         busTrolleyVerticalLine.setVisibility(View.INVISIBLE);
         mflbslnhslVerticalLine1.setVisibility(View.INVISIBLE);
-        mflbslnhslVerticalLine1.setVisibility(View.INVISIBLE);
+        mflbslnhslVerticalLine2.setVisibility(View.INVISIBLE);
 
         tabSelectedTextView.setText(tabLabels[1]);
     }
@@ -435,6 +461,13 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
     @Override
     protected void onResume() {
         super.onResume();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        Ln.d("onDestroy getting called in SystemStatusActionBarActivity.class");
     }
 }
 

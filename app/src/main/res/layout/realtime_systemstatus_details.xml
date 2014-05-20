@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~ realtime_systemstatus_details.xml
+  ~ Last modified on 05-19-2014 11:55-0400 by brianhmayo
+  ~
+  ~ Copyright (c) 2014 SEPTA.  All rights reserved.
+  -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@drawable/main_background">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@android:color/black">
+
+        <RelativeLayout
+            android:id="@+id/realtime_systemstatus_details_tab_advisory_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginRight="5dp"
+            android:orientation="horizontal"
+            android:onClick="tabSelected"
+            android:background="@drawable/realtime_systemstatus_tab_corners">
+
+            <ImageView
+                android:id="@+id/realtime_systemstatus_details_tab_advisory_imageview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_system_status_advisory"/>
+
+            <TextView
+                android:id="@+id/realtime_systemstatus_details_tab_advisory_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/realtime_systemstatus_details_tab_advisory_imageview"
+                android:gravity="left|center_vertical"
+                android:text="Advisory"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/realtime_systemstatus_details_tab_alert_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginRight="5dp"
+            android:orientation="horizontal"
+            android:onClick="tabSelected"
+            android:background="@drawable/realtime_systemstatus_tab_corners">
+
+            <ImageView
+                android:id="@+id/realtime_systemstatus_details_tab_alerts_imageview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_system_status_alert"/>
+
+            <TextView
+                android:id="@+id/realtime_systemstatus_details_tab_alerts_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/realtime_systemstatus_details_tab_alerts_imageview"
+                android:gravity="left|center_vertical"
+                android:text="Alerts"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/realtime_systemstatus_details_tab_detour_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:onClick="tabSelected"
+            android:background="@drawable/realtime_systemstatus_tab_corners">
+
+            <ImageView
+                android:id="@+id/realtime_systemstatus_details_tab_detour_imageview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_system_status_detour"/>
+
+            <TextView
+                android:id="@+id/realtime_systemstatus_details_tab_detour_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/realtime_systemstatus_details_tab_detour_imageview"
+                android:gravity="left|center_vertical"
+                android:text="Detour"/>
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/realtime_systemstatus_details_separator_view"
+        android:layout_width="match_parent"
+        android:layout_height="20dp">
+
+    </View>
+
+    <WebView
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/realtime_systemstatus_details_webview"
+        android:layout_gravity="top|center_horizontal"
+        android:alpha=".75"/>
+
+</LinearLayout>

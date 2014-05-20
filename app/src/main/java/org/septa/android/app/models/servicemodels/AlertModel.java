@@ -133,6 +133,11 @@ public class AlertModel implements Comparable<AlertModel> {
         return routeName;
     }
 
+    public String getRouteId() {
+
+        return routeId;
+    }
+
     @Override
     public int compareTo(AlertModel another) {
         int result = 0;

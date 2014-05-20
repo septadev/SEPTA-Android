@@ -244,7 +244,7 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
     public void onLocationChanged(Location newLocation) {
         // TODO: find a different way to tell if we should make our network calls, with a timer.
         // TODO: find a better way to shut off the updates and resume when it makes sense
-        if (newLocation.getAccuracy()< 16.0) {
+        if (newLocation.getAccuracy()< getResources().getInteger(R.integer.transitview_map_accuracy_limit_in_meters)) {
             mLocationClient.disconnect();
             LatLng currentLocation = new LatLng(newLocation.getLatitude(), newLocation.getLongitude());
 

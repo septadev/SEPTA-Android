@@ -15,4 +15,6 @@
     <string name="dir">Dir</string>
     <string name="dest">Dest</string>
 
+    <integer name="transitview_map_accuracy_limit_in_meters">150</integer>
+
 </resources>

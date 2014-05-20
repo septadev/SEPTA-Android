@@ -315,7 +315,7 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
         Log.d(TAG, "location changed with accuracy of "+newLocation.getAccuracy());
         // TODO: find a different way to tell if we should make our network calls, with a timer.
         // TODO: find a better way to shut off the updates and resume when it makes sense
-        if (newLocation.getAccuracy()< 100.0) {
+        if (newLocation.getAccuracy()< getResources().getInteger(R.integer.findnearestlocation_map_accuracy_limit_in_meters)) {
             this.existingLocation = newLocation;
 
             mLocationClient.disconnect();

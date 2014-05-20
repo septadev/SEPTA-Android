@@ -10,4 +10,6 @@
 
     <string name="ic_menu_secondmenu_title">Second Menu</string>
 
+    <integer name="trainview_map_accuracy_limit_in_meters">150</integer>
+
 </resources>

@@ -13,4 +13,6 @@
     <string name="findnearestlocation_map_zoom_level_float">12.0</string>
     <string name="distance_miles">miles</string>
 
+    <integer name="findnearestlocation_map_accuracy_limit_in_meters">100</integer>
+
 </resources>

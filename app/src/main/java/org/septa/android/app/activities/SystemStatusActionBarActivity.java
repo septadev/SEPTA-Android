@@ -43,10 +43,12 @@ import roboguice.util.Ln;
 public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivity implements AdapterView.OnItemClickListener{
     public static final String TAG = SystemStatusActionBarActivity.class.getName();
 
-    private boolean inChangeRadiusMode = false;
+    private boolean inFilterMode = false;
 
     private final String[] tabLabels = new String[] {"BUS", "TROLLEY", "REGIONAL RAIL", "MFL, BSL, NHSL"};
     private int selectedTab = 0;
+
+    private ArrayList<AlertModel>alertModelList = new ArrayList<AlertModel>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -394,10 +396,10 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
     public boolean onCreateOptionsMenu(Menu menu) {
         Log.d(TAG, "creating the menu in find nearest location actionbar activity");
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.find_nearest_location_action_bar, menu);
+        getMenuInflater().inflate(R.menu.realtime_systemstatus_action_bar, menu);
 
-        menu.findItem(R.id.actionmenu_findnearestlocationactionbar_changeradius).setVisible(!inChangeRadiusMode);
-        menu.findItem(R.id.actionmenu_findnearestlocationactionbar_changeradius_done).setVisible(inChangeRadiusMode);
+        menu.findItem(R.id.actionmenu_systemstatusactionbar_filter_none).setVisible(!inFilterMode);
+        menu.findItem(R.id.actionmenu_systemstatusactionbar_filter_removeemptyrows).setVisible(inFilterMode);
 
         return true;
     }
@@ -412,21 +414,79 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.actionmenu_findnearestlocationactionbar_changeradius:
-                inChangeRadiusMode = true;
+            case R.id.actionmenu_systemstatusactionbar_filter_none:
+                inFilterMode = true;
+
+                reloadListView();
+
                 ActivityCompat.invalidateOptionsMenu(this);
 
-                fetchAlerts();
-
                 return true;
-            case R.id.actionmenu_findnearestlocationactionbar_changeradius_done:
-                inChangeRadiusMode = false;
+            case R.id.actionmenu_systemstatusactionbar_filter_removeemptyrows:
+                inFilterMode = false;
+
+                reloadListView();
+
                 ActivityCompat.invalidateOptionsMenu(this);
 
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void reloadListView() {
+        ArrayList<AlertModel>selectedAlertList = new ArrayList<AlertModel>();
+        switch (selectedTab) {
+            case 0: {
+                for (AlertModel alert : alertModelList) {
+                    if (alert.isBus() && (!inFilterMode || alert.hasFlag())) {
+                        selectedAlertList.add(alert);
+                    }
+                }
+
+                break;
+            }
+            case 1: {
+                for (AlertModel alert : alertModelList) {
+                    if (alert.isTrolley() && (!inFilterMode || alert.hasFlag())) {
+                        selectedAlertList.add(alert);
+                    }
+                }
+
+                break;
+
+            }
+            case 2: {
+                for (AlertModel alert : alertModelList) {
+                    if (alert.isRegionalRail() && (!inFilterMode || alert.hasFlag())) {
+                        selectedAlertList.add(alert);
+                    }
+                }
+
+                break;
+            }
+            case 3: {
+                for (AlertModel alert : alertModelList) {
+                    if ((alert.isMFL()  && (!inFilterMode || alert.hasFlag())) ||
+                        (alert.isBSL()  && (!inFilterMode || alert.hasFlag())) ||
+                        (alert.isNHSL() && (!inFilterMode || alert.hasFlag()))) {
+                            selectedAlertList.add(alert);
+                    }
+                }
+
+                break;
+            }
+            default: {
+                Ln.d("should never get here");
+            }
+        }
+
+        ListView listView = (ListView)findViewById(R.id.realtime_systemstatus_listview);
+        Collections.sort(selectedAlertList);
+        SystemStatus_ListViewItem_ArrayAdapter systemStatusListViewArrayAdapter = new SystemStatus_ListViewItem_ArrayAdapter(SystemStatusActionBarActivity.this, selectedAlertList);
+        listView.setAdapter(systemStatusListViewArrayAdapter);
+        listView.invalidate();
     }
 
     private void fetchAlerts() {
@@ -445,58 +505,10 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
                 loadingTextView.setText("");
                 loadingProgressBar.setVisibility(View.GONE);
 
-                ArrayList<AlertModel>alertModelList = (ArrayList<AlertModel>)o;
+                alertModelList = (ArrayList<AlertModel>)o;
                 Ln.d("callback called for alerts with count of "+alertModelList.size());
 
-                ArrayList<AlertModel>selectedAlertList = new ArrayList<AlertModel>();
-                switch (selectedTab) {
-                    case 0: {
-                        for (AlertModel alert : alertModelList) {
-                            if (alert.isBus()) {
-                                selectedAlertList.add(alert);
-                            }
-                        }
-
-                        break;
-                    }
-                    case 1: {
-                        for (AlertModel alert : alertModelList) {
-                            if (alert.isTrolley()) {
-                                selectedAlertList.add(alert);
-                            }
-                        }
-
-                        break;
-
-                    }
-                    case 2: {
-                        for (AlertModel alert : alertModelList) {
-                            if (alert.isRegionalRail()) {
-                                selectedAlertList.add(alert);
-                            }
-                        }
-
-                        break;
-                    }
-                    case 3: {
-                        for (AlertModel alert : alertModelList) {
-                            if (alert.isMFL() || alert.isBSL() || alert.isNHSL()) {
-                                selectedAlertList.add(alert);
-                            }
-                        }
-
-                        break;
-                    }
-                    default: {
-                        Ln.d("should never get here");
-                    }
-                }
-
-                ListView listView = (ListView)findViewById(R.id.realtime_systemstatus_listview);
-                Collections.sort(selectedAlertList);
-                SystemStatus_ListViewItem_ArrayAdapter systemStatusListViewArrayAdapter = new SystemStatus_ListViewItem_ArrayAdapter(SystemStatusActionBarActivity.this, selectedAlertList);
-                listView.setAdapter(systemStatusListViewArrayAdapter);
-                listView.invalidate();
+                reloadListView();
             }
 
             @Override

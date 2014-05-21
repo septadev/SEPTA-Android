@@ -20,13 +20,13 @@
     <!--android:visible="true"/>-->
 
     <item android:id="@+id/actionmenu_systemstatusactionbar_filter_none"
-          android:icon="@drawable/ic_menu_filter_allrows"
+          android:icon="@drawable/ic_menu_filter_allowallrows"
           android:title="@string/ic_menu_filter_none"
           app:showAsAction="always"
           android:orderInCategory="2"/>
 
     <item android:id="@+id/actionmenu_systemstatusactionbar_filter_removeemptyrows"
-          android:icon="@drawable/ic_menu_done"
+          android:icon="@drawable/ic_menu_filter_removeemptyrows"
           android:title="@string/ic_menu_filter_removemeptyrows"
           android:visible="false"
           app:showAsAction="always"

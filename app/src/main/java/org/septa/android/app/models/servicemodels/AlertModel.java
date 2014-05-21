@@ -18,7 +18,7 @@ public class AlertModel implements Comparable<AlertModel> {
     @SerializedName("isadvisory") private String isAdvisory;
     @SerializedName("isalert") private String isAlert;
     @SerializedName("isdetour") private String isDetour;
-    @SerializedName("issuspend") private String isSuspended;
+    @SerializedName("issuppend") private String isSuspended;
     @SerializedName("last_update") private Date lastUpdate;
     @SerializedName("mode") private String mode;
     @SerializedName("route_id") private String routeId;

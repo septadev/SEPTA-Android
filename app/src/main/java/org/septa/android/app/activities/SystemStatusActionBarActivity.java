@@ -26,10 +26,14 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.internal.is;
+
 import org.septa.android.app.R;
 import org.septa.android.app.adapters.SystemStatus_ListViewItem_ArrayAdapter;
 import org.septa.android.app.models.ObjectFactory;
 import org.septa.android.app.models.servicemodels.AlertModel;
+import org.septa.android.app.models.servicemodels.ElevatorOutagesMetaModel;
+import org.septa.android.app.models.servicemodels.ElevatorOutagesModel;
 import org.septa.android.app.services.apiproxies.AlertsServiceProxy;
 
 import java.util.ArrayList;
@@ -49,6 +53,7 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
     private int selectedTab = 0;
 
     private ArrayList<AlertModel>alertModelList = new ArrayList<AlertModel>();
+    private ElevatorOutagesModel elevatorOutages = ElevatorOutagesModel.EmptyElevatorOutagesModel();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +70,7 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
         setContentView(R.layout.realtime_systemstatus);
 
         selectedTab = ObjectFactory.getInstance().getSharedPreferencesManager(this).getSystemStatusSelectedTab();
+        inFilterMode = ObjectFactory.getInstance().getSharedPreferencesManager(this).getSystemStatusFilterEnabled();
 
         // set the empty view in case we don't have any data
         LinearLayout emptyView = (LinearLayout)findViewById(R.id.empty);
@@ -437,10 +443,11 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
 
     private void reloadListView() {
         ArrayList<AlertModel>selectedAlertList = new ArrayList<AlertModel>();
+
         switch (selectedTab) {
             case 0: {
                 for (AlertModel alert : alertModelList) {
-                    if (alert.isBus() && (!inFilterMode || alert.hasFlag())) {
+                    if ((alert.isGeneral() || alert.isBus()) && (!inFilterMode || alert.hasFlag())) {
                         selectedAlertList.add(alert);
                     }
                 }
@@ -449,7 +456,7 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
             }
             case 1: {
                 for (AlertModel alert : alertModelList) {
-                    if (alert.isTrolley() && (!inFilterMode || alert.hasFlag())) {
+                    if ((alert.isGeneral() || alert.isTrolley()) && (!inFilterMode || alert.hasFlag())) {
                         selectedAlertList.add(alert);
                     }
                 }
@@ -459,7 +466,7 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
             }
             case 2: {
                 for (AlertModel alert : alertModelList) {
-                    if (alert.isRegionalRail() && (!inFilterMode || alert.hasFlag())) {
+                    if ((alert.isGeneral() || alert.isRegionalRail()) && (!inFilterMode || alert.hasFlag())) {
                         selectedAlertList.add(alert);
                     }
                 }
@@ -468,9 +475,9 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
             }
             case 3: {
                 for (AlertModel alert : alertModelList) {
-                    if ((alert.isMFL()  && (!inFilterMode || alert.hasFlag())) ||
-                        (alert.isBSL()  && (!inFilterMode || alert.hasFlag())) ||
-                        (alert.isNHSL() && (!inFilterMode || alert.hasFlag()))) {
+                    if (((alert.isGeneral() || alert.isMFL())  && (!inFilterMode || alert.hasFlag())) ||
+                        ((alert.isGeneral() || alert.isBSL())  && (!inFilterMode || alert.hasFlag())) ||
+                        ((alert.isGeneral() || alert.isNHSL()) && (!inFilterMode || alert.hasFlag()))) {
                             selectedAlertList.add(alert);
                     }
                 }
@@ -556,6 +563,7 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
         super.onDestroy();
 
         ObjectFactory.getInstance().getSharedPreferencesManager(this).setSystemStatusSelectedTab(selectedTab);
+        ObjectFactory.getInstance().getSharedPreferencesManager(this).setSystemStatusFilterEnabled(inFilterMode);
     }
 }
 

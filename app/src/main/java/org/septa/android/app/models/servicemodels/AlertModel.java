@@ -24,6 +24,15 @@ public class AlertModel implements Comparable<AlertModel> {
     @SerializedName("route_id") private String routeId;
     @SerializedName("route_name") private String routeName;
 
+    public boolean isGeneral() {
+        if (mode.equals("generic")) {
+
+            return true;
+        }
+
+        return false;
+    }
+
     public boolean isBSL() {
         if (mode.equals("Broad Street Line")) {
             return true;
@@ -66,14 +75,6 @@ public class AlertModel implements Comparable<AlertModel> {
 
     public boolean isNHSL() {
         if (mode.equals("Norristown High Speed Line")) {
-            return true;
-        }
-
-        return false;
-    }
-
-    public boolean isGeneric() {
-        if (mode.equals("generic")) {
             return true;
         }
 
@@ -150,6 +151,25 @@ public class AlertModel implements Comparable<AlertModel> {
         Integer otherRouteName = null;
         boolean thisIsString = false;
         boolean otherIsString = false;
+
+        // first check if the row is for elevators, if yes, it will go at the top
+        if (mode.equals("elevator")) {
+
+            return -1;
+        } else {
+            if (another.mode.equals("elevator")) {
+                return 1;
+            }
+        }
+
+        // next check if the row is for general, if yes, it goes just below the elevator
+        if (mode.equals("generic")) {
+            return -1;
+        } else {
+            if (another.mode.equals("generic")) {
+                return 1;
+            }
+        }
 
         // we assume a route short name is either a number (only numerics), a number with a trailing character, or
         //  not a number (all characters.

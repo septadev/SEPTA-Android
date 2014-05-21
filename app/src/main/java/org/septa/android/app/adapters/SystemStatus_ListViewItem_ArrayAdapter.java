@@ -56,7 +56,11 @@ public class SystemStatus_ListViewItem_ArrayAdapter extends ArrayAdapter<AlertMo
         ImageView alertImageView = (ImageView)rowView.findViewById(R.id.systemstatus_listview_route_item_alert_icon);
         alertImageView.setVisibility(View.INVISIBLE);
 
-        routeTitleTextView.setText(alertInformation.getRouteName());
+        if (alertInformation.isGeneral()) {
+            routeTitleTextView.setText("General");
+        } else {
+            routeTitleTextView.setText(alertInformation.getRouteName());
+        }
 
         if (alertInformation.isBus()) routeIconImageView.setImageResource(R.drawable.ic_systemstatus_bus_black);
         else
@@ -64,9 +68,21 @@ public class SystemStatus_ListViewItem_ArrayAdapter extends ArrayAdapter<AlertMo
         else
         if (alertInformation.isTrolley()) routeIconImageView.setImageResource(R.drawable.ic_systemstatus_trolley_green);
         else
-        if (alertInformation.isMFL()) routeIconImageView.setImageResource(R.drawable.ic_systemstatus_mfl_blue);
+        if (alertInformation.isMFL()) {
+            if (alertInformation.getRouteName().equals("Market Frankford Owl")) {
+                routeIconImageView.setImageResource(R.drawable.ic_systemstatus_mfl_owl);
+            } else {
+                routeIconImageView.setImageResource(R.drawable.ic_systemstatus_mfl_blue);
+            }
+        }
         else
-        if (alertInformation.isBSL()) routeIconImageView.setImageResource(R.drawable.ic_systemstatus_bsl_orange);
+        if (alertInformation.isBSL()) {
+            if (alertInformation.getRouteName().equals("Broad Street Line Owl")) {
+                routeIconImageView.setImageResource(R.drawable.ic_systemstatus_bsl_owl);
+            } else {
+                routeIconImageView.setImageResource(R.drawable.ic_systemstatus_bsl_orange);
+            }
+        }
         else
         if (alertInformation.isNHSL()) routeIconImageView.setImageResource(R.drawable.ic_systemstatus_nhsl_purple);
 

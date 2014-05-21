@@ -23,12 +23,16 @@ public class SharedPreferencesManager {
 
     private int systemStatusSelectedTab = 0;    // the default selected tab value is 0
 
+    private boolean systemStatusFilterEnabled = false;  // the default filter enabled value is false
+
     public SharedPreferencesManager(Context context) {
 
         sharedPreferences = context.getSharedPreferences("SEPTAPreferences",Context.MODE_PRIVATE);
 
         readFromPreferencesMainTabbarSelectedSection();
         readFromPreferencesNearestLocationMapSearchRadius();
+        readFromPreferencesSystemStatusSelectedTab();
+        readFromPreferencesSystemStatusFilterEnabled();
     }
 
     public int getMainTabbarSelectedSection() {
@@ -90,6 +94,30 @@ public class SharedPreferencesManager {
     private void writePreferenceForSystemStatusSelectedTab() {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putInt("systemstatus_selected_tab", systemStatusSelectedTab);
+        editor.apply();
+    }
+
+    /*
+        Realtime -> System Status : Filter Enabled
+     */
+
+    public boolean getSystemStatusFilterEnabled() {
+        return systemStatusFilterEnabled;
+    }
+
+    public void setSystemStatusFilterEnabled(boolean filterEnabled) {
+        this.systemStatusFilterEnabled = filterEnabled;
+        writePreferenceForSystemStatusFilterEnabled();
+    }
+
+    private void readFromPreferencesSystemStatusFilterEnabled() {
+
+        systemStatusFilterEnabled = sharedPreferences.getBoolean("systemstatus_filter_enabled", systemStatusFilterEnabled);
+    }
+
+    private void writePreferenceForSystemStatusFilterEnabled() {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean("systemstatus_filter_enabled", systemStatusFilterEnabled);
         editor.apply();
     }
 }

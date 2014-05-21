@@ -120,9 +120,14 @@ public class AlertModel implements Comparable<AlertModel> {
         return false;
     }
 
+    public boolean isSuspended() {
+
+        return hasSuspendedFlag();
+    }
+
 
     public boolean hasFlag() {
-        if (hasAlertFlag() || hasAdvisoryFlag() || hasDetourFlag()) {
+        if (hasSuspendedFlag() || hasAlertFlag() || hasAdvisoryFlag() || hasDetourFlag()) {
             return true;
         }
 

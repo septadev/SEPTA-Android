@@ -107,10 +107,7 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Ln.d("detected an item click at position "+position);
-
         AlertModel alert = (AlertModel)parent.getItemAtPosition(position);
-        Ln.d("the alert model is "+ alert.getRouteId());
 
         String displayRouteName = alert.getRouteName();
         if (alert.isBus()) {

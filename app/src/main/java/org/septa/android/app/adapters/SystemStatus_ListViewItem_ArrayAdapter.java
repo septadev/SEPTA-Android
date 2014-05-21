@@ -50,8 +50,11 @@ public class SystemStatus_ListViewItem_ArrayAdapter extends ArrayAdapter<AlertMo
         TextView routeTitleTextView = (TextView)rowView.findViewById(R.id.systemstatus_listview_route_item_route_text);
 
         ImageView advisoryImageView = (ImageView)rowView.findViewById(R.id.systemstatus_listview_route_item_advisory_icon);
+        advisoryImageView.setVisibility(View.INVISIBLE);
         ImageView detourImageView = (ImageView)rowView.findViewById(R.id.systemstatus_listview_route_item_detour_icon);
+        detourImageView.setVisibility(View.INVISIBLE);
         ImageView alertImageView = (ImageView)rowView.findViewById(R.id.systemstatus_listview_route_item_alert_icon);
+        alertImageView.setVisibility(View.INVISIBLE);
 
         routeTitleTextView.setText(alertInformation.getRouteName());
 
@@ -66,6 +69,24 @@ public class SystemStatus_ListViewItem_ArrayAdapter extends ArrayAdapter<AlertMo
         if (alertInformation.isBSL()) routeIconImageView.setImageResource(R.drawable.ic_systemstatus_bsl_orange);
         else
         if (alertInformation.isNHSL()) routeIconImageView.setImageResource(R.drawable.ic_systemstatus_nhsl_purple);
+
+        // TODO: replace this drawable with the correct one once obtained.
+        // if this is a suspended route, replace the detour icon with the suspended one and ignore all other flags.
+        if (alertInformation.isSuspended()) {
+            detourImageView.setImageResource(R.drawable.ic_schedules_rrl_small);
+            detourImageView.setVisibility(View.VISIBLE);
+
+            return rowView;
+        }
+
+        // TODO: replace this drawable with the correct one once obtained.
+        if (alertInformation.hasSnowFlag()) {
+            alertImageView.setImageResource(R.drawable.ic_schedules_bsl_small);
+            alertImageView.setVisibility(View.VISIBLE);
+
+            // TODO: figure out if we are suppose to cap the view here like suspended or continue
+            return rowView;
+        }
 
         if (alertInformation.hasFlag()) {
             if (alertInformation.hasAdvisoryFlag()) {
@@ -90,6 +111,12 @@ public class SystemStatus_ListViewItem_ArrayAdapter extends ArrayAdapter<AlertMo
 
     @Override
     public boolean isEnabled(int position) {
+
+        // in the special case of suspended, the row is not selectable.
+        if (values.get(position).isSuspended()) {
+
+            return false;
+        }
 
         // if the alert has a flag enabled, then it is selectable
         return values.get(position).hasFlag();

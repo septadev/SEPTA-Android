@@ -8,9 +8,11 @@
 package org.septa.android.app.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.Menu;
@@ -21,10 +23,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.septa.android.app.R;
 import org.septa.android.app.adapters.SystemStatus_ListViewItem_ArrayAdapter;
+import org.septa.android.app.models.ObjectFactory;
 import org.septa.android.app.models.servicemodels.AlertModel;
 import org.septa.android.app.services.apiproxies.AlertsServiceProxy;
 
@@ -41,7 +45,7 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
 
     private boolean inChangeRadiusMode = false;
 
-    private final String[] tabLabels = new String[] {"TRANSIT", "REGIONAL RAIL", "MFL, BSL, NHSL"};
+    private final String[] tabLabels = new String[] {"BUS", "TROLLEY", "REGIONAL RAIL", "MFL, BSL, NHSL"};
     private int selectedTab = 0;
 
     @Override
@@ -57,6 +61,8 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
         getSupportActionBar().setIcon(id);
 
         setContentView(R.layout.realtime_systemstatus);
+
+        selectedTab = ObjectFactory.getInstance().getSharedPreferencesManager(this).getSystemStatusSelectedTab();
 
         // set the empty view in case we don't have any data
         LinearLayout emptyView = (LinearLayout)findViewById(R.id.empty);
@@ -78,14 +84,18 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
 
         switch (selectedTab) {
             case 0: {
-                selectedBusTrolleyTab();
+                selectedBusTab();
                 break;
             }
             case 1: {
-                selectedRegionalRailTab();
+                selectedTrolleyTab();
                 break;
             }
             case 2: {
+                selectedRegionalRailTab();
+                break;
+            }
+            case 3: {
                 selectedMFLBSLNHSLTab();
                 break;
             }
@@ -138,22 +148,29 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
         listView.invalidate();
 
         switch (view.getId()) {
-            case R.id.realtime_systemstatus_tab_bustrolley_view: {
+            case R.id.realtime_systemstatus_tab_bus_view: {
                 selectedTab = 0;
 
-                selectedBusTrolleyTab();
+                selectedBusTab();
+
+                break;
+            }
+            case R.id.realtime_systemstatus_tab_trolley_view: {
+                selectedTab = 1;
+
+                selectedTrolleyTab();
 
                 break;
             }
             case R.id.realtime_systemstatus_tab_regionalrail_view: {
-                selectedTab = 1;
+                selectedTab = 2;
 
                 selectedRegionalRailTab();
 
                 break;
             }
             case R.id.realtime_systemstatus_tab_mflbslnhsl_view: {
-                selectedTab = 2;
+                selectedTab = 3;
 
                 selectedMFLBSLNHSLTab();
 
@@ -164,10 +181,13 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
             }
         }
 
+        LinearLayout tabbarLayoutView = (LinearLayout)findViewById(R.id.realtime_systemstatus_tabbar_linearlayout);
+        tabbarLayoutView.setBackgroundColor(Color.BLACK);
+
         fetchAlerts();
     }
 
-    private void selectedBusTrolleyTab() {
+    private void selectedBusTab() {
         // get the color from the looking array given the ordinal position of the route type
         String busColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[5];
         String trolleyColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[3];
@@ -176,14 +196,68 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
         String bslColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[2];
         String nhslColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[4];
 
-        ImageView busImageView = (ImageView)findViewById(R.id.realtime_systemstatus_tab_bustrolley_bus_imageview);
-        ImageView trolleyImageView = (ImageView)findViewById(R.id.realtime_systemstatus_tab_bustrolley_trolley_imageview);
+        ImageView busImageView = (ImageView)findViewById(R.id.realtime_systemstatus_tab_bus_imageview);
+        ImageView trolleyImageView = (ImageView)findViewById(R.id.realtime_systemstatus_tab_trolley_imageview);
         ImageView regionalRailImageView = (ImageView)findViewById(R.id.realtime_systemstatus_tab_regionalrail_rrl_imageview);
         ImageView mflImageView = (ImageView)findViewById(R.id.realtime_systemstatus_tab_mflbslnhsl_mfl_imageview);
         ImageView bslImageView = (ImageView)findViewById(R.id.realtime_systemstatus_tab_mflbslnhsl_bsl_imageview);
         ImageView nhslImageView = (ImageView)findViewById(R.id.realtime_systemstatus_tab_mflbslnhsl_nhsl_imageview);
 
-        View busTrolleyVerticalLine = (View)findViewById(R.id.realtime_systemstatus_tab_bustrolley_verticalline);
+        View mflbslnhslVerticalLine1 = (View)findViewById(R.id.realtime_systemstatus_tab_mflbslnhsl_verticalline1);
+        View mflbslnhslVerticalLine2 = (View)findViewById(R.id.realtime_systemstatus_tab_mflbslnhsl_verticalline2);
+
+        RelativeLayout busTabView = (RelativeLayout)findViewById(R.id.realtime_systemstatus_tab_bus_view);
+        RelativeLayout trolleyTabView = (RelativeLayout)findViewById(R.id.realtime_systemstatus_tab_trolley_view);
+        LinearLayout regionalRailTabView = (LinearLayout)findViewById(R.id.realtime_systemstatus_tab_regionalrail_view);
+        RelativeLayout mflBSLNHSLTabView = (RelativeLayout)findViewById(R.id.realtime_systemstatus_tab_mflbslnhsl_view);
+
+        TextView tabSelectedTextView = (TextView)findViewById(R.id.realtime_systemstatus_tabselection_textview);
+
+        GradientDrawable busImageViewShapeDrawable = (GradientDrawable)busImageView.getBackground();
+        GradientDrawable trolleyImageViewShapeDrawable = (GradientDrawable)trolleyImageView.getBackground();
+        GradientDrawable regionalrailImageViewShapeDrawable = (GradientDrawable) regionalRailImageView.getBackground();
+        GradientDrawable mflImageViewShapeDrawable = (GradientDrawable)mflImageView.getBackground();
+        GradientDrawable bslImageViewShapeDrawable = (GradientDrawable)bslImageView.getBackground();
+        GradientDrawable nhslImageViewShapeDrawable = (GradientDrawable)nhslImageView.getBackground();
+
+        busImageViewShapeDrawable.setColor(Color.WHITE);
+        trolleyImageViewShapeDrawable.setColor(Color.parseColor(trolleyColor));
+        regionalrailImageViewShapeDrawable.setColor(Color.parseColor(regionalRailColor));
+        mflImageViewShapeDrawable.setColor(Color.parseColor(mflColor));
+        bslImageViewShapeDrawable.setColor(Color.parseColor(bslColor));
+        nhslImageViewShapeDrawable.setColor(Color.parseColor(nhslColor));
+
+        busImageView.setImageResource(R.drawable.ic_systemstatus_bus_black);
+        trolleyImageView.setImageResource(R.drawable.ic_systemstatus_trolley_white);
+
+        regionalRailImageView.setImageResource(R.drawable.ic_systemstatus_rrl_white);
+
+        mflImageView.setImageResource(R.drawable.ic_systemstatus_mfl_white);
+        bslImageView.setImageResource(R.drawable.ic_systemstatus_bsl_white);
+        nhslImageView.setImageResource(R.drawable.ic_systemstatus_nhsl_white);
+
+        mflbslnhslVerticalLine1.setVisibility(View.INVISIBLE);
+        mflbslnhslVerticalLine2.setVisibility(View.INVISIBLE);
+
+        tabSelectedTextView.setText(tabLabels[0]);
+    }
+
+    private void selectedTrolleyTab() {
+        // get the color from the looking array given the ordinal position of the route type
+        String busColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[5];
+        String trolleyColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[3];
+        String regionalRailColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[0];
+        String mflColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[1];
+        String bslColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[2];
+        String nhslColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[4];
+
+        ImageView busImageView = (ImageView)findViewById(R.id.realtime_systemstatus_tab_bus_imageview);
+        ImageView trolleyImageView = (ImageView)findViewById(R.id.realtime_systemstatus_tab_trolley_imageview);
+        ImageView regionalRailImageView = (ImageView)findViewById(R.id.realtime_systemstatus_tab_regionalrail_rrl_imageview);
+        ImageView mflImageView = (ImageView)findViewById(R.id.realtime_systemstatus_tab_mflbslnhsl_mfl_imageview);
+        ImageView bslImageView = (ImageView)findViewById(R.id.realtime_systemstatus_tab_mflbslnhsl_bsl_imageview);
+        ImageView nhslImageView = (ImageView)findViewById(R.id.realtime_systemstatus_tab_mflbslnhsl_nhsl_imageview);
+
         View mflbslnhslVerticalLine1 = (View)findViewById(R.id.realtime_systemstatus_tab_mflbslnhsl_verticalline1);
         View mflbslnhslVerticalLine2 = (View)findViewById(R.id.realtime_systemstatus_tab_mflbslnhsl_verticalline2);
 
@@ -196,14 +270,14 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
         GradientDrawable bslImageViewShapeDrawable = (GradientDrawable)bslImageView.getBackground();
         GradientDrawable nhslImageViewShapeDrawable = (GradientDrawable)nhslImageView.getBackground();
 
-        busImageViewShapeDrawable.setColor(Color.WHITE);
+        busImageViewShapeDrawable.setColor(Color.parseColor(busColor));
         trolleyImageViewShapeDrawable.setColor(Color.WHITE);
         regionalrailImageViewShapeDrawable.setColor(Color.parseColor(regionalRailColor));
         mflImageViewShapeDrawable.setColor(Color.parseColor(mflColor));
         bslImageViewShapeDrawable.setColor(Color.parseColor(bslColor));
         nhslImageViewShapeDrawable.setColor(Color.parseColor(nhslColor));
 
-        busImageView.setImageResource(R.drawable.ic_systemstatus_bus_black);
+        busImageView.setImageResource(R.drawable.ic_systemstatus_bus_white);
         trolleyImageView.setImageResource(R.drawable.ic_systemstatus_trolley_green);
 
         regionalRailImageView.setImageResource(R.drawable.ic_systemstatus_rrl_white);
@@ -212,11 +286,10 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
         bslImageView.setImageResource(R.drawable.ic_systemstatus_bsl_white);
         nhslImageView.setImageResource(R.drawable.ic_systemstatus_nhsl_white);
 
-        busTrolleyVerticalLine.setVisibility(View.VISIBLE);
         mflbslnhslVerticalLine1.setVisibility(View.INVISIBLE);
         mflbslnhslVerticalLine2.setVisibility(View.INVISIBLE);
 
-        tabSelectedTextView.setText(tabLabels[0]);
+        tabSelectedTextView.setText(tabLabels[1]);
     }
 
     private void selectedRegionalRailTab() {
@@ -228,14 +301,13 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
         String bslColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[2];
         String nhslColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[4];
 
-        ImageView busImageView = (ImageView)findViewById(R.id.realtime_systemstatus_tab_bustrolley_bus_imageview);
-        ImageView trolleyImageView = (ImageView)findViewById(R.id.realtime_systemstatus_tab_bustrolley_trolley_imageview);
+        ImageView busImageView = (ImageView)findViewById(R.id.realtime_systemstatus_tab_bus_imageview);
+        ImageView trolleyImageView = (ImageView)findViewById(R.id.realtime_systemstatus_tab_trolley_imageview);
         ImageView regionalRailImageView = (ImageView)findViewById(R.id.realtime_systemstatus_tab_regionalrail_rrl_imageview);
         ImageView mflImageView = (ImageView)findViewById(R.id.realtime_systemstatus_tab_mflbslnhsl_mfl_imageview);
         ImageView bslImageView = (ImageView)findViewById(R.id.realtime_systemstatus_tab_mflbslnhsl_bsl_imageview);
         ImageView nhslImageView = (ImageView)findViewById(R.id.realtime_systemstatus_tab_mflbslnhsl_nhsl_imageview);
 
-        View busTrolleyVerticalLine = (View)findViewById(R.id.realtime_systemstatus_tab_bustrolley_verticalline);
         View mflbslnhslVerticalLine1 = (View)findViewById(R.id.realtime_systemstatus_tab_mflbslnhsl_verticalline1);
         View mflbslnhslVerticalLine2 = (View)findViewById(R.id.realtime_systemstatus_tab_mflbslnhsl_verticalline2);
 
@@ -264,11 +336,10 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
         bslImageView.setImageResource(R.drawable.ic_systemstatus_bsl_white);
         nhslImageView.setImageResource(R.drawable.ic_systemstatus_nhsl_white);
 
-        busTrolleyVerticalLine.setVisibility(View.INVISIBLE);
         mflbslnhslVerticalLine1.setVisibility(View.INVISIBLE);
         mflbslnhslVerticalLine2.setVisibility(View.INVISIBLE);
 
-        tabSelectedTextView.setText(tabLabels[1]);
+        tabSelectedTextView.setText(tabLabels[2]);
     }
 
     private void selectedMFLBSLNHSLTab() {
@@ -280,14 +351,13 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
         String bslColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[2];
         String nhslColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[4];
 
-        ImageView busImageView = (ImageView)findViewById(R.id.realtime_systemstatus_tab_bustrolley_bus_imageview);
-        ImageView trolleyImageView = (ImageView)findViewById(R.id.realtime_systemstatus_tab_bustrolley_trolley_imageview);
+        ImageView busImageView = (ImageView)findViewById(R.id.realtime_systemstatus_tab_bus_imageview);
+        ImageView trolleyImageView = (ImageView)findViewById(R.id.realtime_systemstatus_tab_trolley_imageview);
         ImageView regionalRailImageView = (ImageView)findViewById(R.id.realtime_systemstatus_tab_regionalrail_rrl_imageview);
         ImageView mflImageView = (ImageView)findViewById(R.id.realtime_systemstatus_tab_mflbslnhsl_mfl_imageview);
         ImageView bslImageView = (ImageView)findViewById(R.id.realtime_systemstatus_tab_mflbslnhsl_bsl_imageview);
         ImageView nhslImageView = (ImageView)findViewById(R.id.realtime_systemstatus_tab_mflbslnhsl_nhsl_imageview);
 
-        View busTrolleyVerticalLine = (View)findViewById(R.id.realtime_systemstatus_tab_bustrolley_verticalline);
         View mflbslnhslVerticalLine1 = (View)findViewById(R.id.realtime_systemstatus_tab_mflbslnhsl_verticalline1);
         View mflbslnhslVerticalLine2 = (View)findViewById(R.id.realtime_systemstatus_tab_mflbslnhsl_verticalline2);
 
@@ -316,11 +386,10 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
         bslImageView.setImageResource(R.drawable.ic_systemstatus_bsl_orange);
         nhslImageView.setImageResource(R.drawable.ic_systemstatus_nhsl_purple);
 
-        busTrolleyVerticalLine.setVisibility(View.INVISIBLE);
         mflbslnhslVerticalLine1.setVisibility(View.VISIBLE);
         mflbslnhslVerticalLine2.setVisibility(View.VISIBLE);
 
-        tabSelectedTextView.setText(tabLabels[2]);
+        tabSelectedTextView.setText(tabLabels[3]);
     }
 
 
@@ -386,7 +455,7 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
                 switch (selectedTab) {
                     case 0: {
                         for (AlertModel alert : alertModelList) {
-                            if (alert.isBus() || alert.isTrolley()) {
+                            if (alert.isBus()) {
                                 selectedAlertList.add(alert);
                             }
                         }
@@ -395,6 +464,16 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
                     }
                     case 1: {
                         for (AlertModel alert : alertModelList) {
+                            if (alert.isTrolley()) {
+                                selectedAlertList.add(alert);
+                            }
+                        }
+
+                        break;
+
+                    }
+                    case 2: {
+                        for (AlertModel alert : alertModelList) {
                             if (alert.isRegionalRail()) {
                                 selectedAlertList.add(alert);
                             }
@@ -402,7 +481,7 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
 
                         break;
                     }
-                    case 2: {
+                    case 3: {
                         for (AlertModel alert : alertModelList) {
                             if (alert.isMFL() || alert.isBSL() || alert.isNHSL()) {
                                 selectedAlertList.add(alert);
@@ -467,7 +546,7 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
     protected void onDestroy() {
         super.onDestroy();
 
-        Ln.d("onDestroy getting called in SystemStatusActionBarActivity.class");
+        ObjectFactory.getInstance().getSharedPreferencesManager(this).setSystemStatusSelectedTab(selectedTab);
     }
 }
 

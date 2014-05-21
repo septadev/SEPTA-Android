@@ -21,6 +21,8 @@ public class SharedPreferencesManager {
     private int mainTabbarSelectedSection = 0;    // the default starting value is 0
     private float nearestLocationMapSearchRadius = 2.5f;    // the default starting value is 2.5 miles
 
+    private int systemStatusSelectedTab = 0;    // the default selected tab value is 0
+
     public SharedPreferencesManager(Context context) {
 
         sharedPreferences = context.getSharedPreferences("SEPTAPreferences",Context.MODE_PRIVATE);
@@ -68,6 +70,26 @@ public class SharedPreferencesManager {
     private void writePreferenceForNearestLocationMapSearchRedius() {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putFloat("findnearestlocation_mapsearch_radius", nearestLocationMapSearchRadius);
+        editor.apply();
+    }
+
+    public int getSystemStatusSelectedTab() {
+        return systemStatusSelectedTab;
+    }
+
+    public void setSystemStatusSelectedTab(int selectedTab) {
+        this.systemStatusSelectedTab = selectedTab;
+        writePreferenceForSystemStatusSelectedTab();
+    }
+
+    private void readFromPreferencesSystemStatusSelectedTab() {
+
+        systemStatusSelectedTab = sharedPreferences.getInt("systemstatus_selected_tab", systemStatusSelectedTab);
+    }
+
+    private void writePreferenceForSystemStatusSelectedTab() {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt("systemstatus_selected_tab", systemStatusSelectedTab);
         editor.apply();
     }
 }

@@ -1,12 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.septa.android.app" >
+    package="org.septa.android.app">
 
     <supports-screens android:smallScreens="true"
                       android:normalScreens="true"
                       android:largeScreens="true"
                       android:xlargeScreens="true"
                       android:anyDensity="true"/>
+
+    <!--<compatible-screens>-->
+        <!--&lt;!&ndash;all small size screens &ndash;&gt;-->
+        <!--<screen android:screenSize="small" android:screenDensity="ldpi"/>-->
+        <!--<screen android:screenSize="small" android:screenDensity="mdpi"/>-->
+        <!--<screen android:screenSize="small" android:screenDensity="hdpi"/>-->
+
+        <!--&lt;!&ndash;all normal size screens &ndash;&gt;-->
+        <!--<screen android:screenSize="normal" android:screenDensity="ldpi"/>-->
+        <!--<screen android:screenSize="normal" android:screenDensity="mdpi"/>-->
+        <!--<screen android:screenSize="normal" android:screenDensity="hdpi"/>-->
+        <!--<screen android:screenSize="normal" android:screenDensity="xhdpi"/>-->
+        <!--<screen android:screenSize="normal" android:screenDensity="480"/>-->
+
+        <!--&lt;!&ndash; all large size screens &ndash;&gt;-->
+        <!--<screen android:screenSize="large" android:screenDensity="ldpi"/>-->
+        <!--<screen android:screenSize="large" android:screenDensity="mdpi"/>-->
+        <!--<screen android:screenSize="large" android:screenDensity="hdpi"/>-->
+        <!--<screen android:screenSize="large" android:screenDensity="xhdpi"/>-->
+        <!--<screen android:screenSize="large" android:screenDensity="480"/>-->
+
+        <!--&lt;!&ndash; all xlarge size screens &ndash;&gt;-->
+        <!--<screen android:screenSize="xlarge" android:screenDensity="ldpi"/>-->
+        <!--<screen android:screenSize="xlarge" android:screenDensity="mdpi"/>-->
+        <!--<screen android:screenSize="xlarge" android:screenDensity="hdpi"/>-->
+        <!--<screen android:screenSize="xlarge" android:screenDensity="xhdpi"/>-->
+        <!--<screen android:screenSize="xlarge" android:screenDensity="480"/>-->
+
+        <!--&lt;!&ndash; Special case for Nexus 7 &ndash;&gt;-->
+        <!--<screen android:screenSize="large" android:screenDensity="213"/>-->
+
+    <!--</compatible-screens>-->
 
     <!-- the Google Play Services Map API v2 requires OpenGL ES v2, thus
         instruct the Google Play store not to show or install app on a device
@@ -15,17 +47,19 @@
 
     <!-- needed for the Connect tab to call customer service -->
     <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-feature android:name="android.hardware.telephony" android:required="false"/>
 
     <!-- needed for the Realtime tab tips WebView -->
     <uses-permission android:name="android.permission.INTERNET" />
-
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
     <!-- needed to obtain the user's location to display on the map and find nearest location -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES"/>
+
+
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-feature android:name="android.hardware.location.gps" android:required="false"/>
 
     <permission android:name="org.septa.android.app.permission.MAPS_RECEIVE" android:protectionLevel="signature"/>
 

@@ -2,11 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.septa.android.app" >
 
-    <!--<supports-screens android:smallScreens="true"-->
-                      <!--android:normalScreens="true"-->
-                      <!--android:largeScreens="true"-->
-                      <!--android:xlargeScreens="true"-->
-                      <!--android:anyDensity="true"/>-->
+    <supports-screens android:smallScreens="true"
+                      android:normalScreens="true"
+                      android:largeScreens="true"
+                      android:xlargeScreens="true"
+                      android:anyDensity="true"/>
 
     <!-- the Google Play Services Map API v2 requires OpenGL ES v2, thus
         instruct the Google Play store not to show or install app on a device
@@ -28,11 +28,6 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <permission android:name="org.septa.android.app.permission.MAPS_RECEIVE" android:protectionLevel="signature"/>
-
-    <!-- <uses-permission android:name="android.permission.CAMERA" /> -->
-    <!-- <uses-feature android:name="android.hardware.camera" /> -->
-    <!-- <uses-feature android:name="android.hardware.camera.autofocus" /> -->
-    <!-- <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> -->
 
     <application
         android:allowBackup="true"

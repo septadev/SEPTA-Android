@@ -17,14 +17,10 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.septa.android.app.R;
-import org.septa.android.app.activities.PlaceholderActionBarActivity;
-import org.septa.android.app.activities.SettingsActionBarActivity;
 
 public class RealtimeMenuFragment extends Fragment {
     public static final String TAG = RealtimeMenuFragment.class.getName();

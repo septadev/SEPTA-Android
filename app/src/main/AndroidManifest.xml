@@ -94,15 +94,6 @@
             android:label="@string/app_name" >
         </activity>
         <activity
-            android:name="org.septa.android.app.activities.PlaceholderActionBarActivity"
-            android:parentActivityName="org.septa.android.app.activities.MainTabbarActivity" >
-
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.MainTabbarActivity" />
-        </activity>
-        <activity
             android:name="org.septa.android.app.activities.SettingsActionBarActivity"
             android:parentActivityName="org.septa.android.app.activities.MainTabbarActivity" >
 
@@ -236,6 +227,13 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.SystemStatusActionBarActivity" />
+        </activity>
+        <activity android:name=".activities.NextToArriveActionBarActivity"
+                  android:parentActivityName="org.septa.android.app.activities.MainTabbarActivity" >
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.MainTabbarActivity" />
         </activity>
     </application>
 

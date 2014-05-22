@@ -77,7 +77,7 @@ public class FindNearestLocation_ListViewItem_ArrayAdapter extends ArrayAdapter<
 
                 TextView routeTextView = new TextView(context);
 
-                int width = PixelHelper.pixelsToDensityIndependentPixels(context, 38);
+                int width = PixelHelper.pixelsToDensityIndependentPixels(context, 42);
                 LinearLayout.LayoutParams textViewLayoutParams = new LinearLayout.LayoutParams(width,
                                                                                                ViewGroup.LayoutParams.WRAP_CONTENT);
                 textViewLayoutParams.setMargins(0, 0, 5, 0); // llp.setMargins(left, top, right, bottom);

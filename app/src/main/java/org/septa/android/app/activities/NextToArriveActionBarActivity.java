@@ -53,7 +53,7 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
         int id = getResources().getIdentifier(resourceName, "drawable", getPackageName());
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("|" + actionBarTitleText);
+        getSupportActionBar().setTitle(actionBarTitleText);
         getSupportActionBar().setIcon(id);
 
         mAdapter = new NextToArrive_ListViewItem_ArrayAdapter(this);

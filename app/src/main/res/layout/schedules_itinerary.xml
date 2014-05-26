@@ -21,8 +21,9 @@
 
         <Button
             android:id="@+id/schedules_itinerary_tab_now_button"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:layout_marginRight="2.5dp"
             android:text="Now"
             android:textSize="24sp"
@@ -31,9 +32,8 @@
 
         <Button
             android:id="@+id/schedules_itinerary_tab_weekday_button"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:layout_marginLeft="2.5dp"
             android:layout_marginRight="2.5dp"
             android:text="Weekday"
@@ -43,8 +43,9 @@
 
         <Button
             android:id="@+id/schedules_itinerary_tab_sat_button"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:layout_marginLeft="2.5dp"
             android:layout_marginRight="2.5dp"
             android:text="Sat"
@@ -54,8 +55,9 @@
 
         <Button
             android:id="@+id/schedules_itinerary_tab_sun_button"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:layout_marginLeft="2.5dp"
             android:text="Sun"
             android:textSize="24sp"

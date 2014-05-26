@@ -19,10 +19,11 @@
         android:orientation="horizontal"
         android:background="@android:color/black">
 
-        <RelativeLayout
+        <LinearLayout
             android:id="@+id/realtime_systemstatus_tab_bus_view"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:layout_marginRight="5dp"
             android:orientation="horizontal"
             android:onClick="tabSelected"
@@ -30,18 +31,19 @@
 
             <ImageView
                 android:id="@+id/realtime_systemstatus_tab_bus_imageview"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="10dp"
                 android:src="@drawable/ic_systemstatus_bus_white"
                 android:background="@drawable/realtime_systemstatus_tab_corners"/>
 
-        </RelativeLayout>
+        </LinearLayout>
 
-        <RelativeLayout
+        <LinearLayout
             android:id="@+id/realtime_systemstatus_tab_trolley_view"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:layout_marginRight="5dp"
             android:orientation="horizontal"
             android:onClick="tabSelected"
@@ -49,29 +51,27 @@
 
             <ImageView
                 android:id="@+id/realtime_systemstatus_tab_trolley_imageview"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="10dp"
                 android:src="@drawable/ic_systemstatus_trolley_white"
                 android:background="@drawable/realtime_systemstatus_tab_corners"/>
 
-        </RelativeLayout>
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/realtime_systemstatus_tab_regionalrail_view"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_weight="1"
             android:layout_marginRight="5dp"
             android:orientation="horizontal"
-            android:onClick="tabSelected"
-            android:layout_weight="1">
+            android:onClick="tabSelected">
 
             <ImageView
                 android:id="@+id/realtime_systemstatus_tab_regionalrail_rrl_imageview"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:layout_gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:padding="10dp"
                 android:src="@drawable/ic_systemstatus_rrl_white"
                 android:background="@drawable/realtime_systemstatus_tab_corners"/>
@@ -94,7 +94,6 @@
                 android:padding="10dp"
                 android:src="@drawable/ic_systemstatus_mfl_white"
                 android:background="@drawable/realtime_systemstatus_tab_leftcorner"/>
-
 
             <ImageView
                 android:id="@+id/realtime_systemstatus_tab_mflbslnhsl_bsl_imageview"

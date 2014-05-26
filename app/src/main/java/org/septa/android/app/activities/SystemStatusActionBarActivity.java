@@ -211,8 +211,8 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
         View mflbslnhslVerticalLine1 = (View)findViewById(R.id.realtime_systemstatus_tab_mflbslnhsl_verticalline1);
         View mflbslnhslVerticalLine2 = (View)findViewById(R.id.realtime_systemstatus_tab_mflbslnhsl_verticalline2);
 
-        RelativeLayout busTabView = (RelativeLayout)findViewById(R.id.realtime_systemstatus_tab_bus_view);
-        RelativeLayout trolleyTabView = (RelativeLayout)findViewById(R.id.realtime_systemstatus_tab_trolley_view);
+        LinearLayout busTabView = (LinearLayout)findViewById(R.id.realtime_systemstatus_tab_bus_view);
+        LinearLayout trolleyTabView = (LinearLayout)findViewById(R.id.realtime_systemstatus_tab_trolley_view);
         LinearLayout regionalRailTabView = (LinearLayout)findViewById(R.id.realtime_systemstatus_tab_regionalrail_view);
         RelativeLayout mflBSLNHSLTabView = (RelativeLayout)findViewById(R.id.realtime_systemstatus_tab_mflbslnhsl_view);
 

@@ -36,7 +36,7 @@ public class NextToArrive_ListViewItem_ArrayAdapter extends BaseAdapter implemen
     private ArrayList<SchedulesRecentlyViewedModel> recentlyViewed = new ArrayList<SchedulesRecentlyViewedModel>();
     protected ArrayList<SchedulesRouteModel> nextToArriveTrainList = new ArrayList<SchedulesRouteModel>();
 
-    private String[] sectionTitles = new String[]{ "Favorites", "Recently Viewed", "Routes"};
+    private String[] sectionTitles = new String[]{ "Favorites", "Recently Viewed", "Next To Arrive Trains"};
 
     public NextToArrive_ListViewItem_ArrayAdapter(Context context) {
         mContext = context;
@@ -250,7 +250,7 @@ public class NextToArrive_ListViewItem_ArrayAdapter extends BaseAdapter implemen
                 holder.text.setText(sectionTitles[2]);
 
                 // TODO: adjust this to the correct color
-                holder.text.setBackgroundColor(Color.parseColor("#FF446655"));
+                holder.text.setBackgroundColor(Color.parseColor("#99F04E43"));
             }
         }
 

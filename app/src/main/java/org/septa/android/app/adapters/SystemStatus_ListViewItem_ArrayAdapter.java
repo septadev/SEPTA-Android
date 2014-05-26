@@ -42,7 +42,6 @@ public class SystemStatus_ListViewItem_ArrayAdapter extends ArrayAdapter<AlertMo
         View rowView = null;
 
         AlertModel alertInformation = values.get(position);
-        Ln.d("the route id is "+alertInformation.getRouteId());
 
         rowView = inflater.inflate(R.layout.systemstatus_listview_route_item, parent, false);
 

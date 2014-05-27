@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~ app_tracker.xml
+  ~ Last modified on 05-26-2014 22:06-0400 by brianhmayo
+  ~
+  ~ Copyright (c) 2014 SEPTA.  All rights reserved.
+  -->
+
+<resources>
+    <integer name="ga_sessionTimeout">300</integer>
+
+    <!-- Enable automatic Activity measurement -->
+    <bool name="ga_autoActivityTracking">true</bool>
+
+    <!-- The screen names that will appear in reports -->
+    <screenName name="org.septa.android.app.activities.MainTabbarActivity">
+        SEPTAApp MainTabbarActivity
+    </screenName>
+    <screenName name="org.septa.android.app.activities.TipsActionBarActivity">
+        SEPTAApp TipsActionBarActivity
+    </screenName>
+
+    <!-- TODO: replace this with the production value -->
+    <string name="ga_trackingId">UA-46459012-1</string>
+</resources>

@@ -37,7 +37,6 @@ dependencies {
     compile group: 'com.andraskindler.quickscroll', name: 'quickscroll', version: '0.9.8'
     compile group: 'se.emilsjolander', name: 'stickylistheaders', version: '+'
     compile group: 'org.roboguice', name: 'roboguice', version: '2.0'
-    compile group: 'org.robolectric', name: 'robolectric', version: '2.3'
 }
 
 // check that the SEPTA.signing gradle property exists and that its value is the filename to a file

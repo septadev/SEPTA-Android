@@ -9,6 +9,7 @@ package org.septa.android.app.adapters.schedules;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,7 +25,6 @@ import org.septa.android.app.models.SchedulesRouteModel;
 
 import java.util.ArrayList;
 
-import roboguice.util.Ln;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 
 public class SchedulesItinerary_ListViewItem_ArrayAdapter extends BaseAdapter implements
@@ -87,11 +87,11 @@ public class SchedulesItinerary_ListViewItem_ArrayAdapter extends BaseAdapter im
 
     public void setHeaderViewText(String text) {
         if (headerView == null) {
-            Ln.d("the headerView is null");
+            Log.d("f", "the headerView is null");
         } else {
             TextView textView = (TextView) headerView.findViewById(R.id.schedules_routeselection_sectionheader_textview);
             if (textView == null) {
-                Ln.d("the textView is null");
+                Log.d("f", "the textView is null");
             }
             textView.setText(text);
         }

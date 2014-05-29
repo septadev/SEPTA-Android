@@ -42,7 +42,6 @@ import java.util.Collections;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
-import roboguice.util.Ln;
 
 public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivity implements AdapterView.OnItemClickListener{
     public static final String TAG = SystemStatusActionBarActivity.class.getName();
@@ -108,7 +107,7 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
                 break;
             }
             default: {
-                Ln.d("this should never be reached");
+                Log.d("f", "this should never be reached");
             }
         }
     }
@@ -182,7 +181,7 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
                 break;
             }
             default: {
-                Ln.d("not sure how we feel into this default for this switch");
+                Log.d("f", "not sure how we feel into this default for this switch");
             }
         }
 
@@ -485,7 +484,7 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
                 break;
             }
             default: {
-                Ln.d("should never get here");
+                Log.d("f", "should never get here");
             }
         }
 
@@ -513,7 +512,7 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
                 loadingProgressBar.setVisibility(View.GONE);
 
                 alertModelList = (ArrayList<AlertModel>)o;
-                Ln.d("callback called for alerts with count of "+alertModelList.size());
+                Log.d("f", "callback called for alerts with count of "+alertModelList.size());
 
                 reloadListView();
             }

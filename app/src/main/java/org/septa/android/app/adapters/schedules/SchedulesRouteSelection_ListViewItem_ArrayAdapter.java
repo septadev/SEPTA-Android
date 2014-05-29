@@ -26,7 +26,6 @@ import org.septa.android.app.models.SchedulesRouteModel;
 
 import java.util.ArrayList;
 
-import roboguice.util.Ln;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 
 public class SchedulesRouteSelection_ListViewItem_ArrayAdapter extends BaseAdapter implements

@@ -15,6 +15,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -29,7 +30,6 @@ import org.septa.android.app.models.SchedulesRouteModel;
 
 import java.util.ArrayList;
 
-import roboguice.util.Ln;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
 import static org.septa.android.app.models.RouteTypes.*;
@@ -58,7 +58,7 @@ public class SchedulesRouteSelectionActionBarActivity extends BaseAnalyticsActio
         iconImageNameSuffix = getIntent().getStringExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key));
         String resourceName = getString(R.string.actionbar_iconimage_imagename_base).concat(iconImageNameSuffix);
 
-        Ln.d("resource name is to be "+resourceName);
+        Log.d("f", "resource name is to be " + resourceName);
 
         int id = getResources().getIdentifier(resourceName, "drawable", getPackageName());
 
@@ -115,7 +115,7 @@ public class SchedulesRouteSelectionActionBarActivity extends BaseAnalyticsActio
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position,long id) {
         String routeShortName = "";
-        Ln.d("onItemClick occurred at position "+position+" with id "+id+" and route short name of "+routeShortName);
+        Log.d("f", "onItemClick occurred at position "+position+" with id "+id+" and route short name of "+routeShortName);
 
         if (!mAdapter.isFavorite(position) && !mAdapter.isRecentlyViewed(position)) {
             SchedulesRouteModel rtm = (SchedulesRouteModel)mAdapter.getItem(position);
@@ -233,7 +233,7 @@ public class SchedulesRouteSelectionActionBarActivity extends BaseAnalyticsActio
 
                 cursor.close();
             } else {
-                Ln.d("cursor is null");
+                Log.d("f", "cursor is null");
             }
 
             database.close();

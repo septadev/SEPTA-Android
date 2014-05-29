@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
-import roboguice.util.Ln;
 
 public class SystemStatusDetailsActionBarActivity extends BaseAnalyticsActionBarActivity {
     public static final String TAG = SystemStatusDetailsActionBarActivity.class.getName();
@@ -91,7 +90,7 @@ public class SystemStatusDetailsActionBarActivity extends BaseAnalyticsActionBar
         webView.setWebViewClient(new WebViewClient(){
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url){
-                Ln.d("got the url as "+url);
+                Log.d("f", "got the url as "+url);
 
                 return false;
             }
@@ -120,7 +119,7 @@ public class SystemStatusDetailsActionBarActivity extends BaseAnalyticsActionBar
                 break;
             }
             default: {
-                Ln.d("this should never be reached");
+                Log.d("f", "this should never be reached");
             }
         }
     }
@@ -149,7 +148,7 @@ public class SystemStatusDetailsActionBarActivity extends BaseAnalyticsActionBar
                 break;
             }
             default: {
-                Ln.d("not sure how we feel into this default for this switch");
+                Log.d("f", "not sure how we feel into this default for this switch");
             }
         }
 
@@ -238,7 +237,7 @@ public class SystemStatusDetailsActionBarActivity extends BaseAnalyticsActionBar
                         break;
                     }
                     default: {
-                        Ln.d("should never be able to get here");
+                        Log.d("f", "should never be able to get here");
                     }
                 }
             }
@@ -257,7 +256,7 @@ public class SystemStatusDetailsActionBarActivity extends BaseAnalyticsActionBar
                 setProgressBarIndeterminateVisibility(Boolean.FALSE);
 
                 routeAlertModelList = (ArrayList<RouteAlertDataModel>)o;
-                Ln.d("callback called for alerts with count of "+routeAlertModelList.size());
+                Log.d("f", "callback called for alerts with count of "+routeAlertModelList.size());
 
                 renderRouteAlertsToWebView();
             }

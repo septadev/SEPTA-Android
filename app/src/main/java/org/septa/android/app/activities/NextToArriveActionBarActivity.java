@@ -24,7 +24,6 @@ import org.septa.android.app.activities.schedules.SchedulesItineraryActionBarAct
 import org.septa.android.app.adapters.NextToArrive_ListViewItem_ArrayAdapter;
 import org.septa.android.app.models.SchedulesRouteModel;
 
-import roboguice.util.Ln;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
 public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivity implements
@@ -48,7 +47,7 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
         iconImageNameSuffix = getIntent().getStringExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key));
         String resourceName = getString(R.string.actionbar_iconimage_imagename_base).concat(iconImageNameSuffix);
 
-        Ln.d("resource name is to be " + resourceName);
+        Log.d("f", "resource name is to be " + resourceName);
 
         int id = getResources().getIdentifier(resourceName, "drawable", getPackageName());
 
@@ -129,7 +128,7 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position,long id) {
         String routeShortName = "";
-        Ln.d("onItemClick occurred at position "+position+" with id "+id+" and route short name of "+routeShortName);
+        Log.d("f", "onItemClick occurred at position "+position+" with id "+id+" and route short name of "+routeShortName);
 
         if (!mAdapter.isFavorite(position) && !mAdapter.isRecentlyViewed(position)) {
             SchedulesRouteModel rtm = (SchedulesRouteModel)mAdapter.getItem(position);

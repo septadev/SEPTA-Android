@@ -20,8 +20,6 @@ import org.septa.android.app.models.servicemodels.AlertModel;
 
 import java.util.List;
 
-import roboguice.util.Ln;
-
 public class SystemStatus_ListViewItem_ArrayAdapter extends ArrayAdapter<AlertModel> {
     public static final String TAG = SystemStatus_ListViewItem_ArrayAdapter.class.getName();
 

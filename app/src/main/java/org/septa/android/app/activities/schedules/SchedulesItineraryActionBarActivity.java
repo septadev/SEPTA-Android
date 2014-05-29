@@ -17,6 +17,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -32,7 +33,6 @@ import org.septa.android.app.models.SchedulesRouteModel;
 
 import java.util.ArrayList;
 
-import roboguice.util.Ln;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
 import static org.septa.android.app.models.RouteTypes.RAIL;
@@ -67,7 +67,7 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
         iconImageNameSuffix = getIntent().getStringExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key));
         String resourceName = getString(R.string.actionbar_iconimage_imagename_base).concat(iconImageNameSuffix);
 
-        Ln.d("resource name is to be " + resourceName);
+        Log.d("f", "resource name is to be " + resourceName);
 
         int id = getResources().getIdentifier(resourceName, "drawable", getPackageName());
 
@@ -78,7 +78,7 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
         travelType = valueOf(getIntent().getStringExtra(getString(R.string.schedules_itinerary_travelType)));
         routeShortName = getIntent().getStringExtra(getString(R.string.schedules_itinerary_routeShortName));
 
-        Ln.d("got the travel type as "+travelType.name());
+        Log.d("f", "got the travel type as "+travelType.name());
 
         mAdapter = new SchedulesItinerary_ListViewItem_ArrayAdapter(this, travelType);
 
@@ -150,11 +150,11 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
 
         startActivityForResult(itinerarySelectionIntent, 202);
 
-        Ln.d("start end selection selected");
+        Log.d("f", "start end selection selected");
     }
 
     public void reverseStartEndSelected(View view) {
-        Ln.d("reverse start end selected");
+        Log.d("f", "reverse start end selected");
     }
 
     public void tabSelected(View view) {
@@ -188,7 +188,7 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
                 break;
             }
             default: {
-                Ln.d("not sure how we feel into this default for this switch");
+                Log.d("f", "not sure how we feel into this default for this switch");
             }
         }
     }
@@ -405,7 +405,7 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
 
                 cursor.close();
             } else {
-                Ln.d("cursor is null");
+                Log.d("f", "cursor is null");
             }
 
             database.close();
@@ -415,9 +415,9 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
         protected Boolean doInBackground(RouteTypes... params) {
             RouteTypes routeType = params[0];
 
-            Ln.d("about to call the loadRoutes...");
+            Log.d("f", "about to call the loadRoutes...");
             loadRoutes(routeType);
-            Ln.d("called the loadRoutes.");
+            Log.d("f", "called the loadRoutes.");
 
             return false;
         }
@@ -426,10 +426,10 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
         protected void onPostExecute(Boolean b) {
             super.onPostExecute(b);
 
-            Ln.d("calling onPostExecute...");
+            Log.d("f", "calling onPostExecute...");
             mAdapter.setSchedulesRouteModel(routesModelList);
             mAdapter.notifyDataSetChanged();
-            Ln.d("done with the onPostExecute call.");
+            Log.d("f", "done with the onPostExecute call.");
         }
     }
 }

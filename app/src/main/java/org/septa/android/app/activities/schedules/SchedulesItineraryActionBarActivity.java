@@ -75,7 +75,12 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
         getSupportActionBar().setTitle("|" + actionBarTitleText);
         getSupportActionBar().setIcon(id);
 
-        travelType = valueOf(getIntent().getStringExtra(getString(R.string.schedules_itinerary_travelType)));
+        String stringTravelType = getIntent().getStringExtra(getString(R.string.schedules_itinerary_travelType));
+        if (stringTravelType != null) {
+            travelType = valueOf(getIntent().getStringExtra(getString(R.string.schedules_itinerary_travelType)));
+        } else {
+            Log.d("f", "travelType is null...");
+        }
         routeShortName = getIntent().getStringExtra(getString(R.string.schedules_itinerary_routeShortName));
 
         Log.d("f", "got the travel type as "+travelType.name());
@@ -103,7 +108,9 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
 
         routesModel = new ArrayList<SchedulesRouteModel>();
         RoutesLoader routesLoader = new RoutesLoader(routesModel);
-        routesLoader.execute(travelType);
+
+        //TODO: this is casuing a crash since travelType is coming in null at times.  this needs work.
+//        routesLoader.execute(travelType);
     }
 
     @Override

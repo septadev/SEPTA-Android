@@ -17,8 +17,10 @@ public class FareInformationActionBarActivity extends BaseAnalyticsActionBarActi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        String actionBarTitleText = getIntent().getStringExtra(getString(R.string.actionbar_titletext_key));
-        String iconImageNameSuffix = getIntent().getStringExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key));
+//        String actionBarTitleText = getIntent().getStringExtra(getString(R.string.actionbar_titletext_key));
+        String actionBarTitleText = "| Fare Information";
+//        String iconImageNameSuffix = getIntent().getStringExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key));
+        String iconImageNameSuffix = "fares";
 
         String resourceName = getString(R.string.actionbar_iconimage_imagename_base).concat(iconImageNameSuffix);
 

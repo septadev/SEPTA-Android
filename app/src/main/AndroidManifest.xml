@@ -203,6 +203,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.MainTabbarActivity" />
         </activity>
+        <meta-data android:name="com.crashlytics.ApiKey" android:value="***REMOVED***"/>
     </application>
 
 </manifest>

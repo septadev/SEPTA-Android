@@ -8,38 +8,6 @@
                       android:xlargeScreens="true"
                       android:anyDensity="true"/>
 
-    <!--<compatible-screens>-->
-        <!--&lt;!&ndash;all small size screens &ndash;&gt;-->
-        <!--<screen android:screenSize="small" android:screenDensity="ldpi"/>-->
-        <!--<screen android:screenSize="small" android:screenDensity="mdpi"/>-->
-        <!--<screen android:screenSize="small" android:screenDensity="hdpi"/>-->
-
-        <!--&lt;!&ndash;all normal size screens &ndash;&gt;-->
-        <!--<screen android:screenSize="normal" android:screenDensity="ldpi"/>-->
-        <!--<screen android:screenSize="normal" android:screenDensity="mdpi"/>-->
-        <!--<screen android:screenSize="normal" android:screenDensity="hdpi"/>-->
-        <!--<screen android:screenSize="normal" android:screenDensity="xhdpi"/>-->
-        <!--<screen android:screenSize="normal" android:screenDensity="480"/>-->
-
-        <!--&lt;!&ndash; all large size screens &ndash;&gt;-->
-        <!--<screen android:screenSize="large" android:screenDensity="ldpi"/>-->
-        <!--<screen android:screenSize="large" android:screenDensity="mdpi"/>-->
-        <!--<screen android:screenSize="large" android:screenDensity="hdpi"/>-->
-        <!--<screen android:screenSize="large" android:screenDensity="xhdpi"/>-->
-        <!--<screen android:screenSize="large" android:screenDensity="480"/>-->
-
-        <!--&lt;!&ndash; all xlarge size screens &ndash;&gt;-->
-        <!--<screen android:screenSize="xlarge" android:screenDensity="ldpi"/>-->
-        <!--<screen android:screenSize="xlarge" android:screenDensity="mdpi"/>-->
-        <!--<screen android:screenSize="xlarge" android:screenDensity="hdpi"/>-->
-        <!--<screen android:screenSize="xlarge" android:screenDensity="xhdpi"/>-->
-        <!--<screen android:screenSize="xlarge" android:screenDensity="480"/>-->
-
-        <!--&lt;!&ndash; Special case for Nexus 7 &ndash;&gt;-->
-        <!--<screen android:screenSize="large" android:screenDensity="213"/>-->
-
-    <!--</compatible-screens>-->
-
     <!-- the Google Play Services Map API v2 requires OpenGL ES v2, thus
         instruct the Google Play store not to show or install app on a device
         that does not support OpenGL ES v2 -->

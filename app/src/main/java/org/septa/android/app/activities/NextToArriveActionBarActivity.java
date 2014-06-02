@@ -20,6 +20,7 @@ import android.view.View;
 import android.widget.AdapterView;
 
 import org.septa.android.app.R;
+import org.septa.android.app.activities.schedules.ItinerarySelectionActionBarActivity;
 import org.septa.android.app.activities.schedules.SchedulesItineraryActionBarActivity;
 import org.septa.android.app.adapters.NextToArrive_ListViewItem_ArrayAdapter;
 import org.septa.android.app.models.SchedulesRouteModel;
@@ -82,14 +83,30 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
         super.onPostCreate(savedInstanceState);
     }
 
+    public void startEndSelectionSelected(View view) {
+
+//        Intent itinerarySelectionIntent = null;
+//
+//        itinerarySelectionIntent = new Intent(this, ItinerarySelectionActionBarActivity.class);
+//        itinerarySelectionIntent.putExtra(getString(R.string.actionbar_titletext_key), "Select Start");
+//        itinerarySelectionIntent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), iconImageNameSuffix);
+//        itinerarySelectionIntent.putExtra(getString(R.string.schedules_itinerary_travelType),
+//                travelType.name());
+//        itinerarySelectionIntent.putExtra(getString(R.string.schedules_itinerary_routeShortName), routeShortName);
+//
+//        startActivityForResult(itinerarySelectionIntent, 202);
+
+        Log.d(TAG, "start end selection selected");
+    }
+
+    public void reverseStartEndSelected(View view) {
+        Log.d(TAG, "reverse start end selected");
+    }
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         Log.d(TAG, "creating the menu in find nearest location actionbar activity");
-        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.realtime_systemstatus_action_bar, menu);
-//
-//        menu.findItem(R.id.actionmenu_systemstatusactionbar_filter_none).setVisible(!inFilterMode);
-//        menu.findItem(R.id.actionmenu_systemstatusactionbar_filter_removeemptyrows).setVisible(inFilterMode);
 
         return true;
     }
@@ -139,10 +156,7 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
         Intent schedulesItineraryIntent = null;
 
         schedulesItineraryIntent = new Intent(this, SchedulesItineraryActionBarActivity.class);
-//        schedulesItineraryIntent.putExtra(getString(R.string.actionbar_titletext_key), routesModel.get(position).getRouteId());
         schedulesItineraryIntent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), iconImageNameSuffix);
-//        schedulesItineraryIntent.putExtra(getString(R.string.schedules_itinerary_travelType),
-//                travelType.name());
         schedulesItineraryIntent.putExtra(getString(R.string.schedules_itinerary_routeShortName), routeShortName);
 
         startActivity(schedulesItineraryIntent);

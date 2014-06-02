@@ -36,7 +36,7 @@ public class NextToArrive_ListViewItem_ArrayAdapter extends BaseAdapter implemen
     private ArrayList<SchedulesRecentlyViewedModel> recentlyViewed = new ArrayList<SchedulesRecentlyViewedModel>();
     protected ArrayList<SchedulesRouteModel> nextToArriveTrainList = new ArrayList<SchedulesRouteModel>();
 
-    private String[] sectionTitles = new String[]{ "Favorites", "Recently Viewed", "Next To Arrive Trains"};
+    private String[] sectionTitles = new String[]{ "<blank>", "Favorites", "Recently Viewed", "Next To Arrive Trains"};
 
     public NextToArrive_ListViewItem_ArrayAdapter(Context context) {
         mContext = context;
@@ -116,11 +116,17 @@ public class NextToArrive_ListViewItem_ArrayAdapter extends BaseAdapter implemen
     }
 
     public boolean isFavorite(int position) {
+        if (position ==0) {
+            return false;
+        }
 
         return getItems()[position] instanceof SchedulesFavoriteModel;
     }
 
     public boolean isRecentlyViewed(int position) {
+        if (position ==0) {
+            return false;
+        }
 
         return getItems()[position] instanceof SchedulesRecentlyViewedModel;
     }
@@ -128,7 +134,7 @@ public class NextToArrive_ListViewItem_ArrayAdapter extends BaseAdapter implemen
     @Override
     public int getCount() {
 
-        return favorites.size()+recentlyViewed.size()+nextToArriveTrainList.size();
+        return 1+favorites.size()+recentlyViewed.size()+nextToArriveTrainList.size();
     }
 
     @Override
@@ -147,48 +153,53 @@ public class NextToArrive_ListViewItem_ArrayAdapter extends BaseAdapter implemen
     public View getView(int position, View convertView, ViewGroup parent) {
         View rowView = null;
 
-        if (isFavorite(position)) {     // favorite position rows
-            rowView = mInflater.inflate(R.layout.nexttoarrive_favoriteandrecentlyviewed_listview_item, parent, false);
+        if (position == 0) {    // first position is the start and end stop entry cell
 
-            TextView startStopNameTextView = (TextView)rowView.findViewById(R.id.nexttoarrive_favoriteandrecentlyviewed_start_textview);
-            TextView endStopNameTextView = (TextView)rowView.findViewById(R.id.nexttoarrive_favoriteandrecentlyviewed_end_textview);
+            rowView = mInflater.inflate(R.layout.nexttoarrive_selectstartend_row, parent, false);
+        } else {
 
-            startStopNameTextView.setText("testing start");
-            endStopNameTextView.setText("testing end");
-
-            // to create a larger space in the ListView, each row has a transparent view built in
-            // if we are not the last row in the logical section, make it gone, else visible
-            View transparentView = (View)rowView.findViewById(R.id.nexttoarrive_favoriteandrecentlyviewed_transparent_view);
-            if (position == (favorites.size()-1)) {
-                transparentView.setVisibility(View.VISIBLE);
-            } else {
-                transparentView.setVisibility(View.GONE);
-            }
-        } else {                        // recently viewed position rows
-            if (isRecentlyViewed(position)) {
+            if (isFavorite(position)) {     // favorite position rows
                 rowView = mInflater.inflate(R.layout.nexttoarrive_favoriteandrecentlyviewed_listview_item, parent, false);
 
-//                SchedulesRecentlyViewedModel rm = (SchedulesRecentlyViewedModel)getItem(position);
-
-                TextView startStopNameTextView = (TextView)rowView.findViewById(R.id.nexttoarrive_favoriteandrecentlyviewed_start_textview);
-                TextView endStopNameTextView = (TextView)rowView.findViewById(R.id.nexttoarrive_favoriteandrecentlyviewed_end_textview);
+                TextView startStopNameTextView = (TextView) rowView.findViewById(R.id.nexttoarrive_favoriteandrecentlyviewed_start_textview);
+                TextView endStopNameTextView = (TextView) rowView.findViewById(R.id.nexttoarrive_favoriteandrecentlyviewed_end_textview);
 
                 startStopNameTextView.setText("testing start");
                 endStopNameTextView.setText("testing end");
 
                 // to create a larger space in the ListView, each row has a transparent view built in
                 // if we are not the last row in the logical section, make it gone, else visible
-                View transparentView = (View)rowView.findViewById(R.id.nexttoarrive_favoriteandrecentlyviewed_transparent_view);
-                if (position == ((favorites.size()+recentlyViewed.size())-1)) {
+                View transparentView = (View) rowView.findViewById(R.id.nexttoarrive_favoriteandrecentlyviewed_transparent_view);
+                if (position == (favorites.size() - 1)) {
                     transparentView.setVisibility(View.VISIBLE);
                 } else {
                     transparentView.setVisibility(View.GONE);
                 }
-            } else{
+            } else {                        // recently viewed position rows
+                if (isRecentlyViewed(position)) {
+                    rowView = mInflater.inflate(R.layout.nexttoarrive_favoriteandrecentlyviewed_listview_item, parent, false);
+
+//                SchedulesRecentlyViewedModel rm = (SchedulesRecentlyViewedModel)getItem(position);
+
+                    TextView startStopNameTextView = (TextView) rowView.findViewById(R.id.nexttoarrive_favoriteandrecentlyviewed_start_textview);
+                    TextView endStopNameTextView = (TextView) rowView.findViewById(R.id.nexttoarrive_favoriteandrecentlyviewed_end_textview);
+
+                    startStopNameTextView.setText("testing start");
+                    endStopNameTextView.setText("testing end");
+
+                    // to create a larger space in the ListView, each row has a transparent view built in
+                    // if we are not the last row in the logical section, make it gone, else visible
+                    View transparentView = (View) rowView.findViewById(R.id.nexttoarrive_favoriteandrecentlyviewed_transparent_view);
+                    if (position == ((favorites.size() + recentlyViewed.size()) - 1)) {
+                        transparentView.setVisibility(View.VISIBLE);
+                    } else {
+                        transparentView.setVisibility(View.GONE);
+                    }
+                } else {
 //                String[] routeTypeLabels = mContext.getResources().getStringArray(R.array.schedulesfragment_listview_bothimage_endnames);
 //
-                SchedulesRouteModel rtm = (SchedulesRouteModel)getItem(position);
-                rowView = mInflater.inflate(R.layout.nexttoarrive_nexttoarrivetrains_listview_item, parent, false);
+                    SchedulesRouteModel rtm = (SchedulesRouteModel) getItem(position);
+                    rowView = mInflater.inflate(R.layout.nexttoarrive_nexttoarrivetrains_listview_item, parent, false);
 //                ImageView leftIconImageView = (ImageView)rowView.findViewById(R.id.schedules_routeselect_item_leftImageView);
 //                ImageView rightBackgroundImageView = (ImageView)rowView.findViewById(R.id.schedules_routeselection_item_rightImageBackgroundview);
 //                TextView routeIdTextView = (TextView)rowView.findViewById(R.id.schedules_routeselection_item_routeid);
@@ -220,6 +231,7 @@ public class NextToArrive_ListViewItem_ArrayAdapter extends BaseAdapter implemen
 //                }
 //
 //                routeLongNameTextView.setText(routes.get(position).getRouteLongName());
+                }
             }
         }
 
@@ -239,18 +251,23 @@ public class NextToArrive_ListViewItem_ArrayAdapter extends BaseAdapter implemen
             holder = (HeaderViewHolder) convertView.getTag();
         }
 
-        if (favorites.size()>0 && position<favorites.size()) {
-            holder.text.setText(sectionTitles[0]);
-            holder.text.setBackgroundColor(Color.parseColor("#990DA44A"));
+        if (position == 0) {    // for the first position, the start-end selection, make the headerview nothing
+            holder.text.setBackgroundColor(Color.parseColor("#00000000"));
+            holder.text.setHeight(0);
         } else {
-            if (recentlyViewed.size()>0 && (position-favorites.size())<recentlyViewed.size()) {
-                holder.text.setText(sectionTitles[1]);
+            if (favorites.size() > 0 && position < favorites.size()) {
+                holder.text.setText(sectionTitles[0]);
                 holder.text.setBackgroundColor(Color.parseColor("#990DA44A"));
             } else {
-                holder.text.setText(sectionTitles[2]);
+                if (recentlyViewed.size() > 0 && (position - favorites.size()) < recentlyViewed.size()) {
+                    holder.text.setText(sectionTitles[1]);
+                    holder.text.setBackgroundColor(Color.parseColor("#990DA44A"));
+                } else {
+                    holder.text.setText(sectionTitles[2]);
 
-                // TODO: adjust this to the correct color
-                holder.text.setBackgroundColor(Color.parseColor("#99F04E43"));
+                    // TODO: adjust this to the correct color
+                    holder.text.setBackgroundColor(Color.parseColor("#99F04E43"));
+                }
             }
         }
 
@@ -259,17 +276,23 @@ public class NextToArrive_ListViewItem_ArrayAdapter extends BaseAdapter implemen
 
     @Override
     public long getHeaderId(int position) {
-        if (isFavorite(position)) {
+        if (position == 0) {
 
             return 0;
+        }
+
+        if (isFavorite(position)) {
+
+            return 1;
         } else {
+
             if (isRecentlyViewed(position)) {
 
-                return 1;
+                return 2;
             }
         }
 
-        return 2;
+        return 3;
     }
 
     @Override
@@ -281,9 +304,13 @@ public class NextToArrive_ListViewItem_ArrayAdapter extends BaseAdapter implemen
             }
             case 1: {
 
-                return favorites.size();
+                return 1;
             }
             case 2: {
+
+                return favorites.size();
+            }
+            case 3: {
 
                 return favorites.size()+recentlyViewed.size();
             }
@@ -296,15 +323,19 @@ public class NextToArrive_ListViewItem_ArrayAdapter extends BaseAdapter implemen
 
     @Override
     public int getSectionForPosition(int position) {
-        if (isFavorite(position)) {
+        if (position == 0) {
             return 0;
+        }
+
+        if (isFavorite(position)) {
+            return 1;
         } else {
             if (isRecentlyViewed(position)) {
-                return 1;
+                return 2;
             }
         }
 
-        return 2;
+        return 3;
     }
 
     @Override

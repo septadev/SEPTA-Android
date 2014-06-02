@@ -179,6 +179,13 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
     }
 
     private void loadMapAndListView(Location newLocation, float mapSearchRadius) {
+        if (newLocation != null) {
+            Log.d(TAG, "newLocation's latitude "+newLocation.getLatitude());
+        } else {
+            Log.d(TAG, "newLocation is null, wrong.");
+        }
+
+        Log.d(TAG, "mapSearchRadius is "+mapSearchRadius);
 
         loadMapAndListView(newLocation.getLatitude(), newLocation.getLongitude(), mapSearchRadius);
     }
@@ -339,6 +346,8 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
 
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, Float.parseFloat(getString(R.string.findnearestlocation_map_zoom_level_float))));
 
+            Log.d(TAG, "onLocationChanged, newLocation's latitude "+newLocation.getLatitude());
+            Log.d(TAG, "onLocationChanged, newLocation's longitude "+newLocation.getLongitude());
             loadMapAndListView(newLocation, ObjectFactory.getInstance().getSharedPreferencesManager(this).getNearestLocationMapSearchRadius());
         }
     }
@@ -381,7 +390,7 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
          * start a Google Play services activity that can resolve
          * error.
          */
-        if (connectionResult.hasResolution()) {
+//        if (connectionResult.hasResolution()) {
 //            try {
                 // Start an Activity that tries to resolve the error
 //                connectionResult.startResolutionForResult(
@@ -395,13 +404,13 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
 //                // Log the error
 //                e.printStackTrace();
 //            }
-        } else {
+//        } else {
             /*
              * If no resolution is available, display a dialog to the
              * user with the error.
              */
-            Log.d(TAG, "location services error: " + connectionResult.getErrorCode());
-        }
+//            Log.d(TAG, "location services error: " + connectionResult.getErrorCode());
+//        }
     }
 
     @Override

@@ -40,3 +40,5 @@ local.properties
 proguard/
 
 .DS_Store
+
+app/src/main/assets/crashlytics-build.properties

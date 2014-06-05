@@ -7,7 +7,7 @@
   ~ Copyright (c) 2014 SEPTA.  All rights reserved.
   -->
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="horizontal"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
@@ -18,20 +18,25 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:gravity="center_vertical"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_marginLeft="10dp">
 
         <TextView
             android:text="5844"
             android:id="@+id/nexttoarrive_nexttoarrivetrains_trainnumber_textview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:includeFontPadding="false"
             android:textSize="24sp"/>
 
         <TextView
             android:text="On time"
             android:id="@+id/nexttoarrive_nexttoarrivetrains_lateness_textview"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:includeFontPadding="false"
+            android:gravity="center"
+            android:textSize="13sp"/>
 
     </LinearLayout>
 
@@ -61,12 +66,12 @@
     <TextView
         android:text="Lansdale/Doylestown"
         android:id="@+id/nexttoarrive_nexttoarrivetrains_routename_textview"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="15dp"
         android:layout_toRightOf="@id/nexttoarrive_nexttoarrivetrains_startendtime_view"
         android:singleLine="true"
         android:ellipsize="middle"
-        android:layout_gravity="center_vertical"/>
+        android:gravity="center_vertical"/>
 
-</RelativeLayout>
+</LinearLayout>

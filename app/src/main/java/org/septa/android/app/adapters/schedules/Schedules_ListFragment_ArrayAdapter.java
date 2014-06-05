@@ -29,7 +29,7 @@ public class Schedules_ListFragment_ArrayAdapter  extends ArrayAdapter<String> {
 
 
     public Schedules_ListFragment_ArrayAdapter(Context context, String[] values) {
-        super(context, R.layout.scheduels_listfragment_item, values);
+        super(context, R.layout.schedules_listfragment_item, values);
         this.context = context;
         this.values = values;
 
@@ -44,7 +44,7 @@ public class Schedules_ListFragment_ArrayAdapter  extends ArrayAdapter<String> {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         // TODO: this does not seem right; why am I inflating this again here when super should be taking care of it.
-        View rowView = inflater.inflate(R.layout.scheduels_listfragment_item, parent, false);
+        View rowView = inflater.inflate(R.layout.schedules_listfragment_item, parent, false);
 
         ImageView leftImageView = (ImageView) rowView.findViewById(R.id.schedules_listfragment_item_leftImageView);
         ImageView rightImageBackgroundView = (ImageView) rowView.findViewById(R.id.schedules_listfragment_item_rightImageBackgroundview);

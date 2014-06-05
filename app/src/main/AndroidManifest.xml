@@ -203,6 +203,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.MainTabbarActivity" />
         </activity>
+        <activity android:name=".activities.NextToArriveStopSelectionActionBarActivity"
+                  android:parentActivityName="org.septa.android.app.activities.NextToArriveActionBarActivity" >
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.NextToArriveActionBarActivity" />
+        </activity>
+
         <meta-data android:name="com.crashlytics.ApiKey" android:value="***REMOVED***"/>
     </application>
 

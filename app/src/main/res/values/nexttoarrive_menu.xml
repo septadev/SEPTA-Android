@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ nexttoarrive_menu.xml
+  ~ Last modified on 06-05-2014 11:14-0400 by brianhmayo
+  ~
+  ~ Copyright (c) 2014 SEPTA.  All rights reserved.
+  -->
+
+<resources>
+
+    <string name="nexttoarrive_menu_icon_imageBase">settings_icon_</string>
+
+    <!-- about listview items meta-data -->
+    <!-- texts, iconSuffixes, urls -->
+    <string-array name="nexttoarrive_menu_listview_items_texts">
+        <item>Refresh</item>
+        <item>Favorite</item>
+        <item>Fare</item>
+        <item>Real Time</item>
+    </string-array>
+
+    <string-array name="nexttoarrive_listview_items_description">
+        <item>select trip before refreshing</item>
+        <item>no trips have been selected</item>
+        <item>Fare Information</item>
+        <item>Regional Rail Service</item>
+    </string-array>
+
+
+    <string-array name="nexttoarrive_menu_listview_items_iconSuffixes">
+        <item>refresh</item>
+        <item>favorite</item>
+        <item>fare</item>
+        <item>realtime</item>
+    </string-array>
+
+</resources>

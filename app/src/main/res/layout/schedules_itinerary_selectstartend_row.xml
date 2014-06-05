@@ -10,7 +10,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="horizontal"
               android:layout_width="match_parent"
-              android:layout_height="103dp"
+              android:layout_height="63dp"
               android:background="@android:color/white">
 
     <ImageButton
@@ -34,9 +34,8 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:layout_margin="2.5dp"
-            android:layout_marginTop="5dp"
             android:background="#BEBEBE"
-            android:textSize="24sp"
+            android:textSize="20sp"
             android:hint="Select start"
             android:gravity="center"
             android:onClick=""/>
@@ -47,9 +46,8 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:layout_margin="2.5dp"
-            android:layout_marginBottom="5dp"
             android:background="#BEBEBE"
-            android:textSize="24sp"
+            android:textSize="20sp"
             android:hint="Select destination"
             android:gravity="center"
             android:onClick=""/>

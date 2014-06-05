@@ -9,6 +9,7 @@ package org.septa.android.app.adapters;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,7 +37,7 @@ public class NextToArrive_ListViewItem_ArrayAdapter extends BaseAdapter implemen
     private ArrayList<SchedulesRecentlyViewedModel> recentlyViewed = new ArrayList<SchedulesRecentlyViewedModel>();
     protected ArrayList<SchedulesRouteModel> nextToArriveTrainList = new ArrayList<SchedulesRouteModel>();
 
-    private String[] sectionTitles = new String[]{ "<blank>", "Favorites", "Recently Viewed", "Next To Arrive Trains"};
+    private String[] sectionTitles = new String[]{ "<start_end_import>", "Favorites", "Recently Viewed", "Next To Arrive Trains"};
 
     public NextToArrive_ListViewItem_ArrayAdapter(Context context) {
         mContext = context;
@@ -116,17 +117,11 @@ public class NextToArrive_ListViewItem_ArrayAdapter extends BaseAdapter implemen
     }
 
     public boolean isFavorite(int position) {
-        if (position ==0) {
-            return false;
-        }
 
         return getItems()[position] instanceof SchedulesFavoriteModel;
     }
 
     public boolean isRecentlyViewed(int position) {
-        if (position ==0) {
-            return false;
-        }
 
         return getItems()[position] instanceof SchedulesRecentlyViewedModel;
     }
@@ -134,7 +129,7 @@ public class NextToArrive_ListViewItem_ArrayAdapter extends BaseAdapter implemen
     @Override
     public int getCount() {
 
-        return 1+favorites.size()+recentlyViewed.size()+nextToArriveTrainList.size();
+        return favorites.size()+recentlyViewed.size()+nextToArriveTrainList.size();
     }
 
     @Override
@@ -153,85 +148,55 @@ public class NextToArrive_ListViewItem_ArrayAdapter extends BaseAdapter implemen
     public View getView(int position, View convertView, ViewGroup parent) {
         View rowView = null;
 
-        if (position == 0) {    // first position is the start and end stop entry cell
+        if (position == 0) {
+            rowView = mInflater.inflate(R.layout.nexttoarrive_favoriteandrecentlyviewed_listview_item, parent, false);
+            rowView.setVisibility(View.GONE);
 
-            rowView = mInflater.inflate(R.layout.nexttoarrive_selectstartend_row, parent, false);
-        } else {
+            return rowView;
+        }
 
-            if (isFavorite(position)) {     // favorite position rows
+        if (isFavorite(position)) {     // favorite position rows
+            Log.d(TAG, "getView for position is a fav at position "+position);
+            rowView = mInflater.inflate(R.layout.nexttoarrive_favoriteandrecentlyviewed_listview_item, parent, false);
+
+            TextView startStopNameTextView = (TextView)rowView.findViewById(R.id.nexttoarrive_favoriteandrecentlyviewed_start_textview);
+            TextView endStopNameTextView = (TextView)rowView.findViewById(R.id.nexttoarrive_favoriteandrecentlyviewed_end_textview);
+
+            startStopNameTextView.setText("testing start");
+            endStopNameTextView.setText("testing end");
+
+            // to create a larger space in the ListView, each row has a transparent view built in
+            // if we are not the last row in the logical section, make it gone, else visible
+            View transparentView = (View)rowView.findViewById(R.id.nexttoarrive_favoriteandrecentlyviewed_transparent_view);
+            if (position == (favorites.size()-1)) {
+                transparentView.setVisibility(View.VISIBLE);
+            } else {
+                transparentView.setVisibility(View.GONE);
+            }
+        } else {                        // recently viewed position rows
+            if (isRecentlyViewed(position)) {
+                Log.d(TAG, "getView for position is a recentlyviewed at position "+position);
                 rowView = mInflater.inflate(R.layout.nexttoarrive_favoriteandrecentlyviewed_listview_item, parent, false);
 
-                TextView startStopNameTextView = (TextView) rowView.findViewById(R.id.nexttoarrive_favoriteandrecentlyviewed_start_textview);
-                TextView endStopNameTextView = (TextView) rowView.findViewById(R.id.nexttoarrive_favoriteandrecentlyviewed_end_textview);
+                TextView startStopNameTextView = (TextView)rowView.findViewById(R.id.nexttoarrive_favoriteandrecentlyviewed_start_textview);
+                TextView endStopNameTextView = (TextView)rowView.findViewById(R.id.nexttoarrive_favoriteandrecentlyviewed_end_textview);
 
                 startStopNameTextView.setText("testing start");
                 endStopNameTextView.setText("testing end");
 
                 // to create a larger space in the ListView, each row has a transparent view built in
                 // if we are not the last row in the logical section, make it gone, else visible
-                View transparentView = (View) rowView.findViewById(R.id.nexttoarrive_favoriteandrecentlyviewed_transparent_view);
-                if (position == (favorites.size() - 1)) {
+                View transparentView = (View)rowView.findViewById(R.id.nexttoarrive_favoriteandrecentlyviewed_transparent_view);
+                if (position == ((favorites.size()+recentlyViewed.size())-1)) {
                     transparentView.setVisibility(View.VISIBLE);
                 } else {
                     transparentView.setVisibility(View.GONE);
                 }
-            } else {                        // recently viewed position rows
-                if (isRecentlyViewed(position)) {
-                    rowView = mInflater.inflate(R.layout.nexttoarrive_favoriteandrecentlyviewed_listview_item, parent, false);
+            } else{
+                Log.d(TAG, "getView for position is a train schedule entry at position "+position);
 
-//                SchedulesRecentlyViewedModel rm = (SchedulesRecentlyViewedModel)getItem(position);
-
-                    TextView startStopNameTextView = (TextView) rowView.findViewById(R.id.nexttoarrive_favoriteandrecentlyviewed_start_textview);
-                    TextView endStopNameTextView = (TextView) rowView.findViewById(R.id.nexttoarrive_favoriteandrecentlyviewed_end_textview);
-
-                    startStopNameTextView.setText("testing start");
-                    endStopNameTextView.setText("testing end");
-
-                    // to create a larger space in the ListView, each row has a transparent view built in
-                    // if we are not the last row in the logical section, make it gone, else visible
-                    View transparentView = (View) rowView.findViewById(R.id.nexttoarrive_favoriteandrecentlyviewed_transparent_view);
-                    if (position == ((favorites.size() + recentlyViewed.size()) - 1)) {
-                        transparentView.setVisibility(View.VISIBLE);
-                    } else {
-                        transparentView.setVisibility(View.GONE);
-                    }
-                } else {
-//                String[] routeTypeLabels = mContext.getResources().getStringArray(R.array.schedulesfragment_listview_bothimage_endnames);
-//
-                    SchedulesRouteModel rtm = (SchedulesRouteModel) getItem(position);
-                    rowView = mInflater.inflate(R.layout.nexttoarrive_nexttoarrivetrains_listview_item, parent, false);
-//                ImageView leftIconImageView = (ImageView)rowView.findViewById(R.id.schedules_routeselect_item_leftImageView);
-//                ImageView rightBackgroundImageView = (ImageView)rowView.findViewById(R.id.schedules_routeselection_item_rightImageBackgroundview);
-//                TextView routeIdTextView = (TextView)rowView.findViewById(R.id.schedules_routeselection_item_routeid);
-//                TextView routeLongNameTextView = (TextView)rowView.findViewById(R.id.schedules_routeselection_item_routelongname);
-//
-//                int id = mContext.getResources().getIdentifier(leftImageStartName + routeTypeLabels[routeType.ordinal()] + "_small", "drawable", mContext.getPackageName());
-//                leftIconImageView.setImageResource(id);
-//
-//                id = mContext.getResources().getIdentifier(rightImageBackgroundName + routeTypeLabels[routeType.ordinal()], "drawable", mContext.getPackageName());
-//                rightBackgroundImageView.setImageResource(id);
-//
-//                routeIdTextView.setText(routes.get(position).getRouteId());
-//
-//                switch (routes.get(position).getRouteId().length()) {
-//                    case 6: {
-//                        routeIdTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
-//                        break;
-//                    }
-//                    case 5: {
-//                        routeIdTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-//                        break;
-//                    }
-//                    case 4: {
-//                        routeIdTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
-//                        break;
-//                    }
-//                    default: {
-//                    }
-//                }
-//
-//                routeLongNameTextView.setText(routes.get(position).getRouteLongName());
-                }
+                SchedulesRouteModel rtm = (SchedulesRouteModel)getItem(position);
+                rowView = mInflater.inflate(R.layout.nexttoarrive_nexttoarrivetrains_listview_item, parent, false);
             }
         }
 
@@ -240,33 +205,24 @@ public class NextToArrive_ListViewItem_ArrayAdapter extends BaseAdapter implemen
 
     @Override
     public View getHeaderView(int position, View convertView, ViewGroup parent) {
-        HeaderViewHolder holder;
+        convertView = mInflater.inflate(R.layout.schedules_routeselection_headerview, parent, false);
+        TextView text = (TextView) convertView.findViewById(R.id.schedules_routeselection_sectionheader_textview);
 
-        if (convertView == null) {
-            holder = new HeaderViewHolder();
-            convertView = mInflater.inflate(R.layout.schedules_routeselection_headerview, parent, false);
-            holder.text = (TextView) convertView.findViewById(R.id.schedules_routeselection_sectionheader_textview);
-            convertView.setTag(holder);
+        if (position == 0) {
+            convertView = mInflater.inflate(R.layout.nexttoarrive_selectstartend_row, parent, false);
         } else {
-            holder = (HeaderViewHolder) convertView.getTag();
-        }
 
-        if (position == 0) {    // for the first position, the start-end selection, make the headerview nothing
-            holder.text.setBackgroundColor(Color.parseColor("#00000000"));
-            holder.text.setHeight(0);
-        } else {
             if (favorites.size() > 0 && position < favorites.size()) {
-                holder.text.setText(sectionTitles[0]);
-                holder.text.setBackgroundColor(Color.parseColor("#990DA44A"));
+                text.setText(sectionTitles[1]);
+                text.setBackgroundColor(Color.parseColor("#990DA44A"));
             } else {
                 if (recentlyViewed.size() > 0 && (position - favorites.size()) < recentlyViewed.size()) {
-                    holder.text.setText(sectionTitles[1]);
-                    holder.text.setBackgroundColor(Color.parseColor("#990DA44A"));
+                    text.setText(sectionTitles[2]);
+                    text.setBackgroundColor(Color.parseColor("#990DA44A"));
                 } else {
-                    holder.text.setText(sectionTitles[2]);
+                    text.setText(sectionTitles[3]);
 
-                    // TODO: adjust this to the correct color
-                    holder.text.setBackgroundColor(Color.parseColor("#99F04E43"));
+                    text.setBackgroundColor(Color.parseColor("#99F04E43"));
                 }
             }
         }
@@ -280,12 +236,10 @@ public class NextToArrive_ListViewItem_ArrayAdapter extends BaseAdapter implemen
 
             return 0;
         }
-
         if (isFavorite(position)) {
 
             return 1;
         } else {
-
             if (isRecentlyViewed(position)) {
 
                 return 2;
@@ -323,10 +277,7 @@ public class NextToArrive_ListViewItem_ArrayAdapter extends BaseAdapter implemen
 
     @Override
     public int getSectionForPosition(int position) {
-        if (position == 0) {
-            return 0;
-        }
-
+        Log.d(TAG, "getSectionForPosition for the position "+position);
         if (isFavorite(position)) {
             return 1;
         } else {
@@ -334,17 +285,12 @@ public class NextToArrive_ListViewItem_ArrayAdapter extends BaseAdapter implemen
                 return 2;
             }
         }
-
         return 3;
     }
 
     @Override
     public Object[] getSections() {
-
+    Log.d(TAG, "getSections");
         return sectionTitles;
-    }
-
-    class HeaderViewHolder {
-        TextView text;
     }
 }

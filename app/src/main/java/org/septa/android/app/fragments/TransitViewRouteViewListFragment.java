@@ -29,7 +29,7 @@ public class TransitViewRouteViewListFragment extends ListFragment {
     private List<TransitViewVehicleModel> transitViewVehicleList;
 
     public TransitViewRouteViewListFragment() {
-        // instanciate an empty array list for the TrainViewModels
+        // instantiate an empty array list for the TrainViewModels
         transitViewVehicleList = new ArrayList<TransitViewVehicleModel>(0);
     }
 

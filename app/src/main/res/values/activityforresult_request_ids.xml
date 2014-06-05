@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ activityforresult_request_ids.xml
+  ~ Last modified on 06-05-2014 10:11-0400 by brianhmayo
+  ~
+  ~ Copyright (c) 2014 SEPTA.  All rights reserved.
+  -->
+
+<resources>
+    <integer name="nexttoarrive_stopselection_activityforresult_request_id">404</integer>
+</resources>

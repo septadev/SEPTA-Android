@@ -11,17 +11,19 @@ import android.annotation.TargetApi;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
 import org.septa.android.app.R;
-import org.septa.android.app.activities.schedules.ItinerarySelectionActionBarActivity;
-import org.septa.android.app.activities.schedules.SchedulesItineraryActionBarActivity;
 import org.septa.android.app.adapters.NextToArrive_ListViewItem_ArrayAdapter;
 import org.septa.android.app.models.SchedulesRouteModel;
 
@@ -39,14 +41,15 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
 
     private String iconImageNameSuffix;
 
+    private boolean menuRevealed = false;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.nexttoarrive);
 
-        String actionBarTitleText = getIntent().getStringExtra(getString(R.string.actionbar_titletext_key));
-        iconImageNameSuffix = getIntent().getStringExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key));
-        String resourceName = getString(R.string.actionbar_iconimage_imagename_base).concat(iconImageNameSuffix);
+        String actionBarTitleText = getString(R.string.nexttoarrive_activity_titlebar_text);
+        String resourceName = getString(R.string.actionbar_iconimage_imagename_base).concat("nexttoarrive");
 
         Log.d("f", "resource name is to be " + resourceName);
 
@@ -78,35 +81,42 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
         getSupportActionBar().setHomeButtonEnabled(true);
     }
 
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-    }
-
     public void startEndSelectionSelected(View view) {
 
-//        Intent itinerarySelectionIntent = null;
-//
-//        itinerarySelectionIntent = new Intent(this, ItinerarySelectionActionBarActivity.class);
-//        itinerarySelectionIntent.putExtra(getString(R.string.actionbar_titletext_key), "Select Start");
-//        itinerarySelectionIntent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), iconImageNameSuffix);
-//        itinerarySelectionIntent.putExtra(getString(R.string.schedules_itinerary_travelType),
-//                travelType.name());
-//        itinerarySelectionIntent.putExtra(getString(R.string.schedules_itinerary_routeShortName), routeShortName);
-//
-//        startActivityForResult(itinerarySelectionIntent, 202);
+        Intent stopSelectionIntent = null;
 
-        Log.d(TAG, "start end selection selected");
+        stopSelectionIntent = new Intent(this, NextToArriveStopSelectionActionBarActivity.class);
+        stopSelectionIntent.putExtra(getString(R.string.nexttoarrive_stopselection_startordestination), "Start");
+        startActivityForResult(stopSelectionIntent, getResources().getInteger(R.integer.nexttoarrive_stopselection_activityforresult_request_id));
+
+        Log.d(TAG, "start destination selection selected");
     }
 
     public void reverseStartEndSelected(View view) {
         Log.d(TAG, "reverse start end selected");
     }
 
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == getResources().getInteger(R.integer.nexttoarrive_stopselection_activityforresult_request_id)) {
+            if (resultCode == RESULT_OK) {
+                Log.d(TAG, "the result is okay");
+                String stopName = data.getStringExtra("stop_name");
+                String stopId = data.getStringExtra("stop_id");
+                String selectionMode = data.getStringExtra("selection_mode");
+                Log.d(TAG, "the stop name is " + stopName + " and stop id is "+stopId+" and the selection mode is " + selectionMode);
+            }
+            if (resultCode == RESULT_CANCELED) {
+                Log.d(TAG, "the result is canceled");
+                //Write your code if there's no result
+            }
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         Log.d(TAG, "creating the menu in find nearest location actionbar activity");
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.nexttoarrive_action_bar, menu);
 
         return true;
     }
@@ -121,19 +131,75 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.actionmenu_systemstatusactionbar_filter_none:
+            case R.id.actionmenu_transitview_reveallistview:
 
-                ActivityCompat.invalidateOptionsMenu(this);
+                if (menuRevealed) {
+                    menuRevealed = false;
+
+                    hideListView();
+                } else {
+                    menuRevealed = true;
+
+                    revealListView();
+                }
 
                 return true;
-            case R.id.actionmenu_systemstatusactionbar_filter_removeemptyrows:
 
-                ActivityCompat.invalidateOptionsMenu(this);
-
-                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void revealListView() {
+        final FrameLayout rl1 = (FrameLayout) findViewById(R.id.trainview_map_fragment_view);
+        Animation anim = AnimationUtils.loadAnimation(this, R.anim.slide_right_to_left);
+
+        anim.setAnimationListener(new Animation.AnimationListener(){
+            @Override
+            public void onAnimationStart(Animation arg0) {
+                final View shadowView = (View) findViewById(R.id.trainview_map_fragmet_view_shadow);
+                shadowView.setVisibility(View.VISIBLE);
+                shadowView.bringToFront();
+            }
+            @Override
+            public void onAnimationRepeat(Animation arg0) {
+            }
+            @Override
+            public void onAnimationEnd(Animation arg0) {
+                LinearLayout ll2 = (LinearLayout) findViewById(R.id.back_frame);
+                ll2.bringToFront();
+            }
+        });
+
+        anim.setInterpolator((new AccelerateDecelerateInterpolator()));
+        anim.setFillAfter(true);
+        rl1.startAnimation(anim);
+    }
+
+    private void hideListView() {
+        final FrameLayout rl1 = (FrameLayout) findViewById(R.id.trainview_map_fragment_view);
+        Animation anim = AnimationUtils.loadAnimation(this, R.anim.slide_left_to_right);
+        rl1.bringToFront();
+
+        anim.setAnimationListener(new Animation.AnimationListener(){
+            @Override
+            public void onAnimationStart(Animation arg0) {
+            }
+            @Override
+            public void onAnimationRepeat(Animation arg0) {
+            }
+            @Override
+            public void onAnimationEnd(Animation arg0) {
+                View shadowView = (View) findViewById(R.id.trainview_map_fragmet_view_shadow);
+                shadowView.setVisibility(View.INVISIBLE);
+                LinearLayout mapView = (LinearLayout) findViewById(R.id.trainview_map_fragment_innerview);
+                mapView.bringToFront();
+            }
+        });
+
+        anim.setInterpolator((new AccelerateDecelerateInterpolator()));
+        anim.setFillAfter(true);
+        rl1.startAnimation(anim);
     }
 
     @Override
@@ -145,7 +211,7 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position,long id) {
         String routeShortName = "";
-        Log.d("f", "onItemClick occurred at position "+position+" with id "+id+" and route short name of "+routeShortName);
+        Log.d("f", "onItemClick occurred at position "+position+" with id "+id);
 
         if (!mAdapter.isFavorite(position) && !mAdapter.isRecentlyViewed(position)) {
             SchedulesRouteModel rtm = (SchedulesRouteModel)mAdapter.getItem(position);
@@ -153,13 +219,13 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
             routeShortName = rtm.getRouteShortName();
         }
 
-        Intent schedulesItineraryIntent = null;
-
-        schedulesItineraryIntent = new Intent(this, SchedulesItineraryActionBarActivity.class);
-        schedulesItineraryIntent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), iconImageNameSuffix);
-        schedulesItineraryIntent.putExtra(getString(R.string.schedules_itinerary_routeShortName), routeShortName);
-
-        startActivity(schedulesItineraryIntent);
+//        Intent schedulesItineraryIntent = null;
+//
+//        schedulesItineraryIntent = new Intent(this, SchedulesItineraryActionBarActivity.class);
+//        schedulesItineraryIntent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), iconImageNameSuffix);
+//        schedulesItineraryIntent.putExtra(getString(R.string.schedules_itinerary_routeShortName), routeShortName);
+//
+//        startActivity(schedulesItineraryIntent);
     }
 
     @Override

@@ -27,7 +27,14 @@ import org.septa.android.app.R;
 import org.septa.android.app.adapters.NextToArrive_ListViewItem_ArrayAdapter;
 import org.septa.android.app.models.SchedulesRouteModel;
 import org.septa.android.app.models.TripDataModel;
+import org.septa.android.app.models.servicemodels.NextToArriveModel;
+import org.septa.android.app.services.apiproxies.NextToArriveServiceProxy;
 
+import java.util.ArrayList;
+
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
 public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivity implements
@@ -282,5 +289,42 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
     public void onStickyHeaderChanged(StickyListHeadersListView l, View header,
                                       int itemPosition, long headerId) {
 
+    }
+
+    private void checkTripStartAndDestinationForNextToArriveDataRequest() {
+        // check if we have both the start and destination stops, if yes, fetch the data.
+        if ((tripDataModel.getStartStopName() != null) && tripDataModel.getDestinationStopName() != null) {
+
+            fetchNextToArrive();
+        }
+    }
+
+    private void fetchNextToArrive() {
+        Callback callback = new Callback() {
+            @Override
+            public void success(Object o, Response response) {
+                Log.d(TAG, "successfully ended fetch next to arrive service call with " + ((ArrayList<NextToArriveModel>) o).size());
+                setProgressBarIndeterminateVisibility(Boolean.FALSE);
+                mAdapter.setNextToArriveTrainList((ArrayList<NextToArriveModel>)o);
+            }
+
+            @Override
+            public void failure(RetrofitError retrofitError) {
+                setProgressBarIndeterminateVisibility(Boolean.FALSE);
+
+                try {
+                    Log.d(TAG, "A failure in the call to train view service with body |" + retrofitError.getResponse().getBody().in() + "|");
+                } catch (Exception ex) {
+                    // TODO: clean this up
+                    Log.d(TAG, "blah... what is going on?");
+                }
+            }
+        };
+
+        NextToArriveServiceProxy nextToArriveServiceProxy = new NextToArriveServiceProxy();
+        mAdapter.clearNextToArriveTrainList();
+        setProgressBarIndeterminateVisibility(Boolean.TRUE);
+        // TODO: make the number of results a string value in xml.
+        nextToArriveServiceProxy.getNextToArrive(tripDataModel.getStartStopName(),tripDataModel.getDestinationStopName(),"50", callback);
     }
 }

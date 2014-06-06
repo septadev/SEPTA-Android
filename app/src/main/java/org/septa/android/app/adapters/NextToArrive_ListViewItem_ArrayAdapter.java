@@ -21,6 +21,7 @@ import org.septa.android.app.R;
 import org.septa.android.app.models.SchedulesFavoriteModel;
 import org.septa.android.app.models.SchedulesRecentlyViewedModel;
 import org.septa.android.app.models.SchedulesRouteModel;
+import org.septa.android.app.models.servicemodels.NextToArriveModel;
 
 import java.util.ArrayList;
 
@@ -35,7 +36,7 @@ public class NextToArrive_ListViewItem_ArrayAdapter extends BaseAdapter implemen
 
     private ArrayList<SchedulesFavoriteModel> favorites = new ArrayList<SchedulesFavoriteModel>();
     private ArrayList<SchedulesRecentlyViewedModel> recentlyViewed = new ArrayList<SchedulesRecentlyViewedModel>();
-    protected ArrayList<SchedulesRouteModel> nextToArriveTrainList = new ArrayList<SchedulesRouteModel>();
+    protected ArrayList<NextToArriveModel> nextToArriveTrainList = new ArrayList<NextToArriveModel>();
 
     private String[] sectionTitles = new String[]{ "<start_end_import>", "Favorites", "Recently Viewed", "Next To Arrive Trains"};
 
@@ -55,16 +56,16 @@ public class NextToArrive_ListViewItem_ArrayAdapter extends BaseAdapter implemen
         rvm = new SchedulesRecentlyViewedModel();
         recentlyViewed.add(rvm);
 
-//        SchedulesRouteModel rm = new SchedulesRouteModel();
-//        nextToArriveTrainList.add(rm);
-//        rm = new SchedulesRouteModel();
-//        nextToArriveTrainList.add(rm);
-//        rm = new SchedulesRouteModel();
-//        nextToArriveTrainList.add(rm);
-//        rm = new SchedulesRouteModel();
-//        nextToArriveTrainList.add(rm);
-//        rm = new SchedulesRouteModel();
-//        nextToArriveTrainList.add(rm);
+        NextToArriveModel rm = new NextToArriveModel();
+        nextToArriveTrainList.add(rm);
+        rm = new NextToArriveModel();
+        nextToArriveTrainList.add(rm);
+        rm = new NextToArriveModel();
+        nextToArriveTrainList.add(rm);
+        rm = new NextToArriveModel();
+        nextToArriveTrainList.add(rm);
+        rm = new NextToArriveModel();
+        nextToArriveTrainList.add(rm);
 //        rm = new SchedulesRouteModel();
 //        nextToArriveTrainList.add(rm);
 //        rm = new SchedulesRouteModel();
@@ -97,14 +98,14 @@ public class NextToArrive_ListViewItem_ArrayAdapter extends BaseAdapter implemen
 //        nextToArriveTrainList.add(rm);
     }
 
-    public void setNextToArriveTrainList(ArrayList<SchedulesRouteModel> nextToArriveTrainList) {
+    public void setNextToArriveTrainList(ArrayList<NextToArriveModel> nextToArriveTrainList) {
         this.nextToArriveTrainList = nextToArriveTrainList;
 
         notifyDataSetChanged();
     }
 
     public void clearNextToArriveTrainList() {
-        this.nextToArriveTrainList = new ArrayList<SchedulesRouteModel>();
+        this.nextToArriveTrainList = new ArrayList<NextToArriveModel>();
 
         notifyDataSetChanged();
     }

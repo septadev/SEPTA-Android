@@ -8,8 +8,8 @@
 package org.septa.android.app.models;
 
 import android.content.Context;
-import android.util.Log;
 
+import org.septa.android.app.R;
 import org.septa.android.app.managers.SharedPreferencesManager;
 
 import java.util.HashMap;
@@ -26,6 +26,12 @@ public class ObjectFactory {
     private static Object railRoutesMutex = new Object();
     private static RoutesModel trolleyRoutesSignleton = null;
     private static Object trolleyRoutesMutex = new Object();
+
+    private static StopsModel stopsModelSingleton = null;
+    private static Object stopsModelMutex = new Object();
+
+    private static HashMap<String, String> gtfsStopNameTranslationsSingleton = null;
+    private static Object gtfsStopNameTranslationsMutex = new Object();
 
     private static SharedPreferencesManager sharedPreferencesManagerSingleton = null;
     private static Object sharedPreferencesManagerMutex = new Object();
@@ -98,6 +104,18 @@ public class ObjectFactory {
         return model;
     }
 
+    public StopsModel getStopsModel() {
+        if (stopsModelSingleton == null) {
+            synchronized (stopsModelMutex) {
+                if (stopsModelSingleton == null) {
+                    stopsModelSingleton = new StopsModel();
+                }
+            }
+        }
+
+        return stopsModelSingleton;
+    }
+
     public SharedPreferencesManager getSharedPreferencesManager(Context context) {
         if (sharedPreferencesManagerSingleton == null) {
             synchronized (sharedPreferencesManagerMutex) {
@@ -108,5 +126,23 @@ public class ObjectFactory {
         }
 
         return sharedPreferencesManagerSingleton;
+    }
+
+    public HashMap<String, String> getGTFSStopNameTranslations(Context context) {
+        if (gtfsStopNameTranslationsSingleton == null) {
+            synchronized (gtfsStopNameTranslationsMutex) {
+                if (gtfsStopNameTranslationsSingleton == null) {
+                    String[] stopname_translation_gtfs_names = context.getResources().getStringArray(R.array.stopname_translation_gtfs_names);
+                    String[] stopname_translation_display_name = context.getResources().getStringArray(R.array.stopname_translation_display_name);
+
+                    gtfsStopNameTranslationsSingleton = new HashMap<String, String>(stopname_translation_display_name.length);
+                    for (int i = 0; i < stopname_translation_display_name.length; i++) {
+                        gtfsStopNameTranslationsSingleton.put(stopname_translation_display_name[i], stopname_translation_gtfs_names[i]);
+                    }
+                }
+            }
+        }
+
+        return gtfsStopNameTranslationsSingleton;
     }
 }

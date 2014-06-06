@@ -17,7 +17,9 @@ import org.septa.android.app.R;
 import org.septa.android.app.adapters.NextToArrive_StopSelection_ListViewItem_ArrayAdapter;
 import org.septa.android.app.databases.SEPTADatabase;
 import org.septa.android.app.fragments.StopSelectionListFragment;
+import org.septa.android.app.models.ObjectFactory;
 import org.septa.android.app.models.StopModel;
+import org.septa.android.app.models.StopsModel;
 
 import java.util.ArrayList;
 
@@ -59,44 +61,15 @@ public class NextToArriveStopSelectionActionBarActivity extends BaseAnalyticsAct
         ArrayList<StopModel> stopsList = new ArrayList<StopModel>();
 
         private void loadStops() {
-            SEPTADatabase septaDatabase = new SEPTADatabase(NextToArriveStopSelectionActionBarActivity.this);
-            SQLiteDatabase database = septaDatabase.getReadableDatabase();
+            StopsModel stopsModel = ObjectFactory.getInstance().getStopsModel();
+            stopsModel.loadStops(NextToArriveStopSelectionActionBarActivity.this);
 
-            String queryString = null;
-                    Log.d("f", "type is rail, loading the trips");
-                    queryString = "SELECT stop_id, stop_name, wheelchair_boarding FROM stops_rail ORDER BY stop_name";
-
-            Cursor cursor = database.rawQuery(queryString, null);
-            if (cursor != null) {
-                if (cursor.moveToFirst()) {
-                    do {
-                        StopModel stopModel = new StopModel();
-
-                        stopModel.setStopId(cursor.getString(0));       // s.stop_id
-                        stopModel.setStopName(cursor.getString(1));     // s.stop_name
-                        if (cursor.getInt(2) == 1) {                    // s.wheelchair_boarding
-                            stopModel.setWheelchairBoarding(true);
-                        } else {
-                            stopModel.setWheelchairBoarding(false);
-                        }
-
-                        stopsList.add(stopModel);
-                    } while (cursor.moveToNext());
-                }
-
-                cursor.close();
-            } else {
-                Log.d("f", "cursor is null");
-            }
-
-            database.close();
+            stopsList = stopsModel.getStopModelArrayList();
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            Log.d("f", "about to call the loadTrips...");
             loadStops();
-            Log.d("f", "called the loadTrips.");
 
             return false;
         }

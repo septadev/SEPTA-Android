@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ gfts_stopname_translations.xml
+  ~ Last modified on 06-05-2014 18:24-0400 by brianhmayo
+  ~
+  ~ Copyright (c) 2014 SEPTA.  All rights reserved.
+  -->
+
+<resources>
+    <string-array name="stopname_translation_gtfs_names">
+        <item>Norristown TC</item>
+        <item>Temple U</item>
+        <item>Elm St</item>
+        <item>Neshaminy Falls</item>
+
+        <item>Mt Airy</item>
+        <item>Morton</item>
+        <item>Main St</item>
+        <item>Levittown</item>
+
+        <item>Jenkintown-Wyncote</item>
+        <item>Highland Ave</item>
+        <item>Highland</item>
+        <item>Ft Washington</item>
+
+        <item>Fernwood</item>
+        <item>Fern Rock TC</item>
+        <item>Elwyn Station</item>
+        <item>Eastwick Station</item>
+
+        <item>Churchmans Crossing</item>
+        <item>Chester TC</item>
+        <item>Airport Terminal E-F</item>
+        <item>Airport Terminal C-D</item>
+
+        <item>North Philadelphia</item>
+        <item>Prospect Park</item>
+        <item>Wayne Station</item>
+        <item>Wayne Jct</item>
+
+        <item>49th St</item>
+        <item>North Broad St</item>
+    </string-array>
+    
+    <string-array name="stopname_translation_display_name">
+        <item>Norristown T.C.</item>
+        <item>Temple University</item>
+        <item>Norristown</item>
+        <item>Neshaminy</item>
+
+        <item>Mount Airy</item>
+        <item>Morton-Rutledge</item>
+        <item>Main Street</item>
+        <item>Levittown-Tullytown</item>
+
+        <item>Jenkintown Wyncote</item>
+        <item>Highland Avenue</item>
+        <item>Highland Station</item>
+        <item>Fort Washington</item>
+
+        <item>Fernwood-Yeadon</item>
+        <item>Fern Rock T C</item>
+        <item>Elwyn</item>
+        <item>Eastwick</item>
+
+        <item>Churchman\'s Crossing</item>
+        <item>Chester</item>
+        <item>Airport Terminal E F</item>
+        <item>Airport Terminal C D</item>
+
+        <item>North Philadelphia Amtrak</item>
+        <item>Prospect Park - Moore</item>
+        <item>Wayne</item>
+        <item>Wayne Junction</item>
+
+        <item>49th Street</item>
+        <item>North Broad</item>
+    </string-array>
+    
+</resources>

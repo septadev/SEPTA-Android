@@ -11,7 +11,19 @@ public class StopModel {
 
     private String stopId;
     private String stopName;
+    private int stopSequence = 0;
     private boolean wheelchairBoarding;
+
+    public StopModel(String stopId, String stopName, boolean wheelchairBoarding) {
+        this.stopId = stopId;
+        this.stopName = stopName;
+        this.wheelchairBoarding = wheelchairBoarding;
+    }
+
+    public StopModel(String stopId, String stopName, int stopSequence, boolean wheelchairBoarding) {
+        this(stopId, stopName, wheelchairBoarding);
+        this.stopSequence = stopSequence;
+    }
 
     public String getStopId() {
         return stopId;
@@ -27,10 +39,6 @@ public class StopModel {
 
     public void setStopName(String stopName) {
         this.stopName = stopName;
-    }
-
-    public boolean isWheelchairBoarding() {
-        return wheelchairBoarding;
     }
 
     public void setWheelchairBoarding(boolean wheelchairBoarding) {

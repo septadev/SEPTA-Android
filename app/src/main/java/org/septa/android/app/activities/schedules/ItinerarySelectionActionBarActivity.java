@@ -26,6 +26,7 @@ import org.septa.android.app.adapters.schedules.ItinerarySelection_ListViewItem_
 import org.septa.android.app.databases.SEPTADatabase;
 import org.septa.android.app.models.RouteTypes;
 import org.septa.android.app.models.SchedulesRouteModel;
+import org.septa.android.app.models.StopModel;
 import org.septa.android.app.models.TripDataModel;
 
 import java.util.ArrayList;
@@ -147,8 +148,8 @@ public class ItinerarySelectionActionBarActivity extends BaseAnalyticsActionBarA
 
     private class StopsLoader extends AsyncTask<RouteTypes, Integer, Boolean> {
         String routeShortName;
-        ArrayList<TripDataModel> tripDataModelsListDirection0 = new ArrayList<TripDataModel>();
-        ArrayList<TripDataModel> tripDataModelsListDirection1 = new ArrayList<TripDataModel>();
+        ArrayList<StopModel> stopModelListDirection0 = new ArrayList<StopModel>();
+        ArrayList<StopModel> stopModelListDirection1 = new ArrayList<StopModel>();
 
         public StopsLoader(String routeShortName) {
 
@@ -205,28 +206,18 @@ public class ItinerarySelectionActionBarActivity extends BaseAnalyticsActionBarA
             if (cursor != null) {
                 if (cursor.moveToFirst()) {
                     do {
-                        TripDataModel tripDataModel = new TripDataModel();
-
-                        tripDataModel.setStartStopName(cursor.getString(0));      // s.stop_name
-                        Integer stopId = Integer.getInteger(cursor.getString(1)); // st.stop_id
-                        tripDataModel.setStartStopId(stopId);                     // s.wheelchair_boarding
-                        if (cursor.getInt(3) == 1) {                              // stop_sequence
-                            tripDataModel.setWheelBoardingFeature(true);
-                        } else {
-                            tripDataModel.setWheelBoardingFeature(false);
-                        }
-                        tripDataModel.setStartStopSequence(cursor.getInt(4));
+                        StopModel stopModel = new StopModel(cursor.getString(0), cursor.getString(1), cursor.getInt(4), (cursor.getInt(3) == 1) ? true : false);
 
                         if (routeType != RAIL) {
                             if (cursor.getInt(2) == 0) {
                                 Log.d("f", "found a dir 0, add this tripdatamodel to 0");
-                                tripDataModelsListDirection0.add(tripDataModel);
+                                stopModelListDirection0.add(stopModel);
                             } else {
                                 Log.d("f", "found a dir 1, add this tripdatamodel to 1");
-                                tripDataModelsListDirection1.add(tripDataModel);
+                                stopModelListDirection1.add(stopModel);
                             }
                         } else {
-                            tripDataModelsListDirection0.add(tripDataModel);
+                            stopModelListDirection0.add(stopModel);
                         }
                     } while (cursor.moveToNext());
                 }
@@ -255,8 +246,8 @@ public class ItinerarySelectionActionBarActivity extends BaseAnalyticsActionBarA
             super.onPostExecute(b);
 
             Log.d("f", "calling onPostExecute...");
-            mAdapter.setTripDataForDirection0(tripDataModelsListDirection0);
-            mAdapter.setTripDataForDirection1(tripDataModelsListDirection1);
+            mAdapter.setTripDataForDirection0(stopModelListDirection0);
+            mAdapter.setTripDataForDirection1(stopModelListDirection1);
             mAdapter.notifyDataSetChanged();
             Log.d("f", "done with the onPostExecute call.");
         }

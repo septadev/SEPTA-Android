@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import org.septa.android.app.R;
 import org.septa.android.app.models.RouteTypes;
+import org.septa.android.app.models.StopModel;
 import org.septa.android.app.models.TripDataModel;
 
 import java.util.ArrayList;
@@ -34,8 +35,8 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
     String[] resourceEndNames;
 
     String[] directionHeadingLabels = null;
-    ArrayList<TripDataModel> tripsForDirection0 = new ArrayList<TripDataModel>();
-    ArrayList<TripDataModel> tripsForDirection1 = new ArrayList<TripDataModel>();
+    ArrayList<StopModel> stopsForDirection0 = new ArrayList<StopModel>();
+    ArrayList<StopModel> stopsForDirection1 = new ArrayList<StopModel>();
 
     RouteTypes routeType = null;
 
@@ -55,33 +56,33 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
         this.directionHeadingLabels = directionHeadingLabels;
     }
 
-    public void setTripDataForDirection0(ArrayList<TripDataModel>tripsForDirection0) {
+    public void setTripDataForDirection0(ArrayList<StopModel>stopsForDirection0) {
 
-        this.tripsForDirection0 = tripsForDirection0;
+        this.stopsForDirection0 = stopsForDirection0;
     }
 
-    public void setTripDataForDirection1(ArrayList<TripDataModel>tripsForDirection1) {
+    public void setTripDataForDirection1(ArrayList<StopModel>stopsForDirection1) {
 
-        this.tripsForDirection1 = tripsForDirection1;
+        this.stopsForDirection1 = stopsForDirection1;
     }
 
     protected Object[] getItems() {
         ArrayList<Object> items = new ArrayList<Object>();
 
-        if (tripsForDirection0.size()>0) {
+        if (stopsForDirection0.size()>0) {
             Log.d("f", "items for direction 0 is not 0, add 2 more");
 
             items.add(new Object());
             items.add(new Object());
-            items.addAll(tripsForDirection0);
+            items.addAll(stopsForDirection0);
         }
 
-        if (tripsForDirection1.size()>0) {
+        if (stopsForDirection1.size()>0) {
             Log.d("f", "items for direction 1" +
                     " is not 0, add 2 more");
             items.add(new Object());
             items.add(new Object());
-            items.addAll(tripsForDirection1);
+            items.addAll(stopsForDirection1);
         }
 
         return items.toArray();
@@ -114,7 +115,7 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
             rowView = mInflater.inflate(R.layout.itineraryselection_listview_route_item, parent, false);
 
             ImageView handicapImageView = (ImageView) rowView.findViewById(R.id.iterinaryselection_accessibilityicon_imageview);
-            if (((TripDataModel)getItem(position)).hasWheelBoardingFeature()) {
+            if (((StopModel)getItem(position)).hasWheelBoardingFeature()) {
                 Log.d("f", "the trip is wheel boarding enabled");
                 handicapImageView.setVisibility(View.VISIBLE);
             } else {
@@ -142,9 +143,9 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
         view = mInflater.inflate(R.layout.schedules_routeselection_headerview, parent, false);
         TextView textView = (TextView) view.findViewById(R.id.schedules_routeselection_sectionheader_textview);
 
-        Log.d("f", "in getHeaderView with position of " + position + " and tripsForDirection0.size() is " + tripsForDirection0.size());
+        Log.d("f", "in getHeaderView with position of " + position + " and tripsForDirection0.size() is " + stopsForDirection0.size());
 
-        if (position < tripsForDirection0.size()+2) {
+        if (position < stopsForDirection0.size()+2) {
 Log.d("f", "getHeaderView will be 0");
             textView.setText(directionHeadingLabels[0]);
         } else {
@@ -172,8 +173,8 @@ Log.d("f", "getPositionForSection "+section+" returning 0");
                 return 0;
             }
             case 1: {
-Log.d("f", "getPositionForSection "+section+" return "+tripsForDirection0.size()+2);
-                return tripsForDirection0.size()+2;
+Log.d("f", "getPositionForSection "+section+" return "+stopsForDirection0.size()+2);
+                return stopsForDirection0.size()+2;
             }
             default: {
 
@@ -185,7 +186,7 @@ Log.d("f", "getPositionForSection "+section+" return "+tripsForDirection0.size()
     @Override
     public int getSectionForPosition(int position) {
         Log.d("f", "getSectionForPosition "+position);
-        if (position < tripsForDirection0.size()+2) {
+        if (position < stopsForDirection0.size()+2) {
 
             return 0;
         } else {

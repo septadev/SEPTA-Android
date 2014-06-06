@@ -26,6 +26,7 @@ import android.widget.LinearLayout;
 import org.septa.android.app.R;
 import org.septa.android.app.adapters.NextToArrive_ListViewItem_ArrayAdapter;
 import org.septa.android.app.models.SchedulesRouteModel;
+import org.septa.android.app.models.TripDataModel;
 
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
@@ -36,12 +37,12 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
     public static final String TAG = NextToArriveActionBarActivity.class.getName();
 
     private NextToArrive_ListViewItem_ArrayAdapter mAdapter;
-
     private StickyListHeadersListView stickyList;
 
-    private String iconImageNameSuffix;
+    private TripDataModel tripDataModel = new TripDataModel();
 
     private boolean menuRevealed = false;
+    private boolean inProcessOfStartDestinationFlow = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -50,8 +51,6 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
 
         String actionBarTitleText = getString(R.string.nexttoarrive_activity_titlebar_text);
         String resourceName = getString(R.string.actionbar_iconimage_imagename_base).concat("nexttoarrive");
-
-        Log.d("f", "resource name is to be " + resourceName);
 
         int id = getResources().getIdentifier(resourceName, "drawable", getPackageName());
 
@@ -72,16 +71,14 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
         stickyList.setAdapter(mAdapter);
         stickyList.setOnTouchListener(this);
 
-        stickyList.setFastScrollAlwaysVisible(true);
         stickyList.setFastScrollEnabled(true);
-
-//        stickyList.setDivider(null);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
     }
 
     public void startEndSelectionSelected(View view) {
+        this.inProcessOfStartDestinationFlow = true;
 
         Intent stopSelectionIntent = null;
 
@@ -92,18 +89,58 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
         Log.d(TAG, "start destination selection selected");
     }
 
+    public void selectStartSelected(View view) {
+        Intent stopSelectionIntent = null;
+
+        stopSelectionIntent = new Intent(this, NextToArriveStopSelectionActionBarActivity.class);
+        stopSelectionIntent.putExtra(getString(R.string.nexttoarrive_stopselection_startordestination), "Start");
+        startActivityForResult(stopSelectionIntent, getResources().getInteger(R.integer.nexttoarrive_stopselection_activityforresult_request_id));
+
+        Log.d(TAG, "select start selected");
+    }
+
+    public void selectDestinationSelected(View view) {
+        Intent stopSelectionIntent = null;
+
+        stopSelectionIntent = new Intent(this, NextToArriveStopSelectionActionBarActivity.class);
+        stopSelectionIntent.putExtra(getString(R.string.nexttoarrive_stopselection_startordestination), "Destination");
+        startActivityForResult(stopSelectionIntent, getResources().getInteger(R.integer.nexttoarrive_stopselection_activityforresult_request_id));
+
+        Log.d(TAG, "select destination selected");
+    }
+
     public void reverseStartEndSelected(View view) {
         Log.d(TAG, "reverse start end selected");
+
+        tripDataModel.reverseStartAndDestinationStops();
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == getResources().getInteger(R.integer.nexttoarrive_stopselection_activityforresult_request_id)) {
             if (resultCode == RESULT_OK) {
-                Log.d(TAG, "the result is okay");
                 String stopName = data.getStringExtra("stop_name");
                 String stopId = data.getStringExtra("stop_id");
                 String selectionMode = data.getStringExtra("selection_mode");
-                Log.d(TAG, "the stop name is " + stopName + " and stop id is "+stopId+" and the selection mode is " + selectionMode);
+
+                if (selectionMode.equals("destination")) {
+                    tripDataModel.setDestinationStopId(stopId);
+                    tripDataModel.setDestinationStopName(stopName);
+
+                    if (inProcessOfStartDestinationFlow) {
+                        inProcessOfStartDestinationFlow = false;
+                    }
+                } else {
+                    tripDataModel.setStartStopId(stopId);
+                    tripDataModel.setStartStopName(stopName);
+
+                    if (inProcessOfStartDestinationFlow) {
+                        Intent stopSelectionIntent = null;
+
+                        stopSelectionIntent = new Intent(this, NextToArriveStopSelectionActionBarActivity.class);
+                        stopSelectionIntent.putExtra(getString(R.string.nexttoarrive_stopselection_startordestination), "Destination");
+                        startActivityForResult(stopSelectionIntent, getResources().getInteger(R.integer.nexttoarrive_stopselection_activityforresult_request_id));
+                    }
+                }
             }
             if (resultCode == RESULT_CANCELED) {
                 Log.d(TAG, "the result is canceled");
@@ -244,27 +281,6 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
     @Override
     public void onStickyHeaderChanged(StickyListHeadersListView l, View header,
                                       int itemPosition, long headerId) {
-
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
 
     }
 }

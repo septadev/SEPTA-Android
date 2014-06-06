@@ -11,22 +11,22 @@ public class TripDataModel {
 
     private String startStopNameTitle;
     private String startStopName;
-    private String endStopName;
 
-    private Integer startStopId;
-    private Integer endStopId;
+    private String destinationStopNameTitle;
+    private String destinationStopName;
+
+    private String startStopId;
+    private String destinationStopId;
 
     private String startArrivalTime;
-    private String endArrivalTime;
+    private String destinationArrivalTime;
 
     private String tripId;
     private Integer startStopSequence;
-    private Integer endStopSequence;
+    private Integer destinationStopSequence;
 
     private Integer directionId;
     private String trainNumber;
-
-    private boolean wheelBoardingFeature;
 
     public String getStartStopNameTitle() {
         return startStopNameTitle;
@@ -44,28 +44,36 @@ public class TripDataModel {
         this.startStopName = startStopName;
     }
 
-    public String getEndStopName() {
-        return endStopName;
+    public String getDestinationStopNameTitle() {
+        return destinationStopNameTitle;
     }
 
-    public void setEndStopName(String endStopName) {
-        this.endStopName = endStopName;
+    public void setDestinationStopNameTitle(String destinationStopNameTitle) {
+        this.destinationStopNameTitle = destinationStopNameTitle;
     }
 
-    public Integer getStartStopId() {
+    public String getDestinationStopName() {
+        return destinationStopName;
+    }
+
+    public void setDestinationStopName(String destinationStopName) {
+        this.destinationStopName = destinationStopName;
+    }
+
+    public String getStartStopId() {
         return startStopId;
     }
 
-    public void setStartStopId(Integer startStopId) {
+    public void setStartStopId(String startStopId) {
         this.startStopId = startStopId;
     }
 
-    public Integer getEndStopId() {
-        return endStopId;
+    public String getDestinationStopId() {
+        return destinationStopId;
     }
 
-    public void setEndStopId(Integer endStopId) {
-        this.endStopId = endStopId;
+    public void setDestinationStopId(String destinationStopId) {
+        this.destinationStopId = destinationStopId;
     }
 
     public String getStartArrivalTime() {
@@ -76,12 +84,12 @@ public class TripDataModel {
         this.startArrivalTime = startArrivalTime;
     }
 
-    public String getEndArrivalTime() {
-        return endArrivalTime;
+    public String getDestinationArrivalTime() {
+        return destinationArrivalTime;
     }
 
-    public void setEndArrivalTime(String endArrivalTime) {
-        this.endArrivalTime = endArrivalTime;
+    public void setDestinationArrivalTime(String destinationArrivalTime) {
+        this.destinationArrivalTime = destinationArrivalTime;
     }
 
     public String getTripId() {
@@ -100,12 +108,12 @@ public class TripDataModel {
         this.startStopSequence = startStopSequence;
     }
 
-    public Integer getEndStopSequence() {
-        return endStopSequence;
+    public Integer getDestinationStopSequence() {
+        return destinationStopSequence;
     }
 
-    public void setEndStopSequence(Integer endStopSequence) {
-        this.endStopSequence = endStopSequence;
+    public void setDestinationStopSequence(Integer destinationStopSequence) {
+        this.destinationStopSequence = destinationStopSequence;
     }
 
     public Integer getDirectionId() {
@@ -124,11 +132,7 @@ public class TripDataModel {
         this.trainNumber = trainNumber;
     }
 
-    public boolean hasWheelBoardingFeature() {
-        return wheelBoardingFeature;
-    }
+    public void reverseStartAndDestinationStops() {
 
-    public void setWheelBoardingFeature(boolean wheelBoardingFeature) {
-        this.wheelBoardingFeature = wheelBoardingFeature;
     }
 }

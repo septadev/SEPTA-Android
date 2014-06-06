@@ -44,7 +44,7 @@
                 android:textSize="20sp"
                 android:hint="Select start"
                 android:gravity="center"
-                android:onClick=""/>
+                android:onClick="selectStartSelected"/>
 
             <TextView
                 android:id="@+id/nexttoarrive_selectstartend_end_textview"
@@ -56,7 +56,7 @@
                 android:textSize="20sp"
                 android:hint="Select destination"
                 android:gravity="center"
-                android:onClick=""/>
+                android:onClick="selectDestinationSelected"/>
 
         </LinearLayout>
 

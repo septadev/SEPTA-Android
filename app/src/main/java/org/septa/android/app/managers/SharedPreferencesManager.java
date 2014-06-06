@@ -7,7 +7,6 @@
 
 package org.septa.android.app.managers;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
@@ -25,6 +24,9 @@ public class SharedPreferencesManager {
 
     private boolean systemStatusFilterEnabled = false;  // the default filter enabled value is false
 
+    private String nextToArriveRecentlyViewedList;
+    private String nextToArriveFavoritesList;
+
     public SharedPreferencesManager(Context context) {
 
         sharedPreferences = context.getSharedPreferences("SEPTAPreferences",Context.MODE_PRIVATE);
@@ -33,6 +35,8 @@ public class SharedPreferencesManager {
         readFromPreferencesNearestLocationMapSearchRadius();
         readFromPreferencesSystemStatusSelectedTab();
         readFromPreferencesSystemStatusFilterEnabled();
+        readFromPreferencesNextToArriveFavoritesList();
+        readFromPreferencesNextToArriveRecentlyViewedList();
     }
 
     public int getMainTabbarSelectedSection() {
@@ -120,4 +124,46 @@ public class SharedPreferencesManager {
         editor.putBoolean("systemstatus_filter_enabled", systemStatusFilterEnabled);
         editor.apply();
     }
+
+    public String getNextToArriveRecentlyViewedList() {
+        return nextToArriveRecentlyViewedList;
+    }
+
+    public void setNexttoArriveRecentlyViewedList(String recentlyViewedList) {
+        this.nextToArriveRecentlyViewedList = recentlyViewedList;
+        writePreferenceForNextToArriveRecentlyViewedList();
+    }
+
+    private void readFromPreferencesNextToArriveRecentlyViewedList() {
+
+        nextToArriveRecentlyViewedList = sharedPreferences.getString("nexttoarrive_recentlyviewed_list", nextToArriveRecentlyViewedList);
+    }
+
+    private void writePreferenceForNextToArriveRecentlyViewedList() {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("nexttoarrive_recentlyviewed_list", nextToArriveRecentlyViewedList);
+        editor.apply();
+    }
+
+    public String getNextToArriveFavoritesList() {
+        return nextToArriveFavoritesList;
+    }
+
+    public void setNexttoArriveFavoritesList(String favoritesList) {
+        this.nextToArriveFavoritesList = favoritesList;
+        writePreferenceForNextToArriveFavoritesList();
+    }
+
+    private void readFromPreferencesNextToArriveFavoritesList() {
+
+        nextToArriveFavoritesList = sharedPreferences.getString("nexttoarrive_favorites_list", nextToArriveFavoritesList);
+    }
+
+    private void writePreferenceForNextToArriveFavoritesList() {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("nexttoarrive_favorites_list", nextToArriveFavoritesList);
+        editor.apply();
+    }
+
+
 }

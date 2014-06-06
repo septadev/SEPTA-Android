@@ -18,8 +18,10 @@ import android.widget.SectionIndexer;
 import android.widget.TextView;
 
 import org.septa.android.app.R;
+import org.septa.android.app.managers.NextToArriveFavoritesAndRecentlyViewedStore;
 import org.septa.android.app.models.NextToArriveFavoriteModel;
 import org.septa.android.app.models.NextToArriveRecentlyViewedModel;
+import org.septa.android.app.models.ObjectFactory;
 import org.septa.android.app.models.SchedulesFavoriteModel;
 import org.septa.android.app.models.SchedulesRecentlyViewedModel;
 import org.septa.android.app.models.SchedulesRouteModel;
@@ -56,11 +58,11 @@ public class NextToArrive_ListViewItem_ArrayAdapter extends BaseAdapter implemen
         fm = new NextToArriveFavoriteModel();
         favorites.add(fm);
 
-        NextToArriveRecentlyViewedModel rvm = new NextToArriveRecentlyViewedModel();
-        recentlyViewed.add(rvm);
-        rvm = new NextToArriveRecentlyViewedModel();
-        recentlyViewed.add(rvm);
+        NextToArriveFavoritesAndRecentlyViewedStore nextToArriveFavoritesAndRecentlyViewedStore = new NextToArriveFavoritesAndRecentlyViewedStore(mContext);
+        recentlyViewed = nextToArriveFavoritesAndRecentlyViewedStore.getRecentlyViewedList();
 
+        // add a single record with no values as a "dummy" record that will be made View.GONE but will keep the header showing
+        // a bit of hack to get the current library being used for sticky headers to work.
         NextToArriveModel rm = new NextToArriveModel();
         nextToArriveTrainList.add(rm);
     }

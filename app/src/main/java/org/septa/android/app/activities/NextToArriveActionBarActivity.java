@@ -26,6 +26,9 @@ import android.widget.TextView;
 
 import org.septa.android.app.R;
 import org.septa.android.app.adapters.NextToArrive_ListViewItem_ArrayAdapter;
+import org.septa.android.app.managers.NextToArriveFavoritesAndRecentlyViewedStore;
+import org.septa.android.app.models.NextToArriveRecentlyViewedModel;
+import org.septa.android.app.models.NextToArriveStoredTripModel;
 import org.septa.android.app.models.SchedulesRouteModel;
 import org.septa.android.app.models.TripDataModel;
 import org.septa.android.app.models.servicemodels.NextToArriveModel;
@@ -299,6 +302,15 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
     private void checkTripStartAndDestinationForNextToArriveDataRequest() {
         // check if we have both the start and destination stops, if yes, fetch the data.
         if ((tripDataModel.getStartStopName() != null) && tripDataModel.getDestinationStopName() != null) {
+
+            NextToArriveFavoritesAndRecentlyViewedStore store = new NextToArriveFavoritesAndRecentlyViewedStore(this);
+            NextToArriveRecentlyViewedModel nextToArriveRecentlyViewedModel = new NextToArriveRecentlyViewedModel();
+            nextToArriveRecentlyViewedModel.setStartStopId(tripDataModel.getStartStopId());
+            nextToArriveRecentlyViewedModel.setStartStopName(tripDataModel.getStartStopName());
+            nextToArriveRecentlyViewedModel.setDestintationStopId(tripDataModel.getDestinationStopId());
+            nextToArriveRecentlyViewedModel.setDestinationStopName(tripDataModel.getDestinationStopName());
+
+            store.addRecentlyViewed(nextToArriveRecentlyViewedModel);
 
             fetchNextToArrive();
         }

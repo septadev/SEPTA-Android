@@ -46,6 +46,10 @@ public class NextToArriveFavoritesAndRecentlyViewedStore {
         String json = ObjectFactory.getInstance().getSharedPreferencesManager(context).getNextToArriveRecentlyViewedList();
         recentlyViewedJSONList = gson.fromJson(json, new TypeToken<List<NextToArriveRecentlyViewedModel>>(){}.getType());
 
+        if (recentlyViewedJSONList == null) {
+            recentlyViewedJSONList = new ArrayList<NextToArriveRecentlyViewedModel>();
+        }
+
         return recentlyViewedJSONList;
     }
 

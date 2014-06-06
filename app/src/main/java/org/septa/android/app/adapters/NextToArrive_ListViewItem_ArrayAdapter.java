@@ -194,10 +194,21 @@ public class NextToArrive_ListViewItem_ArrayAdapter extends BaseAdapter implemen
                     transparentView.setVisibility(View.GONE);
                 }
             } else{
-                Log.d(TAG, "getView for position is a train schedule entry at position "+position);
-
-                SchedulesRouteModel rtm = (SchedulesRouteModel)getItem(position);
+                NextToArriveModel ntarm = (NextToArriveModel)getItem(position);
                 rowView = mInflater.inflate(R.layout.nexttoarrive_nexttoarrivetrains_listview_item, parent, false);
+
+                TextView trainNumberTextView = (TextView)rowView.findViewById(R.id.nexttoarrive_nexttoarrivetrains_trainnumber_textview);
+                TextView latenessTextView = (TextView)rowView.findViewById(R.id.nexttoarrive_nexttoarrivetrains_lateness_textview);
+                TextView startTimeTextView = (TextView)rowView.findViewById(R.id.nexttoarrive_nexttoarrivetrains_starttime_textview);
+                TextView endTimeTextView = (TextView)rowView.findViewById(R.id.nexttoarrive_nexttoarrivetrains_endtime_textview);
+                TextView routeNameTextView = (TextView)rowView.findViewById(R.id.nexttoarrive_nexttoarrivetrains_routename_textview);
+
+                NextToArriveModel nextToArriveModel = this.nextToArriveTrainList.get(position);
+                trainNumberTextView.setText(nextToArriveModel.getOriginalTrain());
+                latenessTextView.setText(nextToArriveModel.getOriginalDelay());
+                startTimeTextView.setText(nextToArriveModel.getOriginalArrivalTime());
+                endTimeTextView.setText(nextToArriveModel.getOriginalDepartureTime());
+                routeNameTextView.setText(nextToArriveModel.getOriginalLine());
             }
         }
 

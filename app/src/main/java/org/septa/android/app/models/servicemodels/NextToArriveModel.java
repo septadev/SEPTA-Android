@@ -28,4 +28,51 @@ public class NextToArriveModel {
 
     @SerializedName("Connection") private String Connection;
 
+    public String getOriginalTrain() {
+        return originalTrain;
+    }
+
+    public String getOriginalLine() {
+        return originalLine;
+    }
+
+    public String getOriginalDepartureTime() {
+        return originalDepartureTime;
+    }
+
+    public String getOriginalArrivalTime() {
+        return OriginalArrivalTime;
+    }
+
+    public String getOriginalDelay() {
+        return originalDelay;
+    }
+
+    public String getTerminalTrain() {
+        return terminalTrain;
+    }
+
+    public String getTerminalLine() {
+        return terminalLine;
+    }
+
+    public String getTerminalDepartureTime() {
+        return terminalDepartureTime;
+    }
+
+    public String getTerminalArrivalTime() {
+        return terminalArrivalTime;
+    }
+
+    public String getTerminalDelay() {
+        return terminalDelay;
+    }
+
+    public boolean isDirect() {
+        return isDirect;
+    }
+
+    public String getConnection() {
+        return Connection;
+    }
 }

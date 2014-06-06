@@ -148,6 +148,8 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
                         startActivityForResult(stopSelectionIntent, getResources().getInteger(R.integer.nexttoarrive_stopselection_activityforresult_request_id));
                     }
                 }
+
+                checkTripStartAndDestinationForNextToArriveDataRequest();
             }
             if (resultCode == RESULT_CANCELED) {
                 Log.d(TAG, "the result is canceled");
@@ -262,14 +264,6 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
 
             routeShortName = rtm.getRouteShortName();
         }
-
-//        Intent schedulesItineraryIntent = null;
-//
-//        schedulesItineraryIntent = new Intent(this, SchedulesItineraryActionBarActivity.class);
-//        schedulesItineraryIntent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), iconImageNameSuffix);
-//        schedulesItineraryIntent.putExtra(getString(R.string.schedules_itinerary_routeShortName), routeShortName);
-//
-//        startActivity(schedulesItineraryIntent);
     }
 
     @Override

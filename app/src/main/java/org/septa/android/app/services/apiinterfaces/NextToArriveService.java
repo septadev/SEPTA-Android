@@ -16,7 +16,7 @@ import retrofit.http.GET;
 import retrofit.http.Path;
 
 public interface NextToArriveService {
-    @GET("/hackathon/NextToArrive/{startStation}/{destinationStation}/{numberOfResults")
+    @GET("/hackathon/NextToArrive/{startStation}/{destinationStation}/{numberOfResults}")
     void views(@Path("startStation") String startStation,
                @Path("destinationStation") String destinationStation,
                @Path("numberOfResults") String numberOfResults,

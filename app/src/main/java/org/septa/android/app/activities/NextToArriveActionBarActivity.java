@@ -22,6 +22,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import org.septa.android.app.R;
 import org.septa.android.app.adapters.NextToArrive_ListViewItem_ArrayAdapter;
@@ -120,6 +121,11 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
         Log.d(TAG, "reverse start end selected");
 
         tripDataModel.reverseStartAndDestinationStops();
+        NextToArrive_ListViewItem_ArrayAdapter nextToArriveListViewItemArrayAdapter = (NextToArrive_ListViewItem_ArrayAdapter)stickyList.getAdapter();
+        nextToArriveListViewItemArrayAdapter.setStartStopName(tripDataModel.getStartStopName());
+        nextToArriveListViewItemArrayAdapter.setDestinationStopName(tripDataModel.getDestinationStopName());
+
+        checkTripStartAndDestinationForNextToArriveDataRequest();
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -148,6 +154,10 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
                         startActivityForResult(stopSelectionIntent, getResources().getInteger(R.integer.nexttoarrive_stopselection_activityforresult_request_id));
                     }
                 }
+
+                NextToArrive_ListViewItem_ArrayAdapter nextToArriveListViewItemArrayAdapter = (NextToArrive_ListViewItem_ArrayAdapter)stickyList.getAdapter();
+                nextToArriveListViewItemArrayAdapter.setStartStopName(tripDataModel.getStartStopName());
+                nextToArriveListViewItemArrayAdapter.setDestinationStopName(tripDataModel.getDestinationStopName());
 
                 checkTripStartAndDestinationForNextToArriveDataRequest();
             }
@@ -259,15 +269,16 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
         String routeShortName = "";
         Log.d("f", "onItemClick occurred at position "+position+" with id "+id);
 
-        if (!mAdapter.isFavorite(position) && !mAdapter.isRecentlyViewed(position)) {
-            SchedulesRouteModel rtm = (SchedulesRouteModel)mAdapter.getItem(position);
-
-            routeShortName = rtm.getRouteShortName();
-        }
+//        if (!mAdapter.isFavorite(position) && !mAdapter.isRecentlyViewed(position)) {
+//            SchedulesRouteModel rtm = (SchedulesRouteModel)mAdapter.getItem(position);
+//
+//            routeShortName = rtm.getRouteShortName();
+//        }
     }
 
     @Override
     public void onHeaderClick(StickyListHeadersListView l, View header, int itemPosition, long headerId, boolean currentlySticky) {
+        Log.d(TAG, "sticky header click");
 
     }
 

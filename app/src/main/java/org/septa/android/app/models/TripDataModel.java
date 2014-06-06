@@ -133,6 +133,13 @@ public class TripDataModel {
     }
 
     public void reverseStartAndDestinationStops() {
+        String tempStartStopName = getStartStopName();
+        String tempStartStopId = getStartStopId();
 
+        setStartStopId(destinationStopId);
+        setStartStopName(destinationStopName);
+
+        setDestinationStopId(tempStartStopId);
+        setDestinationStopName(tempStartStopName);
     }
 }

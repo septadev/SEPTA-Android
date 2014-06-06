@@ -44,6 +44,7 @@
                 android:textSize="20sp"
                 android:hint="Select start"
                 android:gravity="center"
+                android:clickable="true"
                 android:onClick="selectStartSelected"/>
 
             <TextView
@@ -56,6 +57,7 @@
                 android:textSize="20sp"
                 android:hint="Select destination"
                 android:gravity="center"
+                android:clickable="true"
                 android:onClick="selectDestinationSelected"/>
 
         </LinearLayout>

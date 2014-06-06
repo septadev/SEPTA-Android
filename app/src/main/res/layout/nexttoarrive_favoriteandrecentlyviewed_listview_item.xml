@@ -33,7 +33,7 @@
     <TextView
         android:id="@+id/nexttoarrive_favoriteandrecentlyviewed_start_textview"
         android:layout_width="150dp"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:layout_marginLeft="5dp"
         android:layout_toRightOf="@id/nexttoarrive_favoriteandrecentlyviewed_start_imageview"
@@ -50,7 +50,7 @@
     <TextView
         android:id="@+id/nexttoarrive_favoriteandrecentlyviewed_end_textview"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp"

@@ -18,6 +18,8 @@ import android.widget.SectionIndexer;
 import android.widget.TextView;
 
 import org.septa.android.app.R;
+import org.septa.android.app.models.NextToArriveFavoriteModel;
+import org.septa.android.app.models.NextToArriveRecentlyViewedModel;
 import org.septa.android.app.models.SchedulesFavoriteModel;
 import org.septa.android.app.models.SchedulesRecentlyViewedModel;
 import org.septa.android.app.models.SchedulesRouteModel;
@@ -34,68 +36,33 @@ public class NextToArrive_ListViewItem_ArrayAdapter extends BaseAdapter implemen
     private final Context mContext;
     private LayoutInflater mInflater;
 
-    private ArrayList<SchedulesFavoriteModel> favorites = new ArrayList<SchedulesFavoriteModel>();
-    private ArrayList<SchedulesRecentlyViewedModel> recentlyViewed = new ArrayList<SchedulesRecentlyViewedModel>();
+    private ArrayList<NextToArriveFavoriteModel> favorites = new ArrayList<NextToArriveFavoriteModel>();
+    private ArrayList<NextToArriveRecentlyViewedModel> recentlyViewed = new ArrayList<NextToArriveRecentlyViewedModel>();
     protected ArrayList<NextToArriveModel> nextToArriveTrainList = new ArrayList<NextToArriveModel>();
 
     private String[] sectionTitles = new String[]{ "<start_end_import>", "Favorites", "Recently Viewed", "Next To Arrive Trains"};
+
+    private String startStopName;
+    private String destinationStopName;
 
     public NextToArrive_ListViewItem_ArrayAdapter(Context context) {
         mContext = context;
         mInflater = LayoutInflater.from(context);
 
-        SchedulesFavoriteModel fm = new SchedulesFavoriteModel();
+        NextToArriveFavoriteModel fm = new NextToArriveFavoriteModel();
         favorites.add(fm);
-        fm = new SchedulesFavoriteModel();
+        fm = new NextToArriveFavoriteModel();
         favorites.add(fm);
-        fm = new SchedulesFavoriteModel();
+        fm = new NextToArriveFavoriteModel();
         favorites.add(fm);
 
-        SchedulesRecentlyViewedModel rvm = new SchedulesRecentlyViewedModel();
+        NextToArriveRecentlyViewedModel rvm = new NextToArriveRecentlyViewedModel();
         recentlyViewed.add(rvm);
-        rvm = new SchedulesRecentlyViewedModel();
+        rvm = new NextToArriveRecentlyViewedModel();
         recentlyViewed.add(rvm);
 
         NextToArriveModel rm = new NextToArriveModel();
         nextToArriveTrainList.add(rm);
-        rm = new NextToArriveModel();
-        nextToArriveTrainList.add(rm);
-        rm = new NextToArriveModel();
-        nextToArriveTrainList.add(rm);
-        rm = new NextToArriveModel();
-        nextToArriveTrainList.add(rm);
-        rm = new NextToArriveModel();
-        nextToArriveTrainList.add(rm);
-//        rm = new SchedulesRouteModel();
-//        nextToArriveTrainList.add(rm);
-//        rm = new SchedulesRouteModel();
-//        nextToArriveTrainList.add(rm);
-//        rm = new SchedulesRouteModel();
-//        nextToArriveTrainList.add(rm);
-//        rm = new SchedulesRouteModel();
-//        nextToArriveTrainList.add(rm);
-//        rm = new SchedulesRouteModel();
-//        nextToArriveTrainList.add(rm);
-//        rm = new SchedulesRouteModel();
-//        nextToArriveTrainList.add(rm);
-//        rm = new SchedulesRouteModel();
-//        nextToArriveTrainList.add(rm);
-//        rm = new SchedulesRouteModel();
-//        nextToArriveTrainList.add(rm);
-//        rm = new SchedulesRouteModel();
-//        nextToArriveTrainList.add(rm);
-//        rm = new SchedulesRouteModel();
-//        nextToArriveTrainList.add(rm);
-//        rm = new SchedulesRouteModel();
-//        nextToArriveTrainList.add(rm);
-//        rm = new SchedulesRouteModel();
-//        nextToArriveTrainList.add(rm);
-//        rm = new SchedulesRouteModel();
-//        nextToArriveTrainList.add(rm);
-//        rm = new SchedulesRouteModel();
-//        nextToArriveTrainList.add(rm);
-//        rm = new SchedulesRouteModel();
-//        nextToArriveTrainList.add(rm);
     }
 
     public void setNextToArriveTrainList(ArrayList<NextToArriveModel> nextToArriveTrainList) {
@@ -119,18 +86,18 @@ public class NextToArrive_ListViewItem_ArrayAdapter extends BaseAdapter implemen
 
     public boolean isFavorite(int position) {
 
-        return getItems()[position] instanceof SchedulesFavoriteModel;
+        return getItems()[position] instanceof NextToArriveFavoriteModel;
     }
 
     public boolean isRecentlyViewed(int position) {
 
-        return getItems()[position] instanceof SchedulesRecentlyViewedModel;
+        return getItems()[position] instanceof NextToArriveRecentlyViewedModel;
     }
 
     @Override
     public int getCount() {
 
-        return favorites.size()+recentlyViewed.size()+nextToArriveTrainList.size();
+        return 1+favorites.size()+recentlyViewed.size()+nextToArriveTrainList.size();
     }
 
     @Override
@@ -145,6 +112,10 @@ public class NextToArrive_ListViewItem_ArrayAdapter extends BaseAdapter implemen
         return position;
     }
 
+    private int adjustedPosition(int position) {
+        return --position;
+    }
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View rowView = null;
@@ -156,7 +127,7 @@ public class NextToArrive_ListViewItem_ArrayAdapter extends BaseAdapter implemen
             return rowView;
         }
 
-        if (isFavorite(position)) {     // favorite position rows
+        if (isFavorite(adjustedPosition(position))) {     // favorite position rows
             Log.d(TAG, "getView for position is a fav at position "+position);
             rowView = mInflater.inflate(R.layout.nexttoarrive_favoriteandrecentlyviewed_listview_item, parent, false);
 
@@ -169,14 +140,14 @@ public class NextToArrive_ListViewItem_ArrayAdapter extends BaseAdapter implemen
             // to create a larger space in the ListView, each row has a transparent view built in
             // if we are not the last row in the logical section, make it gone, else visible
             View transparentView = (View)rowView.findViewById(R.id.nexttoarrive_favoriteandrecentlyviewed_transparent_view);
-            if (position == (favorites.size()-1)) {
+            if (adjustedPosition(position) == (favorites.size()-1)) {
                 transparentView.setVisibility(View.VISIBLE);
             } else {
                 transparentView.setVisibility(View.GONE);
             }
         } else {                        // recently viewed position rows
-            if (isRecentlyViewed(position)) {
-                Log.d(TAG, "getView for position is a recentlyviewed at position "+position);
+            if (isRecentlyViewed(adjustedPosition(position))) {
+                Log.d(TAG, "getView for position is a recentlyviewed at adjusted position "+adjustedPosition(position));
                 rowView = mInflater.inflate(R.layout.nexttoarrive_favoriteandrecentlyviewed_listview_item, parent, false);
 
                 TextView startStopNameTextView = (TextView)rowView.findViewById(R.id.nexttoarrive_favoriteandrecentlyviewed_start_textview);
@@ -188,13 +159,13 @@ public class NextToArrive_ListViewItem_ArrayAdapter extends BaseAdapter implemen
                 // to create a larger space in the ListView, each row has a transparent view built in
                 // if we are not the last row in the logical section, make it gone, else visible
                 View transparentView = (View)rowView.findViewById(R.id.nexttoarrive_favoriteandrecentlyviewed_transparent_view);
-                if (position == ((favorites.size()+recentlyViewed.size())-1)) {
+                if (adjustedPosition(position) == ((favorites.size()+recentlyViewed.size())-1)) {
                     transparentView.setVisibility(View.VISIBLE);
                 } else {
                     transparentView.setVisibility(View.GONE);
                 }
             } else{
-                NextToArriveModel ntarm = (NextToArriveModel)getItem(position);
+                NextToArriveModel ntarm = (NextToArriveModel)getItem(adjustedPosition(position));
                 rowView = mInflater.inflate(R.layout.nexttoarrive_nexttoarrivetrains_listview_item, parent, false);
 
                 TextView trainNumberTextView = (TextView)rowView.findViewById(R.id.nexttoarrive_nexttoarrivetrains_trainnumber_textview);
@@ -203,12 +174,26 @@ public class NextToArrive_ListViewItem_ArrayAdapter extends BaseAdapter implemen
                 TextView endTimeTextView = (TextView)rowView.findViewById(R.id.nexttoarrive_nexttoarrivetrains_endtime_textview);
                 TextView routeNameTextView = (TextView)rowView.findViewById(R.id.nexttoarrive_nexttoarrivetrains_routename_textview);
 
-                NextToArriveModel nextToArriveModel = this.nextToArriveTrainList.get(position);
+                NextToArriveModel nextToArriveModel = (NextToArriveModel)getItems()[adjustedPosition(position)];
+
+                if (nextToArriveModel.getOriginalTrain() == null) { // found a dummy blank row
+                    rowView.setVisibility(View.GONE);
+                    return rowView;
+                } else {
+                    rowView.setVisibility(View.VISIBLE);
+                }
+
                 trainNumberTextView.setText(nextToArriveModel.getOriginalTrain());
                 latenessTextView.setText(nextToArriveModel.getOriginalDelay());
                 startTimeTextView.setText(nextToArriveModel.getOriginalArrivalTime());
                 endTimeTextView.setText(nextToArriveModel.getOriginalDepartureTime());
                 routeNameTextView.setText(nextToArriveModel.getOriginalLine());
+
+                if (nextToArriveModel.getOriginalDelay().equals("On time")) {
+                    latenessTextView.setTextColor(Color.parseColor("#FF00A354"));
+                } else {
+                    latenessTextView.setTextColor(Color.parseColor("#FFFC4745"));
+                }
             }
         }
 
@@ -222,13 +207,18 @@ public class NextToArrive_ListViewItem_ArrayAdapter extends BaseAdapter implemen
 
         if (position == 0) {
             convertView = mInflater.inflate(R.layout.nexttoarrive_selectstartend_row, parent, false);
+            TextView startStopNameTextView = (TextView)convertView.findViewById(R.id.nexttoarrive_selectstartend_start_textview);
+            TextView destinationStopNameTextView = (TextView)convertView.findViewById(R.id.nexttoarrive_selectstartend_end_textview);
+
+            startStopNameTextView.setText(this.startStopName);
+            destinationStopNameTextView.setText(this.destinationStopName);
         } else {
 
-            if (favorites.size() > 0 && position < favorites.size()) {
+            if (favorites.size() > 0 && adjustedPosition(position) < favorites.size()) {
                 text.setText(sectionTitles[1]);
                 text.setBackgroundColor(Color.parseColor("#990DA44A"));
             } else {
-                if (recentlyViewed.size() > 0 && (position - favorites.size()) < recentlyViewed.size()) {
+                if (recentlyViewed.size() > 0 && (adjustedPosition(position) - favorites.size()) < recentlyViewed.size()) {
                     text.setText(sectionTitles[2]);
                     text.setBackgroundColor(Color.parseColor("#990DA44A"));
                 } else {
@@ -248,11 +238,11 @@ public class NextToArrive_ListViewItem_ArrayAdapter extends BaseAdapter implemen
 
             return 0;
         }
-        if (isFavorite(position)) {
+        if (isFavorite(adjustedPosition(position))) {
 
             return 1;
         } else {
-            if (isRecentlyViewed(position)) {
+            if (isRecentlyViewed(adjustedPosition(position))) {
 
                 return 2;
             }
@@ -304,5 +294,17 @@ public class NextToArrive_ListViewItem_ArrayAdapter extends BaseAdapter implemen
     public Object[] getSections() {
     Log.d(TAG, "getSections");
         return sectionTitles;
+    }
+
+    public void setStartStopName(String startStopName) {
+        this.startStopName = startStopName;
+
+        notifyDataSetChanged();
+    }
+
+    public void setDestinationStopName(String destinationStopName) {
+        this.destinationStopName = destinationStopName;
+
+        notifyDataSetChanged();
     }
 }

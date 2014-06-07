@@ -28,7 +28,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:0.11.+'
-        classpath 'org.robolectric.gradle:gradle-android-test-plugin:0.9.+'
+//        classpath 'org.robolectric.gradle:gradle-android-test-plugin:0.9.+'
         classpath 'com.crashlytics.tools.gradle:crashlytics-gradle:1.+'
     }
 }
@@ -42,7 +42,7 @@ allprojects {
 
 apply plugin: 'android'
 apply plugin: 'crashlytics'
-apply plugin: 'android-test'
+//apply plugin: 'android-test'
 
 repositories {
     mavenCentral()
@@ -87,7 +87,7 @@ android {
     }
 
     sourceSets {
-        androidTest.setRoot('src/test') //note that this is androidTest instead of instrumentTest
+//        androidTest.setRoot('src/test') //note that this is androidTest instead of instrumentTest
     }
 
     signingConfigs {
@@ -181,7 +181,7 @@ dependencies {
 }
 
 //only include files that are suffixed with Test.class and set the max heap size
-androidTest {
-    include '**/*Test.class'
-    maxHeapSize = "2048m"
-}
+//androidTest {
+//    include '**/*Test.class'
+//    maxHeapSize = "2048m"
+//}

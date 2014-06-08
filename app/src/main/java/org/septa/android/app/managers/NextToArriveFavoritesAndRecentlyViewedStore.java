@@ -33,6 +33,21 @@ public class NextToArriveFavoritesAndRecentlyViewedStore {
     }
 
     public void addRecentlyViewed(NextToArriveRecentlyViewedModel nextToArriveModel) {
+
+        // duplicate avoidance
+        // check if we already have this recently viewed
+        // if yes, if first position already, we do nothing
+        // if second position, we make third position second overwriting this recently viewed, so we can make this first position
+        // if third position, we follow the normal course since that will fall off and then become first.
+        if (recentlyViewedJSONList.contains(nextToArriveModel)) {
+            if (recentlyViewedJSONList.get(0) == nextToArriveModel) {
+                return;
+            } else {
+                if (recentlyViewedJSONList.get(1) == nextToArriveModel) {
+                    recentlyViewedJSONList.set(1, recentlyViewedJSONList.get(2));
+                }
+            }
+        }
         recentlyViewedJSONList.set(2, recentlyViewedJSONList.get(1));
         recentlyViewedJSONList.set(1, recentlyViewedJSONList.get(0));
         recentlyViewedJSONList.set(0, nextToArriveModel);

@@ -8,49 +8,72 @@
 package org.septa.android.app.managers;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import org.septa.android.app.models.NextToArriveFavoriteModel;
 import org.septa.android.app.models.NextToArriveRecentlyViewedModel;
-import org.septa.android.app.models.NextToArriveStoredTripModel;
 import org.septa.android.app.models.ObjectFactory;
-import org.septa.android.app.models.servicemodels.NextToArriveModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class NextToArriveFavoritesAndRecentlyViewedStore {
 
-    private ArrayList<NextToArriveFavoriteModel>favoritesJSONList = new ArrayList<NextToArriveFavoriteModel>(3);
-    private ArrayList<NextToArriveRecentlyViewedModel>recentlyViewedJSONList = new ArrayList<NextToArriveRecentlyViewedModel>(3);
+    private ArrayList<NextToArriveFavoriteModel>favoritesJSONList;
+    private ArrayList<NextToArriveRecentlyViewedModel>recentlyViewedJSONList;
     private Context context;
 
     public NextToArriveFavoritesAndRecentlyViewedStore(Context context) {
 
         this.context = context;
+        recentlyViewedJSONList = getRecentlyViewedList();
+        favoritesJSONList = getFavoriteList();
+    }
+
+    public int trueRecentlyViewedListSize() {
+        // if the list has a size of 3, make sure the entries are true and not null
+        if (recentlyViewedJSONList.size() == 3) {
+            if (recentlyViewedJSONList.get(2) != null) {
+                return 3;
+            } else {
+                if (recentlyViewedJSONList.get(1) != null) {
+                    return 2;
+                } else {
+                    if (recentlyViewedJSONList.get(0) != null) {
+                        return 1;
+                    }
+                }
+            }
+            return 0;
+        }
+
+        // the size of the list is not 3, thus they must be real being added in individually
+        return recentlyViewedJSONList.size();
     }
 
     public void addRecentlyViewed(NextToArriveRecentlyViewedModel nextToArriveModel) {
 
         // duplicate avoidance
         // check if we already have this recently viewed
-        // if yes, if first position already, we do nothing
-        // if second position, we make third position second overwriting this recently viewed, so we can make this first position
-        // if third position, we follow the normal course since that will fall off and then become first.
-        if (recentlyViewedJSONList.contains(nextToArriveModel)) {
-            if (recentlyViewedJSONList.get(0) == nextToArriveModel) {
-                return;
-            } else {
-                if (recentlyViewedJSONList.get(1) == nextToArriveModel) {
-                    recentlyViewedJSONList.set(1, recentlyViewedJSONList.get(2));
+        // if we find a duplicate, remove it form the list, the list will shuffle properly.
+        for (int i=0; i < recentlyViewedJSONList.size(); i++) {
+            if (recentlyViewedJSONList.get(i) != null) {
+                if (recentlyViewedJSONList.get(i).compareTo(nextToArriveModel) == 0) {
+                    recentlyViewedJSONList.remove(i);
                 }
             }
         }
-        recentlyViewedJSONList.set(2, recentlyViewedJSONList.get(1));
-        recentlyViewedJSONList.set(1, recentlyViewedJSONList.get(0));
-        recentlyViewedJSONList.set(0, nextToArriveModel);
+
+        // put the recently viewed item at the top of the list
+        recentlyViewedJSONList.add(0, nextToArriveModel);
+
+        // check if we have a (overly) full list, and remove the 4th item if exists
+        if (recentlyViewedJSONList.size() == 4) {
+            recentlyViewedJSONList.remove(3);
+        }
 
         sendToSharedPreferencesRecentlyViewed();
     }
@@ -59,19 +82,45 @@ public class NextToArriveFavoritesAndRecentlyViewedStore {
         Gson gson = new Gson();
 
         String json = ObjectFactory.getInstance().getSharedPreferencesManager(context).getNextToArriveRecentlyViewedList();
+        Log.d("f", "the raw json is "+json);
         recentlyViewedJSONList = gson.fromJson(json, new TypeToken<List<NextToArriveRecentlyViewedModel>>(){}.getType());
 
         if (recentlyViewedJSONList == null) {
-            recentlyViewedJSONList = new ArrayList<NextToArriveRecentlyViewedModel>();
+            Log.d("f", "the object is null recentlyviewedjsonlist, so instantiate a new one");
+            recentlyViewedJSONList = new ArrayList<NextToArriveRecentlyViewedModel>(3);
         }
 
+        Log.d("f", "got the recently viewed from shared prefrences with count of "+recentlyViewedJSONList.size());
+
         return recentlyViewedJSONList;
+    }
+
+    public ArrayList<NextToArriveFavoriteModel> getFavoriteList() {
+        Gson gson = new Gson();
+
+        String json = ObjectFactory.getInstance().getSharedPreferencesManager(context).getNextToArriveFavoritesList();
+        favoritesJSONList = gson.fromJson(json, new TypeToken<List<NextToArriveFavoriteModel>>(){}.getType());
+
+        if (favoritesJSONList == null) {
+            favoritesJSONList = new ArrayList<NextToArriveFavoriteModel>(3);
+        }
+
+        return favoritesJSONList;
     }
 
     private void sendToSharedPreferencesRecentlyViewed() {
         Gson gson = new Gson();
         String recentlyViewedListAsJSON = gson.toJson(recentlyViewedJSONList);
 
-        ObjectFactory.getInstance().getSharedPreferencesManager(context).setNexttoArriveRecentlyViewedList(recentlyViewedListAsJSON);
+        Log.d("sendToSharedPrefrencesRecentlyViewed", "value of "+recentlyViewedListAsJSON);
+
+        ObjectFactory.getInstance().getSharedPreferencesManager(context).setNextToArriveRecentlyViewedList(recentlyViewedListAsJSON);
+    }
+
+    private void sendToSharedPreferencesFavorites() {
+        Gson gson = new Gson();
+        String favoritesListAsJSON = gson.toJson(favoritesJSONList);
+
+        ObjectFactory.getInstance().getSharedPreferencesManager(context).setNexttoArriveFavoritesList(favoritesListAsJSON);
     }
 }

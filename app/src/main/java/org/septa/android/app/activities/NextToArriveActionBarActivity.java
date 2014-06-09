@@ -27,6 +27,7 @@ import android.widget.TextView;
 import org.septa.android.app.R;
 import org.septa.android.app.adapters.NextToArrive_ListViewItem_ArrayAdapter;
 import org.septa.android.app.managers.NextToArriveFavoritesAndRecentlyViewedStore;
+import org.septa.android.app.models.NextToArriveFavoriteModel;
 import org.septa.android.app.models.NextToArriveRecentlyViewedModel;
 import org.septa.android.app.models.NextToArriveStoredTripModel;
 import org.septa.android.app.models.SchedulesRouteModel;
@@ -269,14 +270,18 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position,long id) {
-        String routeShortName = "";
         Log.d("f", "onItemClick occurred at position "+position+" with id "+id);
 
-//        if (!mAdapter.isFavorite(position) && !mAdapter.isRecentlyViewed(position)) {
-//            SchedulesRouteModel rtm = (SchedulesRouteModel)mAdapter.getItem(position);
-//
-//            routeShortName = rtm.getRouteShortName();
-//        }
+        NextToArriveStoredTripModel storedTripModel = mAdapter.getSelectedFavoriteOrRecentlyViewed(position);
+        tripDataModel.setStartStopId(storedTripModel.getStartStopId());
+        tripDataModel.setStartStopName(storedTripModel.getStartStopName());
+        tripDataModel.setDestinationStopId(storedTripModel.getDestintationStopId());
+        tripDataModel.setDestinationStopName(storedTripModel.getDestinationStopName());
+
+        mAdapter.setStartStopName(tripDataModel.getStartStopName());
+        mAdapter.setDestinationStopName(tripDataModel.getDestinationStopName());
+
+        checkTripStartAndDestinationForNextToArriveDataRequest();
     }
 
     @Override

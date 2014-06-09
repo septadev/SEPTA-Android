@@ -21,6 +21,7 @@ import org.septa.android.app.R;
 import org.septa.android.app.managers.NextToArriveFavoritesAndRecentlyViewedStore;
 import org.septa.android.app.models.NextToArriveFavoriteModel;
 import org.septa.android.app.models.NextToArriveRecentlyViewedModel;
+import org.septa.android.app.models.NextToArriveStoredTripModel;
 import org.septa.android.app.models.ObjectFactory;
 import org.septa.android.app.models.SchedulesFavoriteModel;
 import org.septa.android.app.models.SchedulesRecentlyViewedModel;
@@ -47,18 +48,13 @@ public class NextToArrive_ListViewItem_ArrayAdapter extends BaseAdapter implemen
     private String startStopName;
     private String destinationStopName;
 
+    private NextToArriveFavoritesAndRecentlyViewedStore nextToArriveFavoritesAndRecentlyViewedStore;
+
     public NextToArrive_ListViewItem_ArrayAdapter(Context context) {
         mContext = context;
         mInflater = LayoutInflater.from(context);
 
-        NextToArriveFavoriteModel fm = new NextToArriveFavoriteModel();
-        favorites.add(fm);
-        fm = new NextToArriveFavoriteModel();
-        favorites.add(fm);
-        fm = new NextToArriveFavoriteModel();
-        favorites.add(fm);
-
-        NextToArriveFavoritesAndRecentlyViewedStore nextToArriveFavoritesAndRecentlyViewedStore = new NextToArriveFavoritesAndRecentlyViewedStore(mContext);
+        nextToArriveFavoritesAndRecentlyViewedStore = new NextToArriveFavoritesAndRecentlyViewedStore(mContext);
         recentlyViewed = nextToArriveFavoritesAndRecentlyViewedStore.getRecentlyViewedList();
 
         // add a single record with no values as a "dummy" record that will be made View.GONE but will keep the header showing
@@ -69,6 +65,8 @@ public class NextToArrive_ListViewItem_ArrayAdapter extends BaseAdapter implemen
 
     public void setNextToArriveTrainList(ArrayList<NextToArriveModel> nextToArriveTrainList) {
         this.nextToArriveTrainList = nextToArriveTrainList;
+
+        recentlyViewed = nextToArriveFavoritesAndRecentlyViewedStore.getRecentlyViewedList();
 
         notifyDataSetChanged();
     }
@@ -130,14 +128,15 @@ public class NextToArrive_ListViewItem_ArrayAdapter extends BaseAdapter implemen
         }
 
         if (isFavorite(adjustedPosition(position))) {     // favorite position rows
-            Log.d(TAG, "getView for position is a fav at position "+position);
             rowView = mInflater.inflate(R.layout.nexttoarrive_favoriteandrecentlyviewed_listview_item, parent, false);
 
             TextView startStopNameTextView = (TextView)rowView.findViewById(R.id.nexttoarrive_favoriteandrecentlyviewed_start_textview);
             TextView endStopNameTextView = (TextView)rowView.findViewById(R.id.nexttoarrive_favoriteandrecentlyviewed_end_textview);
 
-            startStopNameTextView.setText("testing start");
-            endStopNameTextView.setText("testing end");
+
+            NextToArriveFavoriteModel favoriteModel = (NextToArriveFavoriteModel)getItems()[adjustedPosition(position)];
+            startStopNameTextView.setText(favoriteModel.getStartStopName());
+            endStopNameTextView.setText(favoriteModel.getDestinationStopName());
 
             // to create a larger space in the ListView, each row has a transparent view built in
             // if we are not the last row in the logical section, make it gone, else visible
@@ -149,14 +148,14 @@ public class NextToArrive_ListViewItem_ArrayAdapter extends BaseAdapter implemen
             }
         } else {                        // recently viewed position rows
             if (isRecentlyViewed(adjustedPosition(position))) {
-                Log.d(TAG, "getView for position is a recentlyviewed at adjusted position "+adjustedPosition(position));
                 rowView = mInflater.inflate(R.layout.nexttoarrive_favoriteandrecentlyviewed_listview_item, parent, false);
 
                 TextView startStopNameTextView = (TextView)rowView.findViewById(R.id.nexttoarrive_favoriteandrecentlyviewed_start_textview);
                 TextView endStopNameTextView = (TextView)rowView.findViewById(R.id.nexttoarrive_favoriteandrecentlyviewed_end_textview);
 
-                startStopNameTextView.setText("testing start");
-                endStopNameTextView.setText("testing end");
+                NextToArriveRecentlyViewedModel recentlyViewedModel = (NextToArriveRecentlyViewedModel)getItems()[adjustedPosition(position)];
+                startStopNameTextView.setText(recentlyViewedModel.getStartStopName());
+                endStopNameTextView.setText(recentlyViewedModel.getDestinationStopName());
 
                 // to create a larger space in the ListView, each row has a transparent view built in
                 // if we are not the last row in the logical section, make it gone, else visible
@@ -308,5 +307,10 @@ public class NextToArrive_ListViewItem_ArrayAdapter extends BaseAdapter implemen
         this.destinationStopName = destinationStopName;
 
         notifyDataSetChanged();
+    }
+
+    public NextToArriveStoredTripModel getSelectedFavoriteOrRecentlyViewed(int position) {
+
+        return (NextToArriveStoredTripModel)getItems()[adjustedPosition(position)];
     }
 }

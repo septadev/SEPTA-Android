@@ -226,10 +226,12 @@ public class SystemStatusDetailsActionBarActivity extends BaseAnalyticsActionBar
         if (routeAlertModelList != null) {
             for (RouteAlertDataModel routeAlert : routeAlertModelList) {
                 switch (selectedTab) {
-                    case ADVISORY:
-                    case ALERTS: {
-
+                    case ADVISORY: {
                         htmlToDisplay += routeAlert.getAdvisoryMessage();
+                        break;
+                    }
+                    case ALERTS: {
+                        htmlToDisplay += routeAlert.getCurrentMessage();
                         break;
                     }
                     case DETOUR: {
@@ -256,7 +258,7 @@ public class SystemStatusDetailsActionBarActivity extends BaseAnalyticsActionBar
                 setProgressBarIndeterminateVisibility(Boolean.FALSE);
 
                 routeAlertModelList = (ArrayList<RouteAlertDataModel>)o;
-                Log.d("f", "callback called for alerts with count of "+routeAlertModelList.size());
+                Log.d("details", "callback called for alerts with count of "+routeAlertModelList.size());
 
                 renderRouteAlertsToWebView();
             }
@@ -276,6 +278,7 @@ public class SystemStatusDetailsActionBarActivity extends BaseAnalyticsActionBar
 
         RouteAlertServiceProxy routeAlertServiceProxy = new RouteAlertServiceProxy();
         setProgressBarIndeterminateVisibility(Boolean.TRUE);
+        Log.d("f", "route id for alerts "+routeId);
         routeAlertServiceProxy.getRouteAlertData(routeId, callback);
     }
 

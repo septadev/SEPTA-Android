@@ -7,7 +7,7 @@
 
 package org.septa.android.app.models;
 
-public class NextToArriveStoredTripModel {
+public class  NextToArriveStoredTripModel implements Comparable<NextToArriveStoredTripModel> {
 
     private String startStopName;
     private String startStopId;
@@ -44,5 +44,18 @@ public class NextToArriveStoredTripModel {
 
     public void setDestintationStopId(String destintationStopId) {
         this.destintationStopId = destintationStopId;
+    }
+
+    @Override
+    public int compareTo(NextToArriveStoredTripModel another) {
+        if ((this.getStartStopId().equals(another.getStartStopId())) &&
+            (this.getStartStopName().equals(another.getStartStopName())) &&
+            (this.getDestintationStopId().equals(another.getDestintationStopId())) &&
+            (this.getDestinationStopName().equals(another.getDestinationStopName()))) {
+
+            return 0;
+        }
+
+        return -1;
     }
 }

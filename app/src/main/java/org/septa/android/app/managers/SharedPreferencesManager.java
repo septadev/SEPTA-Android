@@ -129,7 +129,7 @@ public class SharedPreferencesManager {
         return nextToArriveRecentlyViewedList;
     }
 
-    public void setNexttoArriveRecentlyViewedList(String recentlyViewedList) {
+    public void setNextToArriveRecentlyViewedList(String recentlyViewedList) {
         this.nextToArriveRecentlyViewedList = recentlyViewedList;
         writePreferenceForNextToArriveRecentlyViewedList();
     }

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@android:color/transparent">
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+        <ImageView
+            android:id="@+id/nexttoarrive_menudialog_listview_items_imageview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_gravity="left|center_vertical"/>
+
+        <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center">
+
+            <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:layout_gravity="center_vertical"
+                    android:id="@+id/nexttoarrive_menudialog_listview_items_maintext"
+                    android:textStyle="normal"
+                    android:textColor="@android:color/white"
+                    android:gravity="center_horizontal"
+                    android:textSize="20dp"/>
+            <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:layout_gravity="center_vertical"
+                    android:id="@+id/nexttoarrive_menudialog_listview_items_subtext"
+                    android:textStyle="normal"
+                    android:textColor="@android:color/white"
+                    android:gravity="center_horizontal"
+                    android:textSize="14dp"/>
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#FF202014" />
+    <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#FF30302E" />
+    <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#FF444442" />
+
+</FrameLayout>

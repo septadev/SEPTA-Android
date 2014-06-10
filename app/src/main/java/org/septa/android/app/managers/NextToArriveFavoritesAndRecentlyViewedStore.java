@@ -82,15 +82,11 @@ public class NextToArriveFavoritesAndRecentlyViewedStore {
         Gson gson = new Gson();
 
         String json = ObjectFactory.getInstance().getSharedPreferencesManager(context).getNextToArriveRecentlyViewedList();
-        Log.d("f", "the raw json is "+json);
         recentlyViewedJSONList = gson.fromJson(json, new TypeToken<List<NextToArriveRecentlyViewedModel>>(){}.getType());
 
         if (recentlyViewedJSONList == null) {
-            Log.d("f", "the object is null recentlyviewedjsonlist, so instantiate a new one");
             recentlyViewedJSONList = new ArrayList<NextToArriveRecentlyViewedModel>(3);
         }
-
-        Log.d("f", "got the recently viewed from shared prefrences with count of "+recentlyViewedJSONList.size());
 
         return recentlyViewedJSONList;
     }

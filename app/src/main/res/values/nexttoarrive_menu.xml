@@ -8,7 +8,7 @@
 
 <resources>
 
-    <string name="nexttoarrive_menu_icon_imageBase">settings_icon_</string>
+    <string name="nexttoarrive_menu_icon_imageBase">ic_</string>
 
     <!-- about listview items meta-data -->
     <!-- texts, iconSuffixes, urls -->
@@ -19,7 +19,7 @@
         <item>Real Time</item>
     </string-array>
 
-    <string-array name="nexttoarrive_listview_items_description">
+    <string-array name="nexttoarrive_menu_listview_items_subtexts">
         <item>select trip before refreshing</item>
         <item>no trips have been selected</item>
         <item>Fare Information</item>
@@ -27,11 +27,11 @@
     </string-array>
 
 
-    <string-array name="nexttoarrive_menu_listview_items_iconSuffixes">
+    <string-array name="nexttoarrive_menu_listview_items_iconsuffixes">
         <item>refresh</item>
         <item>favorite</item>
         <item>fare</item>
-        <item>realtime</item>
+        <item>tips</item>
     </string-array>
 
 </resources>

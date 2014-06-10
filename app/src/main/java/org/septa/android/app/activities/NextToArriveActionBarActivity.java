@@ -21,13 +21,16 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
+import android.widget.ListView;
 
 import org.septa.android.app.R;
 import org.septa.android.app.adapters.NextToArrive_ListViewItem_ArrayAdapter;
+import org.septa.android.app.adapters.NextToArrive_MenuDialog_ListViewItem_ArrayAdapter;
 import org.septa.android.app.managers.NextToArriveFavoritesAndRecentlyViewedStore;
 import org.septa.android.app.models.NextToArriveRecentlyViewedModel;
 import org.septa.android.app.models.NextToArriveStoredTripModel;
 import org.septa.android.app.models.TripDataModel;
+import org.septa.android.app.models.adapterhelpers.TextSubTextImageModel;
 import org.septa.android.app.models.servicemodels.NextToArriveModel;
 import org.septa.android.app.services.apiproxies.NextToArriveServiceProxy;
 
@@ -41,7 +44,7 @@ import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivity implements
         AdapterView.OnItemClickListener, StickyListHeadersListView.OnHeaderClickListener,
         StickyListHeadersListView.OnStickyHeaderOffsetChangedListener,
-        StickyListHeadersListView.OnStickyHeaderChangedListener, View.OnTouchListener {
+        StickyListHeadersListView.OnStickyHeaderChangedListener, View.OnTouchListener, View.OnClickListener {
     public static final String TAG = NextToArriveActionBarActivity.class.getName();
 
     private NextToArrive_ListViewItem_ArrayAdapter mAdapter;
@@ -174,6 +177,58 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.nexttoarrive_action_bar, menu);
 
+        FrameLayout menuDialog = (FrameLayout)findViewById(R.id.nexttoarrive_menudialog_mainlayout);
+        menuDialog.setBackgroundResource(R.drawable.nexttoarrive_menudialog_bottomcorners);
+        GradientDrawable drawable = (GradientDrawable) menuDialog.getBackground();
+        drawable.setColor(0xFF353534);
+
+        String iconPrefix = getResources().getString(R.string.nexttoarrive_menu_icon_imageBase);
+        String[] texts = getResources().getStringArray(R.array.nexttoarrive_menu_listview_items_texts);
+        String[] subTexts = getResources().getStringArray(R.array.nexttoarrive_menu_listview_items_subtexts);
+        String[] iconSuffix = getResources().getStringArray(R.array.nexttoarrive_menu_listview_items_iconsuffixes);
+
+        TextSubTextImageModel[] listMenuItems = new TextSubTextImageModel[texts.length];
+        for (int i=0; i<texts.length; i++) {
+            TextSubTextImageModel textSubTextImageModel = new TextSubTextImageModel(texts[i], subTexts[i], iconPrefix, iconSuffix[i]);
+            listMenuItems[i] = textSubTextImageModel;
+        }
+
+        ListView menuListView = (ListView)findViewById(R.id.nexttoarrive_menudialog_fragmentlistview);
+        menuListView.setAdapter(new NextToArrive_MenuDialog_ListViewItem_ArrayAdapter(this, listMenuItems));
+
+//        menuListView.setDivider(null);
+//        menuListView.setPadding(0, 5, 0, 0);
+        menuListView.setDividerHeight(5);
+        menuListView.setDividerHeight(5);
+
+        menuListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position,long id) {
+                Log.d(TAG, "click in the menu dialog at position "+position);
+
+                switch (position) {
+                    case 0: {       // refresh
+
+                        break;
+                    }
+                    case 1: {       // favorite
+
+                        break;
+                    }
+                    case 2: {       // fare
+                        startActivity(new Intent(NextToArriveActionBarActivity.this,
+                                      FareInformationActionBarActivity.class));
+                        break;
+                    }
+                    case 3: {       // real time
+
+                        break;
+                    }
+                }
+
+            }
+        });
+
         return true;
     }
 
@@ -208,32 +263,27 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
 
     private void revealListView() {
         FrameLayout menuDialog = (FrameLayout)findViewById(R.id.nexttoarrive_menudialog_mainlayout);
+        menuDialog.clearAnimation();
 
-        menuDialog.setBackgroundResource(R.drawable.nexttoarrive_menudialog_bottomcorners);
-
-        GradientDrawable drawable = (GradientDrawable) menuDialog.getBackground();
-        drawable.setColor(0xFF000000);
+//        menuDialog.setBackgroundResource(R.drawable.nexttoarrive_menudialog_bottomcorners);
+//        GradientDrawable drawable = (GradientDrawable) menuDialog.getBackground();
+//        drawable.setColor(0xBB000000);
 
         menuDialog.setVisibility(View.VISIBLE);
         Animation animation = AnimationUtils.loadAnimation(this, R.anim.nexttoarrive_menudialog_scale_in);
         animation.setDuration(500);
-        menuDialog.setAnimation(animation);
-        menuDialog.animate();
-        animation.start();
+
+        menuDialog.startAnimation(animation);
     }
 
     private void hideListView() {
         Log.d(TAG, "hide list view");
         FrameLayout menuDialog = (FrameLayout)findViewById(R.id.nexttoarrive_menudialog_mainlayout);
-//        menuDialog.setVisibility(View.GONE);
+        menuDialog.clearAnimation();
 
-        GradientDrawable drawable = (GradientDrawable) menuDialog.getBackground();
-        drawable.setColor(0x00000000);
-//        Animation animation = AnimationUtils.loadAnimation(this, R.anim.nexttoarrive_menudialog_scale_out);
-//        animation.setDuration(500);
-//        menuDialog.setAnimation(animation);
-//        menuDialog.animate();
-//        animation.start();
+        Animation animation = AnimationUtils.loadAnimation(this, R.anim.nexttoarrive_menudialog_scale_out);
+        animation.setDuration(500);
+        menuDialog.startAnimation(animation);
     }
 
     @Override
@@ -320,5 +370,10 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
         setProgressBarIndeterminateVisibility(Boolean.TRUE);
         // TODO: make the number of results a string value in xml.
         nextToArriveServiceProxy.getNextToArrive(tripDataModel.getStartStopName(),tripDataModel.getDestinationStopName(),"50", callback);
+    }
+
+    @Override
+    public void onClick(View v) {
+        Log.d(TAG, "detected a click on this view "+v.toString());
     }
 }

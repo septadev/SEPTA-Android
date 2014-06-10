@@ -38,4 +38,20 @@
         android:background="@android:color/white"
         android:visibility="gone"/>
 
+    <FrameLayout
+        android:id="@+id/nexttoarrive_menudialog_mainlayout"
+        android:layout_width="match_parent"
+        android:layout_height="240dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:background="#FF000000"
+        android:visibility="invisible">
+
+        <ListView
+            android:id="@+id/nexttoarrive_menudialog_listview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </FrameLayout>
+
 </FrameLayout>

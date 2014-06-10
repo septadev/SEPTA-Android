@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~ nexttoarrive_menudialog_bottomcorners.xml
+  ~ Last modified on 06-09-2014 17:51-0400 by brianhmayo
+  ~
+  ~ Copyright (c) 2014 SEPTA.  All rights reserved.
+  -->
+
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <corners android:bottomLeftRadius="10dp"
+             android:bottomRightRadius="10dp"/>
+
+</shape>

@@ -9,6 +9,7 @@ package org.septa.android.app.activities;
 
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,21 +17,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import org.septa.android.app.R;
 import org.septa.android.app.adapters.NextToArrive_ListViewItem_ArrayAdapter;
 import org.septa.android.app.managers.NextToArriveFavoritesAndRecentlyViewedStore;
-import org.septa.android.app.models.NextToArriveFavoriteModel;
 import org.septa.android.app.models.NextToArriveRecentlyViewedModel;
 import org.septa.android.app.models.NextToArriveStoredTripModel;
-import org.septa.android.app.models.SchedulesRouteModel;
 import org.septa.android.app.models.TripDataModel;
 import org.septa.android.app.models.servicemodels.NextToArriveModel;
 import org.septa.android.app.services.apiproxies.NextToArriveServiceProxy;
@@ -191,7 +187,7 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.actionmenu_transitview_reveallistview:
+            case R.id.actionmenu_nexttoarrive_revealactions:
 
                 if (menuRevealed) {
                     menuRevealed = false;
@@ -211,55 +207,33 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
     }
 
     private void revealListView() {
-        final FrameLayout rl1 = (FrameLayout) findViewById(R.id.trainview_map_fragment_view);
-        Animation anim = AnimationUtils.loadAnimation(this, R.anim.slide_right_to_left);
+        FrameLayout menuDialog = (FrameLayout)findViewById(R.id.nexttoarrive_menudialog_mainlayout);
 
-        anim.setAnimationListener(new Animation.AnimationListener(){
-            @Override
-            public void onAnimationStart(Animation arg0) {
-                final View shadowView = (View) findViewById(R.id.trainview_map_fragmet_view_shadow);
-                shadowView.setVisibility(View.VISIBLE);
-                shadowView.bringToFront();
-            }
-            @Override
-            public void onAnimationRepeat(Animation arg0) {
-            }
-            @Override
-            public void onAnimationEnd(Animation arg0) {
-                LinearLayout ll2 = (LinearLayout) findViewById(R.id.back_frame);
-                ll2.bringToFront();
-            }
-        });
+        menuDialog.setBackgroundResource(R.drawable.nexttoarrive_menudialog_bottomcorners);
 
-        anim.setInterpolator((new AccelerateDecelerateInterpolator()));
-        anim.setFillAfter(true);
-        rl1.startAnimation(anim);
+        GradientDrawable drawable = (GradientDrawable) menuDialog.getBackground();
+        drawable.setColor(0xFF000000);
+
+        menuDialog.setVisibility(View.VISIBLE);
+        Animation animation = AnimationUtils.loadAnimation(this, R.anim.nexttoarrive_menudialog_scale_in);
+        animation.setDuration(500);
+        menuDialog.setAnimation(animation);
+        menuDialog.animate();
+        animation.start();
     }
 
     private void hideListView() {
-        final FrameLayout rl1 = (FrameLayout) findViewById(R.id.trainview_map_fragment_view);
-        Animation anim = AnimationUtils.loadAnimation(this, R.anim.slide_left_to_right);
-        rl1.bringToFront();
+        Log.d(TAG, "hide list view");
+        FrameLayout menuDialog = (FrameLayout)findViewById(R.id.nexttoarrive_menudialog_mainlayout);
+//        menuDialog.setVisibility(View.GONE);
 
-        anim.setAnimationListener(new Animation.AnimationListener(){
-            @Override
-            public void onAnimationStart(Animation arg0) {
-            }
-            @Override
-            public void onAnimationRepeat(Animation arg0) {
-            }
-            @Override
-            public void onAnimationEnd(Animation arg0) {
-                View shadowView = (View) findViewById(R.id.trainview_map_fragmet_view_shadow);
-                shadowView.setVisibility(View.INVISIBLE);
-                LinearLayout mapView = (LinearLayout) findViewById(R.id.trainview_map_fragment_innerview);
-                mapView.bringToFront();
-            }
-        });
-
-        anim.setInterpolator((new AccelerateDecelerateInterpolator()));
-        anim.setFillAfter(true);
-        rl1.startAnimation(anim);
+        GradientDrawable drawable = (GradientDrawable) menuDialog.getBackground();
+        drawable.setColor(0x00000000);
+//        Animation animation = AnimationUtils.loadAnimation(this, R.anim.nexttoarrive_menudialog_scale_out);
+//        animation.setDuration(500);
+//        menuDialog.setAnimation(animation);
+//        menuDialog.animate();
+//        animation.start();
     }
 
     @Override
@@ -270,8 +244,6 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position,long id) {
-        Log.d("f", "onItemClick occurred at position "+position+" with id "+id);
-
         NextToArriveStoredTripModel storedTripModel = mAdapter.getSelectedFavoriteOrRecentlyViewed(position);
         tripDataModel.setStartStopId(storedTripModel.getStartStopId());
         tripDataModel.setStartStopName(storedTripModel.getStartStopName());
@@ -344,7 +316,7 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
         };
 
         NextToArriveServiceProxy nextToArriveServiceProxy = new NextToArriveServiceProxy();
-        mAdapter.clearNextToArriveTrainList();
+//        mAdapter.clearNextToArriveTrainList();
         setProgressBarIndeterminateVisibility(Boolean.TRUE);
         // TODO: make the number of results a string value in xml.
         nextToArriveServiceProxy.getNextToArrive(tripDataModel.getStartStopName(),tripDataModel.getDestinationStopName(),"50", callback);

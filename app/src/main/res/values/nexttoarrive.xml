@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ nexttoarrive_menu.xml
+  ~ nexttoarrive.xml
   ~ Last modified on 06-05-2014 11:14-0400 by brianhmayo
   ~
   ~ Copyright (c) 2014 SEPTA.  All rights reserved.
   -->
 
 <resources>
+
+    <string name="nexttoarrive_realtime_webview_url">file:///android_asset/nexttoarrive_realtime.html</string>
 
     <string name="nexttoarrive_menu_icon_imageBase">ic_</string>
 

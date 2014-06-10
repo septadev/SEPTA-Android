@@ -42,7 +42,7 @@ import retrofit.client.Response;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
 public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivity implements
-        AdapterView.OnItemClickListener, StickyListHeadersListView.OnHeaderClickListener,
+        StickyListHeadersListView.OnHeaderClickListener,
         StickyListHeadersListView.OnStickyHeaderOffsetChangedListener,
         StickyListHeadersListView.OnStickyHeaderChangedListener, View.OnTouchListener, View.OnClickListener {
     public static final String TAG = NextToArriveActionBarActivity.class.getName();
@@ -72,7 +72,21 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
         mAdapter = new NextToArrive_ListViewItem_ArrayAdapter(this);
 
         stickyList = (StickyListHeadersListView) findViewById(R.id.list);
-        stickyList.setOnItemClickListener(this);
+        stickyList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position,long id) {
+                NextToArriveStoredTripModel storedTripModel = mAdapter.getSelectedFavoriteOrRecentlyViewed(position);
+                tripDataModel.setStartStopId(storedTripModel.getStartStopId());
+                tripDataModel.setStartStopName(storedTripModel.getStartStopName());
+                tripDataModel.setDestinationStopId(storedTripModel.getDestintationStopId());
+                tripDataModel.setDestinationStopName(storedTripModel.getDestinationStopName());
+
+                mAdapter.setStartStopName(tripDataModel.getStartStopName());
+                mAdapter.setDestinationStopName(tripDataModel.getDestinationStopName());
+
+                checkTripStartAndDestinationForNextToArriveDataRequest();
+            }}
+        );
         stickyList.setOnHeaderClickListener(this);
         stickyList.setOnStickyHeaderChangedListener(this);
         stickyList.setOnStickyHeaderOffsetChangedListener(this);
@@ -196,11 +210,6 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
         ListView menuListView = (ListView)findViewById(R.id.nexttoarrive_menudialog_fragmentlistview);
         menuListView.setAdapter(new NextToArrive_MenuDialog_ListViewItem_ArrayAdapter(this, listMenuItems));
 
-//        menuListView.setDivider(null);
-//        menuListView.setPadding(0, 5, 0, 0);
-        menuListView.setDividerHeight(5);
-        menuListView.setDividerHeight(5);
-
         menuListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position,long id) {
@@ -221,7 +230,8 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
                         break;
                     }
                     case 3: {       // real time
-
+                        startActivity(new Intent(NextToArriveActionBarActivity.this,
+                                      NextToArriveRealTimeWebViewActionBarActivity.class));
                         break;
                     }
                 }
@@ -290,20 +300,6 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
     public boolean onTouch(View v, MotionEvent event) {
         v.setOnTouchListener(null);
         return false;
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position,long id) {
-        NextToArriveStoredTripModel storedTripModel = mAdapter.getSelectedFavoriteOrRecentlyViewed(position);
-        tripDataModel.setStartStopId(storedTripModel.getStartStopId());
-        tripDataModel.setStartStopName(storedTripModel.getStartStopName());
-        tripDataModel.setDestinationStopId(storedTripModel.getDestintationStopId());
-        tripDataModel.setDestinationStopName(storedTripModel.getDestinationStopName());
-
-        mAdapter.setStartStopName(tripDataModel.getStartStopName());
-        mAdapter.setDestinationStopName(tripDataModel.getDestinationStopName());
-
-        checkTripStartAndDestinationForNextToArriveDataRequest();
     }
 
     @Override

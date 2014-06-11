@@ -14,4 +14,7 @@
 
     <string name="field_separator">:</string>
 
+    <!-- A 20 second vehicle refresh interval time, in milliseconds-->
+    <integer name="vehicle_refresh_interval_ms">20000</integer>
+
 </resources>

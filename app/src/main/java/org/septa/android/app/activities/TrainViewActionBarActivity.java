@@ -7,21 +7,20 @@
 
 package org.septa.android.app.activities;
 
-import android.app.ActionBar;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
@@ -35,20 +34,21 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.septa.android.app.R;
 import org.septa.android.app.fragments.TrainViewListFragment;
 import org.septa.android.app.models.KMLModel;
-import org.septa.android.app.models.LocationModel;
 import org.septa.android.app.models.ObjectFactory;
 import org.septa.android.app.models.servicemodels.TrainViewModel;
 import org.septa.android.app.services.apiproxies.TrainViewServiceProxy;
-import org.septa.android.app.utilities.KMLSAXXMLProcessor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -80,6 +80,10 @@ public class TrainViewActionBarActivity extends BaseAnalyticsActionBarActivity i
             MILLISECONDS_PER_SECOND * FASTEST_INTERVAL_IN_SECONDS;
 
     private boolean listviewRevealed = false;
+
+    private ArrayList<Marker>markerList = new ArrayList<Marker>();
+
+    private Timer asyncTrainViewRefreshTimer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -298,6 +302,34 @@ public class TrainViewActionBarActivity extends BaseAnalyticsActionBarActivity i
         }
     }
 
+    public void asyncTrainViewRefresh() {
+        asyncTrainViewRefreshTimer = new Timer();
+        TimerTask doAsynchronousTask = new TimerTask() {
+            @Override
+            public void run() {
+                Log.d(TAG, "in run for async task");
+                        try {
+
+                            fetchTrainViewData();
+                        } catch (Exception e) {
+                            // TODO Auto-generated catch block
+                        }
+                    }
+            };
+
+        int refreshInterval = getResources().getInteger(R.integer.vehicle_refresh_interval_ms);
+        asyncTrainViewRefreshTimer.schedule(doAsynchronousTask, 0, refreshInterval);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        Log.d(TAG, "onPause, cancelling and purging the async timer");
+        asyncTrainViewRefreshTimer.cancel();
+        asyncTrainViewRefreshTimer.purge();
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -317,6 +349,8 @@ public class TrainViewActionBarActivity extends BaseAnalyticsActionBarActivity i
         // TODO Auto-generated method stub
         super.onResume();
 
+        asyncTrainViewRefresh();
+
         int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getApplicationContext());
         if (resultCode != ConnectionResult.SUCCESS){
             GooglePlayServicesUtil.getErrorDialog(resultCode, this, RQS_GooglePlayServices);
@@ -331,7 +365,20 @@ public class TrainViewActionBarActivity extends BaseAnalyticsActionBarActivity i
                 setProgressBarIndeterminateVisibility(Boolean.FALSE);
 
                 TrainViewListFragment listFragment = (TrainViewListFragment) getSupportFragmentManager().findFragmentById(R.id.trainview_list_fragment);
+
+                // test the listFragment.  If null, we may have transitioned off this view and this fetch
+                //  was long running from either a slow start or an async timer task.
+                if (listFragment == null) {
+                    return;
+                }
+
                 listFragment.setTrainViewModels((ArrayList<TrainViewModel>)o);
+
+                // clear all of the markers off the map
+                for (Marker marker : markerList) {
+                    marker.remove();
+                }
+                markerList.clear();
 
                 for (TrainViewModel trainView: (ArrayList<TrainViewModel>)o) {
                     BitmapDescriptor trainIcon;
@@ -351,11 +398,12 @@ public class TrainViewActionBarActivity extends BaseAnalyticsActionBarActivity i
 
                     // check to make sure that mMap is not null
                     if (mMap != null) {
-                        mMap.addMarker(new MarkerOptions()
+                        Marker marker = mMap.addMarker(new MarkerOptions()
                                 .position(trainView.getLatLng())
                                 .title(title)
                                 .icon(trainIcon)
                                 .snippet(snippet));
+                        markerList.add(marker);
                     }
                 }
             }

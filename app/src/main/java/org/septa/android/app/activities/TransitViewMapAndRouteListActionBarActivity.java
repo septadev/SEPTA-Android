@@ -34,6 +34,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
@@ -46,7 +47,10 @@ import org.septa.android.app.models.servicemodels.TransitViewVehicleModel;
 import org.septa.android.app.services.apiproxies.TransitViewServiceProxy;
 import org.septa.android.app.utilities.KMLSAXXMLProcessor;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -82,6 +86,10 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
     private RoutesModel busRoutes;
     private String routeShortName;
 
+    private ArrayList<Marker> markerList = new ArrayList<Marker>();
+
+    private Timer asyncTransitViewRefreshTimer;
+
     @Override
     public boolean onTouchEvent(MotionEvent e) {
         Log.d(TAG, "touch event heard");
@@ -94,7 +102,7 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
         super.onCreate(savedInstanceState);
 
         Intent intent = getIntent();
-        String routeShortName = intent.getStringExtra("route_short_name");
+        routeShortName = intent.getStringExtra("route_short_name");
 
         String actionBarTitleText = getIntent().getStringExtra(getString(R.string.actionbar_titletext_key));
         String iconImageNameSuffix = getIntent().getStringExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key));
@@ -152,9 +160,27 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
         }
     }
 
+    public void asyncTransitViewRefresh() {
+        asyncTransitViewRefreshTimer = new Timer();
+        TimerTask doAsynchronousTask = new TimerTask() {
+            @Override
+            public void run() {
+                Log.d(TAG, "in run for async task");
+                try {
+
+                    fetchTransitViewDataForRoute(routeShortName);
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                }
+            }
+        };
+
+        int refreshInterval = getResources().getInteger(R.integer.vehicle_refresh_interval_ms);
+        asyncTransitViewRefreshTimer.schedule(doAsynchronousTask, 0, refreshInterval);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        Log.d(TAG, "creating the menu in find nearest location actionbar activity");
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.trainsitview_action_bar, menu);
 
@@ -324,6 +350,14 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+
+        asyncTransitViewRefreshTimer.cancel();
+        asyncTransitViewRefreshTimer.purge();
+    }
+
+    @Override
     protected void onStart() {
         super.onStart();
         // Connect the client.
@@ -347,6 +381,8 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
         // TODO Auto-generated method stub
         super.onResume();
 
+        asyncTransitViewRefresh();
+
         int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getApplicationContext());
         if (resultCode != ConnectionResult.SUCCESS){
             GooglePlayServicesUtil.getErrorDialog(resultCode, this, RQS_GooglePlayServices);
@@ -362,7 +398,20 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
                 List<TransitViewVehicleModel> transitViewVehicleList = ((TransitViewModel)o).getActiveVehicleModelList();
 
                 TransitViewRouteViewListFragment listFragment1 = (TransitViewRouteViewListFragment) getSupportFragmentManager().findFragmentById(R.id.transitview_list_fragment);
+
+                // test the listFragment1.  If null, we may have transitioned off this view and this fetch
+                //  was long running from either a slow start or an async timer task.
+                if (listFragment1 == null) {
+                    return;
+                }
+
                 listFragment1.setTrainViewModels(transitViewVehicleList);
+
+                // clear all of the markers off the map
+                for (Marker marker : markerList) {
+                    marker.remove();
+                }
+                markerList.clear();
 
                 for (TransitViewVehicleModel transitViewVehicle: transitViewVehicleList) {
                     BitmapDescriptor transitIcon;
@@ -372,8 +421,6 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
                         break;
                     }
 
-                    Log.d(TAG, "bound here "+transitViewVehicle.getDirection());
-
                     if (transitViewVehicle.isSouthBound() || transitViewVehicle.isWestBound()) {
                         transitIcon = BitmapDescriptorFactory.fromResource(R.drawable.ic_transitview_bus_red);
                     } else {
@@ -382,11 +429,12 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
 
                     // check to make sure that mMap is not null
                     if (mMap != null) {
-                        mMap.addMarker(new MarkerOptions()
+                        Marker marker = mMap.addMarker(new MarkerOptions()
                                 .position(transitViewVehicle.getLatLng())
-                                .title("Vehicle: "+transitViewVehicle.getVehicleId()+ " (updated: x min)")
+                                .title("Vehicle: " + transitViewVehicle.getVehicleId() + " (updated: "+transitViewVehicle.getOffset()+" min)")
                                 .icon(transitIcon)
-                                .snippet("Destination: "+ transitViewVehicle.getDestination()));
+                                .snippet("Destination: " + transitViewVehicle.getDestination()));
+                        markerList.add(marker);
                     }
                 }
             }

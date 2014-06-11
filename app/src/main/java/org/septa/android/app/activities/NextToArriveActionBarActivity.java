@@ -21,6 +21,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import org.septa.android.app.R;
@@ -44,7 +45,9 @@ import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivity implements
         StickyListHeadersListView.OnHeaderClickListener,
         StickyListHeadersListView.OnStickyHeaderOffsetChangedListener,
-        StickyListHeadersListView.OnStickyHeaderChangedListener, View.OnTouchListener, View.OnClickListener {
+        StickyListHeadersListView.OnStickyHeaderChangedListener,
+        View.OnTouchListener,
+        View.OnClickListener {
     public static final String TAG = NextToArriveActionBarActivity.class.getName();
 
     private NextToArrive_ListViewItem_ArrayAdapter mAdapter;
@@ -74,7 +77,7 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
         stickyList = (StickyListHeadersListView) findViewById(R.id.list);
         stickyList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position,long id) {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 NextToArriveStoredTripModel storedTripModel = mAdapter.getSelectedFavoriteOrRecentlyViewed(position);
                 tripDataModel.setStartStopId(storedTripModel.getStartStopId());
                 tripDataModel.setStartStopName(storedTripModel.getStartStopName());
@@ -85,8 +88,8 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
                 mAdapter.setDestinationStopName(tripDataModel.getDestinationStopName());
 
                 checkTripStartAndDestinationForNextToArriveDataRequest();
-            }}
-        );
+            }
+        });
         stickyList.setOnHeaderClickListener(this);
         stickyList.setOnStickyHeaderChangedListener(this);
         stickyList.setOnStickyHeaderOffsetChangedListener(this);
@@ -212,8 +215,7 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
 
         menuListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position,long id) {
-                Log.d(TAG, "click in the menu dialog at position "+position);
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                 switch (position) {
                     case 0: {       // refresh
@@ -226,16 +228,15 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
                     }
                     case 2: {       // fare
                         startActivity(new Intent(NextToArriveActionBarActivity.this,
-                                      FareInformationActionBarActivity.class));
+                                FareInformationActionBarActivity.class));
                         break;
                     }
                     case 3: {       // real time
                         startActivity(new Intent(NextToArriveActionBarActivity.this,
-                                      NextToArriveRealTimeWebViewActionBarActivity.class));
+                                NextToArriveRealTimeWebViewActionBarActivity.class));
                         break;
                     }
                 }
-
             }
         });
 
@@ -273,17 +274,18 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
 
     private void revealListView() {
         FrameLayout menuDialog = (FrameLayout)findViewById(R.id.nexttoarrive_menudialog_mainlayout);
+        ListView listView = (ListView)findViewById(R.id.nexttoarrive_menudialog_fragmentlistview);
+
         menuDialog.clearAnimation();
 
-//        menuDialog.setBackgroundResource(R.drawable.nexttoarrive_menudialog_bottomcorners);
-//        GradientDrawable drawable = (GradientDrawable) menuDialog.getBackground();
-//        drawable.setColor(0xBB000000);
-
+        listView.setVisibility(View.VISIBLE);
         menuDialog.setVisibility(View.VISIBLE);
-        Animation animation = AnimationUtils.loadAnimation(this, R.anim.nexttoarrive_menudialog_scale_in);
-        animation.setDuration(500);
 
-        menuDialog.startAnimation(animation);
+        Animation mainLayoutAnimation = AnimationUtils.loadAnimation(this, R.anim.nexttoarrive_menudialog_scale_in);
+        mainLayoutAnimation.setDuration(500);
+
+        menuDialog.startAnimation(mainLayoutAnimation);
+        listView.setVisibility(View.VISIBLE);
     }
 
     private void hideListView() {
@@ -291,9 +293,24 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
         FrameLayout menuDialog = (FrameLayout)findViewById(R.id.nexttoarrive_menudialog_mainlayout);
         menuDialog.clearAnimation();
 
-        Animation animation = AnimationUtils.loadAnimation(this, R.anim.nexttoarrive_menudialog_scale_out);
-        animation.setDuration(500);
-        menuDialog.startAnimation(animation);
+        Animation mainLayOutAnimation = AnimationUtils.loadAnimation(this, R.anim.nexttoarrive_menudialog_scale_out);
+        mainLayOutAnimation.setDuration(500);
+
+        mainLayOutAnimation.setAnimationListener(new Animation.AnimationListener(){
+            @Override
+            public void onAnimationStart(Animation arg0) {
+            }
+            @Override
+            public void onAnimationRepeat(Animation arg0) {
+            }
+            @Override
+            public void onAnimationEnd(Animation arg0) {
+                ListView listView = (ListView)findViewById(R.id.nexttoarrive_menudialog_fragmentlistview);
+                listView.setVisibility(View.GONE);
+            }
+        });
+
+        menuDialog.startAnimation(mainLayOutAnimation);
     }
 
     @Override
@@ -370,6 +387,7 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
 
     @Override
     public void onClick(View v) {
-        Log.d(TAG, "detected a click on this view "+v.toString());
+        Log.d(TAG, "detected a click on this view " + v.toString());
     }
+
 }

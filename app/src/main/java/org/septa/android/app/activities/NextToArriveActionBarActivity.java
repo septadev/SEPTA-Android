@@ -79,6 +79,11 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 NextToArriveStoredTripModel storedTripModel = mAdapter.getSelectedFavoriteOrRecentlyViewed(position);
+
+                // if the tap took place on a next to arrive data row, just return.
+                if (storedTripModel == null) {
+                    return;
+                }
                 tripDataModel.setStartStopId(storedTripModel.getStartStopId());
                 tripDataModel.setStartStopName(storedTripModel.getStartStopName());
                 tripDataModel.setDestinationStopId(storedTripModel.getDestintationStopId());

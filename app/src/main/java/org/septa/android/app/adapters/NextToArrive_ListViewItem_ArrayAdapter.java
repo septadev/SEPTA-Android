@@ -22,10 +22,7 @@ import org.septa.android.app.managers.NextToArriveFavoritesAndRecentlyViewedStor
 import org.septa.android.app.models.NextToArriveFavoriteModel;
 import org.septa.android.app.models.NextToArriveRecentlyViewedModel;
 import org.septa.android.app.models.NextToArriveStoredTripModel;
-import org.septa.android.app.models.ObjectFactory;
-import org.septa.android.app.models.SchedulesFavoriteModel;
-import org.septa.android.app.models.SchedulesRecentlyViewedModel;
-import org.septa.android.app.models.SchedulesRouteModel;
+
 import org.septa.android.app.models.servicemodels.NextToArriveModel;
 
 import java.util.ArrayList;
@@ -310,6 +307,9 @@ public class NextToArrive_ListViewItem_ArrayAdapter extends BaseAdapter implemen
     }
 
     public NextToArriveStoredTripModel getSelectedFavoriteOrRecentlyViewed(int position) {
+        if (getItems()[adjustedPosition(position)] instanceof NextToArriveModel) {
+            return null;
+        }
 
         return (NextToArriveStoredTripModel)getItems()[adjustedPosition(position)];
     }

@@ -6,7 +6,7 @@
               android:layout_height="match_parent"
               android:background="@android:color/transparent">
 
-    <LinearLayout
+    <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
@@ -29,9 +29,10 @@
                     android:layout_marginTop="5dp"
                     android:layout_gravity="center_vertical"
                     android:id="@+id/nexttoarrive_menudialog_listview_items_maintext"
-                    android:textStyle="normal"
+                    android:textStyle="bold"
                     android:textColor="@android:color/white"
                     android:gravity="center_horizontal"
+                    android:includeFontPadding="false"
                     android:textSize="20dp"/>
             <TextView
                     android:layout_width="match_parent"
@@ -42,10 +43,11 @@
                     android:textStyle="normal"
                     android:textColor="@android:color/white"
                     android:gravity="center_horizontal"
+                    android:includeFontPadding="false"
                     android:textSize="14dp"/>
 
         </LinearLayout>
-    </LinearLayout>
+    </FrameLayout>
 
     <View
             android:layout_width="match_parent"

@@ -78,12 +78,8 @@ public class NextToArriveStopSelectionActionBarActivity extends BaseAnalyticsAct
         protected void onPostExecute(Boolean b) {
             super.onPostExecute(b);
 
-            Log.d("f", "calling onPostExecute...");
-
             StopSelectionListFragment stopsListFragment = (StopSelectionListFragment)getSupportFragmentManager().findFragmentById(R.id.stopselection_list_fragment);
             stopsListFragment.setStopList(stopsList);
-
-            Log.d("f", "done with the onPostExecute call.");
         }
     }
 }

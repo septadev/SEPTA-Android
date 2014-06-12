@@ -20,13 +20,13 @@ public class NextToArriveModel {
 
     @SerializedName("term_train") private String terminalTrain;
     @SerializedName("term_line") private String terminalLine;
-    @SerializedName("term_departure_time") private String terminalDepartureTime;
+    @SerializedName("term_depart_time") private String terminalDepartureTime;
     @SerializedName("term_arrival_time") private String terminalArrivalTime;
     @SerializedName("term_delay") private String terminalDelay;
 
-    @SerializedName("isdirect") private boolean isDirect;
+    @SerializedName("isdirect") private String isDirect;
 
-    @SerializedName("Connection") private String Connection;
+    @SerializedName("Connection") private String connection;
 
     public String getOriginalTrain() {
         return originalTrain;
@@ -69,10 +69,10 @@ public class NextToArriveModel {
     }
 
     public boolean isDirect() {
-        return isDirect;
+        return isDirect.equals("true");
     }
 
     public String getConnection() {
-        return Connection;
+        return connection;
     }
 }

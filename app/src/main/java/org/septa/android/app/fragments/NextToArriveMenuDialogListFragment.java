@@ -32,7 +32,7 @@ public class NextToArriveMenuDialogListFragment  extends ListFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.id.nexttoarrive_menudialog_fragmentlistview, null);
+        View view = inflater.inflate(R.id.nexttoarrive_menudialog_listview, null);
 
         String iconPrefix = getResources().getString(R.string.nexttoarrive_menu_icon_imageBase);
         String[] texts = getResources().getStringArray(R.array.nexttoarrive_menu_listview_items_texts);
@@ -45,7 +45,7 @@ public class NextToArriveMenuDialogListFragment  extends ListFragment {
             listMenuItems[i] = textSubTextImageModel;
         }
 
-        ListView menuListView = (ListView)getActivity().findViewById(R.id.nexttoarrive_menudialog_fragmentlistview);
+        ListView menuListView = (ListView)getActivity().findViewById(R.id.nexttoarrive_menudialog_listview);
         menuListView.setAdapter(new NextToArrive_MenuDialog_ListViewItem_ArrayAdapter(getActivity(), listMenuItems));
 
         return view;

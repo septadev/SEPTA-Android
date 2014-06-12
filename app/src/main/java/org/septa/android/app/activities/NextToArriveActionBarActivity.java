@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,8 +22,10 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.ListView;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 
 import org.septa.android.app.R;
 import org.septa.android.app.adapters.NextToArrive_ListViewItem_ArrayAdapter;
@@ -52,11 +55,16 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
 
     private NextToArrive_ListViewItem_ArrayAdapter mAdapter;
     private StickyListHeadersListView stickyList;
+    private ListView menuDialogListView;
 
     private TripDataModel tripDataModel = new TripDataModel();
 
     private boolean menuRevealed = false;
     private boolean inProcessOfStartDestinationFlow = false;
+
+    private int millisecondsUntilRefresh = 0;
+
+    private CountDownTimer scheduleRefreshCountDownTimer;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -79,6 +87,11 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 NextToArriveStoredTripModel storedTripModel = mAdapter.getSelectedFavoriteOrRecentlyViewed(position);
+
+                // if the tap took place on a next to arrive data row, just return.
+                if (storedTripModel == null) {
+                    return;
+                }
                 tripDataModel.setStartStopId(storedTripModel.getStartStopId());
                 tripDataModel.setStartStopName(storedTripModel.getStartStopName());
                 tripDataModel.setDestinationStopId(storedTripModel.getDestintationStopId());
@@ -103,6 +116,8 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
+
+        this.millisecondsUntilRefresh = getResources().getInteger(R.integer.vehicle_refresh_interval_ms);
     }
 
     public void startEndSelectionSelected(View view) {
@@ -210,7 +225,8 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
             listMenuItems[i] = textSubTextImageModel;
         }
 
-        ListView menuListView = (ListView)findViewById(R.id.nexttoarrive_menudialog_fragmentlistview);
+        ListView menuListView = (ListView)findViewById(R.id.nexttoarrive_menudialog_listview);
+        this.menuDialogListView = menuListView;
         menuListView.setAdapter(new NextToArrive_MenuDialog_ListViewItem_ArrayAdapter(this, listMenuItems));
 
         menuListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -219,7 +235,7 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
 
                 switch (position) {
                     case 0: {       // refresh
-
+                        checkTripStartAndDestinationForNextToArriveDataRequest();
                         break;
                     }
                     case 1: {       // favorite
@@ -274,7 +290,7 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
 
     private void revealListView() {
         FrameLayout menuDialog = (FrameLayout)findViewById(R.id.nexttoarrive_menudialog_mainlayout);
-        ListView listView = (ListView)findViewById(R.id.nexttoarrive_menudialog_fragmentlistview);
+        ListView listView = (ListView)findViewById(R.id.nexttoarrive_menudialog_listview);
 
         menuDialog.clearAnimation();
 
@@ -305,7 +321,7 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
             }
             @Override
             public void onAnimationEnd(Animation arg0) {
-                ListView listView = (ListView)findViewById(R.id.nexttoarrive_menudialog_fragmentlistview);
+                ListView listView = (ListView)findViewById(R.id.nexttoarrive_menudialog_listview);
                 listView.setVisibility(View.GONE);
             }
         });
@@ -342,6 +358,7 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
     private void checkTripStartAndDestinationForNextToArriveDataRequest() {
         // check if we have both the start and destination stops, if yes, fetch the data.
         if ((tripDataModel.getStartStopName() != null) && tripDataModel.getDestinationStopName() != null) {
+            ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter)menuDialogListView.getAdapter()).enableRefresh();
 
             NextToArriveFavoritesAndRecentlyViewedStore store = new NextToArriveFavoritesAndRecentlyViewedStore(this);
             NextToArriveRecentlyViewedModel nextToArriveRecentlyViewedModel = new NextToArriveRecentlyViewedModel();
@@ -353,6 +370,17 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
             store.addRecentlyViewed(nextToArriveRecentlyViewedModel);
 
             fetchNextToArrive();
+
+            if (scheduleRefreshCountDownTimer != null) {
+                scheduleRefreshCountDownTimer.cancel();
+                scheduleRefreshCountDownTimer.start();
+            } else {
+                scheduleRefreshCountDownTimer = createScheduleRefreshCountDownTimer();
+                scheduleRefreshCountDownTimer.start();
+            }
+        } else{
+
+            ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter)menuDialogListView.getAdapter()).disableRefresh();
         }
     }
 
@@ -360,7 +388,6 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
         Callback callback = new Callback() {
             @Override
             public void success(Object o, Response response) {
-                Log.d(TAG, "successfully ended fetch next to arrive service call with " + ((ArrayList<NextToArriveModel>) o).size());
                 setProgressBarIndeterminateVisibility(Boolean.FALSE);
                 mAdapter.setNextToArriveTrainList((ArrayList<NextToArriveModel>)o);
             }
@@ -381,8 +408,24 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
         NextToArriveServiceProxy nextToArriveServiceProxy = new NextToArriveServiceProxy();
 //        mAdapter.clearNextToArriveTrainList();
         setProgressBarIndeterminateVisibility(Boolean.TRUE);
-        // TODO: make the number of results a string value in xml.
-        nextToArriveServiceProxy.getNextToArrive(tripDataModel.getStartStopName(),tripDataModel.getDestinationStopName(),"50", callback);
+
+        String startStopName = tripDataModel.getStartStopName();
+        String destinationStopName = tripDataModel.getDestinationStopName();
+
+        String[]displayStopNamesList = getResources().getStringArray(R.array.stopname_translation_display_name);
+        String[]gtfsStopNamesList = getResources().getStringArray(R.array.stopname_translation_gtfs_names);
+        for (int i=0; i<displayStopNamesList.length;i++) {
+            if (displayStopNamesList[i].equals(startStopName)) {
+                startStopName = gtfsStopNamesList[i];
+            }
+            if (displayStopNamesList[i].equals(destinationStopName)) {
+                destinationStopName = gtfsStopNamesList[i];
+            }
+        }
+
+        Log.d(TAG, "about to call for next to arrive with start and destination names as "+startStopName+" "+destinationStopName);
+
+        nextToArriveServiceProxy.getNextToArrive(startStopName, destinationStopName,"50", callback);
     }
 
     @Override
@@ -390,4 +433,46 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
         Log.d(TAG, "detected a click on this view " + v.toString());
     }
 
+    @Override
+    protected void onPause() {
+        Log.d(TAG, "onPause called");
+        super.onPause();
+
+        scheduleRefreshCountDownTimer.cancel();
+    }
+
+    @Override
+    protected void onStart() {
+        Log.d(TAG, "onStart called");
+        super.onStart();
+
+        scheduleRefreshCountDownTimer = createScheduleRefreshCountDownTimer();
+        if ((tripDataModel.getStartStopName() != null) && tripDataModel.getDestinationStopName() != null) {
+            scheduleRefreshCountDownTimer.start();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        Log.d(TAG, "onStop called");
+        super.onStop();
+
+        scheduleRefreshCountDownTimer = null;
+    }
+
+    private CountDownTimer createScheduleRefreshCountDownTimer() {
+        return new CountDownTimer(20000, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+
+                ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter)menuDialogListView.getAdapter()).setNextRefreshInSecondsValue(millisUntilFinished/1000);
+            }
+
+            @Override
+            public void onFinish() {
+
+                checkTripStartAndDestinationForNextToArriveDataRequest();
+            }
+        };
+    }
 }

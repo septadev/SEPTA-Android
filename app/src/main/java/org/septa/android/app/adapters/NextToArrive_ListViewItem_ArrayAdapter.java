@@ -22,10 +22,7 @@ import org.septa.android.app.managers.NextToArriveFavoritesAndRecentlyViewedStor
 import org.septa.android.app.models.NextToArriveFavoriteModel;
 import org.septa.android.app.models.NextToArriveRecentlyViewedModel;
 import org.septa.android.app.models.NextToArriveStoredTripModel;
-import org.septa.android.app.models.ObjectFactory;
-import org.septa.android.app.models.SchedulesFavoriteModel;
-import org.septa.android.app.models.SchedulesRecentlyViewedModel;
-import org.septa.android.app.models.SchedulesRouteModel;
+
 import org.septa.android.app.models.servicemodels.NextToArriveModel;
 
 import java.util.ArrayList;
@@ -166,34 +163,83 @@ public class NextToArrive_ListViewItem_ArrayAdapter extends BaseAdapter implemen
                     transparentView.setVisibility(View.GONE);
                 }
             } else{
+                Log.d(TAG, "get view for row");
                 NextToArriveModel ntarm = (NextToArriveModel)getItem(adjustedPosition(position));
                 rowView = mInflater.inflate(R.layout.nexttoarrive_nexttoarrivetrains_listview_item, parent, false);
 
-                TextView trainNumberTextView = (TextView)rowView.findViewById(R.id.nexttoarrive_nexttoarrivetrains_trainnumber_textview);
-                TextView latenessTextView = (TextView)rowView.findViewById(R.id.nexttoarrive_nexttoarrivetrains_lateness_textview);
-                TextView startTimeTextView = (TextView)rowView.findViewById(R.id.nexttoarrive_nexttoarrivetrains_starttime_textview);
-                TextView endTimeTextView = (TextView)rowView.findViewById(R.id.nexttoarrive_nexttoarrivetrains_endtime_textview);
-                TextView routeNameTextView = (TextView)rowView.findViewById(R.id.nexttoarrive_nexttoarrivetrains_routename_textview);
-
-                NextToArriveModel nextToArriveModel = (NextToArriveModel)getItems()[adjustedPosition(position)];
-
-                if (nextToArriveModel.getOriginalTrain() == null) { // found a dummy blank row
+                if (ntarm.getOriginalTrain() == null) { // found a dummy blank row
                     rowView.setVisibility(View.GONE);
                     return rowView;
-                } else {
-                    rowView.setVisibility(View.VISIBLE);
                 }
 
-                trainNumberTextView.setText(nextToArriveModel.getOriginalTrain());
-                latenessTextView.setText(nextToArriveModel.getOriginalDelay());
-                startTimeTextView.setText(nextToArriveModel.getOriginalArrivalTime());
-                endTimeTextView.setText(nextToArriveModel.getOriginalDepartureTime());
-                routeNameTextView.setText(nextToArriveModel.getOriginalLine());
+                Log.d(TAG, "evaluating if isDirect");
+                if (ntarm.isDirect()) {
+                    Log.d(TAG, "is direct");
+                    TextView trainNumberTextView = (TextView) rowView.findViewById(R.id.nexttoarrive_nexttoarrivetrains_trainnumber_textview);
+                    TextView latenessTextView = (TextView) rowView.findViewById(R.id.nexttoarrive_nexttoarrivetrains_lateness_textview);
+                    TextView startTimeTextView = (TextView) rowView.findViewById(R.id.nexttoarrive_nexttoarrivetrains_starttime_textview);
+                    TextView endTimeTextView = (TextView) rowView.findViewById(R.id.nexttoarrive_nexttoarrivetrains_endtime_textview);
+                    TextView routeNameTextView = (TextView) rowView.findViewById(R.id.nexttoarrive_nexttoarrivetrains_routename_textview);
 
-                if (nextToArriveModel.getOriginalDelay().equals("On time")) {
-                    latenessTextView.setTextColor(Color.parseColor("#FF00A354"));
+                    NextToArriveModel nextToArriveModel = (NextToArriveModel) getItems()[adjustedPosition(position)];
+
+                    trainNumberTextView.setText(nextToArriveModel.getOriginalTrain());
+                    latenessTextView.setText(nextToArriveModel.getOriginalDelay());
+                    startTimeTextView.setText(nextToArriveModel.getOriginalDepartureTime());
+                    endTimeTextView.setText(nextToArriveModel.getOriginalArrivalTime());
+                    routeNameTextView.setText(nextToArriveModel.getOriginalLine());
+
+                    if (nextToArriveModel.getOriginalDelay().equals("On time")) {
+                        latenessTextView.setTextColor(Color.parseColor("#FF00A354"));
+                    } else {
+                        latenessTextView.setTextColor(Color.parseColor("#FFFC4745"));
+                    }
                 } else {
-                    latenessTextView.setTextColor(Color.parseColor("#FFFC4745"));
+                    Log.d(TAG, "is not direct");
+                    rowView = mInflater.inflate(R.layout.nexttoarrive_nexttoarrivetrains_connection_listview_item, parent, false);
+
+                    TextView trainNumberOrigTextView = (TextView) rowView.findViewById(R.id.nexttoarrive_nexttoarrivetrains_trainnumber_orig_textview);
+                    TextView latenessOrigTextView = (TextView) rowView.findViewById(R.id.nexttoarrive_nexttoarrivetrains_lateness_orig_textview);
+                    TextView startTimeOrigTextView = (TextView) rowView.findViewById(R.id.nexttoarrive_nexttoarrivetrains_starttime_orig_textview);
+                    TextView endTimeOrigTextView = (TextView) rowView.findViewById(R.id.nexttoarrive_nexttoarrivetrains_endtime_orig_textview);
+                    TextView routeNameOrigTextView = (TextView) rowView.findViewById(R.id.nexttoarrive_nexttoarrivetrains_routename_orig_textview);
+
+                    TextView connectionTextView = (TextView) rowView.findViewById(R.id.nexttoarrive_nexttoarrivetrains_connectiontext);
+
+                    TextView trainNumberTermTextView = (TextView) rowView.findViewById(R.id.nexttoarrive_nexttoarrivetrains_trainnumber_term_textview);
+                    TextView latenessTermTextView = (TextView) rowView.findViewById(R.id.nexttoarrive_nexttoarrivetrains_lateness_term_textview);
+                    TextView startTimeTermTextView = (TextView) rowView.findViewById(R.id.nexttoarrive_nexttoarrivetrains_starttime_term_textview);
+                    TextView endTimeTermTextView = (TextView) rowView.findViewById(R.id.nexttoarrive_nexttoarrivetrains_endtime_term_textview);
+                    TextView routeNameTermTextView = (TextView) rowView.findViewById(R.id.nexttoarrive_nexttoarrivetrains_routename_term_textview);
+
+                    NextToArriveModel nextToArriveModel = (NextToArriveModel) getItems()[adjustedPosition(position)];
+
+                    if (nextToArriveModel.getOriginalTrain() == null) { // found a dummy blank row
+                        rowView.setVisibility(View.GONE);
+                        return rowView;
+                    } else {
+                        rowView.setVisibility(View.VISIBLE);
+                    }
+
+                    trainNumberOrigTextView.setText(nextToArriveModel.getOriginalTrain());
+                    latenessOrigTextView.setText(nextToArriveModel.getOriginalDelay());
+                    startTimeOrigTextView.setText(nextToArriveModel.getOriginalDepartureTime());
+                    endTimeOrigTextView.setText(nextToArriveModel.getOriginalArrivalTime());
+                    routeNameOrigTextView.setText(nextToArriveModel.getOriginalLine());
+
+                    connectionTextView.setText(nextToArriveModel.getConnection());
+
+                    trainNumberTermTextView.setText(nextToArriveModel.getTerminalTrain());
+                    latenessTermTextView.setText(nextToArriveModel.getTerminalDelay());
+                    startTimeTermTextView.setText(nextToArriveModel.getTerminalDepartureTime());
+                    endTimeTermTextView.setText(nextToArriveModel.getTerminalArrivalTime());
+                    routeNameTermTextView.setText(nextToArriveModel.getTerminalLine());
+
+                    if (nextToArriveModel.getTerminalDelay().equals("On time")) {
+                        latenessTermTextView.setTextColor(Color.parseColor("#FF00A354"));
+                    } else {
+                        latenessTermTextView.setTextColor(Color.parseColor("#FFFC4745"));
+                    }
                 }
             }
         }
@@ -310,6 +356,9 @@ public class NextToArrive_ListViewItem_ArrayAdapter extends BaseAdapter implemen
     }
 
     public NextToArriveStoredTripModel getSelectedFavoriteOrRecentlyViewed(int position) {
+        if (getItems()[adjustedPosition(position)] instanceof NextToArriveModel) {
+            return null;
+        }
 
         return (NextToArriveStoredTripModel)getItems()[adjustedPosition(position)];
     }

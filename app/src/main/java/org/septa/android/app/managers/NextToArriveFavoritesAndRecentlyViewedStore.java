@@ -108,8 +108,6 @@ public class NextToArriveFavoritesAndRecentlyViewedStore {
         Gson gson = new Gson();
         String recentlyViewedListAsJSON = gson.toJson(recentlyViewedJSONList);
 
-        Log.d("sendToSharedPrefrencesRecentlyViewed", "value of "+recentlyViewedListAsJSON);
-
         ObjectFactory.getInstance().getSharedPreferencesManager(context).setNextToArriveRecentlyViewedList(recentlyViewedListAsJSON);
     }
 

@@ -51,7 +51,6 @@ public class LoadKMLFileTask extends AsyncTask<Context, Void, Void> {
     protected void onPostExecute(Void result) {
         super.onPostExecute(result);
 
-        Log.d(TAG, "finished loading the kml file with the filename of "+kmlFileName);
         timingLogger.dumpToLog();
         timingLogger = null;
    }

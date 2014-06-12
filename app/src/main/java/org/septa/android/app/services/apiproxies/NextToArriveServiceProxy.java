@@ -7,14 +7,11 @@
 
 package org.septa.android.app.services.apiproxies;
 
-import org.septa.android.app.models.LocationModel;
 import org.septa.android.app.models.servicemodels.NextToArriveModel;
 import org.septa.android.app.services.adaptors.NextToArriveAdaptor;
 import org.septa.android.app.services.apiinterfaces.NextToArriveService;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import retrofit.Callback;
 

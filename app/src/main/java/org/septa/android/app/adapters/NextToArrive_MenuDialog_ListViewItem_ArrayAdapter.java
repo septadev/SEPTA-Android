@@ -21,10 +21,24 @@ public class NextToArrive_MenuDialog_ListViewItem_ArrayAdapter extends ArrayAdap
     private final Context context;
     private final TextSubTextImageModel[] values;
 
+    private long secondsUntilNextRefresh = 0;
+
+    private boolean isRefreshEnabled = false;
+
     public NextToArrive_MenuDialog_ListViewItem_ArrayAdapter(Context context, TextSubTextImageModel[] values) {
         super(context, R.layout.fareinformation_listview_item, values);
         this.context = context;
         this.values = values;
+    }
+
+    public void enableRefresh() {
+
+        this.isRefreshEnabled = true;
+    }
+
+    public void disableRefresh() {
+
+        this.isRefreshEnabled = false;
     }
 
     @Override
@@ -43,11 +57,24 @@ public class NextToArrive_MenuDialog_ListViewItem_ArrayAdapter extends ArrayAdap
         mainTextView.setText(values[position].getMainText());
         subTextView.setText(values[position].getSubText());
 
+        // if we are filling out the refresh view and the seconds count is greater than
+        // 0, change the text to reflect that
+        if (position == 0) {
+            if (secondsUntilNextRefresh > 0) {
+                subTextView.setText("refreshing in "+secondsUntilNextRefresh+" seconds");
+            }
+        }
+
         String resourceName = values[position].getImageNameBase().concat(values[position].getImageNameSuffix());
         int id = context.getResources().getIdentifier(resourceName, "drawable", context.getPackageName());
         imageView.setImageResource(id);
 
         return rowView;
+    }
+
+    public void setNextRefreshInSecondsValue(long secondsUntilNextRefresh) {
+        this.secondsUntilNextRefresh = secondsUntilNextRefresh;
+        notifyDataSetChanged();
     }
 
     @Override
@@ -58,6 +85,8 @@ public class NextToArrive_MenuDialog_ListViewItem_ArrayAdapter extends ArrayAdap
 
     @Override
     public boolean isEnabled(int position) {
+        if (position == 0) return isRefreshEnabled;
+
         return true;
     }
 }

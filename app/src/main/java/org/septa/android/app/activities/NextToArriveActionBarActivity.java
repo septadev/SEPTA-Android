@@ -121,6 +121,8 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
     public void startEndSelectionSelected(View view) {
         this.inProcessOfStartDestinationFlow = true;
 
+        tripDataModel.clear();
+
         Intent stopSelectionIntent = null;
 
         stopSelectionIntent = new Intent(this, NextToArriveStopSelectionActionBarActivity.class);

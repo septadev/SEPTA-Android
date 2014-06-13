@@ -142,4 +142,25 @@ public class TripDataModel {
         setDestinationStopId(tempStartStopId);
         setDestinationStopName(tempStartStopName);
     }
+
+    public void clear() {
+        startStopNameTitle = null;
+        startStopName = null;
+
+        destinationStopNameTitle = null;
+        destinationStopName = null;
+
+        startStopId = null;
+        destinationStopId = null;
+
+        startArrivalTime = null;
+        destinationArrivalTime = null;
+
+        tripId = null;
+        startStopSequence = null;
+        destinationStopSequence = null;
+
+        directionId = null;
+        trainNumber = null;
+    }
 }

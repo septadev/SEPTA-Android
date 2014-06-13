@@ -24,40 +24,40 @@
         <TextView
             android:text="5844"
             android:id="@+id/nexttoarrive_nexttoarrivetrains_trainnumber_textview"
-            android:layout_width="wrap_content"
+            android:layout_width="60dp"
             android:layout_height="25dp"
             android:includeFontPadding="false"
-            android:layout_gravity="bottom|center_horizontal"
+            android:layout_gravity="bottom|left"
             android:textSize="24sp"/>
 
         <TextView
             android:text="On time"
             android:id="@+id/nexttoarrive_nexttoarrivetrains_lateness_textview"
-            android:layout_width="wrap_content"
+            android:layout_width="60dp"
             android:layout_height="wrap_content"
             android:includeFontPadding="false"
-            android:layout_gravity="top|center_horizontal"
+            android:layout_gravity="top|left"
             android:textSize="13sp"/>
 
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/nexttoarrive_nexttoarrivetrains_startendtime_view"
-        android:layout_width="wrap_content"
+        android:layout_width="60dp"
         android:layout_height="match_parent"
         android:layout_marginLeft="10dp"
         android:layout_toRightOf="@id/nexttoarrive_nexttoarrivetrains_trainnolateness_view"
-        android:gravity="center_vertical"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:gravity="left|center_vertical">
 
         <TextView
-            android:text="4:55pm"
+            android:text="14:55pm"
             android:id="@+id/nexttoarrive_nexttoarrivetrains_starttime_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
         <TextView
-            android:text="4:55pm"
+            android:text="14:55pm"
             android:id="@+id/nexttoarrive_nexttoarrivetrains_endtime_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>

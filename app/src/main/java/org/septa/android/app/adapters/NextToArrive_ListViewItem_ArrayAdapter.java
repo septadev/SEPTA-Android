@@ -227,6 +227,12 @@ public class NextToArrive_ListViewItem_ArrayAdapter extends BaseAdapter implemen
                     endTimeOrigTextView.setText(nextToArriveModel.getOriginalArrivalTime());
                     routeNameOrigTextView.setText(nextToArriveModel.getOriginalLine());
 
+                    if (nextToArriveModel.getOriginalDelay().equals("On time")) {
+                        latenessOrigTextView.setTextColor(Color.parseColor("#FF00A354"));
+                    } else {
+                        latenessOrigTextView.setTextColor(Color.parseColor("#FFFC4745"));
+                    }
+
                     connectionTextView.setText(nextToArriveModel.getConnection());
 
                     trainNumberTermTextView.setText(nextToArriveModel.getTerminalTrain());

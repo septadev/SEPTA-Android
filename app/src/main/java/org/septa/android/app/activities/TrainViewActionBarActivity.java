@@ -361,7 +361,6 @@ public class TrainViewActionBarActivity extends BaseAnalyticsActionBarActivity i
         Callback callback = new Callback() {
             @Override
             public void success(Object o, Response response) {
-                Log.d(TAG, "successfully ended trainview service call with " + ((ArrayList<TrainViewModel>) o).size());
                 setProgressBarIndeterminateVisibility(Boolean.FALSE);
 
                 TrainViewListFragment listFragment = (TrainViewListFragment) getSupportFragmentManager().findFragmentById(R.id.trainview_list_fragment);

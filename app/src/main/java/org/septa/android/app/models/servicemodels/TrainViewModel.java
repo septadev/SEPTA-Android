@@ -94,7 +94,11 @@ public class TrainViewModel {
 
         char lastChar = trainNumber.charAt(trainNumber.length() - 1);
         if (Core.isInteger("" + lastChar)) {
-            localTrainNumber = Integer.parseInt(trainNumber);
+            try {
+                localTrainNumber = Integer.parseInt(trainNumber);
+            } catch (Exception ex) {
+                return false;
+            }
         } else {
             String trainNumberString = trainNumber.substring(0,trainNumber.length() - 1);
 

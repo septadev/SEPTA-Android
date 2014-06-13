@@ -48,13 +48,9 @@ public class TransitViewListFragment extends ListFragment {
 //        RoutesModel busRoutesModel = new RoutesModel(RoutesModel.RouteType.BUS_ROUTE);
 //        busRoutesModel.loadRoutes(getActivity());
 
-        Log.d(TAG, "get bus routes from transitviewlistfragment");
         RoutesModel busRoutesModel = ObjectFactory.getInstance().getBusRoutes();
-        Log.d(TAG, "got bus routes from transitviewlistfragment");
 
-        Log.d(TAG, "about to load routes");
         busRoutesModel.loadRoutes(getActivity());
-        Log.d(TAG, "loaded routes");
 
         busRouteModelList = busRoutesModel.getRouteModels();
         Collections.sort(busRouteModelList);

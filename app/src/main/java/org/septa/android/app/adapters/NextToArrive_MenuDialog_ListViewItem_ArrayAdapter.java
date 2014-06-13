@@ -25,6 +25,9 @@ public class NextToArrive_MenuDialog_ListViewItem_ArrayAdapter extends ArrayAdap
 
     private boolean isRefreshEnabled = false;
 
+    private boolean isSaveToFavoriteEnabled = false;
+    private boolean isRemoveSavedFavoriteEnabled = false;
+
     public NextToArrive_MenuDialog_ListViewItem_ArrayAdapter(Context context, TextSubTextImageModel[] values) {
         super(context, R.layout.fareinformation_listview_item, values);
         this.context = context;
@@ -39,6 +42,26 @@ public class NextToArrive_MenuDialog_ListViewItem_ArrayAdapter extends ArrayAdap
     public void disableRefresh() {
 
         this.isRefreshEnabled = false;
+    }
+
+    public void enableSaveAsFavorite() {
+
+        this.isSaveToFavoriteEnabled = true;
+    }
+
+    public void disableSaveAsFavorite() {
+
+        this.isSaveToFavoriteEnabled = false;
+    }
+
+    public void enableRemoveSavedFavorite() {
+
+        this.isRemoveSavedFavoriteEnabled = true;
+    }
+
+    public void disableRemovedSavedFavorite() {
+
+        this.isRemoveSavedFavoriteEnabled = false;
     }
 
     @Override
@@ -65,6 +88,16 @@ public class NextToArrive_MenuDialog_ListViewItem_ArrayAdapter extends ArrayAdap
             }
         }
 
+        if (position == 1) {
+            if (isSaveToFavoriteEnabled) {
+                subTextView.setText("add route to favorites");
+            }
+
+            if (isRemoveSavedFavoriteEnabled) {
+                subTextView.setText("remove route from favorites");
+            }
+        }
+
         String resourceName = values[position].getImageNameBase().concat(values[position].getImageNameSuffix());
         int id = context.getResources().getIdentifier(resourceName, "drawable", context.getPackageName());
         imageView.setImageResource(id);
@@ -86,6 +119,8 @@ public class NextToArrive_MenuDialog_ListViewItem_ArrayAdapter extends ArrayAdap
     @Override
     public boolean isEnabled(int position) {
         if (position == 0) return isRefreshEnabled;
+
+        if (position == 1) return isSaveToFavoriteEnabled || isRemoveSavedFavoriteEnabled;
 
         return true;
     }

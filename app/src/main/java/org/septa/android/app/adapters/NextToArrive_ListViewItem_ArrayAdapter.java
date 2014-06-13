@@ -52,7 +52,7 @@ public class NextToArrive_ListViewItem_ArrayAdapter extends BaseAdapter implemen
         mInflater = LayoutInflater.from(context);
 
         nextToArriveFavoritesAndRecentlyViewedStore = new NextToArriveFavoritesAndRecentlyViewedStore(mContext);
-        recentlyViewed = nextToArriveFavoritesAndRecentlyViewedStore.getRecentlyViewedList();
+        reloadFavoriteAndRecentlyViewedLists();
 
         // add a single record with no values as a "dummy" record that will be made View.GONE but will keep the header showing
         // a bit of hack to get the current library being used for sticky headers to work.
@@ -60,10 +60,15 @@ public class NextToArrive_ListViewItem_ArrayAdapter extends BaseAdapter implemen
         nextToArriveTrainList.add(rm);
     }
 
+    public void reloadFavoriteAndRecentlyViewedLists() {
+        recentlyViewed = nextToArriveFavoritesAndRecentlyViewedStore.getRecentlyViewedList();
+        favorites = nextToArriveFavoritesAndRecentlyViewedStore.getFavoriteList();
+    }
+
     public void setNextToArriveTrainList(ArrayList<NextToArriveModel> nextToArriveTrainList) {
         this.nextToArriveTrainList = nextToArriveTrainList;
 
-        recentlyViewed = nextToArriveFavoritesAndRecentlyViewedStore.getRecentlyViewedList();
+        reloadFavoriteAndRecentlyViewedLists();
 
         notifyDataSetChanged();
     }
@@ -163,7 +168,6 @@ public class NextToArrive_ListViewItem_ArrayAdapter extends BaseAdapter implemen
                     transparentView.setVisibility(View.GONE);
                 }
             } else{
-                Log.d(TAG, "get view for row");
                 NextToArriveModel ntarm = (NextToArriveModel)getItem(adjustedPosition(position));
                 rowView = mInflater.inflate(R.layout.nexttoarrive_nexttoarrivetrains_listview_item, parent, false);
 
@@ -172,9 +176,7 @@ public class NextToArrive_ListViewItem_ArrayAdapter extends BaseAdapter implemen
                     return rowView;
                 }
 
-                Log.d(TAG, "evaluating if isDirect");
                 if (ntarm.isDirect()) {
-                    Log.d(TAG, "is direct");
                     TextView trainNumberTextView = (TextView) rowView.findViewById(R.id.nexttoarrive_nexttoarrivetrains_trainnumber_textview);
                     TextView latenessTextView = (TextView) rowView.findViewById(R.id.nexttoarrive_nexttoarrivetrains_lateness_textview);
                     TextView startTimeTextView = (TextView) rowView.findViewById(R.id.nexttoarrive_nexttoarrivetrains_starttime_textview);

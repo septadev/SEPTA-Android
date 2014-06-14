@@ -14,10 +14,9 @@
                 android:layout_height="match_parent"
                 android:paddingTop="0dp">
     
-    <RelativeLayout
-        android:layout_width="0dp"
+    <LinearLayout
+        android:layout_width="60dp"
         android:layout_height="match_parent"
-        android:layout_weight="3"
         android:orientation="vertical"
         android:layout_marginLeft="5dp"
         android:layout_alignParentLeft="true">
@@ -27,6 +26,7 @@
             android:layout_height="24dp"
             android:textStyle="bold"
             android:textSize="22sp"
+            android:text="1723"
             android:id="@+id/trainview_listview_item_train_number_textview"/>
 
         <TextView
@@ -34,15 +34,15 @@
             android:layout_height="15dp"
             android:textStyle="bold"
             android:textSize="13sp"
+            android:text="999 mins"
             android:layout_below="@id/trainview_listview_item_train_number_textview"
             android:id="@+id/trainview_listview_item_train_timing_textview"/>
     
-    </RelativeLayout>
+    </LinearLayout>
 
-    <RelativeLayout
-        android:layout_width="0dp"
+    <LinearLayout
+        android:layout_width="75dp"
         android:layout_height="match_parent"
-        android:layout_weight="2"
         android:orientation="vertical">
 
         <TextView
@@ -66,12 +66,11 @@
             android:gravity="right"
             android:textColor="@android:color/black"/>
 
-        </RelativeLayout>
+        </LinearLayout>
 
-    <RelativeLayout
-        android:layout_width="0dp"
+    <LinearLayout
+        android:layout_width="fill_parent"
         android:layout_height="match_parent"
-        android:layout_weight="8"
         android:orientation="vertical">
 
         <TextView
@@ -93,6 +92,6 @@
             android:text="testing end stop"
             android:textColor="@android:color/black"/>
 
-    </RelativeLayout>
+    </LinearLayout>
 
 </LinearLayout>

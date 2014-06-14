@@ -7,7 +7,7 @@
   ~ Copyright (c) 2014 SEPTA.  All rights reserved.
   -->
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -67,4 +67,4 @@
             android:textColor="@android:color/white" />
     </RelativeLayout>
 
-</RelativeLayout>
+</LinearLayout>

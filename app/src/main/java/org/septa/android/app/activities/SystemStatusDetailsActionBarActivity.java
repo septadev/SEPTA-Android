@@ -14,7 +14,9 @@ import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import org.septa.android.app.R;
 import org.septa.android.app.models.SystemStatusDetailType;
@@ -32,6 +34,7 @@ public class SystemStatusDetailsActionBarActivity extends BaseAnalyticsActionBar
 
     private SystemStatusDetailType selectedTab = SystemStatusDetailType.ADVISORY;
 
+    private boolean suspendTabEnabled = false;
     private boolean advisoryTabEnabled = false;
     private boolean alertsTabEnabled = false;
     private boolean detourTabEnabled = false;
@@ -47,6 +50,9 @@ public class SystemStatusDetailsActionBarActivity extends BaseAnalyticsActionBar
         String iconImageNameSuffix = getIntent().getStringExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key));
         routeId = getIntent().getStringExtra(getString(R.string.systemstatus_details_route_id));
 
+        Log.d(TAG, "received route id in details as "+routeId);
+
+        suspendTabEnabled = getIntent().getBooleanExtra("system_status_details_tabenabled_suspend", false);
         advisoryTabEnabled = getIntent().getBooleanExtra(getString(R.string.systemstatus_details_tabenabled_advisory), false);
         alertsTabEnabled = getIntent().getBooleanExtra(getString(R.string.systemstatus_details_tabenabled_alerts), false);
         detourTabEnabled = getIntent().getBooleanExtra(getString(R.string.systemstatus_details_tabenabled_detour), false);
@@ -72,9 +78,21 @@ public class SystemStatusDetailsActionBarActivity extends BaseAnalyticsActionBar
             detourLayoutView.setVisibility(View.GONE);
         }
 
-        if (alertsTabEnabled) {
+        if (alertsTabEnabled || suspendTabEnabled) {
             alertsLayoutView.setVisibility(View.VISIBLE);
             selectedTab = SystemStatusDetailType.ALERTS;
+
+            if (suspendTabEnabled) {
+                ImageView alertTabImageView = (ImageView)alertsLayoutView.findViewById(R.id.realtime_systemstatus_details_tab_alerts_imageview);
+                TextView alertTabTextView = (TextView)alertsLayoutView.findViewById(R.id.realtime_systemstatus_details_tab_alerts_textview);
+                alertTabTextView.setText("Suspend");
+                alertTabImageView.setImageResource(R.drawable.ic_system_status_suspended);
+            } else {
+                ImageView alertTabImageView = (ImageView)alertsLayoutView.findViewById(R.id.realtime_systemstatus_details_tab_alerts_imageview);
+                TextView alertTabTextView = (TextView)alertsLayoutView.findViewById(R.id.realtime_systemstatus_details_tab_alerts_textview);
+                alertTabTextView.setText("Alerts");
+                alertTabImageView.setImageResource(R.drawable.ic_system_status_alert);
+            }
         } else {
             alertsLayoutView.setVisibility(View.GONE);
         }
@@ -201,7 +219,12 @@ public class SystemStatusDetailsActionBarActivity extends BaseAnalyticsActionBar
 
     private void selectedAlertsTab() {
         // get the color from the looking array given the ordinal position of the route type
-        String barColor = this.getResources().getStringArray(R.array.systemstatus_details_separatorbar_colors)[2];
+        String barColor;
+        if (suspendTabEnabled) {
+            barColor = this.getResources().getStringArray(R.array.systemstatus_details_separatorbar_colors)[3];
+        } else {
+            barColor = this.getResources().getStringArray(R.array.systemstatus_details_separatorbar_colors)[2];
+        }
 
         RelativeLayout advisoryTabView = (RelativeLayout)findViewById(R.id.realtime_systemstatus_details_tab_advisory_view);
         RelativeLayout detourTabView = (RelativeLayout)findViewById(R.id.realtime_systemstatus_details_tab_detour_view);
@@ -216,6 +239,7 @@ public class SystemStatusDetailsActionBarActivity extends BaseAnalyticsActionBar
 
         advisoryTabViewShapeDrawable.setColor(Color.WHITE);
         detourTabViewShapeDrawable.setColor(Color.WHITE);
+
         alertsTabViewShapeDrawable.setColor(Color.parseColor("#FFAAAAAA"));
 
         renderRouteAlertsToWebView();
@@ -237,6 +261,9 @@ public class SystemStatusDetailsActionBarActivity extends BaseAnalyticsActionBar
                     case DETOUR: {
                         htmlToDisplay += routeAlert.getDetourDetailsAsHTML();
                         break;
+                    }
+                    case SUSPEND: {
+                        htmlToDisplay += routeAlert.getCurrentMessage();
                     }
                     default: {
                         Log.d("f", "should never be able to get here");

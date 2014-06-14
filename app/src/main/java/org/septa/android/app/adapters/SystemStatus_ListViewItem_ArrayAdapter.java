@@ -86,7 +86,7 @@ public class SystemStatus_ListViewItem_ArrayAdapter extends ArrayAdapter<AlertMo
         // TODO: replace this drawable with the correct one once obtained.
         // if this is a suspended route, replace the detour icon with the suspended one and ignore all other flags.
         if (alertInformation.isSuspended()) {
-            detourImageView.setImageResource(R.drawable.ic_schedules_rrl_small);
+            detourImageView.setImageResource(R.drawable.ic_system_status_suspended);
             detourImageView.setVisibility(View.VISIBLE);
 
             return rowView;
@@ -128,7 +128,7 @@ public class SystemStatus_ListViewItem_ArrayAdapter extends ArrayAdapter<AlertMo
         // in the special case of suspended, the row is not selectable.
         if (values.get(position).isSuspended()) {
 
-            return false;
+            return true;
         }
 
         // if the alert has a flag enabled, then it is selectable

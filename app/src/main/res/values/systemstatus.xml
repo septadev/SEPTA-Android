@@ -13,6 +13,7 @@
         <item>#FFF9D419</item>  // advisory
         <item>#FFE3731D</item>  // detour
         <item>#FFBE1E2C</item>  // alerts
+        <item>#FFDC4E3C</item>  // suspend
     </string-array>
 
     <string name="systemstatus_details_tabenabled_advisory">system_status_details_tabenabled_advisory</string>

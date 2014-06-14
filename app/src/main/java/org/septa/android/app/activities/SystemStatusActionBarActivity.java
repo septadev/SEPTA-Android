@@ -129,16 +129,22 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
         systemStatusDetailsIntent.putExtra(getString(R.string.actionbar_titletext_key), displayRouteName);
         systemStatusDetailsIntent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), "systemstatus");
 
-        if (alert.hasAdvisoryFlag()) {
-            systemStatusDetailsIntent.putExtra(getString(R.string.systemstatus_details_tabenabled_advisory), true);
-        }
-        if (alert.hasAlertFlag()) {
-            systemStatusDetailsIntent.putExtra(getString(R.string.systemstatus_details_tabenabled_alerts), true);
-        }
-        if (alert.hasDetourFlag()) {
-            systemStatusDetailsIntent.putExtra(getString(R.string.systemstatus_details_tabenabled_detour), true);
+        // if the suspend is enabled, no other tabs will exist
+        if (alert.hasSuspendedFlag()) {
+            systemStatusDetailsIntent.putExtra("system_status_details_tabenabled_suspend", true);
+        } else {
+            if (alert.hasAdvisoryFlag()) {
+                systemStatusDetailsIntent.putExtra(getString(R.string.systemstatus_details_tabenabled_advisory), true);
+            }
+            if (alert.hasAlertFlag()) {
+                systemStatusDetailsIntent.putExtra(getString(R.string.systemstatus_details_tabenabled_alerts), true);
+            }
+            if (alert.hasDetourFlag()) {
+                systemStatusDetailsIntent.putExtra(getString(R.string.systemstatus_details_tabenabled_detour), true);
+            }
         }
 
+        Log.d(TAG, "about to put route id as "+alert.getRouteId());
         systemStatusDetailsIntent.putExtra(getString(R.string.systemstatus_details_route_id), alert.getRouteId());
 
         startActivity(systemStatusDetailsIntent);

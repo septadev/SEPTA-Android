@@ -10,5 +10,6 @@ package org.septa.android.app.models;
 public enum SystemStatusDetailType {
     ADVISORY,
     ALERTS,
-    DETOUR
+    DETOUR,
+    SUSPEND
 }

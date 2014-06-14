@@ -54,6 +54,8 @@
             android:layout_marginRight="5dp"
             android:orientation="horizontal"
             android:onClick="tabSelected"
+            android:gravity="center"
+            android:layout_gravity="center"
             android:background="@drawable/realtime_systemstatus_tab_corners">
 
             <ImageView

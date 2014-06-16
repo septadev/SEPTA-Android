@@ -1,5 +1,4 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
-
 buildscript {
     repositories {
         mavenCentral()
@@ -8,9 +7,16 @@ buildscript {
         classpath 'com.android.tools.build:gradle:0.11.+'
     }
 }
-
 allprojects {
     repositories {
         mavenCentral()
     }
+}
+
+//android {
+//    defaultConfig {}
+//    productFlavors {
+//    }
+//}
+dependencies {
 }

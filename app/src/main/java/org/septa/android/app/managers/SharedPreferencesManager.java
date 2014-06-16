@@ -27,6 +27,9 @@ public class SharedPreferencesManager {
     private String nextToArriveRecentlyViewedList;
     private String nextToArriveFavoritesList;
 
+    private String schedulesRecentlyViewedList;
+    private String schedulesFavoritesList;
+
     public SharedPreferencesManager(Context context) {
 
         sharedPreferences = context.getSharedPreferences("SEPTAPreferences",Context.MODE_PRIVATE);
@@ -165,5 +168,43 @@ public class SharedPreferencesManager {
         editor.apply();
     }
 
+    public String getSchdulesRecentlyViewedList() {
+        return schedulesRecentlyViewedList;
+    }
 
+    public void setScheduelsRecentlyViewedList(String recentlyViewedList) {
+        this.schedulesRecentlyViewedList = recentlyViewedList;
+        writePreferenceForSchedulesRecentlyViewedList();
+    }
+
+    private void readFromPreferencesSchedulesRecentlyViewedList() {
+
+        schedulesRecentlyViewedList = sharedPreferences.getString("schedule_recentlyviewed_list", schedulesRecentlyViewedList);
+    }
+
+    private void writePreferenceForSchedulesRecentlyViewedList() {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("schedule_recentlyviewed_list", schedulesRecentlyViewedList);
+        editor.apply();
+    }
+
+    public String getSchedulesFavoritesList() {
+        return schedulesFavoritesList;
+    }
+
+    public void setSchedulesFavoritesList(String favoritesList) {
+        this.schedulesFavoritesList = favoritesList;
+        writePreferenceForSchedulesFavoritesList();
+    }
+
+    private void readFromPreferencesSchedulesFavoritesList() {
+
+        schedulesFavoritesList = sharedPreferences.getString("schedule_favorites_list", schedulesFavoritesList);
+    }
+
+    private void writePreferenceForSchedulesFavoritesList() {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("schedule_favorites_list", schedulesFavoritesList);
+        editor.apply();
+    }
 }

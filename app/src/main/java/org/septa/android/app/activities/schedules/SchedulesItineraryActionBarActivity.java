@@ -23,6 +23,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -36,6 +37,7 @@ import org.septa.android.app.databases.SEPTADatabase;
 import org.septa.android.app.managers.SchedulesFavoritesAndRecentlyViewedStore;
 import org.septa.android.app.models.ObjectFactory;
 import org.septa.android.app.models.RouteTypes;
+import org.septa.android.app.models.SchedulesDataModel;
 import org.septa.android.app.models.SchedulesFavoriteModel;
 import org.septa.android.app.models.SchedulesRecentlyViewedModel;
 import org.septa.android.app.models.SchedulesRouteModel;
@@ -81,12 +83,6 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
         iconImageNameSuffix = getIntent().getStringExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key));
         String resourceName = getString(R.string.actionbar_iconimage_imagename_base).concat(iconImageNameSuffix);
 
-        String schedulesRouteModelJSONString = getIntent().getStringExtra(getString(R.string.schedules_itinerary_schedulesRouteModel));
-        Gson gson = new Gson();
-        schedulesRouteModel = gson.fromJson(schedulesRouteModelJSONString, new TypeToken<SchedulesRouteModel>(){}.getType());
-
-        Log.d(TAG, "onCreate and have the route Code as "+schedulesRouteModel.getRouteCode());
-
         int id = getResources().getIdentifier(resourceName, "drawable", getPackageName());
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -103,6 +99,17 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
         this.inProcessOfStartDestinationFlow = false;
 
         mAdapter = new SchedulesItinerary_ListViewItem_ArrayAdapter(this, travelType);
+
+        String schedulesRouteModelJSONString = getIntent().getStringExtra(getString(R.string.schedules_itinerary_schedulesRouteModel));
+        Gson gson = new Gson();
+        schedulesRouteModel = gson.fromJson(schedulesRouteModelJSONString, new TypeToken<SchedulesRouteModel>(){}.getType());
+
+        if (schedulesRouteModel != null && schedulesRouteModel.hasStartAndEndSelected()) {
+            mAdapter.setRouteStartName(schedulesRouteModel.getRouteStartName());
+            mAdapter.setRouteEndName(schedulesRouteModel.getRouteEndName());
+
+            checkTripStartAndDestinationForNextToArriveDataRequest();
+        }
 
         stickyList = (StickyListHeadersListView) findViewById(R.id.list);
         stickyList.setOnItemClickListener(this);
@@ -208,17 +215,20 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
 
             Log.d(TAG, "get back both start and end");
 
+            TextView endRouteNameTextView = (TextView)findViewById(R.id.schedules_itinerary_routedirection_textview);
+            endRouteNameTextView.setText("To "+schedulesRouteModel.getRouteEndName());
+
             SchedulesFavoritesAndRecentlyViewedStore store = ObjectFactory.getInstance().getSchedulesFavoritesAndRecentlyViewedStore(this);
 
             SchedulesRecentlyViewedModel schedulesRecentlyViewedModel = new SchedulesRecentlyViewedModel();
-            schedulesRecentlyViewedModel.setRouteCode(schedulesRouteModel.getRouteCode());
+            schedulesRecentlyViewedModel.setRouteId(schedulesRouteModel.getRouteId());
             schedulesRecentlyViewedModel.setRouteStartName(schedulesRouteModel.getRouteStartName());
             schedulesRecentlyViewedModel.setRouteStartStopId(schedulesRouteModel.getRouteStartStopId());
             schedulesRecentlyViewedModel.setRouteEndName(schedulesRouteModel.getRouteEndName());
             schedulesRecentlyViewedModel.setRouteEndStopId(schedulesRouteModel.getRouteEndStopId());
 
             SchedulesFavoriteModel schedulesFavoriteModel = new SchedulesFavoriteModel();
-            schedulesFavoriteModel.setRouteCode(schedulesRouteModel.getRouteCode());
+            schedulesFavoriteModel.setRouteId(schedulesRouteModel.getRouteId());
             schedulesFavoriteModel.setRouteStartStopId(schedulesRouteModel.getRouteStartStopId());
             schedulesFavoriteModel.setRouteStartName(schedulesRouteModel.getRouteStartName());
             schedulesFavoriteModel.setRouteEndStopId(schedulesRouteModel.getRouteEndStopId());
@@ -235,8 +245,12 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
                 store.addRecentlyViewed(this.travelType.name(), schedulesRecentlyViewedModel);
             }
 
-//            fetchNextToArrive();
-//
+            Log.d(TAG, "about to instantiate schedules data model");
+            SchedulesDataModel schedulesDataModel = new SchedulesDataModel(this);
+            schedulesDataModel.setRoute(schedulesRouteModel);
+            Log.d(TAG, "about to call the loadstartbasedtrips");
+            schedulesDataModel.loadStartBasedTrips(travelType);
+            Log.d(TAG, "called the loadstartbasedtrips");
         }
     }
 

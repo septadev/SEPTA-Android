@@ -117,9 +117,9 @@ public class SchedulesRouteSelectionActionBarActivity extends BaseAnalyticsActio
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position,long id) {
         String routeShortName = "";
-        Log.d("f", "onItemClick occurred at position "+position+" with id "+id+" and route short name of "+routeShortName);
 
         SchedulesRouteModel route = (SchedulesRouteModel)mAdapter.getItem(position);
+        Log.d("f", "onItemClick occurred at position "+position+" with id "+id+" and route short name of "+route.getRouteShortName());
 
         if (!mAdapter.isFavorite(position) && !mAdapter.isRecentlyViewed(position)) {
 
@@ -132,7 +132,7 @@ public class SchedulesRouteSelectionActionBarActivity extends BaseAnalyticsActio
         Intent schedulesItineraryIntent = null;
 
         schedulesItineraryIntent = new Intent(this, SchedulesItineraryActionBarActivity.class);
-        schedulesItineraryIntent.putExtra(getString(R.string.actionbar_titletext_key), route.getRouteCode());
+        schedulesItineraryIntent.putExtra(getString(R.string.actionbar_titletext_key), route.getRouteId());
         schedulesItineraryIntent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), iconImageNameSuffix);
         schedulesItineraryIntent.putExtra(getString(R.string.schedules_itinerary_travelType),
                 travelType.name());

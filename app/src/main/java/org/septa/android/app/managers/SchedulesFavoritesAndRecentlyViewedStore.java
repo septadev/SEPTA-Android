@@ -110,7 +110,6 @@ public class SchedulesFavoritesAndRecentlyViewedStore {
         if (recentlyViewedList != null) {
             Log.d("yy", "we have already a recently viewed");
             for (int i = 0; i < recentlyViewedList.size(); i++) {
-                Log.d("yy", "processing the recently viewed list with size " + recentlyViewedList.size());
                 if (recentlyViewedList.get(i) != null) {
                     Log.d("yy", "recently viewed for position " + i);
                     if (recentlyViewedList.get(i).compareTo(schedulesModel) == 0) {
@@ -188,7 +187,7 @@ public class SchedulesFavoritesAndRecentlyViewedStore {
     private void sendToSharedPreferencesRecentlyViewed() {
         Gson gson = new Gson();
         String recentlyViewedListAsJSON = gson.toJson(recentlyViewedListMap);
-        Log.d("y", "about to store this json "+recentlyViewedListAsJSON);
+//        Log.d("y", "about to store this json "+recentlyViewedListAsJSON);
 
         ObjectFactory.getInstance().getSharedPreferencesManager(context).setSchedulesRecentlyViewedList(recentlyViewedListAsJSON);
     }

@@ -9,8 +9,6 @@ package org.septa.android.app.adapters.schedules;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.nfc.Tag;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -132,7 +130,7 @@ public class SchedulesRouteSelection_ListViewItem_ArrayAdapter extends BaseAdapt
 
             SchedulesFavoriteModel favoriteModel = (SchedulesFavoriteModel)getItems()[adjustedPosition(position)];
 
-            routeIdTextView.setText(favoriteModel.getRouteCode());
+            routeIdTextView.setText(favoriteModel.getRouteId());
             startStopNameTextView.setText(favoriteModel.getRouteStartName());
             endStopNameTextView.setText(favoriteModel.getRouteEndName());
 
@@ -154,7 +152,7 @@ public class SchedulesRouteSelection_ListViewItem_ArrayAdapter extends BaseAdapt
 
                 SchedulesRecentlyViewedModel recentlyViewedModel = (SchedulesRecentlyViewedModel)getItems()[adjustedPosition(position)];
 
-                routeIdTextView.setText(recentlyViewedModel.getRouteCode());
+                routeIdTextView.setText(recentlyViewedModel.getRouteId());
                 startStopNameTextView.setText(recentlyViewedModel.getRouteStartName());
                 endStopNameTextView.setText(recentlyViewedModel.getRouteEndName());
 
@@ -185,9 +183,9 @@ public class SchedulesRouteSelection_ListViewItem_ArrayAdapter extends BaseAdapt
 
                 SchedulesRouteModel route = (SchedulesRouteModel)getItems()[adjustedPosition(position)];
 
-                routeIdTextView.setText(route.getRouteCode());
+                routeIdTextView.setText(route.getRouteId());
 
-                switch (route.getRouteCode().length()) {
+                switch (route.getRouteId().length()) {
                     case 6: {
                         routeIdTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
                         break;

@@ -6,18 +6,23 @@ import java.lang.String;
 
 public class SchedulesRouteModel implements Comparable<SchedulesRouteModel> {
     private int routeType;
-    private String routeCode;
+    private String routeId;
     private String routeShortName;
     private String routeLongName;
     private String routeStart;
     private String routeEnd;
     private String routeStartStopId;
     private String routeEndStopId;
+    private Number blockId;
+    private Number stopSequence;
+    private Number arriveTime;
+    private Number serviceId;
+    private String tripId;
 
     public SchedulesRouteModel() { };
 
     public SchedulesRouteModel(int routeType,
-                               String routeCode,
+                               String routeId,
                                String routeShortName,
                                String routeLongName,
                                String routeStart,
@@ -25,7 +30,7 @@ public class SchedulesRouteModel implements Comparable<SchedulesRouteModel> {
                                String routeStartStopId,
                                String routeEndStopId) {
         this.setRouteType(routeType);
-        this.setRouteCode(routeCode);
+        this.setRouteId(routeId);
         this.setRouteShortName(routeShortName);
         this.setRouteLongName(routeLongName);
         this.setRouteStartName(routeStart);
@@ -44,12 +49,12 @@ public class SchedulesRouteModel implements Comparable<SchedulesRouteModel> {
         this.routeType = routeType;
     }
 
-    public String getRouteCode() {
-        return routeCode;
+    public String getRouteId() {
+        return routeId;
     }
 
-    public void setRouteCode(String routeCode) {
-        this.routeCode = routeCode;
+    public void setRouteId(String routeId) {
+        this.routeId = routeId;
     }
 
     public String getRouteStartName() {
@@ -101,17 +106,27 @@ public class SchedulesRouteModel implements Comparable<SchedulesRouteModel> {
     }
 
     public void print() {
-        Log.d("gg", "Route type: "+routeType+"  route id: "+ routeCode +"     route short name: "+routeShortName+"     route long name: "+routeLongName);
+        Log.d("gg", "Route type: "+routeType+"  route id: "+ routeId +"     route short name: "+routeShortName+"     route long name: "+routeLongName);
         Log.d("gg", "Route start name: "+routeStart+"   Route end name "+routeEnd+"     Route start id "+routeStartStopId+"     route end id "+routeEndStopId);
+    }
+
+    public boolean hasStartAndEndSelected() {
+        if (getRouteStartName() != null &&
+            getRouteEndName() != null &&
+            !getRouteStartName().isEmpty() &&
+            !getRouteEndName().isEmpty()) {
+            return true;
+        }
+
+        return false;
     }
 
     @Override
     public int compareTo(SchedulesRouteModel another) {
-        if ((this.getRouteCode().equals(another.getRouteCode())) &&
-                (this.getRouteShortName()==another.getRouteShortName()) &&
-                (this.getRouteStartName().equals(another.getRouteStartName())) &&
-                (this.getRouteEndStopId()==another.getRouteEndStopId()) &&
-                (this.getRouteEndName().equals(another.getRouteEndName()))) {
+        if ((this.getRouteId().equals(another.getRouteId())) &&
+            (this.getRouteStartName().equals(another.getRouteStartName())) &&
+            (this.getRouteEndStopId().equals(another.getRouteEndStopId())) &&
+            (this.getRouteEndName().equals(another.getRouteEndName()))) {
 
             return 0;
         }
@@ -128,5 +143,45 @@ public class SchedulesRouteModel implements Comparable<SchedulesRouteModel> {
 
         setRouteEndStopId(tempStartStopId);
         setRouteEndName(tempStartStopName);
+    }
+
+    public Number getBlockId() {
+        return blockId;
+    }
+
+    public void setBlockId(Number blockId) {
+        this.blockId = blockId;
+    }
+
+    public Number getStopSequence() {
+        return stopSequence;
+    }
+
+    public void setStopSequence(Number stopSequence) {
+        this.stopSequence = stopSequence;
+    }
+
+    public Number getArriveTime() {
+        return arriveTime;
+    }
+
+    public void setArriveTime(Number arriveTime) {
+        this.arriveTime = arriveTime;
+    }
+
+    public Number getServiceId() {
+        return serviceId;
+    }
+
+    public void setServiceId(Number serviceId) {
+        this.serviceId = serviceId;
+    }
+
+    public String getTripId() {
+        return tripId;
+    }
+
+    public void setTripId(String tripId) {
+        this.tripId = tripId;
     }
 }

@@ -147,9 +147,9 @@ public class SchedulesItinerary_ListViewItem_ArrayAdapter extends BaseAdapter im
             id = mContext.getResources().getIdentifier(rightImageBackgroundName + routeTypeLabels[routeType.ordinal()], "drawable", mContext.getPackageName());
             rightBackgroundImageView.setImageResource(id);
 
-            routeIdTextView.setText(routes.get((position-1)).getRouteCode());
+            routeIdTextView.setText(routes.get((position-1)).getRouteId());
 
-            switch (routes.get((position-1)).getRouteCode().length()) {
+            switch (routes.get((position-1)).getRouteId().length()) {
                 case 6: {
                     routeIdTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
                     break;

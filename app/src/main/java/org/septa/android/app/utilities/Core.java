@@ -7,6 +7,9 @@
 
 package org.septa.android.app.utilities;
 
+import java.util.Calendar;
+import java.util.Date;
+
 public class Core {
 
     public static boolean isInteger(String s) {

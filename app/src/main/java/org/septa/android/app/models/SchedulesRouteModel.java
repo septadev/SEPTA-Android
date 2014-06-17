@@ -34,9 +34,11 @@ public class SchedulesRouteModel implements Comparable<SchedulesRouteModel> {
         this.setRouteEndStopId(routeEndStopId);
     }
 
-    public int getRouteType() {
-        return routeType;
-    }
+//    public int getRouteType() {
+//        return routeType;
+//    }
+
+    public RouteTypes getRouteType() { return RouteTypes.values()[routeType]; }
 
     public void setRouteType(int routeType) {
         this.routeType = routeType;

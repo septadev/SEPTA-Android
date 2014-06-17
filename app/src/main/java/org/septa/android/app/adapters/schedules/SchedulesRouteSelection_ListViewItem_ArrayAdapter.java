@@ -9,6 +9,7 @@ package org.septa.android.app.adapters.schedules;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.nfc.Tag;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -21,6 +22,7 @@ import android.widget.TextView;
 
 import org.septa.android.app.R;
 import org.septa.android.app.managers.SchedulesFavoritesAndRecentlyViewedStore;
+import org.septa.android.app.models.ObjectFactory;
 import org.septa.android.app.models.SchedulesFavoriteModel;
 import org.septa.android.app.models.SchedulesRecentlyViewedModel;
 import org.septa.android.app.models.RouteTypes;
@@ -56,7 +58,7 @@ public class SchedulesRouteSelection_ListViewItem_ArrayAdapter extends BaseAdapt
 
         this.routeType = routeType;
 
-        schedulesFavoritesAndRecentlyViewedStore = new SchedulesFavoritesAndRecentlyViewedStore(context);
+        schedulesFavoritesAndRecentlyViewedStore = ObjectFactory.getInstance().getSchedulesFavoritesAndRecentlyViewedStore(context);
         reloadFavoriteAndRecentlyViewedLists();
 
         resourceEndNames = context.getResources().getStringArray(R.array.schedulesfragment_listview_bothimage_endnames);
@@ -65,8 +67,8 @@ public class SchedulesRouteSelection_ListViewItem_ArrayAdapter extends BaseAdapt
     }
 
     public void reloadFavoriteAndRecentlyViewedLists() {
-        recentlyViewed = schedulesFavoritesAndRecentlyViewedStore.getRecentlyViewedList();
-        favorites = schedulesFavoritesAndRecentlyViewedStore.getFavoriteList();
+        recentlyViewed = schedulesFavoritesAndRecentlyViewedStore.getRecentlyViewedList(routeType.name());
+        favorites = schedulesFavoritesAndRecentlyViewedStore.getFavoriteList(routeType.name());
     }
 
     public void setSchedulesRouteModel(ArrayList<SchedulesRouteModel> routes) {
@@ -144,7 +146,6 @@ public class SchedulesRouteSelection_ListViewItem_ArrayAdapter extends BaseAdapt
             }
         } else {                        // recently viewed position rows
             if (isRecentlyViewed(adjustedPosition(position))) {
-                Log.d(TAG, "found a recently viewed at position "+position);
                 rowView = mInflater.inflate(R.layout.schedules_routeselection_favoriteandrecentlyviewed_listview_item, parent, false);
 
                 TextView routeIdTextView = (TextView)rowView.findViewById(R.id.schedules_routeselection_favoriterecentlyviewed_routeid_textview);
@@ -157,19 +158,12 @@ public class SchedulesRouteSelection_ListViewItem_ArrayAdapter extends BaseAdapt
                 startStopNameTextView.setText(recentlyViewedModel.getRouteStartName());
                 endStopNameTextView.setText(recentlyViewedModel.getRouteEndName());
 
-                Log.d(TAG, "print out recentlyviewedmodel");
-                recentlyViewedModel.print();
-                Log.d(TAG, "done print out recentlyviewedmodel");
-
                 // to create a larger space in the ListView, each row has a transparent view built in
                 // if we are not the last row in the logical section, make it gone, else visible
                 View transparentView = (View)rowView.findViewById(R.id.schedules_routeselection_favoriteandrecentlyviewed_transparentview);
-                Log.d(TAG, "adjust pos is "+adjustedPosition(position)+"    compared against sizes of "+(favorites.size()+recentlyViewed.size()));
                 if ((adjustedPosition(position)+1) == (favorites.size()+recentlyViewed.size())) {
-                    Log.d(TAG, "setting the transpartent view visible");
                     transparentView.setVisibility(View.VISIBLE);
                 } else {
-                    Log.d(TAG, "leaving the transparent view gone");
                     transparentView.setVisibility(View.GONE);
                 }
             } else{

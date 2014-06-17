@@ -34,6 +34,7 @@ import org.septa.android.app.activities.SchedulesRRStopSelectionActionBarActivit
 import org.septa.android.app.adapters.schedules.SchedulesItinerary_ListViewItem_ArrayAdapter;
 import org.septa.android.app.databases.SEPTADatabase;
 import org.septa.android.app.managers.SchedulesFavoritesAndRecentlyViewedStore;
+import org.septa.android.app.models.ObjectFactory;
 import org.septa.android.app.models.RouteTypes;
 import org.septa.android.app.models.SchedulesFavoriteModel;
 import org.septa.android.app.models.SchedulesRecentlyViewedModel;
@@ -207,13 +208,12 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
 
             Log.d(TAG, "get back both start and end");
 
-            SchedulesFavoritesAndRecentlyViewedStore store = new SchedulesFavoritesAndRecentlyViewedStore(this);
+            SchedulesFavoritesAndRecentlyViewedStore store = ObjectFactory.getInstance().getSchedulesFavoritesAndRecentlyViewedStore(this);
 
             SchedulesRecentlyViewedModel schedulesRecentlyViewedModel = new SchedulesRecentlyViewedModel();
             schedulesRecentlyViewedModel.setRouteCode(schedulesRouteModel.getRouteCode());
             schedulesRecentlyViewedModel.setRouteStartName(schedulesRouteModel.getRouteStartName());
             schedulesRecentlyViewedModel.setRouteStartStopId(schedulesRouteModel.getRouteStartStopId());
-                    Log.d(TAG, "start stop id is "+schedulesRouteModel.getRouteStartStopId());
             schedulesRecentlyViewedModel.setRouteEndName(schedulesRouteModel.getRouteEndName());
             schedulesRecentlyViewedModel.setRouteEndStopId(schedulesRouteModel.getRouteEndStopId());
 
@@ -226,15 +226,13 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
 
             // check if the selected route is already a favorite, then we allow the option of removing this
             // route from the favorites list.
-            if (store.isFavorite(schedulesFavoriteModel)) {
-                Log.d(TAG, "this is already a favorite");
+            if (store.isFavorite(this.travelType.name(), schedulesFavoriteModel)) {
 //                ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter)menuDialogListView.getAdapter()).enableRemoveSavedFavorite();
             }
 
             // check if this route is already stored as a favorite; if not store as a recent
-            if (!store.isFavorite(schedulesRecentlyViewedModel)) {
-                Log.d(TAG, "storing the recently viewed");
-                store.addRecentlyViewed(schedulesRecentlyViewedModel);
+            if (!store.isFavorite(this.travelType.name(), schedulesRecentlyViewedModel)) {
+                store.addRecentlyViewed(this.travelType.name(), schedulesRecentlyViewedModel);
             }
 
 //            fetchNextToArrive();

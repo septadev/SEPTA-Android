@@ -10,6 +10,7 @@ package org.septa.android.app.models;
 import android.content.Context;
 
 import org.septa.android.app.R;
+import org.septa.android.app.managers.SchedulesFavoritesAndRecentlyViewedStore;
 import org.septa.android.app.managers.SharedPreferencesManager;
 
 import java.util.HashMap;
@@ -39,6 +40,9 @@ public class ObjectFactory {
 
     private static HashMap<String, KMLModel> kmlModels = new HashMap<String, KMLModel>();
     private static Object kmlModelMutex = new Object();
+
+    private static SchedulesFavoritesAndRecentlyViewedStore schedulesFavoritesAndRecentlyViewedStoreSingleton = null;
+    private static Object schedulesFavoritesAndRecentlyViewedStoreMutex = new Object();
 
     private ObjectFactory(){
     }
@@ -144,5 +148,17 @@ public class ObjectFactory {
         }
 
         return gtfsStopNameTranslationsSingleton;
+    }
+
+    public SchedulesFavoritesAndRecentlyViewedStore getSchedulesFavoritesAndRecentlyViewedStore(Context context) {
+        if (schedulesFavoritesAndRecentlyViewedStoreSingleton == null) {
+            synchronized (schedulesFavoritesAndRecentlyViewedStoreMutex) {
+                if (schedulesFavoritesAndRecentlyViewedStoreSingleton == null) {
+                    schedulesFavoritesAndRecentlyViewedStoreSingleton = new SchedulesFavoritesAndRecentlyViewedStore(context);
+                }
+            }
+        }
+
+        return schedulesFavoritesAndRecentlyViewedStoreSingleton;
     }
 }

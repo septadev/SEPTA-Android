@@ -8,11 +8,26 @@
 package org.septa.android.app.models;
 
 public enum RouteTypes {
-    RAIL,
-    MFL,
-    BSL,
-    TROLLEY,
-    NHSL,
-    BUS,
-    TRACKLESSTROLLEY
+    TROLLEY ("trolley"),
+    MFL ("mfl"),
+    RAIL ("rail"),
+    BUS ("bus"),
+    BSL ("bsl"),
+    NHSL ("nhsl"),
+    TRACKLESSTROLLEY ("tracklesstrolley");
+
+    private final String name;
+
+    private RouteTypes(String s) {
+        name = s;
+    }
+
+    public boolean equalsName(String otherName){
+        return (otherName == null)? false:name.equals(otherName);
+    }
+
+    public String toString(){
+        return name;
+    }
+
 }

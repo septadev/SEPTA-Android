@@ -119,23 +119,27 @@ public class SchedulesRouteSelectionActionBarActivity extends BaseAnalyticsActio
         String routeShortName = "";
         Log.d("f", "onItemClick occurred at position "+position+" with id "+id+" and route short name of "+routeShortName);
 
-        if (!mAdapter.isFavorite(position) && !mAdapter.isRecentlyViewed(position)) {
-            SchedulesRouteModel rtm = (SchedulesRouteModel)mAdapter.getItem(position);
+        SchedulesRouteModel route = (SchedulesRouteModel)mAdapter.getItem(position);
 
-            routeShortName = rtm.getRouteShortName();
+        if (!mAdapter.isFavorite(position) && !mAdapter.isRecentlyViewed(position)) {
+
+
+            routeShortName = route.getRouteShortName();
         }
+
+        Log.d("tt", "in scheduelsrouteselectionactionbaractivity, the route type as name is "+route.getRouteType().name());
 
         Intent schedulesItineraryIntent = null;
 
         schedulesItineraryIntent = new Intent(this, SchedulesItineraryActionBarActivity.class);
-        schedulesItineraryIntent.putExtra(getString(R.string.actionbar_titletext_key), routesModel.get(position).getRouteCode());
+        schedulesItineraryIntent.putExtra(getString(R.string.actionbar_titletext_key), route.getRouteCode());
         schedulesItineraryIntent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), iconImageNameSuffix);
         schedulesItineraryIntent.putExtra(getString(R.string.schedules_itinerary_travelType),
                 travelType.name());
         schedulesItineraryIntent.putExtra(getString(R.string.schedules_itinerary_routeShortName), routeShortName);
 
         Gson gson = new Gson();
-        String schedulesRouteModelJSONString = gson.toJson(routesModel.get(position));
+        String schedulesRouteModelJSONString = gson.toJson(route);
         schedulesItineraryIntent.putExtra(getString(R.string.schedules_itinerary_schedulesRouteModel), schedulesRouteModelJSONString);
 
         startActivity(schedulesItineraryIntent);

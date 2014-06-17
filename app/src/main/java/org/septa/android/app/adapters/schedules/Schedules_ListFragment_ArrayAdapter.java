@@ -50,10 +50,43 @@ public class Schedules_ListFragment_ArrayAdapter  extends ArrayAdapter<String> {
         ImageView rightImageBackgroundView = (ImageView) rowView.findViewById(R.id.schedules_listfragment_item_rightImageBackgroundview);
         TextView textView = (TextView) rowView.findViewById(R.id.schedules_listfragment_item_rightTextView);
 
-        int id = context.getResources().getIdentifier(leftImageStartName + resourceEndNames[position], "drawable", context.getPackageName());
+        // in order to manage the route types number in the SQLlite database, we need to reorder the values and thus use this lookup.
+        int listPositionValue = 0;
+        switch (position) {
+            case 0: {
+                listPositionValue = 3;
+                break;
+            }
+            case 1: {
+                listPositionValue = 1;
+                break;
+            }
+            case 2: {
+                listPositionValue = 4;
+                break;
+            }
+            case 3: {
+                listPositionValue = 0;
+                break;
+            }
+            case 4: {
+                listPositionValue = 5;
+                break;
+            }
+            case 5: {
+                listPositionValue = 2;
+                break;
+            }
+            default: {
+                listPositionValue = 0;
+                break;
+            }
+        }
+
+        int id = context.getResources().getIdentifier(leftImageStartName + resourceEndNames[listPositionValue], "drawable", context.getPackageName());
         leftImageView.setImageResource(id);
 
-        id = context.getResources().getIdentifier(rightImageBackgroundName + resourceEndNames[position], "drawable", context.getPackageName());
+        id = context.getResources().getIdentifier(rightImageBackgroundName + resourceEndNames[listPositionValue], "drawable", context.getPackageName());
         rightImageBackgroundView.setImageResource(id);
 
         textView.setText(values[position]);

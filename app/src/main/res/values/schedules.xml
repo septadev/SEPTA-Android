@@ -21,32 +21,32 @@
     <string name="schedulesfragment_listview_leftimage_startname">ic_schedules_</string>
     <string name="schedulesfragment_listview_rightimage_startname">bg_schedules_</string>
     <string-array name="schedulesfragment_listview_bothimage_endnames">
-        <item>rrl</item>
-        <item>mfl</item>
-        <item>bsl</item>
         <item>trolley</item>
-        <item>nhsl</item>
+        <item>mfl</item>
+        <item>rrl</item>
         <item>bus</item>
+        <item>bsl</item>
+        <item>nhsl</item>
     </string-array>
 
     // positions are based on the RouteTypes enum
     <string-array name="schedules_routeselection_routesheader_colors">
-        <item>#9945637A</item>  // regional rail
-        <item>#99007DC3</item>  // mfl
-        <item>#99F58426</item>  // bsl
         <item>#994D7900</item>  // trolley
-        <item>#99791D7E</item>  // nhsl
+        <item>#99007DC3</item>  // mfl
+        <item>#9945637A</item>  // regional rail
         <item>#99383D42</item>  // bus
+        <item>#99F58426</item>  // bsl
+        <item>#99791D7E</item>  // nhsl
     </string-array>
 
     // positions are based on the RouteTypes enum
     <string-array name="schedules_routeselection_routesheader_solid_colors">
-        <item>#FF45637A</item>  // regional rail
-        <item>#FF007DC3</item>  // mfl
-        <item>#FFF58426</item>  // bsl
         <item>#FF4D7900</item>  // trolley
-        <item>#FF791D7E</item>  // nhsl
+        <item>#FF007DC3</item>  // mfl
+        <item>#FF45637A</item>  // regional rail
         <item>#FF383D42</item>  // bus
+        <item>#FFF58426</item>  // bsl
+        <item>#FF791D7E</item>  // nhsl
     </string-array>
 
     <string name="schedules_routeselect_travelType">schedules_routeselect_travelType</string>

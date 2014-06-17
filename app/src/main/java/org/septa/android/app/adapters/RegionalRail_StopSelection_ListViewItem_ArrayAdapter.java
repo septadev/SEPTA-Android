@@ -8,7 +8,6 @@
 package org.septa.android.app.adapters;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,18 +17,17 @@ import android.widget.TextView;
 
 import org.septa.android.app.R;
 import org.septa.android.app.models.StopModel;
-import org.septa.android.app.models.TripDataModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class NextToArrive_StopSelection_ListViewItem_ArrayAdapter extends ArrayAdapter<StopModel> {
-    public static final String TAG = NextToArrive_StopSelection_ListViewItem_ArrayAdapter.class.getName();
+public class RegionalRail_StopSelection_ListViewItem_ArrayAdapter extends ArrayAdapter<StopModel> {
+    public static final String TAG = RegionalRail_StopSelection_ListViewItem_ArrayAdapter.class.getName();
 
     private final Context context;
     private List<StopModel> values;
 
-    public NextToArrive_StopSelection_ListViewItem_ArrayAdapter(Context context, List<StopModel> tripDataModelArrayList) {
+    public RegionalRail_StopSelection_ListViewItem_ArrayAdapter(Context context, List<StopModel> tripDataModelArrayList) {
         super(context, R.layout.nexttoarrive_listview_stop_item, tripDataModelArrayList);
         this.context = context;
         this.values = tripDataModelArrayList;

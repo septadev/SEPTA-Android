@@ -24,11 +24,19 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import org.septa.android.app.R;
 import org.septa.android.app.activities.BaseAnalyticsActionBarActivity;
+import org.septa.android.app.activities.NextToArriveStopSelectionActionBarActivity;
+import org.septa.android.app.activities.SchedulesRRStopSelectionActionBarActivity;
 import org.septa.android.app.adapters.schedules.SchedulesItinerary_ListViewItem_ArrayAdapter;
 import org.septa.android.app.databases.SEPTADatabase;
+import org.septa.android.app.managers.SchedulesFavoritesAndRecentlyViewedStore;
 import org.septa.android.app.models.RouteTypes;
+import org.septa.android.app.models.SchedulesFavoriteModel;
+import org.septa.android.app.models.SchedulesRecentlyViewedModel;
 import org.septa.android.app.models.SchedulesRouteModel;
 
 import java.util.ArrayList;
@@ -42,6 +50,7 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
         AdapterView.OnItemClickListener, StickyListHeadersListView.OnHeaderClickListener,
         StickyListHeadersListView.OnStickyHeaderOffsetChangedListener,
         StickyListHeadersListView.OnStickyHeaderChangedListener, View.OnTouchListener {
+    public static final String TAG = SchedulesItineraryActionBarActivity.class.getName();
 
     private SchedulesItinerary_ListViewItem_ArrayAdapter mAdapter;
     private boolean fadeHeader = true;
@@ -53,10 +62,13 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
     private ArrayList<SchedulesRouteModel> routesModel;
 
     private String iconImageNameSuffix;
-    private String routeShortName;
 
-    private final String[] tabLabels = new String[] {"REMAINING TRIPS TO TODAY", "WEEKDAY", "SATURDAY", "SUNDAY"};
+    private final String[] tabLabels = new String[] {"NOW", "WEEKDAY", "SATURDAY", "SUNDAY"};
     private int selectedTab = 0;
+
+    private boolean inProcessOfStartDestinationFlow;
+
+    private SchedulesRouteModel schedulesRouteModel = new SchedulesRouteModel();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -64,15 +76,20 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
         setContentView(R.layout.schedules_itinerary);
 
         String actionBarTitleText = getIntent().getStringExtra(getString(R.string.actionbar_titletext_key));
+
         iconImageNameSuffix = getIntent().getStringExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key));
         String resourceName = getString(R.string.actionbar_iconimage_imagename_base).concat(iconImageNameSuffix);
 
-        Log.d("f", "resource name is to be " + resourceName);
+        String schedulesRouteModelJSONString = getIntent().getStringExtra(getString(R.string.schedules_itinerary_schedulesRouteModel));
+        Gson gson = new Gson();
+        schedulesRouteModel = gson.fromJson(schedulesRouteModelJSONString, new TypeToken<SchedulesRouteModel>(){}.getType());
+
+        Log.d(TAG, "onCreate and have the route Code as "+schedulesRouteModel.getRouteCode());
 
         int id = getResources().getIdentifier(resourceName, "drawable", getPackageName());
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("|" + actionBarTitleText);
+        getSupportActionBar().setTitle("| " + actionBarTitleText);
         getSupportActionBar().setIcon(id);
 
         String stringTravelType = getIntent().getStringExtra(getString(R.string.schedules_itinerary_travelType));
@@ -81,9 +98,8 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
         } else {
             Log.d("f", "travelType is null...");
         }
-        routeShortName = getIntent().getStringExtra(getString(R.string.schedules_itinerary_routeShortName));
 
-        Log.d("f", "got the travel type as "+travelType.name());
+        this.inProcessOfStartDestinationFlow = false;
 
         mAdapter = new SchedulesItinerary_ListViewItem_ArrayAdapter(this, travelType);
 
@@ -143,25 +159,132 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
         tabSunButton.setTextColor(Color.BLACK);
     }
 
-
     public void startEndSelectionSelected(View view) {
+        this.inProcessOfStartDestinationFlow = true;
 
-        Intent itinerarySelectionIntent = null;
+//        tripDataModel.clear();
 
-        itinerarySelectionIntent = new Intent(this, ItinerarySelectionActionBarActivity.class);
-        itinerarySelectionIntent.putExtra(getString(R.string.actionbar_titletext_key), "Select Start");
-        itinerarySelectionIntent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), iconImageNameSuffix);
-        itinerarySelectionIntent.putExtra(getString(R.string.schedules_itinerary_travelType),
-                travelType.name());
-        itinerarySelectionIntent.putExtra(getString(R.string.schedules_itinerary_routeShortName), routeShortName);
+        Intent stopSelectionIntent = null;
 
-        startActivityForResult(itinerarySelectionIntent, 202);
+        stopSelectionIntent = new Intent(this, SchedulesRRStopSelectionActionBarActivity.class);
+        stopSelectionIntent.putExtra(getString(R.string.regionalrail_stopselection_startordestination), "Start");
+        startActivityForResult(stopSelectionIntent, getResources().getInteger(R.integer.nexttoarrive_stopselection_activityforresult_request_id));
+    }
 
-        Log.d("f", "start end selection selected");
+    public void selectStartSelected(View view) {
+        Intent stopSelectionIntent = null;
+
+        stopSelectionIntent = new Intent(this, SchedulesRRStopSelectionActionBarActivity.class);
+        stopSelectionIntent.putExtra(getString(R.string.regionalrail_stopselection_startordestination), "Start");
+        startActivityForResult(stopSelectionIntent, getResources().getInteger(R.integer.nexttoarrive_stopselection_activityforresult_request_id));
+    }
+
+    public void selectDestinationSelected(View view) {
+        Intent stopSelectionIntent = null;
+
+        stopSelectionIntent = new Intent(this, SchedulesRRStopSelectionActionBarActivity.class);
+        stopSelectionIntent.putExtra(getString(R.string.regionalrail_stopselection_startordestination), "Destination");
+        startActivityForResult(stopSelectionIntent, getResources().getInteger(R.integer.nexttoarrive_stopselection_activityforresult_request_id));
     }
 
     public void reverseStartEndSelected(View view) {
-        Log.d("f", "reverse start end selected");
+        schedulesRouteModel.reverseStartAndDestinationStops();
+        SchedulesItinerary_ListViewItem_ArrayAdapter schedulesListViewItemArrayAdapter = (SchedulesItinerary_ListViewItem_ArrayAdapter)stickyList.getAdapter();
+        schedulesListViewItemArrayAdapter.setRouteStartName(schedulesRouteModel.getRouteStartName());
+        schedulesListViewItemArrayAdapter.setRouteEndName(schedulesRouteModel.getRouteEndName());
+
+        checkTripStartAndDestinationForNextToArriveDataRequest();
+    }
+
+    private void checkTripStartAndDestinationForNextToArriveDataRequest() {
+        // check if we have both the start and destination stops, if yes, fetch the data.
+        if ((schedulesRouteModel.getRouteStartName() != null) &&
+                !schedulesRouteModel.getRouteStartName().isEmpty() &&
+                (schedulesRouteModel.getRouteEndName() != null) &&
+                !schedulesRouteModel.getRouteEndName().isEmpty()) {
+//            ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter)menuDialogListView.getAdapter()).enableRefresh();
+//            ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter)menuDialogListView.getAdapter()).enableSaveAsFavorite();
+
+            Log.d(TAG, "get back both start and end");
+
+            SchedulesFavoritesAndRecentlyViewedStore store = new SchedulesFavoritesAndRecentlyViewedStore(this);
+
+            SchedulesRecentlyViewedModel schedulesRecentlyViewedModel = new SchedulesRecentlyViewedModel();
+            schedulesRecentlyViewedModel.setRouteCode(schedulesRouteModel.getRouteCode());
+            schedulesRecentlyViewedModel.setRouteStartName(schedulesRouteModel.getRouteStartName());
+            schedulesRecentlyViewedModel.setRouteStartStopId(schedulesRouteModel.getRouteStartStopId());
+                    Log.d(TAG, "start stop id is "+schedulesRouteModel.getRouteStartStopId());
+            schedulesRecentlyViewedModel.setRouteEndName(schedulesRouteModel.getRouteEndName());
+            schedulesRecentlyViewedModel.setRouteEndStopId(schedulesRouteModel.getRouteEndStopId());
+
+            SchedulesFavoriteModel schedulesFavoriteModel = new SchedulesFavoriteModel();
+            schedulesFavoriteModel.setRouteCode(schedulesRouteModel.getRouteCode());
+            schedulesFavoriteModel.setRouteStartStopId(schedulesRouteModel.getRouteStartStopId());
+            schedulesFavoriteModel.setRouteStartName(schedulesRouteModel.getRouteStartName());
+            schedulesFavoriteModel.setRouteEndStopId(schedulesRouteModel.getRouteEndStopId());
+            schedulesFavoriteModel.setRouteEndName(schedulesRouteModel.getRouteEndName());
+
+            // check if the selected route is already a favorite, then we allow the option of removing this
+            // route from the favorites list.
+            if (store.isFavorite(schedulesFavoriteModel)) {
+                Log.d(TAG, "this is already a favorite");
+//                ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter)menuDialogListView.getAdapter()).enableRemoveSavedFavorite();
+            }
+
+            // check if this route is already stored as a favorite; if not store as a recent
+            if (!store.isFavorite(schedulesRecentlyViewedModel)) {
+                Log.d(TAG, "storing the recently viewed");
+                store.addRecentlyViewed(schedulesRecentlyViewedModel);
+            }
+
+//            fetchNextToArrive();
+//
+        }
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == getResources().getInteger(R.integer.nexttoarrive_stopselection_activityforresult_request_id)) {
+            if (resultCode == RESULT_OK) {
+                String stopName = data.getStringExtra("stop_name");
+                String stopId = data.getStringExtra("stop_id");
+                String selectionMode = data.getStringExtra("selection_mode");
+
+                if (selectionMode.equals("destination")) {
+                    schedulesRouteModel.setRouteEndStopId(stopId);
+                    schedulesRouteModel.setRouteEndName(stopName);
+
+                    if (inProcessOfStartDestinationFlow) {
+                        inProcessOfStartDestinationFlow = false;
+                    }
+                } else {
+                    if (schedulesRouteModel == null) {
+                        Log.d(TAG, "schedulesRouteModel is null here, bad");
+                    } else {
+                        Log.d(TAG, "schedulesroutemodel is not null here, good");
+                    }
+                    schedulesRouteModel.setRouteStartStopId(stopId);
+                    schedulesRouteModel.setRouteStartName(stopName);
+
+                    if (inProcessOfStartDestinationFlow) {
+                        Intent stopSelectionIntent = null;
+
+                        stopSelectionIntent = new Intent(this, NextToArriveStopSelectionActionBarActivity.class);
+                        stopSelectionIntent.putExtra(getString(R.string.regionalrail_stopselection_startordestination), "Destination");
+                        startActivityForResult(stopSelectionIntent, getResources().getInteger(R.integer.nexttoarrive_stopselection_activityforresult_request_id));
+                    }
+                }
+
+                SchedulesItinerary_ListViewItem_ArrayAdapter schedulesListViewItemArrayAdapter = (SchedulesItinerary_ListViewItem_ArrayAdapter)stickyList.getAdapter();
+                schedulesListViewItemArrayAdapter.setRouteStartName(schedulesRouteModel.getRouteStartName());
+                schedulesListViewItemArrayAdapter.setRouteEndName(schedulesRouteModel.getRouteEndName());
+
+                checkTripStartAndDestinationForNextToArriveDataRequest();
+            }
+            if (resultCode == RESULT_CANCELED) {
+                Log.d(TAG, "the result is canceled");
+                //Write your code if there's no result
+            }
+        }
     }
 
     public void tabSelected(View view) {
@@ -339,6 +462,10 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
         return false;
     }
 
+    /* --
+        RoutesLoader - asynctask to load the routes
+
+     */
     private class RoutesLoader extends AsyncTask<RouteTypes, Integer, Boolean> {
         ArrayList<SchedulesRouteModel> routesModelList = null;
 
@@ -392,8 +519,8 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
                                     cursor.getString(3),
                                     "",
                                     "",
-                                    0,
-                                    0);
+                                    "",
+                                    "");
                         } else {
                             // for bus
                             routeModel = new SchedulesRouteModel(
@@ -403,8 +530,8 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
                                     cursor.getString(3),
                                     "",
                                     "",
-                                    0,
-                                    0);
+                                    "",
+                                    "");
                         }
 //                        routesModelList.add(routeModel);
                     } while (cursor.moveToNext());

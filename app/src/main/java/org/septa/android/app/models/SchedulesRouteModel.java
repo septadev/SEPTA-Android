@@ -1,33 +1,35 @@
 package org.septa.android.app.models;
 
+import android.util.Log;
+
 import java.lang.String;
 
-public class SchedulesRouteModel {
+public class SchedulesRouteModel implements Comparable<SchedulesRouteModel> {
     private int routeType;
-    private String routeId;
+    private String routeCode;
     private String routeShortName;
     private String routeLongName;
     private String routeStart;
     private String routeEnd;
-    private int routeStartStopId;
-    private int routeEndStopId;
+    private String routeStartStopId;
+    private String routeEndStopId;
 
     public SchedulesRouteModel() { };
 
     public SchedulesRouteModel(int routeType,
-                               String routeId,
+                               String routeCode,
                                String routeShortName,
                                String routeLongName,
                                String routeStart,
                                String routeEnd,
-                               int routeStartStopId,
-                               int routeEndStopId) {
+                               String routeStartStopId,
+                               String routeEndStopId) {
         this.setRouteType(routeType);
-        this.setRouteId(routeId);
+        this.setRouteCode(routeCode);
         this.setRouteShortName(routeShortName);
         this.setRouteLongName(routeLongName);
-        this.setRouteStart(routeStart);
-        this.setRouteEnd(routeEnd);
+        this.setRouteStartName(routeStart);
+        this.setRouteEndName(routeEnd);
         this.setRouteStartStopId(routeStartStopId);
         this.setRouteEndStopId(routeEndStopId);
     }
@@ -40,43 +42,43 @@ public class SchedulesRouteModel {
         this.routeType = routeType;
     }
 
-    public String getRouteId() {
-        return routeId;
+    public String getRouteCode() {
+        return routeCode;
     }
 
-    public void setRouteId(String routeId) {
-        this.routeId = routeId;
+    public void setRouteCode(String routeCode) {
+        this.routeCode = routeCode;
     }
 
-    public String getRouteStart() {
+    public String getRouteStartName() {
         return routeStart;
     }
 
-    public void setRouteStart(String routeStart) {
+    public void setRouteStartName(String routeStart) {
         this.routeStart = routeStart;
     }
 
-    public String getRouteEnd() {
+    public String getRouteEndName() {
         return routeEnd;
     }
 
-    public void setRouteEnd(String routeEnd) {
+    public void setRouteEndName(String routeEnd) {
         this.routeEnd = routeEnd;
     }
 
-    public int getRouteStartStopId() {
+    public String getRouteStartStopId() {
         return routeStartStopId;
     }
 
-    public void setRouteStartStopId(int routeStartStopId) {
+    public void setRouteStartStopId(String routeStartStopId) {
         this.routeStartStopId = routeStartStopId;
     }
 
-    public int getRouteEndStopId() {
+    public String getRouteEndStopId() {
         return routeEndStopId;
     }
 
-    public void setRouteEndStopId(int routeEndStopId) {
+    public void setRouteEndStopId(String routeEndStopId) {
         this.routeEndStopId = routeEndStopId;
     }
 
@@ -94,5 +96,35 @@ public class SchedulesRouteModel {
 
     public void setRouteLongName(String routeLongName) {
         this.routeLongName = routeLongName;
+    }
+
+    public void print() {
+        Log.d("gg", "Route type: "+routeType+"  route id: "+ routeCode +"     route short name: "+routeShortName+"     route long name: "+routeLongName);
+        Log.d("gg", "Route start name: "+routeStart+"   Route end name "+routeEnd+"     Route start id "+routeStartStopId+"     route end id "+routeEndStopId);
+    }
+
+    @Override
+    public int compareTo(SchedulesRouteModel another) {
+        if ((this.getRouteCode().equals(another.getRouteCode())) &&
+                (this.getRouteShortName()==another.getRouteShortName()) &&
+                (this.getRouteStartName().equals(another.getRouteStartName())) &&
+                (this.getRouteEndStopId()==another.getRouteEndStopId()) &&
+                (this.getRouteEndName().equals(another.getRouteEndName()))) {
+
+            return 0;
+        }
+
+        return -1;
+    }
+
+    public void reverseStartAndDestinationStops() {
+        String tempStartStopName = getRouteStartName();
+        String tempStartStopId = getRouteStartStopId();
+
+        setRouteStartStopId(getRouteEndStopId());
+        setRouteStartName(getRouteEndName());
+
+        setRouteEndStopId(tempStartStopId);
+        setRouteEndName(tempStartStopName);
     }
 }

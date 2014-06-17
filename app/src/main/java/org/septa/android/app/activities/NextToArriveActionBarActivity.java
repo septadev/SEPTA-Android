@@ -126,7 +126,7 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
         Intent stopSelectionIntent = null;
 
         stopSelectionIntent = new Intent(this, NextToArriveStopSelectionActionBarActivity.class);
-        stopSelectionIntent.putExtra(getString(R.string.nexttoarrive_stopselection_startordestination), "Start");
+        stopSelectionIntent.putExtra(getString(R.string.regionalrail_stopselection_startordestination), "Start");
         startActivityForResult(stopSelectionIntent, getResources().getInteger(R.integer.nexttoarrive_stopselection_activityforresult_request_id));
     }
 
@@ -134,7 +134,7 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
         Intent stopSelectionIntent = null;
 
         stopSelectionIntent = new Intent(this, NextToArriveStopSelectionActionBarActivity.class);
-        stopSelectionIntent.putExtra(getString(R.string.nexttoarrive_stopselection_startordestination), "Start");
+        stopSelectionIntent.putExtra(getString(R.string.regionalrail_stopselection_startordestination), "Start");
         startActivityForResult(stopSelectionIntent, getResources().getInteger(R.integer.nexttoarrive_stopselection_activityforresult_request_id));
     }
 
@@ -142,7 +142,7 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
         Intent stopSelectionIntent = null;
 
         stopSelectionIntent = new Intent(this, NextToArriveStopSelectionActionBarActivity.class);
-        stopSelectionIntent.putExtra(getString(R.string.nexttoarrive_stopselection_startordestination), "Destination");
+        stopSelectionIntent.putExtra(getString(R.string.regionalrail_stopselection_startordestination), "Destination");
         startActivityForResult(stopSelectionIntent, getResources().getInteger(R.integer.nexttoarrive_stopselection_activityforresult_request_id));
     }
 
@@ -177,7 +177,7 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
                         Intent stopSelectionIntent = null;
 
                         stopSelectionIntent = new Intent(this, NextToArriveStopSelectionActionBarActivity.class);
-                        stopSelectionIntent.putExtra(getString(R.string.nexttoarrive_stopselection_startordestination), "Destination");
+                        stopSelectionIntent.putExtra(getString(R.string.regionalrail_stopselection_startordestination), "Destination");
                         startActivityForResult(stopSelectionIntent, getResources().getInteger(R.integer.nexttoarrive_stopselection_activityforresult_request_id));
                     }
                 }
@@ -376,7 +376,9 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
             ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter)menuDialogListView.getAdapter()).enableSaveAsFavorite();
 
             NextToArriveFavoritesAndRecentlyViewedStore store = new NextToArriveFavoritesAndRecentlyViewedStore(this);
+
             NextToArriveRecentlyViewedModel nextToArriveRecentlyViewedModel = new NextToArriveRecentlyViewedModel();
+
             nextToArriveRecentlyViewedModel.setStartStopId(tripDataModel.getStartStopId());
             nextToArriveRecentlyViewedModel.setStartStopName(tripDataModel.getStartStopName());
             nextToArriveRecentlyViewedModel.setDestintationStopId(tripDataModel.getDestinationStopId());

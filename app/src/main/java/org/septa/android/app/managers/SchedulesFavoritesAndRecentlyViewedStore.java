@@ -6,18 +6,18 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import org.septa.android.app.models.NextToArriveFavoriteModel;
-import org.septa.android.app.models.NextToArriveRecentlyViewedModel;
-import org.septa.android.app.models.NextToArriveStoredTripModel;
+import org.septa.android.app.models.SchedulesFavoriteModel;
+import org.septa.android.app.models.SchedulesRecentlyViewedModel;
 import org.septa.android.app.models.ObjectFactory;
+import org.septa.android.app.models.SchedulesRouteModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SchedulesFavoritesAndRecentlyViewedStore {
 
-    private ArrayList<NextToArriveFavoriteModel> favoritesList;
-    private ArrayList<NextToArriveRecentlyViewedModel> recentlyViewedList;
+    private ArrayList<SchedulesFavoriteModel> favoritesList;
+    private ArrayList<SchedulesRecentlyViewedModel> recentlyViewedList;
     private Context context;
 
     public SchedulesFavoritesAndRecentlyViewedStore(Context context) {
@@ -48,9 +48,9 @@ public class SchedulesFavoritesAndRecentlyViewedStore {
         return recentlyViewedList.size();
     }
 
-    public boolean isFavorite(NextToArriveStoredTripModel nextToArriveModel) {
-        for (NextToArriveStoredTripModel storedTrip : favoritesList) {
-            if (storedTrip.compareTo(nextToArriveModel) == 0) {
+    public boolean isFavorite(SchedulesRouteModel schedulesModel) {
+        for (SchedulesRouteModel storedTrip : favoritesList) {
+            if (storedTrip.compareTo(schedulesModel) == 0) {
                 return true;
             }
         }
@@ -58,27 +58,27 @@ public class SchedulesFavoritesAndRecentlyViewedStore {
         return false;
     }
 
-    public void addFavorite(NextToArriveFavoriteModel nextToArriveFavoriteModel) {
+    public void addFavorite(SchedulesFavoriteModel schedulesFavoriteModel) {
         // search the list for a duplicate, if yes just return
-        // the code should be safe guarding against this event even occuring
-        for (NextToArriveStoredTripModel storedTrip : favoritesList) {
-            if (storedTrip.compareTo(nextToArriveFavoriteModel) == 0) {
+        // the code should be safe guarding against this event even occurring
+        for (SchedulesRouteModel storedTrip : favoritesList) {
+            if (storedTrip.compareTo(schedulesFavoriteModel) == 0) {
                 return;
             }
         }
 
-        favoritesList.add(0, nextToArriveFavoriteModel);
+        favoritesList.add(0, schedulesFavoriteModel);
 
         // in case this favorite is also a recently viewed
-        removeRecentlyViewed(nextToArriveFavoriteModel);
+        removeRecentlyViewed(schedulesFavoriteModel);
 
         sendToSharedPreferencesFavorites();
     }
 
-    public void removeFavorite(NextToArriveFavoriteModel nextToArriveFavoriteModel) {
+    public void removeFavorite(SchedulesFavoriteModel schedulesFavoriteModel) {
         Log.d("tt", "remove favorite being run with list size of " + favoritesList.size());
         for (int i=0; i< favoritesList.size(); i++) {
-            if (favoritesList.get(i).compareTo(nextToArriveFavoriteModel) == 0) {
+            if (favoritesList.get(i).compareTo(schedulesFavoriteModel) == 0) {
                 Log.d("qqq", "found a match... removing");
                 favoritesList.remove(i);
                 Log.d("qqq", "new list size is "+favoritesList.size());
@@ -88,10 +88,10 @@ public class SchedulesFavoritesAndRecentlyViewedStore {
         }
     }
 
-    public void removeRecentlyViewed(NextToArriveStoredTripModel nextToArriveModel) {
+    public void removeRecentlyViewed(SchedulesRouteModel schedulesModel) {
         for (int i=0; i < recentlyViewedList.size(); i++) {
             if (recentlyViewedList.get(i) != null) {
-                if (recentlyViewedList.get(i).compareTo(nextToArriveModel) == 0) {
+                if (recentlyViewedList.get(i).compareTo(schedulesModel) == 0) {
                     recentlyViewedList.remove(i);
 
                     sendToSharedPreferencesRecentlyViewed();
@@ -100,21 +100,24 @@ public class SchedulesFavoritesAndRecentlyViewedStore {
         }
     }
 
-    public void addRecentlyViewed(NextToArriveRecentlyViewedModel nextToArriveModel) {
+    public void addRecentlyViewed(SchedulesRecentlyViewedModel schedulesModel) {
 
         // duplicate avoidance
         // check if we already have this recently viewed
         // if we find a duplicate, remove it form the list, the list will shuffle properly.
         for (int i=0; i < recentlyViewedList.size(); i++) {
+            Log.d("f", "processing the recently viewed list with size "+recentlyViewedList.size());
             if (recentlyViewedList.get(i) != null) {
-                if (recentlyViewedList.get(i).compareTo(nextToArriveModel) == 0) {
+                Log.d("F", "recently viewed for position "+i);
+                if (recentlyViewedList.get(i).compareTo(schedulesModel) == 0) {
+                    Log.d("d", "recently viewed at that position is a dup");
                     recentlyViewedList.remove(i);
                 }
             }
         }
 
         // put the recently viewed item at the top of the list
-        recentlyViewedList.add(0, nextToArriveModel);
+        recentlyViewedList.add(0, schedulesModel);
 
         // check if we have a (overly) full list, and remove the 4th item if exists
         if (recentlyViewedList.size() == 4) {
@@ -124,27 +127,27 @@ public class SchedulesFavoritesAndRecentlyViewedStore {
         sendToSharedPreferencesRecentlyViewed();
     }
 
-    public ArrayList<NextToArriveRecentlyViewedModel> getRecentlyViewedList() {
+    public ArrayList<SchedulesRecentlyViewedModel> getRecentlyViewedList() {
         Gson gson = new Gson();
 
-        String json = ObjectFactory.getInstance().getSharedPreferencesManager(context).getNextToArriveRecentlyViewedList();
-        recentlyViewedList = gson.fromJson(json, new TypeToken<List<NextToArriveRecentlyViewedModel>>(){}.getType());
+        String json = ObjectFactory.getInstance().getSharedPreferencesManager(context).getSchedulesRecentlyViewedList();
+        recentlyViewedList = gson.fromJson(json, new TypeToken<List<SchedulesRecentlyViewedModel>>(){}.getType());
 
         if (recentlyViewedList == null) {
-            recentlyViewedList = new ArrayList<NextToArriveRecentlyViewedModel>(3);
+            recentlyViewedList = new ArrayList<SchedulesRecentlyViewedModel>(3);
         }
 
         return recentlyViewedList;
     }
 
-    public ArrayList<NextToArriveFavoriteModel> getFavoriteList() {
+    public ArrayList<SchedulesFavoriteModel> getFavoriteList() {
         Gson gson = new Gson();
 
-        String json = ObjectFactory.getInstance().getSharedPreferencesManager(context).getNextToArriveFavoritesList();
-        favoritesList = gson.fromJson(json, new TypeToken<List<NextToArriveFavoriteModel>>(){}.getType());
+        String json = ObjectFactory.getInstance().getSharedPreferencesManager(context).getSchedulesFavoritesList();
+        favoritesList = gson.fromJson(json, new TypeToken<List<SchedulesFavoriteModel>>(){}.getType());
 
         if (favoritesList == null) {
-            favoritesList = new ArrayList<NextToArriveFavoriteModel>();
+            favoritesList = new ArrayList<SchedulesFavoriteModel>();
         }
 
         return favoritesList;
@@ -153,8 +156,9 @@ public class SchedulesFavoritesAndRecentlyViewedStore {
     private void sendToSharedPreferencesRecentlyViewed() {
         Gson gson = new Gson();
         String recentlyViewedListAsJSON = gson.toJson(recentlyViewedList);
+        Log.d("y", "about to store this json "+recentlyViewedListAsJSON);
 
-        ObjectFactory.getInstance().getSharedPreferencesManager(context).setNextToArriveRecentlyViewedList(recentlyViewedListAsJSON);
+        ObjectFactory.getInstance().getSharedPreferencesManager(context).setSchedulesRecentlyViewedList(recentlyViewedListAsJSON);
     }
 
     private void sendToSharedPreferencesFavorites() {

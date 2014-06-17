@@ -18,15 +18,14 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import org.septa.android.app.R;
-import org.septa.android.app.adapters.NextToArrive_StopSelection_ListViewItem_ArrayAdapter;
+import org.septa.android.app.adapters.RegionalRail_StopSelection_ListViewItem_ArrayAdapter;
 import org.septa.android.app.models.StopModel;
-import org.septa.android.app.models.TripDataModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class StopSelectionListFragment extends ListFragment {
-    public static final String TAG = TransitViewRouteViewListFragment.class.getName();
+    public static final String TAG = StopSelectionListFragment.class.getName();
 
     private List<StopModel> stopModelList;
 
@@ -49,7 +48,7 @@ public class StopSelectionListFragment extends ListFragment {
     public void setStopList(List<StopModel> stopModelList) {
         this.stopModelList = stopModelList;
 
-        ArrayAdapter<StopModel> adapter = new NextToArrive_StopSelection_ListViewItem_ArrayAdapter(getActivity(), stopModelList);
+        ArrayAdapter<StopModel> adapter = new RegionalRail_StopSelection_ListViewItem_ArrayAdapter(getActivity(), stopModelList);
         setListAdapter(adapter);
 
         // after the list has been update, invalidate the list view to re-render
@@ -79,7 +78,7 @@ public class StopSelectionListFragment extends ListFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        ArrayAdapter<StopModel> adapter = new NextToArrive_StopSelection_ListViewItem_ArrayAdapter(inflater.getContext(), stopModelList);
+        ArrayAdapter<StopModel> adapter = new RegionalRail_StopSelection_ListViewItem_ArrayAdapter(inflater.getContext(), stopModelList);
         setListAdapter(adapter);
 
         return super.onCreateView(inflater, container, savedInstanceState);
@@ -87,7 +86,6 @@ public class StopSelectionListFragment extends ListFragment {
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-        Log.d(TAG, "detected a listfragment item being clicked");
         Intent returnIntent = new Intent();
         returnIntent.putExtra("stop_name", stopModelList.get(position).getStopName());
         returnIntent.putExtra("stop_id", stopModelList.get(position).getStopId());

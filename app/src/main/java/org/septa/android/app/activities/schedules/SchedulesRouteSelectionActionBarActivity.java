@@ -21,6 +21,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 
+import com.google.gson.Gson;
+
 import org.septa.android.app.R;
 import org.septa.android.app.activities.BaseAnalyticsActionBarActivity;
 import org.septa.android.app.adapters.schedules.SchedulesRouteSelection_ListViewItem_ArrayAdapter;
@@ -126,11 +128,15 @@ public class SchedulesRouteSelectionActionBarActivity extends BaseAnalyticsActio
         Intent schedulesItineraryIntent = null;
 
         schedulesItineraryIntent = new Intent(this, SchedulesItineraryActionBarActivity.class);
-        schedulesItineraryIntent.putExtra(getString(R.string.actionbar_titletext_key), routesModel.get(position).getRouteId());
+        schedulesItineraryIntent.putExtra(getString(R.string.actionbar_titletext_key), routesModel.get(position).getRouteCode());
         schedulesItineraryIntent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), iconImageNameSuffix);
         schedulesItineraryIntent.putExtra(getString(R.string.schedules_itinerary_travelType),
                 travelType.name());
         schedulesItineraryIntent.putExtra(getString(R.string.schedules_itinerary_routeShortName), routeShortName);
+
+        Gson gson = new Gson();
+        String schedulesRouteModelJSONString = gson.toJson(routesModel.get(position));
+        schedulesItineraryIntent.putExtra(getString(R.string.schedules_itinerary_schedulesRouteModel), schedulesRouteModelJSONString);
 
         startActivity(schedulesItineraryIntent);
     }
@@ -207,14 +213,14 @@ public class SchedulesRouteSelectionActionBarActivity extends BaseAnalyticsActio
                         SchedulesRouteModel routeModel = null;
                         if (routeType == RAIL) {
                             routeModel = new SchedulesRouteModel(
-                                    cursor.getInt(2),
-                                    cursor.getString(1),
-                                    cursor.getString(0),
-                                    cursor.getString(3),
+                                    cursor.getInt(2),   // route_type
+                                    cursor.getString(1),    // route_id
+                                    cursor.getString(0),    // route_short_name
+                                    cursor.getString(3),    // route_long_name
                                     "",
                                     "",
-                                    0,
-                                    0);
+                                    "",
+                                    "");
                         } else {
                             // for bus
                             routeModel = new SchedulesRouteModel(
@@ -224,8 +230,8 @@ public class SchedulesRouteSelectionActionBarActivity extends BaseAnalyticsActio
                                     cursor.getString(3),
                                     "",
                                     "",
-                                    0,
-                                    0);
+                                    "",
+                                    "");
                         }
                         routesModelList.add(routeModel);
                     } while (cursor.moveToNext());

@@ -40,6 +40,8 @@ public class SharedPreferencesManager {
         readFromPreferencesSystemStatusFilterEnabled();
         readFromPreferencesNextToArriveFavoritesList();
         readFromPreferencesNextToArriveRecentlyViewedList();
+        readFromPreferencesSchedulesRecentlyViewedList();
+        readFromPreferencesSchedulesFavoritesList();
     }
 
     public int getMainTabbarSelectedSection() {
@@ -168,11 +170,11 @@ public class SharedPreferencesManager {
         editor.apply();
     }
 
-    public String getSchdulesRecentlyViewedList() {
+    public String getSchedulesRecentlyViewedList() {
         return schedulesRecentlyViewedList;
     }
 
-    public void setScheduelsRecentlyViewedList(String recentlyViewedList) {
+    public void setSchedulesRecentlyViewedList(String recentlyViewedList) {
         this.schedulesRecentlyViewedList = recentlyViewedList;
         writePreferenceForSchedulesRecentlyViewedList();
     }

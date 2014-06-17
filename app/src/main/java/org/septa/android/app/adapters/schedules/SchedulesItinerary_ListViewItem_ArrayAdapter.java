@@ -45,6 +45,9 @@ public class SchedulesItinerary_ListViewItem_ArrayAdapter extends BaseAdapter im
 
     private View headerView = null;
 
+    private String routeStartName;
+    private String routeEndName;
+
     public SchedulesItinerary_ListViewItem_ArrayAdapter(Context context, RouteTypes routeType) {
         mContext = context;
         mInflater = LayoutInflater.from(context);
@@ -53,6 +56,18 @@ public class SchedulesItinerary_ListViewItem_ArrayAdapter extends BaseAdapter im
 
         resourceEndNames = context.getResources().getStringArray(R.array.schedulesfragment_listview_bothimage_endnames);
         leftImageStartName = context.getString(R.string.schedulesfragment_listview_leftimage_startname);
+    }
+
+    public void setRouteStartName(String routeStartName) {
+
+        this.routeStartName = routeStartName;
+        notifyDataSetChanged();
+    }
+
+    public void setRouteEndName(String routeEndName) {
+
+        this.routeEndName = routeEndName;
+        notifyDataSetChanged();
     }
 
     public void setSchedulesRouteModel(ArrayList<SchedulesRouteModel> routes) {
@@ -104,6 +119,18 @@ public class SchedulesItinerary_ListViewItem_ArrayAdapter extends BaseAdapter im
         if (position == 0 ) {
 
             rowView = mInflater.inflate(R.layout.schedules_itinerary_selectstartend_row, parent, false);
+            TextView routeStartStopNameTextView = (TextView)rowView.findViewById(R.id.schedules_itinerary_selectstartend_start_textview);
+            TextView routeEndStopNameTextView = (TextView)rowView.findViewById(R.id.schedules_itinerary_selectstartend_end_textview);
+
+            if (this.routeStartName != null) {
+                routeStartStopNameTextView.setText(routeStartName);
+            }
+
+            if (this.routeEndName != null) {
+                routeEndStopNameTextView.setText(routeEndName);
+                setHeaderViewText(routeEndName);
+            }
+
         } else {
             String[] routeTypeLabels = mContext.getResources().getStringArray(R.array.schedulesfragment_listview_bothimage_endnames);
 
@@ -120,9 +147,9 @@ public class SchedulesItinerary_ListViewItem_ArrayAdapter extends BaseAdapter im
             id = mContext.getResources().getIdentifier(rightImageBackgroundName + routeTypeLabels[routeType.ordinal()], "drawable", mContext.getPackageName());
             rightBackgroundImageView.setImageResource(id);
 
-            routeIdTextView.setText(routes.get((position-1)).getRouteId());
+            routeIdTextView.setText(routes.get((position-1)).getRouteCode());
 
-            switch (routes.get((position-1)).getRouteId().length()) {
+            switch (routes.get((position-1)).getRouteCode().length()) {
                 case 6: {
                     routeIdTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
                     break;

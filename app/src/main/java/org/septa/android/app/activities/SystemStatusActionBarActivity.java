@@ -518,7 +518,6 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
                 loadingProgressBar.setVisibility(View.GONE);
 
                 alertModelList = (ArrayList<AlertModel>)o;
-                Log.d("f", "callback called for alerts with count of "+alertModelList.size());
 
                 reloadListView();
             }

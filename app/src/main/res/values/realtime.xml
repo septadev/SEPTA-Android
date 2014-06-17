@@ -40,7 +40,7 @@
 
     <!-- on the realtime tab, the tips Url -->
     <string name="realtime_tips_webview_url">http://www.septa.org/service/septa-app-mobile.html</string>
-    <string name="nexttoarrive_stopselection_startordestination">nexttoarrive_stopselection_startorend</string>
+    <string name="regionalrail_stopselection_startordestination">nexttoarrive_stopselection_startorend</string>
     <string name="nexttoarrive_activity_titlebar_text">Next To Arrive</string>
 
 </resources>

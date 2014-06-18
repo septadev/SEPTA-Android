@@ -8,14 +8,17 @@ public class TripObject {
     private Number trainNo;
     private Number routeName;
 
-    private Number serviceID;
-    private Number directionID;
+    private Number serviceId;
+    private Number directionId;
 
     private Number startSeq;
     private Number endSeq;
 
-    private String tripID;
+    private String tripId;
 
+    public String print() {
+        return "startTime:"+startTime+"  endTime:"+endTime+"   trainNo:"+trainNo+"   routeName:"+routeName+"   serviceId:"+serviceId+"   directionId:"+directionId+"   startSeq:"+startSeq+"   endSeq:"+endSeq+"   tripId:"+ tripId;
+    }
 
     public Number getStartTime() {
         return startTime;
@@ -49,20 +52,20 @@ public class TripObject {
         this.routeName = routeName;
     }
 
-    public Number getServiceID() {
-        return serviceID;
+    public Number getServiceId() {
+        return serviceId;
     }
 
-    public void setServiceID(Number serviceID) {
-        this.serviceID = serviceID;
+    public void setServiceId(Number serviceId) {
+        this.serviceId = serviceId;
     }
 
-    public Number getDirectionID() {
-        return directionID;
+    public Number getDirectionId() {
+        return directionId;
     }
 
-    public void setDirectionID(Number directionID) {
-        this.directionID = directionID;
+    public void setDirectionId(Number directionId) {
+        this.directionId = directionId;
     }
 
     public Number getStartSeq() {
@@ -81,12 +84,11 @@ public class TripObject {
         this.endSeq = endSeq;
     }
 
-    public String getTripID() {
-        return tripID;
+    public String getTripId() {
+        return tripId;
     }
 
-    public void setTripID(String tripID) {
-        this.tripID = tripID;
+    public void setTripId(String tripId) {
+        this.tripId = tripId;
     }
-
 }

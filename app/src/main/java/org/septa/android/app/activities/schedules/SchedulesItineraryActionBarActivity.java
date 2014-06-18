@@ -41,7 +41,9 @@ import org.septa.android.app.models.SchedulesDataModel;
 import org.septa.android.app.models.SchedulesFavoriteModel;
 import org.septa.android.app.models.SchedulesRecentlyViewedModel;
 import org.septa.android.app.models.SchedulesRouteModel;
+import org.septa.android.app.models.TripObject;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
@@ -125,13 +127,13 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
 //        stickyList.setFastScrollAlwaysVisible(true);
         stickyList.setFastScrollEnabled(true);
 
-        stickyList.setDivider(null);
+//        stickyList.setDividerHeight();
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
         routesModel = new ArrayList<SchedulesRouteModel>();
-        RoutesLoader routesLoader = new RoutesLoader(routesModel);
+//        RoutesLoader routesLoader = new RoutesLoader(routesModel);
 
         //TODO: this is casuing a crash since travelType is coming in null at times.  this needs work.
 //        routesLoader.execute(travelType);
@@ -210,10 +212,6 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
                 !schedulesRouteModel.getRouteStartName().isEmpty() &&
                 (schedulesRouteModel.getRouteEndName() != null) &&
                 !schedulesRouteModel.getRouteEndName().isEmpty()) {
-//            ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter)menuDialogListView.getAdapter()).enableRefresh();
-//            ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter)menuDialogListView.getAdapter()).enableSaveAsFavorite();
-
-            Log.d(TAG, "get back both start and end");
 
             TextView endRouteNameTextView = (TextView)findViewById(R.id.schedules_itinerary_routedirection_textview);
             endRouteNameTextView.setText("To "+schedulesRouteModel.getRouteEndName());
@@ -248,9 +246,15 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
             Log.d(TAG, "about to instantiate schedules data model");
             SchedulesDataModel schedulesDataModel = new SchedulesDataModel(this);
             schedulesDataModel.setRoute(schedulesRouteModel);
-            Log.d(TAG, "about to call the loadstartbasedtrips");
+            Log.d(TAG, "about to call the loadstartbasedtrips....");
             schedulesDataModel.loadStartBasedTrips(travelType);
-            Log.d(TAG, "called the loadstartbasedtrips");
+            Log.d(TAG, "called the loadstartbasedtrips.");
+            Log.d(TAG, "about to call the load and process end stop with start stops...");
+            schedulesDataModel.loadAndProcessEndStopsWithStartStops(travelType);
+            Log.d(TAG, "called the load and process.");
+
+            ArrayList<TripObject>trips = schedulesDataModel.createFilteredTripsList(0);
+            mAdapter.setTripObject(trips);
         }
     }
 
@@ -573,8 +577,8 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
             super.onPostExecute(b);
 
             Log.d("f", "calling onPostExecute...");
-            mAdapter.setSchedulesRouteModel(routesModelList);
-            mAdapter.notifyDataSetChanged();
+//            mAdapter.setSchedulesRouteModel(routesModelList);
+//            mAdapter.notifyDataSetChanged();
             Log.d("f", "done with the onPostExecute call.");
         }
     }

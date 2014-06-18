@@ -6,8 +6,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import org.septa.android.app.databases.SEPTADatabase;
+import org.septa.android.app.utilities.CalendarDateUtilities;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 
 public class SchedulesDataModel {
@@ -17,7 +20,8 @@ public class SchedulesDataModel {
     private HashMap<String, TripObject>startBasedTrips = new HashMap<String, TripObject>();
     private HashMap<String, TripObject>endBasedTrips;
 
-    private ArrayList<TripObject>masterTripsArray = new ArrayList<TripObject>();
+    private ArrayList<TripObject>masterTripsList = new ArrayList<TripObject>();
+    private ArrayList<TripObject>filteredTripsList = new ArrayList<TripObject>();
 
     private SchedulesRouteModel route;
 
@@ -54,12 +58,14 @@ public class SchedulesDataModel {
                     Number serviceId = cursor.getInt(5);
 
                     TripObject trip = new TripObject();
-                    trip.setTripID(tripId);
+                    trip.setTripId(tripId);
                     trip.setTrainNo(trainNumber);
                     trip.setStartSeq(startSequence);
                     trip.setStartTime(startTime);
-                    trip.setDirectionID(directionId);
-                    trip.setServiceID(serviceId);
+                    trip.setDirectionId(directionId);
+                    trip.setServiceId(serviceId);
+
+                    Log.d(TAG,"output trip:   "+trip.print());
 
                     startBasedTrips.put(tripId, trip);
                 } while (cursor.moveToNext());
@@ -83,7 +89,7 @@ public class SchedulesDataModel {
 
         switch(routeType) {
             case RAIL: {
-                queryString = "SELECT route_id, block_id, stop_sequence, arrival_time, direction_id, service_id, stop_times_rail.trip_id trip_id FROM stop_times_rail JOIN trips_rail ON tripsDB.trip_id=stop_times_rail.trip_id WHERE trips_rail.trip_id IN (SELECT trip_id FROM trips_rail WHERE route_id="+route.getRouteId()+" ) AND route_id="+route.getRouteId()+" AND stop_id="+route.getRouteEndStopId()+" ORDER BY arrival_time";
+                queryString = "SELECT route_id, block_id, stop_sequence, arrival_time, direction_id, service_id, stop_times_rail.trip_id trip_id FROM stop_times_rail JOIN trips_rail ON trips_rail.trip_id=stop_times_rail.trip_id WHERE trips_rail.trip_id IN (SELECT trip_id FROM trips_rail WHERE route_id=\""+route.getRouteId()+"\" ) AND route_id=\""+route.getRouteId()+"\" AND stop_id="+route.getRouteEndStopId()+" ORDER BY arrival_time";
                 break;
             }
             case MFL:
@@ -116,11 +122,12 @@ public class SchedulesDataModel {
                     if (startBasedTrips.get(tripId) != null) {
                         Log.d(TAG, "found the trip");
                         TripObject trip = startBasedTrips.get(tripId);
-                        trip.setDirectionID(cursor.getInt(4));
+                        trip.setDirectionId(cursor.getInt(4));
 
                         int startSequence = trip.getStartSeq().intValue();
                         int endSequence = cursor.getInt(2);
 
+                        Log.d(TAG, "start seq is "+startSequence+"   with end seq being "+endSequence+"   for trainno "+cursor.getInt(1));
                         if (startSequence < endSequence) {
                             Log.d(TAG, "the start sequence is less than end, ideal");
                             trip.setEndSeq(endSequence);
@@ -134,7 +141,7 @@ public class SchedulesDataModel {
                                 firstTime = false;
                             }
 
-                            currentDisplayDirection = trip.getDirectionID().intValue();
+                            currentDisplayDirection = trip.getDirectionId().intValue();
                         } else {
                             Log.d(TAG, "the end sequence is less than the start, not ideal");
                             trip.setEndSeq(trip.getStartSeq());
@@ -153,7 +160,7 @@ public class SchedulesDataModel {
                                 if (routeType == RouteTypes.RAIL) {
                                     // do nothing
                                 } else {
-                                    if (trip.getDirectionID().intValue() == 0) {
+                                    if (trip.getDirectionId().intValue() == 0) {
                                         currentDisplayDirection = 1;
                                     } else {
                                         currentDisplayDirection = 0;
@@ -162,7 +169,7 @@ public class SchedulesDataModel {
                             }
                         }
 
-                        masterTripsArray.add(trip);
+                        masterTripsList.add(trip);
                         startBasedTrips.remove(trip);
 
                     } else {
@@ -179,6 +186,39 @@ public class SchedulesDataModel {
         }
 
         database.close();
+
+        Log.d(TAG,"load and process done with masterTripsArray having "+masterTripsList.size()+" rows");
+    }
+
+    public ArrayList<TripObject> createFilteredTripsList(int tab) {
+        filteredTripsList.clear();
+
+        int nowTime = CalendarDateUtilities.getNowTimeFormatted();
+        int serviceId = CalendarDateUtilities.getServiceIdForNow(context);
+        for (TripObject trip : masterTripsList) {
+            if (trip.getServiceId().intValue() == serviceId &&
+               (trip.getStartTime().intValue() > nowTime) &&
+               (trip.getDirectionId().intValue() == currentDisplayDirection)) {
+                this.filteredTripsList.add(trip);
+            } else {
+                if (serviceId == 4) {  // special case for Friday, where both weekday and Friday applies.
+                    if (trip.getServiceId().intValue() == 1 &&
+                       (trip.getStartTime().intValue() > nowTime) &&
+                       (trip.getDirectionId().intValue() == currentDisplayDirection)) {
+                        this.filteredTripsList.add(trip);
+                    }
+                }
+            }
+        }
+
+        if (filteredTripsList == null) {
+            filteredTripsList = new ArrayList<TripObject>();
+        }
+
+        Collections.sort(filteredTripsList, new TripSorter());
+
+        Log.d(TAG, "createFilteredTripsList done with filteredTripsList having size "+filteredTripsList.size());
+        return this.filteredTripsList;
     }
 
     public SchedulesRouteModel getRoute() {
@@ -187,5 +227,22 @@ public class SchedulesDataModel {
 
     public void setRoute(SchedulesRouteModel route) {
         this.route = route;
+    }
+}
+
+class TripSorter implements Comparator<TripObject> {
+    @Override
+    public int compare(TripObject tripObject1, TripObject tripObject2) {
+        Log.d("hh", "sorting the trips for train ");
+        Log.d("yy", "train 1:"+tripObject1.print());
+        Log.d("yy", "train 2:"+tripObject2.print());
+        if (tripObject1.getStartTime().intValue() < tripObject2.getStartTime().intValue()) {
+            return -1;
+        }
+        if (tripObject1.getStartTime().intValue() == tripObject2.getStartTime().intValue()) {
+            return 0;
+        }
+
+        return 1;
     }
 }

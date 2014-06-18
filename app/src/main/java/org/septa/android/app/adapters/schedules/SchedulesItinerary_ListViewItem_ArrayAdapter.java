@@ -10,30 +10,31 @@ package org.septa.android.app.adapters.schedules;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.SectionIndexer;
 import android.widget.TextView;
 
 import org.septa.android.app.R;
 import org.septa.android.app.models.RouteTypes;
-import org.septa.android.app.models.SchedulesRouteModel;
+import org.septa.android.app.models.TripObject;
+import org.septa.android.app.utilities.CalendarDateUtilities;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 
 public class SchedulesItinerary_ListViewItem_ArrayAdapter extends BaseAdapter implements
         StickyListHeadersAdapter, SectionIndexer {
     public static final String TAG = SchedulesItinerary_ListViewItem_ArrayAdapter.class.getName();
-    private final Context mContext;
+    private final Context context;
     private LayoutInflater mInflater;
 
-    protected ArrayList<SchedulesRouteModel> routes = new ArrayList<SchedulesRouteModel>();
+    protected ArrayList<TripObject> trips = new ArrayList<TripObject>();
 
     String[] resourceEndNames;
     String leftImageStartName;
@@ -49,7 +50,7 @@ public class SchedulesItinerary_ListViewItem_ArrayAdapter extends BaseAdapter im
     private String routeEndName;
 
     public SchedulesItinerary_ListViewItem_ArrayAdapter(Context context, RouteTypes routeType) {
-        mContext = context;
+        this.context = context;
         mInflater = LayoutInflater.from(context);
 
         this.routeType = routeType;
@@ -70,22 +71,22 @@ public class SchedulesItinerary_ListViewItem_ArrayAdapter extends BaseAdapter im
         notifyDataSetChanged();
     }
 
-    public void setSchedulesRouteModel(ArrayList<SchedulesRouteModel> routes) {
-        this.routes = routes;
+    public void setTripObject(ArrayList<TripObject> trips) {
+        this.trips = trips;
 
         notifyDataSetChanged();
     }
 
     protected Object[] getItems() {
         ArrayList<Object> items = new ArrayList<Object>(getCount());
-        items.addAll(routes);
+        items.addAll(trips);
 
         return items.toArray();
     }
 
     @Override
     public int getCount() {
-        return routes.size()+1;
+        return trips.size()+1;
     }
 
     @Override
@@ -128,45 +129,43 @@ public class SchedulesItinerary_ListViewItem_ArrayAdapter extends BaseAdapter im
 
             if (this.routeEndName != null) {
                 routeEndStopNameTextView.setText(routeEndName);
-                setHeaderViewText(routeEndName);
             }
 
         } else {
-            String[] routeTypeLabels = mContext.getResources().getStringArray(R.array.schedulesfragment_listview_bothimage_endnames);
+//            String[] routeTypeLabels = context.getResources().getStringArray(R.array.schedulesfragment_listview_bothimage_endnames);
+            TripObject trip = (TripObject)getItem(position);
 
-            SchedulesRouteModel rtm = (SchedulesRouteModel) getItem(position);
-            rowView = mInflater.inflate(R.layout.schedules_routeselection_routes_listview_item, parent, false);
-            ImageView leftIconImageView = (ImageView) rowView.findViewById(R.id.schedules_routeselect_item_leftImageView);
-            ImageView rightBackgroundImageView = (ImageView) rowView.findViewById(R.id.schedules_routeselection_item_rightImageBackgroundview);
-            TextView routeIdTextView = (TextView) rowView.findViewById(R.id.schedules_routeselection_item_routeid);
-            TextView routeLongNameTextView = (TextView) rowView.findViewById(R.id.schedules_routeselection_item_routelongname);
+            rowView = mInflater.inflate(R.layout.schedules_trip_listview_item, parent, false);
 
-            int id = mContext.getResources().getIdentifier(leftImageStartName + routeTypeLabels[routeType.ordinal()] + "_small", "drawable", mContext.getPackageName());
-            leftIconImageView.setImageResource(id);
+            TextView trainNumber = (TextView)rowView.findViewById(R.id.schedules_trip_listview_trainnumber);
+            TextView timeUntilStart = (TextView)rowView.findViewById(R.id.schedules_trip_listview_timeuntilstart);
+            TextView startTime = (TextView)rowView.findViewById(R.id.schedules_trip_listview_starttime);
+            TextView tripTime = (TextView)rowView.findViewById(R.id.schedules_trip_listview_triptime);
+            TextView endTime = (TextView)rowView.findViewById(R.id.schedules_trip_listview_endtime);
 
-            id = mContext.getResources().getIdentifier(rightImageBackgroundName + routeTypeLabels[routeType.ordinal()], "drawable", mContext.getPackageName());
-            rightBackgroundImageView.setImageResource(id);
+            Log.d(TAG, "creating the row view with train:"+trip.print());
 
-            routeIdTextView.setText(routes.get((position-1)).getRouteId());
+            SimpleDateFormat timeDateFormat = new SimpleDateFormat("kkmm");
+            Date startDate = null;
+            Date endDate = null;
+            Date now = new Date();
 
-            switch (routes.get((position-1)).getRouteId().length()) {
-                case 6: {
-                    routeIdTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
-                    break;
-                }
-                case 5: {
-                    routeIdTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-                    break;
-                }
-                case 4: {
-                    routeIdTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
-                    break;
-                }
-                default: {
-                }
+            Log.d(TAG, "string value of date "+CalendarDateUtilities.getStringFromTime(trip.getStartTime().intValue()));
+
+            String nowHoursMinutes = timeDateFormat.format(now);
+            try {
+                startDate = new SimpleDateFormat("kkmm").parse(CalendarDateUtilities.getStringFromTime(trip.getStartTime().intValue()));
+                endDate = timeDateFormat.parse(CalendarDateUtilities.getStringFromTime(trip.getEndTime().intValue()));
+                now = timeDateFormat.parse(nowHoursMinutes);
+            } catch (Exception ex) {
+                Log.d(TAG, "a parse exception has occurred with the date");
             }
 
-            routeLongNameTextView.setText(routes.get((position-1)).getRouteLongName());
+            trainNumber.setText(Integer.toString(trip.getTrainNo().intValue()));
+            timeUntilStart.setText(CalendarDateUtilities.formatHoursMinutesDisplay(CalendarDateUtilities.minutesUntilStartTime(now, trip)));
+            startTime.setText(CalendarDateUtilities.getLocalizedHHMMStamp(context, startDate));
+            endTime.setText(CalendarDateUtilities.getLocalizedHHMMStamp(context, endDate));
+            tripTime.setText(Long.toString(CalendarDateUtilities.tripTime(trip)));
         }
 
         return rowView;

@@ -83,7 +83,7 @@ public class SchedulesRouteSelectionActionBarActivity extends BaseAnalyticsActio
         stickyList.setAdapter(mAdapter);
         stickyList.setOnTouchListener(this);
 
-        stickyList.setFastScrollAlwaysVisible(true);
+        stickyList.setFastScrollAlwaysVisible(false);
         stickyList.setFastScrollEnabled(true);
 
         stickyList.setDivider(null);

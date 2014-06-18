@@ -124,19 +124,12 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
         stickyList.setAdapter(mAdapter);
         stickyList.setOnTouchListener(this);
 
-//        stickyList.setFastScrollAlwaysVisible(true);
         stickyList.setFastScrollEnabled(true);
-
-//        stickyList.setDividerHeight();
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
         routesModel = new ArrayList<SchedulesRouteModel>();
-//        RoutesLoader routesLoader = new RoutesLoader(routesModel);
-
-        //TODO: this is casuing a crash since travelType is coming in null at times.  this needs work.
-//        routesLoader.execute(travelType);
     }
 
     @Override
@@ -207,6 +200,7 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
     }
 
     private void checkTripStartAndDestinationForNextToArriveDataRequest() {
+        Log.d(TAG, "check trip start and destination");
         // check if we have both the start and destination stops, if yes, fetch the data.
         if ((schedulesRouteModel.getRouteStartName() != null) &&
                 !schedulesRouteModel.getRouteStartName().isEmpty() &&
@@ -243,17 +237,13 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
                 store.addRecentlyViewed(this.travelType.name(), schedulesRecentlyViewedModel);
             }
 
-            Log.d(TAG, "about to instantiate schedules data model");
             SchedulesDataModel schedulesDataModel = new SchedulesDataModel(this);
-            schedulesDataModel.setRoute(schedulesRouteModel);
-            Log.d(TAG, "about to call the loadstartbasedtrips....");
-            schedulesDataModel.loadStartBasedTrips(travelType);
-            Log.d(TAG, "called the loadstartbasedtrips.");
-            Log.d(TAG, "about to call the load and process end stop with start stops...");
-            schedulesDataModel.loadAndProcessEndStopsWithStartStops(travelType);
-            Log.d(TAG, "called the load and process.");
 
-            ArrayList<TripObject>trips = schedulesDataModel.createFilteredTripsList(0);
+            schedulesDataModel.setRoute(schedulesRouteModel);
+            schedulesDataModel.loadStartBasedTrips(travelType);
+            schedulesDataModel.loadAndProcessEndStopsWithStartStops(travelType);
+
+            ArrayList<TripObject>trips = schedulesDataModel.createFilteredTripsList(selectedTab);
             mAdapter.setTripObject(trips);
         }
     }
@@ -304,10 +294,11 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
     }
 
     public void tabSelected(View view) {
+        Log.d(TAG, "heard the tab selected");
         switch (view.getId()) {
             case R.id.schedules_itinerary_tab_now_button: {
                 selectedTab = 0;
-                mAdapter.setHeaderViewText(tabLabels[selectedTab]);
+                mAdapter.setHeaderViewText("REMIANING TRIPS FOR TODAY");
                 selectedNowTab();
 
                 break;
@@ -337,6 +328,9 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
                 Log.d("f", "not sure how we feel into this default for this switch");
             }
         }
+
+        mAdapter.setSelectedTab(selectedTab);
+        checkTripStartAndDestinationForNextToArriveDataRequest();
     }
 
     private void selectedNowTab() {
@@ -364,6 +358,7 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
     }
 
     private void selectedWeekdayTab() {
+        Log.d(TAG, "weekday tab selected");
         // get the color from the looking array given the ordinal position of the route type
         String color = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[travelType.ordinal()];
 
@@ -476,110 +471,5 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
     public boolean onTouch(View v, MotionEvent event) {
         v.setOnTouchListener(null);
         return false;
-    }
-
-    /* --
-        RoutesLoader - asynctask to load the routes
-
-     */
-    private class RoutesLoader extends AsyncTask<RouteTypes, Integer, Boolean> {
-        ArrayList<SchedulesRouteModel> routesModelList = null;
-
-        public RoutesLoader(ArrayList<SchedulesRouteModel> routesModelList) {
-
-            this.routesModelList = routesModelList;
-        }
-
-        private void loadRoutes(RouteTypes routeType) {
-            SEPTADatabase septaDatabase = new SEPTADatabase(SchedulesItineraryActionBarActivity.this);
-            SQLiteDatabase database = septaDatabase.getReadableDatabase();
-
-            String queryString = null;
-            switch (routeType) {
-                case RAIL: {
-                    queryString = "SELECT route_short_name, route_id, route_type, route_long_name FROM routes_rail WHERE route_type=2 ORDER BY route_short_name ASC";
-                    break;
-                }
-                case BUS: {
-                    queryString = "SELECT route_short_name, route_id, route_type, route_long_name FROM routes_bus WHERE route_type=3 AND route_short_name NOT IN (\"MF\",\"BSO\") ORDER BY route_short_name ASC";
-                    break;
-                }
-                case BSL: {
-                    queryString = "SELECT route_short_name, route_id, route_type, route_long_name FROM routes_bus WHERE route_short_name LIKE \"BS_\" ORDER BY route_short_name ASC";
-                    break;
-                }
-                case MFL: {
-                    queryString = "SELECT route_short_name, route_id, route_type, route_long_name FROM routes_bus WHERE route_short_name LIKE \"MF_\" ORDER BY route_short_name";
-                    break;
-                }
-                case NHSL: {
-                    queryString = "SELECT route_short_name, route_id, route_type, route_long_name FROM routes_bus WHERE route_short_name=\"NHSL\" ORDER BY route_short_name";
-                    break;
-                }
-                case TROLLEY: {
-                    queryString = "SELECT route_short_name, route_id, route_type, route_long_name FROM routes_bus WHERE route_type=0 AND route_short_name != \"NHSL\" ORDER BY route_short_name ASC";
-                    break;
-                }
-            }
-
-            Cursor cursor = database.rawQuery(queryString, null);
-            if (cursor != null) {
-                if (cursor.moveToFirst()) {
-                    do {
-                        SchedulesRouteModel routeModel = null;
-                        if (routeType == RAIL) {
-                            routeModel = new SchedulesRouteModel(
-                                    cursor.getInt(2),
-                                    cursor.getString(1),
-                                    cursor.getString(0),
-                                    cursor.getString(3),
-                                    "",
-                                    "",
-                                    "",
-                                    "");
-                        } else {
-                            // for bus
-                            routeModel = new SchedulesRouteModel(
-                                    cursor.getInt(2),
-                                    cursor.getString(0),
-                                    cursor.getString(0),
-                                    cursor.getString(3),
-                                    "",
-                                    "",
-                                    "",
-                                    "");
-                        }
-//                        routesModelList.add(routeModel);
-                    } while (cursor.moveToNext());
-                }
-
-                cursor.close();
-            } else {
-                Log.d("f", "cursor is null");
-            }
-
-            database.close();
-        }
-
-        @Override
-        protected Boolean doInBackground(RouteTypes... params) {
-            RouteTypes routeType = params[0];
-
-            Log.d("f", "about to call the loadRoutes...");
-            loadRoutes(routeType);
-            Log.d("f", "called the loadRoutes.");
-
-            return false;
-        }
-
-        @Override
-        protected void onPostExecute(Boolean b) {
-            super.onPostExecute(b);
-
-            Log.d("f", "calling onPostExecute...");
-//            mAdapter.setSchedulesRouteModel(routesModelList);
-//            mAdapter.notifyDataSetChanged();
-            Log.d("f", "done with the onPostExecute call.");
-        }
     }
 }

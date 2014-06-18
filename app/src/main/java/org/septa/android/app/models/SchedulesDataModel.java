@@ -9,6 +9,7 @@ import org.septa.android.app.databases.SEPTADatabase;
 import org.septa.android.app.utilities.CalendarDateUtilities;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -191,14 +192,37 @@ public class SchedulesDataModel {
     }
 
     public ArrayList<TripObject> createFilteredTripsList(int tab) {
+        Log.d(TAG, "create filtered trips list with tab of "+tab);
         filteredTripsList.clear();
 
-        int nowTime = CalendarDateUtilities.getNowTimeFormatted();
-        int serviceId = CalendarDateUtilities.getServiceIdForNow(context);
+        int nowTime = -1;
+        int serviceId = -1;
+
+
+        switch(tab) {
+            case 0: { // Now
+                serviceId = CalendarDateUtilities.getServiceIdForNow(context);
+                nowTime = CalendarDateUtilities.getNowTimeFormatted();
+                break;
+            }
+            case 1: {  // Weekday
+                serviceId = CalendarDateUtilities.getServiceIdForNow(context);
+                break;
+            }
+            case 2: {  // Saturday
+                serviceId = CalendarDateUtilities.getServiceIdForDay(Calendar.SATURDAY);
+                break;
+            }
+            case 3: {  // Sunday
+                serviceId = CalendarDateUtilities.getServiceIdForDay(Calendar.SUNDAY);
+            }
+        }
+
         for (TripObject trip : masterTripsList) {
             if (trip.getServiceId().intValue() == serviceId &&
                (trip.getStartTime().intValue() > nowTime) &&
                (trip.getDirectionId().intValue() == currentDisplayDirection)) {
+
                 this.filteredTripsList.add(trip);
             } else {
                 if (serviceId == 4) {  // special case for Friday, where both weekday and Friday applies.

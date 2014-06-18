@@ -41,6 +41,10 @@ public class CalendarDateUtilities {
     public static int getServiceIdForNow(Context context) {
         int day = getDayOfTheWeek();
 
+         return getServiceIdForDay(day);
+    }
+
+    public static int getServiceIdForDay(int day) {
         switch (day) {
             case Calendar.SUNDAY: {
                 return 3;

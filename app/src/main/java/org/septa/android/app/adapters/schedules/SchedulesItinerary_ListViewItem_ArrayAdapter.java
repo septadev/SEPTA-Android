@@ -43,6 +43,8 @@ public class SchedulesItinerary_ListViewItem_ArrayAdapter extends BaseAdapter im
     RouteTypes routeType = null;
 
     private String[] sectionTitles = new String[]{ "Select Start and End (hidden)", "REMAINING TRIPS FOR TODAY"};
+    private String headerViewText;
+    private int selectedTab = 0;
 
     private View headerView = null;
 
@@ -57,6 +59,8 @@ public class SchedulesItinerary_ListViewItem_ArrayAdapter extends BaseAdapter im
 
         resourceEndNames = context.getResources().getStringArray(R.array.schedulesfragment_listview_bothimage_endnames);
         leftImageStartName = context.getString(R.string.schedulesfragment_listview_leftimage_startname);
+
+        headerViewText = sectionTitles[1];   // set the default primary header to be the remaining trips
     }
 
     public void setRouteStartName(String routeStartName) {
@@ -102,13 +106,12 @@ public class SchedulesItinerary_ListViewItem_ArrayAdapter extends BaseAdapter im
     }
 
     public void setHeaderViewText(String text) {
+        this.headerViewText = text;
+
         if (headerView == null) {
-            Log.d("f", "the headerView is null");
+
         } else {
             TextView textView = (TextView) headerView.findViewById(R.id.schedules_routeselection_sectionheader_textview);
-            if (textView == null) {
-                Log.d("f", "the textView is null");
-            }
             textView.setText(text);
         }
     }
@@ -166,6 +169,11 @@ public class SchedulesItinerary_ListViewItem_ArrayAdapter extends BaseAdapter im
             startTime.setText(CalendarDateUtilities.getLocalizedHHMMStamp(context, startDate));
             endTime.setText(CalendarDateUtilities.getLocalizedHHMMStamp(context, endDate));
             tripTime.setText(Long.toString(CalendarDateUtilities.tripTime(trip)));
+
+            // if we are not on the "Now" tab, hide the hours until since it will not be valid.
+            if (selectedTab > 0) {
+                timeUntilStart.setVisibility(View.INVISIBLE);
+            }
         }
 
         return rowView;
@@ -182,7 +190,7 @@ public class SchedulesItinerary_ListViewItem_ArrayAdapter extends BaseAdapter im
             view = mInflater.inflate(R.layout.schedules_routeselection_headerview, parent, false);
             TextView textView = (TextView) view.findViewById(R.id.schedules_routeselection_sectionheader_textview);
 
-            textView.setText(sectionTitles[1]);
+            textView.setText(headerViewText);
             textView.setBackgroundColor(Color.parseColor("#998A1515"));
 
             this.headerView = view;
@@ -231,6 +239,14 @@ public class SchedulesItinerary_ListViewItem_ArrayAdapter extends BaseAdapter im
     public Object[] getSections() {
 
         return sectionTitles;
+    }
+
+    public int getSelectedTab() {
+        return selectedTab;
+    }
+
+    public void setSelectedTab(int selectedTab) {
+        this.selectedTab = selectedTab;
     }
 
     class HeaderViewHolder {

@@ -94,7 +94,8 @@ public class SchedulesDataModel {
             case MFL:
             case BSL:
             case NHSL: {
-                queryString = "SELECT route_id, block_id, stop_sequence, arrival_time, direction_id, service_id, stop_timesDB.trip_id trip_id FROM stop_timesDB JOIN tripsDB ON tripsDB.trip_id=stop_timesDB.trip_id WHERE tripsDB.trip_id IN (SELECT trip_id FROM tripsDB WHERE route_id="+route.getRouteShortName()+" ) AND route_id="+route.getRouteShortName()+" AND stop_id="+route.getRouteEndStopId()+" ORDER BY arrival_time";
+                Log.d(TAG, "try just routeType:"+routeType+"    or as name():"+routeType.name());
+                queryString = "SELECT route_id, block_id, stop_sequence, arrival_time, direction_id, service_id, st.trip_id trip_id FROM stop_times_"+routeType.name()+" as st JOIN trips_"+routeType.name()+" as t ON t.trip_id=st.trip_id WHERE t.trip_id IN (SELECT trip_id FROM trips_"+routeType.name()+" WHERE route_id=\""+route.getRouteId()+"\" ) AND route_id=\""+route.getRouteId()+"\" AND stop_id="+route.getRouteEndStopId()+" ORDER BY arrival_time";
                 break;
             }
             case BUS: {

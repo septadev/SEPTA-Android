@@ -175,12 +175,20 @@ public class SchedulesRouteSelection_ListViewItem_ArrayAdapter extends BaseAdapt
                 TextView routeIdTextView = (TextView)rowView.findViewById(R.id.schedules_routeselection_item_routeid);
                 TextView routeLongNameTextView = (TextView)rowView.findViewById(R.id.schedules_routeselection_item_routelongname);
 
-                int id = mContext.getResources().getIdentifier(leftImageStartName + routeTypeLabels[routeType.ordinal()] + "_small", "drawable", mContext.getPackageName());
-                leftIconImageView.setImageResource(id);
+                // special icon and color rules for MFO and BSO
+                if (rtm.getRouteId().equals("MFO") || rtm.getRouteId().equals("BSO")) {
+                    int id = mContext.getResources().getIdentifier(leftImageStartName + routeTypeLabels[RouteTypes.BUS.ordinal()] + "_small", "drawable", mContext.getPackageName());
+                    leftIconImageView.setImageResource(id);
 
-                id = mContext.getResources().getIdentifier(rightImageBackgroundName + routeTypeLabels[routeType.ordinal()], "drawable", mContext.getPackageName());
-                rightBackgroundImageView.setImageResource(id);
+                    id = mContext.getResources().getIdentifier(rightImageBackgroundName + routeTypeLabels[RouteTypes.BUS.ordinal()], "drawable", mContext.getPackageName());
+                    rightBackgroundImageView.setImageResource(id);
+                } else {
+                    int id = mContext.getResources().getIdentifier(leftImageStartName + routeTypeLabels[routeType.ordinal()] + "_small", "drawable", mContext.getPackageName());
+                    leftIconImageView.setImageResource(id);
 
+                    id = mContext.getResources().getIdentifier(rightImageBackgroundName + routeTypeLabels[routeType.ordinal()], "drawable", mContext.getPackageName());
+                    rightBackgroundImageView.setImageResource(id);
+                }
                 SchedulesRouteModel route = (SchedulesRouteModel)getItems()[adjustedPosition(position)];
 
                 routeIdTextView.setText(route.getRouteId());

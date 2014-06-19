@@ -219,7 +219,7 @@
                     android:value=".activities.NextToArriveActionBarActivity" />
         </activity>
 
-        <activity android:name=".activities.SchedulesRRStopSelectionActionBarActivity"
+        <activity android:name=".activities.schedules.SchedulesRRStopSelectionActionBarActivity"
                   android:parentActivityName="org.septa.android.app.activities.schedules.SchedulesRouteSelectionActionBarActivity" >
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data

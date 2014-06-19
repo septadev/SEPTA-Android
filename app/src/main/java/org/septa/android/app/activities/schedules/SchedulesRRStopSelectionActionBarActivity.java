@@ -1,9 +1,11 @@
-package org.septa.android.app.activities;
+package org.septa.android.app.activities.schedules;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
 
 import org.septa.android.app.R;
+import org.septa.android.app.activities.BaseAnalyticsActionBarActivity;
+import org.septa.android.app.activities.NextToArriveStopSelectionActionBarActivity;
 import org.septa.android.app.adapters.RegionalRail_StopSelection_ListViewItem_ArrayAdapter;
 import org.septa.android.app.fragments.StopSelectionListFragment;
 import org.septa.android.app.models.ObjectFactory;

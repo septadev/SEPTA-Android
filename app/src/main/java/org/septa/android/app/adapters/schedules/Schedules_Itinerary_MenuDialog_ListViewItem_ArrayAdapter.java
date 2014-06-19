@@ -1,4 +1,4 @@
-package org.septa.android.app.adapters;
+package org.septa.android.app.adapters.schedules;
 
 import android.content.Context;
 import android.view.LayoutInflater;

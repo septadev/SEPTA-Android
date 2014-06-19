@@ -54,7 +54,7 @@ public class Schedules_ListFragment_ArrayAdapter  extends ArrayAdapter<String> {
         int listPositionValue = 0;
         switch (position) {
             case 0: {
-                listPositionValue = 3;
+                listPositionValue = 2;
                 break;
             }
             case 1: {
@@ -74,7 +74,7 @@ public class Schedules_ListFragment_ArrayAdapter  extends ArrayAdapter<String> {
                 break;
             }
             case 5: {
-                listPositionValue = 2;
+                listPositionValue = 3;
                 break;
             }
             default: {

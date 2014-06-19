@@ -14,6 +14,7 @@ import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -71,7 +72,7 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
 
     private String iconImageNameSuffix;
 
-    private final String[] tabLabels = new String[] {"NOW", "WEEKDAY", "SATURDAY", "SUNDAY"};
+    private final String[] tabLabels = new String[]{"NOW", "WEEKDAY", "SATURDAY", "SUNDAY"};
     private int selectedTab = 0;
 
     private boolean inProcessOfStartDestinationFlow;
@@ -80,6 +81,8 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
 
     private boolean menuRevealed = false;
     private ListView menuDialogListView;
+
+    private CountDownTimer schedulesItineraryRefreshCountDownTimer;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -110,7 +113,8 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
 
         String schedulesRouteModelJSONString = getIntent().getStringExtra(getString(R.string.schedules_itinerary_schedulesRouteModel));
         Gson gson = new Gson();
-        schedulesRouteModel = gson.fromJson(schedulesRouteModelJSONString, new TypeToken<SchedulesRouteModel>(){}.getType());
+        schedulesRouteModel = gson.fromJson(schedulesRouteModelJSONString, new TypeToken<SchedulesRouteModel>() {
+        }.getType());
 
 
         String iconPrefix = getResources().getString(R.string.schedules_itinerary_menu_icon_imageBase);
@@ -118,12 +122,12 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
         String[] subTexts = getResources().getStringArray(R.array.schedules_itinerary_menu_listview_items_subtexts);
         String[] iconSuffix = getResources().getStringArray(R.array.schedules_itinerary_menu_listview_items_iconsuffixes);
         TextSubTextImageModel[] listMenuItems = new TextSubTextImageModel[texts.length];
-        for (int i=0; i<texts.length; i++) {
+        for (int i = 0; i < texts.length; i++) {
             TextSubTextImageModel textSubTextImageModel = new TextSubTextImageModel(texts[i], subTexts[i], iconPrefix, iconSuffix[i]);
             listMenuItems[i] = textSubTextImageModel;
         }
 
-        ListView menuListView = (ListView)findViewById(R.id.schedules_itinerary_menudialog_listview);
+        ListView menuListView = (ListView) findViewById(R.id.schedules_itinerary_menudialog_listview);
         this.menuDialogListView = menuListView;
         menuListView.setAdapter(new Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter(this, listMenuItems));
 
@@ -157,21 +161,21 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
 
-        View routeDirectionView = (View)findViewById(R.id.schedules_itinerary_routedirection_view);
+        View routeDirectionView = (View) findViewById(R.id.schedules_itinerary_routedirection_view);
 
         // get the color from the looking array given the ordinal position of the route type
         String color = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[travelType.ordinal()];
         routeDirectionView.setBackgroundColor(Color.parseColor(color));
 
-        Button tabNowButton = (Button)findViewById(R.id.schedules_itinerary_tab_now_button);
-        Button tabWeekdayButton = (Button)findViewById(R.id.schedules_itinerary_tab_weekday_button);
-        Button tabSatButton = (Button)findViewById(R.id.schedules_itinerary_tab_sat_button);
-        Button tabSunButton = (Button)findViewById(R.id.schedules_itinerary_tab_sun_button);
+        Button tabNowButton = (Button) findViewById(R.id.schedules_itinerary_tab_now_button);
+        Button tabWeekdayButton = (Button) findViewById(R.id.schedules_itinerary_tab_weekday_button);
+        Button tabSatButton = (Button) findViewById(R.id.schedules_itinerary_tab_sat_button);
+        Button tabSunButton = (Button) findViewById(R.id.schedules_itinerary_tab_sun_button);
 
-        GradientDrawable nowTabButtonShapeDrawable = (GradientDrawable)tabNowButton.getBackground();
-        GradientDrawable weekdayTabButtonShapeDrawable = (GradientDrawable)tabWeekdayButton.getBackground();
-        GradientDrawable satTabButtonShapeDrawable = (GradientDrawable)tabSatButton.getBackground();
-        GradientDrawable sunTabButtonShapeDrawable = (GradientDrawable)tabSunButton.getBackground();
+        GradientDrawable nowTabButtonShapeDrawable = (GradientDrawable) tabNowButton.getBackground();
+        GradientDrawable weekdayTabButtonShapeDrawable = (GradientDrawable) tabWeekdayButton.getBackground();
+        GradientDrawable satTabButtonShapeDrawable = (GradientDrawable) tabSatButton.getBackground();
+        GradientDrawable sunTabButtonShapeDrawable = (GradientDrawable) tabSunButton.getBackground();
 
         nowTabButtonShapeDrawable.setColor(Color.parseColor(color));
         tabNowButton.setTextColor(Color.WHITE);
@@ -194,7 +198,7 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.nexttoarrive_action_bar, menu);
 
-        FrameLayout menuDialog = (FrameLayout)findViewById(R.id.schedules_itinerary_menudialog_mainlayout);
+        FrameLayout menuDialog = (FrameLayout) findViewById(R.id.schedules_itinerary_menudialog_mainlayout);
         menuDialog.setBackgroundResource(R.drawable.nexttoarrive_menudialog_bottomcorners);
         GradientDrawable drawable = (GradientDrawable) menuDialog.getBackground();
         drawable.setColor(0xFF353534);
@@ -265,7 +269,7 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
         if (store.isFavorite(this.travelType.name(), schedulesFavoriteModel)) {
             Log.d("tt", "detected this is a favorite, remove ");
             store.removeFavorite(this.travelType.name(), schedulesFavoriteModel);
-            ((Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter)menuDialogListView.getAdapter()).disableRemoveSavedFavorite();
+            ((Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).disableRemoveSavedFavorite();
         } else {
             Log.d("tt", "adding as a favorite");
             store.addFavorite(this.travelType.name(), schedulesFavoriteModel);
@@ -297,8 +301,8 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
 
         Log.d(TAG, "reveal menu");
 
-        FrameLayout menuDialog = (FrameLayout)findViewById(R.id.schedules_itinerary_menudialog_mainlayout);
-        ListView listView = (ListView)findViewById(R.id.schedules_itinerary_menudialog_listview);
+        FrameLayout menuDialog = (FrameLayout) findViewById(R.id.schedules_itinerary_menudialog_mainlayout);
+        ListView listView = (ListView) findViewById(R.id.schedules_itinerary_menudialog_listview);
 
         menuDialog.clearAnimation();
 
@@ -313,22 +317,24 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
     }
 
     private void hideListView() {
-        FrameLayout menuDialog = (FrameLayout)findViewById(R.id.schedules_itinerary_menudialog_mainlayout);
+        FrameLayout menuDialog = (FrameLayout) findViewById(R.id.schedules_itinerary_menudialog_mainlayout);
         menuDialog.clearAnimation();
 
         Animation mainLayOutAnimation = AnimationUtils.loadAnimation(this, R.anim.nexttoarrive_menudialog_scale_out);
         mainLayOutAnimation.setDuration(500);
 
-        mainLayOutAnimation.setAnimationListener(new Animation.AnimationListener(){
+        mainLayOutAnimation.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation arg0) {
             }
+
             @Override
             public void onAnimationRepeat(Animation arg0) {
             }
+
             @Override
             public void onAnimationEnd(Animation arg0) {
-                ListView listView = (ListView)findViewById(R.id.schedules_itinerary_menudialog_listview);
+                ListView listView = (ListView) findViewById(R.id.schedules_itinerary_menudialog_listview);
                 listView.setVisibility(View.GONE);
                 menuRevealed = false;
             }
@@ -336,7 +342,6 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
 
         menuDialog.startAnimation(mainLayOutAnimation);
     }
-
 
 
     public void startEndSelectionSelected(View view) {
@@ -369,7 +374,7 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
 
     public void reverseStartEndSelected(View view) {
         schedulesRouteModel.reverseStartAndDestinationStops();
-        SchedulesItinerary_ListViewItem_ArrayAdapter schedulesListViewItemArrayAdapter = (SchedulesItinerary_ListViewItem_ArrayAdapter)stickyList.getAdapter();
+        SchedulesItinerary_ListViewItem_ArrayAdapter schedulesListViewItemArrayAdapter = (SchedulesItinerary_ListViewItem_ArrayAdapter) stickyList.getAdapter();
         schedulesListViewItemArrayAdapter.setRouteStartName(schedulesRouteModel.getRouteStartName());
         schedulesListViewItemArrayAdapter.setRouteEndName(schedulesRouteModel.getRouteEndName());
 
@@ -384,20 +389,20 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
                 (schedulesRouteModel.getRouteEndName() != null) &&
                 !schedulesRouteModel.getRouteEndName().isEmpty()) {
 
-            ListView menuListView = (ListView)findViewById(R.id.schedules_itinerary_menudialog_listview);
+            ListView menuListView = (ListView) findViewById(R.id.schedules_itinerary_menudialog_listview);
 
             if (menuListView == null) {
                 Log.d(TAG, "menu dialog listview is null");
             }
 
-            if ((Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter)menuListView.getAdapter() == null) {
+            if ((Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter) menuListView.getAdapter() == null) {
                 Log.d(TAG, "menu dialogs adapter is null");
             }
 
-            ((Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter)menuListView.getAdapter()).enableSaveAsFavorite();
+            ((Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter) menuListView.getAdapter()).enableSaveAsFavorite();
 
-            TextView endRouteNameTextView = (TextView)findViewById(R.id.schedules_itinerary_routedirection_textview);
-            endRouteNameTextView.setText("To "+schedulesRouteModel.getRouteEndName());
+            TextView endRouteNameTextView = (TextView) findViewById(R.id.schedules_itinerary_routedirection_textview);
+            endRouteNameTextView.setText("To " + schedulesRouteModel.getRouteEndName());
 
             SchedulesFavoritesAndRecentlyViewedStore store = ObjectFactory.getInstance().getSchedulesFavoritesAndRecentlyViewedStore(this);
 
@@ -418,12 +423,20 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
             // check if the selected route is already a favorite, then we allow the option of removing this
             // route from the favorites list.
             if (store.isFavorite(this.travelType.name(), schedulesFavoriteModel)) {
-                ((Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter)menuListView.getAdapter()).enableRemoveSavedFavorite();
+                ((Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter) menuListView.getAdapter()).enableRemoveSavedFavorite();
             }
 
             // check if this route is already stored as a favorite; if not store as a recent
             if (!store.isFavorite(this.travelType.name(), schedulesRecentlyViewedModel)) {
                 store.addRecentlyViewed(this.travelType.name(), schedulesRecentlyViewedModel);
+            }
+
+            if (schedulesItineraryRefreshCountDownTimer != null) {
+                schedulesItineraryRefreshCountDownTimer.cancel();
+                schedulesItineraryRefreshCountDownTimer.start();
+            } else {
+                schedulesItineraryRefreshCountDownTimer = createScheduleItineraryRefreshCountDownTimer();
+                schedulesItineraryRefreshCountDownTimer.start();
             }
 
             SchedulesDataModel schedulesDataModel = new SchedulesDataModel(this);
@@ -432,7 +445,7 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
             schedulesDataModel.loadStartBasedTrips(travelType);
             schedulesDataModel.loadAndProcessEndStopsWithStartStops(travelType);
 
-            ArrayList<TripObject>trips = schedulesDataModel.createFilteredTripsList(selectedTab);
+            ArrayList<TripObject> trips = schedulesDataModel.createFilteredTripsList(selectedTab);
             mAdapter.setTripObject(trips);
         }
     }
@@ -469,7 +482,7 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
                     }
                 }
 
-                SchedulesItinerary_ListViewItem_ArrayAdapter schedulesListViewItemArrayAdapter = (SchedulesItinerary_ListViewItem_ArrayAdapter)stickyList.getAdapter();
+                SchedulesItinerary_ListViewItem_ArrayAdapter schedulesListViewItemArrayAdapter = (SchedulesItinerary_ListViewItem_ArrayAdapter) stickyList.getAdapter();
                 schedulesListViewItemArrayAdapter.setRouteStartName(schedulesRouteModel.getRouteStartName());
                 schedulesListViewItemArrayAdapter.setRouteEndName(schedulesRouteModel.getRouteEndName());
 
@@ -526,15 +539,15 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
         // get the color from the looking array given the ordinal position of the route type
         String color = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[travelType.ordinal()];
 
-        Button tabNowButton = (Button)findViewById(R.id.schedules_itinerary_tab_now_button);
-        Button tabWeekdayButton = (Button)findViewById(R.id.schedules_itinerary_tab_weekday_button);
-        Button tabSatButton = (Button)findViewById(R.id.schedules_itinerary_tab_sat_button);
-        Button tabSunButton = (Button)findViewById(R.id.schedules_itinerary_tab_sun_button);
+        Button tabNowButton = (Button) findViewById(R.id.schedules_itinerary_tab_now_button);
+        Button tabWeekdayButton = (Button) findViewById(R.id.schedules_itinerary_tab_weekday_button);
+        Button tabSatButton = (Button) findViewById(R.id.schedules_itinerary_tab_sat_button);
+        Button tabSunButton = (Button) findViewById(R.id.schedules_itinerary_tab_sun_button);
 
-        GradientDrawable nowTabButtonShapeDrawable = (GradientDrawable)tabNowButton.getBackground();
-        GradientDrawable weekdayTabButtonShapeDrawable = (GradientDrawable)tabWeekdayButton.getBackground();
-        GradientDrawable satTabButtonShapeDrawable = (GradientDrawable)tabSatButton.getBackground();
-        GradientDrawable sunTabButtonShapeDrawable = (GradientDrawable)tabSunButton.getBackground();
+        GradientDrawable nowTabButtonShapeDrawable = (GradientDrawable) tabNowButton.getBackground();
+        GradientDrawable weekdayTabButtonShapeDrawable = (GradientDrawable) tabWeekdayButton.getBackground();
+        GradientDrawable satTabButtonShapeDrawable = (GradientDrawable) tabSatButton.getBackground();
+        GradientDrawable sunTabButtonShapeDrawable = (GradientDrawable) tabSunButton.getBackground();
 
         nowTabButtonShapeDrawable.setColor(Color.parseColor(color));
         tabNowButton.setTextColor(Color.WHITE);
@@ -551,15 +564,15 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
         // get the color from the looking array given the ordinal position of the route type
         String color = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[travelType.ordinal()];
 
-        Button tabNowButton = (Button)findViewById(R.id.schedules_itinerary_tab_now_button);
-        Button tabWeekdayButton = (Button)findViewById(R.id.schedules_itinerary_tab_weekday_button);
-        Button tabSatButton = (Button)findViewById(R.id.schedules_itinerary_tab_sat_button);
-        Button tabSunButton = (Button)findViewById(R.id.schedules_itinerary_tab_sun_button);
+        Button tabNowButton = (Button) findViewById(R.id.schedules_itinerary_tab_now_button);
+        Button tabWeekdayButton = (Button) findViewById(R.id.schedules_itinerary_tab_weekday_button);
+        Button tabSatButton = (Button) findViewById(R.id.schedules_itinerary_tab_sat_button);
+        Button tabSunButton = (Button) findViewById(R.id.schedules_itinerary_tab_sun_button);
 
-        GradientDrawable nowTabButtonShapeDrawable = (GradientDrawable)tabNowButton.getBackground();
-        GradientDrawable weekdayTabButtonShapeDrawable = (GradientDrawable)tabWeekdayButton.getBackground();
-        GradientDrawable satTabButtonShapeDrawable = (GradientDrawable)tabSatButton.getBackground();
-        GradientDrawable sunTabButtonShapeDrawable = (GradientDrawable)tabSunButton.getBackground();
+        GradientDrawable nowTabButtonShapeDrawable = (GradientDrawable) tabNowButton.getBackground();
+        GradientDrawable weekdayTabButtonShapeDrawable = (GradientDrawable) tabWeekdayButton.getBackground();
+        GradientDrawable satTabButtonShapeDrawable = (GradientDrawable) tabSatButton.getBackground();
+        GradientDrawable sunTabButtonShapeDrawable = (GradientDrawable) tabSunButton.getBackground();
 
         nowTabButtonShapeDrawable.setColor(Color.LTGRAY);
         tabNowButton.setTextColor(Color.BLACK);
@@ -575,15 +588,15 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
         // get the color from the looking array given the ordinal position of the route type
         String color = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[travelType.ordinal()];
 
-        Button tabNowButton = (Button)findViewById(R.id.schedules_itinerary_tab_now_button);
-        Button tabWeekdayButton = (Button)findViewById(R.id.schedules_itinerary_tab_weekday_button);
-        Button tabSatButton = (Button)findViewById(R.id.schedules_itinerary_tab_sat_button);
-        Button tabSunButton = (Button)findViewById(R.id.schedules_itinerary_tab_sun_button);
+        Button tabNowButton = (Button) findViewById(R.id.schedules_itinerary_tab_now_button);
+        Button tabWeekdayButton = (Button) findViewById(R.id.schedules_itinerary_tab_weekday_button);
+        Button tabSatButton = (Button) findViewById(R.id.schedules_itinerary_tab_sat_button);
+        Button tabSunButton = (Button) findViewById(R.id.schedules_itinerary_tab_sun_button);
 
-        GradientDrawable nowTabButtonShapeDrawable = (GradientDrawable)tabNowButton.getBackground();
-        GradientDrawable weekdayTabButtonShapeDrawable = (GradientDrawable)tabWeekdayButton.getBackground();
-        GradientDrawable satTabButtonShapeDrawable = (GradientDrawable)tabSatButton.getBackground();
-        GradientDrawable sunTabButtonShapeDrawable = (GradientDrawable)tabSunButton.getBackground();
+        GradientDrawable nowTabButtonShapeDrawable = (GradientDrawable) tabNowButton.getBackground();
+        GradientDrawable weekdayTabButtonShapeDrawable = (GradientDrawable) tabWeekdayButton.getBackground();
+        GradientDrawable satTabButtonShapeDrawable = (GradientDrawable) tabSatButton.getBackground();
+        GradientDrawable sunTabButtonShapeDrawable = (GradientDrawable) tabSunButton.getBackground();
 
         nowTabButtonShapeDrawable.setColor(Color.LTGRAY);
         tabNowButton.setTextColor(Color.BLACK);
@@ -599,15 +612,15 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
         // get the color from the looking array given the ordinal position of the route type
         String color = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[travelType.ordinal()];
 
-        Button tabNowButton = (Button)findViewById(R.id.schedules_itinerary_tab_now_button);
-        Button tabWeekdayButton = (Button)findViewById(R.id.schedules_itinerary_tab_weekday_button);
-        Button tabSatButton = (Button)findViewById(R.id.schedules_itinerary_tab_sat_button);
-        Button tabSunButton = (Button)findViewById(R.id.schedules_itinerary_tab_sun_button);
+        Button tabNowButton = (Button) findViewById(R.id.schedules_itinerary_tab_now_button);
+        Button tabWeekdayButton = (Button) findViewById(R.id.schedules_itinerary_tab_weekday_button);
+        Button tabSatButton = (Button) findViewById(R.id.schedules_itinerary_tab_sat_button);
+        Button tabSunButton = (Button) findViewById(R.id.schedules_itinerary_tab_sun_button);
 
-        GradientDrawable nowTabButtonShapeDrawable = (GradientDrawable)tabNowButton.getBackground();
-        GradientDrawable weekdayTabButtonShapeDrawable = (GradientDrawable)tabWeekdayButton.getBackground();
-        GradientDrawable satTabButtonShapeDrawable = (GradientDrawable)tabSatButton.getBackground();
-        GradientDrawable sunTabButtonShapeDrawable = (GradientDrawable)tabSunButton.getBackground();
+        GradientDrawable nowTabButtonShapeDrawable = (GradientDrawable) tabNowButton.getBackground();
+        GradientDrawable weekdayTabButtonShapeDrawable = (GradientDrawable) tabWeekdayButton.getBackground();
+        GradientDrawable satTabButtonShapeDrawable = (GradientDrawable) tabSatButton.getBackground();
+        GradientDrawable sunTabButtonShapeDrawable = (GradientDrawable) tabSunButton.getBackground();
 
         nowTabButtonShapeDrawable.setColor(Color.LTGRAY);
         tabNowButton.setTextColor(Color.BLACK);
@@ -627,7 +640,7 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
     }
 
     @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position,long id) {
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
     }
 
     @Override
@@ -651,8 +664,51 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+
+        schedulesItineraryRefreshCountDownTimer.cancel();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        schedulesItineraryRefreshCountDownTimer = createScheduleItineraryRefreshCountDownTimer();
+        if ((schedulesRouteModel.getRouteStartName() != null) &&
+                !schedulesRouteModel.getRouteStartName().isEmpty() &&
+                (schedulesRouteModel.getRouteEndName() != null) &&
+                !schedulesRouteModel.getRouteEndName().isEmpty()) {
+            schedulesItineraryRefreshCountDownTimer.start();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        schedulesItineraryRefreshCountDownTimer = null;
+    }
+
+    @Override
     public boolean onTouch(View v, MotionEvent event) {
         v.setOnTouchListener(null);
         return false;
+    }
+
+    private CountDownTimer createScheduleItineraryRefreshCountDownTimer() {
+        return new CountDownTimer(20000, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+
+//                ((Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter)menuDialogListView.getAdapter()).setNextRefreshInSecondsValue(millisUntilFinished/1000);
+            }
+
+            @Override
+            public void onFinish() {
+
+                checkTripStartAndDestinationForNextToArriveDataRequest();
+            }
+        };
     }
 }

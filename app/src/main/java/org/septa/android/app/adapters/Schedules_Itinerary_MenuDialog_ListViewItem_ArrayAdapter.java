@@ -18,10 +18,16 @@ public class Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter extends Ar
     private boolean isSaveToFavoriteEnabled = false;
     private boolean isRemoveSavedFavoriteEnabled = false;
 
+    private long secondsUntilNextRefresh = 0;
+
     public Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter(Context context, TextSubTextImageModel[] values) {
         super(context, R.layout.fareinformation_listview_item, values);
         this.context = context;
         this.values = values;
+    }
+
+    public void setNextRefreshInSecondsValue(long secondsUntilNextRefresh) {
+        this.secondsUntilNextRefresh = secondsUntilNextRefresh;
     }
 
     public void enableSaveAsFavorite() {

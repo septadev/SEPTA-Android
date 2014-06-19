@@ -1,11 +1,8 @@
 package org.septa.android.app.utilities;
 
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
 import android.text.format.DateFormat;
 
-import org.septa.android.app.activities.schedules.ItinerarySelectionActionBarActivity;
-import org.septa.android.app.databases.SEPTADatabase;
 import org.septa.android.app.models.TripObject;
 
 import java.text.ParseException;

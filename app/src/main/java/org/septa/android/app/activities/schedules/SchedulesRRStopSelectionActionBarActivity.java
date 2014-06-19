@@ -27,9 +27,9 @@ public class SchedulesRRStopSelectionActionBarActivity extends BaseAnalyticsActi
         int id = getResources().getIdentifier(resourceName, "drawable", getPackageName());
 
         // get the start or destination string from the extra intent string if it exists
-        String nexttoarriveStopSelectionStartOrDestinationString = getIntent().getStringExtra(getString(R.string.regionalrail_stopselection_startordestination));
-        if (nexttoarriveStopSelectionStartOrDestinationString != null) {
-            getSupportActionBar().setTitle("| Select "+nexttoarriveStopSelectionStartOrDestinationString);
+        String schedulesRRStopSelectionStartOrDestinationString = getIntent().getStringExtra(getString(R.string.schedules_stopselection_startordestination));
+        if (schedulesRRStopSelectionStartOrDestinationString != null) {
+            getSupportActionBar().setTitle("| Select "+schedulesRRStopSelectionStartOrDestinationString);
         } else {
             getSupportActionBar().setTitle("| Select Start");
         }
@@ -42,7 +42,7 @@ public class SchedulesRRStopSelectionActionBarActivity extends BaseAnalyticsActi
         adapter = new RegionalRail_StopSelection_ListViewItem_ArrayAdapter(this, new ArrayList<StopModel>(0));
         StopSelectionListFragment stopsListFragment = (StopSelectionListFragment)getSupportFragmentManager().findFragmentById(R.id.stopselection_list_fragment);
         stopsListFragment.setListAdapter(adapter);
-        stopsListFragment.setStartOrDestinationSelectionMode(nexttoarriveStopSelectionStartOrDestinationString);
+        stopsListFragment.setStartOrDestinationSelectionMode(schedulesRRStopSelectionStartOrDestinationString);
 
         StopsLoader stopsLoader = new StopsLoader();
         stopsLoader.execute();

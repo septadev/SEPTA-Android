@@ -8,12 +8,15 @@
 package org.septa.android.app.adapters.schedules;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.SectionIndexer;
 import android.widget.TextView;
 
@@ -66,39 +69,30 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
         this.stopsForDirection1 = stopsForDirection1;
     }
 
-    protected Object[] getItems() {
-        ArrayList<Object> items = new ArrayList<Object>();
+    public Object[] getItems() {
+        StopModel[] stopModelsArray = new StopModel[stopsForDirection0.size()+stopsForDirection1.size()];
 
-        if (stopsForDirection0.size()>0) {
-            Log.d("f", "items for direction 0 is not 0, add 2 more");
-
-            items.add(new Object());
-            items.add(new Object());
-            items.addAll(stopsForDirection0);
+        int i = 0;
+        for (StopModel stopModel : stopsForDirection0) {
+            stopModelsArray[i++] = stopModel;
+        }
+        for (StopModel stopModel : stopsForDirection1) {
+            stopModelsArray[i++] = stopModel;
         }
 
-        if (stopsForDirection1.size()>0) {
-            Log.d("f", "items for direction 1" +
-                    " is not 0, add 2 more");
-            items.add(new Object());
-            items.add(new Object());
-            items.addAll(stopsForDirection1);
-        }
-
-        return items.toArray();
+        return stopModelsArray;
     }
 
     @Override
     public int getCount() {
-        Log.d("f", "getCount will return "+getItems().length);
+
         return getItems().length;
     }
 
     @Override
     public Object getItem(int position) {
 
-        // position-1 to compensate for the start end selection row
-        return getItems()[(position)];
+        return getItems()[position];
     }
 
     @Override
@@ -110,27 +104,22 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
     public View getView(int position, View convertView, ViewGroup parent) {
         View rowView;
 
-        if ((getItem(position) instanceof TripDataModel)) {
-            Log.d("f", "found in instance of TripDataModel at position "+position);
-            rowView = mInflater.inflate(R.layout.itineraryselection_listview_route_item, parent, false);
+        rowView = mInflater.inflate(R.layout.nexttoarrive_listview_stop_item, parent, false);
 
-            ImageView handicapImageView = (ImageView) rowView.findViewById(R.id.iterinaryselection_accessibilityicon_imageview);
-            if (((StopModel)getItem(position)).hasWheelBoardingFeature()) {
-                Log.d("f", "the trip is wheel boarding enabled");
-                handicapImageView.setVisibility(View.VISIBLE);
-            } else {
-                Log.d("f", "the trip is not wheel boarding enabled");
-                handicapImageView.setVisibility(View.INVISIBLE);
-            }
+        ImageView icon_imageView = (ImageView) rowView.findViewById(R.id.nexttoarrive_stopselection_accessibilityicon_imageview);
+        TextView text_TextView = (TextView) rowView.findViewById(R.id.nexttoarrive_stopselection_textview);
 
-            TextView textView = (TextView) rowView.findViewById(R.id.iterinaryselection_accessibilityicon_textview);
-
-            textView.setText(((TripDataModel)getItem(position)).getStartStopName());
+        if (((StopModel)getItem(position)).hasWheelBoardingFeature()) {
+            icon_imageView.setVisibility(View.VISIBLE);
         } else {
+            icon_imageView.setVisibility(View.INVISIBLE);
+        }
 
-            rowView = mInflater.inflate(R.layout.itineraryselection_listview_locationinput_item, parent, false);
-            TextView textView = (TextView)rowView.findViewById(R.id.itineraryselection_listview_locationinput_textview);
-            textView.setText("Current Location");
+        text_TextView.setText(((StopModel)getItem(position)).getStopName());
+
+        if (position > stopsForDirection0.size()) {
+            LinearLayout mainLayout = (LinearLayout)rowView.findViewById(R.id.nettoarrive_stopselection_mainlayout);
+            mainLayout.setBackgroundColor(Color.parseColor("#FFCACACB"));
         }
 
         return rowView;
@@ -138,18 +127,20 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
 
     @Override
     public View getHeaderView(int position, View convertView, ViewGroup parent) {
+        Log.d(TAG, "getHeaderView for position "+position);
         View view = null;
+
+        String backgroundColor = mContext.getResources().getStringArray(R.array.schedules_routeselection_routesheader_colors)[5];
 
         view = mInflater.inflate(R.layout.schedules_routeselection_headerview, parent, false);
         TextView textView = (TextView) view.findViewById(R.id.schedules_routeselection_sectionheader_textview);
 
-        Log.d("f", "in getHeaderView with position of " + position + " and tripsForDirection0.size() is " + stopsForDirection0.size());
+        LinearLayout mainLayout = (LinearLayout)view.findViewById(R.id.schedules_routeselection_sectionheader_view);
+        mainLayout.setBackgroundColor(Color.parseColor(backgroundColor));
 
-        if (position < stopsForDirection0.size()+2) {
-Log.d("f", "getHeaderView will be 0");
+        if (position < stopsForDirection0.size()) {
             textView.setText(directionHeadingLabels[0]);
         } else {
-            Log.d("f", "getHeaderView will be 1");
             textView.setText(directionHeadingLabels[1]);
         }
 
@@ -158,7 +149,8 @@ Log.d("f", "getHeaderView will be 0");
 
     @Override
     public long getHeaderId(int position) {
-        if (position == 0) {
+        Log.d(TAG, "getHeaderId for position "+position);
+        if (position < stopsForDirection0.size()) {
             return 0;
         }
 
@@ -167,14 +159,15 @@ Log.d("f", "getHeaderView will be 0");
 
     @Override
     public int getPositionForSection(int section) {
+        Log.d(TAG, "getPositionForSection for section "+section);
         switch (section) {
             case 0: {
-Log.d("f", "getPositionForSection "+section+" returning 0");
+
                 return 0;
             }
             case 1: {
-Log.d("f", "getPositionForSection "+section+" return "+stopsForDirection0.size()+2);
-                return stopsForDirection0.size()+2;
+
+                return stopsForDirection0.size();
             }
             default: {
 
@@ -185,12 +178,12 @@ Log.d("f", "getPositionForSection "+section+" return "+stopsForDirection0.size()
 
     @Override
     public int getSectionForPosition(int position) {
-        Log.d("f", "getSectionForPosition "+position);
-        if (position < stopsForDirection0.size()+2) {
+        if (position < stopsForDirection0.size()) {
+            Log.d(TAG, "getSectionForPosition returning 0 for position "+position+" given size of 0 as "+stopsForDirection0.size());
 
             return 0;
         } else {
-
+            Log.d(TAG, "getSectionForPosition returning 1 for position "+position+" given size of 0 as "+stopsForDirection0.size());
             return 1;
         }
     }

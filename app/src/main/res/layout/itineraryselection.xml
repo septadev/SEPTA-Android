@@ -21,6 +21,8 @@
         android:drawSelectorOnTop="true"
         android:scrollbarStyle="outsideOverlay"
         android:fastScrollEnabled="true"
+        android:divider="@drawable/gradient_black_to_white_right_to_left"
+        android:dividerHeight="2dp"
         android:overScrollMode="never"/>
 
 </LinearLayout>

@@ -58,6 +58,7 @@
     <string name="schedules_itinerary_webview_url">file:///android_asset/nexttoarrive_realtime.html</string>
 
     <string name="schedules_itinerary_menu_icon_imageBase">ic_</string>
+    <string name="schedules_stopselection_startordestination">schedules_stopselection_startordestination</string>
 
     <!-- about listview items meta-data -->
     <!-- texts, iconSuffixes, urls -->
@@ -84,4 +85,6 @@
     </string-array>
 
 
+    <integer name="schedules_itinerary_stopselection_activityforresult_request_code">504</integer>
+    <integer name="schedules_itinerary_stopselection_activityforresult_request_code_regionalrail">604</integer>
 </resources>

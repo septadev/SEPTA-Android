@@ -8,9 +8,12 @@
 package org.septa.android.app.activities.schedules;
 
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -19,6 +22,9 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ListView;
+
+import com.google.gson.Gson;
 
 import org.septa.android.app.R;
 import org.septa.android.app.activities.BaseAnalyticsActionBarActivity;
@@ -27,16 +33,16 @@ import org.septa.android.app.databases.SEPTADatabase;
 import org.septa.android.app.models.RouteTypes;
 import org.septa.android.app.models.SchedulesRouteModel;
 import org.septa.android.app.models.StopModel;
-import org.septa.android.app.models.TripDataModel;
 
 import java.util.ArrayList;
 
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
+import static org.septa.android.app.models.RouteTypes.NHSL;
 import static org.septa.android.app.models.RouteTypes.RAIL;
 import static org.septa.android.app.models.RouteTypes.valueOf;
 
-public class ItinerarySelectionActionBarActivity extends BaseAnalyticsActionBarActivity implements
+public class SchedulesStopsSelectionActionBarActivity extends BaseAnalyticsActionBarActivity implements
         AdapterView.OnItemClickListener, StickyListHeadersListView.OnHeaderClickListener,
         StickyListHeadersListView.OnStickyHeaderOffsetChangedListener,
         StickyListHeadersListView.OnStickyHeaderChangedListener, View.OnTouchListener {
@@ -66,6 +72,14 @@ public class ItinerarySelectionActionBarActivity extends BaseAnalyticsActionBarA
         getSupportActionBar().setTitle("| " + actionBarTitleText);
         getSupportActionBar().setIcon(id);
 
+        // get the start or destination string from the extra intent string if it exists
+        final String schedulesItineraryStopSelectionStartOrDestinationString = getIntent().getStringExtra(getString(R.string.schedules_stopselection_startordestination));
+        if (schedulesItineraryStopSelectionStartOrDestinationString != null) {
+            getSupportActionBar().setTitle("| Select "+schedulesItineraryStopSelectionStartOrDestinationString);
+        } else {
+            getSupportActionBar().setTitle("| Select Start");
+        }
+
         travelType = valueOf(getIntent().getStringExtra(getString(R.string.schedules_itinerary_travelType)));
         routeShortName = getIntent().getStringExtra(getString(R.string.schedules_itinerary_routeShortName));
 
@@ -84,10 +98,24 @@ public class ItinerarySelectionActionBarActivity extends BaseAnalyticsActionBarA
         stickyList.setAdapter(mAdapter);
         stickyList.setOnTouchListener(this);
 
-//        stickyList.setFastScrollAlwaysVisible(true);
         stickyList.setFastScrollEnabled(true);
 
-        stickyList.setDivider(null);
+        stickyList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                StopModel stop = (StopModel)mAdapter.getItem(position);
+
+                Gson gson = new Gson();
+                String stopModelJSONString = gson.toJson(stop);
+
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra("stop_name", stop.getStopName());
+                returnIntent.putExtra("stop_id", stop.getStopId());
+                returnIntent.putExtra("selection_mode", schedulesItineraryStopSelectionStartOrDestinationString);
+                SchedulesStopsSelectionActionBarActivity.this.setResult(SchedulesStopsSelectionActionBarActivity.this.RESULT_OK, returnIntent);
+                SchedulesStopsSelectionActionBarActivity.this.finish();
+            }
+        });
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -155,46 +183,46 @@ public class ItinerarySelectionActionBarActivity extends BaseAnalyticsActionBarA
         }
 
         private void loadTrips(RouteTypes routeType) {
-            SEPTADatabase septaDatabase = new SEPTADatabase(ItinerarySelectionActionBarActivity.this);
+            SEPTADatabase septaDatabase = new SEPTADatabase(SchedulesStopsSelectionActionBarActivity.this);
             SQLiteDatabase database = septaDatabase.getReadableDatabase();
 
             String queryString = null;
             switch (routeType) {
                 case RAIL: {
                     Log.d("f", "type is rail, loading the trips");
-                    queryString = "SELECT stop_name, stop_id, null as direction_id, wheelchair_boarding, null as stop_sequence FROM stops_rail ORDER BY stop_name";
+                    queryString = "SELECT stop_id, stop_name, null as direction_id, wheelchair_boarding, null as stop_sequence FROM stops_rail ORDER BY stop_name";
 
                     break;
                 }
                 case BUS: {
                     Log.d("f", "type is bus, loading the trips");
-                    queryString = "SELECT stop_name, stop_id, direction_id, wheelchair_boarding, stop_sequence FROM stopNameLookUpTable NATURAL JOIN stops_bus s WHERE route_short_name=\"%%route_short_name%%\" ORDER BY stop_name";
+                    queryString = "SELECT stop_id, stop_name, direction_id, wheelchair_boarding, stop_sequence FROM stopNameLookUpTable NATURAL JOIN stops_bus s WHERE route_short_name=\"%%route_short_name%%\" ORDER BY stop_name";
                     queryString = queryString.replace("%%route_short_name%%", routeShortName);
 
                     break;
                 }
                 case TROLLEY: {
                     Log.d("f", "type is trolley, loading the trips");
-                    queryString = "SELECT stop_name, stop_id, direction_id, wheelchair_boarding, stop_sequence FROM stopNameLookUpTable NATURAL JOIN stops_bus s WHERE route_short_name=\"%%route_short_name%%\" ORDER BY stop_name";
+                    queryString = "SELECT stop_id, stop_name, direction_id, wheelchair_boarding, stop_sequence FROM stopNameLookUpTable NATURAL JOIN stops_bus s WHERE route_short_name=\"%%route_short_name%%\" ORDER BY stop_name";
                     queryString = queryString.replace("%%route_short_name%%", routeShortName);
 
                     break;
                 }
                 case BSL: {
                     Log.d("f", "type is bsl, loading the trips");
-                    queryString = "SELECT s.stop_name, st.stop_id, t.direction_id, s.wheelchair_boarding, stop_sequence FROM trips_BSL t JOIN stop_times_BSL st ON t.trip_id=st.trip_id NATURAL JOIN stops_bus s GROUP BY st.stop_id ORDER BY s.stop_name;";
+                    queryString = "SELECT st.stop_id, s.stop_name, t.direction_id, s.wheelchair_boarding, stop_sequence FROM trips_BSL t JOIN stop_times_BSL st ON t.trip_id=st.trip_id NATURAL JOIN stops_bus s GROUP BY st.stop_id ORDER BY s.stop_name;";
 
                      break;
                 }
                 case MFL: {
                     Log.d("f", "type is mfl, loading the trips");
-                    queryString = "SELECT stop_name, stop_id, direction_id, wheelchair_boarding, stop_sequence FROM stopNameLookUpTable NATURAL JOIN stops_bus WHERE route_short_name=\"%%route_short_name\" ORDER BY stop_name";
+                    queryString = "SELECT stop_id, stop_name, direction_id, wheelchair_boarding, stop_sequence FROM stopNameLookUpTable NATURAL JOIN stops_bus WHERE route_short_name=\"%%route_short_name\" ORDER BY stop_name";
                     queryString = queryString.replace("%%route_short_name%%", routeShortName);
                     break;
                 }
                 case NHSL: {
                     Log.d("f", "type is nhsl, loading the trips");
-                    queryString = "SELECT s.stop_name, st.stop_id, t.direction_id, s.wheelchair_boarding, stop_sequence FROM trips_NHSL t JOIN stop_times_NHSL st ON trips_NHSL.trip_id=st.trip_id NATURAL JOIN stops_bus s GROUP BY st.stop_id ORDER BY s.stop_name;";
+                    queryString = "SELECT st.stop_id, s.stop_name, t.direction_id, s.wheelchair_boarding, stop_sequence FROM trips_NHSL t JOIN stop_times_NHSL st ON t.trip_id=st.trip_id NATURAL JOIN stops_bus s GROUP BY st.stop_id ORDER BY s.stop_name;";
 
                     break;
                 }
@@ -208,15 +236,19 @@ public class ItinerarySelectionActionBarActivity extends BaseAnalyticsActionBarA
 
                         if (routeType != RAIL) {
                             if (cursor.getInt(2) == 0) {
-                                Log.d("f", "found a dir 0, add this tripdatamodel to 0");
                                 stopModelListDirection0.add(stopModel);
                             } else {
-                                Log.d("f", "found a dir 1, add this tripdatamodel to 1");
-                                stopModelListDirection1.add(stopModel);
+                                 stopModelListDirection1.add(stopModel);
                             }
                         } else {
                             stopModelListDirection0.add(stopModel);
                         }
+
+                        if (routeType == NHSL) {
+
+                            stopModelListDirection0.add(stopModel);
+                        }
+
                     } while (cursor.moveToNext());
                 }
 
@@ -232,9 +264,7 @@ public class ItinerarySelectionActionBarActivity extends BaseAnalyticsActionBarA
         protected Boolean doInBackground(RouteTypes... params) {
             RouteTypes routeType = params[0];
 
-            Log.d("f", "about to call the loadTrips...");
             loadTrips(routeType);
-            Log.d("f", "called the loadTrips.");
 
             return false;
         }
@@ -243,11 +273,9 @@ public class ItinerarySelectionActionBarActivity extends BaseAnalyticsActionBarA
         protected void onPostExecute(Boolean b) {
             super.onPostExecute(b);
 
-            Log.d("f", "calling onPostExecute...");
             mAdapter.setTripDataForDirection0(stopModelListDirection0);
             mAdapter.setTripDataForDirection1(stopModelListDirection1);
             mAdapter.notifyDataSetChanged();
-            Log.d("f", "done with the onPostExecute call.");
         }
     }
 
@@ -262,9 +290,8 @@ public class ItinerarySelectionActionBarActivity extends BaseAnalyticsActionBarA
         }
 
         private void loadDirectionHeaders(RouteTypes routeType) {
-            Log.d("f", "starting loadDirectionHeaders...");
             this.routeType = routeType;
-            SEPTADatabase septaDatabase = new SEPTADatabase(ItinerarySelectionActionBarActivity.this);
+            SEPTADatabase septaDatabase = new SEPTADatabase(SchedulesStopsSelectionActionBarActivity.this);
             SQLiteDatabase database = septaDatabase.getReadableDatabase();
 
             String queryString = null;
@@ -277,7 +304,7 @@ public class ItinerarySelectionActionBarActivity extends BaseAnalyticsActionBarA
                 case MFL:
                 case NHSL:
                 case TROLLEY: {
-                    Log.d("f", "in trolley, setting querystring");
+                    Log.d("f", "setting querystring with route short name as "+routeShortName);
                     queryString = "SELECT dircode, Route, DirectionDescription FROM bus_stop_directions WHERE Route=\"%%route_short_name%%\" ORDER BY dircode";
                     queryString = queryString.replace("%%route_short_name%%", routeShortName);
 
@@ -293,7 +320,6 @@ public class ItinerarySelectionActionBarActivity extends BaseAnalyticsActionBarA
 
             if (cursor != null) {
                 if (cursor.moveToFirst()) {
-                    Log.d("f", "cursor is not null and moving to first.");
                     do {
                         if (cursor.getInt(0) == 0) {
                             Log.d("f", "direction is 0 will set text to be "+cursor.getString(2));
@@ -317,9 +343,7 @@ public class ItinerarySelectionActionBarActivity extends BaseAnalyticsActionBarA
         protected Boolean doInBackground(RouteTypes... params) {
             RouteTypes routeType = params[0];
 
-            Log.d("f", "about to call the loadDirectionHeaders...");
             loadDirectionHeaders(routeType);
-            Log.d("f", "called the loadDirectionHeaders.");
 
             return false;
         }
@@ -328,13 +352,11 @@ public class ItinerarySelectionActionBarActivity extends BaseAnalyticsActionBarA
         protected void onPostExecute(Boolean b) {
             super.onPostExecute(b);
 
-            Log.d("f", "calling onPostExecute...");
             mAdapter.setDirectionHeadingLabels(directionHeaderLabels);
 //            mAdapter.notifyDataSetChanged();
 
             StopsLoader stopsLoader = new StopsLoader(routeShortName);
             stopsLoader.execute(routeType);
-            Log.d("f", "done with the onPostExecute call.");
         }
     }
 }

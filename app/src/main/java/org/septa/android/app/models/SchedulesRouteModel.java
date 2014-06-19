@@ -123,6 +123,12 @@ public class SchedulesRouteModel implements Comparable<SchedulesRouteModel> {
 
     @Override
     public int compareTo(SchedulesRouteModel another) {
+        Log.d("tt", "in compareTo");
+        this.print();
+        Log.d("tt", "-----");
+        another.print();
+        Log.d("tt", "done in compareTo");
+
         if ((this.getRouteId().equals(another.getRouteId())) &&
             (this.getRouteStartName().equals(another.getRouteStartName())) &&
             (this.getRouteEndStopId().equals(another.getRouteEndStopId())) &&

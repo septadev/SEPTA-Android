@@ -66,8 +66,6 @@ public class SchedulesDataModel {
                     trip.setDirectionId(directionId);
                     trip.setServiceId(serviceId);
 
-                    Log.d(TAG,"output trip:   "+trip.print());
-
                     startBasedTrips.put(tripId, trip);
                 } while (cursor.moveToNext());
             }
@@ -116,21 +114,21 @@ public class SchedulesDataModel {
 
         if (cursor != null) {
             if (cursor.moveToFirst()) {
-                Log.d("f", "cursor is not null and moving to first.");
+//                Log.d("f", "cursor is not null and moving to first.");
                 do {
                     String tripId = cursor.getString(6);
 
                     if (startBasedTrips.get(tripId) != null) {
-                        Log.d(TAG, "found the trip");
+//                        Log.d(TAG, "found the trip");
                         TripObject trip = startBasedTrips.get(tripId);
                         trip.setDirectionId(cursor.getInt(4));
 
                         int startSequence = trip.getStartSeq().intValue();
                         int endSequence = cursor.getInt(2);
 
-                        Log.d(TAG, "start seq is "+startSequence+"   with end seq being "+endSequence+"   for trainno "+cursor.getInt(1));
+//                        Log.d(TAG, "start seq is "+startSequence+"   with end seq being "+endSequence+"   for trainno "+cursor.getInt(1));
                         if (startSequence < endSequence) {
-                            Log.d(TAG, "the start sequence is less than end, ideal");
+//                            Log.d(TAG, "the start sequence is less than end, ideal");
                             trip.setEndSeq(endSequence);
                             trip.setEndTime(cursor.getInt(3));
 
@@ -144,7 +142,7 @@ public class SchedulesDataModel {
 
                             currentDisplayDirection = trip.getDirectionId().intValue();
                         } else {
-                            Log.d(TAG, "the end sequence is less than the start, not ideal");
+//                            Log.d(TAG, "the end sequence is less than the start, not ideal");
                             trip.setEndSeq(trip.getStartSeq());
                             trip.setEndTime(trip.getStartTime());
 
@@ -257,9 +255,6 @@ public class SchedulesDataModel {
 class TripSorter implements Comparator<TripObject> {
     @Override
     public int compare(TripObject tripObject1, TripObject tripObject2) {
-        Log.d("hh", "sorting the trips for train ");
-        Log.d("yy", "train 1:"+tripObject1.print());
-        Log.d("yy", "train 2:"+tripObject2.print());
         if (tripObject1.getStartTime().intValue() < tripObject2.getStartTime().intValue()) {
             return -1;
         }

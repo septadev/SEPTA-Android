@@ -146,14 +146,10 @@ public class SchedulesItinerary_ListViewItem_ArrayAdapter extends BaseAdapter im
             TextView tripTime = (TextView)rowView.findViewById(R.id.schedules_trip_listview_triptime);
             TextView endTime = (TextView)rowView.findViewById(R.id.schedules_trip_listview_endtime);
 
-            Log.d(TAG, "creating the row view with train:"+trip.print());
-
             SimpleDateFormat timeDateFormat = new SimpleDateFormat("kkmm");
             Date startDate = null;
             Date endDate = null;
             Date now = new Date();
-
-            Log.d(TAG, "string value of date "+CalendarDateUtilities.getStringFromTime(trip.getStartTime().intValue()));
 
             String nowHoursMinutes = timeDateFormat.format(now);
             try {
@@ -172,7 +168,7 @@ public class SchedulesItinerary_ListViewItem_ArrayAdapter extends BaseAdapter im
 
             // if we are not on the "Now" tab, hide the hours until since it will not be valid.
             if (selectedTab > 0) {
-                timeUntilStart.setVisibility(View.INVISIBLE);
+                timeUntilStart.setVisibility(View.GONE);
             }
         }
 

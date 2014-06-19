@@ -28,6 +28,7 @@ public class SchedulesFavoritesAndRecentlyViewedStore {
 
         favoritesListMap = new HashMap<String, ArrayList<SchedulesFavoriteModel>>();
         recentlyViewedListMap = new HashMap<String, ArrayList<SchedulesRecentlyViewedModel>>();
+        Log.d("qq", "just made a new schedules fav and rv store");
     }
 
     public boolean isFavorite(String routeType, SchedulesRouteModel schedulesModel) {
@@ -71,6 +72,7 @@ public class SchedulesFavoritesAndRecentlyViewedStore {
     }
 
     public void removeFavorite(String routeType, SchedulesFavoriteModel schedulesFavoriteModel) {
+        Log.d("ss", "removeFavorite, with routeType "+routeType);
         ArrayList<SchedulesFavoriteModel>favoritesList = favoritesListMap.get(routeType);
 
         if (favoritesList != null) {
@@ -88,17 +90,23 @@ public class SchedulesFavoritesAndRecentlyViewedStore {
     }
 
     public void removeRecentlyViewed(String routeType, SchedulesRouteModel schedulesModel) {
+        Log.d("d", "removeRecentlyViewed... with routeType as "+routeType);
+        Log.d("yy", "recentlyViewedListMap here is size "+recentlyViewedListMap.size());
         ArrayList<SchedulesRecentlyViewedModel> recentlyViewedList = recentlyViewedListMap.get(routeType);
         if (recentlyViewedList != null) {
+            Log.d("rr", "recentlyViewed is not null");
             for (int i = 0; i < recentlyViewedList.size(); i++) {
                 if (recentlyViewedList.get(i) != null) {
                     if (recentlyViewedList.get(i).compareTo(schedulesModel) == 0) {
+                        Log.d("DD", "compared recently viewed is equal");
                         recentlyViewedList.remove(i);
 
                         sendToSharedPreferencesRecentlyViewed();
                     }
                 }
             }
+        } else {
+            Log.d("dd", "recentlyViewedlistmap for this route type says null but how can that be????" );
         }
     }
 
@@ -106,6 +114,7 @@ public class SchedulesFavoritesAndRecentlyViewedStore {
         // duplicate avoidance
         // check if we already have this recently viewed
         // if we find a duplicate, remove it form the list, the list will shuffle properly.
+        Log.d("ss", "addRecentlyViewed with routeType as "+routeType);
         ArrayList<SchedulesRecentlyViewedModel> recentlyViewedList = recentlyViewedListMap.get(routeType);
         if (recentlyViewedList != null) {
             Log.d("yy", "we have already a recently viewed");
@@ -132,6 +141,7 @@ public class SchedulesFavoritesAndRecentlyViewedStore {
         }
 
         recentlyViewedListMap.put(routeType, recentlyViewedList);
+        Log.d("yy", "recentlyViewedListMap is size "+recentlyViewedListMap.size());
 
         sendToSharedPreferencesRecentlyViewed();
     }
@@ -142,7 +152,6 @@ public class SchedulesFavoritesAndRecentlyViewedStore {
         ArrayList<SchedulesRecentlyViewedModel> recentlyViewedList = recentlyViewedListMap.get(routeType);
 
         String json = ObjectFactory.getInstance().getSharedPreferencesManager(context).getSchedulesRecentlyViewedList();
-        Log.d("hh", "fetched from the shared preferences manager as json "+json);
         recentlyViewedListMap = gson.fromJson(json, new TypeToken<HashMap<String, List<SchedulesRecentlyViewedModel>>>() {
         }.getType());
 
@@ -172,12 +181,15 @@ public class SchedulesFavoritesAndRecentlyViewedStore {
         }.getType());
 
         if (favoritesListMap != null) {
+
             favoritesList = favoritesListMap.get(routeType);
         } else {
+
             favoritesListMap = new HashMap<String, ArrayList<SchedulesFavoriteModel>>();
         }
 
         if (favoritesList == null) {
+
             favoritesList = new ArrayList<SchedulesFavoriteModel>();
         }
 
@@ -187,7 +199,6 @@ public class SchedulesFavoritesAndRecentlyViewedStore {
     private void sendToSharedPreferencesRecentlyViewed() {
         Gson gson = new Gson();
         String recentlyViewedListAsJSON = gson.toJson(recentlyViewedListMap);
-//        Log.d("y", "about to store this json "+recentlyViewedListAsJSON);
 
         ObjectFactory.getInstance().getSharedPreferencesManager(context).setSchedulesRecentlyViewedList(recentlyViewedListAsJSON);
     }
@@ -196,6 +207,6 @@ public class SchedulesFavoritesAndRecentlyViewedStore {
         Gson gson = new Gson();
         String favoritesListAsJSON = gson.toJson(favoritesListMap);
 
-        ObjectFactory.getInstance().getSharedPreferencesManager(context).setNexttoArriveFavoritesList(favoritesListAsJSON);
+        ObjectFactory.getInstance().getSharedPreferencesManager(context).setSchedulesFavoritesList(favoritesListAsJSON);
     }
 }

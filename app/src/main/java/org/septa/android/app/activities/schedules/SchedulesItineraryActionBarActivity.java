@@ -10,19 +10,21 @@ package org.septa.android.app.activities.schedules;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -30,10 +32,12 @@ import com.google.gson.reflect.TypeToken;
 
 import org.septa.android.app.R;
 import org.septa.android.app.activities.BaseAnalyticsActionBarActivity;
+import org.septa.android.app.activities.FareInformationActionBarActivity;
+import org.septa.android.app.activities.NextToArriveRealTimeWebViewActionBarActivity;
 import org.septa.android.app.activities.NextToArriveStopSelectionActionBarActivity;
 import org.septa.android.app.activities.SchedulesRRStopSelectionActionBarActivity;
+import org.septa.android.app.adapters.Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter;
 import org.septa.android.app.adapters.schedules.SchedulesItinerary_ListViewItem_ArrayAdapter;
-import org.septa.android.app.databases.SEPTADatabase;
 import org.septa.android.app.managers.SchedulesFavoritesAndRecentlyViewedStore;
 import org.septa.android.app.models.ObjectFactory;
 import org.septa.android.app.models.RouteTypes;
@@ -42,13 +46,12 @@ import org.septa.android.app.models.SchedulesFavoriteModel;
 import org.septa.android.app.models.SchedulesRecentlyViewedModel;
 import org.septa.android.app.models.SchedulesRouteModel;
 import org.septa.android.app.models.TripObject;
+import org.septa.android.app.models.adapterhelpers.TextSubTextImageModel;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
-import static org.septa.android.app.models.RouteTypes.RAIL;
 import static org.septa.android.app.models.RouteTypes.valueOf;
 
 public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBarActivity implements
@@ -74,6 +77,9 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
     private boolean inProcessOfStartDestinationFlow;
 
     private SchedulesRouteModel schedulesRouteModel = new SchedulesRouteModel();
+
+    private boolean menuRevealed = false;
+    private ListView menuDialogListView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -105,6 +111,21 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
         String schedulesRouteModelJSONString = getIntent().getStringExtra(getString(R.string.schedules_itinerary_schedulesRouteModel));
         Gson gson = new Gson();
         schedulesRouteModel = gson.fromJson(schedulesRouteModelJSONString, new TypeToken<SchedulesRouteModel>(){}.getType());
+
+
+        String iconPrefix = getResources().getString(R.string.schedules_itinerary_menu_icon_imageBase);
+        String[] texts = getResources().getStringArray(R.array.schedules_itinerary_menu_listview_items_texts);
+        String[] subTexts = getResources().getStringArray(R.array.schedules_itinerary_menu_listview_items_subtexts);
+        String[] iconSuffix = getResources().getStringArray(R.array.schedules_itinerary_menu_listview_items_iconsuffixes);
+        TextSubTextImageModel[] listMenuItems = new TextSubTextImageModel[texts.length];
+        for (int i=0; i<texts.length; i++) {
+            TextSubTextImageModel textSubTextImageModel = new TextSubTextImageModel(texts[i], subTexts[i], iconPrefix, iconSuffix[i]);
+            listMenuItems[i] = textSubTextImageModel;
+        }
+
+        ListView menuListView = (ListView)findViewById(R.id.schedules_itinerary_menudialog_listview);
+        this.menuDialogListView = menuListView;
+        menuListView.setAdapter(new Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter(this, listMenuItems));
 
         if (schedulesRouteModel != null && schedulesRouteModel.hasStartAndEndSelected()) {
             mAdapter.setRouteStartName(schedulesRouteModel.getRouteStartName());
@@ -162,6 +183,162 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
         tabSunButton.setTextColor(Color.BLACK);
     }
 
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+
+        return true;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.nexttoarrive_action_bar, menu);
+
+        FrameLayout menuDialog = (FrameLayout)findViewById(R.id.schedules_itinerary_menudialog_mainlayout);
+        menuDialog.setBackgroundResource(R.drawable.nexttoarrive_menudialog_bottomcorners);
+        GradientDrawable drawable = (GradientDrawable) menuDialog.getBackground();
+        drawable.setColor(0xFF353534);
+
+//        String iconPrefix = getResources().getString(R.string.schedules_itinerary_menu_icon_imageBase);
+//        String[] texts = getResources().getStringArray(R.array.schedules_itinerary_menu_listview_items_texts);
+//        String[] subTexts = getResources().getStringArray(R.array.schedules_itinerary_menu_listview_items_subtexts);
+//        String[] iconSuffix = getResources().getStringArray(R.array.schedules_itinerary_menu_listview_items_iconsuffixes);
+
+//        TextSubTextImageModel[] listMenuItems = new TextSubTextImageModel[texts.length];
+//        for (int i=0; i<texts.length; i++) {
+//            TextSubTextImageModel textSubTextImageModel = new TextSubTextImageModel(texts[i], subTexts[i], iconPrefix, iconSuffix[i]);
+//            listMenuItems[i] = textSubTextImageModel;
+//        }
+//
+//        ListView menuListView = (ListView)findViewById(R.id.schedules_itinerary_menudialog_listview);
+//        this.menuDialogListView = menuListView;
+//        menuListView.setAdapter(new Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter(this, listMenuItems));
+
+        menuDialogListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                switch (position) {
+                    case 0: {       // favorite
+                        addOrRemoveRouteFromFavorites();
+//                        mAdapter.reloadFavoriteAndRecentlyViewedLists();
+                        mAdapter.notifyDataSetChanged();
+                        hideListView();
+                        break;
+                    }
+                    case 1: {       // fare
+                        startActivity(new Intent(SchedulesItineraryActionBarActivity.this,
+                                FareInformationActionBarActivity.class));
+                        hideListView();
+                        break;
+                    }
+                    case 2: {       // service advisory
+                        checkTripStartAndDestinationForNextToArriveDataRequest();
+                        hideListView();
+                        break;
+                    }
+                    case 3: {       // real time
+                        startActivity(new Intent(SchedulesItineraryActionBarActivity.this,
+                                NextToArriveRealTimeWebViewActionBarActivity.class));
+                        hideListView();
+                        break;
+                    }
+                }
+            }
+        });
+
+        return true;
+    }
+
+    private void addOrRemoveRouteFromFavorites() {
+        SchedulesFavoritesAndRecentlyViewedStore store = ObjectFactory.getInstance().getSchedulesFavoritesAndRecentlyViewedStore(this);
+
+        SchedulesFavoriteModel schedulesFavoriteModel = new SchedulesFavoriteModel();
+        schedulesFavoriteModel.setRouteId(schedulesRouteModel.getRouteId());
+        schedulesFavoriteModel.setRouteStartStopId(schedulesRouteModel.getRouteStartStopId());
+        schedulesFavoriteModel.setRouteStartName(schedulesRouteModel.getRouteStartName());
+        schedulesFavoriteModel.setRouteEndStopId(schedulesRouteModel.getRouteEndStopId());
+        schedulesFavoriteModel.setRouteEndName(schedulesRouteModel.getRouteEndName());
+
+        // check if the selected route is already a favorite, then we allow the option of removing this
+        // route from the favorites list.
+        if (store.isFavorite(this.travelType.name(), schedulesFavoriteModel)) {
+            Log.d("tt", "detected this is a favorite, remove ");
+            store.removeFavorite(this.travelType.name(), schedulesFavoriteModel);
+            ((Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter)menuDialogListView.getAdapter()).disableRemoveSavedFavorite();
+        } else {
+            Log.d("tt", "adding as a favorite");
+            store.addFavorite(this.travelType.name(), schedulesFavoriteModel);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.actionmenu_nexttoarrive_revealactions:
+
+                if (menuRevealed) {
+
+                    hideListView();
+                } else {
+
+                    revealListView();
+                }
+
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void revealListView() {
+        menuRevealed = true;
+
+        Log.d(TAG, "reveal menu");
+
+        FrameLayout menuDialog = (FrameLayout)findViewById(R.id.schedules_itinerary_menudialog_mainlayout);
+        ListView listView = (ListView)findViewById(R.id.schedules_itinerary_menudialog_listview);
+
+        menuDialog.clearAnimation();
+
+        listView.setVisibility(View.VISIBLE);
+        menuDialog.setVisibility(View.VISIBLE);
+
+        Animation mainLayoutAnimation = AnimationUtils.loadAnimation(this, R.anim.nexttoarrive_menudialog_scale_in);
+        mainLayoutAnimation.setDuration(500);
+
+        menuDialog.startAnimation(mainLayoutAnimation);
+        listView.setVisibility(View.VISIBLE);
+    }
+
+    private void hideListView() {
+        FrameLayout menuDialog = (FrameLayout)findViewById(R.id.schedules_itinerary_menudialog_mainlayout);
+        menuDialog.clearAnimation();
+
+        Animation mainLayOutAnimation = AnimationUtils.loadAnimation(this, R.anim.nexttoarrive_menudialog_scale_out);
+        mainLayOutAnimation.setDuration(500);
+
+        mainLayOutAnimation.setAnimationListener(new Animation.AnimationListener(){
+            @Override
+            public void onAnimationStart(Animation arg0) {
+            }
+            @Override
+            public void onAnimationRepeat(Animation arg0) {
+            }
+            @Override
+            public void onAnimationEnd(Animation arg0) {
+                ListView listView = (ListView)findViewById(R.id.schedules_itinerary_menudialog_listview);
+                listView.setVisibility(View.GONE);
+                menuRevealed = false;
+            }
+        });
+
+        menuDialog.startAnimation(mainLayOutAnimation);
+    }
+
+
+
     public void startEndSelectionSelected(View view) {
         this.inProcessOfStartDestinationFlow = true;
 
@@ -207,6 +384,18 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
                 (schedulesRouteModel.getRouteEndName() != null) &&
                 !schedulesRouteModel.getRouteEndName().isEmpty()) {
 
+            ListView menuListView = (ListView)findViewById(R.id.schedules_itinerary_menudialog_listview);
+
+            if (menuListView == null) {
+                Log.d(TAG, "menu dialog listview is null");
+            }
+
+            if ((Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter)menuListView.getAdapter() == null) {
+                Log.d(TAG, "menu dialogs adapter is null");
+            }
+
+            ((Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter)menuListView.getAdapter()).enableSaveAsFavorite();
+
             TextView endRouteNameTextView = (TextView)findViewById(R.id.schedules_itinerary_routedirection_textview);
             endRouteNameTextView.setText("To "+schedulesRouteModel.getRouteEndName());
 
@@ -229,7 +418,7 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
             // check if the selected route is already a favorite, then we allow the option of removing this
             // route from the favorites list.
             if (store.isFavorite(this.travelType.name(), schedulesFavoriteModel)) {
-//                ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter)menuDialogListView.getAdapter()).enableRemoveSavedFavorite();
+                ((Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter)menuListView.getAdapter()).enableRemoveSavedFavorite();
             }
 
             // check if this route is already stored as a favorite; if not store as a recent
@@ -435,12 +624,6 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
     public void onConfigurationChanged(Configuration newConfig) {
 
         super.onConfigurationChanged(newConfig);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

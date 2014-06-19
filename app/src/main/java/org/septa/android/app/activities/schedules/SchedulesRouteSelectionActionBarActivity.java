@@ -60,8 +60,6 @@ public class SchedulesRouteSelectionActionBarActivity extends BaseAnalyticsActio
         iconImageNameSuffix = getIntent().getStringExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key));
         String resourceName = getString(R.string.actionbar_iconimage_imagename_base).concat(iconImageNameSuffix);
 
-        Log.d("f", "resource name is to be " + resourceName);
-
         int id = getResources().getIdentifier(resourceName, "drawable", getPackageName());
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

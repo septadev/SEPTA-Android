@@ -63,7 +63,7 @@
     <string name="commentsForm_commentType_spinner_prompt">Description</string>
 
     <string-array name="commentsForm_commentType_spinner_arraylist">
-        <item>Compliement</item>
+        <item>Compliment</item>
         <item>Concern</item>
         <item>Inquiry</item>
         <item>Suggestion</item>

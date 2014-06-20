@@ -99,7 +99,7 @@ public class SchedulesDataModel {
                 break;
             }
             case BUS: {
-                queryString = "SELECT route_id, block_id, stop_sequence, arrival_time, direction_id, service_id, stop_timesDB.trip_id trip_id FROM stop_times_bus JOIN tripsDB ON trips_bus.trip_id=stop_times_bus.trip_id WHERE trips_bus.trip_id IN (SELECT trip_id FROM trips_bus WHERE route_id="+route.getRouteShortName()+" AND direction_id="+currentDisplayDirection+" ) AND route_id="+route.getRouteShortName()+" AND stop_id="+route.getRouteEndStopId()+" ORDER BY arrival_time";
+                queryString = "SELECT route_id, block_id, stop_sequence, arrival_time, direction_id, service_id, stop_times_bus.trip_id trip_id FROM stop_times_bus JOIN trips_bus ON trips_bus.trip_id=stop_times_bus.trip_id WHERE trips_bus.trip_id IN (SELECT trip_id FROM trips_bus WHERE route_id=\""+route.getRouteId()+"\" AND direction_id="+currentDisplayDirection+" ) AND route_id=\""+route.getRouteId()+"\" AND stop_id="+route.getRouteEndStopId()+" ORDER BY arrival_time";
                 break;
             }
         }
@@ -172,8 +172,6 @@ public class SchedulesDataModel {
                         masterTripsList.add(trip);
                         startBasedTrips.remove(trip);
 
-                    } else {
-                        Log.d("dd", "no trip, did not find one");
                     }
 
 
@@ -218,6 +216,7 @@ public class SchedulesDataModel {
         }
 
         for (TripObject trip : masterTripsList) {
+            Log.d(TAG, "trip object is: "+trip.print());
             if (trip.getServiceId().intValue() == serviceId &&
                (trip.getStartTime().intValue() > nowTime) &&
                (trip.getDirectionId().intValue() == currentDisplayDirection)) {

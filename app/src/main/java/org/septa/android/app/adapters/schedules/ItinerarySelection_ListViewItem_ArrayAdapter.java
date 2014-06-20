@@ -127,7 +127,6 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
 
     @Override
     public View getHeaderView(int position, View convertView, ViewGroup parent) {
-        Log.d(TAG, "getHeaderView for position "+position);
         View view = null;
 
         String backgroundColor = mContext.getResources().getStringArray(R.array.schedules_routeselection_routesheader_colors)[5];
@@ -149,7 +148,6 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
 
     @Override
     public long getHeaderId(int position) {
-        Log.d(TAG, "getHeaderId for position "+position);
         if (position < stopsForDirection0.size()) {
             return 0;
         }
@@ -159,7 +157,6 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
 
     @Override
     public int getPositionForSection(int section) {
-        Log.d(TAG, "getPositionForSection for section "+section);
         switch (section) {
             case 0: {
 
@@ -179,11 +176,10 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
     @Override
     public int getSectionForPosition(int position) {
         if (position < stopsForDirection0.size()) {
-            Log.d(TAG, "getSectionForPosition returning 0 for position "+position+" given size of 0 as "+stopsForDirection0.size());
 
             return 0;
         } else {
-            Log.d(TAG, "getSectionForPosition returning 1 for position "+position+" given size of 0 as "+stopsForDirection0.size());
+
             return 1;
         }
     }

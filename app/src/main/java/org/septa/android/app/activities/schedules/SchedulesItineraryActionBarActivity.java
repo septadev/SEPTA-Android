@@ -283,8 +283,6 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
     private void revealListView() {
         menuRevealed = true;
 
-        Log.d(TAG, "reveal menu");
-
         FrameLayout menuDialog = (FrameLayout) findViewById(R.id.schedules_itinerary_menudialog_mainlayout);
         ListView listView = (ListView) findViewById(R.id.schedules_itinerary_menudialog_listview);
 

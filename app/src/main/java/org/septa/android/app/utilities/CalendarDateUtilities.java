@@ -88,17 +88,34 @@ public class CalendarDateUtilities {
     }
 
     public static String formatHoursMinutesDisplay(long minutes) {
-        if (minutes == 1) {
-            return "1 min";
+        String returnString = "";
+        long hours = 0;
+
+        if (minutes > 60) {
+            hours = minutes / 60;
+            minutes = minutes - (hours * 60);
         }
 
-        if (minutes <= 60) {
-            return minutes + " mins";
+
+        if (hours > 0) {
+            returnString += hours + " hour";
+            if (hours > 1) {
+                returnString += "s";
+            }
         }
 
-        long hours = minutes / 60;
+        if (minutes > 0) {
+            if (hours > 0) {
+                returnString += " ";
+            }
 
-        return hours + " hours "+(minutes/60) + " mins";
+            returnString += minutes + " min";
+            if (minutes > 1) {
+                returnString += "s";
+            }
+        }
+
+        return returnString;
     }
 
     public static long minutesUntilStartTime(Date now, TripObject trip) {

@@ -163,7 +163,7 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
             }
         }
 
-        String backgroundColor = mContext.getResources().getStringArray(R.array.schedules_routeselection_routesheader_colors)[colorPosition];
+        String backgroundColor = mContext.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[colorPosition];
 
 
         view = mInflater.inflate(R.layout.schedules_routeselection_headerview, parent, false);

@@ -137,7 +137,7 @@ public class SchedulesRouteModel implements Comparable<SchedulesRouteModel> {
             return 0;
         }
 
-        return -1;
+        return this.getRouteId().compareTo(another.getRouteId());
     }
 
     public void reverseStartAndDestinationStops() {

@@ -9,6 +9,7 @@ package org.septa.android.app.adapters.schedules;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +28,9 @@ import org.septa.android.app.models.RouteTypes;
 import org.septa.android.app.models.SchedulesRouteModel;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 
@@ -72,15 +76,21 @@ public class SchedulesRouteSelection_ListViewItem_ArrayAdapter extends BaseAdapt
     public void setSchedulesRouteModel(ArrayList<SchedulesRouteModel> routes) {
         this.routes = routes;
 
+        Log.d(TAG, "about to sort the routes");
+        if ((routeType == RouteTypes.TROLLEY) || (routeType == RouteTypes.BUS)) {
+            // sort numerically taking care for bus routeIds that have a trailing letter
+            Collections.sort(this.routes, new NumericComparator());
+        } else {
+
+            Collections.sort(this.routes);
+        }
+        Log.d(TAG, "sorted the routes");
+
         notifyDataSetChanged();
     }
 
     protected Object[] getItems() {
         ArrayList<Object> items = new ArrayList<Object>(getCount());
-
-//        Log.d(TAG, "count of favorites is "+favorites.size());
-//        Log.d(TAG, "count of recently viewed is "+recentlyViewed.size());
-//        Log.d(TAG, "count of routes is "+routes.size());
 
         items.addAll(favorites); items.addAll(recentlyViewed); items.addAll(routes);
 
@@ -307,5 +317,39 @@ public class SchedulesRouteSelection_ListViewItem_ArrayAdapter extends BaseAdapt
 
     class HeaderViewHolder {
         TextView text;
+    }
+}
+
+// this numeric comparator makes the assumption that the strings are either mostly numerics
+// with possibly a training letter or have no numerics at all.
+class NumericComparator implements Comparator<SchedulesRouteModel> {
+    @Override
+    public int compare(SchedulesRouteModel o1, SchedulesRouteModel o2) {
+        int o1RouteIdAsInt = 0;
+        int o2RouteIdAsInt = 0;
+
+        String o1NumericString = o1.getRouteId().replaceAll("[^\\d.]", "");
+        String o2NumericString = o2.getRouteId().replaceAll("[^\\d.]", "");
+
+        // first check if either or both the strings are length 0, meaning they have no numerics
+        if (o1NumericString.length() == 0) {     // this is all non numerics
+            if (o2NumericString.length() == 0) {
+                return o1.getRouteId().compareTo(o2.getRouteId());
+            } else {
+                return 1;
+            }
+        } else {
+            if (o2NumericString.length() == 0) {
+                return -1;
+            }
+        }
+
+        o1RouteIdAsInt = Integer.parseInt(o1NumericString);
+        o2RouteIdAsInt = Integer.parseInt(o2NumericString);
+
+        if (o1RouteIdAsInt == o2RouteIdAsInt) return 0;
+        if (o1RouteIdAsInt < o2RouteIdAsInt) return -1;
+
+        return 1;
     }
 }

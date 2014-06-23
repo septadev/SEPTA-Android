@@ -63,7 +63,7 @@ public class SchedulesRouteSelectionActionBarActivity extends BaseAnalyticsActio
         int id = getResources().getIdentifier(resourceName, "drawable", getPackageName());
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("|" + actionBarTitleText);
+        getSupportActionBar().setTitle("| " + actionBarTitleText);
         getSupportActionBar().setIcon(id);
 
         travelType = valueOf(getIntent().getStringExtra(getString(R.string.schedules_routeselect_travelType)));

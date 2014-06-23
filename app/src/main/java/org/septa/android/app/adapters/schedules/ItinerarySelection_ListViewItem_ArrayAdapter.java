@@ -9,7 +9,6 @@ package org.septa.android.app.adapters.schedules;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,10 +21,12 @@ import android.widget.TextView;
 
 import org.septa.android.app.R;
 import org.septa.android.app.models.RouteTypes;
+import org.septa.android.app.models.SchedulesRouteModel;
 import org.septa.android.app.models.StopModel;
-import org.septa.android.app.models.TripDataModel;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 
@@ -64,11 +65,13 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
     public void setTripDataForDirection0(ArrayList<StopModel>stopsForDirection0) {
 
         this.stopsForDirection0 = stopsForDirection0;
+        Collections.sort(this.stopsForDirection0, new StopModelNumericComparator());
     }
 
     public void setTripDataForDirection1(ArrayList<StopModel>stopsForDirection1) {
 
         this.stopsForDirection1 = stopsForDirection1;
+        Collections.sort(this.stopsForDirection1, new StopModelNumericComparator());
     }
 
     public Object[] getItems() {
@@ -119,10 +122,13 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
 
         text_TextView.setText(((StopModel)getItem(position)).getStopName());
 
-        if (position > stopsForDirection0.size()) {
+        // for the rows that are in the second section, they get a different color background
+        if (position > stopsForDirection0.size()-1) {
             LinearLayout mainLayout = (LinearLayout)rowView.findViewById(R.id.nettoarrive_stopselection_mainlayout);
             mainLayout.setBackgroundColor(Color.parseColor("#FFCACACB"));
         }
+
+        Log.d(TAG, "stop model is id="+((StopModel) getItem(position)).getStopId()+"   name="+((StopModel) getItem(position)).getStopName());
 
         return rowView;
     }
@@ -223,5 +229,39 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
     public Object[] getSections() {
 
         return directionHeadingLabels;
+    }
+}
+
+// this numeric comparator makes the assumption that the strings are either mostly numerics
+// with possibly a training letter or have no numerics at all.
+class StopModelNumericComparator implements Comparator<StopModel> {
+    @Override
+    public int compare(StopModel o1, StopModel o2) {
+        int o1RouteIdAsInt = 0;
+        int o2RouteIdAsInt = 0;
+
+        String o1NumericString = o1.getStopName().replaceAll("[^\\d.]", "");
+        String o2NumericString = o2.getStopName().replaceAll("[^\\d.]", "");
+
+        // first check if either or both the strings are length 0, meaning they have no numerics
+        if (o1NumericString.length() == 0) {     // this is all non numerics
+            if (o2NumericString.length() == 0) {
+                return o1.getStopName().compareTo(o2.getStopName());
+            } else {
+                return 1;
+            }
+        } else {
+            if (o2NumericString.length() == 0) {
+                return -1;
+            }
+        }
+
+        o1RouteIdAsInt = Integer.parseInt(o1NumericString);
+        o2RouteIdAsInt = Integer.parseInt(o2NumericString);
+
+        if (o1RouteIdAsInt == o2RouteIdAsInt) return 0;
+        if (o1RouteIdAsInt < o2RouteIdAsInt) return -1;
+
+        return 1;
     }
 }

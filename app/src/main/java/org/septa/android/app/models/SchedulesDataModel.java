@@ -34,8 +34,6 @@ public class SchedulesDataModel {
     }
 
     public void loadStartBasedTrips(RouteTypes routeType) {
-        //TODO: set database based on routeType, figure that out.
-        Log.d(TAG, "the routeType via name is "+routeType);
         String queryString = "SELECT route_id, block_id, stop_sequence, arrival_time, direction_id, service_id, stop_times_"+routeType+".trip_id trip_id FROM stop_times_"+routeType+" JOIN trips_"+routeType+" ON trips_"+routeType+".trip_id=stop_times_"+routeType+".trip_id WHERE trips_"+routeType+".trip_id IN (SELECT trip_id FROM trips_"+routeType+" WHERE route_id=\""+ getRoute().getRouteId()+"\" ) AND route_id=\""+ getRoute().getRouteId()+"\" AND stop_id="+ getRoute().getRouteStartStopId()+" ORDER BY arrival_time";
 
         SEPTADatabase septaDatabase = new SEPTADatabase(context);
@@ -76,9 +74,6 @@ public class SchedulesDataModel {
         }
 
         database.close();
-
-        Log.d(TAG, "load start is done with "+startBasedTrips.size()+" number of rows");
-
     }
 
     public void loadAndProcessEndStopsWithStartStops(RouteTypes routeType) {
@@ -94,7 +89,6 @@ public class SchedulesDataModel {
             case MFL:
             case BSL:
             case NHSL: {
-                Log.d(TAG, "try just routeType:"+routeType+"    or as name():"+routeType.name());
                 queryString = "SELECT route_id, block_id, stop_sequence, arrival_time, direction_id, service_id, st.trip_id trip_id FROM stop_times_"+routeType.name()+" as st JOIN trips_"+routeType.name()+" as t ON t.trip_id=st.trip_id WHERE t.trip_id IN (SELECT trip_id FROM trips_"+routeType.name()+" WHERE route_id=\""+route.getRouteId()+"\" ) AND route_id=\""+route.getRouteId()+"\" AND stop_id="+route.getRouteEndStopId()+" ORDER BY arrival_time";
                 break;
             }
@@ -115,21 +109,17 @@ public class SchedulesDataModel {
 
         if (cursor != null) {
             if (cursor.moveToFirst()) {
-//                Log.d("f", "cursor is not null and moving to first.");
                 do {
                     String tripId = cursor.getString(6);
 
                     if (startBasedTrips.get(tripId) != null) {
-//                        Log.d(TAG, "found the trip");
                         TripObject trip = startBasedTrips.get(tripId);
                         trip.setDirectionId(cursor.getInt(4));
 
                         int startSequence = trip.getStartSeq().intValue();
                         int endSequence = cursor.getInt(2);
 
-//                        Log.d(TAG, "start seq is "+startSequence+"   with end seq being "+endSequence+"   for trainno "+cursor.getInt(1));
                         if (startSequence < endSequence) {
-//                            Log.d(TAG, "the start sequence is less than end, ideal");
                             trip.setEndSeq(endSequence);
                             trip.setEndTime(cursor.getInt(3));
 
@@ -143,7 +133,6 @@ public class SchedulesDataModel {
 
                             currentDisplayDirection = trip.getDirectionId().intValue();
                         } else {
-//                            Log.d(TAG, "the end sequence is less than the start, not ideal");
                             trip.setEndSeq(trip.getStartSeq());
                             trip.setEndTime(trip.getStartTime());
 
@@ -184,12 +173,9 @@ public class SchedulesDataModel {
         }
 
         database.close();
-
-        Log.d(TAG,"load and process done with masterTripsArray having "+masterTripsList.size()+" rows");
     }
 
     public ArrayList<TripObject> createFilteredTripsList(int tab) {
-        Log.d(TAG, "create filtered trips list with tab of "+tab);
         filteredTripsList.clear();
 
         int nowTime = -1;
@@ -216,7 +202,6 @@ public class SchedulesDataModel {
         }
 
         for (TripObject trip : masterTripsList) {
-            Log.d(TAG, "trip object is: "+trip.print());
             if (trip.getServiceId().intValue() == serviceId &&
                (trip.getStartTime().intValue() > nowTime) &&
                (trip.getDirectionId().intValue() == currentDisplayDirection)) {
@@ -239,7 +224,6 @@ public class SchedulesDataModel {
 
         Collections.sort(filteredTripsList, new TripSorter());
 
-        Log.d(TAG, "createFilteredTripsList done with filteredTripsList having size "+filteredTripsList.size());
         return this.filteredTripsList;
     }
 

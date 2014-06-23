@@ -40,7 +40,7 @@ public class SchedulesRouteSelectionActionBarActivity extends BaseAnalyticsActio
         AdapterView.OnItemClickListener, StickyListHeadersListView.OnHeaderClickListener,
         StickyListHeadersListView.OnStickyHeaderOffsetChangedListener,
         StickyListHeadersListView.OnStickyHeaderChangedListener, View.OnTouchListener {
-
+    public static final String TAG = SchedulesRouteSelectionActionBarActivity.class.getName();
     private SchedulesRouteSelection_ListViewItem_ArrayAdapter mAdapter;
     private boolean fadeHeader = true;
 
@@ -57,7 +57,9 @@ public class SchedulesRouteSelectionActionBarActivity extends BaseAnalyticsActio
         setContentView(R.layout.schedules_routeselection);
 
         String actionBarTitleText = getIntent().getStringExtra(getString(R.string.actionbar_titletext_key));
+        Log.d(TAG, "got action bar title text as " + actionBarTitleText);
         iconImageNameSuffix = getIntent().getStringExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key));
+        Log.d(TAG, "got action bar image name suffix as " + iconImageNameSuffix);
         String resourceName = getString(R.string.actionbar_iconimage_imagename_base).concat(iconImageNameSuffix);
 
         int id = getResources().getIdentifier(resourceName, "drawable", getPackageName());

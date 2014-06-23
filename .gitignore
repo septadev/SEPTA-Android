@@ -43,3 +43,4 @@ proguard/
 
 app/src/main/assets/crashlytics-build.properties
 .hprof
+app/src/main/res/values/com_crashlytics_export_strings.xml

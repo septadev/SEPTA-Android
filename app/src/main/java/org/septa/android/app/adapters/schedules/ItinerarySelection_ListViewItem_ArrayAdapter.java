@@ -42,14 +42,16 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
     ArrayList<StopModel> stopsForDirection1 = new ArrayList<StopModel>();
 
     RouteTypes routeType = null;
+    String routeShortName;
 
     private View headerView = null;
 
-    public ItinerarySelection_ListViewItem_ArrayAdapter(Context context, RouteTypes routeType) {
+    public ItinerarySelection_ListViewItem_ArrayAdapter(Context context, RouteTypes routeType, String routeShortName) {
         mContext = context;
         mInflater = LayoutInflater.from(context);
 
         this.routeType = routeType;
+        this.routeShortName = routeShortName;
 
         resourceEndNames = context.getResources().getStringArray(R.array.schedulesfragment_listview_bothimage_endnames);
     }
@@ -129,7 +131,40 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
     public View getHeaderView(int position, View convertView, ViewGroup parent) {
         View view = null;
 
-        String backgroundColor = mContext.getResources().getStringArray(R.array.schedules_routeselection_routesheader_colors)[5];
+        int colorPosition =0;
+        switch (routeType) {
+            case TROLLEY: {
+                colorPosition = 0;
+                break;
+            }
+            case MFL: {
+                if (routeShortName.equals("MFO")) {
+                    colorPosition = 3;
+                } else {
+                    colorPosition = 1;
+                }
+                break;
+            }
+            case BUS: {
+                colorPosition = 3;
+                break;
+            }
+            case BSL: {
+                if (routeShortName.equals("BSO")) {
+                    colorPosition = 3;
+                } else {
+                    colorPosition = 4;
+                }
+                break;
+            }
+            case NHSL: {
+                colorPosition = 5;
+                break;
+            }
+        }
+
+        String backgroundColor = mContext.getResources().getStringArray(R.array.schedules_routeselection_routesheader_colors)[colorPosition];
+
 
         view = mInflater.inflate(R.layout.schedules_routeselection_headerview, parent, false);
         TextView textView = (TextView) view.findViewById(R.id.schedules_routeselection_sectionheader_textview);
@@ -138,9 +173,9 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
         mainLayout.setBackgroundColor(Color.parseColor(backgroundColor));
 
         if (position < stopsForDirection0.size()) {
-            textView.setText(directionHeadingLabels[0]);
+            textView.setText("To "+directionHeadingLabels[0]);
         } else {
-            textView.setText(directionHeadingLabels[1]);
+            textView.setText("To "+directionHeadingLabels[1]);
         }
 
         return view;

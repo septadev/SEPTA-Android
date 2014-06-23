@@ -12,8 +12,6 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -22,7 +20,6 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ListView;
 
 import com.google.gson.Gson;
 
@@ -38,8 +35,6 @@ import java.util.ArrayList;
 
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
-import static org.septa.android.app.models.RouteTypes.NHSL;
-import static org.septa.android.app.models.RouteTypes.RAIL;
 import static org.septa.android.app.models.RouteTypes.valueOf;
 
 public class SchedulesStopsSelectionActionBarActivity extends BaseAnalyticsActionBarActivity implements
@@ -85,7 +80,7 @@ public class SchedulesStopsSelectionActionBarActivity extends BaseAnalyticsActio
 
         Log.d("f", "got the travel type as "+travelType.name());
 
-        mAdapter = new ItinerarySelection_ListViewItem_ArrayAdapter(this, travelType);
+        mAdapter = new ItinerarySelection_ListViewItem_ArrayAdapter(this, travelType, routeShortName);
 
         stickyList = (StickyListHeadersListView) findViewById(R.id.list);
         stickyList.setOnItemClickListener(this);
@@ -186,6 +181,11 @@ public class SchedulesStopsSelectionActionBarActivity extends BaseAnalyticsActio
             SEPTADatabase septaDatabase = new SEPTADatabase(SchedulesStopsSelectionActionBarActivity.this);
             SQLiteDatabase database = septaDatabase.getReadableDatabase();
 
+            // special rule if the routeShortName is MFO or BSO, then the type is actually a BUS and not MFL or BSL.
+            if (routeShortName.equals("MFO") || routeShortName.equals("BSO")) {
+                routeType = RouteTypes.BUS;
+            }
+
             String queryString = null;
             switch (routeType) {
                 case RAIL: {
@@ -210,19 +210,19 @@ public class SchedulesStopsSelectionActionBarActivity extends BaseAnalyticsActio
                 }
                 case BSL: {
                     Log.d("f", "type is bsl, loading the trips");
-                    queryString = "SELECT st.stop_id, s.stop_name, t.direction_id, s.wheelchair_boarding, stop_sequence FROM trips_BSL t JOIN stop_times_BSL st ON t.trip_id=st.trip_id NATURAL JOIN stops_bus s GROUP BY st.stop_id ORDER BY s.stop_name;";
+                    queryString = "SELECT stop_times_BSL.stop_id, stops_bus.stop_name, direction_id, stops_bus.wheelchair_boarding, null as stop_sequence FROM trips_BSL JOIN stop_times_BSL ON trips_BSL.trip_id=stop_times_BSL.trip_id NATURAL JOIN stops_bus GROUP BY stop_times_BSL.stop_id ORDER BY stops_bus.stop_name;";
 
                      break;
                 }
                 case MFL: {
-                    Log.d("f", "type is mfl, loading the trips");
-                    queryString = "SELECT stop_id, stop_name, direction_id, wheelchair_boarding, stop_sequence FROM stopNameLookUpTable NATURAL JOIN stops_bus WHERE route_short_name=\"%%route_short_name\" ORDER BY stop_name";
-                    queryString = queryString.replace("%%route_short_name%%", routeShortName);
+                    Log.d("f", "type is mfl, loading the trips with shortname as "+routeShortName);
+                    queryString = "SELECT stop_times_MFL.stop_id, stops_bus.stop_name, direction_id, stops_bus.wheelchair_boarding, null as stop_sequence FROM trips_MFL JOIN stop_times_MFL ON trips_MFL.trip_id=stop_times_MFL.trip_id NATURAL JOIN stops_bus GROUP BY stop_times_MFL.stop_id ORDER BY stops_bus.stop_name;";
+
                     break;
                 }
                 case NHSL: {
                     Log.d("f", "type is nhsl, loading the trips");
-                    queryString = "SELECT st.stop_id, s.stop_name, t.direction_id, s.wheelchair_boarding, stop_sequence FROM trips_NHSL t JOIN stop_times_NHSL st ON t.trip_id=st.trip_id NATURAL JOIN stops_bus s GROUP BY st.stop_id ORDER BY s.stop_name;";
+                    queryString = "SELECT stop_times_NHSL.stop_id, stops_bus.stop_name, null as direction_id, stops_bus.wheelchair_boarding, null as stop_sequence FROM trips_NHSL JOIN stop_times_NHSL ON trips_NHSL.trip_id=stop_times_NHSL.trip_id NATURAL JOIN stops_bus GROUP BY stop_times_NHSL.stop_id ORDER BY stops_bus.stop_name;";
 
                     break;
                 }
@@ -234,24 +234,36 @@ public class SchedulesStopsSelectionActionBarActivity extends BaseAnalyticsActio
                     do {
                         StopModel stopModel = new StopModel(cursor.getString(0), cursor.getString(1), cursor.getInt(4), (cursor.getInt(3) == 1) ? true : false);
 
-                        if (routeType != RAIL) {
-                            if (cursor.getInt(2) == 0) {
+                        switch (routeType) {
+                            // in the case of RAIL, the direction is always 0
+                            case RAIL: {
                                 stopModelListDirection0.add(stopModel);
-                            } else {
-                                 stopModelListDirection1.add(stopModel);
+
+                                break;
                             }
-                        } else {
-                            stopModelListDirection0.add(stopModel);
+                            // in the case of BUS and TROLLEY, the direction will be read from the selected row
+                            case BUS:
+                            case TROLLEY: {
+                                if (cursor.getInt(2) == 0) {
+                                    stopModelListDirection0.add(stopModel);
+                                } else {
+                                    stopModelListDirection1.add(stopModel);
+                                }
+
+                                break;
+                            }
+                            // in the case of BSL, MFL, and NHSL, stops will be shown for both directions
+                            case BSL:
+                            case MFL:
+                            case NHSL: {
+                                stopModelListDirection0.add(stopModel);
+                                stopModelListDirection1.add(stopModel);
+
+                                break;
+                            }
                         }
-
-                        if (routeType == NHSL) {
-
-                            stopModelListDirection0.add(stopModel);
-                        }
-
                     } while (cursor.moveToNext());
                 }
-
                 cursor.close();
             } else {
                 Log.d("f", "cursor is null");

@@ -234,40 +234,6 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
     }
 }
 
-// this numeric comparator makes the assumption that the strings are either mostly numerics
-// with possibly a training letter or have no numerics at all.
-class StopModelNumericComparator implements Comparator<StopModel> {
-    @Override
-    public int compare(StopModel o1, StopModel o2) {
-        int o1RouteIdAsInt = 0;
-        int o2RouteIdAsInt = 0;
-
-        String o1NumericString = o1.getStopName().replaceAll("[^\\d.]", "");
-        String o2NumericString = o2.getStopName().replaceAll("[^\\d.]", "");
-
-        // first check if either or both the strings are length 0, meaning they have no numerics
-        if (o1NumericString.length() == 0) {     // this is all non numerics
-            if (o2NumericString.length() == 0) {
-                return o1.getStopName().compareTo(o2.getStopName());
-            } else {
-                return 1;
-            }
-        } else {
-            if (o2NumericString.length() == 0) {
-                return -1;
-            }
-        }
-
-        o1RouteIdAsInt = Integer.parseInt(o1NumericString);
-        o2RouteIdAsInt = Integer.parseInt(o2NumericString);
-
-        if (o1RouteIdAsInt == o2RouteIdAsInt) return 0;
-        if (o1RouteIdAsInt < o2RouteIdAsInt) return -1;
-
-        return 1;
-    }
-}
-
 class NumberAwareStringComparator implements Comparator<StopModel>{
     public int compare(StopModel stopModel1, StopModel stopModel2) {
         String s1 = stopModel1.getStopName();

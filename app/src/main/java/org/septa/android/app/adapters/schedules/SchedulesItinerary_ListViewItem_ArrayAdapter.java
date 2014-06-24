@@ -135,8 +135,8 @@ public class SchedulesItinerary_ListViewItem_ArrayAdapter extends BaseAdapter im
             }
 
         } else {
-//            String[] routeTypeLabels = context.getResources().getStringArray(R.array.schedulesfragment_listview_bothimage_endnames);
             TripObject trip = (TripObject)getItem(position);
+//            Log.d(TAG, "this trip is "+trip.print());
 
             rowView = mInflater.inflate(R.layout.schedules_trip_listview_item, parent, false);
 

@@ -266,7 +266,7 @@ public class SchedulesStopsSelectionActionBarActivity extends BaseAnalyticsActio
                 }
                 cursor.close();
             } else {
-                Log.d("f", "cursor is null");
+                Log.d("ii", "cursor is null");
             }
 
             database.close();
@@ -311,7 +311,9 @@ public class SchedulesStopsSelectionActionBarActivity extends BaseAnalyticsActio
                 case RAIL: {
                     break;
                 }
-                case BUS:
+                case BUS: {
+                    break;
+                }
                 case BSL:
                 case MFL:
                 case NHSL:
@@ -345,7 +347,7 @@ public class SchedulesStopsSelectionActionBarActivity extends BaseAnalyticsActio
 
                 cursor.close();
             } else {
-                Log.d("f", "cursor is null");
+                Log.d("z", "cursor is null");
             }
 
             database.close();

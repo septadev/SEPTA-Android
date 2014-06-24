@@ -28,7 +28,6 @@ public class SchedulesFavoritesAndRecentlyViewedStore {
 
         favoritesListMap = new HashMap<String, ArrayList<SchedulesFavoriteModel>>();
         recentlyViewedListMap = new HashMap<String, ArrayList<SchedulesRecentlyViewedModel>>();
-        Log.d("qq", "just made a new schedules fav and rv store");
     }
 
     public boolean isFavorite(String routeType, SchedulesRouteModel schedulesModel) {
@@ -72,16 +71,12 @@ public class SchedulesFavoritesAndRecentlyViewedStore {
     }
 
     public void removeFavorite(String routeType, SchedulesFavoriteModel schedulesFavoriteModel) {
-        Log.d("ss", "removeFavorite, with routeType "+routeType);
         ArrayList<SchedulesFavoriteModel>favoritesList = favoritesListMap.get(routeType);
 
         if (favoritesList != null) {
-            Log.d("tt", "remove favorite being run with list size of " + favoritesList.size());
             for (int i = 0; i < favoritesList.size(); i++) {
                 if (favoritesList.get(i).compareTo(schedulesFavoriteModel) == 0) {
-                    Log.d("qqq", "found a match... removing");
                     favoritesList.remove(i);
-                    Log.d("qqq", "new list size is " + favoritesList.size());
 
                     sendToSharedPreferencesFavorites();
                 }
@@ -114,21 +109,18 @@ public class SchedulesFavoritesAndRecentlyViewedStore {
         // duplicate avoidance
         // check if we already have this recently viewed
         // if we find a duplicate, remove it form the list, the list will shuffle properly.
-        Log.d("ss", "addRecentlyViewed with routeType as "+routeType);
         ArrayList<SchedulesRecentlyViewedModel> recentlyViewedList = recentlyViewedListMap.get(routeType);
         if (recentlyViewedList != null) {
-            Log.d("yy", "we have already a recently viewed");
             for (int i = 0; i < recentlyViewedList.size(); i++) {
                 if (recentlyViewedList.get(i) != null) {
-                    Log.d("yy", "recently viewed for position " + i);
                     if (recentlyViewedList.get(i).compareTo(schedulesModel) == 0) {
-                        Log.d("yy", "recently viewed at that position is a dup");
+
                         recentlyViewedList.remove(i);
                     }
                 }
             }
         } else {
-            Log.d("yy", "recently viewed list is null");
+
             recentlyViewedList = new ArrayList<SchedulesRecentlyViewedModel>();
         }
 
@@ -141,7 +133,6 @@ public class SchedulesFavoritesAndRecentlyViewedStore {
         }
 
         recentlyViewedListMap.put(routeType, recentlyViewedList);
-        Log.d("yy", "recentlyViewedListMap is size "+recentlyViewedListMap.size());
 
         sendToSharedPreferencesRecentlyViewed();
     }
@@ -156,15 +147,15 @@ public class SchedulesFavoritesAndRecentlyViewedStore {
         }.getType());
 
         if (recentlyViewedListMap != null) {
-            Log.d("yy", "recently viewed list map is not null here");
+
             recentlyViewedList = recentlyViewedListMap.get(routeType);
         } else {
-            Log.d("yy", "recently viewed list map is null here... make a new one");
+
             recentlyViewedListMap = new HashMap<String, ArrayList<SchedulesRecentlyViewedModel>>();
         }
 
         if (recentlyViewedList == null) {
-            Log.d("hh", "getting the recently viewed list hashmap and returning the array list, but null");
+
             recentlyViewedList = new ArrayList<SchedulesRecentlyViewedModel>(3);
         }
 

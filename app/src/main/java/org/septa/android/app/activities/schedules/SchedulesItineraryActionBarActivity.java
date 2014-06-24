@@ -10,8 +10,11 @@ package org.septa.android.app.activities.schedules;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -37,6 +40,7 @@ import org.septa.android.app.activities.FareInformationActionBarActivity;
 import org.septa.android.app.activities.NextToArriveRealTimeWebViewActionBarActivity;
 import org.septa.android.app.adapters.schedules.Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter;
 import org.septa.android.app.adapters.schedules.SchedulesItinerary_ListViewItem_ArrayAdapter;
+import org.septa.android.app.databases.SEPTADatabase;
 import org.septa.android.app.managers.SchedulesFavoritesAndRecentlyViewedStore;
 import org.septa.android.app.models.ObjectFactory;
 import org.septa.android.app.models.RouteTypes;
@@ -95,16 +99,20 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
 
         int id = getResources().getIdentifier(resourceName, "drawable", getPackageName());
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("| " + actionBarTitleText);
-        getSupportActionBar().setIcon(id);
-
         String stringTravelType = getIntent().getStringExtra(getString(R.string.schedules_itinerary_travelType));
         if (stringTravelType != null) {
             travelType = valueOf(getIntent().getStringExtra(getString(R.string.schedules_itinerary_travelType)));
         } else {
             Log.d("f", "travelType is null...");
         }
+
+        if ((travelType == RouteTypes.TROLLEY) || (travelType == RouteTypes.BUS)) {
+            actionBarTitleText = "Route " + actionBarTitleText;
+        }
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("| " + actionBarTitleText);
+        getSupportActionBar().setIcon(id);
 
         this.inProcessOfStartDestinationFlow = false;
 
@@ -209,7 +217,6 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
                 switch (position) {
                     case 0: {       // favorite
                         addOrRemoveRouteFromFavorites();
-//                        mAdapter.reloadFavoriteAndRecentlyViewedLists();
                         mAdapter.notifyDataSetChanged();
                         hideListView();
                         break;
@@ -418,6 +425,7 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
     }
 
     private void checkTripStartAndDestinationForNextToArriveDataRequest() {
+        boolean flipStartAndEndStops = false;
         Log.d(TAG, "check trip start and destination");
         // check if we have both the start and destination stops, if yes, fetch the data.
         if ((schedulesRouteModel.getRouteStartName() != null) &&
@@ -427,19 +435,26 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
 
             ListView menuListView = (ListView) findViewById(R.id.schedules_itinerary_menudialog_listview);
 
-            if (menuListView == null) {
-                Log.d(TAG, "menu dialog listview is null");
-            }
-
-            if ((Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter)menuListView.getAdapter() == null) {
-                Log.d(TAG, "menu dialogs adapter is null");
-            }
-
             ((Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter) menuListView.getAdapter()).enableSaveAsFavorite();
+            SchedulesDataModel schedulesDataModel = new SchedulesDataModel(this);
 
-            TextView endRouteNameTextView = (TextView) findViewById(R.id.schedules_itinerary_routedirection_textview);
-            endRouteNameTextView.setText("To " + schedulesRouteModel.getRouteEndName());
+            if (schedulesItineraryRefreshCountDownTimer != null) {
+                schedulesItineraryRefreshCountDownTimer.cancel();
+                schedulesItineraryRefreshCountDownTimer.start();
+            } else {
+                schedulesItineraryRefreshCountDownTimer = createScheduleItineraryRefreshCountDownTimer();
+                schedulesItineraryRefreshCountDownTimer.start();
+            }
 
+            schedulesDataModel.setRoute(schedulesRouteModel);
+            schedulesDataModel.loadStartBasedTrips(travelType);
+            flipStartAndEndStops = schedulesDataModel.loadAndProcessEndStopsWithStartStops(travelType);
+
+            if (flipStartAndEndStops) {
+                schedulesRouteModel.reverseStartAndDestinationStops();
+            }
+
+            // given the schedules route model, create a recently viewed and favorite model
             SchedulesFavoritesAndRecentlyViewedStore store = ObjectFactory.getInstance().getSchedulesFavoritesAndRecentlyViewedStore(this);
 
             SchedulesRecentlyViewedModel schedulesRecentlyViewedModel = new SchedulesRecentlyViewedModel();
@@ -448,6 +463,7 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
             schedulesRecentlyViewedModel.setRouteStartStopId(schedulesRouteModel.getRouteStartStopId());
             schedulesRecentlyViewedModel.setRouteEndName(schedulesRouteModel.getRouteEndName());
             schedulesRecentlyViewedModel.setRouteEndStopId(schedulesRouteModel.getRouteEndStopId());
+            schedulesRecentlyViewedModel.setRouteShortName(schedulesRouteModel.getRouteShortName());
 
             SchedulesFavoriteModel schedulesFavoriteModel = new SchedulesFavoriteModel();
             schedulesFavoriteModel.setRouteId(schedulesRouteModel.getRouteId());
@@ -455,6 +471,7 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
             schedulesFavoriteModel.setRouteStartName(schedulesRouteModel.getRouteStartName());
             schedulesFavoriteModel.setRouteEndStopId(schedulesRouteModel.getRouteEndStopId());
             schedulesFavoriteModel.setRouteEndName(schedulesRouteModel.getRouteEndName());
+            schedulesFavoriteModel.setRouteShortName(schedulesRouteModel.getRouteShortName());
 
             // check if the selected route is already a favorite, then we allow the option of removing this
             // route from the favorites list.
@@ -467,19 +484,26 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
                 store.addRecentlyViewed(this.travelType.name(), schedulesRecentlyViewedModel);
             }
 
-            if (schedulesItineraryRefreshCountDownTimer != null) {
-                schedulesItineraryRefreshCountDownTimer.cancel();
-                schedulesItineraryRefreshCountDownTimer.start();
-            } else {
-                schedulesItineraryRefreshCountDownTimer = createScheduleItineraryRefreshCountDownTimer();
-                schedulesItineraryRefreshCountDownTimer.start();
+            Log.d(TAG, "route short name and travel type "+schedulesRouteModel.getRouteShortName()+" "+travelType);
+            switch (travelType) {
+                case RAIL: {
+                    TextView endRouteNameTextView = (TextView) findViewById(R.id.schedules_itinerary_routedirection_textview);
+                    endRouteNameTextView.setText("To " + schedulesRouteModel.getRouteEndName());
+
+                    break;
+                }
+                case BUS:
+                case BSL:
+                case MFL:
+                case NHSL:
+                case TROLLEY: {
+                    Log.d(TAG, "load the direction header from SQLite");
+                    DirectionHeaderLoader directionHeaderLoader = new DirectionHeaderLoader(schedulesRouteModel.getRouteShortName());
+                    directionHeaderLoader.execute(schedulesDataModel);
+
+                    break;
+                }
             }
-
-            SchedulesDataModel schedulesDataModel = new SchedulesDataModel(this);
-
-            schedulesDataModel.setRoute(schedulesRouteModel);
-            schedulesDataModel.loadStartBasedTrips(travelType);
-            schedulesDataModel.loadAndProcessEndStopsWithStartStops(travelType);
 
             ArrayList<TripObject> trips = schedulesDataModel.createFilteredTripsList(selectedTab);
             mAdapter.setTripObject(trips);
@@ -533,7 +557,7 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
                     String selectionMode = data.getStringExtra("selection_mode");
 
                     if (selectionMode.equals("Destination")) {
-                        Log.d(TAG, "selection mode is detintation, right? "+selectionMode);
+                        Log.d(TAG, "selection mode is detintation, right? " + selectionMode);
                         schedulesRouteModel.setRouteEndStopId(stopId);
                         schedulesRouteModel.setRouteEndName(stopName);
 
@@ -542,7 +566,7 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
                             inProcessOfStartDestinationFlow = false;
                         }
                     } else {
-                        Log.d(TAG, "not in selection mode of desintation as "+selectionMode);
+                        Log.d(TAG, "not in selection mode of desintation as " + selectionMode);
                         schedulesRouteModel.setRouteStartStopId(stopId);
                         schedulesRouteModel.setRouteStartName(stopName);
 
@@ -792,5 +816,69 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
                 checkTripStartAndDestinationForNextToArriveDataRequest();
             }
         };
+    }
+
+    private class DirectionHeaderLoader extends AsyncTask<SchedulesDataModel, Integer, Boolean> {
+        String routeShortName;
+        SchedulesDataModel schedulesDataModel;
+        String directionHeaderString;
+
+        public DirectionHeaderLoader(String routeShortName) {
+
+            this.routeShortName = routeShortName;
+        }
+
+        private void loadDirectionHeaders(SchedulesDataModel schedulesDataModel) {
+            String queryString;
+
+            this.schedulesDataModel = schedulesDataModel;
+
+            SEPTADatabase septaDatabase = new SEPTADatabase(SchedulesItineraryActionBarActivity.this);
+            SQLiteDatabase database = septaDatabase.getReadableDatabase();
+
+            Log.d("f", "setting querystring with route short name as " + routeShortName);
+            queryString = "SELECT dircode, Route, DirectionDescription FROM bus_stop_directions WHERE Route=\"%%route_short_name%%\" ORDER BY dircode";
+            queryString = queryString.replace("%%route_short_name%%", routeShortName);
+
+            Cursor cursor = null;
+
+            if (queryString != null) {
+                cursor = database.rawQuery(queryString, null);
+            }
+
+            if (cursor != null) {
+                if (cursor.moveToFirst()) {
+                    do {
+                        if (cursor.getInt(0) == schedulesDataModel.getCurrentDisplayDirection()) {
+                            Log.d("p", "found the direction code, will set string");
+                            directionHeaderString = cursor.getString(2);
+                        }
+                    } while (cursor.moveToNext());
+                }
+
+                cursor.close();
+            } else {
+                Log.d("f", "cursor is null");
+            }
+
+            database.close();
+        }
+
+        @Override
+        protected Boolean doInBackground(SchedulesDataModel... params) {
+            SchedulesDataModel schedulesDataModel = params[0];
+
+            loadDirectionHeaders(schedulesDataModel);
+
+            return false;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean b) {
+            super.onPostExecute(b);
+
+            TextView endRouteNameTextView = (TextView) findViewById(R.id.schedules_itinerary_routedirection_textview);
+            endRouteNameTextView.setText("To " + directionHeaderString);
+        }
     }
 }

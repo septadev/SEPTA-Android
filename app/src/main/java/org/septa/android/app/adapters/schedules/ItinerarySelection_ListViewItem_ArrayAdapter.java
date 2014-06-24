@@ -65,13 +65,15 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
     public void setTripDataForDirection0(ArrayList<StopModel>stopsForDirection0) {
 
         this.stopsForDirection0 = stopsForDirection0;
-        Collections.sort(this.stopsForDirection0, new StopModelNumericComparator());
+//        Collections.sort(this.stopsForDirection0, new StopModelNumericComparator());
+        Collections.sort(this.stopsForDirection0, new NumberAwareStringComparator());
     }
 
     public void setTripDataForDirection1(ArrayList<StopModel>stopsForDirection1) {
 
         this.stopsForDirection1 = stopsForDirection1;
-        Collections.sort(this.stopsForDirection1, new StopModelNumericComparator());
+//        Collections.sort(this.stopsForDirection1, new StopModelNumericComparator());
+        Collections.sort(this.stopsForDirection1, new NumberAwareStringComparator());
     }
 
     public Object[] getItems() {
@@ -128,7 +130,7 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
             mainLayout.setBackgroundColor(Color.parseColor("#FFCACACB"));
         }
 
-        Log.d(TAG, "stop model is id="+((StopModel) getItem(position)).getStopId()+"   name="+((StopModel) getItem(position)).getStopName());
+//        Log.d(TAG, "stop model is id="+((StopModel) getItem(position)).getStopId()+"   name="+((StopModel) getItem(position)).getStopName());
 
         return rowView;
     }
@@ -263,5 +265,51 @@ class StopModelNumericComparator implements Comparator<StopModel> {
         if (o1RouteIdAsInt < o2RouteIdAsInt) return -1;
 
         return 1;
+    }
+}
+
+class NumberAwareStringComparator implements Comparator<StopModel>{
+    public int compare(StopModel stopModel1, StopModel stopModel2) {
+        String s1 = stopModel1.getStopName();
+        String s2 = stopModel2.getStopName();
+
+        String[] s1Parts = s1.split("(?<=\\D)(?=\\d)|(?<=\\d)(?=\\D)");
+        String[] s2Parts = s2.split("(?<=\\D)(?=\\d)|(?<=\\d)(?=\\D)");
+
+        int i = 0;
+        while(i < s1Parts.length && i < s2Parts.length){
+
+            //if parts are the same
+            if(s1Parts[i].compareTo(s2Parts[i]) == 0){
+                ++i;
+            }else{
+                try{
+
+                    int intS1 = Integer.parseInt(s1Parts[i]);
+                    int intS2 = Integer.parseInt(s2Parts[i]);
+
+                    //if the parse works
+
+                    int diff = intS1 - intS2;
+                    if(diff == 0){
+                        ++i;
+                    }else{
+                        return diff;
+                    }
+                }catch(Exception ex){
+                    return s1.compareTo(s2);
+                }
+            }//end else
+        }//end while
+
+        //Handle if one string is a prefix of the other.
+        // nothing comes before something.
+        if(s1.length() < s2.length()){
+            return -1;
+        }else if(s1.length() > s2.length()){
+            return 1;
+        }else{
+            return 0;
+        }
     }
 }

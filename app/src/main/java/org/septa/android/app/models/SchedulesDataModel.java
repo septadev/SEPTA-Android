@@ -26,7 +26,7 @@ public class SchedulesDataModel {
 
     private SchedulesRouteModel route;
 
-    private int currentDisplayDirection = -1;
+    private int currentDisplayDirection = 0;
 
     public SchedulesDataModel(Context context) {
 
@@ -34,6 +34,10 @@ public class SchedulesDataModel {
     }
 
     public void loadStartBasedTrips(RouteTypes routeType) {
+        if (routeType == RouteTypes.TROLLEY) {
+            routeType = RouteTypes.BUS;
+        }
+
         String queryString = "SELECT route_id, block_id, stop_sequence, arrival_time, direction_id, service_id, stop_times_"+routeType+".trip_id trip_id FROM stop_times_"+routeType+" JOIN trips_"+routeType+" ON trips_"+routeType+".trip_id=stop_times_"+routeType+".trip_id WHERE trips_"+routeType+".trip_id IN (SELECT trip_id FROM trips_"+routeType+" WHERE route_id=\""+ getRoute().getRouteId()+"\" ) AND route_id=\""+ getRoute().getRouteId()+"\" AND stop_id="+ getRoute().getRouteStartStopId()+" ORDER BY arrival_time";
 
         SEPTADatabase septaDatabase = new SEPTADatabase(context);
@@ -76,7 +80,8 @@ public class SchedulesDataModel {
         database.close();
     }
 
-    public void loadAndProcessEndStopsWithStartStops(RouteTypes routeType) {
+    public boolean loadAndProcessEndStopsWithStartStops(RouteTypes routeType) {
+        Log.d(TAG, "load and process end stops with start stops starting...");
         String queryString = null;
         boolean flippedOnce = false;
         boolean firstTime = true;
@@ -92,9 +97,13 @@ public class SchedulesDataModel {
                 queryString = "SELECT route_id, block_id, stop_sequence, arrival_time, direction_id, service_id, st.trip_id trip_id FROM stop_times_"+routeType.name()+" as st JOIN trips_"+routeType.name()+" as t ON t.trip_id=st.trip_id WHERE t.trip_id IN (SELECT trip_id FROM trips_"+routeType.name()+" WHERE route_id=\""+route.getRouteId()+"\" ) AND route_id=\""+route.getRouteId()+"\" AND stop_id="+route.getRouteEndStopId()+" ORDER BY arrival_time";
                 break;
             }
+            case TROLLEY:
             case BUS: {
-                queryString = "SELECT route_id, block_id, stop_sequence, arrival_time, direction_id, service_id, stop_times_bus.trip_id trip_id FROM stop_times_bus JOIN trips_bus ON trips_bus.trip_id=stop_times_bus.trip_id WHERE trips_bus.trip_id IN (SELECT trip_id FROM trips_bus WHERE route_id=\""+route.getRouteId()+"\" AND direction_id="+currentDisplayDirection+" ) AND route_id=\""+route.getRouteId()+"\" AND stop_id="+route.getRouteEndStopId()+" ORDER BY arrival_time";
+                queryString = "SELECT route_id, block_id, stop_sequence, arrival_time, direction_id, service_id, stop_times_bus.trip_id trip_id FROM stop_times_bus JOIN trips_bus ON trips_bus.trip_id=stop_times_bus.trip_id WHERE trips_bus.trip_id IN (SELECT trip_id FROM trips_bus WHERE route_id=\""+route.getRouteId()+"\" AND direction_id="+ getCurrentDisplayDirection() +" ) AND route_id=\""+route.getRouteId()+"\" AND stop_id="+route.getRouteEndStopId()+" ORDER BY arrival_time";
                 break;
+            }
+            default: {
+                Log.d(TAG, "fell through the setting of the query string");
             }
         }
 
@@ -109,6 +118,7 @@ public class SchedulesDataModel {
 
         if (cursor != null) {
             if (cursor.moveToFirst()) {
+                Log.d(TAG, "move to first record in the cursor");
                 do {
                     String tripId = cursor.getString(6);
 
@@ -120,6 +130,7 @@ public class SchedulesDataModel {
                         int endSequence = cursor.getInt(2);
 
                         if (startSequence < endSequence) {
+                            Log.d(TAG, "start sequence is less than end sequence... no more manipulation needed");
                             trip.setEndSeq(endSequence);
                             trip.setEndTime(cursor.getInt(3));
 
@@ -131,8 +142,9 @@ public class SchedulesDataModel {
                                 firstTime = false;
                             }
 
-                            currentDisplayDirection = trip.getDirectionId().intValue();
+                            setCurrentDisplayDirection(trip.getDirectionId().intValue());
                         } else {
+                            Log.d(TAG, "start sequence is more than end sequence... more manipulation is needed, maybe a flip");
                             trip.setEndSeq(trip.getStartSeq());
                             trip.setEndTime(trip.getStartTime());
 
@@ -146,13 +158,17 @@ public class SchedulesDataModel {
                                     // TODO: flipStops here
                                 }
                             } else {
+                                Log.d(TAG, "not trolley or bus");
                                 if (routeType == RouteTypes.RAIL) {
+                                    Log.d(TAG, "rail, do nothing");
                                     // do nothing
                                 } else {
+                                    Log.d(TAG, "not rail");
+                                    Log.d(TAG, "direction id here is "+trip.getDirectionId());
                                     if (trip.getDirectionId().intValue() == 0) {
-                                        currentDisplayDirection = 1;
+                                        setCurrentDisplayDirection(1);
                                     } else {
-                                        currentDisplayDirection = 0;
+                                        setCurrentDisplayDirection(0);
                                     }
                                 }
                             }
@@ -173,6 +189,8 @@ public class SchedulesDataModel {
         }
 
         database.close();
+
+        return flippedOnce;
     }
 
     public ArrayList<TripObject> createFilteredTripsList(int tab) {
@@ -204,14 +222,14 @@ public class SchedulesDataModel {
         for (TripObject trip : masterTripsList) {
             if (trip.getServiceId().intValue() == serviceId &&
                (trip.getStartTime().intValue() > nowTime) &&
-               (trip.getDirectionId().intValue() == currentDisplayDirection)) {
+               (trip.getDirectionId().intValue() == getCurrentDisplayDirection())) {
 
                 this.filteredTripsList.add(trip);
             } else {
                 if (serviceId == 4) {  // special case for Friday, where both weekday and Friday applies.
                     if (trip.getServiceId().intValue() == 1 &&
                        (trip.getStartTime().intValue() > nowTime) &&
-                       (trip.getDirectionId().intValue() == currentDisplayDirection)) {
+                       (trip.getDirectionId().intValue() == getCurrentDisplayDirection())) {
                         this.filteredTripsList.add(trip);
                     }
                 }
@@ -233,6 +251,14 @@ public class SchedulesDataModel {
 
     public void setRoute(SchedulesRouteModel route) {
         this.route = route;
+    }
+
+    public int getCurrentDisplayDirection() {
+        return currentDisplayDirection;
+    }
+
+    public void setCurrentDisplayDirection(int currentDisplayDirection) {
+        this.currentDisplayDirection = currentDisplayDirection;
     }
 }
 

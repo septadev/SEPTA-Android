@@ -9,19 +9,16 @@ package org.septa.android.app.activities;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.widget.GridLayout;
 import android.util.Log;
-import android.util.TimingLogger;
 import android.view.Gravity;
 import android.widget.ImageView;
 
 import com.crashlytics.android.Crashlytics;
 import org.septa.android.app.R;
-import org.septa.android.app.models.ObjectFactory;
 import org.septa.android.app.tasks.LoadDatabaseTask;
 import org.septa.android.app.tasks.LoadKMLFileTask;
 
@@ -85,8 +82,19 @@ public class SplashScreenActivity extends BaseAnalyticsActivity {
             }
         }, getResources().getInteger(R.integer.splashscreen_delaytime_seconds) * 1000);
 
+
         File databaseFileName = new File(this.getApplicationInfo().dataDir+"/databases/"+DATABASE_NAME);
+        boolean forceLoadDatabase = getResources().getBoolean(R.bool.force_load_database);
+
+        boolean deleteSuccessful = false;
+        if (forceLoadDatabase) {
+            Log.d(TAG, "force load database is true, delete the existing database");
+            deleteSuccessful = databaseFileName.delete();
+        }
+        Log.d(TAG, "delete successful: "+deleteSuccessful);
+
         if (!databaseFileName.exists()) {
+            Log.d(TAG, "the database file does not exists, unzip a new one");
             new LoadDatabaseTask(this, progressDialog).execute(this, null, null);
         }
 

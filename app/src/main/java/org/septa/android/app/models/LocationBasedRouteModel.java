@@ -29,7 +29,7 @@ public class LocationBasedRouteModel {
     }
 
     public enum DirectionCode {
-        N, S, E, W, X
+        N, S, E, W, X, Loop, LOOP
     }
 
     public String getRouteShortName() {

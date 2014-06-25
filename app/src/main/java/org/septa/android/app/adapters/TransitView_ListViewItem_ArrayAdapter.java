@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import org.septa.android.app.R;
 import org.septa.android.app.models.RouteModel;
+import org.septa.android.app.utilities.PixelHelper;
 
 import java.util.List;
 
@@ -53,9 +54,19 @@ public class TransitView_ListViewItem_ArrayAdapter extends ArrayAdapter<RouteMod
         transitViewBusRouteRouteIdTextView.setText(busRouteModel.getRouteId());
         transitViewBusRouteStatusImageView.setImageResource(R.drawable.transitview_listitem_in_service);
 
+        switch (busRouteModel.getRouteShortName().length()) {
+            case 3: {
+                transitViewBusRouteRouteIdTextView.setTextSize(PixelHelper.pixelsToDensityIndependentPixels(getContext(), 10));
+                break;
+            }
+            case 4: {
+                transitViewBusRouteRouteIdTextView.setTextSize(PixelHelper.pixelsToDensityIndependentPixels(getContext(), 8));
+                break;
+            }
+        }
+
         if (busRouteModel.getRouteShortName().equals("NHSL")) {
             transitViewBusRouteRouteTypeImageView.setImageResource(R.drawable.transitview_listitem_nshl);
-            transitViewBusRouteRouteIdTextView.setTextSize(18.0f);
 
             return rowView;
         } else {
@@ -70,10 +81,10 @@ public class TransitView_ListViewItem_ArrayAdapter extends ArrayAdapter<RouteMod
 
                    if (busRouteModel.getRouteShortName().equals("LUCYGO")) {
                        transitViewBusRouteRouteIdTextView.setText("GOLD");
-                       transitViewBusRouteRouteIdTextView.setTextSize(16.0f);
+                       transitViewBusRouteRouteIdTextView.setTextSize(PixelHelper.pixelsToDensityIndependentPixels(getContext(), 7));
                    } else {
                        transitViewBusRouteRouteIdTextView.setText("GREEN");
-                       transitViewBusRouteRouteIdTextView.setTextSize(14.0f);
+                       transitViewBusRouteRouteIdTextView.setTextSize(PixelHelper.pixelsToDensityIndependentPixels(getContext(), 6));
                    }
 
                    return rowView;

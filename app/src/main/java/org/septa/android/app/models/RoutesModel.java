@@ -11,7 +11,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
-import android.util.TimingLogger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -79,12 +78,8 @@ public class RoutesModel {
     public void loadRoutes(Context context) {
         if (loaded) return;
 
-        TimingLogger timings = new TimingLogger("RoutesModel", "loadRoutes");
-
         SEPTADatabase septaDatabase = new SEPTADatabase(context);
         SQLiteDatabase database = septaDatabase.getReadableDatabase();
-
-        timings.addSplit("  opened the database...");
 
         // given the route type included in the call, alter the select to
         String queryString = "SELECT s.route_id, r.route_short_name, r.route_long_name, r.route_type, s.service_id, MIN(min) as min, MAX(max) as max FROM serviceHours s JOIN routes_XXXXX r ON r.route_short_name = s.route_short_name GROUP BY s.route_id, service_id ORDER BY s.route_id";
@@ -107,15 +102,15 @@ public class RoutesModel {
                         busRoute.setRouteLongName(cursor.getString(2));
                         busRoute.setRouteId(cursor.getString(0));
                         busRoute.setRouteType(Integer.valueOf(cursor.getString(3)));
+                        busRoute.setInService(true);   // TODO: replace this with the actual value or method to find it inline
                     }
 
                     MinMaxHoursModel minMaxHours = new MinMaxHoursModel(Integer.valueOf(cursor.getString(5)), Integer.valueOf(cursor.getString(6)));
 
-                    busRoute.addMinMaxHoursToRoute(cursor.getString(3), minMaxHours);
+                    busRoute.addMinMaxHoursToRoute(cursor.getString(4), minMaxHours);
 
                     setRouteByRouteId(cursor.getString(0), busRoute);
                     setRouteByRouteShortName(cursor.getString(1), busRoute);
-                    timings.addSplit("      processed a record...");
                 } while (cursor.moveToNext());
             }
 
@@ -126,12 +121,7 @@ public class RoutesModel {
         }
 
         database.close();
-
-        timings.dumpToLog();
     }
 
-    public void reset() {
 
-        this.loaded = false;
-    }
 }

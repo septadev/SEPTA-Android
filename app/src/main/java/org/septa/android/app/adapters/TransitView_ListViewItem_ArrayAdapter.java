@@ -43,6 +43,8 @@ public class TransitView_ListViewItem_ArrayAdapter extends ArrayAdapter<RouteMod
 
         RouteModel busRouteModel = values.get(position);
 
+        Log.d(TAG, "busroutemodel:"+busRouteModel.print());
+
         rowView = inflater.inflate(R.layout.transitview_listview_item, parent, false);
 
         ImageView transitViewBusRouteRouteTypeImageView = (ImageView) rowView.findViewById(R.id.transitview_left_bus_route_icon_ImageView);
@@ -50,9 +52,17 @@ public class TransitView_ListViewItem_ArrayAdapter extends ArrayAdapter<RouteMod
         TextView transitViewBusRouteStatusTextView = (TextView) rowView.findViewById(R.id.transitview_right_bus_route_status_TextView);
         ImageView transitViewBusRouteStatusImageView = (ImageView) rowView.findViewById(R.id.transitview_right_bus_route_status_ImageView);
 
+        if (values.get(position).isInService(context)) {
+            Log.d(TAG, "route is in service, label as such");
+            transitViewBusRouteStatusTextView.setText(context.getString(R.string.in_service));
+            transitViewBusRouteStatusImageView.setImageResource(R.drawable.transitview_listitem_in_service);
+        } else {
+            Log.d(TAG, "route is not in service, label as such");
+            transitViewBusRouteStatusTextView.setText(context.getString(R.string.not_in_service));
+            transitViewBusRouteStatusImageView.setImageResource(R.drawable.transitview_listitem_out_of_service);
+        }
 
         transitViewBusRouteRouteIdTextView.setText(busRouteModel.getRouteId());
-        transitViewBusRouteStatusImageView.setImageResource(R.drawable.transitview_listitem_in_service);
 
         switch (busRouteModel.getRouteShortName().length()) {
             case 3: {
@@ -123,5 +133,21 @@ public class TransitView_ListViewItem_ArrayAdapter extends ArrayAdapter<RouteMod
         }
 
         return rowView;
+    }
+
+
+    @Override
+    public boolean areAllItemsEnabled() {
+
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled(int position) {
+        if (values.get(position).isInService(context)) {
+            return true;
+        }
+
+        return false;
     }
 }

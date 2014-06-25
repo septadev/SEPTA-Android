@@ -16,26 +16,25 @@
     <RelativeLayout
         android:id="@+id/transitview_left_bus_route_id_with_icon"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_alignParentLeft="true"
+        android:layout_gravity="center_vertical"
+        android:gravity="center_vertical"
         android:paddingTop="5dp"
         android:paddingBottom="5dp">
         <ImageView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:id="@+id/transitview_left_bus_route_icon_ImageView" />
         <TextView
             android:id="@+id/transitview_left_bus_route_route_id_TextView"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignLeft="@id/transitview_left_bus_route_icon_ImageView"
-            android:layout_alignTop="@id/transitview_left_bus_route_icon_ImageView"
+            android:layout_height="match_parent"
             android:layout_alignRight="@id/transitview_left_bus_route_icon_ImageView"
-            android:layout_alignBottom="@id/transitview_left_bus_route_icon_ImageView"
             android:gravity="right|center_vertical"
             android:textSize="24sp"
             android:textStyle="bold"
-            android:layout_marginRight="10dp"
+            android:layout_marginRight="5dp"
             android:textColor="@android:color/white" />
     </RelativeLayout>
 

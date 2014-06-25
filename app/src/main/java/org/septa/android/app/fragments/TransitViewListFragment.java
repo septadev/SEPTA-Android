@@ -44,16 +44,13 @@ public class TransitViewListFragment extends ListFragment {
         getListView().setPadding(0, 5, 0, 5);
         getListView().setDividerHeight(0);
 
-        // TODO: fix this, this is not the right way to perform a database query.  Make it async.
-//        RoutesModel busRoutesModel = new RoutesModel(RoutesModel.RouteType.BUS_ROUTE);
-//        busRoutesModel.loadRoutes(getActivity());
-
         RoutesModel busRoutesModel = ObjectFactory.getInstance().getBusRoutes();
 
         busRoutesModel.loadRoutes(getActivity());
 
         busRouteModelList = busRoutesModel.getRouteModels();
         Collections.sort(busRouteModelList);
+
         _adapter = new TransitView_ListViewItem_ArrayAdapter(getActivity(), busRouteModelList);
 
         setListAdapter(_adapter);

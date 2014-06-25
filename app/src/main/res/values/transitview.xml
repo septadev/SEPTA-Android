@@ -14,6 +14,8 @@
     <string name="westbound">WestBound</string>
     <string name="dir">Dir</string>
     <string name="dest">Dest</string>
+    <string name="in_service">In Service</string>
+    <string name="not_in_service">Not In Service</string>
 
     <integer name="transitview_map_accuracy_limit_in_meters">150</integer>
 

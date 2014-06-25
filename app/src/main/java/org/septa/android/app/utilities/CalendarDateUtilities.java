@@ -19,26 +19,28 @@ public class CalendarDateUtilities {
         return day;
     }
 
-    public static boolean isTodaySunday() {
-        int day = getDayOfTheWeek();
+    public static int getDayOfTheWeekForYesterday() {
+        int dayOfTheWeek = getDayOfTheWeek();
 
-        switch (day) {
-            case Calendar.SUNDAY: {
-                return true;
-            }
-            default: {
-                return false;
-            }
-        }
+        dayOfTheWeek--;
+
+        // handle the condition if now is Sunday and we went to 0, then we wrap to Saturday, which is 7
+        if (dayOfTheWeek<1) dayOfTheWeek=7;
+
+        return dayOfTheWeek;
     }
 
     // this is a short cut method to return the service id.
     // technically this data should be looked up in the SQLlite database.
     // but for now
     public static int getServiceIdForNow(Context context) {
-        int day = getDayOfTheWeek();
 
-         return getServiceIdForDay(day);
+         return getServiceIdForDay(getDayOfTheWeek());
+    }
+
+    public static int getServiceIdForYesterday(Context context) {
+
+        return getServiceIdForDay(getDayOfTheWeekForYesterday());
     }
 
     public static int getServiceIdForDay(int day) {

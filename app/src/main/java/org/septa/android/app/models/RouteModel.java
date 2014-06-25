@@ -7,6 +7,11 @@
 
 package org.septa.android.app.models;
 
+import android.content.Context;
+import android.util.Log;
+
+import org.septa.android.app.utilities.CalendarDateUtilities;
+
 import java.util.HashMap;
 
 public class RouteModel implements Comparable<RouteModel> {
@@ -23,6 +28,8 @@ public class RouteModel implements Comparable<RouteModel> {
 
     private String startStopName;
     private String endStopName;
+
+    private boolean inService;
 
     private HashMap<String, MinMaxHoursModel> hours;
 
@@ -165,5 +172,46 @@ public class RouteModel implements Comparable<RouteModel> {
 
     public void setEndStopName(String endStopName) {
         this.endStopName = endStopName;
+    }
+
+    public boolean isInService(Context context) {
+        int serviceIdForToday = CalendarDateUtilities.getServiceIdForNow(context);
+        MinMaxHoursModel minMaxHoursModelForToday = getMinMaxHoursForServiceId(String.valueOf(serviceIdForToday));
+
+        if (minMaxHoursModelForToday == null) {
+            Log.d(TAG, "the minMaxHoursModelForToday is null, we must not have this for this service Id of: "+serviceIdForToday);
+            return false;
+        }
+
+        int nowTime = CalendarDateUtilities.getNowTimeFormatted();
+
+        if (minMaxHoursModelForToday.inMinMaxRange(nowTime)) {
+            Log.d(TAG, "we are in the range, thus in service");
+            return true;
+        } else {
+            // we must check if we are actually in the range of yesterday's service
+            int serviceIdForYesterday = CalendarDateUtilities.getServiceIdForYesterday(context);
+            MinMaxHoursModel minMaxHoursModelForYesterday = getMinMaxHoursForServiceId(String.valueOf(serviceIdForYesterday));
+
+            if (minMaxHoursModelForYesterday == null) {
+                Log.d(TAG, "the minMaxHoursModelForYesterday is null, we must not have this for this service Id of: "+serviceIdForYesterday);
+                return false;
+            }
+
+            // since we are winding the day back we need to add 24 hours to our nowTime
+            nowTime+=2400;
+
+            if (minMaxHoursModelForToday.inMinMaxRange(nowTime)) {
+                Log.d(TAG, "we are in the range for yesterday's service, thus in service");
+                return true;
+            } else {
+                Log.d(TAG, "even after winding the clock back 1 day, we are still not in service, return false");
+                return false;
+            }
+        }
+    }
+
+    public void setInService(boolean inService) {
+        this.inService = inService;
     }
 }

@@ -144,10 +144,7 @@ public class TransitView_ListViewItem_ArrayAdapter extends ArrayAdapter<RouteMod
 
     @Override
     public boolean isEnabled(int position) {
-        if (values.get(position).isInService(context)) {
-            return true;
-        }
-
-        return false;
+        // even though some routes might be out of service, still allow a click and show the route sans the vehicle
+        return true;
     }
 }

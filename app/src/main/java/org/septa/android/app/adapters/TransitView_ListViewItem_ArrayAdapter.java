@@ -9,6 +9,7 @@ package org.septa.android.app.adapters;
 
 import android.content.Context;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -66,11 +67,11 @@ public class TransitView_ListViewItem_ArrayAdapter extends ArrayAdapter<RouteMod
 
         switch (busRouteModel.getRouteShortName().length()) {
             case 3: {
-                transitViewBusRouteRouteIdTextView.setTextSize(PixelHelper.pixelsToDensityIndependentPixels(getContext(), 10));
+                transitViewBusRouteRouteIdTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
                 break;
             }
             case 4: {
-                transitViewBusRouteRouteIdTextView.setTextSize(PixelHelper.pixelsToDensityIndependentPixels(getContext(), 8));
+                transitViewBusRouteRouteIdTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
                 break;
             }
         }
@@ -91,10 +92,10 @@ public class TransitView_ListViewItem_ArrayAdapter extends ArrayAdapter<RouteMod
 
                    if (busRouteModel.getRouteShortName().equals("LUCYGO")) {
                        transitViewBusRouteRouteIdTextView.setText("GOLD");
-                       transitViewBusRouteRouteIdTextView.setTextSize(PixelHelper.pixelsToDensityIndependentPixels(getContext(), 7));
+                       transitViewBusRouteRouteIdTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
                    } else {
                        transitViewBusRouteRouteIdTextView.setText("GREEN");
-                       transitViewBusRouteRouteIdTextView.setTextSize(PixelHelper.pixelsToDensityIndependentPixels(getContext(), 6));
+                       transitViewBusRouteRouteIdTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
                    }
 
                    return rowView;

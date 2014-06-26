@@ -148,6 +148,7 @@ public class FindNearestLocation_ListViewItem_ArrayAdapter extends ArrayAdapter<
                     }
                     case 4: {
                         routeText = route.getRouteShortName() + "E";
+                        break;
                     }
                     case 8: {
                         routeText = route.getRouteShortName() + "W";

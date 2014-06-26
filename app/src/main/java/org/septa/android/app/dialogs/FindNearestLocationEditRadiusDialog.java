@@ -9,6 +9,7 @@ package org.septa.android.app.dialogs;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
@@ -19,6 +20,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import org.septa.android.app.R;
@@ -56,6 +58,11 @@ public class FindNearestLocationEditRadiusDialog extends Dialog {
         setTenthsValue(mapSearchRadiusString.substring(2,3));
         setHundredthsValue(mapSearchRadiusString.substring(3,4));
         setThousandthsValue(mapSearchRadiusString.substring(4,5));
+
+//        EditText radiusEditTextViewOnes = (EditText) findViewById(R.id.radiusedit_textview_ones);
+//        radiusEditTextViewOnes.requestFocus();
+//        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+//        imm.showSoftInput(radiusEditTextViewOnes, InputMethodManager.SHOW_IMPLICIT);
     }
 
     public void setOnesValue(String onesValue) {
@@ -141,6 +148,7 @@ public class FindNearestLocationEditRadiusDialog extends Dialog {
         mainLayout.setBackgroundDrawable(gd);
 
         populateEditTextFields(mapSearchRadius);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
     }
 
     @Override

@@ -108,7 +108,7 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
         double defaultLongitude = Double.parseDouble(getResources().getString(R.string.generalmap_default_location_longitude));
         float defaultZoomLevel = Float.parseFloat(getResources().getString(R.string.generalmap_default_zoomlevel));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(defaultLatitute, defaultLongitude), defaultZoomLevel));
-        loadMapAndListView(defaultLatitute, defaultLongitude, mapSearchRadius);
+//        loadMapAndListView(defaultLatitute, defaultLongitude, mapSearchRadius);
 
         mMap.setMyLocationEnabled(true);
 

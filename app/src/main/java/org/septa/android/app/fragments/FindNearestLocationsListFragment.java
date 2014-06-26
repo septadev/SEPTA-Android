@@ -114,43 +114,6 @@ public class FindNearestLocationsListFragment extends ListFragment {
 //        lv.setEmptyView(View.inflate(getActivity(), R.layout.row_empty_view, (ViewGroup)getListView().getParent()));
     }
 
-    /**
-     * Called when the fragment is visible to the user and actively running. Resumes the WebView.
-     */
-    @Override
-    public void onPause() {
-
-        super.onPause();
-    }
-
-    /**
-     * Called when the fragment is no longer resumed. Pauses the WebView.
-     */
-    @Override
-    public void onResume() {
-
-        super.onResume();
-    }
-
-    /**
-     * Called when the WebView has been detached from the fragment.
-     * The WebView is no longer available after this time.
-     */
-    @Override
-    public void onDestroyView() {
-
-        super.onDestroyView();
-    }
-
-    /**
-     * Called when the fragment is no longer in use. Destroys the internal state of the WebView.
-     */
-    @Override
-    public void onDestroy() {
-
-        super.onDestroy();
-    }
-
     private class RouteStopIdLoader extends AsyncTask<List<LocationModel>, Integer, Boolean> {
         ListView listView = null;
         RoutesModel routesModel = null;

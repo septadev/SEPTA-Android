@@ -67,7 +67,10 @@ public class LocationModel {
     public void addRoute(String routeShortName, LocationBasedRouteModel.DirectionCode direction, int routeType) {
         LocationBasedRouteModel routeModel = routes.containsKey(routeShortName)?routes.get(routeShortName):new LocationBasedRouteModel();
 
-        routeModel.setDirectionBinaryPower(routeModel.getDirectionBinaryPower()+(int)Math.pow(2, direction.ordinal()));
+        // we only want to use the direction of N, S, E, W and not the higher ordinal ones
+        if (direction.ordinal() < 5) {
+            routeModel.setDirectionBinaryPower(routeModel.getDirectionBinaryPower() + (int) Math.pow(2, direction.ordinal()));
+        }
         routeModel.setRouteShortName(routeShortName);
         routeModel.setRouteType(routeType);
 

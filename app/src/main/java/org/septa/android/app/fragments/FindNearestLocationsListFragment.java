@@ -7,6 +7,7 @@
 
 package org.septa.android.app.fragments;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
@@ -19,7 +20,11 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.google.gson.Gson;
+
 import org.septa.android.app.R;
+import org.septa.android.app.activities.FindNearestLocationRouteDetailsActionBarActivity;
+import org.septa.android.app.activities.schedules.SchedulesItineraryActionBarActivity;
 import org.septa.android.app.adapters.FindNearestLocation_ListViewItem_ArrayAdapter;
 import org.septa.android.app.databases.SEPTADatabase;
 import org.septa.android.app.models.LocationBasedRouteModel;
@@ -105,6 +110,20 @@ public class FindNearestLocationsListFragment extends ListFragment {
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         Log.d(TAG, "detected a listfragment item being clicked");
+
+        LocationModel locationModel = locationList.get(position);
+        Log.d(TAG, "I clicked on this locationName "+locationModel.getLocationName()+" with "+locationModel.getRoutes().size());
+
+        //GSon the locationModel to pass to the activity
+        Intent findNearestLocationRouteDetailsIntent = null;
+
+        findNearestLocationRouteDetailsIntent = new Intent(getActivity(), FindNearestLocationRouteDetailsActionBarActivity.class);
+
+        Gson gson = new Gson();
+        String locationRouteModelJSONString = gson.toJson(locationModel);
+        findNearestLocationRouteDetailsIntent.putExtra(getString(R.string.findNearestLocation_locationRouteModel), locationRouteModelJSONString);
+
+        startActivity(findNearestLocationRouteDetailsIntent);
     }
 
     @Override

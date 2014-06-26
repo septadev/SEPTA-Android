@@ -136,30 +136,7 @@ public class FindNearestLocation_ListViewItem_ArrayAdapter extends ArrayAdapter<
                     }
                 }
 
-                String routeText = "";
-                switch (route.getDirectionBinaryPower()) {
-                    case 1: {
-                        routeText = route.getRouteShortName() + "N";
-                        break;
-                    }
-                    case 2: {
-                        routeText = route.getRouteShortName() + "S";
-                        break;
-                    }
-                    case 4: {
-                        routeText = route.getRouteShortName() + "E";
-                        break;
-                    }
-                    case 8: {
-                        routeText = route.getRouteShortName() + "W";
-                        break;
-                    }
-                    default: {
-                        routeText = route.getRouteShortName();
-                        break;
-                    }
-                }
-                routeTextView.setText(routeText);
+                routeTextView.setText(route.getRouteShortNameWithDirection());
                 routeTextView.setTextColor(Color.WHITE);
                 routeTextView.setTextSize(12.0f);
 
@@ -175,12 +152,12 @@ public class FindNearestLocation_ListViewItem_ArrayAdapter extends ArrayAdapter<
     @Override
     public boolean areAllItemsEnabled() {
 
-        return false;
+        return true;
     }
 
     @Override
     public boolean isEnabled(int position) {
 
-        return false;
+        return true;
     }
 }

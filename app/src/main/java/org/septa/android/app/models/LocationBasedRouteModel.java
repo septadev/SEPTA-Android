@@ -39,4 +39,33 @@ public class LocationBasedRouteModel {
     public void setRouteShortName(String routeShortName) {
         this.routeShortName = routeShortName;
     }
+
+    public String getRouteShortNameWithDirection() {
+        String routeText;
+
+        switch (getDirectionBinaryPower()) {
+            case 1: {
+                routeText = getRouteShortName() + "N";
+                break;
+            }
+            case 2: {
+                routeText = getRouteShortName() + "S";
+                break;
+            }
+            case 4: {
+                routeText = getRouteShortName() + "E";
+                break;
+            }
+            case 8: {
+                routeText = getRouteShortName() + "W";
+                break;
+            }
+            default: {
+                routeText = getRouteShortName();
+                break;
+            }
+        }
+
+        return routeText;
+    }
 }

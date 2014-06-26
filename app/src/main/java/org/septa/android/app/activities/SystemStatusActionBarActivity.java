@@ -570,4 +570,3 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
         ObjectFactory.getInstance().getSharedPreferencesManager(this).setSystemStatusFilterEnabled(inFilterMode);
     }
 }
-

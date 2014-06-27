@@ -7,8 +7,6 @@
 
 package org.septa.android.app.models;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +23,10 @@ public class LocationModel {
     private String location_type;
     private HashMap<String, LocationBasedRouteModel> routes;
     private HashMap<String, Number> directionBinary;
+
+    private boolean alert = false;
+    private boolean detour = false;
+    private boolean advisory = false;
 
     public LocationModel() {
 
@@ -65,7 +67,7 @@ public class LocationModel {
     }
 
     public void addRoute(String routeShortName, LocationBasedRouteModel.DirectionCode direction, int routeType) {
-        LocationBasedRouteModel routeModel = routes.containsKey(routeShortName)?routes.get(routeShortName):new LocationBasedRouteModel();
+        LocationBasedRouteModel routeModel = routes.containsKey(routeShortName) ? routes.get(routeShortName) : new LocationBasedRouteModel();
 
         // we only want to use the direction of N, S, E, W and not the higher ordinal ones
         if (direction.ordinal() < 5) {
@@ -79,14 +81,14 @@ public class LocationModel {
 
     public String print() {
         String output = "";
-        output += "distance:"+distance;
-        output += " locationId:"+location_id;
-        output += " locationLatitude:"+location_lat;
-        output += " locationLongitude:"+location_lon;
-        output += " locationName:"+location_name;
-        output += " locationType:"+location_type;
+        output += "distance:" + distance;
+        output += " locationId:" + location_id;
+        output += " locationLatitude:" + location_lat;
+        output += " locationLongitude:" + location_lon;
+        output += " locationName:" + location_name;
+        output += " locationType:" + location_type;
 
-        if (routes.size()>0) {
+        if (routes.size() > 0) {
             output += " routes:";
             for (LocationBasedRouteModel route : routes.values()) {
                 output += route.getRouteShortName() + ",";
@@ -94,5 +96,29 @@ public class LocationModel {
         }
 
         return output;
+    }
+
+    public boolean hasAlert() {
+        return alert;
+    }
+
+    public void setAlert(boolean alert) {
+        this.alert = alert;
+    }
+
+    public boolean hasDetour() {
+        return detour;
+    }
+
+    public void setDetour(boolean detour) {
+        this.detour = detour;
+    }
+
+    public boolean hasAdvisory() {
+        return advisory;
+    }
+
+    public void setAdvisory(boolean advisory) {
+        this.advisory = advisory;
     }
 }

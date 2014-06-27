@@ -7,14 +7,8 @@
 
 package org.septa.android.app.models.servicemodels;
 
-import android.util.Log;
-
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.annotations.SerializedName;
-
-import org.septa.android.app.R;
-import org.septa.android.app.activities.TransitViewMapAndRouteListActionBarActivity;
-import org.septa.android.app.utilities.Core;
 
 public class TransitViewVehicleModel {
     public static final String TAG = TransitViewVehicleModel.class.getName();

@@ -152,12 +152,14 @@ public class FindNearestLocation_ListViewItem_ArrayAdapter extends ArrayAdapter<
     @Override
     public boolean areAllItemsEnabled() {
 
-        return true;
+        // while work is in progress for the find nearest location rotue details, don't allow a tap on the row
+        return false;
     }
 
     @Override
     public boolean isEnabled(int position) {
 
-        return true;
+        // while work is in progress for the find nearest location rotue details, don't allow a tap on the row
+        return false;
     }
 }

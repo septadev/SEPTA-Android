@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 
+<!--
+~ findnearestlocation_routedetails_listview_item.xml
+~ Last modified on 06-26-2014 10:07-0500 by brianhmayo
+~
+~ Copyright (c) 2014 SEPTA.  All rights reserved.
+-->
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="horizontal"
               android:layout_width="match_parent"

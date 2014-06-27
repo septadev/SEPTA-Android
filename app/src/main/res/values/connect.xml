@@ -46,7 +46,7 @@
     </string-array>
 
     <string-array name="connect_fares_listview_item_image_suffixes">
-        <item>transitcashfare</item>   <!-- TODO: fix the spelling of this word -->
+        <item>transitcashfare</item>
         <item>token</item>
         <item>transpass</item>
         <item>trailpass</item>

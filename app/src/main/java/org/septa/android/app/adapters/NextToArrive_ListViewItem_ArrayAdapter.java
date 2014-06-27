@@ -88,12 +88,12 @@ public class NextToArrive_ListViewItem_ArrayAdapter extends BaseAdapter implemen
 
     public boolean isFavorite(int position) {
 
-        return getItems()[position] instanceof NextToArriveFavoriteModel;
+        return getItem(position) instanceof NextToArriveFavoriteModel;
     }
 
     public boolean isRecentlyViewed(int position) {
 
-        return getItems()[position] instanceof NextToArriveRecentlyViewedModel;
+        return getItem(position) instanceof NextToArriveRecentlyViewedModel;
     }
 
     @Override

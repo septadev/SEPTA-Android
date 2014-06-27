@@ -8,6 +8,9 @@
 package org.septa.android.app.activities.schedules;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
@@ -26,8 +29,13 @@ import com.google.gson.Gson;
 import org.septa.android.app.R;
 import org.septa.android.app.activities.BaseAnalyticsActionBarActivity;
 import org.septa.android.app.adapters.schedules.SchedulesRouteSelection_ListViewItem_ArrayAdapter;
+import org.septa.android.app.adapters.schedules.Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter;
 import org.septa.android.app.databases.SEPTADatabase;
+import org.septa.android.app.managers.SchedulesFavoritesAndRecentlyViewedStore;
+import org.septa.android.app.models.ObjectFactory;
 import org.septa.android.app.models.RouteTypes;
+import org.septa.android.app.models.SchedulesFavoriteModel;
+import org.septa.android.app.models.SchedulesRecentlyViewedModel;
 import org.septa.android.app.models.SchedulesRouteModel;
 
 import java.util.ArrayList;
@@ -37,7 +45,7 @@ import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 import static org.septa.android.app.models.RouteTypes.*;
 
 public class SchedulesRouteSelectionActionBarActivity extends BaseAnalyticsActionBarActivity implements
-        AdapterView.OnItemClickListener, StickyListHeadersListView.OnHeaderClickListener,
+        AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, StickyListHeadersListView.OnHeaderClickListener,
         StickyListHeadersListView.OnStickyHeaderOffsetChangedListener,
         StickyListHeadersListView.OnStickyHeaderChangedListener, View.OnTouchListener {
     public static final String TAG = SchedulesRouteSelectionActionBarActivity.class.getName();
@@ -72,6 +80,7 @@ public class SchedulesRouteSelectionActionBarActivity extends BaseAnalyticsActio
 
         stickyList = (StickyListHeadersListView) findViewById(R.id.list);
         stickyList.setOnItemClickListener(this);
+        stickyList.setOnItemLongClickListener(this);
         stickyList.setOnHeaderClickListener(this);
         stickyList.setOnStickyHeaderChangedListener(this);
         stickyList.setOnStickyHeaderOffsetChangedListener(this);
@@ -141,6 +150,95 @@ public class SchedulesRouteSelectionActionBarActivity extends BaseAnalyticsActio
         schedulesItineraryIntent.putExtra(getString(R.string.schedules_itinerary_schedulesRouteModel), schedulesRouteModelJSONString);
 
         startActivity(schedulesItineraryIntent);
+    }
+
+    @Override
+    public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+        if (mAdapter.isFavorite(position) || mAdapter.isRecentlyViewed(position)) {
+            String alertDialogTitle = mAdapter.isFavorite(position) ? "Delete Favorite" : "Delete Recently Viewed";
+            AlertDialog.Builder alert = new AlertDialog.Builder(this);
+            alert.setTitle(alertDialogTitle);
+            alert.setMessage("Are you sure you want to delete?");
+
+            alert.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    final SchedulesRouteModel schedulesRouteModel = (SchedulesRouteModel)mAdapter.getItem(position);
+
+                    SchedulesRouteSelectionActionBarActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (mAdapter.isFavorite(position)) { removeFavorite(schedulesRouteModel); }
+                            if (mAdapter.isRecentlyViewed(position)) { removeRecentlyViewed(schedulesRouteModel); }
+
+                            mAdapter.reloadFavoriteAndRecentlyViewedLists();
+                            mAdapter.notifyDataSetChanged();
+                        }
+                    });
+
+                    //do your work here
+                    dialog.dismiss();
+
+                }
+            });
+            alert.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                    dialog.dismiss();
+                }
+            });
+
+            alert.show();
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean removeFavorite(SchedulesRouteModel schedulesRouteModel) {
+        SchedulesFavoritesAndRecentlyViewedStore store = ObjectFactory.getInstance().getSchedulesFavoritesAndRecentlyViewedStore(SchedulesRouteSelectionActionBarActivity.this);
+
+        SchedulesFavoriteModel schedulesFavoriteModel = new SchedulesFavoriteModel();
+        schedulesFavoriteModel.setRouteId(schedulesRouteModel.getRouteId());
+        schedulesFavoriteModel.setRouteStartStopId(schedulesRouteModel.getRouteStartStopId());
+        schedulesFavoriteModel.setRouteStartName(schedulesRouteModel.getRouteStartName());
+        schedulesFavoriteModel.setRouteEndStopId(schedulesRouteModel.getRouteEndStopId());
+        schedulesFavoriteModel.setRouteEndName(schedulesRouteModel.getRouteEndName());
+
+        // check if the selected route is already a favorite, then we allow the option of removing this
+        // route from the favorites list.
+        if (store.isFavorite(travelType.name(), schedulesFavoriteModel)) {
+            Log.d("tt", "detected this is a favorite, remove ");
+            store.removeFavorite(travelType.name(), schedulesFavoriteModel);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean removeRecentlyViewed(SchedulesRouteModel schedulesRouteModel) {
+        SchedulesFavoritesAndRecentlyViewedStore store = ObjectFactory.getInstance().getSchedulesFavoritesAndRecentlyViewedStore(SchedulesRouteSelectionActionBarActivity.this);
+
+        SchedulesRecentlyViewedModel schedulesRecentlyViewedModel = new SchedulesRecentlyViewedModel();
+        schedulesRecentlyViewedModel.setRouteId(schedulesRouteModel.getRouteId());
+        schedulesRecentlyViewedModel.setRouteStartStopId(schedulesRouteModel.getRouteStartStopId());
+        schedulesRecentlyViewedModel.setRouteStartName(schedulesRouteModel.getRouteStartName());
+        schedulesRecentlyViewedModel.setRouteEndStopId(schedulesRouteModel.getRouteEndStopId());
+        schedulesRecentlyViewedModel.setRouteEndName(schedulesRouteModel.getRouteEndName());
+
+        // check if the selected route is already a favorite, then we allow the option of removing this
+        // route from the favorites list.
+        if (store.isRecentlyViewed(travelType.name(), schedulesRecentlyViewedModel)) {
+            Log.d("tt", "detected this is a recently viewed, remove ");
+            store.removeRecentlyViewed(travelType.name(), schedulesRecentlyViewedModel);
+
+            return true;
+        }
+
+        return false;
     }
 
     @Override

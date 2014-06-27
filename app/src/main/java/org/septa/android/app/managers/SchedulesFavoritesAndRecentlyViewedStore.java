@@ -44,6 +44,20 @@ public class SchedulesFavoritesAndRecentlyViewedStore {
         return false;
     }
 
+    public boolean isRecentlyViewed(String routeType, SchedulesRouteModel schedulesModel) {
+        ArrayList<SchedulesRecentlyViewedModel>recentlyViewedList = recentlyViewedListMap.get(routeType);
+
+        if (recentlyViewedList != null) {
+            for (SchedulesRouteModel storedTrip : recentlyViewedList) {
+                if (storedTrip.compareTo(schedulesModel) == 0) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     public void addFavorite(String routeType, SchedulesFavoriteModel schedulesFavoriteModel) {
         // search the list for a duplicate, if yes just return
         // the code should be safe guarding against this event even occurring

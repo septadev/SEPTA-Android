@@ -8,6 +8,8 @@
 package org.septa.android.app.activities;
 
 import android.annotation.TargetApi;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
@@ -24,13 +26,21 @@ import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 
+import com.google.android.gms.internal.is;
+
 import org.septa.android.app.R;
+import org.septa.android.app.activities.schedules.SchedulesRouteSelectionActionBarActivity;
 import org.septa.android.app.adapters.NextToArrive_ListViewItem_ArrayAdapter;
 import org.septa.android.app.adapters.NextToArrive_MenuDialog_ListViewItem_ArrayAdapter;
 import org.septa.android.app.managers.NextToArriveFavoritesAndRecentlyViewedStore;
+import org.septa.android.app.managers.SchedulesFavoritesAndRecentlyViewedStore;
 import org.septa.android.app.models.NextToArriveFavoriteModel;
 import org.septa.android.app.models.NextToArriveRecentlyViewedModel;
 import org.septa.android.app.models.NextToArriveStoredTripModel;
+import org.septa.android.app.models.ObjectFactory;
+import org.septa.android.app.models.SchedulesFavoriteModel;
+import org.septa.android.app.models.SchedulesRecentlyViewedModel;
+import org.septa.android.app.models.SchedulesRouteModel;
 import org.septa.android.app.models.TripDataModel;
 import org.septa.android.app.models.adapterhelpers.TextSubTextImageModel;
 import org.septa.android.app.models.servicemodels.NextToArriveModel;
@@ -47,8 +57,9 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
         StickyListHeadersListView.OnHeaderClickListener,
         StickyListHeadersListView.OnStickyHeaderOffsetChangedListener,
         StickyListHeadersListView.OnStickyHeaderChangedListener,
-        View.OnTouchListener,
-        View.OnClickListener {
+//        View.OnTouchListener,
+//        View.OnClickListener,
+        AdapterView.OnItemLongClickListener {
     public static final String TAG = NextToArriveActionBarActivity.class.getName();
 
     private NextToArrive_ListViewItem_ArrayAdapter mAdapter;
@@ -101,6 +112,7 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
                 checkTripStartAndDestinationForNextToArriveDataRequest();
             }
         });
+        stickyList.setOnItemLongClickListener(this);
         stickyList.setOnHeaderClickListener(this);
         stickyList.setOnStickyHeaderChangedListener(this);
         stickyList.setOnStickyHeaderOffsetChangedListener(this);
@@ -108,7 +120,7 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
         stickyList.setDrawingListUnderStickyHeader(true);
         stickyList.setAreHeadersSticky(true);
         stickyList.setAdapter(mAdapter);
-        stickyList.setOnTouchListener(this);
+//        stickyList.setOnTouchListener(this);
 
         stickyList.setFastScrollEnabled(true);
 
@@ -343,12 +355,13 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
 
         menuDialog.startAnimation(mainLayOutAnimation);
     }
-
-    @Override
-    public boolean onTouch(View v, MotionEvent event) {
-        v.setOnTouchListener(null);
-        return false;
-    }
+//
+//    @Override
+//    public boolean onTouch(View v, MotionEvent event) {
+//        Log.d(TAG, "detected an onTouch here.");
+//        v.setOnTouchListener(null);
+//        return false;
+//    }
 
     @Override
     public void onHeaderClick(StickyListHeadersListView l, View header, int itemPosition, long headerId, boolean currentlySticky) {
@@ -460,11 +473,6 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
     }
 
     @Override
-    public void onClick(View v) {
-        Log.d(TAG, "detected a click on this view " + v.toString());
-    }
-
-    @Override
     protected void onPause() {
         super.onPause();
 
@@ -488,6 +496,10 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
         scheduleRefreshCountDownTimer = null;
     }
 
+    private int adjustedPosition(int position) {
+        return --position;
+    }
+
     private CountDownTimer createScheduleRefreshCountDownTimer() {
         return new CountDownTimer(20000, 1000) {
             @Override
@@ -502,5 +514,81 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
                 checkTripStartAndDestinationForNextToArriveDataRequest();
             }
         };
+    }
+
+    @Override
+    public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+        Log.d(TAG, "on item long click detected");
+        if (mAdapter.isFavorite(adjustedPosition(position)) || mAdapter.isRecentlyViewed(adjustedPosition(position))) {
+            String alertDialogTitle = mAdapter.isFavorite(adjustedPosition(position)) ? "Delete Favorite" : "Delete Recently Viewed";
+            AlertDialog.Builder alert = new AlertDialog.Builder(this);
+            alert.setTitle(alertDialogTitle);
+            alert.setMessage("Are you sure you want to delete?");
+
+            alert.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    final NextToArriveStoredTripModel nextToArriveStoredTripModel = (NextToArriveStoredTripModel)mAdapter.getItem(adjustedPosition(position));
+
+                    NextToArriveActionBarActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (mAdapter.isFavorite(adjustedPosition(position))) { removeFavorite(nextToArriveStoredTripModel); }
+                            if (mAdapter.isRecentlyViewed(adjustedPosition(position))) { removeRecentlyViewed(nextToArriveStoredTripModel); }
+
+                            mAdapter.reloadFavoriteAndRecentlyViewedLists();
+                            mAdapter.notifyDataSetChanged();
+                        }
+                    });
+
+                    //do your work here
+                    dialog.dismiss();
+
+                }
+            });
+            alert.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                    dialog.dismiss();
+                }
+            });
+
+            alert.show();
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean removeFavorite(NextToArriveStoredTripModel nextToArriveStoredTripModel) {
+        NextToArriveFavoritesAndRecentlyViewedStore store = new NextToArriveFavoritesAndRecentlyViewedStore(this);
+
+        // check if the selected route is already a favorite, then we allow the option of removing this
+        // route from the favorites list.
+        if (store.isFavorite(nextToArriveStoredTripModel)) {
+            Log.d("tt", "detected this is a favorite, remove ");
+            store.removeFavorite(nextToArriveStoredTripModel);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean removeRecentlyViewed(NextToArriveStoredTripModel nextToArriveStoredTripModel) {
+        NextToArriveFavoritesAndRecentlyViewedStore store = new NextToArriveFavoritesAndRecentlyViewedStore(this);
+
+        // check if the selected route is already a favorite, then we allow the option of removing this
+        // route from the favorites list.
+        if (store.isRecentlyViewed(nextToArriveStoredTripModel)) {
+            Log.d("tt", "detected this is a recently viewed, remove ");
+            store.removeRecentlyViewed(nextToArriveStoredTripModel);
+
+            return true;
+        }
+
+        return false;
     }
 }

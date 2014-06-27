@@ -99,12 +99,12 @@ public class SchedulesRouteSelection_ListViewItem_ArrayAdapter extends BaseAdapt
 
     public boolean isFavorite(int position) {
 
-        return getItems()[position] instanceof SchedulesFavoriteModel;
+        return getItem(position) instanceof SchedulesFavoriteModel;
     }
 
     public boolean isRecentlyViewed(int position) {
 
-        return getItems()[position] instanceof SchedulesRecentlyViewedModel;
+        return getItem(position) instanceof SchedulesRecentlyViewedModel;
     }
 
     @Override

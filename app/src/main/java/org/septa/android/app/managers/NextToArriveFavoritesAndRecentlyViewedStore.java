@@ -65,6 +65,16 @@ public class NextToArriveFavoritesAndRecentlyViewedStore {
         return false;
     }
 
+    public boolean isRecentlyViewed(NextToArriveStoredTripModel nextToArriveModel) {
+        for (NextToArriveStoredTripModel storedTrip : recentlyViewedList) {
+            if (storedTrip.compareTo(nextToArriveModel) == 0) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public void addFavorite(NextToArriveFavoriteModel nextToArriveFavoriteModel) {
         // search the list for a duplicate, if yes just return
         // the code should be safe guarding against this event even occuring
@@ -82,13 +92,10 @@ public class NextToArriveFavoritesAndRecentlyViewedStore {
         sendToSharedPreferencesFavorites();
     }
 
-    public void removeFavorite(NextToArriveFavoriteModel nextToArriveFavoriteModel) {
-        Log.d("tt", "remove favorite being run with list size of "+favoritesList.size());
+    public void removeFavorite(NextToArriveStoredTripModel nextToArriveFavoriteModel) {
         for (int i=0; i< favoritesList.size(); i++) {
             if (favoritesList.get(i).compareTo(nextToArriveFavoriteModel) == 0) {
-                Log.d("qqq", "found a match... removing");
                 favoritesList.remove(i);
-                Log.d("qqq", "new list size is "+favoritesList.size());
 
                 sendToSharedPreferencesFavorites();
             }

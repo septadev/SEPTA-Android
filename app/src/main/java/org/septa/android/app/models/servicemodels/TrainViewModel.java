@@ -13,7 +13,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.annotations.SerializedName;
 import org.septa.android.app.utilities.Core;
 
-public class TrainViewModel {
+public class TrainViewModel implements Comparable<TrainViewModel> {
     public static final String TAG = TrainViewModel.class.getName();
 
     @SerializedName("lat") private double latitude;
@@ -24,6 +24,8 @@ public class TrainViewModel {
     @SerializedName("nextstop") private String nextStop;
     @SerializedName("late") private int late;
     @SerializedName("SOURCE") private String source;
+
+    private double distanceFromCurrentLocation;
 
     public double getLatitude() {
         return latitude;
@@ -114,4 +116,25 @@ public class TrainViewModel {
         return (localTrainNumber % 2 == 0);
     }
 
+    public double getDistanceFromCurrentLocation() {
+        return distanceFromCurrentLocation;
+    }
+
+    public void setDistanceFromCurrentLocation(double distanceFromCurrentLocation) {
+        this.distanceFromCurrentLocation = distanceFromCurrentLocation;
+    }
+
+    // sort this model object by distance, which will default to 0 if not set.
+    @Override
+    public int compareTo(TrainViewModel another) {
+        if (this.getDistanceFromCurrentLocation() < another.getDistanceFromCurrentLocation()) {
+            return -1;
+        } else {
+            if (this.getDistanceFromCurrentLocation() > another.getDistanceFromCurrentLocation()) {
+                return 1;
+            }
+        }
+
+        return 0;
+    }
 }

@@ -38,12 +38,15 @@ import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.septa.android.app.R;
 import org.septa.android.app.fragments.TrainViewListFragment;
+import org.septa.android.app.fragments.TransitViewRouteViewListFragment;
 import org.septa.android.app.models.KMLModel;
 import org.septa.android.app.models.ObjectFactory;
 import org.septa.android.app.models.servicemodels.TrainViewModel;
+import org.septa.android.app.models.servicemodels.TransitViewVehicleModel;
 import org.septa.android.app.services.apiproxies.TrainViewServiceProxy;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -82,6 +85,10 @@ public class TrainViewActionBarActivity extends BaseAnalyticsActionBarActivity i
     private ArrayList<Marker>markerList = new ArrayList<Marker>();
 
     private Timer asyncTrainViewRefreshTimer;
+
+    private List<TrainViewModel> trainViewArrayList = new ArrayList<TrainViewModel>();
+
+    private LatLng currentLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,7 +143,6 @@ public class TrainViewActionBarActivity extends BaseAnalyticsActionBarActivity i
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        Log.d(TAG, "creating the menu in find nearest location actionbar activity");
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.trainsitview_action_bar, menu);
 
@@ -145,7 +151,6 @@ public class TrainViewActionBarActivity extends BaseAnalyticsActionBarActivity i
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        Log.d(TAG, "onPrepareOptionsMenu");
 
         return true;
     }
@@ -230,10 +235,12 @@ public class TrainViewActionBarActivity extends BaseAnalyticsActionBarActivity i
         // TODO: find a better way to shut off the updates and resume when it makes sense
         if (newLocation.getAccuracy()< getResources().getInteger(R.integer.trainview_map_accuracy_limit_in_meters)) {
             mLocationClient.disconnect();
-            LatLng currentLocation = new LatLng(newLocation.getLatitude(), newLocation.getLongitude());
+            currentLocation = new LatLng(newLocation.getLatitude(), newLocation.getLongitude());
 
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation,
                     Float.parseFloat(getString(R.string.trainviewactionbaractivity_map_zoom_level_float))));
+
+            updateTrainList();
         }
     }
 
@@ -245,8 +252,6 @@ public class TrainViewActionBarActivity extends BaseAnalyticsActionBarActivity i
     @Override
     public void onConnected(Bundle dataBundle) {
         // Display the connection status
-        Log.d(TAG, "location services connected");
-
         LocationRequest mLocationRequest = LocationRequest.create();
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         mLocationRequest.setInterval(UPDATE_INTERVAL);
@@ -255,14 +260,9 @@ public class TrainViewActionBarActivity extends BaseAnalyticsActionBarActivity i
         mLocationClient.requestLocationUpdates(mLocationRequest, this);
     }
 
-    /*
-     * Called by LocationModel Services if the connection to the
-     * location client drops because of an error.
-     */
     @Override
     public void onDisconnected() {
-        // Display the connection status
-        Log.d(TAG, "location services disconnected.");
+
     }
 
     /*
@@ -305,7 +305,6 @@ public class TrainViewActionBarActivity extends BaseAnalyticsActionBarActivity i
         TimerTask doAsynchronousTask = new TimerTask() {
             @Override
             public void run() {
-                Log.d(TAG, "in run for async task");
                         try {
 
                             fetchTrainViewData();
@@ -323,7 +322,6 @@ public class TrainViewActionBarActivity extends BaseAnalyticsActionBarActivity i
     protected void onPause() {
         super.onPause();
 
-        Log.d(TAG, "onPause, cancelling and purging the async timer");
         asyncTrainViewRefreshTimer.cancel();
         asyncTrainViewRefreshTimer.purge();
     }
@@ -355,12 +353,56 @@ public class TrainViewActionBarActivity extends BaseAnalyticsActionBarActivity i
         }
     }
 
+    /** calculates the distance between two locations in MILES */
+    private double distance(double lat1, double lng1, double lat2, double lng2) {
+
+        double earthRadius = 3958.75; // in miles, change to 6371 for kilometers
+
+        double dLat = Math.toRadians(lat2-lat1);
+        double dLng = Math.toRadians(lng2-lng1);
+
+        double sindLat = Math.sin(dLat / 2);
+        double sindLng = Math.sin(dLng / 2);
+
+        double a = Math.pow(sindLat, 2) + Math.pow(sindLng, 2)
+                * Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2));
+
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+        double dist = earthRadius * c;
+
+        return dist;
+    }
+
+    private double getDistanceFromCurrentLocation(LatLng compareToLocation) {
+        double currentLocationLatitude = currentLocation.latitude;
+        double currentLocationLongitude = currentLocation.longitude;
+
+        double compareToLocationLatitude = compareToLocation.latitude;
+        double compareToLocationLongitude = compareToLocation.longitude;
+
+        // lat1 and lng1 are the values of a previously stored location
+        return distance(currentLocationLatitude, currentLocationLongitude, compareToLocationLatitude, compareToLocationLongitude);
+    }
+
+    private void updateTrainList() {
+        TrainViewListFragment listFragment = (TrainViewListFragment) getSupportFragmentManager().findFragmentById(R.id.trainview_list_fragment);
+
+        for (TrainViewModel trainViewModel: trainViewArrayList) {
+            trainViewModel.setDistanceFromCurrentLocation(getDistanceFromCurrentLocation(new LatLng(trainViewModel.getLatitude(), trainViewModel.getLongitude())));
+        }
+
+        Collections.sort(trainViewArrayList);
+        listFragment.setTrainViewModels(trainViewArrayList);
+    }
+
     private void fetchTrainViewData() {
         Callback callback = new Callback() {
             @Override
             public void success(Object o, Response response) {
                 setProgressBarIndeterminateVisibility(Boolean.FALSE);
 
+                trainViewArrayList = (ArrayList<TrainViewModel>)o;
                 TrainViewListFragment listFragment = (TrainViewListFragment) getSupportFragmentManager().findFragmentById(R.id.trainview_list_fragment);
 
                 // test the listFragment.  If null, we may have transitioned off this view and this fetch
@@ -369,16 +411,17 @@ public class TrainViewActionBarActivity extends BaseAnalyticsActionBarActivity i
                     return;
                 }
 
-                listFragment.setTrainViewModels((ArrayList<TrainViewModel>)o);
-
                 // clear all of the markers off the map
                 for (Marker marker : markerList) {
                     marker.remove();
                 }
                 markerList.clear();
 
-                for (TrainViewModel trainView: (ArrayList<TrainViewModel>)o) {
+                for (TrainViewModel trainView: trainViewArrayList) {
                     BitmapDescriptor trainIcon;
+
+                    trainView.setDistanceFromCurrentLocation(getDistanceFromCurrentLocation(trainView.getLatLng()));
+
                     if (trainView.isSouthBound()) {
                         trainIcon = BitmapDescriptorFactory.fromResource(R.drawable.ic_trainview_rrl_red);
                     } else {
@@ -403,6 +446,9 @@ public class TrainViewActionBarActivity extends BaseAnalyticsActionBarActivity i
                         markerList.add(marker);
                     }
                 }
+
+                Collections.sort(trainViewArrayList);
+                listFragment.setTrainViewModels(trainViewArrayList);
             }
 
             @Override

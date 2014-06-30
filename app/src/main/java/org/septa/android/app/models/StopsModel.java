@@ -11,10 +11,10 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
-import android.util.TimingLogger;
 import org.septa.android.app.databases.SEPTADatabase;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class StopsModel {
 private static final String TAG = StopsModel.class.getName();
@@ -29,12 +29,8 @@ private static final String TAG = StopsModel.class.getName();
     public void loadStops(Context context) {
         if (loaded) return;
 
-        TimingLogger timings = new TimingLogger("StopsModel", "loadStops");
-
         SEPTADatabase septaDatabase = new SEPTADatabase(context);
         SQLiteDatabase database = septaDatabase.getReadableDatabase();
-
-        timings.addSplit("  opened the database...");
 
         String queryString = "SELECT stop_id, stop_name, wheelchair_boarding FROM stops_rail ORDER BY stop_name";
 
@@ -53,16 +49,11 @@ private static final String TAG = StopsModel.class.getName();
         }
 
         database.close();
-
-        timings.dumpToLog();
-    }
-
-    public void reset() {
-
-        this.loaded = false;
     }
 
     public ArrayList<StopModel> getStopModelArrayList() {
+        Collections.sort(stopModelArrayList);
+
         return stopModelArrayList;
     }
 }

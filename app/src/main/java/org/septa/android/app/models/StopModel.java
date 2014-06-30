@@ -7,7 +7,11 @@
 
 package org.septa.android.app.models;
 
-public class StopModel {
+import android.util.Log;
+
+import java.util.Comparator;
+
+public class StopModel implements Comparable<StopModel> {
 
     private String stopId;
     private String stopName;
@@ -16,7 +20,7 @@ public class StopModel {
 
     public StopModel(String stopId, String stopName, boolean wheelchairBoarding) {
         this.stopId = stopId;
-        this.stopName = stopName;
+        this.setStopName(stopName);
         this.wheelchairBoarding = wheelchairBoarding;
     }
 
@@ -34,10 +38,36 @@ public class StopModel {
     }
 
     public String getStopName() {
+        if (stopName.equals("Highland Avenue")) {
+            return "Highland Avenue (WIL)";
+        }
+        if (stopName.equals("Highland")) {
+            return "Highland (NOR)";
+        }
+        if (stopName.equals("Norristown")) {
+            return "Elm Street (NOR)";
+        }
+        if (stopName.equals("Main Street")) {
+            return "Main Street (NOR)";
+        }
+
         return stopName;
     }
 
     public void setStopName(String stopName) {
+        if (stopName.equals("Highland Avenue")) {
+            this.stopName = "Highland Avenue (WIL)";
+        }
+        if (stopName.equals("Highland")) {
+            this.stopName = "Highland (NOR)";
+        }
+        if (stopName.equals("Norristown")) {
+            this.stopName = "Elm Street (NOR)";
+        }
+        if (stopName.equals("Main Street")) {
+            this.stopName = "Main Street (NOR)";
+        }
+
         this.stopName = stopName;
     }
 
@@ -50,6 +80,10 @@ public class StopModel {
         return wheelchairBoarding;
     }
 
+    @Override
+    public int compareTo(StopModel another) {
+        return this.getStopName().compareTo(another.getStopName());
+    }
 }
 
 

@@ -48,6 +48,7 @@ import org.septa.android.app.services.apiproxies.TransitViewServiceProxy;
 import org.septa.android.app.utilities.KMLSAXXMLProcessor;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -90,6 +91,10 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
 
     private Timer asyncTransitViewRefreshTimer;
 
+    private LatLng currentLocation = null;
+
+    private List<TransitViewVehicleModel> transitViewVehicleArrayList = new ArrayList<TransitViewVehicleModel>();
+
     @Override
     public boolean onTouchEvent(MotionEvent e) {
         Log.d(TAG, "touch event heard");
@@ -124,10 +129,12 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
 
         if (mMap != null) {
             // set the initial center point of the map on Center City, Philadelphia with a default zoom
-            double defaultLatitute = Double.parseDouble(getResources().getString(R.string.generalmap_default_location_latitude));
+            double defaultLatitude = Double.parseDouble(getResources().getString(R.string.generalmap_default_location_latitude));
             double defaultLongitude = Double.parseDouble(getResources().getString(R.string.generalmap_default_location_longitude));
+
+            currentLocation = new LatLng(defaultLatitude, defaultLongitude);
             float defaultZoomLevel = Float.parseFloat(getResources().getString(R.string.generalmap_default_zoomlevel));
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(defaultLatitute, defaultLongitude), defaultZoomLevel));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(defaultLatitude, defaultLongitude), defaultZoomLevel));
 
             mMap.setMyLocationEnabled(true);
 
@@ -279,10 +286,12 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
         // TODO: find a better way to shut off the updates and resume when it makes sense
         if (newLocation.getAccuracy()< getResources().getInteger(R.integer.transitview_map_accuracy_limit_in_meters)) {
             mLocationClient.disconnect();
-            LatLng currentLocation = new LatLng(newLocation.getLatitude(), newLocation.getLongitude());
+            currentLocation = new LatLng(newLocation.getLatitude(), newLocation.getLongitude());
 
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation,
                     Float.parseFloat(getString(R.string.trainviewactionbaractivity_map_zoom_level_float))));
+
+            updateTransitList();
         }
     }
 
@@ -389,13 +398,56 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
         }
     }
 
+    /** calculates the distance between two locations in MILES */
+    private double distance(double lat1, double lng1, double lat2, double lng2) {
+
+        double earthRadius = 3958.75; // in miles, change to 6371 for kilometers
+
+        double dLat = Math.toRadians(lat2-lat1);
+        double dLng = Math.toRadians(lng2-lng1);
+
+        double sindLat = Math.sin(dLat / 2);
+        double sindLng = Math.sin(dLng / 2);
+
+        double a = Math.pow(sindLat, 2) + Math.pow(sindLng, 2)
+                * Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2));
+
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+        double dist = earthRadius * c;
+
+        return dist;
+    }
+
+    private double getDistanceFromCurrentLocation(LatLng compareToLocation) {
+        double currentLocationLatitude = currentLocation.latitude;
+        double currentLocationLongitude = currentLocation.longitude;
+
+        double compareToLocationLatitude = compareToLocation.latitude;
+        double compareToLocationLongitude = compareToLocation.longitude;
+
+        // lat1 and lng1 are the values of a previously stored location
+        return distance(currentLocationLatitude, currentLocationLongitude, compareToLocationLatitude, compareToLocationLongitude);
+    }
+
+    private void updateTransitList() {
+        TransitViewRouteViewListFragment listFragment1 = (TransitViewRouteViewListFragment) getSupportFragmentManager().findFragmentById(R.id.transitview_list_fragment);
+
+        for (TransitViewVehicleModel transitViewVehicle: transitViewVehicleArrayList) {
+            transitViewVehicle.setDistanceFromCurrentLocation(getDistanceFromCurrentLocation(new LatLng(transitViewVehicle.getLatitude(), transitViewVehicle.getLongitude())));
+        }
+
+        Collections.sort(transitViewVehicleArrayList);
+        listFragment1.setTrainViewModels(transitViewVehicleArrayList);
+    }
+
     private void fetchTransitViewDataForRoute(String routeShortName) {
         Callback callback = new Callback() {
             @Override
             public void success(Object o, Response response) {
                 setProgressBarIndeterminateVisibility(Boolean.FALSE);
 
-                List<TransitViewVehicleModel> transitViewVehicleList = ((TransitViewModel)o).getActiveVehicleModelList();
+                transitViewVehicleArrayList = ((TransitViewModel)o).getActiveVehicleModelList();
 
                 TransitViewRouteViewListFragment listFragment1 = (TransitViewRouteViewListFragment) getSupportFragmentManager().findFragmentById(R.id.transitview_list_fragment);
 
@@ -405,16 +457,16 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
                     return;
                 }
 
-                listFragment1.setTrainViewModels(transitViewVehicleList);
-
                 // clear all of the markers off the map
                 for (Marker marker : markerList) {
                     marker.remove();
                 }
                 markerList.clear();
 
-                for (TransitViewVehicleModel transitViewVehicle: transitViewVehicleList) {
+                for (TransitViewVehicleModel transitViewVehicle: transitViewVehicleArrayList) {
                     BitmapDescriptor transitIcon;
+
+                    transitViewVehicle.setDistanceFromCurrentLocation(getDistanceFromCurrentLocation(new LatLng(transitViewVehicle.getLatitude(), transitViewVehicle.getLongitude())));
 
                     // check if the destination is blank, meaning the bus just went out of service
                     if (transitViewVehicle.getDestination().trim().equals("")) {
@@ -437,6 +489,9 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
                         markerList.add(marker);
                     }
                 }
+
+                Collections.sort(transitViewVehicleArrayList);
+                listFragment1.setTrainViewModels(transitViewVehicleArrayList);
             }
 
             @Override

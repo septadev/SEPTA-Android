@@ -10,7 +10,7 @@ package org.septa.android.app.models.servicemodels;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.annotations.SerializedName;
 
-public class TransitViewVehicleModel {
+public class TransitViewVehicleModel implements Comparable<TransitViewVehicleModel> {
     public static final String TAG = TransitViewVehicleModel.class.getName();
 
     @SerializedName("BlockID")
@@ -30,6 +30,8 @@ public class TransitViewVehicleModel {
     private double latitude;
     @SerializedName("lng")
     private double longitude;
+
+    private double distanceFromCurrentLocation = 0;
 
     public int getBlockId() {
         return blockId;
@@ -125,5 +127,27 @@ public class TransitViewVehicleModel {
     public boolean isWestBound() {
 
         return direction.equals("WestBound");
+    }
+
+    public double getDistanceFromCurrentLocation() {
+        return distanceFromCurrentLocation;
+    }
+
+    public void setDistanceFromCurrentLocation(double distanceFromCurrentLocation) {
+        this.distanceFromCurrentLocation = distanceFromCurrentLocation;
+    }
+
+    // sort this model object by distance, which will default to 0 if not set.
+    @Override
+    public int compareTo(TransitViewVehicleModel another) {
+        if (this.getDistanceFromCurrentLocation() < another.getDistanceFromCurrentLocation()) {
+            return -1;
+        } else {
+            if (this.getDistanceFromCurrentLocation() > another.getDistanceFromCurrentLocation()) {
+                return 1;
+            }
+        }
+
+        return 0;
     }
 }

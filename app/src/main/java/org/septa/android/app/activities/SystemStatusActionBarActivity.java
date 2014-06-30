@@ -48,7 +48,7 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
 
     private boolean inFilterMode = false;
 
-    private final String[] tabLabels = new String[] {"BUS", "TROLLEY", "REGIONAL RAIL", "MFL, BSL, NHSL"};
+    private final String[] tabLabels = new String[] {"BUS", "TROLLEY", "REGIONAL RAIL LINE", "MFL, BSL, NHSL"};
     private int selectedTab = 0;
 
     private ArrayList<AlertModel>alertModelList = new ArrayList<AlertModel>();

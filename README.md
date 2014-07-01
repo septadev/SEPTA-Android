@@ -5,7 +5,7 @@ SEPTA-Android
 
 ### SQLite Database Preparation
 
-1. Rename the id field of your table to “_id”. It can be easily done by clicking the Modify Table button, and then choosing the necessary table and field names.
+1. ** Rename the id field of your table to “_id”. It can be easily done by clicking the Modify Table button, and then choosing the necessary table and field names. (not needed for this particular SQLite database file)
 
 2. ** Add the android_metadata table. To do that, open the Execute SQL tab and paste this simple code into the SQL string field:  (no longer needed; was successful in loading the last SQLite file without this step)
 

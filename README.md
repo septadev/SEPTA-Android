@@ -50,35 +50,31 @@ Once you have created the keystore files, add the password to the <code>SEPTASig
 
 #### Directories/Files
 <dl>
-<dt>Directory: <code>\<home directory>/.gradle</code></dt>
-<dd>file: <code>gradle.properties</code></dd>
-<dl>Directory: <code>\<home directory>/.signing</code></dt>
-<dd>file: <code>SEPTASigning</code></dd>
+<dt>Directory: <code>&lt;home directory&gt;/.gradle</code></dt>
+<dd>file:	<code>gradle.properties</code></dd>
+<dt>Directory: <code>&lt;home directory&gt;/.signing</code></dt>
+<dd>file:	<code>SEPTASigning</code></dd>
 </dl>
 
 #### Content
 <dl>
-<dt>Directory: <code>\<home directory>/.gradle</code></dt>
-<dd>file: <code>gradle.properties</code></dd>
-<dd>	
-
-			SEPTA.signing = /\<home directory>/.signing/SEPTASigning
-</dd>
-<dl>Directory: <code>\<home directory>/.signing</code></dt>
-<dd>file: <code>SEPTASigning.gradle</code></dd>
-<dd>
-
-	project.ext {
-        SEPTA_DEVELOPMENT_KEYSTORE_FILE = '../../SEPTA-Keystores/septaandroid_development.jks'
-        SEPTA_PRODUCTION_KEYSTORE_FILE  = '../../SEPTA-Keystores/septaandroid_production.jks'
-
-        SEPTA_DEVELOPMENT_KEYSTORE_PASSWORD = 'na'
-        SEPTA_PRODUCTION_KEYSTORE_PASSWORD  = 'na'
-
-        ALPHA_KEYALIAS_PASSWORD = 'na'
-        PRERELEASE_KEYALIAS_PASSWORD = 'na'
-        BETA_KEYALIAS_PASSWORD = 'na'
-        RELEASE_KEYALIAS_PASSWORD = 'na'
-	}
-</dd>
+<dt>Directory: <code>&lt;home directory&gt;/.gradle</code></dt>
+<dd>file:	<code>gradle.properties</code></dd>
+<dd>SEPTA.signing = /&lt;home directory&gt;/.signing/SEPTASigning</dd>
 </dl>
+
+<dl>Directory: <code>&lt;home directory&gt;/.signing</code></dt>
+<dd>file:	<code>SEPTASigning.gradle</code></dd>
+</dl>
+		project.ext {
+			SEPTA_DEVELOPMENT_KEYSTORE_FILE = '../../SEPTA-Keystores/septaandroid_development.jks'
+			SEPTA_PRODUCTION_KEYSTORE_FILE  = '../../SEPTA-Keystores/septaandroid_production.jks'
+
+			SEPTA_DEVELOPMENT_KEYSTORE_PASSWORD = 'na'
+			SEPTA_PRODUCTION_KEYSTORE_PASSWORD  = 'na'
+
+			ALPHA_KEYALIAS_PASSWORD = 'na'
+			PRERELEASE_KEYALIAS_PASSWORD = 'na'
+			BETA_KEYALIAS_PASSWORD = 'na'
+			RELEASE_KEYALIAS_PASSWORD = 'na'
+		}

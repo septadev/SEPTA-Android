@@ -21,7 +21,7 @@ This file is read by Android Studio upon startup
 
 2. In this file, create one line, which will look like below:
 
-	SEPTA.signing = /Users/<username>/.signing/SEPTASigning
+	SEPTA.signing = /Users/&gt;username&lt;/.signing/SEPTASigning
 		
 3. Create a directory titled <code>.signing</code>.
 4. Create a file titled <code>SEPTASigning.gradle</code>.

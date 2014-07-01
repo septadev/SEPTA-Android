@@ -375,14 +375,18 @@ public class TrainViewActionBarActivity extends BaseAnalyticsActionBarActivity i
     }
 
     private double getDistanceFromCurrentLocation(LatLng compareToLocation) {
-        double currentLocationLatitude = currentLocation.latitude;
-        double currentLocationLongitude = currentLocation.longitude;
+        if (currentLocation != null) {
+            double currentLocationLatitude = currentLocation.latitude;
+            double currentLocationLongitude = currentLocation.longitude;
 
-        double compareToLocationLatitude = compareToLocation.latitude;
-        double compareToLocationLongitude = compareToLocation.longitude;
+            double compareToLocationLatitude = compareToLocation.latitude;
+            double compareToLocationLongitude = compareToLocation.longitude;
 
-        // lat1 and lng1 are the values of a previously stored location
-        return distance(currentLocationLatitude, currentLocationLongitude, compareToLocationLatitude, compareToLocationLongitude);
+            // lat1 and lng1 are the values of a previously stored location
+            return distance(currentLocationLatitude, currentLocationLongitude, compareToLocationLatitude, compareToLocationLongitude);
+        }
+
+        return 0;
     }
 
     private void updateTrainList() {

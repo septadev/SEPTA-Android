@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/nexttoarrive_menudialog_mainlayout"
+        android:layout_width="match_parent"
+        android:layout_height="205dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:background="#FF000000"
+        android:visibility="invisible">
+
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/nexttoarrive_menudialog_listview"/>
+
+</FrameLayout>

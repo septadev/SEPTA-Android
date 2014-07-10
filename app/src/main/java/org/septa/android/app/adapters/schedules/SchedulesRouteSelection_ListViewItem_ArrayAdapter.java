@@ -28,9 +28,13 @@ import org.septa.android.app.models.RouteTypes;
 import org.septa.android.app.models.SchedulesRouteModel;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 
@@ -53,6 +57,11 @@ public class SchedulesRouteSelection_ListViewItem_ArrayAdapter extends BaseAdapt
     RouteTypes routeType = null;
 
     private String[] sectionTitles = new String[]{ "Favorites", "Recently Viewed", "Routes"};
+
+    private List<String> sections;
+    private Map<Integer, Integer> positions;
+    private Map<Integer, Integer> startPositions;
+
 
     public SchedulesRouteSelection_ListViewItem_ArrayAdapter(Context context, RouteTypes routeType) {
         mContext = context;
@@ -85,6 +94,54 @@ public class SchedulesRouteSelection_ListViewItem_ArrayAdapter extends BaseAdapt
             Collections.sort(this.routes);
         }
         Log.d(TAG, "sorted the routes");
+
+        sections = new ArrayList<String>();
+        positions = new HashMap<Integer, Integer>();
+        startPositions = new HashMap<Integer, Integer>();
+
+        int positionIndex = 0;
+        int sectionIndex = 0;
+        // Compute section indexes for fast scroll
+        for(int i=0; i<favorites.size(); i++) {
+            SchedulesRouteModel schedulesRouteModel = favorites.get(i);
+            String section = schedulesRouteModel.getRouteId();
+            if(section != null && section.length() > 0) {
+                section = section.substring(0, 1);
+                if(!sections.contains(section)) {
+                    sections.add(section);
+                    startPositions.put(sections.indexOf(section), i);
+                }
+                positions.put(i, sections.indexOf(section));
+            }
+        }
+        positionIndex = positionIndex + favorites.size();
+        sectionIndex = sectionIndex + sections.size();
+        for(int i=0; i<recentlyViewed.size(); i++) {
+            SchedulesRouteModel schedulesRouteModel = recentlyViewed.get(i);
+            String section = schedulesRouteModel.getRouteId();
+            if(section != null && section.length() > 0) {
+                section = section.substring(0, 1);
+                if(!sections.contains(section)) {
+                    sections.add(section);
+                    startPositions.put(sections.indexOf(section), i + sectionIndex);
+                }
+                positions.put(i + positionIndex, sections.indexOf(section));
+            }
+        }
+        positionIndex = positionIndex + recentlyViewed.size();
+        sectionIndex = sectionIndex + sections.size();
+        for(int i=0; i<routes.size(); i++) {
+            SchedulesRouteModel schedulesRouteModel = routes.get(i);
+            String section = schedulesRouteModel.getRouteId();
+            if(section != null && section.length() > 0) {
+                section = section.substring(0, 1);
+                if(!sections.contains(section)) {
+                    sections.add(section);
+                    startPositions.put(sections.indexOf(section), i + sectionIndex);
+                }
+                positions.put(i + positionIndex, sections.indexOf(section));
+            }
+        }
 
         notifyDataSetChanged();
     }
@@ -275,44 +332,18 @@ public class SchedulesRouteSelection_ListViewItem_ArrayAdapter extends BaseAdapt
     }
 
     @Override
-    public int getPositionForSection(int section) {
-        switch (section) {
-            case 0: {
-
-                return 0;
-            }
-            case 1: {
-
-                return favorites.size();
-            }
-            case 2: {
-
-                return favorites.size()+recentlyViewed.size();
-            }
-            default: {
-
-                return 0;
-            }
-        }
-    }
-
-    @Override
-    public int getSectionForPosition(int position) {
-        if (isFavorite(position)) {
-            return 0;
-        } else {
-            if (isRecentlyViewed(position)) {
-                return 1;
-            }
-        }
-
-        return 2;
-    }
-
-    @Override
     public Object[] getSections() {
+        return sections.toArray();
+    }
 
-        return sectionTitles;
+    @Override
+    public int getPositionForSection(int i) {
+        return startPositions.get(i);
+    }
+
+    @Override
+    public int getSectionForPosition(int i) {
+        return positions.get(i);
     }
 
     class HeaderViewHolder {

@@ -99,11 +99,14 @@ public class SchedulesRouteSelection_ListViewItem_ArrayAdapter extends BaseAdapt
         positions = new HashMap<Integer, Integer>();
         startPositions = new HashMap<Integer, Integer>();
 
-        int positionIndex = 0;
-        int sectionIndex = 0;
+        List<SchedulesRouteModel> routeModels = new ArrayList<SchedulesRouteModel>();
+        routeModels.addAll(this.favorites);
+        routeModels.addAll(this.recentlyViewed);
+        routeModels.addAll(this.routes);
+
         // Compute section indexes for fast scroll
-        for(int i=0; i<favorites.size(); i++) {
-            SchedulesRouteModel schedulesRouteModel = favorites.get(i);
+        for(int i=0; i<routeModels.size(); i++) {
+            SchedulesRouteModel schedulesRouteModel = routeModels.get(i);
             String section = schedulesRouteModel.getRouteId();
             if(section != null && section.length() > 0) {
                 section = section.substring(0, 1);
@@ -112,34 +115,6 @@ public class SchedulesRouteSelection_ListViewItem_ArrayAdapter extends BaseAdapt
                     startPositions.put(sections.indexOf(section), i);
                 }
                 positions.put(i, sections.indexOf(section));
-            }
-        }
-        positionIndex = positionIndex + favorites.size();
-        sectionIndex = sectionIndex + sections.size();
-        for(int i=0; i<recentlyViewed.size(); i++) {
-            SchedulesRouteModel schedulesRouteModel = recentlyViewed.get(i);
-            String section = schedulesRouteModel.getRouteId();
-            if(section != null && section.length() > 0) {
-                section = section.substring(0, 1);
-                if(!sections.contains(section)) {
-                    sections.add(section);
-                    startPositions.put(sections.indexOf(section), i + sectionIndex);
-                }
-                positions.put(i + positionIndex, sections.indexOf(section));
-            }
-        }
-        positionIndex = positionIndex + recentlyViewed.size();
-        sectionIndex = sectionIndex + sections.size();
-        for(int i=0; i<routes.size(); i++) {
-            SchedulesRouteModel schedulesRouteModel = routes.get(i);
-            String section = schedulesRouteModel.getRouteId();
-            if(section != null && section.length() > 0) {
-                section = section.substring(0, 1);
-                if(!sections.contains(section)) {
-                    sections.add(section);
-                    startPositions.put(sections.indexOf(section), i + sectionIndex);
-                }
-                positions.put(i + positionIndex, sections.indexOf(section));
             }
         }
 

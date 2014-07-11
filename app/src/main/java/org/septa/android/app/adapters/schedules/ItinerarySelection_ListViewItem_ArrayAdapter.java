@@ -27,6 +27,9 @@ import org.septa.android.app.models.StopModel;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 
@@ -47,6 +50,10 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
 
     private View headerView = null;
 
+    private List<String> sections;
+    private Map<Integer, Integer> positions;
+    private Map<Integer, Integer> startPositions;
+
     public ItinerarySelection_ListViewItem_ArrayAdapter(Context context, RouteTypes routeType, String routeShortName) {
         mContext = context;
         mInflater = LayoutInflater.from(context);
@@ -55,6 +62,34 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
         this.routeShortName = routeShortName;
 
         resourceEndNames = context.getResources().getStringArray(R.array.schedulesfragment_listview_bothimage_endnames);
+    }
+
+    /**
+     * Build section indices for fast scroll
+     */
+    private void buildSectionIndices() {
+        sections = new ArrayList<String>();
+        positions = new HashMap<Integer, Integer>();
+        startPositions = new HashMap<Integer, Integer>();
+
+        List<StopModel> stopModels = new ArrayList<StopModel>();
+        stopModels.addAll(this.stopsForDirection0);
+        stopModels.addAll(this.stopsForDirection1);
+
+        String previousSection = null;
+        for(int i=0; i<stopModels.size(); i++) {
+            StopModel stopModel = stopModels.get(i);
+            String section = stopModel.getStopName();
+            if(section != null && section.length() > 0) {
+                section = section.substring(0, 1);
+                if(!section.equals(previousSection)) {
+                    sections.add(section);
+                    startPositions.put(sections.lastIndexOf(section), i);
+                }
+                positions.put(i, sections.indexOf(section));
+                previousSection = section;
+            }
+        }
     }
 
     public void setDirectionHeadingLabels(String[] directionHeadingLabels) {
@@ -67,6 +102,8 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
         this.stopsForDirection0 = stopsForDirection0;
 //        Collections.sort(this.stopsForDirection0, new StopModelNumericComparator());
         Collections.sort(this.stopsForDirection0, new NumberAwareStringComparator());
+        buildSectionIndices();
+        notifyDataSetChanged();
     }
 
     public void setTripDataForDirection1(ArrayList<StopModel>stopsForDirection1) {
@@ -74,6 +111,8 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
         this.stopsForDirection1 = stopsForDirection1;
 //        Collections.sort(this.stopsForDirection1, new StopModelNumericComparator());
         Collections.sort(this.stopsForDirection1, new NumberAwareStringComparator());
+        buildSectionIndices();
+        notifyDataSetChanged();
     }
 
     public Object[] getItems() {
@@ -199,38 +238,18 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
     }
 
     @Override
-    public int getPositionForSection(int section) {
-        switch (section) {
-            case 0: {
-
-                return 0;
-            }
-            case 1: {
-
-                return stopsForDirection0.size();
-            }
-            default: {
-
-                return 0;
-            }
-        }
-    }
-
-    @Override
-    public int getSectionForPosition(int position) {
-        if (position < stopsForDirection0.size()) {
-
-            return 0;
-        } else {
-
-            return 1;
-        }
-    }
-
-    @Override
     public Object[] getSections() {
+        return sections.toArray();
+    }
 
-        return directionHeadingLabels;
+    @Override
+    public int getPositionForSection(int i) {
+        return startPositions.get(i);
+    }
+
+    @Override
+    public int getSectionForPosition(int i) {
+        return positions.get(i);
     }
 }
 

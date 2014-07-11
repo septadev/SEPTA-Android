@@ -165,7 +165,7 @@ dependencies {
     compile group: 'org.simpleframework', name: 'simple-xml', version: '2.6.3'
     compile group: 'com.readystatesoftware.sqliteasset', name: 'sqliteassethelper', version: '+'
     compile group: 'com.andraskindler.quickscroll', name: 'quickscroll', version: '0.9.8'
-    compile group: 'se.emilsjolander', name: 'stickylistheaders', version: '+'
+    compile group: 'se.emilsjolander', name: 'stickylistheaders', version: '2.4.1'
 }
 
 //only include files that are suffixed with Test.class and set the max heap size

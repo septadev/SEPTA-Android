@@ -284,10 +284,10 @@ public class SchedulesStopsSelectionActionBarActivity extends BaseAnalyticsActio
         @Override
         protected void onPostExecute(Boolean b) {
             super.onPostExecute(b);
-
+            stickyList.setFastScrollEnabled(false);
             mAdapter.setTripDataForDirection0(stopModelListDirection0);
             mAdapter.setTripDataForDirection1(stopModelListDirection1);
-            mAdapter.notifyDataSetChanged();
+            stickyList.setFastScrollEnabled(true);
         }
     }
 

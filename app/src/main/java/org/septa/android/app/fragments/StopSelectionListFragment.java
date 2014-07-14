@@ -47,11 +47,10 @@ public class StopSelectionListFragment extends ListFragment {
     public void setStopList(List<StopModel> stopModelList) {
         this.stopModelList = stopModelList;
 
+        getListView().setFastScrollEnabled(false);
         ArrayAdapter<StopModel> adapter = new RegionalRail_StopSelection_ListViewItem_ArrayAdapter(getActivity(), stopModelList);
         setListAdapter(adapter);
-
-        // after the list has been update, invalidate the list view to re-render
-        this.getListView().invalidate();
+        getListView().setFastScrollEnabled(true);
     }
 
     @Override
@@ -61,13 +60,8 @@ public class StopSelectionListFragment extends ListFragment {
         setRetainInstance(true);
 
         ListView lv = getListView();
-        lv.setFastScrollEnabled(true);
-
         lv.setDivider(getActivity().getResources().getDrawable(R.drawable.list_item_separator_gradient));
         lv.setDividerHeight(3);
-
-        lv.setScrollingCacheEnabled(false);
-        lv.setSmoothScrollbarEnabled(false);
     }
 
     /**

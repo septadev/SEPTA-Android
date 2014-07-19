@@ -44,6 +44,7 @@ private static final String TAG = StopsModel.class.getName();
             }
 
             cursor.close();
+            loaded = true;
         } else {
             Log.d(TAG, "cursor is null");
         }

@@ -28,6 +28,7 @@ import org.septa.android.app.fragments.ConnectListFragment;
 import org.septa.android.app.fragments.RealtimeMenuFragment;
 import org.septa.android.app.fragments.SchedulesListFragment;
 import org.septa.android.app.fragments.TransitMapImageViewFragment;
+import org.septa.android.app.managers.SharedPreferencesManager;
 import org.septa.android.app.models.ObjectFactory;
 
 public class MainTabbarActivity extends BaseAnalyticsActionBarActivity implements ActionBar.TabListener {
@@ -91,16 +92,14 @@ public class MainTabbarActivity extends BaseAnalyticsActionBarActivity implement
             );
         }
 
-        int maintabbarSelectedSection = ObjectFactory.getInstance()
-                .getSharedPreferencesManager(this)
-                .getMainTabbarSelectedSection();
+        int maintabbarSelectedSection = SharedPreferencesManager.getInstance().getMainTabbarSelectedSection();
 
         actionBar.setSelectedNavigationItem(maintabbarSelectedSection);
     }
 
     @Override
     protected void onStop() {
-        ObjectFactory.getInstance().getSharedPreferencesManager(this)
+       SharedPreferencesManager.getInstance()
                 .setMainTabbarSelectedSection(getSupportActionBar()
                 .getSelectedNavigationIndex());
 

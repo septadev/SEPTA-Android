@@ -32,6 +32,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import org.septa.android.app.R;
 import org.septa.android.app.dialogs.FindNearestLocationEditRadiusDialog;
 import org.septa.android.app.fragments.FindNearestLocationsListFragment;
+import org.septa.android.app.managers.SharedPreferencesManager;
 import org.septa.android.app.models.LocationModel;
 import org.septa.android.app.models.ObjectFactory;
 import org.septa.android.app.services.apiproxies.LocationServiceProxy;
@@ -97,7 +98,7 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
         getSupportActionBar().setIcon(R.drawable.ic_actionbar_findnearestlocation);
         getSupportActionBar().setTitle(titleText);
 
-        mapSearchRadius = ObjectFactory.getInstance().getSharedPreferencesManager(this).getNearestLocationMapSearchRadius();
+        mapSearchRadius = SharedPreferencesManager.getInstance().getNearestLocationMapSearchRadius();
 
         mMap = ((SupportMapFragment) getSupportFragmentManager().
                 findFragmentById(R.id.nearestLocationMapFragment)).
@@ -141,7 +142,7 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
                 inChangeRadiusMode = true;
                 ActivityCompat.invalidateOptionsMenu(this);
 
-                findNearestLocationEditRadiusDialog = new FindNearestLocationEditRadiusDialog(this, ObjectFactory.getInstance().getSharedPreferencesManager(this).getNearestLocationMapSearchRadius());
+                findNearestLocationEditRadiusDialog = new FindNearestLocationEditRadiusDialog(this, SharedPreferencesManager.getInstance().getNearestLocationMapSearchRadius());
 
                 findNearestLocationEditRadiusDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
@@ -155,7 +156,7 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
 
                             setMapSearchRadius(mapSearchRadius);
 
-                            ObjectFactory.getInstance().getSharedPreferencesManager(FindNearestLocationActionBarActivity.this).setNearestLocationMapSearchRadius(findNearestLocationEditRadiusDialog.getMapSearchRadius());
+                            SharedPreferencesManager.getInstance().setNearestLocationMapSearchRadius(findNearestLocationEditRadiusDialog.getMapSearchRadius());
                             loadMapAndListView(existingLocation, findNearestLocationEditRadiusDialog.getMapSearchRadius());
                         } else {
                             Log.d(TAG, "radius are equal, nothing");
@@ -348,7 +349,7 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
 
             Log.d(TAG, "onLocationChanged, newLocation's latitude "+newLocation.getLatitude());
             Log.d(TAG, "onLocationChanged, newLocation's longitude "+newLocation.getLongitude());
-            loadMapAndListView(newLocation, ObjectFactory.getInstance().getSharedPreferencesManager(this).getNearestLocationMapSearchRadius());
+            loadMapAndListView(newLocation, SharedPreferencesManager.getInstance().getNearestLocationMapSearchRadius());
         }
     }
 

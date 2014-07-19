@@ -30,6 +30,7 @@ import com.google.android.gms.internal.is;
 
 import org.septa.android.app.R;
 import org.septa.android.app.adapters.SystemStatus_ListViewItem_ArrayAdapter;
+import org.septa.android.app.managers.SharedPreferencesManager;
 import org.septa.android.app.models.ObjectFactory;
 import org.septa.android.app.models.servicemodels.AlertModel;
 import org.septa.android.app.models.servicemodels.ElevatorOutagesMetaModel;
@@ -68,8 +69,8 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
 
         setContentView(R.layout.realtime_systemstatus);
 
-        selectedTab = ObjectFactory.getInstance().getSharedPreferencesManager(this).getSystemStatusSelectedTab();
-        inFilterMode = ObjectFactory.getInstance().getSharedPreferencesManager(this).getSystemStatusFilterEnabled();
+        selectedTab = SharedPreferencesManager.getInstance().getSystemStatusSelectedTab();
+        inFilterMode = SharedPreferencesManager.getInstance().getSystemStatusFilterEnabled();
 
         // set the empty view in case we don't have any data
         LinearLayout emptyView = (LinearLayout)findViewById(R.id.empty);
@@ -566,7 +567,7 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
     protected void onDestroy() {
         super.onDestroy();
 
-        ObjectFactory.getInstance().getSharedPreferencesManager(this).setSystemStatusSelectedTab(selectedTab);
-        ObjectFactory.getInstance().getSharedPreferencesManager(this).setSystemStatusFilterEnabled(inFilterMode);
+       SharedPreferencesManager.getInstance().setSystemStatusSelectedTab(selectedTab);
+       SharedPreferencesManager.getInstance().setSystemStatusFilterEnabled(inFilterMode);
     }
 }

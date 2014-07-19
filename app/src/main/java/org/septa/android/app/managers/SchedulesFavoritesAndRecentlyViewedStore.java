@@ -156,7 +156,7 @@ public class SchedulesFavoritesAndRecentlyViewedStore {
 
         ArrayList<SchedulesRecentlyViewedModel> recentlyViewedList = recentlyViewedListMap.get(routeType);
 
-        String json = ObjectFactory.getInstance().getSharedPreferencesManager(context).getSchedulesRecentlyViewedList();
+        String json = SharedPreferencesManager.getInstance().getSchedulesRecentlyViewedList();
         recentlyViewedListMap = gson.fromJson(json, new TypeToken<HashMap<String, List<SchedulesRecentlyViewedModel>>>() {
         }.getType());
 
@@ -181,7 +181,7 @@ public class SchedulesFavoritesAndRecentlyViewedStore {
 
         ArrayList<SchedulesFavoriteModel>favoritesList = favoritesListMap.get(routeType);
 
-        String json = ObjectFactory.getInstance().getSharedPreferencesManager(context).getSchedulesFavoritesList();
+        String json = SharedPreferencesManager.getInstance().getSchedulesFavoritesList();
         favoritesListMap = gson.fromJson(json, new TypeToken<HashMap<String,List<SchedulesFavoriteModel>>>() {
         }.getType());
 
@@ -205,13 +205,13 @@ public class SchedulesFavoritesAndRecentlyViewedStore {
         Gson gson = new Gson();
         String recentlyViewedListAsJSON = gson.toJson(recentlyViewedListMap);
 
-        ObjectFactory.getInstance().getSharedPreferencesManager(context).setSchedulesRecentlyViewedList(recentlyViewedListAsJSON);
+        SharedPreferencesManager.getInstance().setSchedulesRecentlyViewedList(recentlyViewedListAsJSON);
     }
 
     private void sendToSharedPreferencesFavorites() {
         Gson gson = new Gson();
         String favoritesListAsJSON = gson.toJson(favoritesListMap);
 
-        ObjectFactory.getInstance().getSharedPreferencesManager(context).setSchedulesFavoritesList(favoritesListAsJSON);
+        SharedPreferencesManager.getInstance().setSchedulesFavoritesList(favoritesListAsJSON);
     }
 }

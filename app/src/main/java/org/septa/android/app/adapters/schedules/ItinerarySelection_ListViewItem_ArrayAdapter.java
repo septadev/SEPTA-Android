@@ -9,7 +9,6 @@ package org.septa.android.app.adapters.schedules;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,15 +20,12 @@ import android.widget.TextView;
 
 import org.septa.android.app.R;
 import org.septa.android.app.models.RouteTypes;
-import org.septa.android.app.models.SchedulesRouteModel;
 import org.septa.android.app.models.StopModel;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 
@@ -51,8 +47,6 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
     private View headerView = null;
 
     private List<String> sections;
-    private Map<Integer, Integer> positions;
-    private Map<Integer, Integer> startPositions;
 
     public ItinerarySelection_ListViewItem_ArrayAdapter(Context context, RouteTypes routeType, String routeShortName) {
         mContext = context;
@@ -69,25 +63,16 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
      */
     private void buildSectionIndices() {
         sections = new ArrayList<String>();
-        positions = new HashMap<Integer, Integer>();
-        startPositions = new HashMap<Integer, Integer>();
 
         List<StopModel> stopModels = new ArrayList<StopModel>();
         stopModels.addAll(this.stopsForDirection0);
         stopModels.addAll(this.stopsForDirection1);
 
-        String previousSection = null;
-        for(int i=0; i<stopModels.size(); i++) {
-            StopModel stopModel = stopModels.get(i);
+        for (StopModel stopModel : stopModels) {
             String section = stopModel.getStopName();
-            if(section != null && section.length() > 0) {
+            if (section != null && section.length() > 0) {
                 section = section.substring(0, 1);
-                if(!section.equals(previousSection)) {
-                    sections.add(section);
-                    startPositions.put(sections.lastIndexOf(section), i);
-                }
-                positions.put(i, sections.indexOf(section));
-                previousSection = section;
+                sections.add(section);
             }
         }
     }
@@ -100,7 +85,6 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
     public void setTripDataForDirection0(ArrayList<StopModel>stopsForDirection0) {
 
         this.stopsForDirection0 = stopsForDirection0;
-//        Collections.sort(this.stopsForDirection0, new StopModelNumericComparator());
         Collections.sort(this.stopsForDirection0, new NumberAwareStringComparator());
         buildSectionIndices();
         notifyDataSetChanged();
@@ -109,7 +93,6 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
     public void setTripDataForDirection1(ArrayList<StopModel>stopsForDirection1) {
 
         this.stopsForDirection1 = stopsForDirection1;
-//        Collections.sort(this.stopsForDirection1, new StopModelNumericComparator());
         Collections.sort(this.stopsForDirection1, new NumberAwareStringComparator());
         buildSectionIndices();
         notifyDataSetChanged();
@@ -244,12 +227,12 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
 
     @Override
     public int getPositionForSection(int i) {
-        return startPositions.get(i);
+        return i;
     }
 
     @Override
     public int getSectionForPosition(int i) {
-        return positions.get(i);
+        return i;
     }
 }
 

@@ -22,19 +22,15 @@ import android.widget.TextView;
 import org.septa.android.app.R;
 import org.septa.android.app.managers.SchedulesFavoritesAndRecentlyViewedStore;
 import org.septa.android.app.models.ObjectFactory;
+import org.septa.android.app.models.RouteTypes;
 import org.septa.android.app.models.SchedulesFavoriteModel;
 import org.septa.android.app.models.SchedulesRecentlyViewedModel;
-import org.septa.android.app.models.RouteTypes;
 import org.septa.android.app.models.SchedulesRouteModel;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 
@@ -59,8 +55,6 @@ public class SchedulesRouteSelection_ListViewItem_ArrayAdapter extends BaseAdapt
     private String[] sectionTitles = new String[]{ "Favorites", "Recently Viewed", "Routes"};
 
     private List<String> sections;
-    private Map<Integer, Integer> positions;
-    private Map<Integer, Integer> startPositions;
 
 
     public SchedulesRouteSelection_ListViewItem_ArrayAdapter(Context context, RouteTypes routeType) {
@@ -96,8 +90,6 @@ public class SchedulesRouteSelection_ListViewItem_ArrayAdapter extends BaseAdapt
         Log.d(TAG, "sorted the routes");
 
         sections = new ArrayList<String>();
-        positions = new HashMap<Integer, Integer>();
-        startPositions = new HashMap<Integer, Integer>();
 
         List<SchedulesRouteModel> routeModels = new ArrayList<SchedulesRouteModel>();
         routeModels.addAll(this.favorites);
@@ -105,16 +97,11 @@ public class SchedulesRouteSelection_ListViewItem_ArrayAdapter extends BaseAdapt
         routeModels.addAll(this.routes);
 
         // Compute section indexes for fast scroll
-        for(int i=0; i<routeModels.size(); i++) {
-            SchedulesRouteModel schedulesRouteModel = routeModels.get(i);
+        for (SchedulesRouteModel schedulesRouteModel : routeModels) {
             String section = schedulesRouteModel.getRouteId();
-            if(section != null && section.length() > 0) {
+            if (section != null && section.length() > 0) {
                 section = section.substring(0, 1);
-                if(!sections.contains(section)) {
-                    sections.add(section);
-                    startPositions.put(sections.indexOf(section), i);
-                }
-                positions.put(i, sections.indexOf(section));
+                sections.add(section);
             }
         }
 
@@ -313,12 +300,12 @@ public class SchedulesRouteSelection_ListViewItem_ArrayAdapter extends BaseAdapt
 
     @Override
     public int getPositionForSection(int i) {
-        return startPositions.get(i);
+        return i;
     }
 
     @Override
     public int getSectionForPosition(int i) {
-        return positions.get(i);
+        return i;
     }
 
     class HeaderViewHolder {

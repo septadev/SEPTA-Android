@@ -1,5 +1,6 @@
 package org.septa.android.app.managers;
 
+import org.septa.android.app.models.LocationBasedRouteModel;
 import org.septa.android.app.models.servicemodels.AlertModel;
 import org.septa.android.app.services.adaptors.AlertsAdaptor;
 
@@ -49,8 +50,27 @@ public class AlertManager implements Callback<ArrayList<AlertModel>> {
      * Fetch and cache all alert values.
      */
     public void fetchAlerts() {
-        AlertsAdaptor.getAlertsService().getAllAlerts(this);
+        AlertsAdaptor.getAlertsService().alerts(this);
     }
+
+    /**
+     * The services do not provide a reliable tie between routes and alerts so we have to make one here.
+     * @param route
+     * @return
+     */
+    public AlertModel getAlertForRoute(LocationBasedRouteModel route){
+        if(alerts != null ){
+            for(AlertModel alert : alerts){
+                //@TODO handle MFO/BSL etc lines with odd names that do not relate to key values.
+                if(alert.getRouteName().equals(route.getRouteShortName())){
+                    return alert;
+                }
+            }
+        }
+
+        return null;
+    }
+
 
     /**
      * Updates the Global Alert if we have not yet retrieved an update or

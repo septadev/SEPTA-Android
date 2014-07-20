@@ -147,7 +147,7 @@ android {
         }
     }
     productFlavors {
-}
+    }
 }
 
 dependencies {
@@ -164,6 +164,7 @@ dependencies {
     compile group: 'com.andraskindler.quickscroll', name: 'quickscroll', version: '0.9.8'
     compile('de.keyboardsurfer.android.widget:crouton:1.8.4') {
         exclude group: 'com.google.android', module: 'support-v4'
-	}
+    }
+    compile 'com.jakewharton:butterknife:5.1.1'
     compile group: 'se.emilsjolander', name: 'stickylistheaders', version: '2.4.1'
 }

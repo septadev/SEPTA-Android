@@ -24,13 +24,13 @@ import com.google.gson.Gson;
 
 import org.septa.android.app.R;
 import org.septa.android.app.activities.FindNearestLocationRouteDetailsActionBarActivity;
-import org.septa.android.app.activities.schedules.SchedulesItineraryActionBarActivity;
 import org.septa.android.app.adapters.FindNearestLocation_ListViewItem_ArrayAdapter;
 import org.septa.android.app.databases.SEPTADatabase;
 import org.septa.android.app.models.LocationBasedRouteModel;
 import org.septa.android.app.models.LocationModel;
 import org.septa.android.app.models.ObjectFactory;
 import org.septa.android.app.models.RoutesModel;
+import org.septa.android.app.models.TransportationType;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,12 +51,10 @@ public class FindNearestLocationsListFragment extends ListFragment {
 
         this.locationList = new ArrayList<LocationModel>(0);
         this.getListView().invalidate();
+
     }
 
-    public void setLocationList(List<LocationModel>locationList, String type) {
-        RoutesModel routesModel = null;
-
-        Log.d(TAG, "setting the location list for type " + type);
+    public void setLocationList(List<LocationModel> locationList, TransportationType type) {
 
         this.locationList.addAll(locationList);
         Collections.sort(this.locationList, new Comparator<LocationModel>() {
@@ -65,12 +63,20 @@ public class FindNearestLocationsListFragment extends ListFragment {
             }
         });
 
-        if (type.equals("bus")) {
-            routesModel = ObjectFactory.getInstance().getBusRoutes();
-        } else if (type.equals("rail")) {
-            routesModel = ObjectFactory.getInstance().getRailRoutes();
-        } else {
-            routesModel = ObjectFactory.getInstance().getTrolleyRoutes();
+        RoutesModel routesModel;
+        switch (type) {
+            case BUS:
+                routesModel = ObjectFactory.getInstance().getBusRoutes();
+                break;
+            case RAIL:
+                routesModel = ObjectFactory.getInstance().getRailRoutes();
+                break;
+            case TROLLEY:
+                routesModel = ObjectFactory.getInstance().getTrolleyRoutes();
+                break;
+            default:
+                routesModel = null;
+                break;
         }
 
         RouteStopIdLoader routeStopIdLoader = new RouteStopIdLoader(this.getListView(), routesModel);
@@ -85,16 +91,10 @@ public class FindNearestLocationsListFragment extends ListFragment {
 
         ListView lv = getListView();
         lv.setFastScrollEnabled(true);
-
-        lv.setEmptyView(lv.findViewById(R.id.row_empty_view));
-
         lv.setScrollingCacheEnabled(false);
         lv.setSmoothScrollbarEnabled(false);
     }
 
-    /**
-     * Called to instantiate the view. Creates and returns the WebView.
-     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -109,10 +109,8 @@ public class FindNearestLocationsListFragment extends ListFragment {
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-        Log.d(TAG, "detected a listfragment item being clicked");
 
         LocationModel locationModel = locationList.get(position);
-        Log.d(TAG, "I clicked on this locationName "+locationModel.getLocationName()+" with "+locationModel.getRoutes().size());
 
         //GSon the locationModel to pass to the activity
         Intent findNearestLocationRouteDetailsIntent = null;
@@ -129,8 +127,6 @@ public class FindNearestLocationsListFragment extends ListFragment {
     @Override
     public void onStart() {
         super.onStart();
-//        ListView lv = getListView();
-//        lv.setEmptyView(View.inflate(getActivity(), R.layout.row_empty_view, (ViewGroup)getListView().getParent()));
     }
 
     private class RouteStopIdLoader extends AsyncTask<List<LocationModel>, Integer, Boolean> {
@@ -143,8 +139,8 @@ public class FindNearestLocationsListFragment extends ListFragment {
             this.routesModel = routesModel;
         }
 
-        private void loadRoutesPerStop(List<LocationModel>locationList) {
-            Log.d(TAG, "processing routes per stop with a location list size of "+locationList.size());
+        private void loadRoutesPerStop(List<LocationModel> locationList) {
+            Log.d(TAG, "processing routes per stop with a location list size of " + locationList.size());
             SEPTADatabase septaDatabase = new SEPTADatabase(getActivity());
             SQLiteDatabase database = septaDatabase.getReadableDatabase();
 
@@ -154,7 +150,7 @@ public class FindNearestLocationsListFragment extends ListFragment {
                 if (cursor != null) {
                     if (cursor.moveToFirst()) {
                         do {
-                            location.addRoute(cursor.getString(0), LocationBasedRouteModel.DirectionCode.valueOf(cursor.getString(2)), cursor.getInt(4));
+                            location.addRoute(cursor.getString(0), LocationBasedRouteModel.DirectionCode.valueOf(cursor.getString(2)), cursor.getInt(3), cursor.getInt(4));
                         } while (cursor.moveToNext());
                     }
 
@@ -169,7 +165,7 @@ public class FindNearestLocationsListFragment extends ListFragment {
 
         @Override
         protected Boolean doInBackground(List<LocationModel>... params) {
-            List<LocationModel>locationList = params[0];
+            List<LocationModel> locationList = params[0];
 
             loadRoutesPerStop(locationList);
 

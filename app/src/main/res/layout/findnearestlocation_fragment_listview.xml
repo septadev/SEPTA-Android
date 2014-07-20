@@ -1,17 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ findnearestlocation_fragment_listview.xml
   ~ Last modified on 05-22-2014 10:31-0400 by brianhmayo
   ~
   ~ Copyright (c) 2014 SEPTA.  All rights reserved.
   -->
-
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical" >
-
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black">
     <ListView
         android:id="@android:id/list"
         android:layout_width="match_parent"
@@ -19,5 +16,7 @@
         android:divider="@android:color/white"
         android:dividerHeight="2dp" >
     </ListView>
-
-</LinearLayout>
+    <include
+        android:id="@android:id/empty"
+        layout="@layout/loading_view"/>
+</FrameLayout>

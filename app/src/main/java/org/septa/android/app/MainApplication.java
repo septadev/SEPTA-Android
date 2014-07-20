@@ -4,6 +4,7 @@ import android.app.Application;
 
 import com.crashlytics.android.Crashlytics;
 
+import org.septa.android.app.managers.AlertManager;
 import org.septa.android.app.managers.SharedPreferencesManager;
 
 /**
@@ -16,5 +17,8 @@ public class MainApplication extends Application{
         super.onCreate();
         Crashlytics.start(this);
         SharedPreferencesManager.getInstance().init(this);
+
+        //@TODO putting timing reqs around this and load on demand
+        AlertManager.getInstance().fetchAlerts();
     }
 }

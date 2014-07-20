@@ -17,9 +17,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.widget.ImageView;
 
-import com.crashlytics.android.Crashlytics;
 import org.septa.android.app.R;
-import org.septa.android.app.managers.SharedPreferencesManager;
 import org.septa.android.app.tasks.LoadDatabaseTask;
 import org.septa.android.app.tasks.LoadKMLFileTask;
 

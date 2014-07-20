@@ -25,6 +25,19 @@ public class AlertModel implements Comparable<AlertModel> {
     @SerializedName("route_name") private String routeName;
     @SerializedName("current_message") private String currentMessage;
 
+    public AlertModel(){
+        this.mode = "Empty";
+        this.routeId = null;
+        this.routeName = "Empty";
+        this.currentMessage = "Empty";
+        this.isAlert = "N";
+        this.isDetour = "N";
+        this.isSuspended ="N";
+        this.isAdvisory = "No";
+        this.isSnow = "N";
+        this.lastUpdate = new Date();
+    }
+
     public boolean isGeneral() {
         if (mode.equals("generic")) {
 

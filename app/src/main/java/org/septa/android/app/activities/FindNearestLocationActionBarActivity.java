@@ -13,7 +13,6 @@ import android.content.DialogInterface;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -34,7 +33,7 @@ import org.septa.android.app.dialogs.FindNearestLocationEditRadiusDialog;
 import org.septa.android.app.fragments.FindNearestLocationsListFragment;
 import org.septa.android.app.managers.SharedPreferencesManager;
 import org.septa.android.app.models.LocationModel;
-import org.septa.android.app.models.ObjectFactory;
+import org.septa.android.app.models.TransportationType;
 import org.septa.android.app.services.apiproxies.LocationServiceProxy;
 
 import java.util.ArrayList;
@@ -50,6 +49,9 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
     public static final String TAG = FindNearestLocationActionBarActivity.class.getName();
 
     private boolean inChangeRadiusMode = false;
+    private float defaultZoom;
+    private float maxDistanceFromCityCenter; //if new locations exceed maximum we return to city center instead
+    private Location defaultLocation;
 
     private GoogleMap mMap;
 
@@ -69,12 +71,10 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
             MILLISECONDS_PER_SECOND * FASTEST_INTERVAL_IN_SECONDS;
 
     private FindNearestLocationEditRadiusDialog findNearestLocationEditRadiusDialog;
-
     private int locationServiceCalls = 0;
-
     private Location existingLocation = null;
-
     private float mapSearchRadius;
+    private FindNearestLocationsListFragment mListFragment;
 
     private float getMapSearchRadius() {
 
@@ -94,6 +94,9 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
 
         setContentView(R.layout.findnearestlocation);
 
+        mListFragment = (FindNearestLocationsListFragment) getSupportFragmentManager().
+                findFragmentById(R.id.nearestLocationListFragment);
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setIcon(R.drawable.ic_actionbar_findnearestlocation);
         getSupportActionBar().setTitle(titleText);
@@ -107,13 +110,21 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
         // set the initial center point of the map on Center City, Philadelphia with a default zoom
         double defaultLatitute = Double.parseDouble(getResources().getString(R.string.generalmap_default_location_latitude));
         double defaultLongitude = Double.parseDouble(getResources().getString(R.string.generalmap_default_location_longitude));
-        float defaultZoomLevel = Float.parseFloat(getResources().getString(R.string.generalmap_default_zoomlevel));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(defaultLatitute, defaultLongitude), defaultZoomLevel));
-//        loadMapAndListView(defaultLatitute, defaultLongitude, mapSearchRadius);
+        maxDistanceFromCityCenter = Float.parseFloat(getResources().getString(R.string.generalmap_max_distance_from_center));
 
-        mMap.setMyLocationEnabled(true);
+        Log.d("f", "Max From Center " + maxDistanceFromCityCenter);
+        defaultLocation = new Location("default");
+        defaultLocation.setLatitude(defaultLatitute);
+        defaultLocation.setLongitude(defaultLongitude);
+        this.existingLocation = defaultLocation;
+
+        defaultZoom = Float.parseFloat(getResources().getString(R.string.generalmap_default_zoomlevel));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(defaultLatitute, defaultLongitude), defaultZoom));
+
+        loadMapAndListView(defaultLatitute, defaultLongitude, mapSearchRadius);
 
         mLocationClient = new LocationClient(this, this, this);
+
     }
 
     @Override
@@ -199,9 +210,8 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
             mMap.clear();
         }
 
-        FindNearestLocationsListFragment findNearestLocationsListFragment = (FindNearestLocationsListFragment) getSupportFragmentManager().
-                findFragmentById(R.id.nearestLocationListFragment);
-        findNearestLocationsListFragment.clearLocationLists();
+
+        mListFragment.clearLocationLists();
 
         Callback busStopsCallback = new Callback() {
             @Override
@@ -212,7 +222,7 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
                 ActivityCompat.invalidateOptionsMenu(FindNearestLocationActionBarActivity.this);
 
                 FindNearestLocationsListFragment listFragment = (FindNearestLocationsListFragment) getSupportFragmentManager().findFragmentById(R.id.nearestLocationListFragment);
-                listFragment.setLocationList((ArrayList<LocationModel>) o, "bus");
+                listFragment.setLocationList((ArrayList<LocationModel>) o, TransportationType.BUS);
 
                 for (LocationModel location : (ArrayList<LocationModel>) o) {
                     // check to make sure that mMap is not null
@@ -250,7 +260,7 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
                 ActivityCompat.invalidateOptionsMenu(FindNearestLocationActionBarActivity.this);
 
                 FindNearestLocationsListFragment listFragment = (FindNearestLocationsListFragment) getSupportFragmentManager().findFragmentById(R.id.nearestLocationListFragment);
-                listFragment.setLocationList((ArrayList<LocationModel>) o, "rail");
+                listFragment.setLocationList((ArrayList<LocationModel>) o, TransportationType.RAIL);
 
                 for (LocationModel location : (ArrayList<LocationModel>) o) {
                     // check to make sure that mMap is not null
@@ -288,7 +298,7 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
                 ActivityCompat.invalidateOptionsMenu(FindNearestLocationActionBarActivity.this);
 
                 FindNearestLocationsListFragment listFragment = (FindNearestLocationsListFragment) getSupportFragmentManager().findFragmentById(R.id.nearestLocationListFragment);
-                listFragment.setLocationList((ArrayList<LocationModel>) o, "trolley");
+                listFragment.setLocationList((ArrayList<LocationModel>) o, TransportationType.TROLLEY);
 
                 for (LocationModel location : (ArrayList<LocationModel>) o) {
                     // check to make sure that mMap is not null
@@ -339,17 +349,19 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
         // TODO: find a different way to tell if we should make our network calls, with a timer.
         // TODO: find a better way to shut off the updates and resume when it makes sense
         if (newLocation.getAccuracy()< getResources().getInteger(R.integer.findnearestlocation_map_accuracy_limit_in_meters)) {
-            this.existingLocation = newLocation;
+
 
             mLocationClient.disconnect();
 
-            LatLng currentLocation = new LatLng(newLocation.getLatitude(), newLocation.getLongitude());
+            float distanceFromCenter  = defaultLocation.distanceTo(newLocation);
+            if( distanceFromCenter < maxDistanceFromCityCenter){
+                this.existingLocation = newLocation;
+                Log.d(TAG, "onLocationChanged, newLocation's latitude "+newLocation.getLatitude());
+                Log.d(TAG, "onLocationChanged, newLocation's longitude "+newLocation.getLongitude());
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(newLocation.getLatitude(), newLocation.getLongitude()), Float.parseFloat(getString(R.string.findnearestlocation_map_zoom_level_float))));
+                loadMapAndListView(newLocation, SharedPreferencesManager.getInstance().getNearestLocationMapSearchRadius());
+            }
 
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, Float.parseFloat(getString(R.string.findnearestlocation_map_zoom_level_float))));
-
-            Log.d(TAG, "onLocationChanged, newLocation's latitude "+newLocation.getLatitude());
-            Log.d(TAG, "onLocationChanged, newLocation's longitude "+newLocation.getLongitude());
-            loadMapAndListView(newLocation, SharedPreferencesManager.getInstance().getNearestLocationMapSearchRadius());
         }
     }
 
@@ -360,6 +372,7 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
      */
     @Override
     public void onConnected(Bundle dataBundle) {
+
         // Display the connection status
         LocationRequest mLocationRequest = LocationRequest.create();
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
@@ -419,6 +432,7 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
         super.onStart();
         // Connect the client.
         mLocationClient.connect();
+
     }
 
     @Override

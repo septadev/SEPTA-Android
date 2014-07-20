@@ -10,7 +10,6 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.google.gson.internal.bind.DateTypeAdapter;
 import com.google.gson.reflect.TypeToken;
 
 import org.septa.android.app.models.servicemodels.BusScheduleModel;
@@ -19,7 +18,6 @@ import org.septa.android.app.services.ServiceErrorHandler;
 import org.septa.android.app.services.apiinterfaces.BusSchedulesService;
 
 import java.lang.reflect.Type;
-import java.util.Date;
 
 import retrofit.RestAdapter;
 import retrofit.converter.GsonConverter;
@@ -37,6 +35,7 @@ public class BusSchedulesAdaptor {
                 .setEndpoint("http://www3.septa.org")       // The base API endpoint.
                 .setConverter(new GsonConverter(gson))
                 .setErrorHandler(new ServiceErrorHandler())
+                .setLogLevel(RestAdapter.LogLevel.FULL)
                 .build();
 
         return restAdapter.create(BusSchedulesService.class);

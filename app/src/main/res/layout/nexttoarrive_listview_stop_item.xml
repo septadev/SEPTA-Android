@@ -33,6 +33,17 @@
         android:textSize="28sp"
         android:layout_marginLeft="10dp"
         android:singleLine="true"
-        android:ellipsize="middle"/>
+        android:ellipsize="middle"
+        android:layout_weight="1"/>
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:layout_marginLeft="8dp"
+        android:id="@+id/nexttoarrive_stopselection_distance_textview"
+        android:visibility="gone"
+        android:layout_weight="3"/>
+
 
 </LinearLayout>

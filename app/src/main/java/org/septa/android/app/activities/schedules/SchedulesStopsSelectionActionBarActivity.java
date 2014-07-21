@@ -145,6 +145,12 @@ public class SchedulesStopsSelectionActionBarActivity extends BaseAnalyticsActio
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        locationManager.removeUpdates(this);
+    }
+
+    @Override
     public void onConfigurationChanged(Configuration newConfig) {
 
         super.onConfigurationChanged(newConfig);

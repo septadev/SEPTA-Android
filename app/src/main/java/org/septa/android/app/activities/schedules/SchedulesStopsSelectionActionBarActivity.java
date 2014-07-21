@@ -8,18 +8,25 @@
 package org.septa.android.app.activities.schedules;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Looper;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 
@@ -40,7 +47,10 @@ import static org.septa.android.app.models.RouteTypes.valueOf;
 public class SchedulesStopsSelectionActionBarActivity extends BaseAnalyticsActionBarActivity implements
         AdapterView.OnItemClickListener, StickyListHeadersListView.OnHeaderClickListener,
         StickyListHeadersListView.OnStickyHeaderOffsetChangedListener,
-        StickyListHeadersListView.OnStickyHeaderChangedListener, View.OnTouchListener {
+        StickyListHeadersListView.OnStickyHeaderChangedListener, View.OnTouchListener,
+        View.OnClickListener, LocationListener {
+
+    private static final String TAG = SchedulesStopsSelectionActionBarActivity.class.getName();
 
     private ItinerarySelection_ListViewItem_ArrayAdapter mAdapter;
     private boolean fadeHeader = true;
@@ -51,6 +61,9 @@ public class SchedulesStopsSelectionActionBarActivity extends BaseAnalyticsActio
     private StickyListHeadersListView stickyList;
 
     private ArrayList<SchedulesRouteModel> routesModel;
+
+    private LocationManager locationManager;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -107,7 +120,7 @@ public class SchedulesStopsSelectionActionBarActivity extends BaseAnalyticsActio
                 returnIntent.putExtra("stop_name", stop.getStopName());
                 returnIntent.putExtra("stop_id", stop.getStopId());
                 returnIntent.putExtra("selection_mode", schedulesItineraryStopSelectionStartOrDestinationString);
-                SchedulesStopsSelectionActionBarActivity.this.setResult(SchedulesStopsSelectionActionBarActivity.this.RESULT_OK, returnIntent);
+                SchedulesStopsSelectionActionBarActivity.this.setResult(Activity.RESULT_OK, returnIntent);
                 SchedulesStopsSelectionActionBarActivity.this.finish();
             }
         });
@@ -117,6 +130,12 @@ public class SchedulesStopsSelectionActionBarActivity extends BaseAnalyticsActio
 
         DirectionHeaderLoader directionHeaderLoader = new DirectionHeaderLoader(routeShortName);
         directionHeaderLoader.execute(travelType);
+
+        View headerView = findViewById(R.id.headerview_include);
+        headerView.findViewById(R.id.headerview_textview_current_location).setOnClickListener(this);
+
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
     }
 
     @Override
@@ -167,6 +186,58 @@ public class SchedulesStopsSelectionActionBarActivity extends BaseAnalyticsActio
         return false;
     }
 
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.headerview_textview_current_location:
+                getUserLocation();
+                break;
+        }
+    }
+
+    private void getUserLocation() {
+        Location userLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+        locationManager.removeUpdates(this);
+        if(userLocation == null && !locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            Toast.makeText(this, getString(R.string.error_location_disabled),
+                    Toast.LENGTH_SHORT).show();
+        }  else if(userLocation != null) {
+            Log.i(TAG, "Using cached location: " + String.valueOf(userLocation));
+            sortByLocations(userLocation);
+        }  else {
+            locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, this,
+                    Looper.myLooper());
+        }
+    }
+
+    private void sortByLocations(Location userLocation) {
+        if(userLocation != null) {
+            mAdapter.sortByLocation(userLocation);
+        }
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        Log.i(TAG, "Location: " + location);
+        sortByLocations(location);
+    }
+
+    @Override
+    public void onStatusChanged(String s, int i, Bundle bundle) {
+        Log.i(TAG, "Provider: " + s + " Status: " + i);
+    }
+
+    @Override
+    public void onProviderEnabled(String s) {
+        Log.i(TAG, "Enabled: " + s);
+    }
+
+    @Override
+    public void onProviderDisabled(String s) {
+        Log.i(TAG, "Disabled: " + s);
+    }
+
     private class StopsLoader extends AsyncTask<RouteTypes, Integer, Boolean> {
         String routeShortName;
         ArrayList<StopModel> stopModelListDirection0 = new ArrayList<StopModel>();
@@ -190,39 +261,39 @@ public class SchedulesStopsSelectionActionBarActivity extends BaseAnalyticsActio
             switch (routeType) {
                 case RAIL: {
                     Log.d("f", "type is rail, loading the trips");
-                    queryString = "SELECT stop_id, stop_name, null as direction_id, wheelchair_boarding, null as stop_sequence FROM stops_rail ORDER BY stop_name";
+                    queryString = "SELECT stop_id, stop_name, null as direction_id, wheelchair_boarding, null as stop_sequence, stop_lat, stop_lon  FROM stops_rail ORDER BY stop_name";
 
                     break;
                 }
                 case BUS: {
                     Log.d("f", "type is bus, loading the trips");
-                    queryString = "SELECT stop_id, stop_name, direction_id, wheelchair_boarding, stop_sequence FROM stopNameLookUpTable NATURAL JOIN stops_bus s WHERE route_short_name=\"%%route_short_name%%\" ORDER BY stop_name";
+                    queryString = "SELECT stop_id, stop_name, direction_id, wheelchair_boarding, stop_sequence, s.stop_lat, s.stop_lon  FROM stopNameLookUpTable NATURAL JOIN stops_bus s WHERE route_short_name=\"%%route_short_name%%\" ORDER BY stop_name";
                     queryString = queryString.replace("%%route_short_name%%", routeShortName);
 
                     break;
                 }
                 case TROLLEY: {
                     Log.d("f", "type is trolley, loading the trips");
-                    queryString = "SELECT stop_id, stop_name, direction_id, wheelchair_boarding, stop_sequence FROM stopNameLookUpTable NATURAL JOIN stops_bus s WHERE route_short_name=\"%%route_short_name%%\" ORDER BY stop_name";
+                    queryString = "SELECT stop_id, stop_name, direction_id, wheelchair_boarding, stop_sequence, stop_lat, stop_lon  FROM stopNameLookUpTable NATURAL JOIN stops_bus s WHERE route_short_name=\"%%route_short_name%%\" ORDER BY stop_name";
                     queryString = queryString.replace("%%route_short_name%%", routeShortName);
 
                     break;
                 }
                 case BSL: {
                     Log.d("f", "type is bsl, loading the trips");
-                    queryString = "SELECT stop_times_BSL.stop_id, stops_bus.stop_name, direction_id, stops_bus.wheelchair_boarding, null as stop_sequence FROM trips_BSL JOIN stop_times_BSL ON trips_BSL.trip_id=stop_times_BSL.trip_id NATURAL JOIN stops_bus GROUP BY stop_times_BSL.stop_id ORDER BY stops_bus.stop_name;";
+                    queryString = "SELECT stop_times_BSL.stop_id, stops_bus.stop_name, direction_id, stops_bus.wheelchair_boarding, null as stop_sequence, stop_lat, stop_lon  FROM trips_BSL JOIN stop_times_BSL ON trips_BSL.trip_id=stop_times_BSL.trip_id NATURAL JOIN stops_bus GROUP BY stop_times_BSL.stop_id ORDER BY stops_bus.stop_name;";
 
                      break;
                 }
                 case MFL: {
                     Log.d("f", "type is mfl, loading the trips with shortname as "+routeShortName);
-                    queryString = "SELECT stop_times_MFL.stop_id, stops_bus.stop_name, direction_id, stops_bus.wheelchair_boarding, null as stop_sequence FROM trips_MFL JOIN stop_times_MFL ON trips_MFL.trip_id=stop_times_MFL.trip_id NATURAL JOIN stops_bus GROUP BY stop_times_MFL.stop_id ORDER BY stops_bus.stop_name;";
+                    queryString = "SELECT stop_times_MFL.stop_id, stops_bus.stop_name, direction_id, stops_bus.wheelchair_boarding, null as stop_sequence, stop_lat, stop_lon  FROM trips_MFL JOIN stop_times_MFL ON trips_MFL.trip_id=stop_times_MFL.trip_id NATURAL JOIN stops_bus GROUP BY stop_times_MFL.stop_id ORDER BY stops_bus.stop_name;";
 
                     break;
                 }
                 case NHSL: {
                     Log.d("f", "type is nhsl, loading the trips");
-                    queryString = "SELECT stop_times_NHSL.stop_id, stops_bus.stop_name, null as direction_id, stops_bus.wheelchair_boarding, null as stop_sequence FROM trips_NHSL JOIN stop_times_NHSL ON trips_NHSL.trip_id=stop_times_NHSL.trip_id NATURAL JOIN stops_bus GROUP BY stop_times_NHSL.stop_id ORDER BY stops_bus.stop_name;";
+                    queryString = "SELECT stop_times_NHSL.stop_id, stops_bus.stop_name, null as direction_id, stops_bus.wheelchair_boarding, null as stop_sequence, stop_lat, stop_lon FROM trips_NHSL JOIN stop_times_NHSL ON trips_NHSL.trip_id=stop_times_NHSL.trip_id NATURAL JOIN stops_bus GROUP BY stop_times_NHSL.stop_id ORDER BY stops_bus.stop_name;";
 
                     break;
                 }
@@ -232,7 +303,9 @@ public class SchedulesStopsSelectionActionBarActivity extends BaseAnalyticsActio
             if (cursor != null) {
                 if (cursor.moveToFirst()) {
                     do {
-                        StopModel stopModel = new StopModel(cursor.getString(0), cursor.getString(1), cursor.getInt(4), (cursor.getInt(3) == 1) ? true : false);
+                        StopModel stopModel = new StopModel(cursor.getString(0), cursor.getString(1),
+                                cursor.getInt(4), (cursor.getInt(3) == 1) ? true : false,
+                                cursor.getString(5), cursor.getString(6));
 
                         switch (routeType) {
                             // in the case of RAIL, the direction is always 0

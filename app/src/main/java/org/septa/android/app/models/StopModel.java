@@ -7,10 +7,6 @@
 
 package org.septa.android.app.models;
 
-import android.util.Log;
-
-import java.util.Comparator;
-
 public class StopModel implements Comparable<StopModel> {
 
     private String stopId;
@@ -29,6 +25,12 @@ public class StopModel implements Comparable<StopModel> {
 
     public StopModel(String stopId, String stopName, int stopSequence, boolean wheelchairBoarding) {
         this(stopId, stopName, wheelchairBoarding);
+        this.stopSequence = stopSequence;
+    }
+
+    public StopModel(String stopId, String stopName, int stopSequence, boolean wheelchairBoarding,
+                     String latitude, String longitude) {
+        this(stopId, stopName, wheelchairBoarding, latitude, longitude);
         this.stopSequence = stopSequence;
     }
 

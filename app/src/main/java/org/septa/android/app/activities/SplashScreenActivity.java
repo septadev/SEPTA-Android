@@ -17,7 +17,6 @@ import android.util.Log;
 import android.view.Gravity;
 import android.widget.ImageView;
 
-import com.crashlytics.android.Crashlytics;
 import org.septa.android.app.R;
 import org.septa.android.app.tasks.LoadDatabaseTask;
 import org.septa.android.app.tasks.LoadKMLFileTask;
@@ -32,7 +31,7 @@ public class SplashScreenActivity extends BaseAnalyticsActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Crashlytics.start(this);
+
 
         setContentView(R.layout.splashscreen);
 
@@ -84,7 +83,7 @@ public class SplashScreenActivity extends BaseAnalyticsActivity {
 
 
         File databaseFileName = new File(this.getApplicationInfo().dataDir+"/databases/"+DATABASE_NAME);
-        boolean forceLoadDatabase = getResources().getBoolean(R.bool.force_load_database);
+        boolean forceLoadDatabase =  getResources().getBoolean(R.bool.force_load_database);
 
         boolean deleteSuccessful = false;
         if (forceLoadDatabase) {

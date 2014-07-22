@@ -24,7 +24,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:src="@drawable/ic_systemstatus_mfl_blue"/>
+            android:src="@drawable/ic_systemstatus_mfl_blue"
+            android:paddingRight="5dp"/>
         <TextView
             android:id="@+id/findnearestlocation_routedetails_listviewitem_routeshortname"
             android:layout_width="wrap_content"

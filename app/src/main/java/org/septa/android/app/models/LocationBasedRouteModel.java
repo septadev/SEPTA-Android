@@ -8,15 +8,26 @@
 package org.septa.android.app.models;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class LocationBasedRouteModel {
+
+    private static HashMap<String, RouteSpecialType> routeSpecialTypes;
+    static {
+        routeSpecialTypes = new HashMap<String, RouteSpecialType>();
+        routeSpecialTypes.put("NHSL", RouteSpecialType.NHSL);
+        routeSpecialTypes.put("BSS", RouteSpecialType.BSS);
+        routeSpecialTypes.put("MFL", RouteSpecialType.MFL);
+        routeSpecialTypes.put("MFO", RouteSpecialType.MFO);
+        routeSpecialTypes.put("BSO", RouteSpecialType.BSO);
+    }
     private String routeShortName;
     private int directionBinaryPower = 0;
     private int routeType = 0;
-
     private ArrayList<TimeDayPairModel> timeDayPairArrayList = new ArrayList<TimeDayPairModel>();
     private int timeDayPairIndex = -1;
-
+    private int dircode;
 
     public int getDirectionBinaryPower() {
         return directionBinaryPower;
@@ -26,16 +37,20 @@ public class LocationBasedRouteModel {
         this.directionBinaryPower = directionBinaryPower;
     }
 
+    public int getDirectionCode(){
+        return dircode;
+    }
+
+    public void setDirectionCode(int code){
+        this.dircode = code;
+    }
+
     public int getRouteType() {
         return routeType;
     }
 
     public void setRouteType(int routeType) {
         this.routeType = routeType;
-    }
-
-    public enum DirectionCode {
-        N, S, E, W, X, Loop, LOOP
     }
 
     public String getRouteShortName() {
@@ -102,17 +117,9 @@ public class LocationBasedRouteModel {
         return routeText;
     }
 
-    public void setTimeDayPairIndex(int index) {
 
-        this.timeDayPairIndex = index;
-    }
-
-    public TimeDayPairModel getTimeDayPairFromIndex() {
-        if (timeDayPairIndex > -1) {
-            return timeDayPairArrayList.get(timeDayPairIndex);
-        }
-
-        return null;
+    public List<TimeDayPairModel> getTimeDayPairs(){
+        return timeDayPairArrayList;
     }
 
     public void addTimeDayPair(String time, String day) {
@@ -120,26 +127,33 @@ public class LocationBasedRouteModel {
         this.timeDayPairArrayList.add(timeDayPair);
     }
 
-    public String[] getTimesFromTimeDayPairs() {
-        String[] timeArray = new String[this.timeDayPairArrayList.size()];
-        for (int i = 0; i < this.timeDayPairArrayList.size(); i++) {
-            timeArray[i] = this.timeDayPairArrayList.get(i).getTime();
-        }
-
-        return timeArray;
-    }
-
-    public String[] getDaysFromTimeDayPairs() {
-        String[] dayArray = new String[this.timeDayPairArrayList.size()];
-        for (int i = 0; i < this.timeDayPairArrayList.size(); i++) {
-            dayArray[i] = this.timeDayPairArrayList.get(i).getDay();
-        }
-
-        return dayArray;
-    }
 
     public int getTimeDayPairCount() {
         return this.timeDayPairArrayList.size();
+    }
+
+    public RouteSpecialType getRouteSpecialType() {
+        RouteSpecialType type = routeSpecialTypes.get(getRouteShortName());
+
+        if (type == null) {
+            return RouteSpecialType.NONE;
+        }
+
+        return type;
+    }
+
+    public TransportationType getTransportationType() {
+        return TransportationType.getType(getRouteType());
+    }
+    public enum DirectionCode {
+        N, S, E, W, X, Loop, LOOP
+    }
+
+    /**
+     * Some routes require special handling.
+     */
+    public enum RouteSpecialType {
+        NHSL, BSS, MFL, MFO, BSO, NONE
     }
 
     public class TimeDayPairModel {

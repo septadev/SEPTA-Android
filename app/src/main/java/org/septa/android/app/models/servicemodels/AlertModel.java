@@ -19,10 +19,24 @@ public class AlertModel implements Comparable<AlertModel> {
     @SerializedName("isalert") private String isAlert;
     @SerializedName("isdetour") private String isDetour;
     @SerializedName("issuppend") private String isSuspended;
-    @SerializedName("last_update") private Date lastUpdate;
+    @SerializedName("last_updated") private Date lastUpdate;
     @SerializedName("mode") private String mode;
     @SerializedName("route_id") private String routeId;
     @SerializedName("route_name") private String routeName;
+    @SerializedName("current_message") private String currentMessage;
+
+    public AlertModel(){
+        this.mode = "Empty";
+        this.routeId = null;
+        this.routeName = "Empty";
+        this.currentMessage = "Empty";
+        this.isAlert = "N";
+        this.isDetour = "N";
+        this.isSuspended ="N";
+        this.isAdvisory = "No";
+        this.isSnow = "N";
+        this.lastUpdate = new Date();
+    }
 
     public boolean isGeneral() {
         if (mode.equals("generic")) {
@@ -208,4 +222,13 @@ public class AlertModel implements Comparable<AlertModel> {
         // if we got here, we converted both to Integers and can compare outright.
         return thisRouteName.compareTo(otherRouteName);
     }
+
+    public String getCurrentMessage() {
+        return currentMessage;
+    }
+
+    public Date getLastUpdate() {
+        return lastUpdate;
+    }
+
 }

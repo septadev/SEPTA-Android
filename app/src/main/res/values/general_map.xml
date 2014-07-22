@@ -11,6 +11,8 @@
     <!-- The latitude and longitude for the center of Center City, Philadelphia,Pa -->
     <string name="generalmap_default_location_latitude">39.9527117</string>
     <string name="generalmap_default_location_longitude">-75.1638432</string>
+    <!-- Max distance user can be from city center before we remap default is 80450 meters or about 50 miles -->
+    <string name="generalmap_max_distance_from_center">80450.0f</string>
 
     <!-- A zoom level that provides a nice view of Center City, Philadelphia, Pa  -->
     <string name="generalmap_default_zoomlevel">13.0f</string>

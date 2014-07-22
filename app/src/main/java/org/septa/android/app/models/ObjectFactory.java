@@ -34,10 +34,6 @@ public class ObjectFactory {
     private static HashMap<String, String> gtfsStopNameTranslationsSingleton = null;
     private static Object gtfsStopNameTranslationsMutex = new Object();
 
-    private static SharedPreferencesManager sharedPreferencesManagerSingleton = null;
-    private static Object sharedPreferencesManagerMutex = new Object();
-
-
     private static HashMap<String, KMLModel> kmlModels = new HashMap<String, KMLModel>();
     private static Object kmlModelMutex = new Object();
 
@@ -118,18 +114,6 @@ public class ObjectFactory {
         }
 
         return stopsModelSingleton;
-    }
-
-    public SharedPreferencesManager getSharedPreferencesManager(Context context) {
-        if (sharedPreferencesManagerSingleton == null) {
-            synchronized (sharedPreferencesManagerMutex) {
-                if (sharedPreferencesManagerSingleton == null) {
-                    sharedPreferencesManagerSingleton = new SharedPreferencesManager(context);
-                }
-            }
-        }
-
-        return sharedPreferencesManagerSingleton;
     }
 
     public HashMap<String, String> getGTFSStopNameTranslations(Context context) {

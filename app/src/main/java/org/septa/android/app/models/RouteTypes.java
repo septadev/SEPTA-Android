@@ -6,7 +6,7 @@
  */
 
 package org.septa.android.app.models;
-
+@Deprecated
 public enum RouteTypes {
     TROLLEY ("trolley"),
     MFL ("mfl"),

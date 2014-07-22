@@ -21,6 +21,7 @@ public class LocationModel {
     private float location_lon;
     private String location_name;
     private String location_type;
+
     private HashMap<String, LocationBasedRouteModel> routes;
     private HashMap<String, Number> directionBinary;
 
@@ -62,17 +63,20 @@ public class LocationModel {
         return location_type;
     }
 
+
     public List<LocationBasedRouteModel> getRoutes() {
         return new ArrayList(routes.values());
     }
 
-    public void addRoute(String routeShortName, LocationBasedRouteModel.DirectionCode direction, int routeType) {
+    public void addRoute(String routeShortName, LocationBasedRouteModel.DirectionCode direction, int directionCode , int routeType) {
         LocationBasedRouteModel routeModel = routes.containsKey(routeShortName) ? routes.get(routeShortName) : new LocationBasedRouteModel();
 
         // we only want to use the direction of N, S, E, W and not the higher ordinal ones
         if (direction.ordinal() < 5) {
             routeModel.setDirectionBinaryPower(routeModel.getDirectionBinaryPower() + (int) Math.pow(2, direction.ordinal()));
+            routeModel.setDirectionCode(direction.ordinal());
         }
+        routeModel.setDirectionCode(directionCode);
         routeModel.setRouteShortName(routeShortName);
         routeModel.setRouteType(routeType);
 

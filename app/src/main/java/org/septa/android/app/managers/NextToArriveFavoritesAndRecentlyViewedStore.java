@@ -141,7 +141,7 @@ public class NextToArriveFavoritesAndRecentlyViewedStore {
     public ArrayList<NextToArriveRecentlyViewedModel> getRecentlyViewedList() {
         Gson gson = new Gson();
 
-        String json = ObjectFactory.getInstance().getSharedPreferencesManager(context).getNextToArriveRecentlyViewedList();
+        String json = SharedPreferencesManager.getInstance().getNextToArriveRecentlyViewedList();
         recentlyViewedList = gson.fromJson(json, new TypeToken<List<NextToArriveRecentlyViewedModel>>(){}.getType());
 
         if (recentlyViewedList == null) {
@@ -154,7 +154,7 @@ public class NextToArriveFavoritesAndRecentlyViewedStore {
     public ArrayList<NextToArriveFavoriteModel> getFavoriteList() {
         Gson gson = new Gson();
 
-        String json = ObjectFactory.getInstance().getSharedPreferencesManager(context).getNextToArriveFavoritesList();
+        String json = SharedPreferencesManager.getInstance().getNextToArriveFavoritesList();
         favoritesList = gson.fromJson(json, new TypeToken<List<NextToArriveFavoriteModel>>(){}.getType());
 
         if (favoritesList == null) {
@@ -168,13 +168,13 @@ public class NextToArriveFavoritesAndRecentlyViewedStore {
         Gson gson = new Gson();
         String recentlyViewedListAsJSON = gson.toJson(recentlyViewedList);
 
-        ObjectFactory.getInstance().getSharedPreferencesManager(context).setNextToArriveRecentlyViewedList(recentlyViewedListAsJSON);
+        SharedPreferencesManager.getInstance().setNextToArriveRecentlyViewedList(recentlyViewedListAsJSON);
     }
 
     private void sendToSharedPreferencesFavorites() {
         Gson gson = new Gson();
         String favoritesListAsJSON = gson.toJson(favoritesList);
 
-        ObjectFactory.getInstance().getSharedPreferencesManager(context).setNexttoArriveFavoritesList(favoritesListAsJSON);
+        SharedPreferencesManager.getInstance().setNexttoArriveFavoritesList(favoritesListAsJSON);
     }
 }

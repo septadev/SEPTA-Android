@@ -151,4 +151,19 @@ public class CalendarDateUtilities {
 
         return (endDate.getTime() - startDate.getTime()) / (60 * 1000);
     }
+
+    /**
+     * @param currentDate The new date value
+     * @param lastUpdateDate The last time the data was updated
+     * @param seconds desired duration between updates
+     * @return true if enough time has elapsed or if the dates are null. False otherwise.
+     */
+    public static boolean shouldUpdate(Date currentDate, Date lastUpdateDate, long seconds) {
+        if (currentDate == null || lastUpdateDate == null) {
+            return true;
+        }
+
+        long diff = currentDate.getTime() - lastUpdateDate.getTime();
+        return (diff / 1000 % 60) > seconds;
+    }
 }

@@ -27,7 +27,7 @@ public class AlertsAdaptor {
     public static AlertsService getAlertsService() {
         Gson gson = new GsonBuilder()
                 .setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE)
-                .registerTypeAdapter(Date.class, new DateTypeAdapter())
+                .registerTypeAdapter(Date.class, new DateAdapter())
                 .create();
 
         RestAdapter restAdapter = new RestAdapter.Builder()

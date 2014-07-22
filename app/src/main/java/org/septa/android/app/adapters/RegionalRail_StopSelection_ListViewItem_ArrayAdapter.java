@@ -8,6 +8,7 @@
 package org.septa.android.app.adapters;
 
 import android.content.Context;
+import android.location.Location;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,8 +19,13 @@ import android.widget.TextView;
 
 import org.septa.android.app.R;
 import org.septa.android.app.models.StopModel;
+import org.septa.android.app.utilities.Constants;
+import org.septa.android.app.utilities.StopModelDistanceComparator;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +38,8 @@ public class RegionalRail_StopSelection_ListViewItem_ArrayAdapter extends ArrayA
     private List<String> sections;
     private Map<Integer, Integer> positions;
     private Map<Integer, Integer> startPositions;
+    private boolean useLocations = false;
+    NumberFormat numberFormat = new DecimalFormat("#.##mi");
 
     public RegionalRail_StopSelection_ListViewItem_ArrayAdapter(Context context, List<StopModel> tripDataModelArrayList) {
         super(context, R.layout.nexttoarrive_listview_stop_item, tripDataModelArrayList);
@@ -70,6 +78,13 @@ public class RegionalRail_StopSelection_ListViewItem_ArrayAdapter extends ArrayA
             icon_imageView.setVisibility(View.INVISIBLE);
         }
 
+        if(useLocations) {
+            TextView distance_textview = (TextView) rowView.findViewById(R.id.nexttoarrive_stopselection_distance_textview);
+            distance_textview.setVisibility(View.VISIBLE);
+            distance_textview.setText(numberFormat.format(values.get(position).getDistance()));
+        }
+
+
         text_TextView.setText(values.get(position).getStopName());
 
         return rowView;
@@ -105,5 +120,24 @@ public class RegionalRail_StopSelection_ListViewItem_ArrayAdapter extends ArrayA
     @Override
     public int getSectionForPosition(int i) {
         return positions.get(i);
+    }
+
+    /**
+     * Sort list of stops by location
+     * @param userLocation
+     */
+    public void sortByLocation(Location userLocation) {
+        for(StopModel stopModel : values) {
+            Location stopLocation = new Location("");
+            stopLocation.setLatitude(stopModel.getLatitude());
+            stopLocation.setLongitude(stopModel.getLongitude());
+
+            stopModel.setDistance(Constants.METER_IN_MILES * userLocation.distanceTo(stopLocation));
+        }
+
+        Collections.sort(values, new StopModelDistanceComparator());
+
+        useLocations = true;
+        notifyDataSetChanged();
     }
 }

@@ -7,14 +7,22 @@
 
 package org.septa.android.app.fragments;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.location.LocationProvider;
 import android.os.Bundle;
+import android.os.Looper;
 import android.support.v4.app.ListFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import org.septa.android.app.R;
 import org.septa.android.app.adapters.RegionalRail_StopSelection_ListViewItem_ArrayAdapter;
@@ -23,12 +31,15 @@ import org.septa.android.app.models.StopModel;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StopSelectionListFragment extends ListFragment {
+public class StopSelectionListFragment extends ListFragment implements View.OnClickListener, LocationListener {
     public static final String TAG = StopSelectionListFragment.class.getName();
 
     private List<StopModel> stopModelList;
 
     private String startOrDestinationSelectionMode;
+
+    private LocationManager locationManager;
+    private RegionalRail_StopSelection_ListViewItem_ArrayAdapter adapter;
 
     public StopSelectionListFragment() {
         // instantiate an empty array list for the TripDataModel
@@ -48,7 +59,7 @@ public class StopSelectionListFragment extends ListFragment {
         this.stopModelList = stopModelList;
 
         getListView().setFastScrollEnabled(false);
-        ArrayAdapter<StopModel> adapter = new RegionalRail_StopSelection_ListViewItem_ArrayAdapter(getActivity(), stopModelList);
+        adapter = new RegionalRail_StopSelection_ListViewItem_ArrayAdapter(getActivity(), stopModelList);
         setListAdapter(adapter);
         getListView().setFastScrollEnabled(true);
     }
@@ -62,6 +73,13 @@ public class StopSelectionListFragment extends ListFragment {
         ListView lv = getListView();
         lv.setDivider(getActivity().getResources().getDrawable(R.drawable.list_item_separator_gradient));
         lv.setDividerHeight(3);
+
+        View headerView = getActivity().getLayoutInflater().inflate(
+                R.layout.headerview_route_selection, lv, false);
+        headerView.findViewById(R.id.headerview_textview_current_location).setOnClickListener(this);
+        lv.addHeaderView(headerView);
+
+        locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
     }
 
     /**
@@ -71,19 +89,78 @@ public class StopSelectionListFragment extends ListFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        ArrayAdapter<StopModel> adapter = new RegionalRail_StopSelection_ListViewItem_ArrayAdapter(inflater.getContext(), stopModelList);
+        adapter = new RegionalRail_StopSelection_ListViewItem_ArrayAdapter(inflater.getContext(), stopModelList);
         setListAdapter(adapter);
 
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     @Override
+    public void onStop() {
+        super.onStop();
+        locationManager.removeUpdates(this);
+    }
+
+    @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         Intent returnIntent = new Intent();
+        position -= getListView().getHeaderViewsCount();
         returnIntent.putExtra("stop_name", stopModelList.get(position).getStopName());
         returnIntent.putExtra("stop_id", stopModelList.get(position).getStopId());
         returnIntent.putExtra("selection_mode", startOrDestinationSelectionMode);
-        getActivity().setResult(getActivity().RESULT_OK,returnIntent);
+        getActivity().setResult(Activity.RESULT_OK,returnIntent);
         getActivity().finish();
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.headerview_textview_current_location:
+                getUserLocation();
+                break;
+        }
+    }
+
+    private void getUserLocation() {
+        Location userLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+        locationManager.removeUpdates(this);
+        if(userLocation == null && !locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            Toast.makeText(getActivity(), getString(R.string.error_location_disabled),
+                    Toast.LENGTH_SHORT).show();
+        }  else if(userLocation != null) {
+            Log.i(TAG, "Using cached location: " + String.valueOf(userLocation));
+            sortByLocations(userLocation);
+        }  else {
+            locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, this,
+                    Looper.myLooper());
+        }
+    }
+
+    private void sortByLocations(Location userLocation) {
+        if(userLocation != null) {
+            adapter.sortByLocation(userLocation);
+        }
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        Log.i(TAG, "Location: " + location);
+        sortByLocations(location);
+    }
+
+    @Override
+    public void onStatusChanged(String s, int i, Bundle bundle) {
+        Log.i(TAG, "Provider: " + s + " Status: " + i);
+    }
+
+    @Override
+    public void onProviderEnabled(String s) {
+        Log.i(TAG, "Enabled: " + s);
+    }
+
+    @Override
+    public void onProviderDisabled(String s) {
+        Log.i(TAG, "Disabled: " + s);
     }
 }

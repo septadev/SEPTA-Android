@@ -54,4 +54,8 @@
         <!-- FONT FAIIMLY FOR Project -->
     <declare-styleable name="customfont"> <attr name="android:fontFamily"/> <attr name="android:textStyle"/> </declare-styleable>
 
+    <!-- Location Strings -->
+    <string name="error_location_unavailable">Your location is unavailable</string>
+    <string name="error_location_disabled">Your GPS is disabled</string>
+
 </resources>

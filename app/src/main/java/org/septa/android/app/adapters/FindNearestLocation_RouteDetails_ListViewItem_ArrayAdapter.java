@@ -214,9 +214,8 @@ public class FindNearestLocation_RouteDetails_ListViewItem_ArrayAdapter extends 
         SEPTADatabase septaDatabase = new SEPTADatabase(context);
         SQLiteDatabase database = septaDatabase.getReadableDatabase();
 
-        Log.d("f", "setting querystring with route short name as " + routeShortName);
         queryString = "SELECT DirectionDescription FROM bus_stop_directions WHERE Route=\"" + routeShortName + "\" AND dircode=" + dirCode;
-        Log.d("f", queryString);
+        
         Cursor cursor = null;
 
         if (queryString != null) {

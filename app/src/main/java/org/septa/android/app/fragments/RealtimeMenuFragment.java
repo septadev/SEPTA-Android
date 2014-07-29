@@ -125,8 +125,7 @@ public class RealtimeMenuFragment extends Fragment implements AlertManager.IAler
     public void alertsDidUpdate() {
         Date lastUpdate = SharedPreferencesManager.getInstance().getLastAlertUpdate();
         AlertModel alert = AlertManager.getInstance().getGlobalAlert();
-        Log.d("TIME", alert.getLastUpdate().toString());
-        if (alert != null && !alert.getCurrentMessage().isEmpty() && (lastUpdate == null || alert.getLastUpdate().compareTo(lastUpdate) != 0)) {
+        if (alert != null && !alert.getCurrentMessage().isEmpty() && alert.getLastUpdate() != null && (lastUpdate == null || alert.getLastUpdate().compareTo(lastUpdate) != 0)) {
             Crouton.makeText(getActivity(), alert.getCurrentMessage() , Style.ALERT).show();
 
             //save the date of the last retrieved alert for comparison on future requests

@@ -9,41 +9,41 @@ package org.septa.android.app.dialogs;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
-import android.util.Log;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import org.septa.android.app.R;
 import org.septa.android.app.utilities.PixelHelper;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+
 public class FindNearestLocationEditRadiusDialog extends Dialog {
     public static final String TAG = FindNearestLocationEditRadiusDialog.class.getName();
-    private Activity activity = null;
+    @InjectView(R.id.radiusedit_textview_ones)
+    EditText mTextviewOnes;
+    @InjectView(R.id.radiusedit_textview_tenths)
+    EditText mTextviewTenths;
+    @InjectView(R.id.radiusedit_textview_hundredths)
+    EditText mTextviewHundredths;
+    @InjectView(R.id.radiusedit_textview_thounsandths)
+    EditText mTextviewThounsandths;
 
     private float mapSearchRadius;
 
     public FindNearestLocationEditRadiusDialog(Activity activity, float mapSearchRadius) {
         super(activity);
 
-        this.activity = activity;
         this.mapSearchRadius = mapSearchRadius;
-    }
 
-    public FindNearestLocationEditRadiusDialog(Activity activity, int theme, float mapSearchRadius) {
-        super(activity, theme);
-
-        this.activity = activity;
-        this.mapSearchRadius = mapSearchRadius;
     }
 
     private void populateEditTextFields(float mapSearchRadius) {
@@ -54,60 +54,20 @@ public class FindNearestLocationEditRadiusDialog extends Dialog {
             mapSearchRadiusString += "0";
         }
 
-        setOnesValue(mapSearchRadiusString.substring(0,1));
-        setTenthsValue(mapSearchRadiusString.substring(2,3));
-        setHundredthsValue(mapSearchRadiusString.substring(3,4));
-        setThousandthsValue(mapSearchRadiusString.substring(4,5));
+        mTextviewOnes.setText(mapSearchRadiusString.substring(0, 1));
+        mTextviewTenths.setText(mapSearchRadiusString.substring(2, 3));
+        mTextviewHundredths.setText(mapSearchRadiusString.substring(3, 4));
+        mTextviewThounsandths.setText(mapSearchRadiusString.substring(4, 5));
 
-//        EditText radiusEditTextViewOnes = (EditText) findViewById(R.id.radiusedit_textview_ones);
-//        radiusEditTextViewOnes.requestFocus();
-//        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-//        imm.showSoftInput(radiusEditTextViewOnes, InputMethodManager.SHOW_IMPLICIT);
-    }
-
-    public void setOnesValue(String onesValue) {
-        Log.d(TAG, "trying to access the ones field");
-        EditText radiusEditTextViewOnes = (EditText) findViewById(R.id.radiusedit_textview_ones);
-        radiusEditTextViewOnes.setText(onesValue);
-    }
-
-    public String getOnesValue() {
-        EditText radiusEditTextViewOnes = (EditText) findViewById(R.id.radiusedit_textview_ones);
-        return radiusEditTextViewOnes.getText().toString();
-    }
-
-    public void setTenthsValue(String tenthsValue) {
-        EditText radiusEditTextViewTenths = (EditText) findViewById(R.id.radiusedit_textview_tenths);
-        radiusEditTextViewTenths.setText(tenthsValue);
-    }
-
-    public String getTenthsValue() {
-        EditText radiusEditTextViewTenths = (EditText) findViewById(R.id.radiusedit_textview_tenths);
-        return radiusEditTextViewTenths.getText().toString();
-    }
-
-    public void setHundredthsValue(String hundredthsValue) {
-        EditText radiusEditTextViewHundredths = (EditText) findViewById(R.id.radiusedit_textview_hundredths);
-        radiusEditTextViewHundredths.setText(hundredthsValue);
-    }
-
-    public String getHundredthsValue() {
-        EditText radiusEditTextViewHundredths = (EditText) findViewById(R.id.radiusedit_textview_hundredths);
-        return radiusEditTextViewHundredths.getText().toString();
-    }
-
-    public void setThousandthsValue(String thousandthsValue) {
-        EditText radiusEditTextViewThousandths = (EditText) findViewById(R.id.radiusedit_textview_thounsandths);
-        radiusEditTextViewThousandths.setText(thousandthsValue);
-    }
-
-    public String getThousandthsValue() {
-        EditText radiusEditTextViewThousandths = (EditText) findViewById(R.id.radiusedit_textview_thounsandths);
-        return radiusEditTextViewThousandths.getText().toString();
     }
 
     public float getMapSearchRadius() {
-        String mapSearchRadiusString = getOnesValue() + "." + getTenthsValue() + getHundredthsValue() + getThousandthsValue();
+        String mapSearchRadiusString = mTextviewOnes.getText().toString()
+                + "."
+                + mTextviewTenths.getText().toString()
+                + mTextviewHundredths.getText().toString()
+                + mTextviewThounsandths.getText().toString();
+
         return Float.parseFloat(mapSearchRadiusString);
     }
 
@@ -124,7 +84,7 @@ public class FindNearestLocationEditRadiusDialog extends Dialog {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH, WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH);
 
         // make the dialog window background transparent to allow the gradient on the layout work.
-        getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
         // to stop the dimming of the screen behind the dialog.
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
@@ -137,13 +97,15 @@ public class FindNearestLocationEditRadiusDialog extends Dialog {
         window.setAttributes(windowsLayoutParams);
 
         setContentView(R.layout.findnearestlocation_editradius_dialog);
+        ButterKnife.inject(this);
 
         View mainLayout = findViewById(R.id.radiuserdit_dialog_layout);
 
         GradientDrawable gd = new GradientDrawable(
                 GradientDrawable.Orientation.LEFT_RIGHT,
-                new int[] {0xD9131313,0xD9616261});
+                new int[]{0xD9131313, 0xD9616261});
         gd.setCornerRadius(20f);
+
 
         mainLayout.setBackgroundDrawable(gd);
 
@@ -152,11 +114,8 @@ public class FindNearestLocationEditRadiusDialog extends Dialog {
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent event)
-    {
-        if(event.getAction() == MotionEvent.ACTION_OUTSIDE){
-
-
+    public boolean onTouchEvent(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_OUTSIDE) {
             this.dismiss();
         }
         return false;

@@ -33,13 +33,26 @@ public class FindNearestLocation_ListViewItem_ArrayAdapter extends ArrayAdapter<
     private static final int MAX_ROUTE_DISPLAY = 10;
 
     private final Context context;
-    private final List<LocationModel> values;
+    private List<LocationModel> values;
 
 
     public FindNearestLocation_ListViewItem_ArrayAdapter(Context context, List<LocationModel> values) {
         super(context, R.layout.findnearestlocations_listview_item, values);
         this.context = context;
         this.values = values;
+    }
+
+    public void setList(List<LocationModel> list){
+        this.values = list;
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public int getCount() {
+        if(values == null)
+            return  0;
+
+        return values.size();
     }
 
     @Override

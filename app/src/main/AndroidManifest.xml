@@ -237,7 +237,7 @@
                 android:value=".activities.FindNearestLocationActionBarActivity" />
         </activity>
 
-        <meta-data android:name="com.crashlytics.ApiKey" android:value="@string/crashlytics_apikey"/>
+        <meta-data android:name="com.crashlytics.ApiKey" android:value="bc2dd85ee4bc4580ad7a7e2819d8402ff8595c61"/>
     </application>
 
 </manifest>

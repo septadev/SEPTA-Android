@@ -60,6 +60,7 @@ public class SchedulesRouteSelection_ListViewItem_ArrayAdapter extends BaseAdapt
     public SchedulesRouteSelection_ListViewItem_ArrayAdapter(Context context, RouteTypes routeType) {
         mContext = context;
         mInflater = LayoutInflater.from(context);
+        sections = new ArrayList<String>();
 
         this.routeType = routeType;
 

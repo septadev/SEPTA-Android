@@ -187,4 +187,18 @@ public class SharedPreferencesManager {
         editor.apply();
     }
 
+    public void clearNextToArriveRecentlyViewedList() {
+        clear(KEY_NEXTTOARRIVE_RECENTLY_VIEWED_LIST);
+    }
+
+    public void clearNexttoArriveFavoritesList() {
+        clear(KEY_NEXTTOARRIVE_FAVORITES_LIST);
+    }
+
+    private void clear(String key) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove(key);
+        editor.apply();
+    }
+
 }

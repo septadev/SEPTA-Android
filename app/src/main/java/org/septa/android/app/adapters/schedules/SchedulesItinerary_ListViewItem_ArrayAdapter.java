@@ -29,7 +29,7 @@ import java.util.Date;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 
 public class SchedulesItinerary_ListViewItem_ArrayAdapter extends BaseAdapter implements
-        StickyListHeadersAdapter, SectionIndexer {
+        StickyListHeadersAdapter {
     public static final String TAG = SchedulesItinerary_ListViewItem_ArrayAdapter.class.getName();
     private final Context context;
     private LayoutInflater mInflater;
@@ -42,7 +42,6 @@ public class SchedulesItinerary_ListViewItem_ArrayAdapter extends BaseAdapter im
 
     RouteTypes routeType = null;
 
-    private String[] sectionTitles = new String[]{ "Select Start and End (hidden)", "REMAINING TRIPS FOR TODAY"};
     private String headerViewText;
     private int selectedTab = 0;
 
@@ -60,6 +59,7 @@ public class SchedulesItinerary_ListViewItem_ArrayAdapter extends BaseAdapter im
         resourceEndNames = context.getResources().getStringArray(R.array.schedulesfragment_listview_bothimage_endnames);
         leftImageStartName = context.getString(R.string.schedulesfragment_listview_leftimage_startname);
 
+        String[] sectionTitles = new String[]{"Select Start and End (hidden)", "REMAINING TRIPS FOR TODAY"};
         headerViewText = sectionTitles[1];   // set the default primary header to be the remaining trips
     }
 
@@ -202,39 +202,6 @@ public class SchedulesItinerary_ListViewItem_ArrayAdapter extends BaseAdapter im
         }
 
         return 1;
-    }
-
-    @Override
-    public int getPositionForSection(int section) {
-        switch (section) {
-            case 0: {
-
-                return 0;
-            }
-            case 1: {
-
-                return 1;
-            }
-            default: {
-
-                return 1;
-            }
-        }
-    }
-
-    @Override
-    public int getSectionForPosition(int position) {
-        if (position==0) {
-            return 0;
-        }
-
-        return 1;
-    }
-
-    @Override
-    public Object[] getSections() {
-
-        return sectionTitles;
     }
 
     public int getSelectedTab() {

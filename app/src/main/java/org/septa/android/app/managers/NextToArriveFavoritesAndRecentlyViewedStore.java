@@ -11,6 +11,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
 import org.septa.android.app.models.NextToArriveFavoriteModel;
@@ -22,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NextToArriveFavoritesAndRecentlyViewedStore {
+
+    private static final String TAG = "NextToArriveFavoritesAndRecentlyViewedStore";
 
     private ArrayList<NextToArriveFavoriteModel> favoritesList;
     private ArrayList<NextToArriveRecentlyViewedModel> recentlyViewedList;
@@ -142,7 +145,13 @@ public class NextToArriveFavoritesAndRecentlyViewedStore {
         Gson gson = new Gson();
 
         String json = SharedPreferencesManager.getInstance().getNextToArriveRecentlyViewedList();
-        recentlyViewedList = gson.fromJson(json, new TypeToken<List<NextToArriveRecentlyViewedModel>>(){}.getType());
+        try {
+            recentlyViewedList = gson.fromJson(json, new TypeToken<List<NextToArriveRecentlyViewedModel>>(){}.getType());
+        } catch (JsonSyntaxException e) {
+            SharedPreferencesManager.getInstance().clearNextToArriveRecentlyViewedList();
+            Log.i(TAG, "Clearing recentlyViewedList");
+            recentlyViewedList = null;
+        }
 
         if (recentlyViewedList == null) {
             recentlyViewedList = new ArrayList<NextToArriveRecentlyViewedModel>(3);
@@ -155,7 +164,13 @@ public class NextToArriveFavoritesAndRecentlyViewedStore {
         Gson gson = new Gson();
 
         String json = SharedPreferencesManager.getInstance().getNextToArriveFavoritesList();
-        favoritesList = gson.fromJson(json, new TypeToken<List<NextToArriveFavoriteModel>>(){}.getType());
+        try {
+            favoritesList = gson.fromJson(json, new TypeToken<List<NextToArriveFavoriteModel>>(){}.getType());
+        } catch (JsonSyntaxException e) {
+            SharedPreferencesManager.getInstance().clearNexttoArriveFavoritesList();
+            Log.i(TAG, "Clearing favoritesList");
+            favoritesList = null;
+        }
 
         if (favoritesList == null) {
             favoritesList = new ArrayList<NextToArriveFavoriteModel>();

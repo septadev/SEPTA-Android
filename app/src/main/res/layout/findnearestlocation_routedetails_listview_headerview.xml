@@ -36,7 +36,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         style="@style/listView_section_headers_textView"
-        android:layout_gravity="center_vertical"
-        android:text="Center City"/>
+        android:layout_gravity="center_vertical"/>
 
 </LinearLayout>

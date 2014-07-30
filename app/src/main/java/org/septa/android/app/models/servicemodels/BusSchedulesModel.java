@@ -6,11 +6,13 @@ import java.util.List;
 public class BusSchedulesModel {
 //    @SerializedName("bus")
 
+    public List<BusScheduleModel> busScheduleList;
+
     public BusSchedulesModel() {
         busScheduleList = new ArrayList<BusScheduleModel>();
     }
 
-    private List<BusScheduleModel> busScheduleList;
+
 
     public void addBusScheduleModel(BusScheduleModel busScheduleModel) {
 

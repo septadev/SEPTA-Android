@@ -74,11 +74,6 @@ public class StopSelectionListFragment extends ListFragment implements View.OnCl
         lv.setDivider(getActivity().getResources().getDrawable(R.drawable.list_item_separator_gradient));
         lv.setDividerHeight(3);
 
-        View headerView = getActivity().getLayoutInflater().inflate(
-                R.layout.headerview_route_selection, lv, false);
-        headerView.findViewById(R.id.headerview_textview_current_location).setOnClickListener(this);
-        lv.addHeaderView(headerView);
-
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
     }
 
@@ -89,10 +84,14 @@ public class StopSelectionListFragment extends ListFragment implements View.OnCl
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        adapter = new RegionalRail_StopSelection_ListViewItem_ArrayAdapter(inflater.getContext(), stopModelList);
-        setListAdapter(adapter);
+        View view = super.onCreateView(inflater, container, savedInstanceState);
+        ListView lv = (ListView) view.findViewById(android.R.id.list);
+        View headerView = getActivity().getLayoutInflater().inflate(
+                R.layout.headerview_route_selection, lv, false);
+        headerView.findViewById(R.id.headerview_textview_current_location).setOnClickListener(this);
+        lv.addHeaderView(headerView);
 
-        return super.onCreateView(inflater, container, savedInstanceState);
+        return view;
     }
 
     @Override

@@ -98,12 +98,24 @@ public class FindNearestLocationRouteDetailsActionBarActivity extends BaseAnalyt
 
     private void fetchBusSchedules() {
 
-
         Log.d(TAG, "about to call bus schedules service");
         BusSchedulesServiceProxy busSchedulesServiceProxy = new BusSchedulesServiceProxy();
+
         for(LocationBasedRouteModel route : locationModel.getRoutes()){
+            String direction = null;
+            //hack because services are broken and return bad json. splitting into two route directions returns clean data.. for now.
             RouteFetchCallback callback = new RouteFetchCallback(route);
-            busSchedulesServiceProxy.getBusSchedules(locationModel.getLocationId(), route.getRouteShortName(), null, 5, callback);
+            if(route.getRouteShortName().equals("MFL") || route.getRouteShortName().equals("BSL") ){
+                RouteFetchCallback callbackInbound = new RouteFetchCallback(LocationBasedRouteModel.routeModelForDirection(route, "I"));
+                busSchedulesServiceProxy.getBusSchedules(locationModel.getLocationId(), route.getRouteShortName(), "i", 5, callbackInbound);
+
+                RouteFetchCallback callbackOutbound = new RouteFetchCallback(LocationBasedRouteModel.routeModelForDirection(route, "O"));
+                busSchedulesServiceProxy.getBusSchedules(locationModel.getLocationId(), route.getRouteShortName(), "o", 5, callbackOutbound);
+            } else {
+                busSchedulesServiceProxy.getBusSchedules(locationModel.getLocationId(), route.getRouteShortName(), null, 5, callback);
+            }
+
+
         }
 
         Log.d(TAG, "called bus schedules service");

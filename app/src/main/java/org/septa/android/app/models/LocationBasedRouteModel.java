@@ -26,7 +26,6 @@ public class LocationBasedRouteModel {
     private int directionBinaryPower = 0;
     private int routeType = 0;
     private ArrayList<TimeDayPairModel> timeDayPairArrayList = new ArrayList<TimeDayPairModel>();
-    private int timeDayPairIndex = -1;
     private int dircode;
 
     public int getDirectionBinaryPower() {
@@ -180,5 +179,14 @@ public class LocationBasedRouteModel {
         public void setDay(String day) {
             this.day = day;
         }
+    }
+
+    public static LocationBasedRouteModel routeModelForDirection(LocationBasedRouteModel originalRoute, String direction){
+
+        LocationBasedRouteModel route = new LocationBasedRouteModel();
+        route.setDirectionCode(originalRoute.getDirectionCode());
+        route.setRouteShortName(originalRoute.getRouteShortName() + direction.toUpperCase());
+        route.setRouteType(originalRoute.getRouteType());
+        return route;
     }
 }

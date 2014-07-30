@@ -182,7 +182,17 @@ public class FindNearestLocation_RouteDetails_ListViewItem_ArrayAdapter extends 
 
         LocationBasedRouteModel model = (LocationBasedRouteModel)getItem(position);
         if(model != null){
-            holder.routeDescription.setText(getHeaderValue(model.getRouteShortName(), model.getDirectionCode()));
+            String desc = getHeaderValue(model.getRouteShortName(), model.getDirectionCode());
+            if(desc == null || desc.length() == 0){
+                holder.routeSeperator.setVisibility(View.INVISIBLE);
+                holder.routeDescription.setVisibility(View.INVISIBLE);
+            } else {
+                holder.routeSeperator.setVisibility(View.VISIBLE);
+                holder.routeDescription.setVisibility(View.VISIBLE);
+                holder.routeDescription.setText(desc);
+            }
+
+
             holder.routeId.setText(model.getRouteShortNameWithDirection());
         }
 
@@ -279,6 +289,7 @@ public class FindNearestLocation_RouteDetails_ListViewItem_ArrayAdapter extends 
     class HeaderViewHolder {
         @InjectView(R.id.routeId) TextView routeId;
         @InjectView(R.id.routeDescription) TextView routeDescription;
+        @InjectView(R.id.routeSeperator) TextView routeSeperator;
 
         HeaderViewHolder(View view){
             ButterKnife.inject(this, view);

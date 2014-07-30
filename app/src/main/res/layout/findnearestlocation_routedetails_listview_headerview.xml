@@ -23,6 +23,7 @@
         style="@style/listView_section_headers_textView"
         android:text="124E"/>
     <TextView
+        android:id="@+id/routeSeperator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"

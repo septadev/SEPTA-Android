@@ -222,11 +222,11 @@
         </activity>
 
         <activity android:name=".activities.schedules.SchedulesRRStopSelectionActionBarActivity"
-                  android:parentActivityName="org.septa.android.app.activities.schedules.SchedulesRouteSelectionActionBarActivity" >
+                  android:parentActivityName="org.septa.android.app.activities.MainTabbarActivity" >
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.schedules.SchedulesRouteSelectionActionBarActivity" />
+                android:value="org.septa.android.app.activities.MainTabbarActivity" />
         </activity>
 
         <activity android:name=".activities.FindNearestLocationRouteDetailsActionBarActivity"

@@ -156,9 +156,6 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
         stickyList.setAdapter(mAdapter);
         stickyList.setOnTouchListener(this);
 
-        stickyList.setScrollBarStyle(ListView.SCROLLBARS_OUTSIDE_INSET);
-        stickyList.setFastScrollEnabled(true);
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 

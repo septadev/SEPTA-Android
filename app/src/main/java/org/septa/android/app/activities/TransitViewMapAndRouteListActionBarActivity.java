@@ -8,6 +8,7 @@
 package org.septa.android.app.activities;
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
@@ -128,40 +129,46 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
                 getMap();
 
         if (mMap != null) {
-            // set the initial center point of the map on Center City, Philadelphia with a default zoom
-            double defaultLatitude = Double.parseDouble(getResources().getString(R.string.generalmap_default_location_latitude));
-            double defaultLongitude = Double.parseDouble(getResources().getString(R.string.generalmap_default_location_longitude));
+            try {
+                // set the initial center point of the map on Center City, Philadelphia with a default zoom
+                double defaultLatitude = Double.parseDouble(getResources().getString(R.string.generalmap_default_location_latitude));
+                double defaultLongitude = Double.parseDouble(getResources().getString(R.string.generalmap_default_location_longitude));
 
-            currentLocation = new LatLng(defaultLatitude, defaultLongitude);
-            float defaultZoomLevel = Float.parseFloat(getResources().getString(R.string.generalmap_default_zoomlevel));
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(defaultLatitude, defaultLongitude), defaultZoomLevel));
+                currentLocation = new LatLng(defaultLatitude, defaultLongitude);
+                float defaultZoomLevel = Float.parseFloat(getResources().getString(R.string.generalmap_default_zoomlevel));
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(defaultLatitude, defaultLongitude), defaultZoomLevel));
 
-            mMap.setMyLocationEnabled(true);
+                mMap.setMyLocationEnabled(true);
 
-            mLocationClient = new LocationClient(this, this, this);
+                mLocationClient = new LocationClient(this, this, this);
 
-            KMLSAXXMLProcessor processor = new KMLSAXXMLProcessor(getAssets());
-            processor.readKMLFile("kml/transit/" + routeShortName + ".kml");
+                KMLSAXXMLProcessor processor = new KMLSAXXMLProcessor(getAssets());
+                processor.readKMLFile("kml/transit/" + routeShortName + ".kml");
 
-            kmlModel = processor.getKMLModel();
+                kmlModel = processor.getKMLModel();
 
-            // loop through the placemarks
-            List<KMLModel.Document.Placemark> placemarkList = kmlModel.getDocument().getPlacemarkList();
-            for (KMLModel.Document.Placemark placemark : placemarkList) {
-                List<KMLModel.Document.MultiGeometry.LineString> lineStringList = placemark.getMultiGeometry().getLineStringList();
-                for (KMLModel.Document.MultiGeometry.LineString lineString : lineStringList) {
-                    String color = "#" + kmlModel.getDocument().getColorForStyleId(placemark.getStyleUrl());
-                    List<LatLng> latLngCoordinateList = lineString.getLatLngCoordinates();
+                // loop through the placemarks
+                List<KMLModel.Document.Placemark> placemarkList = kmlModel.getDocument().getPlacemarkList();
+                for (KMLModel.Document.Placemark placemark : placemarkList) {
+                    List<KMLModel.Document.MultiGeometry.LineString> lineStringList = placemark.getMultiGeometry().getLineStringList();
+                    for (KMLModel.Document.MultiGeometry.LineString lineString : lineStringList) {
+                        String color = "#" + kmlModel.getDocument().getColorForStyleId(placemark.getStyleUrl());
+                        List<LatLng> latLngCoordinateList = lineString.getLatLngCoordinates();
 
-                    PolylineOptions lineOptions = new PolylineOptions().addAll(latLngCoordinateList)
-                            .color(Color.parseColor(color))
-                            .width(3.0f)
-                            .visible(true);
-                    mMap.addPolyline(lineOptions);
+                        PolylineOptions lineOptions = new PolylineOptions().addAll(latLngCoordinateList)
+                                .color(Color.parseColor(color))
+                                .width(3.0f)
+                                .visible(true);
+                        mMap.addPolyline(lineOptions);
+                    }
                 }
-            }
 
-            this.fetchTransitViewDataForRoute(routeShortName);
+                this.fetchTransitViewDataForRoute(routeShortName);
+            } catch (NumberFormatException e) {
+                Log.e(TAG, String.format("Error parsing KML for route:%s" ,routeShortName),e);
+            } catch (Resources.NotFoundException e) {
+                Log.e(TAG, "Resource missing", e);
+            }
         } else {
             Log.d(TAG, "map was null, map Google Play services is not installed");
         }

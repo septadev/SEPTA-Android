@@ -39,6 +39,8 @@ public class FindNearestLocationsListFragment extends ListFragment {
     private List<LocationModel> mLocationList;
     private  FindNearestLocation_ListViewItem_ArrayAdapter mAdapter;
 
+    private RouteStopIdLoader routeStopIdLoader;
+
     public FindNearestLocationsListFragment() {
         mLocationList = new ArrayList<LocationModel>(0);
     }
@@ -48,6 +50,14 @@ public class FindNearestLocationsListFragment extends ListFragment {
         this.mLocationList = new ArrayList<LocationModel>(0);
         this.getListView().invalidate();
 
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if(routeStopIdLoader != null) {
+            routeStopIdLoader.cancel(true);
+        }
     }
 
     public void setLocationList(List<LocationModel> mLocationList) {
@@ -60,7 +70,7 @@ public class FindNearestLocationsListFragment extends ListFragment {
         });
 
 
-        RouteStopIdLoader routeStopIdLoader = new RouteStopIdLoader();
+        routeStopIdLoader = new RouteStopIdLoader();
         routeStopIdLoader.execute(mLocationList);
 
     }

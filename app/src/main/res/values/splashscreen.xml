@@ -21,4 +21,6 @@
         <item>septalogowithtextandcopyright</item> <!-- position col 3 row 3 -->
     </string-array>
 
+    <string name="kml_file_name">kml/train/regionalrail.kml</string>
+
 </resources>

@@ -18,7 +18,7 @@ import android.widget.ImageView;
 
 import org.septa.android.app.R;
 import org.septa.android.app.databases.SEPTADatabase;
-import org.septa.android.app.tasks.LoadKMLFileTask;
+import org.septa.android.app.models.ObjectFactory;
 
 public class SplashScreenActivity extends BaseAnalyticsActivity {
     public static final String TAG = SplashScreenActivity.class.getName();
@@ -72,7 +72,10 @@ public class SplashScreenActivity extends BaseAnalyticsActivity {
             @Override
             protected Void doInBackground(Context... contexts) {
                 Context context = contexts[0];
+                // Load database if needed
                 new SEPTADatabase(context).getReadableDatabase().close();
+                // Load KML file
+                ObjectFactory.getInstance().getKMLModel(context, context.getString(R.string.kml_file_name));
                 return null;
             }
 
@@ -88,7 +91,7 @@ public class SplashScreenActivity extends BaseAnalyticsActivity {
 
         // since the regional rail KML file is rather large, pre-load it via an AsyncTask using
         //  the factory and held in a singleton until it is needed.
-        LoadKMLFileTask loadKMLFileTask = new LoadKMLFileTask(this, "kml/train/regionalrail.kml");
-        loadKMLFileTask.execute(this);
+//        LoadKMLFileTask loadKMLFileTask = new LoadKMLFileTask(this, "kml/train/regionalrail.kml");
+//        loadKMLFileTask.execute(this);
     }
 }

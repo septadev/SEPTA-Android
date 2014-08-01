@@ -11,7 +11,7 @@ import org.septa.android.app.R;
 import org.septa.android.app.utilities.PixelHelper;
 
 /**
- * Created by rrobinson on 7/20/14.
+ * Created by Trey Robinson on 7/20/14.
  *
  * Small rounded rectangle used to display route short names.
  */
@@ -22,7 +22,7 @@ public class RouteTextView extends TextView {
         int width = PixelHelper.pixelsToDensityIndependentPixels(context, 42);
         LinearLayout.LayoutParams textViewLayoutParams = new LinearLayout.LayoutParams(width,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
-        textViewLayoutParams.setMargins(0, 0, 5, 0); // llp.setMargins(left, top, right, bottom);
+        textViewLayoutParams.setMargins(0, 0, 5, 0);
         this.setLayoutParams(textViewLayoutParams);
         this.setPadding(5, 5, 5, 5);
         this.setGravity(Gravity.CENTER);

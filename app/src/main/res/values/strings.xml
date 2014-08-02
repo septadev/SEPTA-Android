@@ -27,6 +27,7 @@
         <string name="menuoption_appfeedback_text">Leave Feedback</string>
 
         <string name="no_data_available">No data is available.</string>
+        <string name="loading">Loading</string>
 
         <!--
              nav-main-options is an ordered array list of main navigation items
@@ -57,5 +58,7 @@
     <!-- Location Strings -->
     <string name="error_location_unavailable">Your location is unavailable</string>
     <string name="error_location_disabled">Your GPS is disabled</string>
+
+
 
 </resources>

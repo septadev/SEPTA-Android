@@ -18,6 +18,7 @@ import org.septa.android.app.models.servicemodels.AlertModel;
 import org.septa.android.app.models.servicemodels.BusScheduleModel;
 import org.septa.android.app.models.servicemodels.BusSchedulesModel;
 import org.septa.android.app.services.apiproxies.BusSchedulesServiceProxy;
+import org.septa.android.app.views.StatusView;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -31,6 +32,10 @@ public class FindNearestLocationRouteDetailsActionBarActivity extends BaseAnalyt
     public LocationModel locationModel;
     private FindNearestLocation_RouteDetails_ListViewItem_ArrayAdapter mAdapter;
     private StickyListHeadersListView stickyListHeadersListView;
+    private StatusView statusView;
+
+    //number of requests in process. Used to show/hide loading view
+    private int numRequests;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +58,9 @@ public class FindNearestLocationRouteDetailsActionBarActivity extends BaseAnalyt
         stickyListHeadersListView.setAreHeadersSticky(true);
 
         stickyListHeadersListView.setFastScrollEnabled(true);
-        stickyListHeadersListView.setEmptyView(findViewById(R.id.empty));
+        statusView = (StatusView)findViewById(R.id.empty);
+
+        stickyListHeadersListView.setEmptyView(statusView);
         mAdapter = new FindNearestLocation_RouteDetails_ListViewItem_ArrayAdapter(this);
         stickyListHeadersListView.setAdapter(mAdapter);
         fetchBusSchedules();
@@ -111,14 +118,21 @@ public class FindNearestLocationRouteDetailsActionBarActivity extends BaseAnalyt
 
                 RouteFetchCallback callbackOutbound = new RouteFetchCallback(LocationBasedRouteModel.routeModelForDirection(route, "O"));
                 busSchedulesServiceProxy.getBusSchedules(locationModel.getLocationId(), route.getRouteShortName(), "o", 5, callbackOutbound);
+
+                numRequests += 2;
             } else {
                 busSchedulesServiceProxy.getBusSchedules(locationModel.getLocationId(), route.getRouteShortName(), null, 5, callback);
+                numRequests ++;
             }
 
 
         }
 
         Log.d(TAG, "called bus schedules service");
+    }
+
+    private void updateLoadingView(){
+        statusView.setLoading(numRequests > 0);
     }
 
     private class RouteFetchCallback implements Callback{
@@ -143,6 +157,7 @@ public class FindNearestLocationRouteDetailsActionBarActivity extends BaseAnalyt
                 }
                 mAdapter.addRoute(route);
             }
+            requestComplete();
         }
 
         @Override
@@ -154,6 +169,12 @@ public class FindNearestLocationRouteDetailsActionBarActivity extends BaseAnalyt
                 // TODO: clean this up
                 Log.d(TAG, "blah... what is going on?");
             }
+            requestComplete();
+        }
+
+        private void requestComplete(){
+            numRequests--;
+            updateLoadingView();
         }
 
     }

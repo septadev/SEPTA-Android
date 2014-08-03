@@ -32,7 +32,6 @@ public class BusSchedulesAdaptor {
         RestAdapter restAdapter = new RestAdapter.Builder()
                 .setEndpoint("http://www3.septa.org")       // The base API endpoint.
                 .setConverter(new GsonConverter(gson))
-                .setLogLevel(RestAdapter.LogLevel.FULL)
                 .setErrorHandler(new ServiceErrorHandler())
                 .build();
 

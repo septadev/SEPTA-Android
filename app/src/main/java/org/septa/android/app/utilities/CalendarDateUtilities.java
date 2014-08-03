@@ -51,9 +51,6 @@ public class CalendarDateUtilities {
             case Calendar.SATURDAY: {
                 return 2;
             }
-            case Calendar.FRIDAY: {
-                return 4;
-            }
             default: {      // this will cover any days not specifically called out
                 return 1;
             }

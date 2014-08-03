@@ -10,7 +10,6 @@ package org.septa.android.app.activities;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -24,17 +23,14 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.location.LocationClient;
-import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -42,7 +38,6 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import org.septa.android.app.R;
 import org.septa.android.app.fragments.TransitViewRouteViewListFragment;
 import org.septa.android.app.models.KMLModel;
-import org.septa.android.app.models.RoutesModel;
 import org.septa.android.app.models.servicemodels.TransitViewModel;
 import org.septa.android.app.models.servicemodels.TransitViewVehicleModel;
 import org.septa.android.app.services.apiproxies.TransitViewServiceProxy;
@@ -58,11 +53,9 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsActionBarActivity implements
-        LocationListener,
-        GooglePlayServicesClient.ConnectionCallbacks,
-        GooglePlayServicesClient.OnConnectionFailedListener{
+public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsActionBarActivity {
     public static final String TAG = TransitViewMapAndRouteListActionBarActivity.class.getName();
+    public static final int MAP_PADDING = 20;
 
     KMLModel kmlModel;
 
@@ -70,22 +63,8 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
 
     final int RQS_GooglePlayServices = 1;
 
-    LocationClient mLocationClient;
-
-    private static final int MILLISECONDS_PER_SECOND = 1000;
-
-    public static final int UPDATE_INTERVAL_IN_SECONDS = 10;
-
-    private static final long UPDATE_INTERVAL =
-            MILLISECONDS_PER_SECOND * UPDATE_INTERVAL_IN_SECONDS;
-
-    private static final int FASTEST_INTERVAL_IN_SECONDS = 10;
-    private static final long FASTEST_INTERVAL =
-            MILLISECONDS_PER_SECOND * FASTEST_INTERVAL_IN_SECONDS;
-
     private boolean listviewRevealed = false;
 
-    private RoutesModel busRoutes;
     private String routeShortName;
 
     private ArrayList<Marker> markerList = new ArrayList<Marker>();
@@ -95,6 +74,8 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
     private LatLng currentLocation = null;
 
     private List<TransitViewVehicleModel> transitViewVehicleArrayList = new ArrayList<TransitViewVehicleModel>();
+
+    private LatLngBounds.Builder latLngBuilder;
 
     @Override
     public boolean onTouchEvent(MotionEvent e) {
@@ -139,14 +120,23 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(defaultLatitude, defaultLongitude), defaultZoomLevel));
 
                 mMap.setMyLocationEnabled(true);
-
-                mLocationClient = new LocationClient(this, this, this);
+                // Have map animate to the route when it loads, framing the entire route
+                mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
+                    @Override
+                    public void onMapLoaded() {
+                        LatLngBounds bounds = latLngBuilder.build();
+                        if(bounds.getCenter() != null) {
+                            mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, MAP_PADDING));
+                        }
+                    }
+                });
 
                 KMLSAXXMLProcessor processor = new KMLSAXXMLProcessor(getAssets());
                 processor.readKMLFile("kml/transit/" + routeShortName + ".kml");
 
                 kmlModel = processor.getKMLModel();
 
+                latLngBuilder = new LatLngBounds.Builder();
                 // loop through the placemarks
                 List<KMLModel.Document.Placemark> placemarkList = kmlModel.getDocument().getPlacemarkList();
                 for (KMLModel.Document.Placemark placemark : placemarkList) {
@@ -155,6 +145,11 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
                         String color = "#" + kmlModel.getDocument().getColorForStyleId(placemark.getStyleUrl());
                         List<LatLng> latLngCoordinateList = lineString.getLatLngCoordinates();
 
+                        // add all points to bounds builder
+                        for(LatLng latLng: latLngCoordinateList) {
+                            latLngBuilder.include(latLng);
+                        }
+
                         PolylineOptions lineOptions = new PolylineOptions().addAll(latLngCoordinateList)
                                 .color(Color.parseColor(color))
                                 .width(3.0f)
@@ -162,7 +157,6 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
                         mMap.addPolyline(lineOptions);
                     }
                 }
-
                 this.fetchTransitViewDataForRoute(routeShortName);
             } catch (NumberFormatException e) {
                 Log.e(TAG, String.format("Error parsing KML for route:%s" ,routeShortName),e);
@@ -173,6 +167,7 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
             Log.d(TAG, "map was null, map Google Play services is not installed");
         }
     }
+
 
     public void asyncTransitViewRefresh() {
         asyncTransitViewRefreshTimer = new Timer();
@@ -288,108 +283,11 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
     }
 
     @Override
-    public void onLocationChanged(Location newLocation) {
-        // TODO: find a different way to tell if we should make our network calls, with a timer.
-        // TODO: find a better way to shut off the updates and resume when it makes sense
-        if (newLocation.getAccuracy()< getResources().getInteger(R.integer.transitview_map_accuracy_limit_in_meters)) {
-            mLocationClient.disconnect();
-            currentLocation = new LatLng(newLocation.getLatitude(), newLocation.getLongitude());
-
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation,
-                    Float.parseFloat(getString(R.string.trainviewactionbaractivity_map_zoom_level_float))));
-
-            updateTransitList();
-        }
-    }
-
-    /*
-     * Called by LocationModel Services when the request to connect the
-     * client finishes successfully. At this point, you can
-     * request the current location or start periodic updates
-     */
-    @Override
-    public void onConnected(Bundle dataBundle) {
-        // Display the connection status
-        Log.d(TAG, "location services connected");
-
-        LocationRequest mLocationRequest = LocationRequest.create();
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        mLocationRequest.setInterval(UPDATE_INTERVAL);
-        mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
-
-        mLocationClient.requestLocationUpdates(mLocationRequest, this);
-    }
-
-    /*
-     * Called by LocationModel Services if the connection to the
-     * location client drops because of an error.
-     */
-    @Override
-    public void onDisconnected() {
-        // Display the connection status
-        Log.d(TAG, "location services disconnected.");
-    }
-
-    /*
-     * Called by LocationModel Services if the attempt to
-     * LocationModel Services fails.
-     */
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-        /*
-         * Google Play services can resolve some errors it detects.
-         * If the error has a resolution, try sending an Intent to
-         * start a Google Play services activity that can resolve
-         * error.
-         */
-        if (connectionResult.hasResolution()) {
-//            try {
-            // Start an Activity that tries to resolve the error
-//                connectionResult.startResolutionForResult(
-//                        this,
-//                        9000);
-                /*
-                 * Thrown if Google Play services canceled the original
-                 * PendingIntent
-                 */
-//            } catch (IntentSender.SendIntentException e) {
-//                // Log the error
-//                e.printStackTrace();
-//            }
-        } else {
-            /*
-             * If no resolution is available, display a dialog to the
-             * user with the error.
-             */
-            Log.d(TAG, "location services error: " + connectionResult.getErrorCode());
-        }
-    }
-
-    @Override
     protected void onPause() {
         super.onPause();
 
         asyncTransitViewRefreshTimer.cancel();
         asyncTransitViewRefreshTimer.purge();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        // Connect the client.
-        if (mLocationClient != null) {
-            mLocationClient.connect();
-        }
-    }
-
-    @Override
-    protected void onStop() {
-        // Disconnecting the client invalidates it.
-        if (mLocationClient != null) {
-            mLocationClient.disconnect();
-        }
-
-        super.onStop();
     }
 
     @Override

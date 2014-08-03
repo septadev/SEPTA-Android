@@ -118,7 +118,7 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
                 currentLocation = new LatLng(defaultLatitude, defaultLongitude);
                 float defaultZoomLevel = Float.parseFloat(getResources().getString(R.string.generalmap_default_zoomlevel));
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(defaultLatitude, defaultLongitude), defaultZoomLevel));
-
+                mMap.setMyLocationEnabled(true);
                 // Have map animate to the route when it loads, framing the entire route
                 mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
                     @Override

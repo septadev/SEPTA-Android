@@ -42,12 +42,12 @@ public class FindNearestLocationsListFragment extends ListFragment {
     private RouteStopIdLoader routeStopIdLoader;
 
     public FindNearestLocationsListFragment() {
-        mLocationList = new ArrayList<LocationModel>(0);
+        this.mLocationList = Collections.synchronizedList(new ArrayList<LocationModel>());
     }
 
     public void clearLocationLists() {
 
-        this.mLocationList = new ArrayList<LocationModel>(0);
+        this.mLocationList = Collections.synchronizedList(new ArrayList<LocationModel>());
         this.getListView().invalidate();
 
     }
@@ -61,7 +61,7 @@ public class FindNearestLocationsListFragment extends ListFragment {
     }
 
     public void setLocationList(List<LocationModel> mLocationList) {
-        this.mLocationList = mLocationList;
+        this.mLocationList = Collections.synchronizedList(mLocationList);
 
         Collections.sort(this.mLocationList, new Comparator<LocationModel>() {
             public int compare(LocationModel location1, LocationModel location2) {

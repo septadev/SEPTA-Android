@@ -52,14 +52,6 @@ public class FindNearestLocationsListFragment extends ListFragment {
 
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        if(routeStopIdLoader != null) {
-            routeStopIdLoader.cancel(true);
-        }
-    }
-
     public void setLocationList(List<LocationModel> mLocationList) {
         this.mLocationList = Collections.synchronizedList(mLocationList);
 
@@ -130,6 +122,10 @@ public class FindNearestLocationsListFragment extends ListFragment {
 
         private void loadRoutesPerStop(List<LocationModel> locationList) {
             Log.d(TAG, "processing routes per stop with a location list size of " + locationList.size());
+            if(getActivity() == null) {
+                this.cancel(true);
+                return;
+            }
             SEPTADatabase septaDatabase = new SEPTADatabase(getActivity());
             SQLiteDatabase database = septaDatabase.getReadableDatabase();
 

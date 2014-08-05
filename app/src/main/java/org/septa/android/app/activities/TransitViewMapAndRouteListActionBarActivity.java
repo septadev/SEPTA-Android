@@ -119,41 +119,43 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
                 float defaultZoomLevel = Float.parseFloat(getResources().getString(R.string.generalmap_default_zoomlevel));
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(defaultLatitude, defaultLongitude), defaultZoomLevel));
                 mMap.setMyLocationEnabled(true);
-                // Have map animate to the route when it loads, framing the entire route
-                mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
-                    @Override
-                    public void onMapLoaded() {
-                        LatLngBounds bounds = latLngBuilder.build();
-                        if(bounds.getCenter() != null) {
-                            mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, MAP_PADDING));
-                        }
-                    }
-                });
 
                 KMLSAXXMLProcessor processor = new KMLSAXXMLProcessor(getAssets());
                 processor.readKMLFile("kml/transit/" + routeShortName + ".kml");
 
                 kmlModel = processor.getKMLModel();
 
-                latLngBuilder = new LatLngBounds.Builder();
-                // loop through the placemarks
                 List<KMLModel.Document.Placemark> placemarkList = kmlModel.getDocument().getPlacemarkList();
-                for (KMLModel.Document.Placemark placemark : placemarkList) {
-                    List<KMLModel.Document.MultiGeometry.LineString> lineStringList = placemark.getMultiGeometry().getLineStringList();
-                    for (KMLModel.Document.MultiGeometry.LineString lineString : lineStringList) {
-                        String color = "#" + kmlModel.getDocument().getColorForStyleId(placemark.getStyleUrl());
-                        List<LatLng> latLngCoordinateList = lineString.getLatLngCoordinates();
-
-                        // add all points to bounds builder
-                        for(LatLng latLng: latLngCoordinateList) {
-                            latLngBuilder.include(latLng);
+                if (placemarkList != null && !placemarkList.isEmpty()) {
+                    latLngBuilder = new LatLngBounds.Builder();
+                    // Have map animate to the route when it loads, framing the entire route
+                    mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
+                        @Override
+                        public void onMapLoaded() {
+                            LatLngBounds bounds = latLngBuilder.build();
+                            if(bounds.getCenter() != null) {
+                                mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, MAP_PADDING));
+                            }
                         }
+                    });
+                    // loop through the placemarks
+                    for (KMLModel.Document.Placemark placemark : placemarkList) {
+                        List<KMLModel.Document.MultiGeometry.LineString> lineStringList = placemark.getMultiGeometry().getLineStringList();
+                        for (KMLModel.Document.MultiGeometry.LineString lineString : lineStringList) {
+                            String color = "#" + kmlModel.getDocument().getColorForStyleId(placemark.getStyleUrl());
+                            List<LatLng> latLngCoordinateList = lineString.getLatLngCoordinates();
 
-                        PolylineOptions lineOptions = new PolylineOptions().addAll(latLngCoordinateList)
-                                .color(Color.parseColor(color))
-                                .width(3.0f)
-                                .visible(true);
-                        mMap.addPolyline(lineOptions);
+                            // add all points to bounds builder
+                            for(LatLng latLng: latLngCoordinateList) {
+                                latLngBuilder.include(latLng);
+                            }
+
+                            PolylineOptions lineOptions = new PolylineOptions().addAll(latLngCoordinateList)
+                                    .color(Color.parseColor(color))
+                                    .width(3.0f)
+                                    .visible(true);
+                            mMap.addPolyline(lineOptions);
+                        }
                     }
                 }
                 this.fetchTransitViewDataForRoute(routeShortName);

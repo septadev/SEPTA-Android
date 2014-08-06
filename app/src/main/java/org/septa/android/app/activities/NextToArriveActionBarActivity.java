@@ -52,6 +52,7 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
 
     public static final String TAG = NextToArriveActionBarActivity.class.getName();
     static final String TRIP_MODEL = "tripModel";
+    static final String IN_PROCESS = "inProcess";
 
     private NextToArrive_ListViewItem_ArrayAdapter mAdapter;
     private StickyListHeadersListView stickyList;
@@ -116,6 +117,7 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
 
         if(savedInstanceState != null){
             tripDataModel = savedInstanceState.getParcelable(TRIP_MODEL);
+            inProcessOfStartDestinationFlow = savedInstanceState.getBoolean(IN_PROCESS);
             if (tripDataModel != null) {
                 mAdapter.setStartStopName(tripDataModel.getStartStopName());
                 mAdapter.setDestinationStopName(tripDataModel.getDestinationStopName());
@@ -128,6 +130,7 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putParcelable(TRIP_MODEL, tripDataModel);
+        outState.putBoolean(IN_PROCESS, inProcessOfStartDestinationFlow);
         super.onSaveInstanceState(outState);
     }
 
@@ -382,8 +385,10 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
     private void checkTripStartAndDestinationForNextToArriveDataRequest() {
         // check if we have both the start and destination stops, if yes, fetch the data.
         if ((tripDataModel.getStartStopName() != null) && tripDataModel.getDestinationStopName() != null) {
-            ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).enableRefresh();
-            ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).enableSaveAsFavorite();
+            if(menuDialogListView != null && menuDialogListView.getAdapter() != null){
+                ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).enableRefresh();
+                ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).enableSaveAsFavorite();
+            }
 
             NextToArriveFavoritesAndRecentlyViewedStore store = new NextToArriveFavoritesAndRecentlyViewedStore(this);
 

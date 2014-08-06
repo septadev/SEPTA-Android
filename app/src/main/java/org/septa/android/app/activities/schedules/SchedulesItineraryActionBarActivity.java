@@ -225,12 +225,7 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
                         hideListView();
                         break;
                     }
-                    case 2: {       // service advisory
-                        checkTripStartAndDestinationForNextToArriveDataRequest();
-                        hideListView();
-                        break;
-                    }
-                    case 3: {       // real time
+                    case 2: {       // real time
                         startActivity(new Intent(SchedulesItineraryActionBarActivity.this,
                                 NextToArriveRealTimeWebViewActionBarActivity.class));
                         hideListView();

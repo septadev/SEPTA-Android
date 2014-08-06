@@ -52,7 +52,11 @@ import org.septa.android.app.models.TripObject;
 import org.septa.android.app.models.adapterhelpers.TextSubTextImageModel;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
+import butterknife.ButterKnife;
+import butterknife.InjectViews;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
 import static org.septa.android.app.models.RouteTypes.valueOf;
@@ -61,7 +65,10 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
         AdapterView.OnItemClickListener, StickyListHeadersListView.OnHeaderClickListener,
         StickyListHeadersListView.OnStickyHeaderOffsetChangedListener,
         StickyListHeadersListView.OnStickyHeaderChangedListener, View.OnTouchListener {
+
     public static final String TAG = SchedulesItineraryActionBarActivity.class.getName();
+    static final String SCHEDULE_MODEL = "scheduleModel";
+    static final String SELECTED_TAB = "selectedTab";
 
     private SchedulesItinerary_ListViewItem_ArrayAdapter mAdapter;
     private boolean fadeHeader = true;
@@ -87,10 +94,18 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
     private CountDownTimer schedulesItineraryRefreshCountDownTimer;
     private String actionBarTitleText;
 
+
+    @InjectViews({ R.id.schedules_itinerary_tab_now_button
+            , R.id.schedules_itinerary_tab_weekday_button
+            , R.id.schedules_itinerary_tab_sat_button
+            , R.id.schedules_itinerary_tab_sun_button })
+    List<Button> tabs;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.schedules_itinerary);
+        ButterKnife.inject(this);
 
         actionBarTitleText = getIntent().getStringExtra(getString(R.string.actionbar_titletext_key));
 
@@ -138,12 +153,6 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
         this.menuDialogListView = menuListView;
         menuListView.setAdapter(new Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter(this, listMenuItems));
 
-        if (schedulesRouteModel != null && schedulesRouteModel.hasStartAndEndSelected()) {
-            mAdapter.setRouteStartName(schedulesRouteModel.getRouteStartName());
-            mAdapter.setRouteEndName(schedulesRouteModel.getRouteEndName());
-
-            checkTripStartAndDestinationForNextToArriveDataRequest();
-        }
 
         stickyList = (StickyListHeadersListView) findViewById(R.id.list);
         stickyList.setOnItemClickListener(this);
@@ -160,6 +169,24 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
         getSupportActionBar().setHomeButtonEnabled(true);
 
         routesModel = new ArrayList<SchedulesRouteModel>();
+
+        if(savedInstanceState != null){
+            schedulesRouteModel = savedInstanceState.getParcelable(SCHEDULE_MODEL);
+            selectedTab = savedInstanceState.getInt(SELECTED_TAB);
+        }
+
+        if (schedulesRouteModel != null && schedulesRouteModel.hasStartAndEndSelected()) {
+            mAdapter.setRouteStartName(schedulesRouteModel.getRouteStartName());
+            mAdapter.setRouteEndName(schedulesRouteModel.getRouteEndName());
+
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putParcelable(SCHEDULE_MODEL, schedulesRouteModel);
+        outState.putInt(SELECTED_TAB, selectedTab);
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -172,24 +199,7 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
         String color = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[travelType.ordinal()];
         routeDirectionView.setBackgroundColor(Color.parseColor(color));
 
-        Button tabNowButton = (Button) findViewById(R.id.schedules_itinerary_tab_now_button);
-        Button tabWeekdayButton = (Button) findViewById(R.id.schedules_itinerary_tab_weekday_button);
-        Button tabSatButton = (Button) findViewById(R.id.schedules_itinerary_tab_sat_button);
-        Button tabSunButton = (Button) findViewById(R.id.schedules_itinerary_tab_sun_button);
-
-        GradientDrawable nowTabButtonShapeDrawable = (GradientDrawable) tabNowButton.getBackground();
-        GradientDrawable weekdayTabButtonShapeDrawable = (GradientDrawable) tabWeekdayButton.getBackground();
-        GradientDrawable satTabButtonShapeDrawable = (GradientDrawable) tabSatButton.getBackground();
-        GradientDrawable sunTabButtonShapeDrawable = (GradientDrawable) tabSunButton.getBackground();
-
-        nowTabButtonShapeDrawable.setColor(Color.parseColor(color));
-        tabNowButton.setTextColor(Color.WHITE);
-        weekdayTabButtonShapeDrawable.setColor(Color.LTGRAY);
-        tabWeekdayButton.setTextColor(Color.BLACK);
-        satTabButtonShapeDrawable.setColor(Color.LTGRAY);
-        tabSatButton.setTextColor(Color.BLACK);
-        sunTabButtonShapeDrawable.setColor(Color.LTGRAY);
-        tabSunButton.setTextColor(Color.BLACK);
+        selectTab(selectedTab);
     }
 
     @Override
@@ -595,38 +605,55 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
     }
 
     public void tabSelected(View view) {
-        Log.d(TAG, "heard the tab selected");
         switch (view.getId()) {
-            case R.id.schedules_itinerary_tab_now_button: {
-                selectedTab = 0;
-                mAdapter.setHeaderViewText("REMIANING TRIPS FOR TODAY");
-                selectedNowTab();
-
-                break;
-            }
             case R.id.schedules_itinerary_tab_weekday_button: {
-                selectedTab = 1;
-                mAdapter.setHeaderViewText(tabLabels[selectedTab]);
-                selectedWeekdayTab();
+                Log.d(TAG, "heard the tab selected: weekday" );
+                selectTab(1);
 
                 break;
             }
             case R.id.schedules_itinerary_tab_sat_button: {
-                selectedTab = 2;
-                mAdapter.setHeaderViewText(tabLabels[selectedTab]);
-                selectedSatTab();
+                Log.d(TAG, "heard the tab selected: sat" );
+                selectTab(2);
 
                 break;
             }
             case R.id.schedules_itinerary_tab_sun_button: {
-                selectedTab = 3;
-                mAdapter.setHeaderViewText(tabLabels[selectedTab]);
-                selectedSunTab();
-
+                Log.d(TAG, "heard the tab selected: sun" );
+                selectTab(3);
                 break;
             }
             default: {
-                Log.d("f", "not sure how we feel into this default for this switch");
+                selectTab(0);
+            }
+        }
+    }
+
+    public void selectTab(int index){
+        selectedTab = index;
+        setTabSelected(tabs.get(selectedTab));
+
+        for(int i = 0 ; i < tabs.size(); i++){
+            if(i != selectedTab){
+                setTabUnselected(tabs.get(i));
+            }
+        }
+
+        switch (index){
+
+            case 1:{
+                mAdapter.setHeaderViewText(tabLabels[selectedTab]);
+                break;
+            }
+            case 2:{
+                mAdapter.setHeaderViewText(tabLabels[selectedTab]);
+                break;
+            }
+            case 3:{
+                mAdapter.setHeaderViewText(tabLabels[selectedTab]);
+                break;
+            } default:{
+                mAdapter.setHeaderViewText("REMAINING TRIPS FOR TODAY");
             }
         }
 
@@ -634,103 +661,19 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
         checkTripStartAndDestinationForNextToArriveDataRequest();
     }
 
-    private void selectedNowTab() {
-        // get the color from the looking array given the ordinal position of the route type
+    private void setTabSelected(Button button){
         String color = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[travelType.ordinal()];
+        GradientDrawable gradientDrawable = (GradientDrawable)button.getBackground();
 
-        Button tabNowButton = (Button) findViewById(R.id.schedules_itinerary_tab_now_button);
-        Button tabWeekdayButton = (Button) findViewById(R.id.schedules_itinerary_tab_weekday_button);
-        Button tabSatButton = (Button) findViewById(R.id.schedules_itinerary_tab_sat_button);
-        Button tabSunButton = (Button) findViewById(R.id.schedules_itinerary_tab_sun_button);
-
-        GradientDrawable nowTabButtonShapeDrawable = (GradientDrawable) tabNowButton.getBackground();
-        GradientDrawable weekdayTabButtonShapeDrawable = (GradientDrawable) tabWeekdayButton.getBackground();
-        GradientDrawable satTabButtonShapeDrawable = (GradientDrawable) tabSatButton.getBackground();
-        GradientDrawable sunTabButtonShapeDrawable = (GradientDrawable) tabSunButton.getBackground();
-
-        nowTabButtonShapeDrawable.setColor(Color.parseColor(color));
-        tabNowButton.setTextColor(Color.WHITE);
-        weekdayTabButtonShapeDrawable.setColor(Color.LTGRAY);
-        tabWeekdayButton.setTextColor(Color.BLACK);
-        satTabButtonShapeDrawable.setColor(Color.LTGRAY);
-        tabSatButton.setTextColor(Color.BLACK);
-        sunTabButtonShapeDrawable.setColor(Color.LTGRAY);
-        tabSunButton.setTextColor(Color.BLACK);
+        gradientDrawable.setColor(Color.parseColor(color));
+        button.setTextColor(Color.WHITE);
     }
 
-    private void selectedWeekdayTab() {
-        Log.d(TAG, "weekday tab selected");
-        // get the color from the looking array given the ordinal position of the route type
-        String color = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[travelType.ordinal()];
-
-        Button tabNowButton = (Button) findViewById(R.id.schedules_itinerary_tab_now_button);
-        Button tabWeekdayButton = (Button) findViewById(R.id.schedules_itinerary_tab_weekday_button);
-        Button tabSatButton = (Button) findViewById(R.id.schedules_itinerary_tab_sat_button);
-        Button tabSunButton = (Button) findViewById(R.id.schedules_itinerary_tab_sun_button);
-
-        GradientDrawable nowTabButtonShapeDrawable = (GradientDrawable) tabNowButton.getBackground();
-        GradientDrawable weekdayTabButtonShapeDrawable = (GradientDrawable) tabWeekdayButton.getBackground();
-        GradientDrawable satTabButtonShapeDrawable = (GradientDrawable) tabSatButton.getBackground();
-        GradientDrawable sunTabButtonShapeDrawable = (GradientDrawable) tabSunButton.getBackground();
-
-        nowTabButtonShapeDrawable.setColor(Color.LTGRAY);
-        tabNowButton.setTextColor(Color.BLACK);
-        weekdayTabButtonShapeDrawable.setColor(Color.parseColor(color));
-        tabWeekdayButton.setTextColor(Color.WHITE);
-        satTabButtonShapeDrawable.setColor(Color.LTGRAY);
-        tabSatButton.setTextColor(Color.BLACK);
-        sunTabButtonShapeDrawable.setColor(Color.LTGRAY);
-        tabSunButton.setTextColor(Color.BLACK);
+    private void setTabUnselected(Button button){
+        GradientDrawable gradientDrawable = (GradientDrawable)button.getBackground();
+        gradientDrawable.setColor(Color.LTGRAY);
+        button.setTextColor(Color.BLACK);
     }
-
-    private void selectedSatTab() {
-        // get the color from the looking array given the ordinal position of the route type
-        String color = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[travelType.ordinal()];
-
-        Button tabNowButton = (Button) findViewById(R.id.schedules_itinerary_tab_now_button);
-        Button tabWeekdayButton = (Button) findViewById(R.id.schedules_itinerary_tab_weekday_button);
-        Button tabSatButton = (Button) findViewById(R.id.schedules_itinerary_tab_sat_button);
-        Button tabSunButton = (Button) findViewById(R.id.schedules_itinerary_tab_sun_button);
-
-        GradientDrawable nowTabButtonShapeDrawable = (GradientDrawable) tabNowButton.getBackground();
-        GradientDrawable weekdayTabButtonShapeDrawable = (GradientDrawable) tabWeekdayButton.getBackground();
-        GradientDrawable satTabButtonShapeDrawable = (GradientDrawable) tabSatButton.getBackground();
-        GradientDrawable sunTabButtonShapeDrawable = (GradientDrawable) tabSunButton.getBackground();
-
-        nowTabButtonShapeDrawable.setColor(Color.LTGRAY);
-        tabNowButton.setTextColor(Color.BLACK);
-        weekdayTabButtonShapeDrawable.setColor(Color.LTGRAY);
-        tabWeekdayButton.setTextColor(Color.BLACK);
-        satTabButtonShapeDrawable.setColor(Color.parseColor(color));
-        tabSatButton.setTextColor(Color.WHITE);
-        sunTabButtonShapeDrawable.setColor(Color.LTGRAY);
-        tabSunButton.setTextColor(Color.BLACK);
-    }
-
-    private void selectedSunTab() {
-        // get the color from the looking array given the ordinal position of the route type
-        String color = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[travelType.ordinal()];
-
-        Button tabNowButton = (Button) findViewById(R.id.schedules_itinerary_tab_now_button);
-        Button tabWeekdayButton = (Button) findViewById(R.id.schedules_itinerary_tab_weekday_button);
-        Button tabSatButton = (Button) findViewById(R.id.schedules_itinerary_tab_sat_button);
-        Button tabSunButton = (Button) findViewById(R.id.schedules_itinerary_tab_sun_button);
-
-        GradientDrawable nowTabButtonShapeDrawable = (GradientDrawable) tabNowButton.getBackground();
-        GradientDrawable weekdayTabButtonShapeDrawable = (GradientDrawable) tabWeekdayButton.getBackground();
-        GradientDrawable satTabButtonShapeDrawable = (GradientDrawable) tabSatButton.getBackground();
-        GradientDrawable sunTabButtonShapeDrawable = (GradientDrawable) tabSunButton.getBackground();
-
-        nowTabButtonShapeDrawable.setColor(Color.LTGRAY);
-        tabNowButton.setTextColor(Color.BLACK);
-        weekdayTabButtonShapeDrawable.setColor(Color.LTGRAY);
-        tabWeekdayButton.setTextColor(Color.BLACK);
-        satTabButtonShapeDrawable.setColor(Color.LTGRAY);
-        tabSatButton.setTextColor(Color.BLACK);
-        sunTabButtonShapeDrawable.setColor(Color.parseColor(color));
-        tabSunButton.setTextColor(Color.WHITE);
-    }
-
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {

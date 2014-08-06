@@ -49,7 +49,9 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
         StickyListHeadersListView.OnStickyHeaderOffsetChangedListener,
         StickyListHeadersListView.OnStickyHeaderChangedListener,
         AdapterView.OnItemLongClickListener {
+
     public static final String TAG = NextToArriveActionBarActivity.class.getName();
+    static final String TRIP_MODEL = "tripModel";
 
     private NextToArrive_ListViewItem_ArrayAdapter mAdapter;
     private StickyListHeadersListView stickyList;
@@ -112,6 +114,21 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
+        if(savedInstanceState != null){
+            tripDataModel = savedInstanceState.getParcelable(TRIP_MODEL);
+            if (tripDataModel != null) {
+                mAdapter.setStartStopName(tripDataModel.getStartStopName());
+                mAdapter.setDestinationStopName(tripDataModel.getDestinationStopName());
+            }
+        }
+
+
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putParcelable(TRIP_MODEL, tripDataModel);
+        super.onSaveInstanceState(outState);
     }
 
     public void startEndSelectionSelected(View view) {
@@ -249,6 +266,7 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
             }
         });
 
+        checkTripStartAndDestinationForNextToArriveDataRequest();
         return true;
     }
 
@@ -484,7 +502,8 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
             @Override
             public void onTick(long millisUntilFinished) {
 
-                ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).setNextRefreshInSecondsValue(millisUntilFinished / 1000);
+                if(menuDialogListView != null && menuDialogListView.getAdapter() != null)
+                    ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).setNextRefreshInSecondsValue(millisUntilFinished / 1000);
             }
 
             @Override

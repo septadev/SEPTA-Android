@@ -37,6 +37,7 @@ import org.septa.android.app.models.RouteTypes;
 import org.septa.android.app.models.SchedulesFavoriteModel;
 import org.septa.android.app.models.SchedulesRecentlyViewedModel;
 import org.septa.android.app.models.SchedulesRouteModel;
+import org.septa.android.app.views.StatusView;
 
 import java.util.ArrayList;
 
@@ -52,6 +53,7 @@ public class SchedulesRouteSelectionActionBarActivity extends BaseAnalyticsActio
     private SchedulesRouteSelection_ListViewItem_ArrayAdapter mAdapter;
     private boolean fadeHeader = true;
 
+    private StatusView statusView;
     private RouteTypes travelType;
     private String iconImageNameSuffix;
 
@@ -78,13 +80,16 @@ public class SchedulesRouteSelectionActionBarActivity extends BaseAnalyticsActio
 
         mAdapter = new SchedulesRouteSelection_ListViewItem_ArrayAdapter(this, travelType);
 
+        statusView = (StatusView)findViewById(R.id.empty);
+        statusView.setLoading(true);
+
         stickyList = (StickyListHeadersListView) findViewById(R.id.list);
         stickyList.setOnItemClickListener(this);
         stickyList.setOnItemLongClickListener(this);
         stickyList.setOnHeaderClickListener(this);
         stickyList.setOnStickyHeaderChangedListener(this);
         stickyList.setOnStickyHeaderOffsetChangedListener(this);
-        stickyList.setEmptyView(findViewById(R.id.empty));
+        stickyList.setEmptyView(statusView);
         stickyList.setDrawingListUnderStickyHeader(true);
         stickyList.setAreHeadersSticky(true);
         stickyList.setAdapter(mAdapter);

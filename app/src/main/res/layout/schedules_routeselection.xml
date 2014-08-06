@@ -8,7 +8,6 @@
   -->
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-
              android:layout_width="match_parent"
              android:layout_height="match_parent"
              android:background="@drawable/main_background"
@@ -24,16 +23,11 @@
         android:fastScrollEnabled="true"
         android:overScrollMode="never"/>
 
-    <TextView
-        android:id="@+id/empty"
+    <org.septa.android.app.views.StatusView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:layout_gravity="left|top"
-        android:gravity="center"
-        android:text="no data..."
-        android:textSize="30sp"
+        android:layout_height="match_parent"
         android:background="@android:color/white"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        android:id="@+id/empty"/>
 
 </FrameLayout>

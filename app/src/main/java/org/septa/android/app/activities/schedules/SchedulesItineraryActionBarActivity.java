@@ -57,7 +57,7 @@ import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
 import static org.septa.android.app.models.RouteTypes.valueOf;
 
-public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBarActivity implements
+public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarActivity implements
         AdapterView.OnItemClickListener, StickyListHeadersListView.OnHeaderClickListener,
         StickyListHeadersListView.OnStickyHeaderOffsetChangedListener,
         StickyListHeadersListView.OnStickyHeaderChangedListener, View.OnTouchListener {
@@ -482,7 +482,7 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
                 store.addRecentlyViewed(this.travelType.name(), schedulesRecentlyViewedModel);
             }
 
-            Log.d(TAG, "route short name and travel type "+schedulesRouteModel.getRouteShortName()+" "+travelType);
+            Log.d(TAG, "route short name and travel type " + schedulesRouteModel.getRouteShortName() + " " + travelType);
             switch (travelType) {
                 case RAIL: {
                     TextView endRouteNameTextView = (TextView) findViewById(R.id.schedules_itinerary_routedirection_textview);
@@ -834,32 +834,34 @@ public class SchedulesItineraryActionBarActivity  extends BaseAnalyticsActionBar
             SEPTADatabase septaDatabase = new SEPTADatabase(SchedulesItineraryActionBarActivity.this);
             SQLiteDatabase database = septaDatabase.getReadableDatabase();
 
-            Log.d("f", "setting querystring with route short name as " + routeShortName);
-            queryString = "SELECT dircode, Route, DirectionDescription FROM bus_stop_directions WHERE Route=\"%%route_short_name%%\" ORDER BY dircode";
-            queryString = queryString.replace("%%route_short_name%%", routeShortName);
+            if (routeShortName != null) {
+                queryString = "SELECT dircode, Route, DirectionDescription FROM bus_stop_directions WHERE Route=\"%%route_short_name%%\" ORDER BY dircode";
+                queryString = queryString.replace("%%route_short_name%%", routeShortName);
 
-            Cursor cursor = null;
+                Cursor cursor = null;
 
-            if (queryString != null) {
-                cursor = database.rawQuery(queryString, null);
-            }
-
-            if (cursor != null) {
-                if (cursor.moveToFirst()) {
-                    do {
-                        if (cursor.getInt(0) == schedulesDataModel.getCurrentDisplayDirection()) {
-                            Log.d("p", "found the direction code, will set string");
-                            directionHeaderString = cursor.getString(2);
-                        }
-                    } while (cursor.moveToNext());
+                if (queryString != null) {
+                    cursor = database.rawQuery(queryString, null);
                 }
 
-                cursor.close();
-            } else {
-                Log.d("f", "cursor is null");
+                if (cursor != null) {
+                    if (cursor.moveToFirst()) {
+                        do {
+                            if (cursor.getInt(0) == schedulesDataModel.getCurrentDisplayDirection()) {
+                                Log.d("p", "found the direction code, will set string");
+                                directionHeaderString = cursor.getString(2);
+                            }
+                        } while (cursor.moveToNext());
+                    }
+
+                    cursor.close();
+                } else {
+                    Log.d("f", "cursor is null");
+                }
+
+                database.close();
             }
 
-            database.close();
         }
 
         @Override

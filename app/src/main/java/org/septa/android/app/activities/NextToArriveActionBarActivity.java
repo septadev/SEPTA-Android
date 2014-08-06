@@ -103,7 +103,6 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
         stickyList.setOnHeaderClickListener(this);
         stickyList.setOnStickyHeaderChangedListener(this);
         stickyList.setOnStickyHeaderOffsetChangedListener(this);
-        stickyList.setEmptyView(findViewById(R.id.empty));
         stickyList.setDrawingListUnderStickyHeader(true);
         stickyList.setAreHeadersSticky(true);
         stickyList.setAdapter(mAdapter);

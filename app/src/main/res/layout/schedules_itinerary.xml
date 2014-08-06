@@ -104,7 +104,7 @@
     <FrameLayout
         android:id="@+id/schedules_itinerary_menudialog_mainlayout"
         android:layout_width="match_parent"
-        android:layout_height="205dp"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:background="#FF000000"

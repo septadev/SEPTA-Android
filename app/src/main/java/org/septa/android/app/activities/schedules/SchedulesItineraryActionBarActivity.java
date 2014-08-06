@@ -69,6 +69,8 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
     public static final String TAG = SchedulesItineraryActionBarActivity.class.getName();
     static final String SCHEDULE_MODEL = "scheduleModel";
     static final String SELECTED_TAB = "selectedTab";
+    static final String IN_PROCESS = "inProcess";
+
 
     private SchedulesItinerary_ListViewItem_ArrayAdapter mAdapter;
     private boolean fadeHeader = true;
@@ -173,6 +175,7 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
         if(savedInstanceState != null){
             schedulesRouteModel = savedInstanceState.getParcelable(SCHEDULE_MODEL);
             selectedTab = savedInstanceState.getInt(SELECTED_TAB);
+            inProcessOfStartDestinationFlow = savedInstanceState.getBoolean(IN_PROCESS);
         }
 
         if (schedulesRouteModel != null && schedulesRouteModel.hasStartAndEndSelected()) {
@@ -186,6 +189,7 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
     protected void onSaveInstanceState(Bundle outState) {
         outState.putParcelable(SCHEDULE_MODEL, schedulesRouteModel);
         outState.putInt(SELECTED_TAB, selectedTab);
+        outState.putBoolean(IN_PROCESS, inProcessOfStartDestinationFlow);
         super.onSaveInstanceState(outState);
     }
 

@@ -7,7 +7,10 @@
 
 package org.septa.android.app.models;
 
-public class TripDataModel {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class TripDataModel implements Parcelable {
 
     private String startStopNameTitle;
     private String startStopName;
@@ -163,4 +166,55 @@ public class TripDataModel {
         directionId = null;
         trainNumber = null;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.startStopNameTitle);
+        dest.writeString(this.startStopName);
+        dest.writeString(this.destinationStopNameTitle);
+        dest.writeString(this.destinationStopName);
+        dest.writeString(this.startStopId);
+        dest.writeString(this.destinationStopId);
+        dest.writeString(this.startArrivalTime);
+        dest.writeString(this.destinationArrivalTime);
+        dest.writeString(this.tripId);
+        dest.writeValue(this.startStopSequence);
+        dest.writeValue(this.destinationStopSequence);
+        dest.writeValue(this.directionId);
+        dest.writeString(this.trainNumber);
+    }
+
+    public TripDataModel() {
+    }
+
+    private TripDataModel(Parcel in) {
+        this.startStopNameTitle = in.readString();
+        this.startStopName = in.readString();
+        this.destinationStopNameTitle = in.readString();
+        this.destinationStopName = in.readString();
+        this.startStopId = in.readString();
+        this.destinationStopId = in.readString();
+        this.startArrivalTime = in.readString();
+        this.destinationArrivalTime = in.readString();
+        this.tripId = in.readString();
+        this.startStopSequence = (Integer) in.readValue(Integer.class.getClassLoader());
+        this.destinationStopSequence = (Integer) in.readValue(Integer.class.getClassLoader());
+        this.directionId = (Integer) in.readValue(Integer.class.getClassLoader());
+        this.trainNumber = in.readString();
+    }
+
+    public static final Parcelable.Creator<TripDataModel> CREATOR = new Parcelable.Creator<TripDataModel>() {
+        public TripDataModel createFromParcel(Parcel source) {
+            return new TripDataModel(source);
+        }
+
+        public TripDataModel[] newArray(int size) {
+            return new TripDataModel[size];
+        }
+    };
 }

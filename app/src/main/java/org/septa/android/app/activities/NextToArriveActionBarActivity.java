@@ -49,7 +49,10 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
         StickyListHeadersListView.OnStickyHeaderOffsetChangedListener,
         StickyListHeadersListView.OnStickyHeaderChangedListener,
         AdapterView.OnItemLongClickListener {
+
     public static final String TAG = NextToArriveActionBarActivity.class.getName();
+    static final String TRIP_MODEL = "tripModel";
+    static final String IN_PROCESS = "inProcess";
 
     private NextToArrive_ListViewItem_ArrayAdapter mAdapter;
     private StickyListHeadersListView stickyList;
@@ -112,6 +115,23 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
+        if(savedInstanceState != null){
+            tripDataModel = savedInstanceState.getParcelable(TRIP_MODEL);
+            inProcessOfStartDestinationFlow = savedInstanceState.getBoolean(IN_PROCESS);
+            if (tripDataModel != null) {
+                mAdapter.setStartStopName(tripDataModel.getStartStopName());
+                mAdapter.setDestinationStopName(tripDataModel.getDestinationStopName());
+            }
+        }
+
+
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putParcelable(TRIP_MODEL, tripDataModel);
+        outState.putBoolean(IN_PROCESS, inProcessOfStartDestinationFlow);
+        super.onSaveInstanceState(outState);
     }
 
     public void startEndSelectionSelected(View view) {
@@ -249,6 +269,7 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
             }
         });
 
+        checkTripStartAndDestinationForNextToArriveDataRequest();
         return true;
     }
 
@@ -364,8 +385,10 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
     private void checkTripStartAndDestinationForNextToArriveDataRequest() {
         // check if we have both the start and destination stops, if yes, fetch the data.
         if ((tripDataModel.getStartStopName() != null) && tripDataModel.getDestinationStopName() != null) {
-            ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).enableRefresh();
-            ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).enableSaveAsFavorite();
+            if(menuDialogListView != null && menuDialogListView.getAdapter() != null){
+                ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).enableRefresh();
+                ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).enableSaveAsFavorite();
+            }
 
             NextToArriveFavoritesAndRecentlyViewedStore store = new NextToArriveFavoritesAndRecentlyViewedStore(this);
 
@@ -484,7 +507,8 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
             @Override
             public void onTick(long millisUntilFinished) {
 
-                ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).setNextRefreshInSecondsValue(millisUntilFinished / 1000);
+                if(menuDialogListView != null && menuDialogListView.getAdapter() != null)
+                    ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).setNextRefreshInSecondsValue(millisUntilFinished / 1000);
             }
 
             @Override

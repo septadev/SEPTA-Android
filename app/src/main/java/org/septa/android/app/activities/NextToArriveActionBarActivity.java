@@ -402,7 +402,7 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
                 scheduleRefreshCountDownTimer = createScheduleRefreshCountDownTimer();
                 scheduleRefreshCountDownTimer.start();
             }
-        } else {
+        } else if (menuDialogListView != null && menuDialogListView.getAdapter() != null){
             ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).disableRefresh();
             ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).disableSaveAsFavorite();
             ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).disableRemovedSavedFavorite();

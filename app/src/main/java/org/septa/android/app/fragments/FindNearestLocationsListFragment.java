@@ -47,9 +47,8 @@ public class FindNearestLocationsListFragment extends ListFragment {
     }
 
     public void clearLocationLists() {
-
         this.mLocationList = Collections.synchronizedList(new ArrayList<LocationModel>());
-        this.getListView().invalidate();
+        mAdapter.notifyDataSetChanged();
 
     }
 

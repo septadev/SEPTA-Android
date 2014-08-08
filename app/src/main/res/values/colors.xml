@@ -11,6 +11,11 @@
 
     <!-- Listviews-->
     <color name="listviewSections">#88383D42</color>
+    
+    <color name="ontime_text">#1D8A24</color>
+    <color name="late_text">#B30E0E</color>
+    <color name="route_direction_red">#B30E0E</color>
+    <color name="route_direction_blue">#007DC3</color>
 
 
 </resources>

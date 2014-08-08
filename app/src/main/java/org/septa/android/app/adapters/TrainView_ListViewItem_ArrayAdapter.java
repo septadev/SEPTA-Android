@@ -54,11 +54,6 @@ public class TrainView_ListViewItem_ArrayAdapter extends ArrayAdapter<TrainViewM
         TextView trainTimingTextView = (TextView) rowView.findViewById(R.id.trainview_listview_item_train_timing_textview);
 
         trainNumberTextView.setText(trainInformation.getTrainNumber());
-        if (trainInformation.isSouthBound()) {
-            trainNumberTextView.setTextColor(Color.RED);
-        } else {
-            trainNumberTextView.setTextColor(Color.BLUE);
-        }
 
         if (trainInformation.isLate()) {
             if (trainInformation.getLate() > 1) {
@@ -66,10 +61,10 @@ public class TrainView_ListViewItem_ArrayAdapter extends ArrayAdapter<TrainViewM
             } else {
                 trainTimingTextView.setText(""+trainInformation.getLate()+" min");
             }
-            trainTimingTextView.setTextColor(Color.RED);
+            trainTimingTextView.setTextColor(context.getResources().getColor(R.color.late_text));
         } else {
             trainTimingTextView.setText("On-time");
-            trainTimingTextView.setTextColor(Color.GREEN);
+            trainTimingTextView.setTextColor(context.getResources().getColor(R.color.ontime_text));
         }
 
         TextView trainStart = (TextView) rowView.findViewById(R.id.trainview_listview_item_start_textview);

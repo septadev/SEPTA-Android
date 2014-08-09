@@ -121,7 +121,7 @@ public class TransitViewVehicleModel implements Comparable<TransitViewVehicleMod
 
     public boolean isEastBound() {
 
-        return direction.equals("Eastbound");
+        return direction.equals("EastBound");
     }
 
     public boolean isWestBound() {

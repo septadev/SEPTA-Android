@@ -383,7 +383,7 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
                         break;
                     }
 
-                    if (transitViewVehicle.isSouthBound() || transitViewVehicle.isWestBound()) {
+                    if (transitViewVehicle.isSouthBound() || transitViewVehicle.isEastBound()) {
                         transitIcon = BitmapDescriptorFactory.fromResource(R.drawable.ic_transitview_bus_blue);
                     } else {
                         transitIcon = BitmapDescriptorFactory.fromResource(R.drawable.ic_transitview_bus_red);

@@ -14,6 +14,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,9 +47,8 @@ public class FindNearestLocationsListFragment extends ListFragment {
     }
 
     public void clearLocationLists() {
-
         this.mLocationList = Collections.synchronizedList(new ArrayList<LocationModel>());
-        this.getListView().invalidate();
+        mAdapter.notifyDataSetChanged();
 
     }
 
@@ -62,6 +62,9 @@ public class FindNearestLocationsListFragment extends ListFragment {
         });
 
 
+        if(routeStopIdLoader != null){
+            routeStopIdLoader.cancel(true);
+        }
         routeStopIdLoader = new RouteStopIdLoader();
         routeStopIdLoader.execute(mLocationList);
 
@@ -129,29 +132,39 @@ public class FindNearestLocationsListFragment extends ListFragment {
             SEPTADatabase septaDatabase = new SEPTADatabase(getActivity());
             SQLiteDatabase database = septaDatabase.getReadableDatabase();
 
-            for (LocationModel location : locationList) {
-                String queryString = "SELECT route_short_name, stop_id, Direction, dircode, route_type FROM stopIDRouteLookup WHERE stop_id=" + location.getLocationId();
-                Cursor cursor = database.rawQuery(queryString, null);
-                if (cursor != null) {
-                    if (cursor.moveToFirst()) {
-                        do {
-                            location.addRoute(cursor.getString(0), LocationBasedRouteModel.DirectionCode.valueOf(cursor.getString(2)), cursor.getInt(3), cursor.getInt(4));
-                        } while (cursor.moveToNext());
-                    }
+            SparseArray<LocationModel> locations = new SparseArray<LocationModel>();
+            String queryString = "SELECT route_short_name, stop_id, Direction, dircode, route_type FROM stopIDRouteLookup WHERE stop_id in (";
 
-                    cursor.close();
-                } else {
-                    Log.d(TAG, "cursor is null");
-                }
+            for (LocationModel location : locationList) {
+                queryString += location.getLocationId();
+                locations.put(location.getLocationId(), location);
+
+                if(locationList.indexOf(location) < locationList.size()-1)
+                    queryString += ",";
+
             }
 
+            queryString += ")";
+
+            Cursor cursor = database.rawQuery(queryString, null);
+            if (cursor != null) {
+                if (cursor.moveToFirst()) {
+                    do {
+                        locations.get(cursor.getInt(1)).addRoute(cursor.getString(0), LocationBasedRouteModel.DirectionCode.valueOf(cursor.getString(2)), cursor.getInt(3), cursor.getInt(4));
+                    } while (cursor.moveToNext());
+                }
+
+                cursor.close();
+            } else {
+                Log.d(TAG, "cursor is null");
+            }
             database.close();
+
         }
 
         @Override
         protected Boolean doInBackground(List<LocationModel>... params) {
-            List<LocationModel> locationList = params[0];
-            loadRoutesPerStop(locationList);
+            loadRoutesPerStop(params[0]);
 
             return false;
         }

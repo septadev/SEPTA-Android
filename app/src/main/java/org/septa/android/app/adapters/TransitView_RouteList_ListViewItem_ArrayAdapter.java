@@ -66,7 +66,7 @@ public class TransitView_RouteList_ListViewItem_ArrayAdapter  extends ArrayAdapt
 
         TextView transitviewDirection = (TextView) rowView.findViewById(R.id.transitview_listview_item_start_textview);
         transitviewDirection.setText(transitVehicleInformation.getDirection());
-        if (transitVehicleInformation.isSouthBound() || transitVehicleInformation.isWestBound()) {
+        if (transitVehicleInformation.isSouthBound() || transitVehicleInformation.isEastBound()) {
             transitviewDirection.setTextColor(context.getResources().getColor(R.color.route_direction_blue));
         } else {
             transitviewDirection.setTextColor(context.getResources().getColor(R.color.route_direction_red));

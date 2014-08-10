@@ -207,7 +207,7 @@ public class SchedulesDataModel {
                 break;
             }
             case 1: {  // Weekday
-                serviceId = CalendarDateUtilities.getServiceIdForNow(context);
+                serviceId = CalendarDateUtilities.getServiceIdForDay(Calendar.FRIDAY);
                 break;
             }
             case 2: {  // Saturday

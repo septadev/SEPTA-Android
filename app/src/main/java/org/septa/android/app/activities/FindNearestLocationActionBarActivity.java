@@ -10,6 +10,7 @@ package org.septa.android.app.activities;
 import com.google.android.gms.common.GooglePlayServicesClient;
 
 import android.content.DialogInterface;
+import android.content.IntentSender;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
@@ -22,6 +23,7 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -46,39 +48,40 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
         LocationListener,
         GooglePlayServicesClient.ConnectionCallbacks,
         GooglePlayServicesClient.OnConnectionFailedListener {
+
     public static final String TAG = FindNearestLocationActionBarActivity.class.getName();
 
-    private boolean inChangeRadiusMode = false;
-    private float defaultZoom;
-    private float maxDistanceFromCityCenter; //if new locations exceed maximum we return to city center instead
-    private Location defaultLocation;
+    //State Keys
+    public static final String STATE_CURRENT_LOCATION = "currentLocation";
 
-    private GoogleMap mMap;
-
+    public static final int UPDATE_INTERVAL_IN_SECONDS = 120;
+    private static final int MILLISECONDS_PER_SECOND = 1000;
+    private static final long UPDATE_INTERVAL =
+            MILLISECONDS_PER_SECOND * UPDATE_INTERVAL_IN_SECONDS;
+    private static final int FASTEST_INTERVAL_IN_SECONDS = 60;
+    private static final long FASTEST_INTERVAL =
+            MILLISECONDS_PER_SECOND * FASTEST_INTERVAL_IN_SECONDS;
     final int RQS_GooglePlayServices = 1;
 
     LocationClient mLocationClient;
+    private boolean inChangeRadiusMode = false;
+    private float defaultZoom;
+    private float maxDistanceFromCityCenter; //if new locations exceed maximum we return to city center instead
+    private float maxDistancePerStep; //max distance to be traveled between list reloads.
 
-    private static final int MILLISECONDS_PER_SECOND = 1000;
 
-    public static final int UPDATE_INTERVAL_IN_SECONDS = 10;
-
-    private static final long UPDATE_INTERVAL =
-            MILLISECONDS_PER_SECOND * UPDATE_INTERVAL_IN_SECONDS;
-
-    private static final int FASTEST_INTERVAL_IN_SECONDS = 10;
-    private static final long FASTEST_INTERVAL =
-            MILLISECONDS_PER_SECOND * FASTEST_INTERVAL_IN_SECONDS;
-
+    private GoogleMap mMap;
     private FindNearestLocationEditRadiusDialog findNearestLocationEditRadiusDialog;
     private int locationServiceCalls = 0;
-    private Location existingLocation = null;
     private float mapSearchRadius;
     private FindNearestLocationsListFragment mListFragment;
     private List<LocationModel> mLocationList;
 
-    private float getMapSearchRadius() {
+    private Location defaultLocation;
+    private Location currentLocation;
+    private Location lastListedLocation; //the last location from which we loaded the list. This presents unnecessary UI flicker.
 
+    private float getMapSearchRadius() {
         return mapSearchRadius;
     }
 
@@ -110,23 +113,27 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
         mLocationList = new ArrayList<LocationModel>();
 
         // set the initial center point of the map on Center City, Philadelphia with a default zoom
-        double defaultLatitute = Double.parseDouble(getResources().getString(R.string.generalmap_default_location_latitude));
+        double defaultLatitude = Double.parseDouble(getResources().getString(R.string.generalmap_default_location_latitude));
         double defaultLongitude = Double.parseDouble(getResources().getString(R.string.generalmap_default_location_longitude));
         maxDistanceFromCityCenter = Float.parseFloat(getResources().getString(R.string.generalmap_max_distance_from_center));
+        maxDistancePerStep = Float.parseFloat(getResources().getString(R.string.generalmap_max_distance_per_step));
+        defaultZoom = Float.parseFloat(getResources().getString(R.string.findnearestlocation_map_zoom_level_float));
 
-        Log.d("f", "Max From Center " + maxDistanceFromCityCenter);
         defaultLocation = new Location("default");
-        defaultLocation.setLatitude(defaultLatitute);
+        defaultLocation.setLatitude(defaultLatitude);
         defaultLocation.setLongitude(defaultLongitude);
-        this.existingLocation = defaultLocation;
 
-        defaultZoom = Float.parseFloat(getResources().getString(R.string.generalmap_default_zoomlevel));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(defaultLatitute, defaultLongitude), defaultZoom));
         mMap.setMyLocationEnabled(true);
-
-        loadMapAndListView(defaultLatitute, defaultLongitude, mapSearchRadius);
+        moveMap(defaultLocation, false);
 
         mLocationClient = new LocationClient(this, this, this);
+        if(savedInstanceState != null){
+            currentLocation = (Location)savedInstanceState.get(STATE_CURRENT_LOCATION);
+        }
+
+        if(currentLocation != null){
+            moveMapAndLoadList(currentLocation, false);
+        }
 
     }
 
@@ -140,6 +147,20 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
         menu.findItem(R.id.actionmenu_findnearestlocationactionbar_changeradius_done).setVisible(inChangeRadiusMode);
 
         return true;
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(mLocationClient != null)
+            mLocationClient.connect();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if(mLocationClient != null)
+            mLocationClient.disconnect();
     }
 
     @Override
@@ -168,7 +189,7 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
                         if (getMapSearchRadius() != radius) {
                             setMapSearchRadius(radius);
                             SharedPreferencesManager.getInstance().setNearestLocationMapSearchRadius(radius);
-                            loadMapAndListView(existingLocation, radius);
+                            loadMapAndListView(currentLocation, radius);
                         }
                     }
                 });
@@ -188,16 +209,23 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
         }
     }
 
-    private void loadMapAndListView(Location newLocation, float mapSearchRadius) {
-        loadMapAndListView(newLocation.getLatitude(), newLocation.getLongitude(), mapSearchRadius);
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(STATE_CURRENT_LOCATION, currentLocation);
+        outState.putParcelable(STATE_CURRENT_LOCATION, currentLocation);
+
     }
 
-    private void loadMapAndListView(Double latitude, Double longitude, float mapSearchRadius) {
+    private void loadMapAndListView(Location newLocation, float mapSearchRadius) {
+
+        double longitude = newLocation.getLongitude();
+        double latitude =  newLocation.getLatitude();
 
         if (mMap != null) {
             mMap.clear();
         }
-
+        lastListedLocation = newLocation;
         mLocationList.clear();
         mListFragment.clearLocationLists();
 
@@ -212,23 +240,45 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
         trolleyStopsLocationServiceProxy.getLocation(longitude, latitude, mapSearchRadius, "trolley_stops", new RouteFetchCallback());
     }
 
+    private void moveMapAndLoadList(Location location, boolean animated){
+        moveMap(location, animated);
+        loadMapAndListView(location, SharedPreferencesManager.getInstance().getNearestLocationMapSearchRadius());
+    }
+
+    private void moveMap(Location location, boolean animate){
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), defaultZoom);
+        if(animate){
+            mMap.animateCamera(cameraUpdate);
+        } else{
+            mMap.moveCamera(cameraUpdate);
+        }
+
+    }
+
     @Override
     public void onLocationChanged(Location newLocation) {
+        float distanceFromCenter  = defaultLocation.distanceTo(newLocation);
 
-        if (newLocation.getAccuracy()< getResources().getInteger(R.integer.findnearestlocation_map_accuracy_limit_in_meters)) {
+        if (newLocation.getAccuracy()< getResources().getInteger(R.integer.findnearestlocation_map_accuracy_limit_in_meters) && distanceFromCenter < maxDistanceFromCityCenter) {
+            this.currentLocation = newLocation;
 
+        } else {
+            //too far away. no need for more updates.
             mLocationClient.disconnect();
-
-            float distanceFromCenter  = defaultLocation.distanceTo(newLocation);
-            if( distanceFromCenter < maxDistanceFromCityCenter){
-                this.existingLocation = newLocation;
-                Log.d(TAG, "onLocationChanged, newLocation's latitude "+newLocation.getLatitude());
-                Log.d(TAG, "onLocationChanged, newLocation's longitude "+newLocation.getLongitude());
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(newLocation.getLatitude(), newLocation.getLongitude()), Float.parseFloat(getString(R.string.findnearestlocation_map_zoom_level_float))));
-                loadMapAndListView(newLocation, SharedPreferencesManager.getInstance().getNearestLocationMapSearchRadius());
-            }
-
+            this.currentLocation = defaultLocation;
         }
+
+        /*
+         * We do not want to refresh the map on every location change but we do
+         * want to keep track of our newest location. Once the user travels past the
+         * max step we reload the list. Otherwise we just move the map.
+         */
+        if(lastListedLocation == null || lastListedLocation.distanceTo(currentLocation) > maxDistancePerStep ){
+            moveMapAndLoadList(currentLocation, true);
+        } else {
+            moveMap(currentLocation, true);
+        }
+
     }
 
     /*
@@ -270,49 +320,31 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
          * start a Google Play services activity that can resolve
          * error.
          */
-//        if (connectionResult.hasResolution()) {
-//            try {
+        if (connectionResult.hasResolution()) {
+            try {
                 // Start an Activity that tries to resolve the error
-//                connectionResult.startResolutionForResult(
-//                        this,
-//                        9000);
+                connectionResult.startResolutionForResult(
+                        this,
+                        9000);
                 /*
                  * Thrown if Google Play services canceled the original
                  * PendingIntent
                  */
-//            } catch (IntentSender.SendIntentException e) {
-//                // Log the error
-//                e.printStackTrace();
-//            }
-//        } else {
-            /*
-             * If no resolution is available, display a dialog to the
-             * user with the error.
-             */
-//            Log.d(TAG, "location services error: " + connectionResult.getErrorCode());
-//        }
+            } catch (IntentSender.SendIntentException e) {
+                e.printStackTrace();
+            }
+        } else {
+            mLocationClient.disconnect();
+            currentLocation = defaultLocation;
+            moveMapAndLoadList(currentLocation, false);
+        }
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        // Connect the client.
-        mLocationClient.connect();
-
-    }
-
-    @Override
-    protected void onStop() {
-        // Disconnecting the client invalidates it.
-        mLocationClient.disconnect();
-        super.onStop();
-    }
 
     @Override
     protected void onResume() {
         // TODO Auto-generated method stub
         super.onResume();
-
         int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getApplicationContext());
 
         if (resultCode != ConnectionResult.SUCCESS){

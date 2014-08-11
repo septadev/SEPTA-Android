@@ -191,12 +191,12 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
 
     private void selectedBusTab() {
         // get the color from the looking array given the ordinal position of the route type
-        String busColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[5];
-        String trolleyColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[3];
-        String regionalRailColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[0];
+        String busColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[3];
+        String trolleyColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[0];
+        String regionalRailColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[2];
         String mflColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[1];
-        String bslColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[2];
-        String nhslColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[4];
+        String bslColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[4];
+        String nhslColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[5];
 
         ImageView busImageView = (ImageView) findViewById(R.id.realtime_systemstatus_tab_bus_imageview);
         ImageView trolleyImageView = (ImageView) findViewById(R.id.realtime_systemstatus_tab_trolley_imageview);
@@ -246,12 +246,12 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
 
     private void selectedTrolleyTab() {
         // get the color from the looking array given the ordinal position of the route type
-        String busColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[5];
-        String trolleyColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[3];
-        String regionalRailColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[0];
+        String busColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[3];
+        String trolleyColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[0];
+        String regionalRailColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[2];
         String mflColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[1];
-        String bslColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[2];
-        String nhslColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[4];
+        String bslColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[4];
+        String nhslColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[5];
 
         ImageView busImageView = (ImageView) findViewById(R.id.realtime_systemstatus_tab_bus_imageview);
         ImageView trolleyImageView = (ImageView) findViewById(R.id.realtime_systemstatus_tab_trolley_imageview);
@@ -296,12 +296,12 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
 
     private void selectedRegionalRailTab() {
         // get the color from the looking array given the ordinal position of the route type
-        String busColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[5];
-        String trolleyColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[3];
-        String regionalRailColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[0];
+        String busColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[3];
+        String trolleyColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[0];
+        String regionalRailColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[2];
         String mflColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[1];
-        String bslColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[2];
-        String nhslColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[4];
+        String bslColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[4];
+        String nhslColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[5];
 
         ImageView busImageView = (ImageView) findViewById(R.id.realtime_systemstatus_tab_bus_imageview);
         ImageView trolleyImageView = (ImageView) findViewById(R.id.realtime_systemstatus_tab_trolley_imageview);
@@ -346,12 +346,12 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
 
     private void selectedMFLBSLNHSLTab() {
         // get the color from the looking array given the ordinal position of the route type
-        String busColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[5];
-        String trolleyColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[3];
-        String regionalRailColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[0];
+        String busColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[3];
+        String trolleyColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[0];
+        String regionalRailColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[2];
         String mflColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[1];
-        String bslColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[2];
-        String nhslColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[4];
+        String bslColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[4];
+        String nhslColor = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[5];
 
         ImageView busImageView = (ImageView) findViewById(R.id.realtime_systemstatus_tab_bus_imageview);
         ImageView trolleyImageView = (ImageView) findViewById(R.id.realtime_systemstatus_tab_trolley_imageview);

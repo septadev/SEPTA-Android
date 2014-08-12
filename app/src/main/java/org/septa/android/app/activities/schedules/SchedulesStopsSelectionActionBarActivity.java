@@ -387,12 +387,8 @@ public class SchedulesStopsSelectionActionBarActivity extends BaseAnalyticsActio
 
             String queryString = null;
             switch (routeType) {
-                case RAIL: {
-                    break;
-                }
-                case BUS: {
-                    break;
-                }
+                case RAIL:
+                case BUS:
                 case BSL:
                 case MFL:
                 case NHSL:

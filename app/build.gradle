@@ -79,8 +79,8 @@ android {
     defaultConfig {
         minSdkVersion 10
         targetSdkVersion 19
-        versionCode 34
-        versionName '0.2.1'
+        versionCode 35
+        versionName '0.2.2'
     }
     sourceSets {
 //        androidTest.setRoot('src/test') //note that this is androidTest instead of instrumentTest
@@ -105,10 +105,10 @@ android {
             keyPassword BETA_KEYALIAS_PASSWORD
         }
         release {
-            storeFile file("${SEPTA_PRODUCTION_KEYSTORE_FILE}")
-            storePassword SEPTA_PRODUCTION_KEYSTORE_PASSWORD
-            keyAlias 'release'
-            keyPassword RELEASE_KEYALIAS_PASSWORD
+            storeFile file("${SEPTA_DEVELOPMENT_KEYSTORE_FILE}")
+            storePassword SEPTA_DEVELOPMENT_KEYSTORE_PASSWORD
+            keyAlias 'prerelease'
+            keyPassword PRERELEASE_KEYALIAS_PASSWORD
         }
     }
     buildTypes {
@@ -138,11 +138,11 @@ android {
             buildConfigField "String", "VERSIONNAME", "\"${defaultConfig.versionName}-b${defaultConfig.versionCode}\""
         }
         release {
-            runProguard true
+            runProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
             debuggable false
             zipAlign true
-            signingConfig signingConfigs.release
+            signingConfig signingConfigs.prerelease
             buildConfigField "String", "VERSIONNAME", "\"${defaultConfig.versionName}\""
         }
     }

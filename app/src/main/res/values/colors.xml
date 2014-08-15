@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--Find Nearest Location Routes-->
+    <color name="nshlPurple">#FF791D7E</color>
+    <color name="trolleyGreen">#FF4D7900</color>
+    <color name="bsOrange">#FFF58426</color>
+    <color name="mfBlue">#FF007DC3</color>
+    <color name="railGrey">#FF45637A</color>
+    <color name="busGrey">#FF383D42</color>
+
+    <!-- Listviews-->
+    <color name="listviewSections">#88383D42</color>
+    
+    <color name="ontime_text">#1D8A24</color>
+    <color name="late_text">#B30E0E</color>
+    <color name="route_direction_red">#B30E0E</color>
+    <color name="route_direction_blue">#007DC3</color>
+
+
+</resources>

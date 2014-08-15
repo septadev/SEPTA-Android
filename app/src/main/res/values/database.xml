@@ -11,7 +11,4 @@
 
     <string name="database_loading_message">Loading database...</string>
 
-    <!-- provide a flag to force load a new database file, this will delete the existing one so that a new one will be unzipped -->
-    <bool name="force_load_database">true</bool>
-
 </resources>

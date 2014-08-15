@@ -21,13 +21,25 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.septa.android.app.R;
+import org.septa.android.app.managers.AlertManager;
+import org.septa.android.app.managers.SharedPreferencesManager;
+import org.septa.android.app.models.servicemodels.AlertModel;
 
-public class RealtimeMenuFragment extends Fragment {
+import java.util.Date;
+
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
+
+public class RealtimeMenuFragment extends Fragment implements AlertManager.IAlertListener{
     public static final String TAG = RealtimeMenuFragment.class.getName();
 
+    public static Boolean fetchedResults = false;
+
+    private static final long MAX_ALERT_AGE = 1000*60*60;
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
     }
 
     @Override
@@ -95,4 +107,31 @@ public class RealtimeMenuFragment extends Fragment {
 
         return view;
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        AlertManager.getInstance().addListener(this);
+        AlertManager.getInstance().fetchGlobalAlert();
+    }
+
+    @Override
+    public void onPause() {
+        AlertManager.getInstance().removeListener(this);
+        super.onPause();
+    }
+
+    @Override
+    public void alertsDidUpdate() {
+        Date lastUpdate = SharedPreferencesManager.getInstance().getLastAlertUpdate();
+        AlertModel alert = AlertManager.getInstance().getGlobalAlert();
+        if (alert != null && !alert.getCurrentMessage().isEmpty() && alert.getLastUpdate() != null && (lastUpdate == null || alert.getLastUpdate().compareTo(lastUpdate) != 0)) {
+            Crouton.makeText(getActivity(), alert.getCurrentMessage() , Style.ALERT).show();
+
+            //save the date of the last retrieved alert for comparison on future requests
+            SharedPreferencesManager.getInstance().setLastAlertUpdate(alert.getLastUpdate());
+        }
+
+    }
+
 }

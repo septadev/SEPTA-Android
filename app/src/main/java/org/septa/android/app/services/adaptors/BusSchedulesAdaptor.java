@@ -1,7 +1,5 @@
 package org.septa.android.app.services.adaptors;
 
-import android.util.Log;
-
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -10,7 +8,6 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.google.gson.internal.bind.DateTypeAdapter;
 import com.google.gson.reflect.TypeToken;
 
 import org.septa.android.app.models.servicemodels.BusScheduleModel;
@@ -19,7 +16,6 @@ import org.septa.android.app.services.ServiceErrorHandler;
 import org.septa.android.app.services.apiinterfaces.BusSchedulesService;
 
 import java.lang.reflect.Type;
-import java.util.Date;
 
 import retrofit.RestAdapter;
 import retrofit.converter.GsonConverter;
@@ -48,8 +44,13 @@ class BusSchedulesModelDeserializer implements JsonDeserializer<BusSchedulesMode
     String routeShortName;
 
     public BusSchedulesModelDeserializer(String routeShortName) {
+        //hack for bad data from service
+        if(routeShortName.equals("BSL")){
+            this.routeShortName = "BSS";
+        } else {
+            this.routeShortName = routeShortName;
+        }
 
-        this.routeShortName = routeShortName;
     }
 
     @Override

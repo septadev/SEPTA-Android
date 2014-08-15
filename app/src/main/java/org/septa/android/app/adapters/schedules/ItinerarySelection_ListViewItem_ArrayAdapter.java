@@ -9,7 +9,7 @@ package org.septa.android.app.adapters.schedules;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.util.Log;
+import android.location.Location;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,12 +21,16 @@ import android.widget.TextView;
 
 import org.septa.android.app.R;
 import org.septa.android.app.models.RouteTypes;
-import org.septa.android.app.models.SchedulesRouteModel;
 import org.septa.android.app.models.StopModel;
+import org.septa.android.app.utilities.Constants;
+import org.septa.android.app.utilities.StopModelDistanceComparator;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 
@@ -47,6 +51,10 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
 
     private View headerView = null;
 
+    private List<String> sections;
+    private boolean useLocations = false;
+    NumberFormat numberFormat = new DecimalFormat("#.##mi");
+
     public ItinerarySelection_ListViewItem_ArrayAdapter(Context context, RouteTypes routeType, String routeShortName) {
         mContext = context;
         mInflater = LayoutInflater.from(context);
@@ -57,6 +65,25 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
         resourceEndNames = context.getResources().getStringArray(R.array.schedulesfragment_listview_bothimage_endnames);
     }
 
+    /**
+     * Build section indices for fast scroll
+     */
+    private void buildSectionIndices() {
+        sections = new ArrayList<String>();
+
+        List<StopModel> stopModels = new ArrayList<StopModel>();
+        stopModels.addAll(this.stopsForDirection0);
+        stopModels.addAll(this.stopsForDirection1);
+
+        for (StopModel stopModel : stopModels) {
+            String section = stopModel.getStopName();
+            if (section != null && section.length() > 0) {
+                section = section.substring(0, 1);
+                sections.add(section);
+            }
+        }
+    }
+
     public void setDirectionHeadingLabels(String[] directionHeadingLabels) {
 
         this.directionHeadingLabels = directionHeadingLabels;
@@ -65,15 +92,17 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
     public void setTripDataForDirection0(ArrayList<StopModel>stopsForDirection0) {
 
         this.stopsForDirection0 = stopsForDirection0;
-//        Collections.sort(this.stopsForDirection0, new StopModelNumericComparator());
         Collections.sort(this.stopsForDirection0, new NumberAwareStringComparator());
+        buildSectionIndices();
+        notifyDataSetChanged();
     }
 
     public void setTripDataForDirection1(ArrayList<StopModel>stopsForDirection1) {
 
         this.stopsForDirection1 = stopsForDirection1;
-//        Collections.sort(this.stopsForDirection1, new StopModelNumericComparator());
         Collections.sort(this.stopsForDirection1, new NumberAwareStringComparator());
+        buildSectionIndices();
+        notifyDataSetChanged();
     }
 
     public Object[] getItems() {
@@ -122,6 +151,12 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
             icon_imageView.setVisibility(View.INVISIBLE);
         }
 
+        if(useLocations) {
+            TextView distance_textview = (TextView) rowView.findViewById(R.id.nexttoarrive_stopselection_distance_textview);
+            distance_textview.setVisibility(View.VISIBLE);
+            distance_textview.setText(numberFormat.format(((StopModel) getItem(position)).getDistance()));
+        }
+
         text_TextView.setText(((StopModel)getItem(position)).getStopName());
 
         // for the rows that are in the second section, they get a different color background
@@ -133,6 +168,33 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
 //        Log.d(TAG, "stop model is id="+((StopModel) getItem(position)).getStopId()+"   name="+((StopModel) getItem(position)).getStopName());
 
         return rowView;
+    }
+
+    /**
+     * Sort list of stops by location
+     * @param userLocation
+     */
+    public void sortByLocation(Location userLocation) {
+        for(StopModel stopModel : stopsForDirection0) {
+            Location stopLocation = new Location("");
+            stopLocation.setLatitude(stopModel.getLatitude());
+            stopLocation.setLongitude(stopModel.getLongitude());
+
+            stopModel.setDistance(Constants.METER_IN_MILES * userLocation.distanceTo(stopLocation));
+        }
+
+        for(StopModel stopModel : stopsForDirection1) {
+            Location stopLocation = new Location("");
+            stopLocation.setLatitude(stopModel.getLatitude());
+            stopLocation.setLongitude(stopModel.getLongitude());
+
+            stopModel.setDistance(Constants.METER_IN_MILES * userLocation.distanceTo(stopLocation));
+        }
+
+        Collections.sort(stopsForDirection0, new StopModelDistanceComparator());
+
+        useLocations = true;
+        notifyDataSetChanged();
     }
 
     @Override
@@ -199,38 +261,18 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
     }
 
     @Override
-    public int getPositionForSection(int section) {
-        switch (section) {
-            case 0: {
-
-                return 0;
-            }
-            case 1: {
-
-                return stopsForDirection0.size();
-            }
-            default: {
-
-                return 0;
-            }
-        }
-    }
-
-    @Override
-    public int getSectionForPosition(int position) {
-        if (position < stopsForDirection0.size()) {
-
-            return 0;
-        } else {
-
-            return 1;
-        }
-    }
-
-    @Override
     public Object[] getSections() {
+        return sections.toArray();
+    }
 
-        return directionHeadingLabels;
+    @Override
+    public int getPositionForSection(int i) {
+        return i;
+    }
+
+    @Override
+    public int getSectionForPosition(int i) {
+        return i;
     }
 }
 

@@ -55,10 +55,10 @@ public class TransitView_RouteList_ListViewItem_ArrayAdapter  extends ArrayAdapt
             } else {
                 trainTimingTextView.setText(""+transitVehicleInformation.getLate()+" "+context.getString(R.string.min));
             }
-            trainTimingTextView.setTextColor(Color.RED);
+            trainTimingTextView.setTextColor(context.getResources().getColor(R.color.late_text));
         } else {
             trainTimingTextView.setText(R.string.ontime);
-            trainTimingTextView.setTextColor(Color.GREEN);
+            trainTimingTextView.setTextColor(context.getResources().getColor(R.color.ontime_text));
         }
 
         TextView transitViewDirectionLabel = (TextView) rowView.findViewById(R.id.transitview_listview_item_startlabel_textview);
@@ -66,10 +66,10 @@ public class TransitView_RouteList_ListViewItem_ArrayAdapter  extends ArrayAdapt
 
         TextView transitviewDirection = (TextView) rowView.findViewById(R.id.transitview_listview_item_start_textview);
         transitviewDirection.setText(transitVehicleInformation.getDirection());
-        if (transitVehicleInformation.isSouthBound() || transitVehicleInformation.isWestBound()) {
-            transitviewDirection.setTextColor(Color.BLUE);
+        if (transitVehicleInformation.isSouthBound() || transitVehicleInformation.isEastBound()) {
+            transitviewDirection.setTextColor(context.getResources().getColor(R.color.route_direction_blue));
         } else {
-            transitviewDirection.setTextColor(Color.RED);
+            transitviewDirection.setTextColor(context.getResources().getColor(R.color.route_direction_red));
         }
 
         TextView trainEndLabel = (TextView) rowView.findViewById(R.id.transitview_listview_item_endlabel_textview);

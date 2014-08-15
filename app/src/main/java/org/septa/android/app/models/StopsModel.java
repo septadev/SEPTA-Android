@@ -32,18 +32,20 @@ private static final String TAG = StopsModel.class.getName();
         SEPTADatabase septaDatabase = new SEPTADatabase(context);
         SQLiteDatabase database = septaDatabase.getReadableDatabase();
 
-        String queryString = "SELECT stop_id, stop_name, wheelchair_boarding FROM stops_rail ORDER BY stop_name";
+        String queryString = "SELECT stop_id, stop_name, wheelchair_boarding, stop_lat, stop_lon FROM stops_rail ORDER BY stop_name";
 
         Cursor cursor = database.rawQuery(queryString, null);
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 do {
-                    StopModel stopModel = new StopModel(cursor.getString(0), cursor.getString(1), (cursor.getInt(2) == 1) ? true : false);
+                    StopModel stopModel = new StopModel(cursor.getString(0), cursor.getString(1),
+                            (cursor.getInt(2) == 1) ? true : false, cursor.getString(3), cursor.getString(4));
                     getStopModelArrayList().add(stopModel);
                 } while (cursor.moveToNext());
             }
 
             cursor.close();
+            loaded = true;
         } else {
             Log.d(TAG, "cursor is null");
         }

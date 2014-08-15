@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+    <!-- Strings resources for the stops header view -->
+<resources>
+    <string name="headertext_current_location">Current Location</string>
+    <string name="headertext_enter_address">Enter Address</string>
+</resources>

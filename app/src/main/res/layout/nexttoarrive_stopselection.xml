@@ -19,16 +19,5 @@
         android:id="@+id/stopselection_list_fragment"
         android:name="org.septa.android.app.fragments.StopSelectionListFragment"/>
 
-    <TextView
-        android:id="@+id/empty"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:layout_gravity="left|top"
-        android:gravity="left"
-        android:text="no data"
-        android:textSize="22sp"
-        android:background="@android:color/white"
-        android:visibility="gone"/>
 
 </RelativeLayout>

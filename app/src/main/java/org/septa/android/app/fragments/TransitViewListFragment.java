@@ -54,6 +54,8 @@ public class TransitViewListFragment extends ListFragment {
         _adapter = new TransitView_ListViewItem_ArrayAdapter(getActivity(), busRouteModelList);
 
         setListAdapter(_adapter);
+
+        getListView().setFastScrollEnabled(true);
     }
 
     @Override

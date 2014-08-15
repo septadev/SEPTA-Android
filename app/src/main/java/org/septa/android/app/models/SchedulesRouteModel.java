@@ -1,10 +1,12 @@
 package org.septa.android.app.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
 import java.lang.String;
 
-public class SchedulesRouteModel implements Comparable<SchedulesRouteModel> {
+public class SchedulesRouteModel implements Comparable<SchedulesRouteModel>,Parcelable {
     private int routeType;
     private String routeId;
     private String routeShortName;
@@ -184,4 +186,52 @@ public class SchedulesRouteModel implements Comparable<SchedulesRouteModel> {
     public void setTripId(String tripId) {
         this.tripId = tripId;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.routeType);
+        dest.writeString(this.routeId);
+        dest.writeString(this.routeShortName);
+        dest.writeString(this.routeLongName);
+        dest.writeString(this.routeStart);
+        dest.writeString(this.routeEnd);
+        dest.writeString(this.routeStartStopId);
+        dest.writeString(this.routeEndStopId);
+        dest.writeSerializable(this.blockId);
+        dest.writeSerializable(this.stopSequence);
+        dest.writeSerializable(this.arriveTime);
+        dest.writeSerializable(this.serviceId);
+        dest.writeString(this.tripId);
+    }
+
+    private SchedulesRouteModel(Parcel in) {
+        this.routeType = in.readInt();
+        this.routeId = in.readString();
+        this.routeShortName = in.readString();
+        this.routeLongName = in.readString();
+        this.routeStart = in.readString();
+        this.routeEnd = in.readString();
+        this.routeStartStopId = in.readString();
+        this.routeEndStopId = in.readString();
+        this.blockId = (Number) in.readSerializable();
+        this.stopSequence = (Number) in.readSerializable();
+        this.arriveTime = (Number) in.readSerializable();
+        this.serviceId = (Number) in.readSerializable();
+        this.tripId = in.readString();
+    }
+
+    public static final Parcelable.Creator<SchedulesRouteModel> CREATOR = new Parcelable.Creator<SchedulesRouteModel>() {
+        public SchedulesRouteModel createFromParcel(Parcel source) {
+            return new SchedulesRouteModel(source);
+        }
+
+        public SchedulesRouteModel[] newArray(int size) {
+            return new SchedulesRouteModel[size];
+        }
+    };
 }

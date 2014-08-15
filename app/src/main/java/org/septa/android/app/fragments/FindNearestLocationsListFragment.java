@@ -14,23 +14,20 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.google.gson.Gson;
 
 import org.septa.android.app.R;
 import org.septa.android.app.activities.FindNearestLocationRouteDetailsActionBarActivity;
-import org.septa.android.app.activities.schedules.SchedulesItineraryActionBarActivity;
 import org.septa.android.app.adapters.FindNearestLocation_ListViewItem_ArrayAdapter;
 import org.septa.android.app.databases.SEPTADatabase;
 import org.septa.android.app.models.LocationBasedRouteModel;
 import org.septa.android.app.models.LocationModel;
-import org.septa.android.app.models.ObjectFactory;
-import org.septa.android.app.models.RoutesModel;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,41 +37,37 @@ import java.util.List;
 public class FindNearestLocationsListFragment extends ListFragment {
     public static final String TAG = FindNearestLocationsListFragment.class.getName();
 
-    private List<LocationModel> locationList;
+    private List<LocationModel> mLocationList;
+    private  FindNearestLocation_ListViewItem_ArrayAdapter mAdapter;
+
+    private RouteStopIdLoader routeStopIdLoader;
 
     public FindNearestLocationsListFragment() {
-        // instantiate an empty array list for the TrainViewModels
-        locationList = new ArrayList<LocationModel>(0);
+        this.mLocationList = Collections.synchronizedList(new ArrayList<LocationModel>());
     }
 
     public void clearLocationLists() {
+        this.mLocationList = Collections.synchronizedList(new ArrayList<LocationModel>());
+        mAdapter.notifyDataSetChanged();
 
-        this.locationList = new ArrayList<LocationModel>(0);
-        this.getListView().invalidate();
     }
 
-    public void setLocationList(List<LocationModel>locationList, String type) {
-        RoutesModel routesModel = null;
+    public void setLocationList(List<LocationModel> mLocationList) {
+        this.mLocationList = Collections.synchronizedList(mLocationList);
 
-        Log.d(TAG, "setting the location list for type " + type);
-
-        this.locationList.addAll(locationList);
-        Collections.sort(this.locationList, new Comparator<LocationModel>() {
+        Collections.sort(this.mLocationList, new Comparator<LocationModel>() {
             public int compare(LocationModel location1, LocationModel location2) {
                 return new Float(location1.getDistance()).compareTo(new Float(location2.getDistance()));
             }
         });
 
-        if (type.equals("bus")) {
-            routesModel = ObjectFactory.getInstance().getBusRoutes();
-        } else if (type.equals("rail")) {
-            routesModel = ObjectFactory.getInstance().getRailRoutes();
-        } else {
-            routesModel = ObjectFactory.getInstance().getTrolleyRoutes();
-        }
 
-        RouteStopIdLoader routeStopIdLoader = new RouteStopIdLoader(this.getListView(), routesModel);
-        routeStopIdLoader.execute(locationList);
+        if(routeStopIdLoader != null){
+            routeStopIdLoader.cancel(true);
+        }
+        routeStopIdLoader = new RouteStopIdLoader();
+        routeStopIdLoader.execute(mLocationList);
+
     }
 
     @Override
@@ -85,34 +78,26 @@ public class FindNearestLocationsListFragment extends ListFragment {
 
         ListView lv = getListView();
         lv.setFastScrollEnabled(true);
-
-        lv.setEmptyView(lv.findViewById(R.id.row_empty_view));
-
         lv.setScrollingCacheEnabled(false);
         lv.setSmoothScrollbarEnabled(false);
     }
 
-    /**
-     * Called to instantiate the view. Creates and returns the WebView.
-     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.findnearestlocation_fragment_listview, null);
 
-        ArrayAdapter<LocationModel> adapter = new FindNearestLocation_ListViewItem_ArrayAdapter(inflater.getContext(), locationList);
-        setListAdapter(adapter);
+        mAdapter = new FindNearestLocation_ListViewItem_ArrayAdapter(inflater.getContext(), new ArrayList<LocationModel>());
+        setListAdapter(mAdapter);
 
         return view;
     }
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-        Log.d(TAG, "detected a listfragment item being clicked");
 
-        LocationModel locationModel = locationList.get(position);
-        Log.d(TAG, "I clicked on this locationName "+locationModel.getLocationName()+" with "+locationModel.getRoutes().size());
+        LocationModel locationModel = mLocationList.get(position);
 
         //GSon the locationModel to pass to the activity
         Intent findNearestLocationRouteDetailsIntent = null;
@@ -129,51 +114,57 @@ public class FindNearestLocationsListFragment extends ListFragment {
     @Override
     public void onStart() {
         super.onStart();
-//        ListView lv = getListView();
-//        lv.setEmptyView(View.inflate(getActivity(), R.layout.row_empty_view, (ViewGroup)getListView().getParent()));
     }
 
     private class RouteStopIdLoader extends AsyncTask<List<LocationModel>, Integer, Boolean> {
-        ListView listView = null;
-        RoutesModel routesModel = null;
 
-        public RouteStopIdLoader(ListView listView, RoutesModel routesModel) {
 
-            this.listView = listView;
-            this.routesModel = routesModel;
+        public RouteStopIdLoader() {
+
         }
 
-        private void loadRoutesPerStop(List<LocationModel>locationList) {
-            Log.d(TAG, "processing routes per stop with a location list size of "+locationList.size());
+        private void loadRoutesPerStop(List<LocationModel> locationList) {
+            Log.d(TAG, "processing routes per stop with a location list size of " + locationList.size());
+            if(getActivity() == null) {
+                this.cancel(true);
+                return;
+            }
             SEPTADatabase septaDatabase = new SEPTADatabase(getActivity());
             SQLiteDatabase database = septaDatabase.getReadableDatabase();
 
-            for (LocationModel location : locationList) {
-                String queryString = "SELECT route_short_name, stop_id, Direction, dircode, route_type FROM stopIDRouteLookup WHERE stop_id=" + location.getLocationId();
-                Cursor cursor = database.rawQuery(queryString, null);
-                if (cursor != null) {
-                    if (cursor.moveToFirst()) {
-                        do {
-                            location.addRoute(cursor.getString(0), LocationBasedRouteModel.DirectionCode.valueOf(cursor.getString(2)), cursor.getInt(4));
-                        } while (cursor.moveToNext());
-                    }
+            SparseArray<LocationModel> locations = new SparseArray<LocationModel>();
+            String queryString = "SELECT route_short_name, stop_id, Direction, dircode, route_type FROM stopIDRouteLookup WHERE stop_id in (";
 
-                    cursor.close();
-                } else {
-                    Log.d(TAG, "cursor is null");
-                }
+            for (LocationModel location : locationList) {
+                queryString += location.getLocationId();
+                locations.put(location.getLocationId(), location);
+
+                if(locationList.indexOf(location) < locationList.size()-1)
+                    queryString += ",";
+
             }
 
+            queryString += ")";
+
+            Cursor cursor = database.rawQuery(queryString, null);
+            if (cursor != null) {
+                if (cursor.moveToFirst()) {
+                    do {
+                        locations.get(cursor.getInt(1)).addRoute(cursor.getString(0), LocationBasedRouteModel.DirectionCode.valueOf(cursor.getString(2)), cursor.getInt(3), cursor.getInt(4));
+                    } while (cursor.moveToNext());
+                }
+
+                cursor.close();
+            } else {
+                Log.d(TAG, "cursor is null");
+            }
             database.close();
+
         }
 
         @Override
         protected Boolean doInBackground(List<LocationModel>... params) {
-            List<LocationModel>locationList = params[0];
-
-            loadRoutesPerStop(locationList);
-
-            routesModel.loadRoutes(getActivity());
+            loadRoutesPerStop(params[0]);
 
             return false;
         }
@@ -181,12 +172,8 @@ public class FindNearestLocationsListFragment extends ListFragment {
         @Override
         protected void onPostExecute(Boolean b) {
             super.onPostExecute(b);
-
-            ArrayAdapter<LocationModel> adapter = new FindNearestLocation_ListViewItem_ArrayAdapter(getActivity(), locationList);
-            setListAdapter(adapter);
-
-            // after the list has been updated, invalidate the list view to re-render
-            listView.invalidate();
+            mAdapter.setList(mLocationList);
+            mAdapter.notifyDataSetChanged();
         }
     }
 }

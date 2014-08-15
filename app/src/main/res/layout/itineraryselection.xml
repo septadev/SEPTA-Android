@@ -13,6 +13,13 @@
               android:layout_height="match_parent"
               android:background="@drawable/main_background">
 
+    <include
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        layout="@layout/headerview_route_selection"
+        android:layout_gravity="center_horizontal"
+        android:id="@+id/headerview_include" />
+
     <se.emilsjolander.stickylistheaders.StickyListHeadersListView
         android:id="@+id/list"
         android:layout_width="match_parent"

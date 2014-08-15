@@ -52,40 +52,29 @@
         android:layout_height="2dp"
         android:background="@android:color/darker_gray"></LinearLayout>
 
-    <se.emilsjolander.stickylistheaders.StickyListHeadersListView
-        android:id="@+id/findnearestlocations_routedetails_listview"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="fill_parent"
-        android:clipToPadding="false"
-        android:drawSelectorOnTop="true"
-        android:scrollbarStyle="outsideOverlay"
-        android:fastScrollEnabled="true"
-        android:overScrollMode="never"
-        android:divider="#D9D8DB"
-        android:dividerHeight="1dp"/>
+        android:layout_height="match_parent">
 
-    <LinearLayout
-        android:id="@+id/empty"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:visibility="gone">
-
-        <ProgressBar
-            android:id="@+id/findnearestlocations_routedetails_emptylist_progressbar"
+        <se.emilsjolander.stickylistheaders.StickyListHeadersListView
+            android:id="@+id/findnearestlocations_routedetails_listview"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_gravity="top|center_vertical"
-            android:visibility="invisible"/>
+            android:layout_height="fill_parent"
+            android:clipToPadding="false"
+            android:drawSelectorOnTop="true"
+            android:scrollbarStyle="outsideOverlay"
+            android:fastScrollEnabled="true"
+            android:overScrollMode="never"
+            android:divider="#D9D8DB"
+            android:dividerHeight="1dp"/>
 
-        <TextView
-            android:id="@+id/findnearestlocations_routedetails_emptylist_textview"
+        <org.septa.android.app.views.StatusView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="10dp"
-            android:layout_gravity="top|center_vertical"
-            android:gravity="center"/>
+            android:visibility="gone"
+            android:id="@+id/empty"/>
 
-    </LinearLayout>
+    </FrameLayout>
+
+
 </LinearLayout>

@@ -14,8 +14,8 @@
         <item>Customer Service</item>
         <item>Facebook</item>
         <item>Twitter</item>
-        <item>Comments</item>
-        <item>Leave Feedback</item>
+        <item>Customer Service Comments</item>
+        <item>Leave App Feedback</item>
     </string-array>
 
     <!-- for phone number dialing -->

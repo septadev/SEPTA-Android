@@ -27,7 +27,7 @@ buildscript {
         maven { url 'http://download.crashlytics.com/maven' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.11.+'
+        classpath 'com.android.tools.build:gradle:0.12.+'
         classpath 'com.crashlytics.tools.gradle:crashlytics-gradle:1.+'
     }
 }
@@ -76,45 +76,41 @@ android.applicationVariants.all { variant ->
 android {
     compileSdkVersion 19
     buildToolsVersion '19.1.0'
-
     defaultConfig {
-        minSdkVersion 9
+        minSdkVersion 10
         targetSdkVersion 19
-        versionCode 23
-        versionName "0.1.0"
+        versionCode 36
+        versionName '1.0.0'
     }
-
     sourceSets {
 //        androidTest.setRoot('src/test') //note that this is androidTest instead of instrumentTest
     }
-
     signingConfigs {
         prerelease {
             storeFile file("${SEPTA_DEVELOPMENT_KEYSTORE_FILE}")
             storePassword SEPTA_DEVELOPMENT_KEYSTORE_PASSWORD
-            keyAlias "prerelease"
+            keyAlias 'prerelease'
             keyPassword PRERELEASE_KEYALIAS_PASSWORD
         }
         alpha {
             storeFile file("${SEPTA_DEVELOPMENT_KEYSTORE_FILE}")
             storePassword SEPTA_DEVELOPMENT_KEYSTORE_PASSWORD
-            keyAlias "alpha"
+            keyAlias 'alpha'
             keyPassword ALPHA_KEYALIAS_PASSWORD
         }
         beta {
             storeFile file("${SEPTA_DEVELOPMENT_KEYSTORE_FILE}")
             storePassword SEPTA_DEVELOPMENT_KEYSTORE_PASSWORD
-            keyAlias "beta"
+            keyAlias 'beta'
             keyPassword BETA_KEYALIAS_PASSWORD
         }
         release {
-            storeFile file("${SEPTA_PRODUCTION_KEYSTORE_FILE}")
-            storePassword SEPTA_PRODUCTION_KEYSTORE_PASSWORD
-            keyAlias "release"
-            keyPassword RELEASE_KEYALIAS_PASSWORD
+            storeFile file("${SEPTA_DEVELOPMENT_KEYSTORE_FILE}")
+            storePassword SEPTA_DEVELOPMENT_KEYSTORE_PASSWORD
+            keyAlias 'prerelease'
+            keyPassword PRERELEASE_KEYALIAS_PASSWORD
         }
     }
-
     buildTypes {
         debug {
             runProguard false
@@ -123,7 +119,6 @@ android {
             signingConfig signingConfigs.prerelease
             versionNameSuffix "d" + "${getSprintRound}" + "${getGitHash}"
             buildConfigField "String", "VERSIONNAME", "\"${defaultConfig.versionName}-b${defaultConfig.versionCode}\""
-
         }
         alpha {
             runProguard false
@@ -143,13 +138,15 @@ android {
             buildConfigField "String", "VERSIONNAME", "\"${defaultConfig.versionName}-b${defaultConfig.versionCode}\""
         }
         release {
-            runProguard true
+            runProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
             debuggable false
             zipAlign true
-            signingConfig signingConfigs.release
+            signingConfig signingConfigs.prerelease
             buildConfigField "String", "VERSIONNAME", "\"${defaultConfig.versionName}\""
         }
+    }
+    productFlavors {
     }
 }
 
@@ -162,14 +159,14 @@ dependencies {
     compile group: 'com.squareup.okhttp', name: 'okhttp', version: '1.3.0'
     compile group: 'com.squareup.okhttp', name: 'okhttp-apache', version: '1.3.0'
     compile group: 'com.squareup.retrofit', name: 'retrofit', version: '1.5.0'
-    compile group: 'org.simpleframework', name: 'simple-xml', version: '2.6.3'
+    compile ([group: 'org.simpleframework', name: 'simple-xml', version: '2.6.3']){
+        exclude group: 'xpp3'
+    }
     compile group: 'com.readystatesoftware.sqliteasset', name: 'sqliteassethelper', version: '+'
     compile group: 'com.andraskindler.quickscroll', name: 'quickscroll', version: '0.9.8'
-    compile group: 'se.emilsjolander', name: 'stickylistheaders', version: '+'
+    compile('de.keyboardsurfer.android.widget:crouton:1.8.4') {
+        exclude group: 'com.google.android', module: 'support-v4'
+    }
+    compile 'com.jakewharton:butterknife:5.1.1'
+    compile group: 'se.emilsjolander', name: 'stickylistheaders', version: '2.4.1'
 }
-
-//only include files that are suffixed with Test.class and set the max heap size
-//androidTest {
-//    include '**/*Test.class'
-//    maxHeapSize = "2048m"
-//}

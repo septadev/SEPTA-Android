@@ -7,16 +7,15 @@
 
 package org.septa.android.app.models;
 
-import android.util.Log;
-
-import java.util.Comparator;
-
 public class StopModel implements Comparable<StopModel> {
 
     private String stopId;
     private String stopName;
     private int stopSequence = 0;
     private boolean wheelchairBoarding;
+    private double latitude;
+    private double longitude;
+    private float distance;
 
     public StopModel(String stopId, String stopName, boolean wheelchairBoarding) {
         this.stopId = stopId;
@@ -27,6 +26,19 @@ public class StopModel implements Comparable<StopModel> {
     public StopModel(String stopId, String stopName, int stopSequence, boolean wheelchairBoarding) {
         this(stopId, stopName, wheelchairBoarding);
         this.stopSequence = stopSequence;
+    }
+
+    public StopModel(String stopId, String stopName, int stopSequence, boolean wheelchairBoarding,
+                     String latitude, String longitude) {
+        this(stopId, stopName, wheelchairBoarding, latitude, longitude);
+        this.stopSequence = stopSequence;
+    }
+
+    public StopModel(String stopId, String stopName, boolean wheelchairBoarding,
+                     String latitude, String longitude) {
+        this(stopId, stopName, wheelchairBoarding);
+        this.latitude = Double.valueOf(latitude);
+        this.longitude = Double.valueOf(longitude);
     }
 
     public String getStopId() {
@@ -78,6 +90,30 @@ public class StopModel implements Comparable<StopModel> {
     public boolean hasWheelBoardingFeature() {
 
         return wheelchairBoarding;
+    }
+
+    public float getDistance() {
+        return distance;
+    }
+
+    public void setDistance(float distance) {
+        this.distance = distance;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 
     @Override

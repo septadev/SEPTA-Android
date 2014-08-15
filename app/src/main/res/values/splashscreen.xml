@@ -8,9 +8,6 @@
 
 <resources>
 
-    <!-- the amount of time, in seconds, to delay the transition off of the splash screen and to the main screen -->
-    <integer name="splashscreen_delaytime_seconds">1</integer>
-
     <!--for the splash screen, this is the list of elements to appear in order -->
     <string-array name="splashscreen_icons_inorder">
         <item>mfl</item>                           <!-- position col 1 row 1 -->
@@ -23,5 +20,7 @@
         <item>cct</item>                           <!-- position col 2 row 3 -->
         <item>septalogowithtextandcopyright</item> <!-- position col 3 row 3 -->
     </string-array>
+
+    <string name="kml_file_name">kml/train/regionalrail.kml</string>
 
 </resources>

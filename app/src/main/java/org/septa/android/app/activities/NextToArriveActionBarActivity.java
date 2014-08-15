@@ -18,7 +18,6 @@ import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -26,21 +25,13 @@ import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 
-import com.google.android.gms.internal.is;
-
 import org.septa.android.app.R;
-import org.septa.android.app.activities.schedules.SchedulesRouteSelectionActionBarActivity;
 import org.septa.android.app.adapters.NextToArrive_ListViewItem_ArrayAdapter;
 import org.septa.android.app.adapters.NextToArrive_MenuDialog_ListViewItem_ArrayAdapter;
 import org.septa.android.app.managers.NextToArriveFavoritesAndRecentlyViewedStore;
-import org.septa.android.app.managers.SchedulesFavoritesAndRecentlyViewedStore;
 import org.septa.android.app.models.NextToArriveFavoriteModel;
 import org.septa.android.app.models.NextToArriveRecentlyViewedModel;
 import org.septa.android.app.models.NextToArriveStoredTripModel;
-import org.septa.android.app.models.ObjectFactory;
-import org.septa.android.app.models.SchedulesFavoriteModel;
-import org.septa.android.app.models.SchedulesRecentlyViewedModel;
-import org.septa.android.app.models.SchedulesRouteModel;
 import org.septa.android.app.models.TripDataModel;
 import org.septa.android.app.models.adapterhelpers.TextSubTextImageModel;
 import org.septa.android.app.models.servicemodels.NextToArriveModel;
@@ -53,14 +44,15 @@ import retrofit.RetrofitError;
 import retrofit.client.Response;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
-public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivity implements
+public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivity implements
         StickyListHeadersListView.OnHeaderClickListener,
         StickyListHeadersListView.OnStickyHeaderOffsetChangedListener,
         StickyListHeadersListView.OnStickyHeaderChangedListener,
-//        View.OnTouchListener,
-//        View.OnClickListener,
         AdapterView.OnItemLongClickListener {
+
     public static final String TAG = NextToArriveActionBarActivity.class.getName();
+    static final String TRIP_MODEL = "tripModel";
+    static final String IN_PROCESS = "inProcess";
 
     private NextToArrive_ListViewItem_ArrayAdapter mAdapter;
     private StickyListHeadersListView stickyList;
@@ -70,8 +62,6 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
 
     private boolean menuRevealed = false;
     private boolean inProcessOfStartDestinationFlow = false;
-
-    private int millisecondsUntilRefresh = 0;
 
     private CountDownTimer scheduleRefreshCountDownTimer;
 
@@ -116,18 +106,32 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
         stickyList.setOnHeaderClickListener(this);
         stickyList.setOnStickyHeaderChangedListener(this);
         stickyList.setOnStickyHeaderOffsetChangedListener(this);
-        stickyList.setEmptyView(findViewById(R.id.empty));
         stickyList.setDrawingListUnderStickyHeader(true);
         stickyList.setAreHeadersSticky(true);
         stickyList.setAdapter(mAdapter);
-//        stickyList.setOnTouchListener(this);
 
         stickyList.setFastScrollEnabled(true);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
-        this.millisecondsUntilRefresh = getResources().getInteger(R.integer.vehicle_refresh_interval_ms);
+        if(savedInstanceState != null){
+            tripDataModel = savedInstanceState.getParcelable(TRIP_MODEL);
+            inProcessOfStartDestinationFlow = savedInstanceState.getBoolean(IN_PROCESS);
+            if (tripDataModel != null) {
+                mAdapter.setStartStopName(tripDataModel.getStartStopName());
+                mAdapter.setDestinationStopName(tripDataModel.getDestinationStopName());
+            }
+        }
+
+
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putParcelable(TRIP_MODEL, tripDataModel);
+        outState.putBoolean(IN_PROCESS, inProcessOfStartDestinationFlow);
+        super.onSaveInstanceState(outState);
     }
 
     public void startEndSelectionSelected(View view) {
@@ -160,7 +164,7 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
 
     public void reverseStartEndSelected(View view) {
         tripDataModel.reverseStartAndDestinationStops();
-        NextToArrive_ListViewItem_ArrayAdapter nextToArriveListViewItemArrayAdapter = (NextToArrive_ListViewItem_ArrayAdapter)stickyList.getAdapter();
+        NextToArrive_ListViewItem_ArrayAdapter nextToArriveListViewItemArrayAdapter = (NextToArrive_ListViewItem_ArrayAdapter) stickyList.getAdapter();
         nextToArriveListViewItemArrayAdapter.setStartStopName(tripDataModel.getStartStopName());
         nextToArriveListViewItemArrayAdapter.setDestinationStopName(tripDataModel.getDestinationStopName());
 
@@ -194,7 +198,7 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
                     }
                 }
 
-                NextToArrive_ListViewItem_ArrayAdapter nextToArriveListViewItemArrayAdapter = (NextToArrive_ListViewItem_ArrayAdapter)stickyList.getAdapter();
+                NextToArrive_ListViewItem_ArrayAdapter nextToArriveListViewItemArrayAdapter = (NextToArrive_ListViewItem_ArrayAdapter) stickyList.getAdapter();
                 nextToArriveListViewItemArrayAdapter.setStartStopName(tripDataModel.getStartStopName());
                 nextToArriveListViewItemArrayAdapter.setDestinationStopName(tripDataModel.getDestinationStopName());
 
@@ -212,7 +216,7 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.nexttoarrive_action_bar, menu);
 
-        FrameLayout menuDialog = (FrameLayout)findViewById(R.id.nexttoarrive_menudialog_mainlayout);
+        FrameLayout menuDialog = (FrameLayout) findViewById(R.id.nexttoarrive_menudialog_mainlayout);
         menuDialog.setBackgroundResource(R.drawable.nexttoarrive_menudialog_bottomcorners);
         GradientDrawable drawable = (GradientDrawable) menuDialog.getBackground();
         drawable.setColor(0xFF353534);
@@ -223,12 +227,12 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
         String[] iconSuffix = getResources().getStringArray(R.array.nexttoarrive_menu_listview_items_iconsuffixes);
 
         TextSubTextImageModel[] listMenuItems = new TextSubTextImageModel[texts.length];
-        for (int i=0; i<texts.length; i++) {
+        for (int i = 0; i < texts.length; i++) {
             TextSubTextImageModel textSubTextImageModel = new TextSubTextImageModel(texts[i], subTexts[i], iconPrefix, iconSuffix[i]);
             listMenuItems[i] = textSubTextImageModel;
         }
 
-        ListView menuListView = (ListView)findViewById(R.id.nexttoarrive_menudialog_listview);
+        ListView menuListView = (ListView) findViewById(R.id.nexttoarrive_menudialog_listview);
         this.menuDialogListView = menuListView;
         menuListView.setAdapter(new NextToArrive_MenuDialog_ListViewItem_ArrayAdapter(this, listMenuItems));
 
@@ -265,6 +269,7 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
             }
         });
 
+        checkTripStartAndDestinationForNextToArriveDataRequest();
         return true;
     }
 
@@ -281,7 +286,7 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
         // route from the favorites list.
         if (store.isFavorite(nextToArriveFavoriteModel)) {
             store.removeFavorite(nextToArriveFavoriteModel);
-            ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter)menuDialogListView.getAdapter()).disableRemovedSavedFavorite();
+            ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).disableRemovedSavedFavorite();
         } else {
             store.addFavorite(nextToArriveFavoriteModel);
         }
@@ -316,8 +321,8 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
     private void revealListView() {
         menuRevealed = true;
 
-        FrameLayout menuDialog = (FrameLayout)findViewById(R.id.nexttoarrive_menudialog_mainlayout);
-        ListView listView = (ListView)findViewById(R.id.nexttoarrive_menudialog_listview);
+        FrameLayout menuDialog = (FrameLayout) findViewById(R.id.nexttoarrive_menudialog_mainlayout);
+        ListView listView = (ListView) findViewById(R.id.nexttoarrive_menudialog_listview);
 
         menuDialog.clearAnimation();
 
@@ -332,22 +337,24 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
     }
 
     private void hideListView() {
-        FrameLayout menuDialog = (FrameLayout)findViewById(R.id.nexttoarrive_menudialog_mainlayout);
+        FrameLayout menuDialog = (FrameLayout) findViewById(R.id.nexttoarrive_menudialog_mainlayout);
         menuDialog.clearAnimation();
 
         Animation mainLayOutAnimation = AnimationUtils.loadAnimation(this, R.anim.nexttoarrive_menudialog_scale_out);
         mainLayOutAnimation.setDuration(500);
 
-        mainLayOutAnimation.setAnimationListener(new Animation.AnimationListener(){
+        mainLayOutAnimation.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation arg0) {
             }
+
             @Override
             public void onAnimationRepeat(Animation arg0) {
             }
+
             @Override
             public void onAnimationEnd(Animation arg0) {
-                ListView listView = (ListView)findViewById(R.id.nexttoarrive_menudialog_listview);
+                ListView listView = (ListView) findViewById(R.id.nexttoarrive_menudialog_listview);
                 listView.setVisibility(View.GONE);
                 menuRevealed = false;
             }
@@ -355,13 +362,6 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
 
         menuDialog.startAnimation(mainLayOutAnimation);
     }
-//
-//    @Override
-//    public boolean onTouch(View v, MotionEvent event) {
-//        Log.d(TAG, "detected an onTouch here.");
-//        v.setOnTouchListener(null);
-//        return false;
-//    }
 
     @Override
     public void onHeaderClick(StickyListHeadersListView l, View header, int itemPosition, long headerId, boolean currentlySticky) {
@@ -385,8 +385,10 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
     private void checkTripStartAndDestinationForNextToArriveDataRequest() {
         // check if we have both the start and destination stops, if yes, fetch the data.
         if ((tripDataModel.getStartStopName() != null) && tripDataModel.getDestinationStopName() != null) {
-            ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter)menuDialogListView.getAdapter()).enableRefresh();
-            ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter)menuDialogListView.getAdapter()).enableSaveAsFavorite();
+            if(menuDialogListView != null && menuDialogListView.getAdapter() != null){
+                ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).enableRefresh();
+                ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).enableSaveAsFavorite();
+            }
 
             NextToArriveFavoritesAndRecentlyViewedStore store = new NextToArriveFavoritesAndRecentlyViewedStore(this);
 
@@ -406,7 +408,7 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
             // check if the selected route is already a favorite, then we allow the option of removing this
             // route from the favorites list.
             if (store.isFavorite(nextToArriveFavoriteModel)) {
-                ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter)menuDialogListView.getAdapter()).enableRemoveSavedFavorite();
+                ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).enableRemoveSavedFavorite();
             }
 
             // check if this route is already stored as a favorite; if not store as a recent
@@ -423,10 +425,10 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
                 scheduleRefreshCountDownTimer = createScheduleRefreshCountDownTimer();
                 scheduleRefreshCountDownTimer.start();
             }
-        } else{
-            ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter)menuDialogListView.getAdapter()).disableRefresh();
-            ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter)menuDialogListView.getAdapter()).disableSaveAsFavorite();
-            ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter)menuDialogListView.getAdapter()).disableRemovedSavedFavorite();
+        } else if (menuDialogListView != null && menuDialogListView.getAdapter() != null){
+            ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).disableRefresh();
+            ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).disableSaveAsFavorite();
+            ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).disableRemovedSavedFavorite();
         }
     }
 
@@ -435,7 +437,7 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
             @Override
             public void success(Object o, Response response) {
                 setProgressBarIndeterminateVisibility(Boolean.FALSE);
-                mAdapter.setNextToArriveTrainList((ArrayList<NextToArriveModel>)o);
+                mAdapter.setNextToArriveTrainList((ArrayList<NextToArriveModel>) o);
             }
 
             @Override
@@ -458,9 +460,9 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
         String startStopName = tripDataModel.getStartStopName();
         String destinationStopName = tripDataModel.getDestinationStopName();
 
-        String[]displayStopNamesList = getResources().getStringArray(R.array.stopname_translation_display_name);
-        String[]gtfsStopNamesList = getResources().getStringArray(R.array.stopname_translation_gtfs_names);
-        for (int i=0; i<displayStopNamesList.length;i++) {
+        String[] displayStopNamesList = getResources().getStringArray(R.array.stopname_translation_display_name);
+        String[] gtfsStopNamesList = getResources().getStringArray(R.array.stopname_translation_gtfs_names);
+        for (int i = 0; i < displayStopNamesList.length; i++) {
             if (displayStopNamesList[i].equals(startStopName)) {
                 startStopName = gtfsStopNamesList[i];
             }
@@ -469,7 +471,7 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
             }
         }
 
-        nextToArriveServiceProxy.getNextToArrive(startStopName, destinationStopName,"50", callback);
+        nextToArriveServiceProxy.getNextToArrive(startStopName, destinationStopName, "50", callback);
     }
 
     @Override
@@ -505,7 +507,8 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
             @Override
             public void onTick(long millisUntilFinished) {
 
-                ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter)menuDialogListView.getAdapter()).setNextRefreshInSecondsValue(millisUntilFinished/1000);
+                if(menuDialogListView != null && menuDialogListView.getAdapter() != null)
+                    ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).setNextRefreshInSecondsValue(millisUntilFinished / 1000);
             }
 
             @Override
@@ -528,13 +531,17 @@ public class NextToArriveActionBarActivity  extends BaseAnalyticsActionBarActivi
             alert.setPositiveButton("YES", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    final NextToArriveStoredTripModel nextToArriveStoredTripModel = (NextToArriveStoredTripModel)mAdapter.getItem(adjustedPosition(position));
+                    final NextToArriveStoredTripModel nextToArriveStoredTripModel = (NextToArriveStoredTripModel) mAdapter.getItem(adjustedPosition(position));
 
                     NextToArriveActionBarActivity.this.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            if (mAdapter.isFavorite(adjustedPosition(position))) { removeFavorite(nextToArriveStoredTripModel); }
-                            if (mAdapter.isRecentlyViewed(adjustedPosition(position))) { removeRecentlyViewed(nextToArriveStoredTripModel); }
+                            if (mAdapter.isFavorite(adjustedPosition(position))) {
+                                removeFavorite(nextToArriveStoredTripModel);
+                            }
+                            if (mAdapter.isRecentlyViewed(adjustedPosition(position))) {
+                                removeRecentlyViewed(nextToArriveStoredTripModel);
+                            }
 
                             mAdapter.reloadFavoriteAndRecentlyViewedLists();
                             mAdapter.notifyDataSetChanged();

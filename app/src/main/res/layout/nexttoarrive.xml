@@ -26,17 +26,6 @@
         android:divider="#D9D8DB"
         android:dividerHeight="1dp"/>
 
-    <TextView
-        android:id="@+id/empty"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:layout_gravity="left|top"
-        android:gravity="center"
-        android:text="no data..."
-        android:textSize="30sp"
-        android:background="@android:color/white"
-        android:visibility="gone"/>
 
     <FrameLayout
         android:id="@+id/nexttoarrive_menudialog_mainlayout"

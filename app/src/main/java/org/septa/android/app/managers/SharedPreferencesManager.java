@@ -9,12 +9,17 @@ package org.septa.android.app.managers;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import org.septa.android.app.fragments.FindNearestLocationsListFragment;
 
+import java.util.Date;
+
 public class SharedPreferencesManager {
     public static final String TAG = FindNearestLocationsListFragment.class.getName();
+
+    private static SharedPreferencesManager mInstance;
 
     private SharedPreferences sharedPreferences = null;
     private int mainTabbarSelectedSection = 0;    // the default starting value is 0
@@ -29,61 +34,64 @@ public class SharedPreferencesManager {
 
     private String schedulesRecentlyViewedList;
     private String schedulesFavoritesList;
+    private Date lastAlertUpdate;  //date that new alerts were last loaded successfully
 
-    public SharedPreferencesManager(Context context) {
 
+    private static final String KEY_LAST_ALERT_UPDATE= "last_alert_update";
+    private static final String KEY_SCHEDULE_FAVORITES_LIST = "schedule_favorites_list";
+    private static final String KEY_SCHEDULE_RECENTLY_VIEWED_LIST = "schedule_recentlyviewed_list";
+    private static final String KEY_NEXTTOARRIVE_FAVORITES_LIST = "nexttoarrive_favorites_list";
+    private static final String KEY_NEXTTOARRIVE_RECENTLY_VIEWED_LIST = "nexttoarrive_recentlyviewed_list";
+    private static final String KEY_SYSTEM_STATUS_FILTERS_ENABLED= "systemstatus_filter_enabled";
+    private static final String KEY_SYSTEM_STATUS_SELECTED_TAB= "systemstatus_selected_tab";
+    private static final String KEY_FIND_NEAREST_LOCATION_MAPSEARCH_RADIUS= "findnearestlocation_mapsearch_radius";
+    private static final String KEY_MAINTAB_SELECTED_SECTION= "maintabbar_selected_section";
+
+    public static SharedPreferencesManager getInstance(){
+        if(mInstance == null){
+            mInstance = new SharedPreferencesManager();
+        }
+        return mInstance;
+    }
+
+    public void init(Context context){
         sharedPreferences = context.getSharedPreferences("SEPTAPreferences",Context.MODE_PRIVATE);
+        loadPreferenceValues();
+    }
 
-        readFromPreferencesMainTabbarSelectedSection();
-        readFromPreferencesNearestLocationMapSearchRadius();
-        readFromPreferencesSystemStatusSelectedTab();
-        readFromPreferencesSystemStatusFilterEnabled();
-        readFromPreferencesNextToArriveFavoritesList();
-        readFromPreferencesNextToArriveRecentlyViewedList();
-        readFromPreferencesSchedulesRecentlyViewedList();
-        readFromPreferencesSchedulesFavoritesList();
+    private SharedPreferencesManager() {
+
+    }
+
+    private void loadPreferenceValues(){
+
+        lastAlertUpdate = new Date(sharedPreferences.getLong(KEY_LAST_ALERT_UPDATE, 0L));
+        mainTabbarSelectedSection = sharedPreferences.getInt(KEY_MAINTAB_SELECTED_SECTION, mainTabbarSelectedSection);
+        nearestLocationMapSearchRadius = sharedPreferences.getFloat(KEY_FIND_NEAREST_LOCATION_MAPSEARCH_RADIUS, nearestLocationMapSearchRadius);
+        systemStatusSelectedTab = sharedPreferences.getInt(KEY_SYSTEM_STATUS_SELECTED_TAB, systemStatusSelectedTab);
+        systemStatusFilterEnabled = sharedPreferences.getBoolean(KEY_SYSTEM_STATUS_FILTERS_ENABLED, systemStatusFilterEnabled);
+        nextToArriveRecentlyViewedList = sharedPreferences.getString(KEY_NEXTTOARRIVE_RECENTLY_VIEWED_LIST, nextToArriveRecentlyViewedList);
+        nextToArriveFavoritesList = sharedPreferences.getString(KEY_NEXTTOARRIVE_FAVORITES_LIST , nextToArriveFavoritesList);
+        nextToArriveRecentlyViewedList = sharedPreferences.getString(KEY_SCHEDULE_RECENTLY_VIEWED_LIST, nextToArriveRecentlyViewedList);
+        schedulesFavoritesList = sharedPreferences.getString(KEY_SCHEDULE_FAVORITES_LIST , schedulesFavoritesList);
     }
 
     public int getMainTabbarSelectedSection() {
-
         return mainTabbarSelectedSection;
     }
 
     public void setMainTabbarSelectedSection(int mainTabbarSelectedSection) {
         this.mainTabbarSelectedSection = mainTabbarSelectedSection;
-        writePreferenceForMaintabbarSelectedSection();
-    }
-
-    private void readFromPreferencesMainTabbarSelectedSection() {
-
-        mainTabbarSelectedSection = sharedPreferences.getInt("maintabbar_selected_section", mainTabbarSelectedSection);
-    }
-
-    private void writePreferenceForMaintabbarSelectedSection() {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putInt("maintabbar_selected_section", mainTabbarSelectedSection);
-        editor.apply();
+        saveInt(KEY_MAINTAB_SELECTED_SECTION, this.mainTabbarSelectedSection);
     }
 
     public float getNearestLocationMapSearchRadius() {
-        Log.d(TAG, "returning "+ nearestLocationMapSearchRadius +"for the nearest location map search radius");
         return nearestLocationMapSearchRadius;
     }
 
     public void setNearestLocationMapSearchRadius(float nearestLocationMapSearchRadius) {
         this.nearestLocationMapSearchRadius = nearestLocationMapSearchRadius;
-        writePreferenceForNearestLocationMapSearchRedius();
-    }
-
-    private void readFromPreferencesNearestLocationMapSearchRadius() {
-
-        nearestLocationMapSearchRadius = sharedPreferences.getFloat("findnearestlocation_mapsearch_radius", nearestLocationMapSearchRadius);
-    }
-
-    private void writePreferenceForNearestLocationMapSearchRedius() {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putFloat("findnearestlocation_mapsearch_radius", nearestLocationMapSearchRadius);
-        editor.apply();
+        saveFloat(KEY_FIND_NEAREST_LOCATION_MAPSEARCH_RADIUS, this.nearestLocationMapSearchRadius);
     }
 
     public int getSystemStatusSelectedTab() {
@@ -92,23 +100,8 @@ public class SharedPreferencesManager {
 
     public void setSystemStatusSelectedTab(int selectedTab) {
         this.systemStatusSelectedTab = selectedTab;
-        writePreferenceForSystemStatusSelectedTab();
+        saveInt(KEY_SYSTEM_STATUS_SELECTED_TAB, systemStatusSelectedTab);
     }
-
-    private void readFromPreferencesSystemStatusSelectedTab() {
-
-        systemStatusSelectedTab = sharedPreferences.getInt("systemstatus_selected_tab", systemStatusSelectedTab);
-    }
-
-    private void writePreferenceForSystemStatusSelectedTab() {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putInt("systemstatus_selected_tab", systemStatusSelectedTab);
-        editor.apply();
-    }
-
-    /*
-        Realtime -> System Status : Filter Enabled
-     */
 
     public boolean getSystemStatusFilterEnabled() {
         return systemStatusFilterEnabled;
@@ -116,18 +109,7 @@ public class SharedPreferencesManager {
 
     public void setSystemStatusFilterEnabled(boolean filterEnabled) {
         this.systemStatusFilterEnabled = filterEnabled;
-        writePreferenceForSystemStatusFilterEnabled();
-    }
-
-    private void readFromPreferencesSystemStatusFilterEnabled() {
-
-        systemStatusFilterEnabled = sharedPreferences.getBoolean("systemstatus_filter_enabled", systemStatusFilterEnabled);
-    }
-
-    private void writePreferenceForSystemStatusFilterEnabled() {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean("systemstatus_filter_enabled", systemStatusFilterEnabled);
-        editor.apply();
+        saveBoolean(KEY_SYSTEM_STATUS_FILTERS_ENABLED, filterEnabled);
     }
 
     public String getNextToArriveRecentlyViewedList() {
@@ -136,18 +118,7 @@ public class SharedPreferencesManager {
 
     public void setNextToArriveRecentlyViewedList(String recentlyViewedList) {
         this.nextToArriveRecentlyViewedList = recentlyViewedList;
-        writePreferenceForNextToArriveRecentlyViewedList();
-    }
-
-    private void readFromPreferencesNextToArriveRecentlyViewedList() {
-
-        nextToArriveRecentlyViewedList = sharedPreferences.getString("nexttoarrive_recentlyviewed_list", nextToArriveRecentlyViewedList);
-    }
-
-    private void writePreferenceForNextToArriveRecentlyViewedList() {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("nexttoarrive_recentlyviewed_list", nextToArriveRecentlyViewedList);
-        editor.apply();
+        saveString(KEY_NEXTTOARRIVE_RECENTLY_VIEWED_LIST, recentlyViewedList);
     }
 
     public String getNextToArriveFavoritesList() {
@@ -156,18 +127,7 @@ public class SharedPreferencesManager {
 
     public void setNexttoArriveFavoritesList(String favoritesList) {
         this.nextToArriveFavoritesList = favoritesList;
-        writePreferenceForNextToArriveFavoritesList();
-    }
-
-    private void readFromPreferencesNextToArriveFavoritesList() {
-
-        nextToArriveFavoritesList = sharedPreferences.getString("nexttoarrive_favorites_list", nextToArriveFavoritesList);
-    }
-
-    private void writePreferenceForNextToArriveFavoritesList() {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("nexttoarrive_favorites_list", nextToArriveFavoritesList);
-        editor.apply();
+        saveString(KEY_NEXTTOARRIVE_FAVORITES_LIST, nextToArriveFavoritesList);
     }
 
     public String getSchedulesRecentlyViewedList() {
@@ -176,18 +136,7 @@ public class SharedPreferencesManager {
 
     public void setSchedulesRecentlyViewedList(String recentlyViewedList) {
         this.schedulesRecentlyViewedList = recentlyViewedList;
-        writePreferenceForSchedulesRecentlyViewedList();
-    }
-
-    private void readFromPreferencesSchedulesRecentlyViewedList() {
-
-        schedulesRecentlyViewedList = sharedPreferences.getString("schedule_recentlyviewed_list", schedulesRecentlyViewedList);
-    }
-
-    private void writePreferenceForSchedulesRecentlyViewedList() {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("schedule_recentlyviewed_list", schedulesRecentlyViewedList);
-        editor.apply();
+        saveString(KEY_SCHEDULE_RECENTLY_VIEWED_LIST, schedulesRecentlyViewedList);
     }
 
     public String getSchedulesFavoritesList() {
@@ -196,17 +145,60 @@ public class SharedPreferencesManager {
 
     public void setSchedulesFavoritesList(String favoritesList) {
         this.schedulesFavoritesList = favoritesList;
-        writePreferenceForSchedulesFavoritesList();
+        saveString(KEY_SCHEDULE_FAVORITES_LIST, schedulesFavoritesList);
     }
 
-    private void readFromPreferencesSchedulesFavoritesList() {
-
-        schedulesFavoritesList = sharedPreferences.getString("schedule_favorites_list", schedulesFavoritesList);
+    public Date getLastAlertUpdate() {
+        return lastAlertUpdate;
     }
 
-    private void writePreferenceForSchedulesFavoritesList() {
+    public void setLastAlertUpdate(Date date) {
+        this.lastAlertUpdate = date;
+        saveDate(KEY_LAST_ALERT_UPDATE, date);
+    }
+
+    private void saveString(String key, String value){
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("schedule_favorites_list", schedulesFavoritesList);
+        editor.putString(key, value);
         editor.apply();
     }
+
+    private void saveBoolean(String key, Boolean value){
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(key, value);
+        editor.apply();
+    }
+
+    private void saveInt(String key, int value){
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(key, value);
+        editor.apply();
+    }
+
+    private void saveFloat(String key, float value){
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putFloat(key, value);
+        editor.apply();
+    }
+
+    private void saveDate(String key, Date value){
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putLong(key, value.getTime());
+        editor.apply();
+    }
+
+    public void clearNextToArriveRecentlyViewedList() {
+        clear(KEY_NEXTTOARRIVE_RECENTLY_VIEWED_LIST);
+    }
+
+    public void clearNexttoArriveFavoritesList() {
+        clear(KEY_NEXTTOARRIVE_FAVORITES_LIST);
+    }
+
+    private void clear(String key) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove(key);
+        editor.apply();
+    }
+
 }

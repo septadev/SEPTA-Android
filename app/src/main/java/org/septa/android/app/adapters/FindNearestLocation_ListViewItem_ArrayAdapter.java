@@ -11,8 +11,6 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.util.Log;
-import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,26 +21,38 @@ import android.widget.TextView;
 import org.septa.android.app.R;
 import org.septa.android.app.models.LocationBasedRouteModel;
 import org.septa.android.app.models.LocationModel;
-import org.septa.android.app.models.ObjectFactory;
-import org.septa.android.app.models.RoutesModel;
-import org.septa.android.app.utilities.PixelHelper;
+import org.septa.android.app.views.RouteTextView;
 
 import java.util.List;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+
 public class FindNearestLocation_ListViewItem_ArrayAdapter extends ArrayAdapter<LocationModel> {
     public static final String TAG = FindNearestLocation_ListViewItem_ArrayAdapter.class.getName();
+    private static final int MAX_ROUTE_DISPLAY = 10;
 
     private final Context context;
-    private final List<LocationModel> values;
+    private List<LocationModel> values;
 
-    private final RoutesModel busRoutesModel;
 
     public FindNearestLocation_ListViewItem_ArrayAdapter(Context context, List<LocationModel> values) {
         super(context, R.layout.findnearestlocations_listview_item, values);
         this.context = context;
         this.values = values;
+    }
 
-        busRoutesModel = ObjectFactory.getInstance().getBusRoutes();
+    public void setList(List<LocationModel> list){
+        this.values = list;
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public int getCount() {
+        if(values == null)
+            return  0;
+
+        return values.size();
     }
 
     @Override
@@ -50,116 +60,91 @@ public class FindNearestLocation_ListViewItem_ArrayAdapter extends ArrayAdapter<
         LayoutInflater inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        View rowView = null;
+        View view = convertView;
 
-        if (values != null) {
-            LocationModel location = values.get(position);
-
-            rowView = inflater.inflate(R.layout.findnearestlocations_listview_item, parent, false);
-
-            TextView distanceTextView = (TextView) rowView.findViewById(R.id.findnearestlocations_listView_items_distance_textView);
-            TextView milesTextView = (TextView) rowView.findViewById(R.id.findnearestlocations_listView_items_milesLabel_textView);
-
-            TextView locationNameTextView = (TextView) rowView.findViewById(R.id.findnearestlocations_listView_items_locationName_textView);
-
-            distanceTextView.setText(String.format("%.2f%n", location.getDistance()));
-            milesTextView.setText(context.getString(R.string.distance_miles));
-
-            locationNameTextView.setText(location.getLocationName());
-
-            LinearLayout routesViewLayout = (LinearLayout)rowView.findViewById(R.id.findnearestlocations_listView_routesView_layout);
-
-            int routeCount = 1;
-
-            for (LocationBasedRouteModel route : location.getRoutes()) {
-                // for the view, we can fit 10 routes comfortably
-                if (routeCount==10) break;
-
-                TextView routeTextView = new TextView(context);
-
-                int width = PixelHelper.pixelsToDensityIndependentPixels(context, 42);
-                LinearLayout.LayoutParams textViewLayoutParams = new LinearLayout.LayoutParams(width,
-                                                                                               ViewGroup.LayoutParams.WRAP_CONTENT);
-                textViewLayoutParams.setMargins(0, 0, 5, 0); // llp.setMargins(left, top, right, bottom);
-                routeTextView.setLayoutParams(textViewLayoutParams);
-                routeTextView.setPadding(5, 5, 5, 5);
-                routeTextView.setGravity(Gravity.CENTER);
-
-                routeTextView.setBackgroundResource(R.drawable.findnearestlocation_roundedbutton_corners);
-
-                RoutesModel busRoutesModel = ObjectFactory.getInstance().getBusRoutes();
-                busRoutesModel.loadRoutes(context);
-
-                GradientDrawable drawable = (GradientDrawable) routeTextView.getBackground();
-                switch (route.getRouteType()) {
-                    case 0: {   // trolley
-                        if (route.getRouteShortName().equals("NHSL")) {
-                            drawable.setColor(0xFF791D7E);
-                        } else {
-                            drawable.setColor(0xFF4D7900);
-                        }
-                        break;
-                    }
-                    case 1: {   // subway
-                        if (route.getRouteShortName().equals("BSS")) {
-                            drawable.setColor(0xFFF58426);
-                        } else {
-                            if (route.getRouteShortName().equals("MFL")) {
-                                drawable.setColor(0xFF007DC3);
-                            } else {
-                                drawable.setColor(0xFF000000);
-                            }
-                        }
-                        break;
-                    }
-                    case 2: {   // rail
-                        drawable.setColor(0xFF45637A);
-
-                        break;
-                    }
-                    case 3: {   // bus
-                        if (route.getRouteShortName().equals("MFO")) {
-                            drawable.setColor(0xFF007DC3);
-                        } else {
-                            if (route.getRouteShortName().equals("BSO")) {
-                                drawable.setColor(0xFFF58426);
-                            } else { // bus
-                                drawable.setColor(0xFF383D42);
-                            }
-                        }
-                        break;
-                    }
-                    default: {
-                        Log.d(TAG, "this should not be a value option");
-
-                        break;
-                    }
-                }
-
-                routeTextView.setText(route.getRouteShortNameWithDirection());
-                routeTextView.setTextColor(Color.WHITE);
-                routeTextView.setTextSize(12.0f);
-
-                routesViewLayout.addView(routeTextView);
-
-                routeCount++;
-            }
+        ViewHolder holder;
+        if (view != null) {
+            holder = (ViewHolder) view.getTag();
+        } else {
+            view = inflater.inflate(R.layout.findnearestlocations_listview_item, parent, false);
+            holder = new ViewHolder(view);
+            view.setTag(holder);
         }
 
-        return rowView;
+        LocationModel location = values.get(position);
+
+        holder.distanceTextView.setText(String.format("%.2f%n", location.getDistance()));
+        holder.milesTextView.setText(context.getString(R.string.distance_miles));
+        holder.locationNameTextView.setText(location.getLocationName());
+        holder.routesViewLayout.removeAllViews();
+
+        for (LocationBasedRouteModel route : location.getRoutes()) {
+
+            if(location.getRoutes().indexOf(route) > MAX_ROUTE_DISPLAY)
+                break;
+
+            RouteTextView routeTextView = new RouteTextView(context);
+            GradientDrawable drawable = (GradientDrawable) routeTextView.getBackground();
+
+            if(route.getRouteSpecialType() == LocationBasedRouteModel.RouteSpecialType.NONE){
+                switch (route.getTransportationType()){
+                    case TROLLEY:
+                        drawable.setColor(context.getResources().getColor(R.color.trolleyGreen));
+                        break;
+                    case SUBWAY:
+                        drawable.setColor(Color.BLACK);
+                        break;
+                    case RAIL:
+                        drawable.setColor(context.getResources().getColor(R.color.railGrey));
+                        break;
+                    case BUS:
+                        drawable.setColor(context.getResources().getColor(R.color.busGrey));
+                        break;
+                    default:
+                        Log.d(TAG, "this should not be a value option");
+                        break;
+                }
+
+            } else{
+
+                switch (route.getRouteSpecialType()){
+                    case NHSL:
+                        drawable.setColor(context.getResources().getColor(R.color.nshlPurple));
+                        break;
+                    case BSS:
+                    case BSO:
+                        drawable.setColor(context.getResources().getColor(R.color.bsOrange));
+                        break;
+                    case MFL:
+                    case MFO:
+                        drawable.setColor(context.getResources().getColor(R.color.mfBlue));
+                        break;
+                    default:
+                        Log.d(TAG, "this should not be a value option");
+                        break;
+                }
+            }
+
+            routeTextView.setText(route.getRouteShortNameWithDirection());
+            holder.routesViewLayout.addView(routeTextView);
+
+        }
+
+        return view;
     }
 
-    @Override
-    public boolean areAllItemsEnabled() {
+    static class ViewHolder {
+        @InjectView(R.id.findnearestlocations_listView_items_distance_textView)
+        TextView distanceTextView;
+        @InjectView(R.id.findnearestlocations_listView_items_milesLabel_textView)
+        TextView milesTextView;
+        @InjectView(R.id.findnearestlocations_listView_items_locationName_textView)
+        TextView locationNameTextView;
+        @InjectView(R.id.findnearestlocations_listView_routesView_layout)
+        LinearLayout routesViewLayout;
 
-        // while work is in progress for the find nearest location rotue details, don't allow a tap on the row
-        return false;
-    }
-
-    @Override
-    public boolean isEnabled(int position) {
-
-        // while work is in progress for the find nearest location rotue details, don't allow a tap on the row
-        return false;
+        public ViewHolder(View view) {
+            ButterKnife.inject(this, view);
+        }
     }
 }

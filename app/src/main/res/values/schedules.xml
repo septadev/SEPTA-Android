@@ -65,14 +65,14 @@
     <string-array name="schedules_itinerary_menu_listview_items_texts">
         <item>Favorite</item>
         <item>Fare</item>
-        <item>Service Advisory</item>
+        <!--<item>Service Advisory</item>-->
         <item>Real Time</item>
     </string-array>
 
     <string-array name="schedules_itinerary_menu_listview_items_subtexts">
         <item>no trips have been selected</item>
         <item>Fare Information</item>
-        <item>Click to view details</item>
+        <!--<item>Click to view details</item>-->
         <item>Regional Rail Service</item>
     </string-array>
 
@@ -80,7 +80,7 @@
     <string-array name="schedules_itinerary_menu_listview_items_iconsuffixes">
         <item>favorite</item>
         <item>fare</item>
-        <item>advisory</item>
+        <!--<item>advisory</item>-->
         <item>tips</item>
     </string-array>
 

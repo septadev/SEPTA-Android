@@ -22,15 +22,15 @@ import android.widget.TextView;
 import org.septa.android.app.R;
 import org.septa.android.app.managers.SchedulesFavoritesAndRecentlyViewedStore;
 import org.septa.android.app.models.ObjectFactory;
+import org.septa.android.app.models.RouteTypes;
 import org.septa.android.app.models.SchedulesFavoriteModel;
 import org.septa.android.app.models.SchedulesRecentlyViewedModel;
-import org.septa.android.app.models.RouteTypes;
 import org.septa.android.app.models.SchedulesRouteModel;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 
@@ -54,9 +54,13 @@ public class SchedulesRouteSelection_ListViewItem_ArrayAdapter extends BaseAdapt
 
     private String[] sectionTitles = new String[]{ "Favorites", "Recently Viewed", "Routes"};
 
+    private List<String> sections;
+
+
     public SchedulesRouteSelection_ListViewItem_ArrayAdapter(Context context, RouteTypes routeType) {
         mContext = context;
         mInflater = LayoutInflater.from(context);
+        sections = new ArrayList<String>();
 
         this.routeType = routeType;
 
@@ -85,6 +89,22 @@ public class SchedulesRouteSelection_ListViewItem_ArrayAdapter extends BaseAdapt
             Collections.sort(this.routes);
         }
         Log.d(TAG, "sorted the routes");
+
+        sections = new ArrayList<String>();
+
+        List<SchedulesRouteModel> routeModels = new ArrayList<SchedulesRouteModel>();
+        routeModels.addAll(this.favorites);
+        routeModels.addAll(this.recentlyViewed);
+        routeModels.addAll(this.routes);
+
+        // Compute section indexes for fast scroll
+        for (SchedulesRouteModel schedulesRouteModel : routeModels) {
+            String section = schedulesRouteModel.getRouteId();
+            if (section != null && section.length() > 0) {
+                section = section.substring(0, 1);
+                sections.add(section);
+            }
+        }
 
         notifyDataSetChanged();
     }
@@ -275,44 +295,18 @@ public class SchedulesRouteSelection_ListViewItem_ArrayAdapter extends BaseAdapt
     }
 
     @Override
-    public int getPositionForSection(int section) {
-        switch (section) {
-            case 0: {
-
-                return 0;
-            }
-            case 1: {
-
-                return favorites.size();
-            }
-            case 2: {
-
-                return favorites.size()+recentlyViewed.size();
-            }
-            default: {
-
-                return 0;
-            }
-        }
-    }
-
-    @Override
-    public int getSectionForPosition(int position) {
-        if (isFavorite(position)) {
-            return 0;
-        } else {
-            if (isRecentlyViewed(position)) {
-                return 1;
-            }
-        }
-
-        return 2;
-    }
-
-    @Override
     public Object[] getSections() {
+        return sections.toArray();
+    }
 
-        return sectionTitles;
+    @Override
+    public int getPositionForSection(int i) {
+        return i;
+    }
+
+    @Override
+    public int getSectionForPosition(int i) {
+        return i;
     }
 
     class HeaderViewHolder {

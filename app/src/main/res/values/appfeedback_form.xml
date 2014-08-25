@@ -9,7 +9,7 @@
 <resources>
 
     <!-- App feedback form send to email address -->
-    <string name="appfeedbackform_sendto_emailaddress">androidapp@septa.org</string>
+    <string name="appfeedbackform_sendto_emailaddress">septadev@gmail.com</string>
 
     <string name="appfeedbackform_subject_stringtemplate">SEPTA Android (%1$s) Feedback: %2$s</string>
 

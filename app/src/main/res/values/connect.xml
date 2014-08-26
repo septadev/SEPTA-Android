@@ -36,7 +36,7 @@
 
     <!-- for the connect tab and fare Information -->
     <string-array name="connect_fares_listview_item_texts">
-        <item>Transit Cash Fare: $2.25*\n*Except Buss Routes 123, 124, 125, &amp; 150 and Norristown High Speed Line</item>
+        <item>Transit Cash Fare: $2.25*\n*Except Bus Routes 123, 124, 125, &amp; 150 and Norristown High Speed Line</item>
         <item>Tokens: $1.80\nTransfer: $1.00</item>
         <item>Weekly TransPass: $24.00\nMonthly TransPass: $91.00</item>
         <item>Weekly and Monthly TrailPasses: Price varies according to Zone</item>

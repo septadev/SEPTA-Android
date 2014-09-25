@@ -68,6 +68,8 @@ public class SchedulesDataModel {
                     trip.setDirectionId(directionId);
                     trip.setServiceId(serviceId);
 
+                    setCurrentDisplayDirection(trip.getDirectionId().intValue());
+
                     startBasedTrips.put(tripId, trip);
                 } while (cursor.moveToNext());
             }

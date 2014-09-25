@@ -96,7 +96,7 @@
             android:clipToPadding="false"
             android:drawSelectorOnTop="true"
             android:scrollbarStyle="outsideOverlay"
-            android:fastScrollEnabled="true"
+            android:fastScrollEnabled="false"
             android:overScrollMode="never"/>
 
     </LinearLayout>

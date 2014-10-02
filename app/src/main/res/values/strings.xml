@@ -59,6 +59,9 @@
     <string name="error_location_unavailable">Your location is unavailable</string>
     <string name="error_location_disabled">Your GPS is disabled</string>
 
+    <!-- Stop sort options -->
+    <string name="text_sort_by_name">Sort name</string>
+    <string name="text_sort_by_stop">Sort by stop</string>
 
 
 </resources>

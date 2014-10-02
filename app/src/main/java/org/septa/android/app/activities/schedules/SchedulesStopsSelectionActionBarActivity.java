@@ -22,6 +22,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -63,7 +64,7 @@ public class SchedulesStopsSelectionActionBarActivity extends BaseAnalyticsActio
     private ArrayList<SchedulesRouteModel> routesModel;
 
     private LocationManager locationManager;
-
+    private Menu optionsMenu;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -157,9 +158,46 @@ public class SchedulesStopsSelectionActionBarActivity extends BaseAnalyticsActio
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_sort, menu);
+        optionsMenu = menu;
+        return true;
+    }
 
-        return super.onOptionsItemSelected(item);
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_sort_123:
+                mAdapter.sortByStop();
+                break;
+            case R.id.menu_sort_abc:
+                mAdapter.sortByName();
+                break;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+        swapSortOptions();
+        return true;
+    }
+
+    public void swapSortOptions() {
+        MenuItem sortStop = optionsMenu.findItem(R.id.menu_sort_123);
+        MenuItem sortName = optionsMenu.findItem(R.id.menu_sort_abc);
+        if(sortName != null && sortStop != null) {
+            sortName.setVisible(!sortName.isVisible());
+            sortStop.setVisible(!sortStop.isVisible());
+            onPrepareOptionsMenu(optionsMenu);
+        }
+    }
+
+    public void removeSortOptions() {
+        MenuItem sortStop = optionsMenu.findItem(R.id.menu_sort_123);
+        MenuItem sortName = optionsMenu.findItem(R.id.menu_sort_abc);
+        if(sortName != null && sortStop != null) {
+            sortName.setVisible(false);
+            sortStop.setVisible(false);
+            onPrepareOptionsMenu(optionsMenu);
+        }
     }
 
     @Override
@@ -220,6 +258,7 @@ public class SchedulesStopsSelectionActionBarActivity extends BaseAnalyticsActio
     private void sortByLocations(Location userLocation) {
         if(userLocation != null) {
             mAdapter.sortByLocation(userLocation);
+            removeSortOptions();
         }
     }
 

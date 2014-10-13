@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.SectionIndexer;
 import android.widget.TextView;
 
 import org.septa.android.app.R;
@@ -26,18 +25,13 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-public class RegionalRail_StopSelection_ListViewItem_ArrayAdapter extends ArrayAdapter<StopModel> implements SectionIndexer {
+public class RegionalRail_StopSelection_ListViewItem_ArrayAdapter extends ArrayAdapter<StopModel> {
     public static final String TAG = RegionalRail_StopSelection_ListViewItem_ArrayAdapter.class.getName();
 
     private final Context context;
     private List<StopModel> values;
-    private List<String> sections;
-    private Map<Integer, Integer> positions;
-    private Map<Integer, Integer> startPositions;
     private boolean useLocations = false;
     NumberFormat numberFormat = new DecimalFormat("#.##mi");
 
@@ -45,22 +39,6 @@ public class RegionalRail_StopSelection_ListViewItem_ArrayAdapter extends ArrayA
         super(context, R.layout.nexttoarrive_listview_stop_item, tripDataModelArrayList);
         this.context = context;
         this.values = tripDataModelArrayList;
-        sections = new ArrayList<String>();
-        positions = new HashMap<Integer, Integer>();
-        startPositions = new HashMap<Integer, Integer>();
-
-        for(int i=0; i<tripDataModelArrayList.size(); i++) {
-            StopModel stopModel = tripDataModelArrayList.get(i);
-            String section = stopModel.getStopName();
-            if(section != null && section.length() > 0) {
-                section = section.substring(0, 1);
-                if(!sections.contains(section)) {
-                    sections.add(section);
-                    startPositions.put(sections.indexOf(section), i);
-                }
-                positions.put(i, sections.indexOf(section));
-            }
-        }
     }
 
     @Override
@@ -105,21 +83,6 @@ public class RegionalRail_StopSelection_ListViewItem_ArrayAdapter extends ArrayA
     public boolean isEnabled(int position) {
 
         return true;
-    }
-
-    @Override
-    public Object[] getSections() {
-        return sections.toArray();
-    }
-
-    @Override
-    public int getPositionForSection(int i) {
-        return startPositions.get(i);
-    }
-
-    @Override
-    public int getSectionForPosition(int i) {
-        return positions.get(i);
     }
 
     /**

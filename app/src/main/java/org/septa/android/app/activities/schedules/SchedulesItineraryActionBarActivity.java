@@ -52,7 +52,6 @@ import org.septa.android.app.models.TripObject;
 import org.septa.android.app.models.adapterhelpers.TextSubTextImageModel;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import butterknife.ButterKnife;
@@ -342,33 +341,6 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
     public void startEndSelectionSelected(View view) {
         this.inProcessOfStartDestinationFlow = true;
 
-        Intent stopSelectionIntent = null;
-        int requestCode = 0;
-
-        // for regional rail, we have only a single list of stops versus the two section list
-        switch (travelType) {
-            case RAIL: {
-                stopSelectionIntent = new Intent(this, SchedulesRRStopSelectionActionBarActivity.class);
-                requestCode = getResources().getInteger(R.integer.schedules_itinerary_stopselection_activityforresult_request_code_regionalrail);
-                break;
-            }
-            default: {
-                stopSelectionIntent = new Intent(this, SchedulesStopsSelectionActionBarActivity.class);
-
-                stopSelectionIntent.putExtra(getString(R.string.actionbar_titletext_key), actionBarTitleText);
-                stopSelectionIntent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), iconImageNameSuffix);
-                stopSelectionIntent.putExtra(getString(R.string.schedules_itinerary_travelType),
-                        travelType.name());
-                stopSelectionIntent.putExtra(getString(R.string.schedules_itinerary_routeShortName), schedulesRouteModel.getRouteShortName());
-                requestCode = getResources().getInteger(R.integer.schedules_itinerary_stopselection_activityforresult_request_code);
-            }
-        }
-
-        stopSelectionIntent.putExtra(getString(R.string.schedules_stopselection_startordestination), "Start");
-        startActivityForResult(stopSelectionIntent, requestCode);
-    }
-
-    public void selectStartSelected(View view) {
         Intent stopSelectionIntent = null;
         int requestCode = 0;
 

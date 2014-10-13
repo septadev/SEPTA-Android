@@ -16,7 +16,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.SectionIndexer;
 import android.widget.TextView;
 
 import org.septa.android.app.R;
@@ -24,18 +23,19 @@ import org.septa.android.app.models.RouteTypes;
 import org.septa.android.app.models.StopModel;
 import org.septa.android.app.utilities.Constants;
 import org.septa.android.app.utilities.StopModelDistanceComparator;
+import org.septa.android.app.utilities.StopModelNameComparator;
+import org.septa.android.app.utilities.StopModelSequenceComparator;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
 
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 
 public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter implements
-        StickyListHeadersAdapter, SectionIndexer {
+        StickyListHeadersAdapter {
     public static final String TAG = ItinerarySelection_ListViewItem_ArrayAdapter.class.getName();
     private final Context mContext;
     private LayoutInflater mInflater;
@@ -51,7 +51,6 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
 
     private View headerView = null;
 
-    private List<String> sections;
     private boolean useLocations = false;
     NumberFormat numberFormat = new DecimalFormat("#.##mi");
 
@@ -65,25 +64,6 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
         resourceEndNames = context.getResources().getStringArray(R.array.schedulesfragment_listview_bothimage_endnames);
     }
 
-    /**
-     * Build section indices for fast scroll
-     */
-    private void buildSectionIndices() {
-        sections = new ArrayList<String>();
-
-        List<StopModel> stopModels = new ArrayList<StopModel>();
-        stopModels.addAll(this.stopsForDirection0);
-        stopModels.addAll(this.stopsForDirection1);
-
-        for (StopModel stopModel : stopModels) {
-            String section = stopModel.getStopName();
-            if (section != null && section.length() > 0) {
-                section = section.substring(0, 1);
-                sections.add(section);
-            }
-        }
-    }
-
     public void setDirectionHeadingLabels(String[] directionHeadingLabels) {
 
         this.directionHeadingLabels = directionHeadingLabels;
@@ -93,7 +73,6 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
 
         this.stopsForDirection0 = stopsForDirection0;
         Collections.sort(this.stopsForDirection0, new NumberAwareStringComparator());
-        buildSectionIndices();
         notifyDataSetChanged();
     }
 
@@ -101,7 +80,6 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
 
         this.stopsForDirection1 = stopsForDirection1;
         Collections.sort(this.stopsForDirection1, new NumberAwareStringComparator());
-        buildSectionIndices();
         notifyDataSetChanged();
     }
 
@@ -197,6 +175,18 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
         notifyDataSetChanged();
     }
 
+    public void sortByName() {
+        Collections.sort(stopsForDirection0, new StopModelNameComparator());
+        Collections.sort(stopsForDirection1, new StopModelNameComparator());
+        notifyDataSetChanged();
+    }
+
+    public void sortByStopSequence() {
+        Collections.sort(stopsForDirection0, new StopModelSequenceComparator());
+        Collections.sort(stopsForDirection1, new StopModelSequenceComparator());
+        notifyDataSetChanged();
+    }
+
     @Override
     public View getHeaderView(int position, View convertView, ViewGroup parent) {
         View view = null;
@@ -258,21 +248,6 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
         }
 
         return 1;
-    }
-
-    @Override
-    public Object[] getSections() {
-        return sections.toArray();
-    }
-
-    @Override
-    public int getPositionForSection(int i) {
-        return i;
-    }
-
-    @Override
-    public int getSectionForPosition(int i) {
-        return i;
     }
 }
 

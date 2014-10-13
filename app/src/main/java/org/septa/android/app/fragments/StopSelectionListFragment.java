@@ -13,7 +13,6 @@ import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.location.LocationProvider;
 import android.os.Bundle;
 import android.os.Looper;
 import android.support.v4.app.ListFragment;
@@ -45,6 +44,12 @@ public class StopSelectionListFragment extends ListFragment implements View.OnCl
         // instantiate an empty array list for the TripDataModel
         stopModelList = new ArrayList<StopModel>(0);
         startOrDestinationSelectionMode = "start";
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
     }
 
     public void setStartOrDestinationSelectionMode(String startOrDestinationSelectionMode) {

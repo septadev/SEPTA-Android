@@ -116,6 +116,14 @@ public class StopModel implements Comparable<StopModel> {
         this.longitude = longitude;
     }
 
+    public int getStopSequence() {
+        return stopSequence;
+    }
+
+    public void setStopSequence(int stopSequence) {
+        this.stopSequence = stopSequence;
+    }
+
     @Override
     public int compareTo(StopModel another) {
         return this.getStopName().compareTo(another.getStopName());

@@ -22,6 +22,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -63,7 +64,7 @@ public class SchedulesStopsSelectionActionBarActivity extends BaseAnalyticsActio
     private ArrayList<SchedulesRouteModel> routesModel;
 
     private LocationManager locationManager;
-
+    private Menu optionsMenu;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -157,9 +158,46 @@ public class SchedulesStopsSelectionActionBarActivity extends BaseAnalyticsActio
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_sort, menu);
+        optionsMenu = menu;
+        return true;
+    }
 
-        return super.onOptionsItemSelected(item);
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_sort_123:
+                mAdapter.sortByName();
+                break;
+            case R.id.menu_sort_abc:
+                mAdapter.sortByStopSequence();
+                break;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+        swapSortOptions();
+        return true;
+    }
+
+    public void swapSortOptions() {
+        MenuItem sortStop = optionsMenu.findItem(R.id.menu_sort_123);
+        MenuItem sortName = optionsMenu.findItem(R.id.menu_sort_abc);
+        if(sortName != null && sortStop != null) {
+            sortName.setVisible(!sortName.isVisible());
+            sortStop.setVisible(!sortStop.isVisible());
+            onPrepareOptionsMenu(optionsMenu);
+        }
+    }
+
+    public void removeSortOptions() {
+        MenuItem sortStop = optionsMenu.findItem(R.id.menu_sort_123);
+        MenuItem sortName = optionsMenu.findItem(R.id.menu_sort_abc);
+        if(sortName != null && sortStop != null) {
+            sortName.setVisible(false);
+            sortStop.setVisible(false);
+            onPrepareOptionsMenu(optionsMenu);
+        }
     }
 
     @Override
@@ -220,6 +258,7 @@ public class SchedulesStopsSelectionActionBarActivity extends BaseAnalyticsActio
     private void sortByLocations(Location userLocation) {
         if(userLocation != null) {
             mAdapter.sortByLocation(userLocation);
+            removeSortOptions();
         }
     }
 
@@ -287,19 +326,19 @@ public class SchedulesStopsSelectionActionBarActivity extends BaseAnalyticsActio
                 }
                 case BSL: {
                     Log.d("f", "type is bsl, loading the trips");
-                    queryString = "SELECT stop_times_BSL.stop_id, stops_bus.stop_name, direction_id, stops_bus.wheelchair_boarding, null as stop_sequence, stop_lat, stop_lon  FROM trips_BSL JOIN stop_times_BSL ON trips_BSL.trip_id=stop_times_BSL.trip_id NATURAL JOIN stops_bus GROUP BY stop_times_BSL.stop_id ORDER BY stops_bus.stop_name;";
+                    queryString = "SELECT stop_times_BSL.stop_id, stops_bus.stop_name, direction_id, stops_bus.wheelchair_boarding, stop_sequence, stop_lat, stop_lon  FROM trips_BSL JOIN stop_times_BSL ON trips_BSL.trip_id=stop_times_BSL.trip_id NATURAL JOIN stops_bus GROUP BY stop_times_BSL.stop_id ORDER BY stops_bus.stop_name;";
 
                      break;
                 }
                 case MFL: {
                     Log.d("f", "type is mfl, loading the trips with shortname as "+routeShortName);
-                    queryString = "SELECT stop_times_MFL.stop_id, stops_bus.stop_name, direction_id, stops_bus.wheelchair_boarding, null as stop_sequence, stop_lat, stop_lon  FROM trips_MFL JOIN stop_times_MFL ON trips_MFL.trip_id=stop_times_MFL.trip_id NATURAL JOIN stops_bus GROUP BY stop_times_MFL.stop_id ORDER BY stops_bus.stop_name;";
+                    queryString = "SELECT stop_times_MFL.stop_id, stops_bus.stop_name, direction_id, stops_bus.wheelchair_boarding, stop_sequence, stop_lat, stop_lon  FROM trips_MFL JOIN stop_times_MFL ON trips_MFL.trip_id=stop_times_MFL.trip_id NATURAL JOIN stops_bus GROUP BY stop_times_MFL.stop_id ORDER BY stops_bus.stop_name;";
 
                     break;
                 }
                 case NHSL: {
                     Log.d("f", "type is nhsl, loading the trips");
-                    queryString = "SELECT stop_times_NHSL.stop_id, stops_bus.stop_name, null as direction_id, stops_bus.wheelchair_boarding, null as stop_sequence, stop_lat, stop_lon FROM trips_NHSL JOIN stop_times_NHSL ON trips_NHSL.trip_id=stop_times_NHSL.trip_id NATURAL JOIN stops_bus GROUP BY stop_times_NHSL.stop_id ORDER BY stops_bus.stop_name;";
+                    queryString = "SELECT stop_times_NHSL.stop_id, stops_bus.stop_name, direction_id, stops_bus.wheelchair_boarding, stop_sequence, stop_lat, stop_lon FROM trips_NHSL JOIN stop_times_NHSL ON trips_NHSL.trip_id=stop_times_NHSL.trip_id NATURAL JOIN stops_bus GROUP BY stop_times_NHSL.stop_id ORDER BY stops_bus.stop_name;";
 
                     break;
                 }

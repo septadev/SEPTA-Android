@@ -76,9 +76,6 @@ public class SchedulesFavoritesAndRecentlyViewedStore {
 
         favoritesList.add(0, schedulesFavoriteModel);
 
-        // in case this favorite is also a recently viewed
-        removeRecentlyViewed(routeType, schedulesFavoriteModel);
-
         favoritesListMap.put(routeType, favoritesList);
 
         sendToSharedPreferencesFavorites();

@@ -168,10 +168,10 @@ public class SchedulesStopsSelectionActionBarActivity extends BaseAnalyticsActio
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_sort_123:
-                mAdapter.sortByStop();
+                mAdapter.sortByName();
                 break;
             case R.id.menu_sort_abc:
-                mAdapter.sortByName();
+                mAdapter.sortByStopSequence();
                 break;
             default:
                 return super.onOptionsItemSelected(item);
@@ -326,19 +326,19 @@ public class SchedulesStopsSelectionActionBarActivity extends BaseAnalyticsActio
                 }
                 case BSL: {
                     Log.d("f", "type is bsl, loading the trips");
-                    queryString = "SELECT stop_times_BSL.stop_id, stops_bus.stop_name, direction_id, stops_bus.wheelchair_boarding, null as stop_sequence, stop_lat, stop_lon  FROM trips_BSL JOIN stop_times_BSL ON trips_BSL.trip_id=stop_times_BSL.trip_id NATURAL JOIN stops_bus GROUP BY stop_times_BSL.stop_id ORDER BY stops_bus.stop_name;";
+                    queryString = "SELECT stop_times_BSL.stop_id, stops_bus.stop_name, direction_id, stops_bus.wheelchair_boarding, stop_sequence, stop_lat, stop_lon  FROM trips_BSL JOIN stop_times_BSL ON trips_BSL.trip_id=stop_times_BSL.trip_id NATURAL JOIN stops_bus GROUP BY stop_times_BSL.stop_id ORDER BY stops_bus.stop_name;";
 
                      break;
                 }
                 case MFL: {
                     Log.d("f", "type is mfl, loading the trips with shortname as "+routeShortName);
-                    queryString = "SELECT stop_times_MFL.stop_id, stops_bus.stop_name, direction_id, stops_bus.wheelchair_boarding, null as stop_sequence, stop_lat, stop_lon  FROM trips_MFL JOIN stop_times_MFL ON trips_MFL.trip_id=stop_times_MFL.trip_id NATURAL JOIN stops_bus GROUP BY stop_times_MFL.stop_id ORDER BY stops_bus.stop_name;";
+                    queryString = "SELECT stop_times_MFL.stop_id, stops_bus.stop_name, direction_id, stops_bus.wheelchair_boarding, stop_sequence, stop_lat, stop_lon  FROM trips_MFL JOIN stop_times_MFL ON trips_MFL.trip_id=stop_times_MFL.trip_id NATURAL JOIN stops_bus GROUP BY stop_times_MFL.stop_id ORDER BY stops_bus.stop_name;";
 
                     break;
                 }
                 case NHSL: {
                     Log.d("f", "type is nhsl, loading the trips");
-                    queryString = "SELECT stop_times_NHSL.stop_id, stops_bus.stop_name, null as direction_id, stops_bus.wheelchair_boarding, null as stop_sequence, stop_lat, stop_lon FROM trips_NHSL JOIN stop_times_NHSL ON trips_NHSL.trip_id=stop_times_NHSL.trip_id NATURAL JOIN stops_bus GROUP BY stop_times_NHSL.stop_id ORDER BY stops_bus.stop_name;";
+                    queryString = "SELECT stop_times_NHSL.stop_id, stops_bus.stop_name, direction_id, stops_bus.wheelchair_boarding, stop_sequence, stop_lat, stop_lon FROM trips_NHSL JOIN stop_times_NHSL ON trips_NHSL.trip_id=stop_times_NHSL.trip_id NATURAL JOIN stops_bus GROUP BY stop_times_NHSL.stop_id ORDER BY stops_bus.stop_name;";
 
                     break;
                 }

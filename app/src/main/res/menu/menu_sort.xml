@@ -6,11 +6,11 @@
         android:id="@+id/menu_sort_123"
         android:icon="@drawable/filter_123"
         android:title="@string/text_sort_by_stop"
-        app:showAsAction="always" />
+        app:showAsAction="always"
+        android:visible="false" />
     <item
         android:id="@+id/menu_sort_abc"
         android:icon="@drawable/filter_abc"
         android:title="@string/text_sort_by_name"
-        app:showAsAction="always"
-        android:visible="false" />
+        app:showAsAction="always" />
 </menu>

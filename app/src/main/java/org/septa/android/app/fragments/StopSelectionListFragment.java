@@ -18,9 +18,6 @@ import android.os.Looper;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
@@ -43,8 +40,6 @@ public class StopSelectionListFragment extends ListFragment implements View.OnCl
     private LocationManager locationManager;
     private RegionalRail_StopSelection_ListViewItem_ArrayAdapter adapter;
 
-    Menu optionsMenu;
-
     public StopSelectionListFragment() {
         // instantiate an empty array list for the TripDataModel
         stopModelList = new ArrayList<StopModel>(0);
@@ -55,50 +50,6 @@ public class StopSelectionListFragment extends ListFragment implements View.OnCl
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-
-        inflater.inflate(R.menu.menu_sort, menu);
-        optionsMenu = menu;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_sort_123:
-                adapter.sortByStop();
-                break;
-            case R.id.menu_sort_abc:
-                adapter.sortByName();
-                break;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-        swapSortOptions();
-        return true;
-    }
-
-    public void swapSortOptions() {
-        MenuItem sortStop = optionsMenu.findItem(R.id.menu_sort_123);
-        MenuItem sortName = optionsMenu.findItem(R.id.menu_sort_abc);
-        if(sortName != null && sortStop != null) {
-            sortName.setVisible(!sortName.isVisible());
-            sortStop.setVisible(!sortStop.isVisible());
-            onPrepareOptionsMenu(optionsMenu);
-        }
-    }
-
-    public void removeSortOptions() {
-        MenuItem sortStop = optionsMenu.findItem(R.id.menu_sort_123);
-        MenuItem sortName = optionsMenu.findItem(R.id.menu_sort_abc);
-        if(sortName != null && sortStop != null) {
-            sortName.setVisible(false);
-            sortStop.setVisible(false);
-            onPrepareOptionsMenu(optionsMenu);
-        }
     }
 
     public void setStartOrDestinationSelectionMode(String startOrDestinationSelectionMode) {
@@ -193,7 +144,6 @@ public class StopSelectionListFragment extends ListFragment implements View.OnCl
     private void sortByLocations(Location userLocation) {
         if(userLocation != null) {
             adapter.sortByLocation(userLocation);
-            removeSortOptions();
         }
     }
 

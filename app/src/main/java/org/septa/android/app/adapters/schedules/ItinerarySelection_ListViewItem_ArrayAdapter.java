@@ -181,7 +181,7 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
         notifyDataSetChanged();
     }
 
-    public void sortByStop() {
+    public void sortByStopSequence() {
         Collections.sort(stopsForDirection0, new StopModelSequenceComparator());
         Collections.sort(stopsForDirection1, new StopModelSequenceComparator());
         notifyDataSetChanged();

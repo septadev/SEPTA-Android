@@ -13,6 +13,12 @@ import java.util.Comparator;
 public class StopModelSequenceComparator implements Comparator<StopModel> {
     @Override
     public int compare(StopModel stopModel, StopModel stopModel2) {
-        return stopModel.getStopId().compareTo(stopModel2.getStopId());
+        if(stopModel.getStopSequence() < stopModel2.getStopSequence()) {
+            return -1;
+        } else if(stopModel.getStopSequence() > stopModel2.getStopSequence()) {
+            return 1;
+        } else {
+            return 0;
+        }
     }
 }

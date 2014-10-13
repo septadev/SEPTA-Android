@@ -20,8 +20,6 @@ import org.septa.android.app.R;
 import org.septa.android.app.models.StopModel;
 import org.septa.android.app.utilities.Constants;
 import org.septa.android.app.utilities.StopModelDistanceComparator;
-import org.septa.android.app.utilities.StopModelNameComparator;
-import org.septa.android.app.utilities.StopModelSequenceComparator;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -103,16 +101,6 @@ public class RegionalRail_StopSelection_ListViewItem_ArrayAdapter extends ArrayA
         Collections.sort(values, new StopModelDistanceComparator());
 
         useLocations = true;
-        notifyDataSetChanged();
-    }
-
-    public void sortByName() {
-        Collections.sort(values, new StopModelNameComparator());
-        notifyDataSetChanged();
-    }
-
-    public void sortByStop() {
-        Collections.sort(values, new StopModelSequenceComparator());
         notifyDataSetChanged();
     }
 }

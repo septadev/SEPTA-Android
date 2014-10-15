@@ -59,6 +59,7 @@
 
     <string name="schedules_itinerary_menu_icon_imageBase">ic_</string>
     <string name="schedules_stopselection_startordestination">schedules_stopselection_startordestination</string>
+    <string name="schedules_stopselection_sort_order">schedules_stopselection_sort_order</string>
 
     <!-- about listview items meta-data -->
     <!-- texts, iconSuffixes, urls -->

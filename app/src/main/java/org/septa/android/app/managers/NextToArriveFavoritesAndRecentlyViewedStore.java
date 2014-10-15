@@ -89,9 +89,6 @@ public class NextToArriveFavoritesAndRecentlyViewedStore {
 
         favoritesList.add(0, nextToArriveFavoriteModel);
 
-        // in case this favorite is also a recently viewed
-        removeRecentlyViewed(nextToArriveFavoriteModel);
-
         sendToSharedPreferencesFavorites();
     }
 

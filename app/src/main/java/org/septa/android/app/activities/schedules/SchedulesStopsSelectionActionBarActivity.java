@@ -37,6 +37,7 @@ import org.septa.android.app.adapters.schedules.ItinerarySelection_ListViewItem_
 import org.septa.android.app.databases.SEPTADatabase;
 import org.septa.android.app.models.RouteTypes;
 import org.septa.android.app.models.SchedulesRouteModel;
+import org.septa.android.app.models.SortOrder;
 import org.septa.android.app.models.StopModel;
 
 import java.util.ArrayList;
@@ -65,6 +66,7 @@ public class SchedulesStopsSelectionActionBarActivity extends BaseAnalyticsActio
 
     private LocationManager locationManager;
     private Menu optionsMenu;
+    private SortOrder sortOrder = SortOrder.DEFAULT;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -74,6 +76,9 @@ public class SchedulesStopsSelectionActionBarActivity extends BaseAnalyticsActio
         String actionBarTitleText = getIntent().getStringExtra(getString(R.string.actionbar_titletext_key));
         String iconImageNameSuffix = getIntent().getStringExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key));
         String resourceName = getString(R.string.actionbar_iconimage_imagename_base).concat(iconImageNameSuffix);
+        if(getIntent().hasExtra(getString(R.string.schedules_stopselection_sort_order))) {
+            sortOrder = (SortOrder) getIntent().getSerializableExtra(getString(R.string.schedules_stopselection_sort_order));
+        }
 
         int id = getResources().getIdentifier(resourceName, "drawable", getPackageName());
 
@@ -121,6 +126,9 @@ public class SchedulesStopsSelectionActionBarActivity extends BaseAnalyticsActio
                 returnIntent.putExtra("stop_name", stop.getStopName());
                 returnIntent.putExtra("stop_id", stop.getStopId());
                 returnIntent.putExtra("selection_mode", schedulesItineraryStopSelectionStartOrDestinationString);
+                if(sortOrder != SortOrder.DEFAULT) {
+                    returnIntent.putExtra(getString(R.string.schedules_stopselection_sort_order), sortOrder);
+                }
                 SchedulesStopsSelectionActionBarActivity.this.setResult(Activity.RESULT_OK, returnIntent);
                 SchedulesStopsSelectionActionBarActivity.this.finish();
             }
@@ -168,25 +176,45 @@ public class SchedulesStopsSelectionActionBarActivity extends BaseAnalyticsActio
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_sort_123:
-                mAdapter.sortByName();
+                sortByName();
                 break;
             case R.id.menu_sort_abc:
-                mAdapter.sortByStopSequence();
+                sortBySequence();
                 break;
             default:
                 return super.onOptionsItemSelected(item);
         }
-        swapSortOptions();
         return true;
     }
 
-    public void swapSortOptions() {
-        MenuItem sortStop = optionsMenu.findItem(R.id.menu_sort_123);
+    private void sortByName() {
+        mAdapter.sortByName();
+        sortOrder = SortOrder.NAME;
+        updateSortOptions();
+    }
+
+    private void sortBySequence() {
+        mAdapter.sortByStopSequence();
+        sortOrder = SortOrder.SEQUENCE;
+        updateSortOptions();
+    }
+
+    public void updateSortOptions() {
+        MenuItem sortSequence = optionsMenu.findItem(R.id.menu_sort_123);
         MenuItem sortName = optionsMenu.findItem(R.id.menu_sort_abc);
-        if(sortName != null && sortStop != null) {
-            sortName.setVisible(!sortName.isVisible());
-            sortStop.setVisible(!sortStop.isVisible());
-            onPrepareOptionsMenu(optionsMenu);
+        if(sortName != null && sortSequence != null) {
+            switch (sortOrder) {
+                case SEQUENCE:
+                    sortName.setVisible(false);
+                    sortSequence.setVisible(true);
+                    onPrepareOptionsMenu(optionsMenu);
+                    break;
+                default:
+                    sortName.setVisible(true);
+                    sortSequence.setVisible(false);
+                    onPrepareOptionsMenu(optionsMenu);
+                    break;
+            }
         }
     }
 
@@ -406,6 +434,13 @@ public class SchedulesStopsSelectionActionBarActivity extends BaseAnalyticsActio
             mAdapter.setTripDataForDirection0(stopModelListDirection0);
             mAdapter.setTripDataForDirection1(stopModelListDirection1);
             stickyList.setFastScrollEnabled(true);
+            switch (sortOrder) {
+                case SEQUENCE:
+                    sortBySequence();
+                    break;
+                default:
+                    break;
+            }
         }
     }
 

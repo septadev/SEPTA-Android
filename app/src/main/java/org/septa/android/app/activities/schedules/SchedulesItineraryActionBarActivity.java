@@ -48,6 +48,7 @@ import org.septa.android.app.models.SchedulesDataModel;
 import org.septa.android.app.models.SchedulesFavoriteModel;
 import org.septa.android.app.models.SchedulesRecentlyViewedModel;
 import org.septa.android.app.models.SchedulesRouteModel;
+import org.septa.android.app.models.SortOrder;
 import org.septa.android.app.models.TripObject;
 import org.septa.android.app.models.adapterhelpers.TextSubTextImageModel;
 
@@ -603,6 +604,10 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
                                     travelType.name());
                             stopSelectionIntent.putExtra(getString(R.string.schedules_itinerary_routeShortName), schedulesRouteModel.getRouteShortName());
                             stopSelectionIntent.putExtra(getString(R.string.schedules_stopselection_startordestination), "Destination");
+                            if(data.hasExtra(getString(R.string.schedules_stopselection_sort_order))) {
+                                SortOrder sortOrder = (SortOrder)data.getSerializableExtra(getString(R.string.schedules_stopselection_sort_order));
+                                stopSelectionIntent.putExtra(getString(R.string.schedules_stopselection_sort_order), sortOrder);
+                            }
 
                             startActivityForResult(stopSelectionIntent, getResources().getInteger(R.integer.schedules_itinerary_stopselection_activityforresult_request_code));
                         }

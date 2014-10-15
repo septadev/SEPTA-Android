@@ -260,6 +260,7 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
         schedulesFavoriteModel.setRouteStartName(schedulesRouteModel.getRouteStartName());
         schedulesFavoriteModel.setRouteEndStopId(schedulesRouteModel.getRouteEndStopId());
         schedulesFavoriteModel.setRouteEndName(schedulesRouteModel.getRouteEndName());
+        schedulesFavoriteModel.setRouteShortName(schedulesRouteModel.getRouteShortName());
 
         // check if the selected route is already a favorite, then we allow the option of removing this
         // route from the favorites list.
@@ -267,9 +268,12 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
             Log.d("tt", "detected this is a favorite, remove ");
             store.removeFavorite(this.travelType.name(), schedulesFavoriteModel);
             ((Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).disableRemoveSavedFavorite();
+            ((Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).enableSaveAsFavorite();
         } else {
             Log.d("tt", "adding as a favorite");
             store.addFavorite(this.travelType.name(), schedulesFavoriteModel);
+            ((Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).disableSaveAsFavorite();
+            ((Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).enableRemoveSavedFavorite();
         }
     }
 
@@ -480,6 +484,7 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
             schedulesRecentlyViewedModel.setRouteEndName(schedulesRouteModel.getRouteEndName());
             schedulesRecentlyViewedModel.setRouteEndStopId(schedulesRouteModel.getRouteEndStopId());
             schedulesRecentlyViewedModel.setRouteShortName(schedulesRouteModel.getRouteShortName());
+            schedulesRecentlyViewedModel.setRouteShortName(schedulesRouteModel.getRouteShortName());
 
             SchedulesFavoriteModel schedulesFavoriteModel = new SchedulesFavoriteModel();
             schedulesFavoriteModel.setRouteId(schedulesRouteModel.getRouteId());
@@ -493,6 +498,7 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
             // route from the favorites list.
             if (store.isFavorite(this.travelType.name(), schedulesFavoriteModel)) {
                 ((Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter) menuListView.getAdapter()).enableRemoveSavedFavorite();
+                ((Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter) menuListView.getAdapter()).disableSaveAsFavorite();
             }
 
             // check if this route is already stored as a favorite; if not store as a recent

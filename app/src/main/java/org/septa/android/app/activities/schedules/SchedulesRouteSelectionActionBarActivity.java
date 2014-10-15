@@ -109,21 +109,11 @@ public class SchedulesRouteSelectionActionBarActivity extends BaseAnalyticsActio
     }
 
     @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
+    protected void onStart() {
+        super.onStart();
 
-        super.onPostCreate(savedInstanceState);
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-
-        super.onConfigurationChanged(newConfig);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        return super.onOptionsItemSelected(item);
+        mAdapter.reloadFavoriteAndRecentlyViewedLists();
+        mAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -211,6 +201,7 @@ public class SchedulesRouteSelectionActionBarActivity extends BaseAnalyticsActio
         schedulesFavoriteModel.setRouteStartName(schedulesRouteModel.getRouteStartName());
         schedulesFavoriteModel.setRouteEndStopId(schedulesRouteModel.getRouteEndStopId());
         schedulesFavoriteModel.setRouteEndName(schedulesRouteModel.getRouteEndName());
+        schedulesFavoriteModel.setRouteShortName(schedulesRouteModel.getRouteShortName());
 
         // check if the selected route is already a favorite, then we allow the option of removing this
         // route from the favorites list.
@@ -233,6 +224,7 @@ public class SchedulesRouteSelectionActionBarActivity extends BaseAnalyticsActio
         schedulesRecentlyViewedModel.setRouteStartName(schedulesRouteModel.getRouteStartName());
         schedulesRecentlyViewedModel.setRouteEndStopId(schedulesRouteModel.getRouteEndStopId());
         schedulesRecentlyViewedModel.setRouteEndName(schedulesRouteModel.getRouteEndName());
+        schedulesRecentlyViewedModel.setRouteShortName(schedulesRouteModel.getRouteShortName());
 
         // check if the selected route is already a favorite, then we allow the option of removing this
         // route from the favorites list.

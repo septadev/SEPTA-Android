@@ -79,8 +79,8 @@ android {
     defaultConfig {
         minSdkVersion 10
         targetSdkVersion 19
-        versionCode 44
-        versionName '1.0.8'
+        versionCode 45
+        versionName '1.0.9'
     }
     sourceSets {
 //        androidTest.setRoot('src/test') //note that this is androidTest instead of instrumentTest

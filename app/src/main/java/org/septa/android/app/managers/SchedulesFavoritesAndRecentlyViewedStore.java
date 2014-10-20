@@ -164,17 +164,19 @@ public class SchedulesFavoritesAndRecentlyViewedStore {
 
             recentlyViewedList = recentlyViewedListMap.get(routeType);
             //Remove invalid recently viewed
-            Iterator<SchedulesRecentlyViewedModel> iterator = recentlyViewedList.iterator();
-            int count = 0;
-            while(iterator.hasNext()) {
-                SchedulesRecentlyViewedModel schedulesRecentlyViewedModel = iterator.next();
-                if(schedulesRecentlyViewedModel.getRouteShortName() == null) {
-                    iterator.remove();
-                    count++;
+            if(recentlyViewedList != null) {
+                Iterator<SchedulesRecentlyViewedModel> iterator = recentlyViewedList.iterator();
+                int count = 0;
+                while (iterator.hasNext()) {
+                    SchedulesRecentlyViewedModel schedulesRecentlyViewedModel = iterator.next();
+                    if (schedulesRecentlyViewedModel.getRouteShortName() == null) {
+                        iterator.remove();
+                        count++;
+                    }
                 }
-            }
-            if(count > 0) {
-                sendToSharedPreferencesRecentlyViewed();
+                if (count > 0) {
+                    sendToSharedPreferencesRecentlyViewed();
+                }
             }
         } else {
 
@@ -201,18 +203,20 @@ public class SchedulesFavoritesAndRecentlyViewedStore {
         if (favoritesListMap != null) {
 
             favoritesList = favoritesListMap.get(routeType);
-            //Remove invalid favorites
-            Iterator<SchedulesFavoriteModel> iterator = favoritesList.iterator();
-            int count = 0;
-            while(iterator.hasNext()) {
-                SchedulesFavoriteModel favoriteModel = iterator.next();
-                if(favoriteModel.getRouteShortName() == null) {
-                    iterator.remove();
-                    count++;
+            if(favoritesList != null) {
+                //Remove invalid favorites
+                Iterator<SchedulesFavoriteModel> iterator = favoritesList.iterator();
+                int count = 0;
+                while (iterator.hasNext()) {
+                    SchedulesFavoriteModel favoriteModel = iterator.next();
+                    if (favoriteModel.getRouteShortName() == null) {
+                        iterator.remove();
+                        count++;
+                    }
                 }
-            }
-            if(count > 0) {
-                sendToSharedPreferencesFavorites();
+                if (count > 0) {
+                    sendToSharedPreferencesFavorites();
+                }
             }
         } else {
 

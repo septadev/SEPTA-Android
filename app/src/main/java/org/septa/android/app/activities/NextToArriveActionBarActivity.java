@@ -287,8 +287,11 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
         if (store.isFavorite(nextToArriveFavoriteModel)) {
             store.removeFavorite(nextToArriveFavoriteModel);
             ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).disableRemovedSavedFavorite();
+            ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).enableSaveAsFavorite();
         } else {
             store.addFavorite(nextToArriveFavoriteModel);
+            ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).disableSaveAsFavorite();
+            ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).enableRemoveSavedFavorite();
         }
     }
 
@@ -409,6 +412,10 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
             // route from the favorites list.
             if (store.isFavorite(nextToArriveFavoriteModel)) {
                 ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).enableRemoveSavedFavorite();
+                ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).disableSaveAsFavorite();
+            } else {
+                ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).disableRemovedSavedFavorite();
+                ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).enableSaveAsFavorite();
             }
 
             // check if this route is already stored as a favorite; if not store as a recent

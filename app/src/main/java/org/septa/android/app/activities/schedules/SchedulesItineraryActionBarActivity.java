@@ -56,11 +56,8 @@ import org.septa.android.app.models.TripObject;
 import org.septa.android.app.models.adapterhelpers.TextSubTextImageModel;
 import org.septa.android.app.models.servicemodels.ServiceAdvisoryModel;
 import org.septa.android.app.services.adaptors.AlertsAdaptor;
-import org.septa.android.app.services.apiinterfaces.AlertsService;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import butterknife.ButterKnife;
@@ -803,14 +800,21 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
 
     private void setMenuDetour() {
         MenuItem item = menu.findItem(R.id.actionmenu_nexttoarrive_revealactions);
-        AnimationDrawable animationDrawable = (AnimationDrawable) getResources().getDrawable(R.drawable.actionmenu_detour);
+        AnimationDrawable animationDrawable = (AnimationDrawable) getResources().getDrawable(R.drawable.actionmenu_detour_animation);
         item.setIcon(animationDrawable);
         animationDrawable.start();
     }
 
     private void setMenuAdvisory() {
         MenuItem item = menu.findItem(R.id.actionmenu_nexttoarrive_revealactions);
-        AnimationDrawable animationDrawable = (AnimationDrawable) getResources().getDrawable(R.drawable.actionmenu_advisory);
+        AnimationDrawable animationDrawable = (AnimationDrawable) getResources().getDrawable(R.drawable.actionmenu_advisory_animation);
+        item.setIcon(animationDrawable);
+        animationDrawable.start();
+    }
+
+    private void setMenuDetourAdvisory() {
+        MenuItem item = menu.findItem(R.id.actionmenu_nexttoarrive_revealactions);
+        AnimationDrawable animationDrawable = (AnimationDrawable) getResources().getDrawable(R.drawable.actionmenu_detour_advisory_animation);
         item.setIcon(animationDrawable);
         animationDrawable.start();
     }
@@ -821,8 +825,7 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
             alerts = serviceAdvisoryModels;
             if(ServiceAdvisoryModel.hasValidAdvisory(alerts)
                     && ServiceAdvisoryModel.hasValidDetours(alerts)) {
-                Toast.makeText(this, "Implement double advisory animation", Toast.LENGTH_SHORT).show();
-                setMenuAdvisory();
+                setMenuDetourAdvisory();
             } else if(ServiceAdvisoryModel.hasValidDetours(alerts)) {
                 setMenuDetour();
             } else if(ServiceAdvisoryModel.hasValidAdvisory(alerts)) {

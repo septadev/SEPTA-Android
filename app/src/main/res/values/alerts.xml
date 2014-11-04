@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="detour_start_location">Start Location:</string>
+    <string name="detour_start_date">Start Date:</string>
+    <string name="detour_end_date">End Date:</string>
+    <string name="detour_reason">Reason for Detour:</string>
+    <string name="detour_details">Details:</string>
+
+    <!-- Extras keys -->
+    <string name="alerts_extra_route_type">route_type</string>
+    <string name="alerts_extra_route_short_name">route_short_name</string>
+
+</resources>

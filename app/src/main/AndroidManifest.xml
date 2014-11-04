@@ -262,6 +262,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.FindNearestLocationActionBarActivity" />
         </activity>
+        <activity android:name=".activities.schedules.ServiceAdvisoryActivity"
+            android:parentActivityName="org.septa.android.app.activities.schedules.SchedulesItineraryActionBarActivity"
+            android:configChanges="keyboard|orientation|screenSize" >
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.schedules.SchedulesItineraryActionBarActivity" />
+        </activity>
 
         <meta-data android:name="com.crashlytics.ApiKey" android:value="bc2dd85ee4bc4580ad7a7e2819d8402ff8595c61"/>
     </application>

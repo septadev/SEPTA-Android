@@ -13,6 +13,7 @@ import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -30,10 +31,12 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import org.apache.http.HttpStatus;
 import org.septa.android.app.R;
 import org.septa.android.app.activities.BaseAnalyticsActionBarActivity;
 import org.septa.android.app.activities.FareInformationActionBarActivity;
@@ -51,12 +54,20 @@ import org.septa.android.app.models.SchedulesRouteModel;
 import org.septa.android.app.models.SortOrder;
 import org.septa.android.app.models.TripObject;
 import org.septa.android.app.models.adapterhelpers.TextSubTextImageModel;
+import org.septa.android.app.models.servicemodels.ServiceAdvisoryModel;
+import org.septa.android.app.services.adaptors.AlertsAdaptor;
+import org.septa.android.app.services.apiinterfaces.AlertsService;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectViews;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
 import static org.septa.android.app.models.RouteTypes.valueOf;
@@ -64,7 +75,8 @@ import static org.septa.android.app.models.RouteTypes.valueOf;
 public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarActivity implements
         AdapterView.OnItemClickListener, StickyListHeadersListView.OnHeaderClickListener,
         StickyListHeadersListView.OnStickyHeaderOffsetChangedListener,
-        StickyListHeadersListView.OnStickyHeaderChangedListener, View.OnTouchListener {
+        StickyListHeadersListView.OnStickyHeaderChangedListener, View.OnTouchListener,
+        Callback<ArrayList<ServiceAdvisoryModel>> {
 
     public static final String TAG = SchedulesItineraryActionBarActivity.class.getName();
     static final String SCHEDULE_MODEL = "scheduleModel";
@@ -92,9 +104,11 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
 
     private boolean menuRevealed = false;
     private ListView menuDialogListView;
+    private Menu menu;
 
     private CountDownTimer schedulesItineraryRefreshCountDownTimer;
     private String actionBarTitleText;
+    private List<ServiceAdvisoryModel> alerts;
 
 
     @InjectViews({ R.id.schedules_itinerary_tab_now_button
@@ -183,6 +197,9 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
             mAdapter.setRouteEndName(schedulesRouteModel.getRouteEndName());
 
         }
+
+        AlertsAdaptor.getAlertsService().getAlertsForRoute
+                (AlertsAdaptor.getServiceRouteName(schedulesRouteModel.getRouteShortName(), travelType), this);
     }
 
     @Override
@@ -239,7 +256,12 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
                         hideListView();
                         break;
                     }
-                    case 2: {       // real time
+                    case 2: {       // service advisory
+                        checkTripStartAndDestinationForNextToArriveDataRequest();
+                        hideListView();
+                        break;
+                    }
+                    case 3: {       // real time
                         startActivity(new Intent(SchedulesItineraryActionBarActivity.this,
                                 NextToArriveRealTimeWebViewActionBarActivity.class));
                         hideListView();
@@ -249,6 +271,7 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
             }
         });
 
+        this.menu = menu;
         return true;
     }
 
@@ -776,6 +799,41 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
                 checkTripStartAndDestinationForNextToArriveDataRequest();
             }
         };
+    }
+
+    private void setMenuDetour() {
+        MenuItem item = menu.findItem(R.id.actionmenu_nexttoarrive_revealactions);
+        AnimationDrawable animationDrawable = (AnimationDrawable) getResources().getDrawable(R.drawable.actionmenu_detour);
+        item.setIcon(animationDrawable);
+        animationDrawable.start();
+    }
+
+    private void setMenuAdvisory() {
+        MenuItem item = menu.findItem(R.id.actionmenu_nexttoarrive_revealactions);
+        AnimationDrawable animationDrawable = (AnimationDrawable) getResources().getDrawable(R.drawable.actionmenu_advisory);
+        item.setIcon(animationDrawable);
+        animationDrawable.start();
+    }
+
+    @Override
+    public void success(ArrayList<ServiceAdvisoryModel> serviceAdvisoryModels, Response response) {
+        if(response.getStatus() == HttpStatus.SC_OK && serviceAdvisoryModels != null) {
+            alerts = serviceAdvisoryModels;
+            if(ServiceAdvisoryModel.hasValidAdvisory(alerts)
+                    && ServiceAdvisoryModel.hasValidDetours(alerts)) {
+                Toast.makeText(this, "Implement double advisory animation", Toast.LENGTH_SHORT).show();
+                setMenuAdvisory();
+            } else if(ServiceAdvisoryModel.hasValidDetours(alerts)) {
+                setMenuDetour();
+            } else if(ServiceAdvisoryModel.hasValidAdvisory(alerts)) {
+                setMenuAdvisory();
+            }
+        }
+    }
+
+    @Override
+    public void failure(RetrofitError error) {
+
     }
 
     private class DirectionHeaderLoader extends AsyncTask<SchedulesDataModel, Integer, Boolean> {

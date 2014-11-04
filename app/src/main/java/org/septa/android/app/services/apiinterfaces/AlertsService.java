@@ -8,6 +8,7 @@
 package org.septa.android.app.services.apiinterfaces;
 
 import org.septa.android.app.models.servicemodels.AlertModel;
+import org.septa.android.app.models.servicemodels.ServiceAdvisoryModel;
 
 import java.util.ArrayList;
 
@@ -30,5 +31,11 @@ public interface AlertsService {
     void getAlertsForRouteName(
             @Query("req1") String routeName
             , Callback<ArrayList<AlertModel>> callback
+    );
+
+    @GET("/hackathon/Alerts/get_alert_data.php")
+    void getAlertsForRoute(
+            @Query("req1") String routeName
+            , Callback<ArrayList<ServiceAdvisoryModel>> callback
     );
 }

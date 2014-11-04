@@ -21,7 +21,8 @@ public class DateAdapter implements JsonDeserializer<Date> {
             "yyyy-MM-dd'T'HH:mm:ssZ",
             "yyyy-MM-dd h:mm:ss",
             "MMM dd yyyy h:mm:ss:SSSa",
-            "MMM d yyyy H:mma"
+            "MMM d yyyy H:mma",
+            "MM/dd/yyyy h:mm a"
 
     };
 

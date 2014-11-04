@@ -12,6 +12,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.internal.bind.DateTypeAdapter;
 
+import org.septa.android.app.models.RouteTypes;
+import org.septa.android.app.models.RoutesModel;
 import org.septa.android.app.services.ServiceErrorHandler;
 import org.septa.android.app.services.apiinterfaces.AlertsService;
 import org.septa.android.app.services.apiinterfaces.TrainViewService;
@@ -37,5 +39,14 @@ public class AlertsAdaptor {
                 .build();
 
         return restAdapter.create(AlertsService.class);
+    }
+
+    public static String getServiceRouteName(String routeShortName, RouteTypes routeType) {
+        switch (routeType) {
+            case BUS:
+                return "bus_route_" + routeShortName;
+            default:
+                return null;
+        }
     }
 }

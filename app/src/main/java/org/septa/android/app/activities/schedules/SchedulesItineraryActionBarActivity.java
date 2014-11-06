@@ -31,7 +31,6 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -105,8 +104,8 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
 
     private CountDownTimer schedulesItineraryRefreshCountDownTimer;
     private String actionBarTitleText;
-    private List<ServiceAdvisoryModel> alerts;
-
+    private ArrayList<ServiceAdvisoryModel> alerts;
+    private int actionBarIconId;
 
     @InjectViews({ R.id.schedules_itinerary_tab_now_button
             , R.id.schedules_itinerary_tab_weekday_button
@@ -125,7 +124,7 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
         iconImageNameSuffix = getIntent().getStringExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key));
         String resourceName = getString(R.string.actionbar_iconimage_imagename_base).concat(iconImageNameSuffix);
 
-        int id = getResources().getIdentifier(resourceName, "drawable", getPackageName());
+        actionBarIconId = getResources().getIdentifier(resourceName, "drawable", getPackageName());
 
         String stringTravelType = getIntent().getStringExtra(getString(R.string.schedules_itinerary_travelType));
         if (stringTravelType != null) {
@@ -140,7 +139,7 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("| " + actionBarTitleText);
-        getSupportActionBar().setIcon(id);
+        getSupportActionBar().setIcon(actionBarIconId);
 
         this.inProcessOfStartDestinationFlow = false;
 
@@ -254,7 +253,13 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
                         break;
                     }
                     case 2: {       // service advisory
-                        checkTripStartAndDestinationForNextToArriveDataRequest();
+                        Intent intent = new Intent(SchedulesItineraryActionBarActivity.this,
+                                ServiceAdvisoryActivity.class);
+                        intent.putParcelableArrayListExtra(getString(R.string.alerts_extra_alerts) ,alerts);
+                        intent.putExtra(getString(R.string.alerts_extra_route_type), travelType);
+                        intent.putExtra(getString(R.string.alerts_extra_title), getSupportActionBar().getTitle());
+                        intent.putExtra(getString(R.string.alerts_extra_icon), actionBarIconId);
+                        startActivity(intent);
                         hideListView();
                         break;
                     }
@@ -836,7 +841,7 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
 
     @Override
     public void failure(RetrofitError error) {
-
+        Log.e(TAG, error.getMessage());
     }
 
     private class DirectionHeaderLoader extends AsyncTask<SchedulesDataModel, Integer, Boolean> {

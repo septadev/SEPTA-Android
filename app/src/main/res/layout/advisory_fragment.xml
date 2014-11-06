@@ -7,7 +7,7 @@
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="15dp"
+        android:layout_height="@dimen/alert_banner_height"
         android:background="@color/advisory_yellow" />
 
     <ScrollView
@@ -18,7 +18,8 @@
             android:id="@+id/advisory_message_textview"
             tools:text="Test"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:padding="8dp"/>
     </ScrollView>
 
 </LinearLayout>

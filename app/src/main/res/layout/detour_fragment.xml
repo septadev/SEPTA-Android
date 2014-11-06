@@ -7,7 +7,7 @@
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="15dp"
+        android:layout_height="@dimen/alert_banner_height"
         android:background="@color/detour_orange" />
 
     <ListView
@@ -16,6 +16,7 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         tools:listitem="@layout/detour_list_item"
-        android:dividerHeight="20dp"/>
+        android:dividerHeight="20dp"
+        android:divider="@android:color/transparent"/>
 
 </LinearLayout>

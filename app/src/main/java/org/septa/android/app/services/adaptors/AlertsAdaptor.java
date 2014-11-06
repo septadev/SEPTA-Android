@@ -44,9 +44,11 @@ public class AlertsAdaptor {
     public static String getServiceRouteName(String routeShortName, RouteTypes routeType) {
         switch (routeType) {
             case BUS:
-                return "bus_route_" + routeShortName;
+                return "bus_route_" + routeShortName.toUpperCase();
+            case TROLLEY:
+                return "trolley_route_" + routeShortName.toLowerCase();
             default:
-                return null;
+                return "rr_route_" + routeShortName.toLowerCase();
         }
     }
 }

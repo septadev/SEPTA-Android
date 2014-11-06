@@ -13,6 +13,7 @@ import android.text.format.DateUtils;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -103,6 +104,28 @@ public class ServiceAdvisoryModel implements Parcelable {
             }
         }
         return false;
+    }
+
+    public static String getAdvisoryMessage(List<ServiceAdvisoryModel> alerts) {
+        for(ServiceAdvisoryModel alert : alerts) {
+            if (alert.getAdvisoryMessage() != null) {
+                return alert.getAdvisoryMessage();
+            }
+        }
+        return "";
+    }
+
+    public static ArrayList<ServiceAdvisoryModel> getDetours(List<ServiceAdvisoryModel> alerts) {
+        Date now = new Date();
+        ArrayList<ServiceAdvisoryModel> filteredAlerts = new ArrayList<ServiceAdvisoryModel>();
+        for(ServiceAdvisoryModel alert : alerts) {
+            if (now.after(alert.getDetourStartDateTime()) && now.before(alert.getDetourEndDateTime())
+                    && !TextUtils.isEmpty(alert.getDetourMessage())) {
+                filteredAlerts.add(alert);
+            }
+        }
+
+        return filteredAlerts;
     }
 
     @Override

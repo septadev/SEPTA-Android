@@ -17,6 +17,7 @@ import android.support.v7.app.ActionBar;
 import org.septa.android.app.R;
 import org.septa.android.app.activities.BaseAnalyticsActionBarActivity;
 import org.septa.android.app.fragments.AdvisoryFragment;
+import org.septa.android.app.fragments.AlertFragment;
 import org.septa.android.app.fragments.DetourFragment;
 import org.septa.android.app.models.RouteTypes;
 import org.septa.android.app.models.servicemodels.ServiceAdvisoryModel;
@@ -89,6 +90,12 @@ public class ServiceAdvisoryActivity extends BaseAnalyticsActionBarActivity {
                             .setTabListener(tabListener).setIcon(R.drawable.ic_system_status_detour));
                     fragmentPagerAdapter.addFragment(
                             DetourFragment.newInstance(ServiceAdvisoryModel.getDetours(alerts)));
+                }
+                if (ServiceAdvisoryModel.hasValidAlerts(alerts)) {
+                    actionBar.addTab(actionBar.newTab().setText(getString(R.string.alert_tab_title))
+                            .setTabListener(tabListener).setIcon(R.drawable.ic_system_status_alert));
+                    fragmentPagerAdapter.addFragment(
+                            AlertFragment.newInstance(ServiceAdvisoryModel.getAlertMessage(alerts)));
                 }
 
                 viewPager.setOnPageChangeListener(pageChangeListener);

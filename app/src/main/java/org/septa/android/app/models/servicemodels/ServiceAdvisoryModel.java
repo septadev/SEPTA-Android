@@ -22,7 +22,7 @@ public class ServiceAdvisoryModel implements Parcelable {
 
     @SerializedName("route_id") private String routeId;
     @SerializedName("route_name") private String routeName;
-    @SerializedName("currentMessage") private String currentMessage;
+    @SerializedName("current_message") private String currentMessage;
     @SerializedName("advisory_message") private String advisoryMessage;
     @SerializedName("detour_message") private String detourMessage;
     @SerializedName("detour_start_location") private String detourStartLocation;
@@ -34,9 +34,9 @@ public class ServiceAdvisoryModel implements Parcelable {
     public ServiceAdvisoryModel() {
         this.routeId = null;
         this.routeName = "Empty";
-        this.currentMessage = "Empty";
-        this.advisoryMessage = "Empty";
-        this.detourMessage = "Empty";
+        this.currentMessage = null;
+        this.advisoryMessage = null;
+        this.detourMessage = null;
         this.detourStartLocation = "Empty";
         this.detourStartDateTime = new Date();
         this.detourEndDateTime = new Date();
@@ -85,10 +85,8 @@ public class ServiceAdvisoryModel implements Parcelable {
     }
 
     public static boolean hasValidDetours(List<ServiceAdvisoryModel> alerts) {
-        Date now = new Date();
         for(ServiceAdvisoryModel alert : alerts) {
-            if (now.after(alert.getDetourStartDateTime()) && now.before(alert.getDetourEndDateTime())
-                    && !TextUtils.isEmpty(alert.getDetourMessage())) {
+            if (!TextUtils.isEmpty(alert.getDetourMessage())) {
                 return true;
             }
         }
@@ -96,10 +94,17 @@ public class ServiceAdvisoryModel implements Parcelable {
     }
 
     public static boolean hasValidAdvisory(List<ServiceAdvisoryModel> alerts) {
-        Date now = new Date();
         for(ServiceAdvisoryModel alert : alerts) {
-            if (now.after(alert.getDetourStartDateTime()) && now.before(alert.getDetourEndDateTime())
-                    && !TextUtils.isEmpty(alert.getAdvisoryMessage())) {
+            if (!TextUtils.isEmpty(alert.getAdvisoryMessage())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean hasValidAlerts(List<ServiceAdvisoryModel> alerts) {
+        for(ServiceAdvisoryModel alert : alerts) {
+            if(!TextUtils.isEmpty(alert.getCurrentMessage())) {
                 return true;
             }
         }
@@ -115,12 +120,19 @@ public class ServiceAdvisoryModel implements Parcelable {
         return "";
     }
 
+    public static String getAlertMessage(List<ServiceAdvisoryModel> alerts) {
+        for(ServiceAdvisoryModel alert : alerts) {
+            if (alert.getCurrentMessage() != null) {
+                return alert.getCurrentMessage();
+            }
+        }
+        return "";
+    }
+
     public static ArrayList<ServiceAdvisoryModel> getDetours(List<ServiceAdvisoryModel> alerts) {
-        Date now = new Date();
         ArrayList<ServiceAdvisoryModel> filteredAlerts = new ArrayList<ServiceAdvisoryModel>();
         for(ServiceAdvisoryModel alert : alerts) {
-            if (now.after(alert.getDetourStartDateTime()) && now.before(alert.getDetourEndDateTime())
-                    && !TextUtils.isEmpty(alert.getDetourMessage())) {
+            if (!TextUtils.isEmpty(alert.getDetourMessage())) {
                 filteredAlerts.add(alert);
             }
         }

@@ -34,7 +34,6 @@ public class DateAdapter implements JsonDeserializer<Date> {
             } catch (ParseException e) {
             }
         }
-        throw new JsonParseException("Unparseable date: \"" + jsonElement.getAsString()
-                + "\". Supported formats: " + Arrays.toString(DATE_FORMATS));
+        return new Date(0);
     }
 }

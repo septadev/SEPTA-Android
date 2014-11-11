@@ -21,5 +21,6 @@
     <!-- Alert tab title -->
     <string name="advisory_tab_title">Advisory</string>
     <string name="detour_tab_title">Detour</string>
+    <string name="alert_tab_title">Alerts</string>
 
 </resources>

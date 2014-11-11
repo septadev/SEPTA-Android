@@ -133,7 +133,7 @@ public class SchedulesRouteModel implements Comparable<SchedulesRouteModel>,Parc
             return 0;
         }
 
-        return this.getRouteShortName().compareTo(another.getRouteShortName());
+        return 1;
     }
 
     public void reverseStartAndDestinationStops() {

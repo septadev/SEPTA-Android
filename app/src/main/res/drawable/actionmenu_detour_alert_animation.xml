@@ -4,6 +4,6 @@
         android:drawable="@drawable/actionmenu_detour_animation"
         android:duration="1400" />
     <item
-        android:drawable="@drawable/actionmenu_advisory_animation"
+        android:drawable="@drawable/actionmenu_alert_animation"
         android:duration="1400" />
 </animation-list>

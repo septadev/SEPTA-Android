@@ -194,8 +194,6 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
 
         }
 
-        AlertsAdaptor.getAlertsService().getAlertsForRoute
-                (AlertsAdaptor.getServiceRouteName(schedulesRouteModel.getRouteShortName(), travelType), this);
     }
 
     @Override
@@ -219,11 +217,11 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
         selectTab(selectedTab);
     }
 
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-
-        return true;
-    }
+//    @Override
+//    public boolean onPrepareOptionsMenu(Menu menu) {
+//
+//        return true;
+//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -274,6 +272,9 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
         });
 
         this.menu = menu;
+        // Check for route alerts
+        AlertsAdaptor.getAlertsService().getAlertsForRoute
+                (AlertsAdaptor.getServiceRouteName(schedulesRouteModel, travelType), this);
         return true;
     }
 
@@ -525,6 +526,9 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
             if (store.isFavorite(this.travelType.name(), schedulesFavoriteModel)) {
                 ((Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter) menuListView.getAdapter()).enableRemoveSavedFavorite();
                 ((Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter) menuListView.getAdapter()).disableSaveAsFavorite();
+            } else {
+                ((Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter) menuListView.getAdapter()).disableRemoveSavedFavorite();
+                ((Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter) menuListView.getAdapter()).enableSaveAsFavorite();
             }
 
             // check if this route is already stored as a favorite; if not store as a recent
@@ -758,7 +762,10 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
     protected void onPause() {
         super.onPause();
 
-        schedulesItineraryRefreshCountDownTimer.cancel();
+        if(schedulesItineraryRefreshCountDownTimer != null) {
+            schedulesItineraryRefreshCountDownTimer.cancel();
+            schedulesItineraryRefreshCountDownTimer = null;
+        }
     }
 
     @Override
@@ -772,13 +779,6 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
                 !schedulesRouteModel.getRouteEndName().isEmpty()) {
             schedulesItineraryRefreshCountDownTimer.start();
         }
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-
-        schedulesItineraryRefreshCountDownTimer = null;
     }
 
     @Override
@@ -803,39 +803,38 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
         };
     }
 
-    private void setMenuDetour() {
-        MenuItem item = menu.findItem(R.id.actionmenu_nexttoarrive_revealactions);
-        AnimationDrawable animationDrawable = (AnimationDrawable) getResources().getDrawable(R.drawable.actionmenu_detour_animation);
-        item.setIcon(animationDrawable);
-        animationDrawable.start();
-    }
-
-    private void setMenuAdvisory() {
-        MenuItem item = menu.findItem(R.id.actionmenu_nexttoarrive_revealactions);
-        AnimationDrawable animationDrawable = (AnimationDrawable) getResources().getDrawable(R.drawable.actionmenu_advisory_animation);
-        item.setIcon(animationDrawable);
-        animationDrawable.start();
-    }
-
-    private void setMenuDetourAdvisory() {
-        MenuItem item = menu.findItem(R.id.actionmenu_nexttoarrive_revealactions);
-        AnimationDrawable animationDrawable = (AnimationDrawable) getResources().getDrawable(R.drawable.actionmenu_detour_advisory_animation);
-        item.setIcon(animationDrawable);
-        animationDrawable.start();
-    }
-
     @Override
     public void success(ArrayList<ServiceAdvisoryModel> serviceAdvisoryModels, Response response) {
         if(response.getStatus() == HttpStatus.SC_OK && serviceAdvisoryModels != null) {
+            MenuItem item = menu.findItem(R.id.actionmenu_nexttoarrive_revealactions);
+            AnimationDrawable animationDrawable;
             alerts = serviceAdvisoryModels;
             if(ServiceAdvisoryModel.hasValidAdvisory(alerts)
+                    && ServiceAdvisoryModel.hasValidDetours(alerts)
+                    && ServiceAdvisoryModel.hasValidAlerts(alerts)) {
+                animationDrawable = (AnimationDrawable) getResources().getDrawable(R.drawable.actionmenu_detour_alert_advisroy_animation);
+            } else if(ServiceAdvisoryModel.hasValidAdvisory(alerts)
                     && ServiceAdvisoryModel.hasValidDetours(alerts)) {
-                setMenuDetourAdvisory();
+                animationDrawable = (AnimationDrawable) getResources().getDrawable(R.drawable.actionmenu_detour_advisory_animation);
+            } else if(ServiceAdvisoryModel.hasValidAlerts(alerts)
+                    && ServiceAdvisoryModel.hasValidAdvisory(alerts)) {
+                animationDrawable = (AnimationDrawable) getResources().getDrawable(R.drawable.actionmenu_advisory_alert_animation);
+            } else if(ServiceAdvisoryModel.hasValidAlerts(alerts)
+                    && ServiceAdvisoryModel.hasValidDetours(alerts)) {
+                animationDrawable = (AnimationDrawable) getResources().getDrawable(R.drawable.actionmenu_detour_alert_animation);
             } else if(ServiceAdvisoryModel.hasValidDetours(alerts)) {
-                setMenuDetour();
+                animationDrawable = (AnimationDrawable) getResources().getDrawable(R.drawable.actionmenu_detour_animation);
             } else if(ServiceAdvisoryModel.hasValidAdvisory(alerts)) {
-                setMenuAdvisory();
+                animationDrawable = (AnimationDrawable) getResources().getDrawable(R.drawable.actionmenu_advisory_animation);
+            } else if(ServiceAdvisoryModel.hasValidAlerts(alerts)) {
+                animationDrawable = (AnimationDrawable) getResources().getDrawable(R.drawable.actionmenu_alert_animation);
             }
+            else {
+                return;
+            }
+
+            item.setIcon(animationDrawable);
+            animationDrawable.start();
         }
     }
 

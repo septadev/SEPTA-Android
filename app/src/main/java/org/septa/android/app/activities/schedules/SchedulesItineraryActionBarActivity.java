@@ -440,12 +440,14 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
                         "AND route_short_name='" + schedulesRouteModel.getRouteShortName() + "'";
                 Cursor cursor = database.rawQuery(queryString, null);
                 Log.d(TAG, "Reverse query: " + queryString);
+                SchedulesRouteModel tempModel = new SchedulesRouteModel();
+                tempModel.setRouteStartStopId(schedulesRouteModel.getRouteStartStopId());
                 if(cursor != null && cursor.moveToFirst()) {
                     do {
                         String stopId = String.valueOf(cursor.getInt(0));
                         String reverseStopId = String.valueOf(cursor.getInt(1));
                         String stopName = cursor.getString(2);
-                        if(schedulesRouteModel.getRouteStartStopId().equals(stopId)) {
+                        if(tempModel.getRouteStartStopId().equals(stopId)) {
                             schedulesRouteModel.setRouteStartName(stopName);
                             schedulesRouteModel.setRouteStartStopId(reverseStopId);
                         }else {

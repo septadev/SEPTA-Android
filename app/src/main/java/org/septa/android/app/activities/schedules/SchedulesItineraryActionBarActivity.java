@@ -13,6 +13,7 @@ import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -34,6 +35,7 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import org.apache.http.HttpStatus;
 import org.septa.android.app.R;
 import org.septa.android.app.activities.BaseAnalyticsActionBarActivity;
 import org.septa.android.app.activities.FareInformationActionBarActivity;
@@ -48,14 +50,20 @@ import org.septa.android.app.models.SchedulesDataModel;
 import org.septa.android.app.models.SchedulesFavoriteModel;
 import org.septa.android.app.models.SchedulesRecentlyViewedModel;
 import org.septa.android.app.models.SchedulesRouteModel;
+import org.septa.android.app.models.SortOrder;
 import org.septa.android.app.models.TripObject;
 import org.septa.android.app.models.adapterhelpers.TextSubTextImageModel;
+import org.septa.android.app.models.servicemodels.ServiceAdvisoryModel;
+import org.septa.android.app.services.adaptors.AlertsAdaptor;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectViews;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
 import static org.septa.android.app.models.RouteTypes.valueOf;
@@ -63,7 +71,8 @@ import static org.septa.android.app.models.RouteTypes.valueOf;
 public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarActivity implements
         AdapterView.OnItemClickListener, StickyListHeadersListView.OnHeaderClickListener,
         StickyListHeadersListView.OnStickyHeaderOffsetChangedListener,
-        StickyListHeadersListView.OnStickyHeaderChangedListener, View.OnTouchListener {
+        StickyListHeadersListView.OnStickyHeaderChangedListener, View.OnTouchListener,
+        Callback<ArrayList<ServiceAdvisoryModel>> {
 
     public static final String TAG = SchedulesItineraryActionBarActivity.class.getName();
     static final String SCHEDULE_MODEL = "scheduleModel";
@@ -91,10 +100,12 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
 
     private boolean menuRevealed = false;
     private ListView menuDialogListView;
+    private Menu menu;
 
     private CountDownTimer schedulesItineraryRefreshCountDownTimer;
     private String actionBarTitleText;
-
+    private ArrayList<ServiceAdvisoryModel> alerts;
+    private int actionBarIconId;
 
     @InjectViews({ R.id.schedules_itinerary_tab_now_button
             , R.id.schedules_itinerary_tab_weekday_button
@@ -113,7 +124,7 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
         iconImageNameSuffix = getIntent().getStringExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key));
         String resourceName = getString(R.string.actionbar_iconimage_imagename_base).concat(iconImageNameSuffix);
 
-        int id = getResources().getIdentifier(resourceName, "drawable", getPackageName());
+        actionBarIconId = getResources().getIdentifier(resourceName, "drawable", getPackageName());
 
         String stringTravelType = getIntent().getStringExtra(getString(R.string.schedules_itinerary_travelType));
         if (stringTravelType != null) {
@@ -128,7 +139,7 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("| " + actionBarTitleText);
-        getSupportActionBar().setIcon(id);
+        getSupportActionBar().setIcon(actionBarIconId);
 
         this.inProcessOfStartDestinationFlow = false;
 
@@ -182,6 +193,7 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
             mAdapter.setRouteEndName(schedulesRouteModel.getRouteEndName());
 
         }
+
     }
 
     @Override
@@ -205,11 +217,11 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
         selectTab(selectedTab);
     }
 
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-
-        return true;
-    }
+//    @Override
+//    public boolean onPrepareOptionsMenu(Menu menu) {
+//
+//        return true;
+//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -238,7 +250,18 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
                         hideListView();
                         break;
                     }
-                    case 2: {       // real time
+                    case 2: {       // service advisory
+                        Intent intent = new Intent(SchedulesItineraryActionBarActivity.this,
+                                ServiceAdvisoryActivity.class);
+                        intent.putParcelableArrayListExtra(getString(R.string.alerts_extra_alerts) ,alerts);
+                        intent.putExtra(getString(R.string.alerts_extra_route_type), travelType);
+                        intent.putExtra(getString(R.string.alerts_extra_title), getSupportActionBar().getTitle());
+                        intent.putExtra(getString(R.string.alerts_extra_icon), actionBarIconId);
+                        startActivity(intent);
+                        hideListView();
+                        break;
+                    }
+                    case 3: {       // real time
                         startActivity(new Intent(SchedulesItineraryActionBarActivity.this,
                                 NextToArriveRealTimeWebViewActionBarActivity.class));
                         hideListView();
@@ -248,6 +271,10 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
             }
         });
 
+        this.menu = menu;
+        // Check for route alerts
+        AlertsAdaptor.getAlertsService().getAlertsForRoute
+                (AlertsAdaptor.getServiceRouteName(schedulesRouteModel, travelType), this);
         return true;
     }
 
@@ -260,6 +287,7 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
         schedulesFavoriteModel.setRouteStartName(schedulesRouteModel.getRouteStartName());
         schedulesFavoriteModel.setRouteEndStopId(schedulesRouteModel.getRouteEndStopId());
         schedulesFavoriteModel.setRouteEndName(schedulesRouteModel.getRouteEndName());
+        schedulesFavoriteModel.setRouteShortName(schedulesRouteModel.getRouteShortName());
 
         // check if the selected route is already a favorite, then we allow the option of removing this
         // route from the favorites list.
@@ -267,9 +295,12 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
             Log.d("tt", "detected this is a favorite, remove ");
             store.removeFavorite(this.travelType.name(), schedulesFavoriteModel);
             ((Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).disableRemoveSavedFavorite();
+            ((Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).enableSaveAsFavorite();
         } else {
             Log.d("tt", "adding as a favorite");
             store.addFavorite(this.travelType.name(), schedulesFavoriteModel);
+            ((Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).disableSaveAsFavorite();
+            ((Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).enableRemoveSavedFavorite();
         }
     }
 
@@ -409,12 +440,14 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
                         "AND route_short_name='" + schedulesRouteModel.getRouteShortName() + "'";
                 Cursor cursor = database.rawQuery(queryString, null);
                 Log.d(TAG, "Reverse query: " + queryString);
+                SchedulesRouteModel tempModel = new SchedulesRouteModel();
+                tempModel.setRouteStartStopId(schedulesRouteModel.getRouteStartStopId());
                 if(cursor != null && cursor.moveToFirst()) {
                     do {
                         String stopId = String.valueOf(cursor.getInt(0));
                         String reverseStopId = String.valueOf(cursor.getInt(1));
                         String stopName = cursor.getString(2);
-                        if(schedulesRouteModel.getRouteStartStopId().equals(stopId)) {
+                        if(tempModel.getRouteStartStopId().equals(stopId)) {
                             schedulesRouteModel.setRouteStartName(stopName);
                             schedulesRouteModel.setRouteStartStopId(reverseStopId);
                         }else {
@@ -480,6 +513,7 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
             schedulesRecentlyViewedModel.setRouteEndName(schedulesRouteModel.getRouteEndName());
             schedulesRecentlyViewedModel.setRouteEndStopId(schedulesRouteModel.getRouteEndStopId());
             schedulesRecentlyViewedModel.setRouteShortName(schedulesRouteModel.getRouteShortName());
+            schedulesRecentlyViewedModel.setRouteShortName(schedulesRouteModel.getRouteShortName());
 
             SchedulesFavoriteModel schedulesFavoriteModel = new SchedulesFavoriteModel();
             schedulesFavoriteModel.setRouteId(schedulesRouteModel.getRouteId());
@@ -493,6 +527,10 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
             // route from the favorites list.
             if (store.isFavorite(this.travelType.name(), schedulesFavoriteModel)) {
                 ((Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter) menuListView.getAdapter()).enableRemoveSavedFavorite();
+                ((Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter) menuListView.getAdapter()).disableSaveAsFavorite();
+            } else {
+                ((Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter) menuListView.getAdapter()).disableRemoveSavedFavorite();
+                ((Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter) menuListView.getAdapter()).enableSaveAsFavorite();
             }
 
             // check if this route is already stored as a favorite; if not store as a recent
@@ -597,6 +635,10 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
                                     travelType.name());
                             stopSelectionIntent.putExtra(getString(R.string.schedules_itinerary_routeShortName), schedulesRouteModel.getRouteShortName());
                             stopSelectionIntent.putExtra(getString(R.string.schedules_stopselection_startordestination), "Destination");
+                            if(data.hasExtra(getString(R.string.schedules_stopselection_sort_order))) {
+                                SortOrder sortOrder = (SortOrder)data.getSerializableExtra(getString(R.string.schedules_stopselection_sort_order));
+                                stopSelectionIntent.putExtra(getString(R.string.schedules_stopselection_sort_order), sortOrder);
+                            }
 
                             startActivityForResult(stopSelectionIntent, getResources().getInteger(R.integer.schedules_itinerary_stopselection_activityforresult_request_code));
                         }
@@ -722,7 +764,10 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
     protected void onPause() {
         super.onPause();
 
-        schedulesItineraryRefreshCountDownTimer.cancel();
+        if(schedulesItineraryRefreshCountDownTimer != null) {
+            schedulesItineraryRefreshCountDownTimer.cancel();
+            schedulesItineraryRefreshCountDownTimer = null;
+        }
     }
 
     @Override
@@ -736,13 +781,6 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
                 !schedulesRouteModel.getRouteEndName().isEmpty()) {
             schedulesItineraryRefreshCountDownTimer.start();
         }
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-
-        schedulesItineraryRefreshCountDownTimer = null;
     }
 
     @Override
@@ -765,6 +803,46 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
                 checkTripStartAndDestinationForNextToArriveDataRequest();
             }
         };
+    }
+
+    @Override
+    public void success(ArrayList<ServiceAdvisoryModel> serviceAdvisoryModels, Response response) {
+        if(response.getStatus() == HttpStatus.SC_OK && serviceAdvisoryModels != null) {
+            MenuItem item = menu.findItem(R.id.actionmenu_nexttoarrive_revealactions);
+            AnimationDrawable animationDrawable;
+            alerts = serviceAdvisoryModels;
+            if(ServiceAdvisoryModel.hasValidAdvisory(alerts)
+                    && ServiceAdvisoryModel.hasValidDetours(alerts)
+                    && ServiceAdvisoryModel.hasValidAlerts(alerts)) {
+                animationDrawable = (AnimationDrawable) getResources().getDrawable(R.drawable.actionmenu_detour_alert_advisroy_animation);
+            } else if(ServiceAdvisoryModel.hasValidAdvisory(alerts)
+                    && ServiceAdvisoryModel.hasValidDetours(alerts)) {
+                animationDrawable = (AnimationDrawable) getResources().getDrawable(R.drawable.actionmenu_detour_advisory_animation);
+            } else if(ServiceAdvisoryModel.hasValidAlerts(alerts)
+                    && ServiceAdvisoryModel.hasValidAdvisory(alerts)) {
+                animationDrawable = (AnimationDrawable) getResources().getDrawable(R.drawable.actionmenu_advisory_alert_animation);
+            } else if(ServiceAdvisoryModel.hasValidAlerts(alerts)
+                    && ServiceAdvisoryModel.hasValidDetours(alerts)) {
+                animationDrawable = (AnimationDrawable) getResources().getDrawable(R.drawable.actionmenu_detour_alert_animation);
+            } else if(ServiceAdvisoryModel.hasValidDetours(alerts)) {
+                animationDrawable = (AnimationDrawable) getResources().getDrawable(R.drawable.actionmenu_detour_animation);
+            } else if(ServiceAdvisoryModel.hasValidAdvisory(alerts)) {
+                animationDrawable = (AnimationDrawable) getResources().getDrawable(R.drawable.actionmenu_advisory_animation);
+            } else if(ServiceAdvisoryModel.hasValidAlerts(alerts)) {
+                animationDrawable = (AnimationDrawable) getResources().getDrawable(R.drawable.actionmenu_alert_animation);
+            }
+            else {
+                return;
+            }
+
+            item.setIcon(animationDrawable);
+            animationDrawable.start();
+        }
+    }
+
+    @Override
+    public void failure(RetrofitError error) {
+        Log.e(TAG, error.getMessage());
     }
 
     private class DirectionHeaderLoader extends AsyncTask<SchedulesDataModel, Integer, Boolean> {

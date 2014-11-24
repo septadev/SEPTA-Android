@@ -12,17 +12,40 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.internal.bind.DateTypeAdapter;
 
+import org.septa.android.app.models.RouteTypes;
+import org.septa.android.app.models.RoutesModel;
+import org.septa.android.app.models.SchedulesRouteModel;
 import org.septa.android.app.services.ServiceErrorHandler;
 import org.septa.android.app.services.apiinterfaces.AlertsService;
 import org.septa.android.app.services.apiinterfaces.TrainViewService;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import retrofit.RestAdapter;
 import retrofit.converter.GsonConverter;
 
 public class AlertsAdaptor {
     public static final String TAG = AlertsAdaptor.class.getName();
+    private static Map<String, String> railCodes = new HashMap<String, String>();
+
+    static {
+        railCodes.put("CHE", "che");
+        railCodes.put("CHW", "chw");
+        railCodes.put("CYN", "cyn");
+        railCodes.put("FOX", "fxc");
+        railCodes.put("LAN", "landdoy");
+        railCodes.put("DOY", "landdoy");
+        railCodes.put("MED", "med");
+        railCodes.put("NOR", "nor");
+        railCodes.put("PAO", "pao");
+        railCodes.put("TRE", "trent");
+        railCodes.put("WAR", "warm");
+        railCodes.put("WIL", "wilm");
+        railCodes.put("WTR", "wtren");
+        railCodes.put("GC", "gc");
+    }
 
     public static AlertsService getAlertsService() {
         Gson gson = new GsonBuilder()
@@ -37,5 +60,18 @@ public class AlertsAdaptor {
                 .build();
 
         return restAdapter.create(AlertsService.class);
+    }
+
+    public static String getServiceRouteName(SchedulesRouteModel schedulesRouteModel, RouteTypes routeType) {
+        switch (routeType) {
+            case BUS:
+                return "bus_route_" + schedulesRouteModel.getRouteShortName().toUpperCase();
+            case TROLLEY:
+                return "trolley_route_" + schedulesRouteModel.getRouteShortName().toLowerCase();
+            case RAIL:
+                return "rr_route_" + railCodes.get(schedulesRouteModel.getRouteId().toUpperCase());
+            default:
+                return "rr_route_" + schedulesRouteModel.getRouteShortName().toLowerCase();
+        }
     }
 }

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animation-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:drawable="@drawable/ic_menu_secondmenu_advisory_70"
+        android:duration="200" />
+    <item
+        android:drawable="@drawable/ic_menu_secondmenu_advisory_80"
+        android:duration="200" />
+    <item
+        android:drawable="@drawable/ic_menu_secondmenu_advisory_90"
+        android:duration="200" />
+    <item
+        android:drawable="@drawable/ic_menu_secondmenu_advisory_100"
+        android:duration="200" />
+    <item
+        android:drawable="@drawable/ic_menu_secondmenu_advisory_90"
+        android:duration="200" />
+    <item
+        android:drawable="@drawable/ic_menu_secondmenu_advisory_80"
+        android:duration="200" />
+    <item
+        android:drawable="@drawable/ic_menu_secondmenu_advisory_70"
+        android:duration="200" />
+</animation-list>

@@ -13,6 +13,7 @@ import org.septa.android.app.models.SchedulesRouteModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 public class SchedulesFavoritesAndRecentlyViewedStore {
@@ -90,6 +91,7 @@ public class SchedulesFavoritesAndRecentlyViewedStore {
                     favoritesList.remove(i);
 
                     sendToSharedPreferencesFavorites();
+                    return;
                 }
             }
         }
@@ -108,6 +110,7 @@ public class SchedulesFavoritesAndRecentlyViewedStore {
                         recentlyViewedList.remove(i);
 
                         sendToSharedPreferencesRecentlyViewed();
+                        return;
                     }
                 }
             }
@@ -160,6 +163,21 @@ public class SchedulesFavoritesAndRecentlyViewedStore {
         if (recentlyViewedListMap != null) {
 
             recentlyViewedList = recentlyViewedListMap.get(routeType);
+            //Remove invalid recently viewed
+            if(recentlyViewedList != null) {
+                Iterator<SchedulesRecentlyViewedModel> iterator = recentlyViewedList.iterator();
+                int count = 0;
+                while (iterator.hasNext()) {
+                    SchedulesRecentlyViewedModel schedulesRecentlyViewedModel = iterator.next();
+                    if (schedulesRecentlyViewedModel.getRouteShortName() == null) {
+                        iterator.remove();
+                        count++;
+                    }
+                }
+                if (count > 0) {
+                    sendToSharedPreferencesRecentlyViewed();
+                }
+            }
         } else {
 
             recentlyViewedListMap = new HashMap<String, ArrayList<SchedulesRecentlyViewedModel>>();
@@ -185,6 +203,21 @@ public class SchedulesFavoritesAndRecentlyViewedStore {
         if (favoritesListMap != null) {
 
             favoritesList = favoritesListMap.get(routeType);
+            if(favoritesList != null) {
+                //Remove invalid favorites
+                Iterator<SchedulesFavoriteModel> iterator = favoritesList.iterator();
+                int count = 0;
+                while (iterator.hasNext()) {
+                    SchedulesFavoriteModel favoriteModel = iterator.next();
+                    if (favoriteModel.getRouteShortName() == null) {
+                        iterator.remove();
+                        count++;
+                    }
+                }
+                if (count > 0) {
+                    sendToSharedPreferencesFavorites();
+                }
+            }
         } else {
 
             favoritesListMap = new HashMap<String, ArrayList<SchedulesFavoriteModel>>();

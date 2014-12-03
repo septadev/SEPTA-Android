@@ -16,6 +16,7 @@ public class StopModel implements Comparable<StopModel> {
     private double latitude;
     private double longitude;
     private float distance;
+    private int directionId;
 
     public StopModel(String stopId, String stopName, boolean wheelchairBoarding) {
         this.stopId = stopId;
@@ -122,6 +123,14 @@ public class StopModel implements Comparable<StopModel> {
 
     public void setStopSequence(int stopSequence) {
         this.stopSequence = stopSequence;
+    }
+
+    public int getDirectionId() {
+        return directionId;
+    }
+
+    public void setDirectionId(int directionId) {
+        this.directionId = directionId;
     }
 
     @Override

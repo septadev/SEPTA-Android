@@ -466,6 +466,7 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
         } else {
             schedulesRouteModel.reverseStartAndDestinationStops();
         }
+        schedulesRouteModel.setDirectionId((schedulesRouteModel.getDirectionId() == 1) ? 0: 1);
         SchedulesItinerary_ListViewItem_ArrayAdapter schedulesListViewItemArrayAdapter = (SchedulesItinerary_ListViewItem_ArrayAdapter) stickyList.getAdapter();
         schedulesListViewItemArrayAdapter.setRouteStartName(schedulesRouteModel.getRouteStartName());
         schedulesListViewItemArrayAdapter.setRouteEndName(schedulesRouteModel.getRouteEndName());
@@ -496,6 +497,7 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
             }
 
             schedulesDataModel.setRoute(schedulesRouteModel);
+            schedulesDataModel.setCurrentDisplayDirection(schedulesRouteModel.getDirectionId());
             schedulesDataModel.loadStartBasedTrips(travelType);
             flipStartAndEndStops = schedulesDataModel.loadAndProcessEndStopsWithStartStops(travelType);
 
@@ -609,6 +611,8 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
                     String stopName = data.getStringExtra("stop_name");
                     String stopId = data.getStringExtra("stop_id");
                     String selectionMode = data.getStringExtra("selection_mode");
+                    int directionId = data.getIntExtra("direction_id", 0);
+                    schedulesRouteModel.setDirectionId(directionId);
 
                     if (selectionMode.equals("Destination")) {
                         Log.d(TAG, "selection mode is detintation, right? " + selectionMode);

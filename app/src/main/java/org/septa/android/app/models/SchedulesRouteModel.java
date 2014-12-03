@@ -20,6 +20,7 @@ public class SchedulesRouteModel implements Comparable<SchedulesRouteModel>,Parc
     private Number arriveTime;
     private Number serviceId;
     private String tripId;
+    private int directionId;
 
     public SchedulesRouteModel() { };
 
@@ -185,6 +186,14 @@ public class SchedulesRouteModel implements Comparable<SchedulesRouteModel>,Parc
 
     public void setTripId(String tripId) {
         this.tripId = tripId;
+    }
+
+    public int getDirectionId() {
+        return directionId;
+    }
+
+    public void setDirectionId(int directionId) {
+        this.directionId = directionId;
     }
 
     @Override

@@ -106,7 +106,12 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
     @Override
     public Object getItem(int position) {
 
-        return getItems()[position];
+        StopModel item = (StopModel) getItems()[position];
+        item.setDirectionId(0);
+        if(position > stopsForDirection0.size() - 1) {
+            item.setDirectionId(1);
+        }
+        return item;
     }
 
     @Override

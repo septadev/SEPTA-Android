@@ -437,22 +437,29 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
                         "reverseStopSearch JOIN stops_bus ON reverseStopSearch.reverse_stop_id=stops_bus.stop_id " +
                         "WHERE (reverseStopSearch.stop_id="+ schedulesRouteModel.getRouteStartStopId() +" " +
                         "OR reverseStopSearch.stop_id=" + schedulesRouteModel.getRouteEndStopId() + ") " +
-                        "AND route_short_name='" + schedulesRouteModel.getRouteShortName() + "'";
+                        "AND route_short_name='" + schedulesRouteModel.getRouteShortName() + "' GROUP BY reverseStopSearch.stop_id";
                 Cursor cursor = database.rawQuery(queryString, null);
                 Log.d(TAG, "Reverse query: " + queryString);
                 SchedulesRouteModel tempModel = new SchedulesRouteModel();
                 tempModel.setRouteStartStopId(schedulesRouteModel.getRouteStartStopId());
+                tempModel.setRouteEndStopId(schedulesRouteModel.getRouteEndStopId());
                 if(cursor != null && cursor.moveToFirst()) {
                     do {
                         String stopId = String.valueOf(cursor.getInt(0));
                         String reverseStopId = String.valueOf(cursor.getInt(1));
                         String stopName = cursor.getString(2);
-                        if(tempModel.getRouteStartStopId().equals(stopId)) {
+                        if(tempModel.getRouteStartStopId().equals(stopId) && !stopId.equals(reverseStopId)) {
                             schedulesRouteModel.setRouteStartName(stopName);
                             schedulesRouteModel.setRouteStartStopId(reverseStopId);
-                        }else {
+                        } else if(tempModel.getRouteEndStopId().equals(stopId) && !stopId.equals(reverseStopId)) {
                             schedulesRouteModel.setRouteEndName(stopName);
                             schedulesRouteModel.setRouteEndStopId(reverseStopId);
+                        } else if(tempModel.getRouteStartStopId().equals(stopId)) {
+                            schedulesRouteModel.setRouteEndName(stopName);
+                            schedulesRouteModel.setRouteEndStopId(reverseStopId);
+                        } else {
+                            schedulesRouteModel.setRouteStartName(stopName);
+                            schedulesRouteModel.setRouteStartStopId(reverseStopId);
                         }
 
                     } while(cursor.moveToNext());

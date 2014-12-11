@@ -127,6 +127,7 @@ public class CalendarDateUtilities {
             }
         } catch (ParseException e) {
             e.printStackTrace();
+            startTime = now;
         }
 
         return (startTime.getTime() - now.getTime()) / (60 * 1000);

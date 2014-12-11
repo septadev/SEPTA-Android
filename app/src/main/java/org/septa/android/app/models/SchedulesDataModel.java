@@ -34,7 +34,7 @@ public class SchedulesDataModel {
     }
 
     public void loadStartBasedTrips(RouteTypes routeType) {
-        if (routeType == RouteTypes.TROLLEY) {
+        if (routeType == RouteTypes.TROLLEY || "MFO".equals(route.getRouteId()) || "BSO".equals(route.getRouteId())) {
             routeType = RouteTypes.BUS;
         }
 
@@ -81,6 +81,9 @@ public class SchedulesDataModel {
     }
 
     public boolean loadAndProcessEndStopsWithStartStops(RouteTypes routeType) {
+        if (routeType == RouteTypes.TROLLEY || "MFO".equals(route.getRouteId()) || "BSO".equals(route.getRouteId())) {
+            routeType = RouteTypes.BUS;
+        }
         Log.d(TAG, "load and process end stops with start stops starting...");
         String queryString = null;
         boolean flippedOnce = false;

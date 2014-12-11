@@ -187,7 +187,11 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
     }
 
     public void sortByStopSequence() {
-        Collections.sort(stopsForDirection0, new StopModelSequenceComparator());
+        if("MFL".equals(routeShortName) || "BSL".equals(routeShortName) || "NHSL".equals(routeShortName)) {
+            Collections.sort(stopsForDirection0, Collections.reverseOrder(new StopModelSequenceComparator()));
+        } else {
+            Collections.sort(stopsForDirection0, new StopModelSequenceComparator());
+        }
         Collections.sort(stopsForDirection1, new StopModelSequenceComparator());
         notifyDataSetChanged();
     }

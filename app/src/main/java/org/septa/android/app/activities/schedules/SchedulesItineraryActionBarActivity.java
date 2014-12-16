@@ -437,27 +437,36 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
                         "reverseStopSearch JOIN stops_bus ON reverseStopSearch.reverse_stop_id=stops_bus.stop_id " +
                         "WHERE (reverseStopSearch.stop_id="+ schedulesRouteModel.getRouteStartStopId() +" " +
                         "OR reverseStopSearch.stop_id=" + schedulesRouteModel.getRouteEndStopId() + ") " +
-                        "AND route_short_name='" + schedulesRouteModel.getRouteShortName() + "'";
+                        "AND route_short_name='" + schedulesRouteModel.getRouteShortName() + "' GROUP BY reverseStopSearch.stop_id";
                 Cursor cursor = database.rawQuery(queryString, null);
                 Log.d(TAG, "Reverse query: " + queryString);
                 SchedulesRouteModel tempModel = new SchedulesRouteModel();
                 tempModel.setRouteStartStopId(schedulesRouteModel.getRouteStartStopId());
+                tempModel.setRouteEndStopId(schedulesRouteModel.getRouteEndStopId());
                 if(cursor != null && cursor.moveToFirst()) {
                     do {
                         String stopId = String.valueOf(cursor.getInt(0));
                         String reverseStopId = String.valueOf(cursor.getInt(1));
                         String stopName = cursor.getString(2);
-                        if(tempModel.getRouteStartStopId().equals(stopId)) {
+                        if(tempModel.getRouteStartStopId().equals(stopId) && !stopId.equals(reverseStopId)) {
                             schedulesRouteModel.setRouteStartName(stopName);
                             schedulesRouteModel.setRouteStartStopId(reverseStopId);
-                        }else {
+                        } else if(tempModel.getRouteEndStopId().equals(stopId) && !stopId.equals(reverseStopId)) {
                             schedulesRouteModel.setRouteEndName(stopName);
                             schedulesRouteModel.setRouteEndStopId(reverseStopId);
+                        } else if(tempModel.getRouteStartStopId().equals(stopId)) {
+                            schedulesRouteModel.setRouteEndName(stopName);
+                            schedulesRouteModel.setRouteEndStopId(reverseStopId);
+                        } else {
+                            schedulesRouteModel.setRouteStartName(stopName);
+                            schedulesRouteModel.setRouteStartStopId(reverseStopId);
                         }
 
                     } while(cursor.moveToNext());
+                    cursor.close();
+                } else {
+                    schedulesRouteModel.reverseStartAndDestinationStops();
                 }
-                cursor.close();
             } catch (Exception e) {
                 Log.e(TAG, "Reverse query failed", e);
                 schedulesRouteModel.reverseStartAndDestinationStops();
@@ -466,6 +475,7 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
         } else {
             schedulesRouteModel.reverseStartAndDestinationStops();
         }
+        schedulesRouteModel.setDirectionId((schedulesRouteModel.getDirectionId() == 1) ? 0: 1);
         SchedulesItinerary_ListViewItem_ArrayAdapter schedulesListViewItemArrayAdapter = (SchedulesItinerary_ListViewItem_ArrayAdapter) stickyList.getAdapter();
         schedulesListViewItemArrayAdapter.setRouteStartName(schedulesRouteModel.getRouteStartName());
         schedulesListViewItemArrayAdapter.setRouteEndName(schedulesRouteModel.getRouteEndName());
@@ -496,6 +506,7 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
             }
 
             schedulesDataModel.setRoute(schedulesRouteModel);
+            schedulesDataModel.setCurrentDisplayDirection(schedulesRouteModel.getDirectionId());
             schedulesDataModel.loadStartBasedTrips(travelType);
             flipStartAndEndStops = schedulesDataModel.loadAndProcessEndStopsWithStartStops(travelType);
 
@@ -609,6 +620,8 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
                     String stopName = data.getStringExtra("stop_name");
                     String stopId = data.getStringExtra("stop_id");
                     String selectionMode = data.getStringExtra("selection_mode");
+                    int directionId = data.getIntExtra("direction_id", 0);
+                    schedulesRouteModel.setDirectionId(directionId);
 
                     if (selectionMode.equals("Destination")) {
                         Log.d(TAG, "selection mode is detintation, right? " + selectionMode);

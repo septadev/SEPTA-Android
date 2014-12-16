@@ -123,6 +123,7 @@ public class SchedulesStopsSelectionActionBarActivity extends BaseAnalyticsActio
                 String stopModelJSONString = gson.toJson(stop);
 
                 Intent returnIntent = new Intent();
+                returnIntent.putExtra("direction_id", stop.getDirectionId());
                 returnIntent.putExtra("stop_name", stop.getStopName());
                 returnIntent.putExtra("stop_id", stop.getStopId());
                 returnIntent.putExtra("selection_mode", schedulesItineraryStopSelectionStartOrDestinationString);

@@ -106,7 +106,12 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
     @Override
     public Object getItem(int position) {
 
-        return getItems()[position];
+        StopModel item = (StopModel) getItems()[position];
+        item.setDirectionId(0);
+        if(position > stopsForDirection0.size() - 1) {
+            item.setDirectionId(1);
+        }
+        return item;
     }
 
     @Override
@@ -182,7 +187,11 @@ public class ItinerarySelection_ListViewItem_ArrayAdapter extends BaseAdapter im
     }
 
     public void sortByStopSequence() {
-        Collections.sort(stopsForDirection0, new StopModelSequenceComparator());
+        if("MFL".equals(routeShortName) || "BSL".equals(routeShortName) || "NHSL".equals(routeShortName)) {
+            Collections.sort(stopsForDirection0, Collections.reverseOrder(new StopModelSequenceComparator()));
+        } else {
+            Collections.sort(stopsForDirection0, new StopModelSequenceComparator());
+        }
         Collections.sort(stopsForDirection1, new StopModelSequenceComparator());
         notifyDataSetChanged();
     }

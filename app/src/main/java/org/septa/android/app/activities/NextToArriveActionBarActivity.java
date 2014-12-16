@@ -410,12 +410,14 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
 
             // check if the selected route is already a favorite, then we allow the option of removing this
             // route from the favorites list.
-            if (store.isFavorite(nextToArriveFavoriteModel)) {
-                ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).enableRemoveSavedFavorite();
-                ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).disableSaveAsFavorite();
-            } else {
-                ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).disableRemovedSavedFavorite();
-                ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).enableSaveAsFavorite();
+            if(menuDialogListView != null) {
+                if (store.isFavorite(nextToArriveFavoriteModel)) {
+                    ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).enableRemoveSavedFavorite();
+                    ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).disableSaveAsFavorite();
+                } else {
+                    ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).disableRemovedSavedFavorite();
+                    ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).enableSaveAsFavorite();
+                }
             }
 
             // check if this route is already stored as a favorite; if not store as a recent

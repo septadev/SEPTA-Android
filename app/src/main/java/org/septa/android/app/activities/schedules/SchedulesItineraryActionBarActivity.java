@@ -464,11 +464,10 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
 
                     } while(cursor.moveToNext());
                     cursor.close();
-                } else {
-                    schedulesRouteModel.reverseStartAndDestinationStops();
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Reverse query failed", e);
+            } finally {
                 schedulesRouteModel.reverseStartAndDestinationStops();
             }
 

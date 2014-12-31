@@ -9,7 +9,9 @@ import org.septa.android.app.databases.SEPTADatabase;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 /**
  * Future handler of database interactions
@@ -50,4 +52,23 @@ public class DatabaseManager {
 
         return serviceId;
     }
+
+    /**
+     * Return the nearest date of the passed in day
+     *
+     * @param dayOfWeek day of the week constant from the Calendar class
+     * @return date representing the nearest day
+     */
+    public static Date nearestDayOfWeek(int dayOfWeek) {
+        Calendar calendar = new GregorianCalendar();
+        for (int i = 0; i < 7; i++) {
+            if (calendar.get(Calendar.DAY_OF_WEEK) == dayOfWeek) {
+                break;
+            } else {
+                calendar.add(Calendar.DATE, 1);
+            }
+        }
+        return calendar.getTime();
+    }
+
 }

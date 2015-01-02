@@ -213,7 +213,12 @@ public class SchedulesDataModel {
                 serviceId = CalendarDateUtilities.getServiceIdForNow(context);
                 nowTime = CalendarDateUtilities.getNowTimeFormatted();
                 // Check for holiday
-                int tempServiceId = DatabaseManager.isTodayBusHoliday(database, new Date());
+                int tempServiceId;
+                if(RouteTypes.RAIL == route.getRouteType()) {
+                    tempServiceId = DatabaseManager.isTodayRailHoliday(database, new Date());
+                } else {
+                    tempServiceId = DatabaseManager.isTodayBusHoliday(database, new Date());
+                }
                 if(tempServiceId != -1) {
                     Toast.makeText(context, "Holiday", Toast.LENGTH_SHORT).show();
                 }
@@ -227,8 +232,14 @@ public class SchedulesDataModel {
             case 2: {  // Saturday
                 serviceId = CalendarDateUtilities.getServiceIdForDay(Calendar.SATURDAY);
                 // Check for holiday
-                int tempServiceId = DatabaseManager.isTodayBusHoliday(database,
-                        DatabaseManager.nearestDayOfWeek(Calendar.SATURDAY));
+                int tempServiceId;
+                if(RouteTypes.RAIL == route.getRouteType()) {
+                    tempServiceId = DatabaseManager.isTodayRailHoliday(database,
+                            DatabaseManager.nearestDayOfWeek(Calendar.SATURDAY));
+                } else {
+                    tempServiceId = DatabaseManager.isTodayBusHoliday(database,
+                            DatabaseManager.nearestDayOfWeek(Calendar.SATURDAY));
+                }
                 if(tempServiceId != -1) {
                     Toast.makeText(context, "Holiday", Toast.LENGTH_SHORT).show();
                 }
@@ -238,8 +249,14 @@ public class SchedulesDataModel {
             case 3: {  // Sunday
                 serviceId = CalendarDateUtilities.getServiceIdForDay(Calendar.SUNDAY);
                 // Check for holiday
-                int tempServiceId = DatabaseManager.isTodayBusHoliday(database,
-                        DatabaseManager.nearestDayOfWeek(Calendar.SUNDAY));
+                int tempServiceId;
+                if(RouteTypes.RAIL == route.getRouteType()) {
+                    tempServiceId = DatabaseManager.isTodayRailHoliday(database,
+                            DatabaseManager.nearestDayOfWeek(Calendar.SUNDAY));
+                } else {
+                    tempServiceId = DatabaseManager.isTodayBusHoliday(database,
+                            DatabaseManager.nearestDayOfWeek(Calendar.SUNDAY));
+                }
                 if(tempServiceId != -1) {
                     Toast.makeText(context, "Holiday", Toast.LENGTH_SHORT).show();
                 }

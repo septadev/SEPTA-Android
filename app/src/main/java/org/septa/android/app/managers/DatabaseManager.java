@@ -24,6 +24,7 @@ public class DatabaseManager {
 
     private static final String TAG = SEPTADatabase.class.getName();
     private static final String QUERY_BUS_HOLIDAY = "SELECT service_id, date FROM holiday_bus WHERE date='%s'";
+    private static final String QUERY_RAIL_HOLIDAY = "SELECT service_id, date FROM holiday_rail WHERE date='%s'";
     private static final String DATE_FORMAT_HOLIDAY = "yyyyMMdd";
 
     /**
@@ -36,6 +37,33 @@ public class DatabaseManager {
     public static int isTodayBusHoliday(SQLiteDatabase database, Date date) {
         DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT_HOLIDAY);
         String query = String.format(QUERY_BUS_HOLIDAY, dateFormat.format(date));
+        int serviceId = -1;
+        try {
+            Cursor cursor = database.rawQuery(query, null);
+            if (cursor != null) {
+                if (cursor.getCount() > 0) {
+                    cursor.moveToFirst();
+                    serviceId = cursor.getInt(0);
+                }
+                cursor.close();
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error querying holiday", e);
+        }
+
+        return serviceId;
+    }
+
+    /**
+     * Check if the passed in date is a holiday
+     *
+     * @param database Database object
+     * @param date     Date object
+     * @return the corresponding service id, otherwise -1 if day not found
+     */
+    public static int isTodayRailHoliday(SQLiteDatabase database, Date date) {
+        DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT_HOLIDAY);
+        String query = String.format(QUERY_RAIL_HOLIDAY, dateFormat.format(date));
         int serviceId = -1;
         try {
             Cursor cursor = database.rawQuery(query, null);

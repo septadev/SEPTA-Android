@@ -379,9 +379,10 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
                     transitViewVehicle.setDistanceFromCurrentLocation(getDistanceFromCurrentLocation(new LatLng(transitViewVehicle.getLatitude(), transitViewVehicle.getLongitude())));
 
                     // check if the destination is blank, meaning the bus just went out of service
-                    if (transitViewVehicle.getDestination().trim().equals("")) {
-                        break;
-                    }
+                    // TODO: Removed to deal with error in service api. It's returning all destinations as blank.
+//                    if (transitViewVehicle.getDestination().trim().equals("")) {
+//                        break;
+//                    }
 
                     if (transitViewVehicle.isSouthBound() || transitViewVehicle.isEastBound()) {
                         transitIcon = BitmapDescriptorFactory.fromResource(R.drawable.ic_transitview_bus_blue);

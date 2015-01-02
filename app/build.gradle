@@ -60,9 +60,9 @@ android {
     defaultConfig {
         minSdkVersion 10
         targetSdkVersion 19
-        versionCode 63
-        versionName '1.1.16'
-        project.ext.set("archivesBaseName", project.parent.name + "-v" + versionName + "-b" + versionCode + "${getGitHash}")
+        versionCode 65
+        versionName '1.1.18'
+        project.ext.set("archivesBaseName", project.parent.name + "-v" + versionName + "-b" + versionCode)
     }
     sourceSets {
 //        androidTest.setRoot('src/test') //note that this is androidTest instead of instrumentTest

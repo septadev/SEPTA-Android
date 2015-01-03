@@ -4,14 +4,17 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.septa.android.app.databases.SEPTADatabase;
+import org.septa.android.app.managers.DatabaseManager;
 import org.septa.android.app.utilities.CalendarDateUtilities;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 
 public class SchedulesDataModel {
@@ -202,11 +205,24 @@ public class SchedulesDataModel {
         int nowTime = -1;
         int serviceId = -1;
 
+        SEPTADatabase septaDatabase = new SEPTADatabase(context);
+        SQLiteDatabase database = septaDatabase.getReadableDatabase();
 
         switch(tab) {
             case 0: { // Now
                 serviceId = CalendarDateUtilities.getServiceIdForNow(context);
                 nowTime = CalendarDateUtilities.getNowTimeFormatted();
+                // Check for holiday
+                int tempServiceId;
+                if(RouteTypes.RAIL == route.getRouteType()) {
+                    tempServiceId = DatabaseManager.isTodayRailHoliday(database, new Date());
+                } else {
+                    tempServiceId = DatabaseManager.isTodayBusHoliday(database, new Date());
+                }
+                if(tempServiceId != -1) {
+                    Toast.makeText(context, "Holiday", Toast.LENGTH_SHORT).show();
+                }
+                serviceId = (tempServiceId != -1) ? tempServiceId : serviceId;
                 break;
             }
             case 1: {  // Weekday
@@ -215,10 +231,36 @@ public class SchedulesDataModel {
             }
             case 2: {  // Saturday
                 serviceId = CalendarDateUtilities.getServiceIdForDay(Calendar.SATURDAY);
+                // Check for holiday
+                int tempServiceId;
+                if(RouteTypes.RAIL == route.getRouteType()) {
+                    tempServiceId = DatabaseManager.isTodayRailHoliday(database,
+                            DatabaseManager.nearestDayOfWeek(Calendar.SATURDAY));
+                } else {
+                    tempServiceId = DatabaseManager.isTodayBusHoliday(database,
+                            DatabaseManager.nearestDayOfWeek(Calendar.SATURDAY));
+                }
+                if(tempServiceId != -1) {
+                    Toast.makeText(context, "Holiday", Toast.LENGTH_SHORT).show();
+                }
+                serviceId = (tempServiceId != -1) ? tempServiceId : serviceId;
                 break;
             }
             case 3: {  // Sunday
                 serviceId = CalendarDateUtilities.getServiceIdForDay(Calendar.SUNDAY);
+                // Check for holiday
+                int tempServiceId;
+                if(RouteTypes.RAIL == route.getRouteType()) {
+                    tempServiceId = DatabaseManager.isTodayRailHoliday(database,
+                            DatabaseManager.nearestDayOfWeek(Calendar.SUNDAY));
+                } else {
+                    tempServiceId = DatabaseManager.isTodayBusHoliday(database,
+                            DatabaseManager.nearestDayOfWeek(Calendar.SUNDAY));
+                }
+                if(tempServiceId != -1) {
+                    Toast.makeText(context, "Holiday", Toast.LENGTH_SHORT).show();
+                }
+                serviceId = (tempServiceId != -1) ? tempServiceId : serviceId;
             }
         }
 

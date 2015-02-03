@@ -210,7 +210,8 @@ public class SchedulesDataModel {
 
         switch(tab) {
             case 0: { // Now
-                serviceId = CalendarDateUtilities.getServiceIdForNow(context);
+                serviceId = DatabaseManager.serviceIdForDayOfWeek(database,
+                        CalendarDateUtilities.getDayOfTheWeek(), route.getRouteType());
                 nowTime = CalendarDateUtilities.getNowTimeFormatted();
                 // Check for holiday
                 int tempServiceId;
@@ -226,11 +227,13 @@ public class SchedulesDataModel {
                 break;
             }
             case 1: {  // Weekday
-                serviceId = CalendarDateUtilities.getServiceIdForDay(Calendar.FRIDAY);
+                serviceId = DatabaseManager.serviceIdForDayOfWeek(database,
+                        Calendar.FRIDAY, route.getRouteType());
                 break;
             }
             case 2: {  // Saturday
-                serviceId = CalendarDateUtilities.getServiceIdForDay(Calendar.SATURDAY);
+                serviceId = DatabaseManager.serviceIdForDayOfWeek(database,
+                        Calendar.SATURDAY, route.getRouteType());
                 // Check for holiday
                 int tempServiceId;
                 if(RouteTypes.RAIL == route.getRouteType()) {
@@ -247,7 +250,8 @@ public class SchedulesDataModel {
                 break;
             }
             case 3: {  // Sunday
-                serviceId = CalendarDateUtilities.getServiceIdForDay(Calendar.SUNDAY);
+                serviceId = DatabaseManager.serviceIdForDayOfWeek(database,
+                        Calendar.SUNDAY, route.getRouteType());
                 // Check for holiday
                 int tempServiceId;
                 if(RouteTypes.RAIL == route.getRouteType()) {
@@ -261,6 +265,7 @@ public class SchedulesDataModel {
                     Toast.makeText(context, "Holiday", Toast.LENGTH_SHORT).show();
                 }
                 serviceId = (tempServiceId != -1) ? tempServiceId : serviceId;
+                break;
             }
         }
 

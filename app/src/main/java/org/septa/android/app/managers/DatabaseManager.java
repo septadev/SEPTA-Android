@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import org.septa.android.app.databases.SEPTADatabase;
+import org.septa.android.app.models.RouteTypes;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -76,6 +77,61 @@ public class DatabaseManager {
             }
         } catch (Exception e) {
             Log.e(TAG, "Error querying holiday", e);
+        }
+
+        return serviceId;
+    }
+
+    /**
+     * Retrieves the service id for the specified day of the week
+     *
+     * @param database database object
+     * @param day day of the week constant from the Calendar class
+     * @return service id
+     */
+    public static int serviceIdForDayOfWeek(SQLiteDatabase database, int day, RouteTypes routeType) {
+        // Default to Friday(weekday)
+        int dbDay = 2;
+        switch (day) {
+            case Calendar.SUNDAY:
+                dbDay = 64;
+                break;
+            case Calendar.SATURDAY:
+                dbDay = 32;
+                break;
+            case Calendar.FRIDAY:
+                dbDay = 16;
+                break;
+            case Calendar.THURSDAY:
+                dbDay = 8;
+                break;
+            case Calendar.WEDNESDAY:
+                dbDay = 4;
+                break;
+            case Calendar.TUESDAY:
+                dbDay = 2;
+                break;
+            case Calendar.MONDAY:
+                dbDay = 1;
+                break;
+        }
+
+        int serviceId = 1;
+        String query;
+        if(routeType == RouteTypes.RAIL) {
+            query = "SELECT service_id, days FROM calendar_rail WHERE (days &" + dbDay + ")";
+        } else {
+            query = "SELECT service_id, days FROM calendar_bus WHERE (days &" + dbDay + ")";
+        }
+        Cursor cursor = null;
+        try {
+            cursor = database.rawQuery(query, null);
+            if(cursor != null && cursor.moveToFirst()) {
+                serviceId = cursor.getInt(0);
+                cursor.close();
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error fetching service id", e);
         }
 
         return serviceId;

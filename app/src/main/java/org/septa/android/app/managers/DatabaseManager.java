@@ -96,22 +96,22 @@ public class DatabaseManager {
             case Calendar.SUNDAY:
                 dbDay = 64;
                 break;
-            case Calendar.SATURDAY:
+            case Calendar.MONDAY:
                 dbDay = 32;
                 break;
-            case Calendar.FRIDAY:
+            case Calendar.TUESDAY:
                 dbDay = 16;
                 break;
-            case Calendar.THURSDAY:
+            case Calendar.WEDNESDAY:
                 dbDay = 8;
                 break;
-            case Calendar.WEDNESDAY:
+            case Calendar.THURSDAY:
                 dbDay = 4;
                 break;
-            case Calendar.TUESDAY:
+            case Calendar.FRIDAY:
                 dbDay = 2;
                 break;
-            case Calendar.MONDAY:
+            case Calendar.SATURDAY:
                 dbDay = 1;
                 break;
         }

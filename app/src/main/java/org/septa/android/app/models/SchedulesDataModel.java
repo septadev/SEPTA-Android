@@ -275,14 +275,6 @@ public class SchedulesDataModel {
                (trip.getDirectionId().intValue() == getCurrentDisplayDirection())) {
 
                 this.filteredTripsList.add(trip);
-            } else {
-                if (serviceId == 4) {  // special case for Friday, where both weekday and Friday applies.
-                    if (trip.getServiceId().intValue() == 1 &&
-                       (trip.getStartTime().intValue() > nowTime) &&
-                       (trip.getDirectionId().intValue() == getCurrentDisplayDirection())) {
-                        this.filteredTripsList.add(trip);
-                    }
-                }
             }
         }
 

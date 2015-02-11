@@ -8,4 +8,5 @@ package org.septa.android.app.utilities;
 public class Constants {
 
     public static final float METER_IN_MILES = 0.000621371f;
+    public static final String KEY_LOCATION = "KEY_LOCATION";
 }

@@ -15,16 +15,17 @@
         android:hint="@string/headertext_current_location"
         android:gravity="center"
         android:clickable="true"/>
-<!--
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/headerview_divider_height"
+        android:background="@drawable/list_item_separator_gradient"/>
     <TextView
         android:id="@+id/headerview_textview_enter_address"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/headerview_text_margin"
         android:background="#BEBEBE"
         android:textSize="@dimen/headerview_text_size"
         android:hint="@string/headertext_enter_address"
         android:gravity="center"
         android:clickable="true"/>
--->
 </LinearLayout>

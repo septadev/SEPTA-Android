@@ -24,8 +24,10 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import org.septa.android.app.R;
+import org.septa.android.app.activities.GeocoderActivity;
 import org.septa.android.app.adapters.RegionalRail_StopSelection_ListViewItem_ArrayAdapter;
 import org.septa.android.app.models.StopModel;
+import org.septa.android.app.utilities.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,10 +35,9 @@ import java.util.List;
 public class StopSelectionListFragment extends ListFragment implements View.OnClickListener, LocationListener {
     public static final String TAG = StopSelectionListFragment.class.getName();
 
+    private static final int REQUEST_CODE_GECODER = 1000;
     private List<StopModel> stopModelList;
-
     private String startOrDestinationSelectionMode;
-
     private LocationManager locationManager;
     private RegionalRail_StopSelection_ListViewItem_ArrayAdapter adapter;
 
@@ -94,9 +95,22 @@ public class StopSelectionListFragment extends ListFragment implements View.OnCl
         View headerView = getActivity().getLayoutInflater().inflate(
                 R.layout.headerview_route_selection, lv, false);
         headerView.findViewById(R.id.headerview_textview_current_location).setOnClickListener(this);
+        headerView.findViewById(R.id.headerview_textview_enter_address).setOnClickListener(this);
         lv.addHeaderView(headerView);
 
         return view;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(REQUEST_CODE_GECODER == requestCode && resultCode == Activity.RESULT_OK) {
+            Location addressLocation = data.getParcelableExtra(Constants.KEY_LOCATION);
+            if(addressLocation != null) {
+                sortByLocations(addressLocation);
+            }
+        }
     }
 
     @Override
@@ -121,6 +135,10 @@ public class StopSelectionListFragment extends ListFragment implements View.OnCl
         switch (view.getId()) {
             case R.id.headerview_textview_current_location:
                 getUserLocation();
+                break;
+            case R.id.headerview_textview_enter_address:
+                Intent intent = new Intent(getActivity(), GeocoderActivity.class);
+                startActivityForResult(intent, REQUEST_CODE_GECODER);
                 break;
         }
     }

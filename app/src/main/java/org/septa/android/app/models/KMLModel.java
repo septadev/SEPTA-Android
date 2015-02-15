@@ -382,7 +382,7 @@ public class KMLModel {
                                 coordinate = new Coordinate();
                                 coordinate.setLatLong(new LatLng(Double.parseDouble(coordinateParts[1]),
                                         Double.parseDouble(coordinateParts[0])));
-                                coordinate.setNotsure(Integer.parseInt(coordinateParts[2]));
+                                coordinate.setNotsure((int) Double.parseDouble(coordinateParts[2]));
                             }
 
                             getCoordinateList().add(coordinate);

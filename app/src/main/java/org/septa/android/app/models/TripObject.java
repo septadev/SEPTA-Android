@@ -91,4 +91,43 @@ public class TripObject {
     public void setTripId(String tripId) {
         this.tripId = tripId;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        TripObject that = (TripObject) o;
+
+        if (directionId != null ? !directionId.equals(that.directionId) : that.directionId != null)
+            return false;
+        if (endSeq != null ? !endSeq.equals(that.endSeq) : that.endSeq != null) return false;
+        if (endTime != null ? !endTime.equals(that.endTime) : that.endTime != null) return false;
+        if (routeName != null ? !routeName.equals(that.routeName) : that.routeName != null)
+            return false;
+        if (serviceId != null ? !serviceId.equals(that.serviceId) : that.serviceId != null)
+            return false;
+        if (startSeq != null ? !startSeq.equals(that.startSeq) : that.startSeq != null)
+            return false;
+        if (startTime != null ? !startTime.equals(that.startTime) : that.startTime != null)
+            return false;
+        if (trainNo != null ? !trainNo.equals(that.trainNo) : that.trainNo != null) return false;
+        if (tripId != null ? !tripId.equals(that.tripId) : that.tripId != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = startTime != null ? startTime.hashCode() : 0;
+        result = 31 * result + (endTime != null ? endTime.hashCode() : 0);
+        result = 31 * result + (trainNo != null ? trainNo.hashCode() : 0);
+        result = 31 * result + (routeName != null ? routeName.hashCode() : 0);
+        result = 31 * result + (serviceId != null ? serviceId.hashCode() : 0);
+        result = 31 * result + (directionId != null ? directionId.hashCode() : 0);
+        result = 31 * result + (startSeq != null ? startSeq.hashCode() : 0);
+        result = 31 * result + (endSeq != null ? endSeq.hashCode() : 0);
+        result = 31 * result + (tripId != null ? tripId.hashCode() : 0);
+        return result;
+    }
 }

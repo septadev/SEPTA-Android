@@ -272,7 +272,8 @@ public class SchedulesDataModel {
         for (TripObject trip : masterTripsList) {
             if (trip.getServiceId().intValue() == serviceId &&
                (trip.getStartTime().intValue() > nowTime) &&
-               (trip.getDirectionId().intValue() == getCurrentDisplayDirection())) {
+               (trip.getDirectionId().intValue() == getCurrentDisplayDirection())
+                && !filteredTripsList.contains(trip)) {
 
                 this.filteredTripsList.add(trip);
             }

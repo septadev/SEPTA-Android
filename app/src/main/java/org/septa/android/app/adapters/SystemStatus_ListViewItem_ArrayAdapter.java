@@ -92,14 +92,14 @@ public class SystemStatus_ListViewItem_ArrayAdapter extends ArrayAdapter<AlertMo
             return rowView;
         }
 
-        // TODO: replace this drawable with the correct one once obtained.
-        if (alertInformation.hasSnowFlag()) {
-            alertImageView.setImageResource(R.drawable.ic_schedules_bsl_small);
-            alertImageView.setVisibility(View.VISIBLE);
-
-            // TODO: figure out if we are suppose to cap the view here like suspended or continue
-            return rowView;
-        }
+//        // TODO: replace this drawable with the correct one once obtained.
+//        if (alertInformation.hasSnowFlag()) {
+//            alertImageView.setImageResource(R.drawable.ic_schedules_bsl_small);
+//            alertImageView.setVisibility(View.VISIBLE);
+//
+//            // TODO: figure out if we are suppose to cap the view here like suspended or continue
+//            return rowView;
+//        }
 
         if (alertInformation.hasFlag()) {
             if (alertInformation.hasAdvisoryFlag()) {

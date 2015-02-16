@@ -29,15 +29,12 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
-
 import org.septa.android.app.R;
 import org.septa.android.app.activities.BaseAnalyticsActionBarActivity;
 import org.septa.android.app.activities.GeocoderActivity;
 import org.septa.android.app.adapters.schedules.ItinerarySelection_ListViewItem_ArrayAdapter;
 import org.septa.android.app.databases.SEPTADatabase;
 import org.septa.android.app.models.RouteTypes;
-import org.septa.android.app.models.SchedulesRouteModel;
 import org.septa.android.app.models.SortOrder;
 import org.septa.android.app.models.StopModel;
 import org.septa.android.app.utilities.Constants;
@@ -66,11 +63,10 @@ public class SchedulesStopsSelectionActionBarActivity extends BaseAnalyticsActio
 
     private StickyListHeadersListView stickyList;
 
-    private ArrayList<SchedulesRouteModel> routesModel;
-
     private LocationManager locationManager;
     private Menu optionsMenu;
     private SortOrder sortOrder = SortOrder.DEFAULT;
+    private Location returnedLocation;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -123,9 +119,6 @@ public class SchedulesStopsSelectionActionBarActivity extends BaseAnalyticsActio
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 StopModel stop = (StopModel)mAdapter.getItem(position);
 
-                Gson gson = new Gson();
-                String stopModelJSONString = gson.toJson(stop);
-
                 Intent returnIntent = new Intent();
                 returnIntent.putExtra("direction_id", stop.getDirectionId());
                 returnIntent.putExtra("stop_name", stop.getStopName());
@@ -159,9 +152,8 @@ public class SchedulesStopsSelectionActionBarActivity extends BaseAnalyticsActio
 
         if(REQUEST_CODE_GECODER == requestCode && resultCode == Activity.RESULT_OK) {
             Location addressLocation = data.getParcelableExtra(Constants.KEY_LOCATION);
-            if(addressLocation != null) {
-                sortByLocations(addressLocation);
-            }
+            returnedLocation = addressLocation;
+            sortByLocations(addressLocation);
         }
     }
 
@@ -307,6 +299,8 @@ public class SchedulesStopsSelectionActionBarActivity extends BaseAnalyticsActio
 
     private void sortByLocations(Location userLocation) {
         if(userLocation != null) {
+            sortOrder = SortOrder.LOCATION;
+            returnedLocation = userLocation;
             mAdapter.sortByLocation(userLocation);
             removeSortOptions();
         }
@@ -460,6 +454,9 @@ public class SchedulesStopsSelectionActionBarActivity extends BaseAnalyticsActio
                 case SEQUENCE:
                     sortBySequence();
                     break;
+                case LOCATION:
+                    sortByLocations(returnedLocation);
+                    break;
                 default:
                     break;
             }
@@ -538,7 +535,6 @@ public class SchedulesStopsSelectionActionBarActivity extends BaseAnalyticsActio
             super.onPostExecute(b);
 
             mAdapter.setDirectionHeadingLabels(directionHeaderLabels);
-//            mAdapter.notifyDataSetChanged();
 
             StopsLoader stopsLoader = new StopsLoader(routeShortName);
             stopsLoader.execute(routeType);

@@ -14,6 +14,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Looper;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
@@ -106,9 +107,14 @@ public class StopSelectionListFragment extends ListFragment implements View.OnCl
         super.onActivityResult(requestCode, resultCode, data);
 
         if(REQUEST_CODE_GECODER == requestCode && resultCode == Activity.RESULT_OK) {
-            Location addressLocation = data.getParcelableExtra(Constants.KEY_LOCATION);
+            final Location addressLocation = data.getParcelableExtra(Constants.KEY_LOCATION);
             if(addressLocation != null) {
-                sortByLocations(addressLocation);
+                new Handler().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        sortByLocations(addressLocation);
+                    }
+                });
             }
         }
     }

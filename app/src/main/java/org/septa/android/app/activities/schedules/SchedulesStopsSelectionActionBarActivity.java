@@ -160,7 +160,6 @@ public class SchedulesStopsSelectionActionBarActivity extends BaseAnalyticsActio
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-
     }
 
     @Override
@@ -298,7 +297,7 @@ public class SchedulesStopsSelectionActionBarActivity extends BaseAnalyticsActio
     }
 
     private void sortByLocations(Location userLocation) {
-        if(userLocation != null) {
+        if(userLocation != null && mAdapter != null) {
             sortOrder = SortOrder.LOCATION;
             returnedLocation = userLocation;
             mAdapter.sortByLocation(userLocation);

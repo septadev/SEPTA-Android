@@ -14,7 +14,6 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Looper;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
@@ -41,6 +40,7 @@ public class StopSelectionListFragment extends ListFragment implements View.OnCl
     private String startOrDestinationSelectionMode;
     private LocationManager locationManager;
     private RegionalRail_StopSelection_ListViewItem_ArrayAdapter adapter;
+    private Location addressLocation;
 
     public StopSelectionListFragment() {
         // instantiate an empty array list for the TripDataModel
@@ -69,6 +69,9 @@ public class StopSelectionListFragment extends ListFragment implements View.OnCl
         adapter = new RegionalRail_StopSelection_ListViewItem_ArrayAdapter(getActivity(), stopModelList);
         setListAdapter(adapter);
         getListView().setFastScrollEnabled(true);
+        if(addressLocation != null) {
+            sortByLocations(addressLocation);
+        }
     }
 
     @Override
@@ -107,14 +110,10 @@ public class StopSelectionListFragment extends ListFragment implements View.OnCl
         super.onActivityResult(requestCode, resultCode, data);
 
         if(REQUEST_CODE_GECODER == requestCode && resultCode == Activity.RESULT_OK) {
-            final Location addressLocation = data.getParcelableExtra(Constants.KEY_LOCATION);
+            Location addressLocation = data.getParcelableExtra(Constants.KEY_LOCATION);
             if(addressLocation != null) {
-                new Handler().post(new Runnable() {
-                    @Override
-                    public void run() {
-                        sortByLocations(addressLocation);
-                    }
-                });
+                this.addressLocation = addressLocation;
+                sortByLocations(addressLocation);
             }
         }
     }
@@ -166,7 +165,7 @@ public class StopSelectionListFragment extends ListFragment implements View.OnCl
     }
 
     private void sortByLocations(Location userLocation) {
-        if(userLocation != null) {
+        if(userLocation != null && adapter != null) {
             adapter.sortByLocation(userLocation);
         }
     }

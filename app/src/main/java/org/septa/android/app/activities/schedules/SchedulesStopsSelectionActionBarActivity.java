@@ -228,12 +228,14 @@ public class SchedulesStopsSelectionActionBarActivity extends BaseAnalyticsActio
     }
 
     public void removeSortOptions() {
-        MenuItem sortStop = optionsMenu.findItem(R.id.menu_sort_123);
-        MenuItem sortName = optionsMenu.findItem(R.id.menu_sort_abc);
-        if(sortName != null && sortStop != null) {
-            sortName.setVisible(false);
-            sortStop.setVisible(false);
-            onPrepareOptionsMenu(optionsMenu);
+        if(optionsMenu != null) {
+            MenuItem sortStop = optionsMenu.findItem(R.id.menu_sort_123);
+            MenuItem sortName = optionsMenu.findItem(R.id.menu_sort_abc);
+            if (sortName != null && sortStop != null) {
+                sortName.setVisible(false);
+                sortStop.setVisible(false);
+                onPrepareOptionsMenu(optionsMenu);
+            }
         }
     }
 

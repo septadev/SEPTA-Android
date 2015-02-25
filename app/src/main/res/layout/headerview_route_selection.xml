@@ -23,6 +23,7 @@
         android:id="@+id/headerview_textview_enter_address"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="@dimen/headerview_text_padding"
         android:background="#BEBEBE"
         android:textSize="@dimen/headerview_text_size"
         android:hint="@string/headertext_enter_address"

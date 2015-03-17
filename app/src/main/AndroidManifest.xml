@@ -1,55 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.septa.android.app">
+    package="org.septa.android.app" >
 
-    <supports-screens android:smallScreens="true"
-        android:normalScreens="true"
+    <supports-screens
+        android:anyDensity="true"
         android:largeScreens="true"
-        android:xlargeScreens="true"
-        android:anyDensity="true"/>
+        android:normalScreens="true"
+        android:smallScreens="true"
+        android:xlargeScreens="true" />
 
-    <!-- the Google Play Services Map API v2 requires OpenGL ES v2, thus
+    <!--
+         the Google Play Services Map API v2 requires OpenGL ES v2, thus
         instruct the Google Play store not to show or install app on a device
-        that does not support OpenGL ES v2 -->
-    <uses-feature android:glEsVersion="0x00020000" android:required="true"/>
+        that does not support OpenGL ES v2
+    -->
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true" />
 
     <!-- needed for the Connect tab to call customer service -->
     <uses-permission android:name="android.permission.CALL_PHONE" />
-    <uses-feature android:name="android.hardware.telephony" android:required="false"/>
+
+    <uses-feature
+        android:name="android.hardware.telephony"
+        android:required="false" />
 
     <!-- needed for the Realtime tab tips WebView -->
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <!-- needed to obtain the user's location to display on the map and find nearest location -->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-
-
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-feature android:name="android.hardware.location.gps" android:required="false"/>
 
-    <permission android:name="org.septa.android.app.permission.MAPS_RECEIVE" android:protectionLevel="signature"/>
+    <uses-feature
+        android:name="android.hardware.location.gps"
+        android:required="false" />
+
+    <permission
+        android:name="org.septa.android.app.permission.MAPS_RECEIVE"
+        android:protectionLevel="signature" />
 
     <application
         android:name=".MainApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-
         android:theme="@style/AppTheme" >
-
-        <meta-data android:name="com.google.android.gms.version"
+        <meta-data
+            android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
-
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyBm_Nn2-tPNXMpMTvlv70Sfb3CrVKX2Xzw"/>
+            android:value="AIzaSyBm_Nn2-tPNXMpMTvlv70Sfb3CrVKX2Xzw" />
 
         <activity
-            android:name="org.septa.android.app.activities.SplashScreenActivity"
+            android:name=".activities.SplashScreenActivity"
             android:label="@string/app_name"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -57,19 +66,19 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="org.septa.android.app.activities.MainTabbarActivity"
-            android:label="SEPTA"
-            android:configChanges="keyboard|orientation|screenSize">
+            android:name=".activities.MainTabbarActivity"
+            android:configChanges="keyboard|orientation|screenSize"
+            android:label="SEPTA" >
         </activity>
         <activity
-            android:name="org.septa.android.app.activities.MainNavigationDrawerActivity"
-            android:label="@string/app_name"
-            android:configChanges="keyboard|orientation|screenSize" >
+            android:name=".activities.MainNavigationDrawerActivity"
+            android:configChanges="keyboard|orientation|screenSize"
+            android:label="@string/app_name" >
         </activity>
         <activity
-            android:name="org.septa.android.app.activities.SettingsActionBarActivity"
-            android:parentActivityName="org.septa.android.app.activities.MainTabbarActivity"
-            android:configChanges="keyboard|orientation|screenSize" >
+            android:name=".activities.SettingsActionBarActivity"
+            android:configChanges="keyboard|orientation|screenSize"
+            android:parentActivityName=".activities.MainTabbarActivity" >
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
@@ -77,9 +86,9 @@
                 android:value=".activities.MainTabbarActivity" />
         </activity>
         <activity
-            android:name="org.septa.android.app.activities.TipsActionBarActivity"
-            android:parentActivityName="org.septa.android.app.activities.MainTabbarActivity"
-            android:configChanges="keyboard|orientation|screenSize" >
+            android:name=".activities.TipsActionBarActivity"
+            android:configChanges="keyboard|orientation|screenSize"
+            android:parentActivityName=".activities.MainTabbarActivity" >
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
@@ -87,9 +96,9 @@
                 android:value=".activities.MainTabbarActivity" />
         </activity>
         <activity
-            android:name="org.septa.android.app.activities.AppFeedbackFormActivity"
-            android:parentActivityName="org.septa.android.app.activities.MainTabbarActivity"
-            android:configChanges="keyboard|orientation|screenSize" >
+            android:name=".activities.AppFeedbackFormActivity"
+            android:configChanges="keyboard|orientation|screenSize"
+            android:parentActivityName=".activities.MainTabbarActivity" >
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
@@ -97,9 +106,9 @@
                 android:value=".activities.MainTabbarActivity" />
         </activity>
         <activity
-            android:name="org.septa.android.app.activities.FareInformationActionBarActivity"
-            android:parentActivityName="org.septa.android.app.activities.MainTabbarActivity"
-            android:configChanges="keyboard|orientation|screenSize" >
+            android:name=".activities.FareInformationActionBarActivity"
+            android:configChanges="keyboard|orientation|screenSize"
+            android:parentActivityName=".activities.MainTabbarActivity" >
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
@@ -107,9 +116,9 @@
                 android:value=".activities.MainTabbarActivity" />
         </activity>
         <activity
-            android:name="org.septa.android.app.activities.FareInformationGetMoreDetailsActionBarActivity"
-            android:parentActivityName="org.septa.android.app.activities.MainTabbarActivity"
-            android:configChanges="keyboard|orientation|screenSize" >
+            android:name=".activities.FareInformationGetMoreDetailsActionBarActivity"
+            android:configChanges="keyboard|orientation|screenSize"
+            android:parentActivityName=".activities.MainTabbarActivity" >
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
@@ -117,9 +126,9 @@
                 android:value=".activities.MainTabbarActivity" />
         </activity>
         <activity
-            android:name="org.septa.android.app.activities.AboutActionBarActivity"
-            android:parentActivityName="org.septa.android.app.activities.MainTabbarActivity"
-            android:configChanges="keyboard|orientation|screenSize" >
+            android:name=".activities.AboutActionBarActivity"
+            android:configChanges="keyboard|orientation|screenSize"
+            android:parentActivityName=".activities.MainTabbarActivity" >
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
@@ -127,9 +136,9 @@
                 android:value=".activities.MainTabbarActivity" />
         </activity>
         <activity
-            android:name="org.septa.android.app.activities.CommentsFormActionBarActivity"
-            android:parentActivityName="org.septa.android.app.activities.MainTabbarActivity"
-            android:configChanges="keyboard|orientation|screenSize" >
+            android:name=".activities.CommentsFormActionBarActivity"
+            android:configChanges="keyboard|orientation|screenSize"
+            android:parentActivityName=".activities.MainTabbarActivity" >
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
@@ -137,9 +146,9 @@
                 android:value=".activities.MainTabbarActivity" />
         </activity>
         <activity
-            android:name="org.septa.android.app.activities.FindNearestLocationActionBarActivity"
-            android:parentActivityName="org.septa.android.app.activities.MainTabbarActivity"
-            android:configChanges="keyboard|orientation|screenSize" >
+            android:name=".activities.FindNearestLocationActionBarActivity"
+            android:configChanges="keyboard|orientation|screenSize"
+            android:parentActivityName=".activities.MainTabbarActivity" >
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
@@ -147,9 +156,9 @@
                 android:value=".activities.MainTabbarActivity" />
         </activity>
         <activity
-            android:name="org.septa.android.app.activities.TrainViewActionBarActivity"
-            android:parentActivityName="org.septa.android.app.activities.MainTabbarActivity"
-            android:configChanges="keyboard|orientation|screenSize" >
+            android:name=".activities.TrainViewActionBarActivity"
+            android:configChanges="keyboard|orientation|screenSize"
+            android:parentActivityName=".activities.MainTabbarActivity" >
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
@@ -158,8 +167,8 @@
         </activity>
         <activity
             android:name=".activities.TransitViewActionBarActivity"
-            android:parentActivityName="org.septa.android.app.activities.MainTabbarActivity"
-            android:configChanges="keyboard|orientation|screenSize" >
+            android:configChanges="keyboard|orientation|screenSize"
+            android:parentActivityName=".activities.MainTabbarActivity" >
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
@@ -168,110 +177,134 @@
         </activity>
         <activity
             android:name=".activities.TransitViewMapAndRouteListActionBarActivity"
-            android:parentActivityName="org.septa.android.app.activities.MainTabbarActivity"
-            android:configChanges="keyboard|orientation|screenSize" >
+            android:configChanges="keyboard|orientation|screenSize"
+            android:parentActivityName=".activities.MainTabbarActivity" >
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.MainTabbarActivity" />
         </activity>
-
-        <activity android:name=".activities.schedules.SchedulesRouteSelectionActionBarActivity"
-            android:parentActivityName="org.septa.android.app.activities.MainTabbarActivity"
+        <activity
+            android:name=".activities.schedules.SchedulesRouteSelectionActionBarActivity"
             android:configChanges="keyboard|orientation|screenSize"
-            android:launchMode="singleTop" >
+            android:launchMode="singleTop"
+            android:parentActivityName=".activities.MainTabbarActivity" >
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.MainTabbarActivity" />
         </activity>
-        <activity android:name=".activities.schedules.SchedulesItineraryActionBarActivity"
-            android:parentActivityName="org.septa.android.app.activities.schedules.SchedulesRouteSelectionActionBarActivity"
+        <activity
+            android:name=".activities.schedules.SchedulesItineraryActionBarActivity"
             android:configChanges="keyboard|orientation|screenSize"
-            android:launchMode="singleTop" >
+            android:launchMode="singleTop"
+            android:parentActivityName=".activities.schedules.SchedulesRouteSelectionActionBarActivity" >
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.schedules.SchedulesRouteSelectionActionBarActivity" />
         </activity>
-        <activity android:name=".activities.schedules.SchedulesStopsSelectionActionBarActivity"
-            android:parentActivityName="org.septa.android.app.activities.schedules.SchedulesItineraryActionBarActivity"
-            android:configChanges="keyboard|orientation|screenSize" >
+        <activity
+            android:name=".activities.schedules.SchedulesStopsSelectionActionBarActivity"
+            android:configChanges="keyboard|orientation|screenSize"
+            android:parentActivityName=".activities.schedules.SchedulesItineraryActionBarActivity" >
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.schedules.SchedulesItineraryActionBarActivity" />
         </activity>
-        <activity android:name=".activities.SystemStatusActionBarActivity"
-            android:parentActivityName="org.septa.android.app.activities.MainTabbarActivity"
-            android:configChanges="keyboard|orientation|screenSize" >
+        <activity
+            android:name=".activities.SystemStatusActionBarActivity"
+            android:configChanges="keyboard|orientation|screenSize"
+            android:parentActivityName=".activities.MainTabbarActivity" >
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.MainTabbarActivity" />
         </activity>
-        <activity android:name=".activities.SystemStatusDetailsActionBarActivity"
-            android:parentActivityName="org.septa.android.app.activities.SystemStatusActionBarActivity"
-            android:configChanges="keyboard|orientation|screenSize" >
+        <activity
+            android:name=".activities.SystemStatusDetailsActionBarActivity"
+            android:configChanges="keyboard|orientation|screenSize"
+            android:parentActivityName=".activities.SystemStatusActionBarActivity" >
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.SystemStatusActionBarActivity" />
         </activity>
-        <activity android:name=".activities.NextToArriveActionBarActivity"
-            android:parentActivityName="org.septa.android.app.activities.MainTabbarActivity"
-            android:configChanges="keyboard|orientation|screenSize" >
+        <activity
+            android:name=".activities.NextToArriveActionBarActivity"
+            android:configChanges="keyboard|orientation|screenSize"
+            android:parentActivityName=".activities.MainTabbarActivity" >
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.MainTabbarActivity" />
         </activity>
-        <activity android:name=".activities.NextToArriveStopSelectionActionBarActivity"
-            android:parentActivityName="org.septa.android.app.activities.NextToArriveActionBarActivity"
-            android:configChanges="keyboard|orientation|screenSize" >
+        <activity
+            android:name=".activities.NextToArriveStopSelectionActionBarActivity"
+            android:configChanges="keyboard|orientation|screenSize"
+            android:parentActivityName=".activities.NextToArriveActionBarActivity" >
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.NextToArriveActionBarActivity" />
         </activity>
+        <activity
+            android:name=".activities.NextToArriveRealTimeWebViewActionBarActivity"
+            android:configChanges="keyboard|orientation|screenSize"
+            android:parentActivityName=".activities.NextToArriveActionBarActivity" >
 
-        <activity android:name=".activities.NextToArriveRealTimeWebViewActionBarActivity"
-            android:parentActivityName="org.septa.android.app.activities.NextToArriveActionBarActivity"
-            android:configChanges="keyboard|orientation|screenSize" >
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.NextToArriveActionBarActivity" />
         </activity>
+        <activity
+            android:name=".activities.schedules.SchedulesRRStopSelectionActionBarActivity"
+            android:configChanges="keyboard|orientation|screenSize"
+            android:parentActivityName=".activities.schedules.SchedulesItineraryActionBarActivity" >
 
-        <activity android:name=".activities.schedules.SchedulesRRStopSelectionActionBarActivity"
-            android:parentActivityName="org.septa.android.app.activities.schedules.SchedulesItineraryActionBarActivity"
-            android:configChanges="keyboard|orientation|screenSize" >
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.septa.android.app.activities.schedules.SchedulesItineraryActionBarActivity" />
         </activity>
+        <activity
+            android:name=".activities.FindNearestLocationRouteDetailsActionBarActivity"
+            android:configChanges="keyboard|orientation|screenSize"
+            android:parentActivityName=".activities.FindNearestLocationActionBarActivity" >
 
-        <activity android:name=".activities.FindNearestLocationRouteDetailsActionBarActivity"
-            android:parentActivityName="org.septa.android.app.activities.FindNearestLocationActionBarActivity"
-            android:configChanges="keyboard|orientation|screenSize" >
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.FindNearestLocationActionBarActivity" />
         </activity>
-        <activity android:name=".activities.schedules.ServiceAdvisoryActivity"
-            android:parentActivityName="org.septa.android.app.activities.schedules.SchedulesItineraryActionBarActivity"
-            android:configChanges="keyboard|orientation|screenSize" >
+        <activity
+            android:name=".activities.schedules.ServiceAdvisoryActivity"
+            android:configChanges="keyboard|orientation|screenSize"
+            android:parentActivityName=".activities.schedules.SchedulesItineraryActionBarActivity" >
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.schedules.SchedulesItineraryActionBarActivity" />
         </activity>
 
-        <meta-data android:name="com.crashlytics.ApiKey" android:value="bc2dd85ee4bc4580ad7a7e2819d8402ff8595c61"/>
+        <activity android:name=".activities.GeocoderActivity"></activity>
+
+        <meta-data
+            android:name="com.crashlytics.ApiKey"
+            android:value="bc2dd85ee4bc4580ad7a7e2819d8402ff8595c61" />
+
+
     </application>
 
 </manifest>

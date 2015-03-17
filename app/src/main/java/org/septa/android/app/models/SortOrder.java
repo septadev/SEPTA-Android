@@ -8,5 +8,6 @@ package org.septa.android.app.models;
 public enum SortOrder {
     DEFAULT,
     NAME,
-    SEQUENCE
+    SEQUENCE,
+    LOCATION
 }

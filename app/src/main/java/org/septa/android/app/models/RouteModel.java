@@ -101,13 +101,13 @@ public class RouteModel implements Comparable<RouteModel> {
         // first check if it is a number, then remove the last character and check for a number
         // if those two fail, it must not be or have a number
         try {
-            thisRouteShortName = Integer.valueOf(this.routeShortName);
+            thisRouteShortName = Integer.valueOf(this.routeShortName.replaceAll("[^\\d]", ""));
         } catch (NumberFormatException nfe) {
             thisIsString = true;
         }
 
         try {
-            otherRouteShortName = Integer.valueOf(other.routeShortName);
+            otherRouteShortName = Integer.valueOf(other.routeShortName.replaceAll("[^\\d]", ""));
         } catch (NumberFormatException nfe) {
             otherIsString = true;
         }

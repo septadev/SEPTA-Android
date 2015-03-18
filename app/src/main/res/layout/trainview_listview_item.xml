@@ -79,8 +79,6 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:singleLine="true"
             android:textStyle="bold"
             android:textSize="15sp"
             android:id="@+id/trainview_listview_item_start_textview"
@@ -90,8 +88,6 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:singleLine="true"
             android:textStyle="bold"
             android:textSize="15sp"
             android:id="@+id/trainview_listview_item_end_textview"

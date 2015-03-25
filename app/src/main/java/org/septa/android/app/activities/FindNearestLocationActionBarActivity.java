@@ -7,11 +7,12 @@
 
 package org.septa.android.app.activities;
 
-import com.google.android.gms.common.GooglePlayServicesClient;
-
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.IntentSender;
+import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
@@ -19,6 +20,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.location.LocationListener;
@@ -131,10 +133,25 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
             currentLocation = (Location)savedInstanceState.get(STATE_CURRENT_LOCATION);
         }
 
+        //TODO: CHECK IF GPS AVAILABLE
+        // if not available, show error message with retry button
+        System.out.println("Has GPS: " + hasGpsSensor());
+        System.out.println("GPS enabled: " + isGpsEnabled());
+
         if(currentLocation != null){
             moveMapAndLoadList(currentLocation, false);
         }
 
+    }
+
+    private boolean hasGpsSensor(){
+        PackageManager packageManager = getPackageManager();
+        return packageManager.hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS);
+    }
+
+    private boolean isGpsEnabled(){
+        LocationManager locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
     }
 
     @Override

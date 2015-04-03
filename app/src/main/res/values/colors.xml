@@ -23,5 +23,10 @@
     <color name="detour_row_dark">#88777777</color>
     <color name="alert_red">#FF0000</color>
 
+    <!-- Touch State Colors -->
+    <color name="default_black_selector">#000000</color>
+    <color name="default_black_selector_focused">#222222</color>
+    <color name="default_black_selector_pressed">#222222</color>
+    <color name="default_black_selector_selected">#222222</color>
 
 </resources>

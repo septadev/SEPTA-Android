@@ -69,4 +69,9 @@
     <string name="text_search">Search</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+    <!-- Find nearest location -->
+    <string name="find_nearest_location_gps_unavailable">GPS is unavailable on your device.</string>
+    <string name="find_nearest_location_gps_not_enabled">GPS is not enabled.\nTap to retry.</string>
+    <string name="find_nearest_location_no_nearby_locations_found">No nearby locations found.\nTap to retry.</string>
+
 </resources>

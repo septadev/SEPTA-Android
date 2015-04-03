@@ -7,12 +7,9 @@
 
 package org.septa.android.app.activities;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.IntentSender;
-import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
@@ -35,6 +32,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import org.septa.android.app.R;
 import org.septa.android.app.dialogs.FindNearestLocationEditRadiusDialog;
 import org.septa.android.app.fragments.FindNearestLocationsListFragment;
+import org.septa.android.app.fragments.FindNearestLocationsListFragment.OnRetryLocationSearch;
 import org.septa.android.app.managers.SharedPreferencesManager;
 import org.septa.android.app.models.LocationModel;
 import org.septa.android.app.services.apiproxies.LocationServiceProxy;
@@ -48,6 +46,7 @@ import retrofit.client.Response;
 
 public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBarActivity implements
         LocationListener,
+        OnRetryLocationSearch,
         GooglePlayServicesClient.ConnectionCallbacks,
         GooglePlayServicesClient.OnConnectionFailedListener {
 
@@ -133,25 +132,10 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
             currentLocation = (Location)savedInstanceState.get(STATE_CURRENT_LOCATION);
         }
 
-        //TODO: CHECK IF GPS AVAILABLE
-        // if not available, show error message with retry button
-        System.out.println("Has GPS: " + hasGpsSensor());
-        System.out.println("GPS enabled: " + isGpsEnabled());
-
         if(currentLocation != null){
             moveMapAndLoadList(currentLocation, false);
         }
 
-    }
-
-    private boolean hasGpsSensor(){
-        PackageManager packageManager = getPackageManager();
-        return packageManager.hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS);
-    }
-
-    private boolean isGpsEnabled(){
-        LocationManager locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
     }
 
     @Override
@@ -382,6 +366,10 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
                         .snippet("Route: "));
             }
         }
+    }
+
+    public void onRetryLocationSearch() {
+        updateDisplay();
     }
 
     private class RouteFetchCallback implements Callback{

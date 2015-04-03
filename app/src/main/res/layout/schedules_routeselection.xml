@@ -1,17 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ schedules_routeselection.xmlml
   ~ Last modified on 05-05-2014 16:49-0400 by brianhmayo
   ~
   ~ Copyright (c) 2014 SEPTA.  All rights reserved.
   -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/main_background"
+    android:orientation="vertical">
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             android:background="@drawable/main_background"
-             android:orientation="vertical">
+    <TextView
+        android:id="@+id/schedules_routesselection_alert_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/alert_header_background"
+        android:gravity="center_horizontal"
+        android:paddingBottom="8dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="8dp"
+        android:text="@string/schedules_alerts_header"
+        android:textColor="@android:color/white"
+        android:textSize="16dp"
+        android:textStyle="bold"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/schedules_routesselection_alert_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:background="@color/alert_message_background"
+        android:paddingBottom="8dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="8dp"
+        android:textColor="@android:color/black"
+        android:textSize="14dp"
+        android:visibility="gone"/>
 
     <se.emilsjolander.stickylistheaders.StickyListHeadersListView
         android:id="@+id/list"
@@ -29,5 +58,4 @@
         android:background="@android:color/white"
         android:visibility="gone"
         android:id="@+id/empty"/>
-
-</FrameLayout>
+</LinearLayout>

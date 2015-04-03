@@ -32,7 +32,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import org.septa.android.app.R;
 import org.septa.android.app.dialogs.FindNearestLocationEditRadiusDialog;
 import org.septa.android.app.fragments.FindNearestLocationsListFragment;
-import org.septa.android.app.fragments.FindNearestLocationsListFragment.OnRetryLocationSearch;
+import org.septa.android.app.fragments.FindNearestLocationsListFragment.OnRetryLocationSearchListener;
 import org.septa.android.app.managers.SharedPreferencesManager;
 import org.septa.android.app.models.LocationModel;
 import org.septa.android.app.services.apiproxies.LocationServiceProxy;
@@ -46,7 +46,7 @@ import retrofit.client.Response;
 
 public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBarActivity implements
         LocationListener,
-        OnRetryLocationSearch,
+        OnRetryLocationSearchListener,
         GooglePlayServicesClient.ConnectionCallbacks,
         GooglePlayServicesClient.OnConnectionFailedListener {
 
@@ -62,9 +62,9 @@ public class FindNearestLocationActionBarActivity extends BaseAnalyticsActionBar
     private static final int FASTEST_INTERVAL_IN_SECONDS = 60;
     private static final long FASTEST_INTERVAL =
             MILLISECONDS_PER_SECOND * FASTEST_INTERVAL_IN_SECONDS;
-    final int RQS_GooglePlayServices = 1;
+    private final int RQS_GooglePlayServices = 1;
 
-    LocationClient mLocationClient;
+    private LocationClient mLocationClient;
     private boolean inChangeRadiusMode = false;
     private float defaultZoom;
     private float maxDistanceFromCityCenter; //if new locations exceed maximum we return to city center instead

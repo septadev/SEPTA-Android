@@ -44,18 +44,15 @@ import java.util.List;
 public class FindNearestLocationsListFragment extends ListFragment implements OnClickListener {
     public static final String TAG = FindNearestLocationsListFragment.class.getName();
 
-    public interface OnRetryLocationSearch {
+    public interface OnRetryLocationSearchListener {
         public void onRetryLocationSearch();
     }
 
-    private OnRetryLocationSearch mLocationSearchCallback;
-
+    private FindNearestLocation_ListViewItem_ArrayAdapter mAdapter;
     private List<LocationModel> mLocationList;
-    private  FindNearestLocation_ListViewItem_ArrayAdapter mAdapter;
-
-    private RouteStopIdLoader routeStopIdLoader;
-
+    private OnRetryLocationSearchListener mLocationSearchCallback;
     private RelativeLayout mListContainer;
+    private RouteStopIdLoader routeStopIdLoader;
     private TextView mErrorView;
 
     public FindNearestLocationsListFragment() {
@@ -69,6 +66,7 @@ public class FindNearestLocationsListFragment extends ListFragment implements On
     }
 
     public void setLocationList(List<LocationModel> mLocationList) {
+
         // If GPS is available and enabled, show listview
         if (hasGpsSensor() && isGpsEnabled()) {
             mListContainer.setVisibility(View.VISIBLE);
@@ -81,7 +79,6 @@ public class FindNearestLocationsListFragment extends ListFragment implements On
                     return new Float(location1.getDistance()).compareTo(new Float(location2.getDistance()));
                 }
             });
-
 
             if(routeStopIdLoader != null){
                 routeStopIdLoader.cancel(true);
@@ -102,9 +99,9 @@ public class FindNearestLocationsListFragment extends ListFragment implements On
         super.onAttach(activity);
 
         try {
-            mLocationSearchCallback = (OnRetryLocationSearch) activity;
+            mLocationSearchCallback = (OnRetryLocationSearchListener) activity;
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() + " must implement OnHeadlineSelectedListener");
+            Log.e(TAG, "exception: " + e.getMessage());
         }
     }
 
@@ -121,15 +118,12 @@ public class FindNearestLocationsListFragment extends ListFragment implements On
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         // Setup views
         View view = inflater.inflate(R.layout.findnearestlocation_fragment_listview, null);
-
         mListContainer = (RelativeLayout) view.findViewById(R.id.list_container);
         mErrorView = (TextView) view.findViewById(R.id.empty_text);
-
         mErrorView.setOnClickListener(this);
 
         // If GPS is available and enabled, show listview
@@ -184,6 +178,16 @@ public class FindNearestLocationsListFragment extends ListFragment implements On
                 }
                 break;
         }
+    }
+
+    private boolean hasGpsSensor(){
+        PackageManager packageManager = getActivity().getPackageManager();
+        return packageManager.hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS);
+    }
+
+    private boolean isGpsEnabled(){
+        LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
     }
 
     private class RouteStopIdLoader extends AsyncTask<List<LocationModel>, Integer, Boolean> {
@@ -245,15 +249,5 @@ public class FindNearestLocationsListFragment extends ListFragment implements On
             mAdapter.setList(mLocationList);
             mAdapter.notifyDataSetChanged();
         }
-    }
-
-    private boolean hasGpsSensor(){
-        PackageManager packageManager = getActivity().getPackageManager();
-        return packageManager.hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS);
-    }
-
-    private boolean isGpsEnabled(){
-        LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
     }
 }

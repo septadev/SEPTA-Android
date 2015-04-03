@@ -36,5 +36,7 @@
         android:background="@drawable/state_list_default_selector_with_fade"
         android:clickable="true"
         android:gravity="center"
-        android:textColor="@android:color/white"/>
+        android:lineSpacingMultiplier="1.25"
+        android:textColor="@android:color/white"
+        android:textSize="14sp"/>
 </FrameLayout>

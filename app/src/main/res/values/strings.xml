@@ -71,7 +71,6 @@
 
     <!-- Find nearest location -->
     <string name="find_nearest_location_gps_unavailable">GPS is unavailable on your device.</string>
-    <string name="find_nearest_location_gps_not_enabled">GPS is not enabled.\nTap to retry.</string>
-    <string name="find_nearest_location_no_nearby_locations_found">No nearby locations found.\nTap to retry.</string>
+    <string name="find_nearest_location_gps_not_enabled">GPS is not currently enabled.\nPlease enabled Location Access\nin your device Settings,\nthen tap to retry.</string>
 
 </resources>

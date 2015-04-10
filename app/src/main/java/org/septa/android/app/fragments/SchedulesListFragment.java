@@ -44,8 +44,6 @@ public class SchedulesListFragment extends ListFragment {
     public void onListItemClick(ListView l, View v, int position, long id) {
         Intent schedulesRouteSelectionIntent = null;
 
-        //TODO: Make hard coded strings constants (using them on next page, so need them to be controlled)
-
         switch(position) {
             case 0: // regional rail line
 

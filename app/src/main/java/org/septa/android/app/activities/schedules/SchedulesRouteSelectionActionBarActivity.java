@@ -8,27 +8,28 @@
 package org.septa.android.app.activities.schedules;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.text.Html;
-import android.text.TextUtils;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.TextView;
 
 import com.google.gson.Gson;
 
 import org.septa.android.app.R;
 import org.septa.android.app.activities.BaseAnalyticsActionBarActivity;
 import org.septa.android.app.adapters.schedules.SchedulesRouteSelection_ListViewItem_ArrayAdapter;
+import org.septa.android.app.adapters.schedules.Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter;
 import org.septa.android.app.databases.SEPTADatabase;
 import org.septa.android.app.managers.SchedulesFavoritesAndRecentlyViewedStore;
 import org.septa.android.app.models.ObjectFactory;
@@ -36,30 +37,19 @@ import org.septa.android.app.models.RouteTypes;
 import org.septa.android.app.models.SchedulesFavoriteModel;
 import org.septa.android.app.models.SchedulesRecentlyViewedModel;
 import org.septa.android.app.models.SchedulesRouteModel;
-import org.septa.android.app.models.servicemodels.AlertModel;
-import org.septa.android.app.services.apiproxies.AlertsServiceProxy;
 import org.septa.android.app.views.StatusView;
 
 import java.util.ArrayList;
 
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
-import static org.septa.android.app.models.RouteTypes.RAIL;
-import static org.septa.android.app.models.RouteTypes.valueOf;
+import static org.septa.android.app.models.RouteTypes.*;
 
 public class SchedulesRouteSelectionActionBarActivity extends BaseAnalyticsActionBarActivity implements
-        AdapterView.OnItemClickListener,
-        AdapterView.OnItemLongClickListener,
-        StickyListHeadersListView.OnHeaderClickListener,
+        AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, StickyListHeadersListView.OnHeaderClickListener,
         StickyListHeadersListView.OnStickyHeaderOffsetChangedListener,
-        StickyListHeadersListView.OnStickyHeaderChangedListener,
-        View.OnTouchListener {
-
+        StickyListHeadersListView.OnStickyHeaderChangedListener, View.OnTouchListener {
     public static final String TAG = SchedulesRouteSelectionActionBarActivity.class.getName();
-
     private SchedulesRouteSelection_ListViewItem_ArrayAdapter mAdapter;
     private boolean fadeHeader = true;
 
@@ -70,9 +60,6 @@ public class SchedulesRouteSelectionActionBarActivity extends BaseAnalyticsActio
     private StickyListHeadersListView stickyList;
 
     private ArrayList<SchedulesRouteModel>routesModel;
-
-    private TextView mAlertHeader;
-    private TextView mAlertMessage;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -116,17 +103,9 @@ public class SchedulesRouteSelectionActionBarActivity extends BaseAnalyticsActio
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
-        mAlertHeader = (TextView) findViewById(R.id.schedules_routesselection_alert_header);
-        mAlertMessage = (TextView) findViewById(R.id.schedules_routesselection_alert_message);
-
         routesModel = new ArrayList<SchedulesRouteModel>();
         RoutesLoader routesLoader = new RoutesLoader(routesModel);
         routesLoader.execute(travelType);
-
-        // TODO: Make this a constant ...
-        if (actionBarTitleText.equals("Regional Rail Line")) {
-            fetchAlerts();
-        }
     }
 
     @Override
@@ -378,43 +357,5 @@ public class SchedulesRouteSelectionActionBarActivity extends BaseAnalyticsActio
             mAdapter.setSchedulesRouteModel(routesModelList);
             mAdapter.notifyDataSetChanged();
         }
-    }
-
-    private void fetchAlerts() {
-        Callback callback = new Callback() {
-            @Override
-            public void success(Object o, Response response) {
-                ArrayList<AlertModel> alertModelList = (ArrayList<AlertModel>) o;
-                for (int i = 0; i < alertModelList.size(); i++) {
-                    AlertModel alertModel = alertModelList.get(i);
-                    if (alertModel != null) {
-                        if (alertModel.isGeneral()) {
-                            String generalAlert = alertModel.getCurrentMessage();
-                            // TODO: Make this a constant ...
-                            if (!TextUtils.isEmpty(generalAlert) && !generalAlert.equals("Empty")) {
-                                StringBuilder message = new StringBuilder();
-                                message.append("<b>").append(getString(R.string.schedules_alerts_general_message_prefix)).append("</b> ").append(generalAlert);
-                                mAlertMessage.setText(Html.fromHtml(message.toString()));
-                                mAlertHeader.setVisibility(View.VISIBLE);
-                                mAlertMessage.setVisibility(View.VISIBLE);
-                            }
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void failure(RetrofitError retrofitError) {
-                try {
-                    Log.d(TAG, "A failure in the call to train view service with body |" + retrofitError.getResponse().getBody().in() + "|");
-                } catch (Exception ex) {
-                    // TODO: clean this up
-                    Log.d(TAG, "blah... what is going on?");
-                }
-            }
-        };
-
-        AlertsServiceProxy alertsServiceProxy = new AlertsServiceProxy();
-        alertsServiceProxy.getAlerts(callback);
     }
 }

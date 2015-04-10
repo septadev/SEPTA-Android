@@ -388,17 +388,15 @@ public class SchedulesRouteSelectionActionBarActivity extends BaseAnalyticsActio
                     ArrayList<AlertModel> alertModelList = (ArrayList<AlertModel>) o;
                     for (int i = 0; i < alertModelList.size(); i++) {
                         AlertModel alertModel = alertModelList.get(i);
-                        if (alertModel != null) {
-                            if (alertModel.isGeneral()) {
-                                String generalAlert = alertModel.getCurrentMessage();
-                                if (!TextUtils.isEmpty(generalAlert) && !generalAlert.equals(VALUE_ALERT_RESPONSE_EMPTY)) {
-                                    StringBuilder message = new StringBuilder();
-                                    message.append("<b>").append(getString(R.string.schedules_alerts_general_message_prefix)).append("</b> ").append(generalAlert);
-                                    if (mAlertMessage != null && mAlertHeader != null) {
-                                        mAlertMessage.setText(Html.fromHtml(message.toString()));
-                                        mAlertHeader.setVisibility(View.VISIBLE);
-                                        mAlertMessage.setVisibility(View.VISIBLE);
-                                    }
+                        if (alertModel != null && alertModel.isGeneral()) {
+                            String generalAlert = alertModel.getCurrentMessage();
+                            if (!TextUtils.isEmpty(generalAlert) && !generalAlert.equals(VALUE_ALERT_RESPONSE_EMPTY)) {
+                                StringBuilder message = new StringBuilder();
+                                message.append("<b>").append(getString(R.string.schedules_alerts_general_message_prefix)).append("</b> ").append(generalAlert);
+                                if (mAlertMessage != null && mAlertHeader != null) {
+                                    mAlertMessage.setText(Html.fromHtml(message.toString()));
+                                    mAlertHeader.setVisibility(View.VISIBLE);
+                                    mAlertMessage.setVisibility(View.VISIBLE);
                                 }
                             }
                         }

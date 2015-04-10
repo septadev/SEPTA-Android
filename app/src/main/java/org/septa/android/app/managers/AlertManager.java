@@ -73,7 +73,7 @@ public class AlertManager implements Callback<ArrayList<AlertModel>> {
 
     /**
      * The services do not provide a reliable tie between routes and alerts so we have to make one here.
-     * @param routeShortName is used in the event that LocationBasedRouteModel not available.
+     * @param routeShortName is used in the event that LocationBasedRouteModel is not available.
      * @return
      */
     public AlertModel getAlertForRouteShortName(String routeShortName){

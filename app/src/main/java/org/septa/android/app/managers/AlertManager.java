@@ -71,6 +71,25 @@ public class AlertManager implements Callback<ArrayList<AlertModel>> {
         return null;
     }
 
+    /**
+     * The services do not provide a reliable tie between routes and alerts so we have to make one here.
+     * @param routeShortName is used in the event that LocationBasedRouteModel not available.
+     * @return
+     */
+    public AlertModel getAlertForRouteShortName(String routeShortName){
+        if(alerts != null ){
+            for(AlertModel alert : alerts){
+                // The following check uses "contains" because most values routeShortName contain
+                // alert.getRouteName + " Line" -- this is a hack to handle the existing data model.
+                if(routeShortName.contains(alert.getRouteName())){
+                    return alert;
+                }
+            }
+        }
+
+        return null;
+    }
+
 
     /**
      * Updates the Global Alert if we have not yet retrieved an update or

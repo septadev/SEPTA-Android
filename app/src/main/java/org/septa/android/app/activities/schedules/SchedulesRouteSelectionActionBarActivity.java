@@ -111,8 +111,6 @@ public class SchedulesRouteSelectionActionBarActivity extends BaseAnalyticsActio
         stickyList.setFastScrollAlwaysVisible(false);
         stickyList.setFastScrollEnabled(true);
 
-        stickyList.setDivider(null);
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 

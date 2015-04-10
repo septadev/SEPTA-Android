@@ -50,7 +50,9 @@
         android:drawSelectorOnTop="true"
         android:scrollbarStyle="outsideOverlay"
         android:fastScrollEnabled="true"
-        android:overScrollMode="never"/>
+        android:overScrollMode="never"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="1dp"/>
 
     <org.septa.android.app.views.StatusView
         android:layout_width="match_parent"

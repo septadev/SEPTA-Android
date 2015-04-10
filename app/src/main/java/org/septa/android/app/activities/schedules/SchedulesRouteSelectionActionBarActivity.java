@@ -38,6 +38,7 @@ import org.septa.android.app.models.SchedulesRecentlyViewedModel;
 import org.septa.android.app.models.SchedulesRouteModel;
 import org.septa.android.app.models.servicemodels.AlertModel;
 import org.septa.android.app.services.apiproxies.AlertsServiceProxy;
+import org.septa.android.app.utilities.Constants;
 import org.septa.android.app.views.StatusView;
 
 import java.util.ArrayList;
@@ -59,6 +60,8 @@ public class SchedulesRouteSelectionActionBarActivity extends BaseAnalyticsActio
         View.OnTouchListener {
 
     public static final String TAG = SchedulesRouteSelectionActionBarActivity.class.getName();
+
+    public static final String VALUE_ALERT_RESPONSE_EMPTY = "Empty";
 
     private SchedulesRouteSelection_ListViewItem_ArrayAdapter mAdapter;
     private boolean fadeHeader = true;
@@ -121,8 +124,7 @@ public class SchedulesRouteSelectionActionBarActivity extends BaseAnalyticsActio
         RoutesLoader routesLoader = new RoutesLoader(routesModel);
         routesLoader.execute(travelType);
 
-        // TODO: Make this a constant ...
-        if (actionBarTitleText.equals("Regional Rail Line")) {
+        if (actionBarTitleText.equals(Constants.VALUE_REGIONAL_RAIL_LINE)) {
             fetchAlerts();
         }
     }
@@ -388,8 +390,7 @@ public class SchedulesRouteSelectionActionBarActivity extends BaseAnalyticsActio
                     if (alertModel != null) {
                         if (alertModel.isGeneral()) {
                             String generalAlert = alertModel.getCurrentMessage();
-                            // TODO: Make this a constant ...
-                            if (!TextUtils.isEmpty(generalAlert) && !generalAlert.equals("Empty")) {
+                            if (!TextUtils.isEmpty(generalAlert) && !generalAlert.equals(VALUE_ALERT_RESPONSE_EMPTY)) {
                                 StringBuilder message = new StringBuilder();
                                 message.append("<b>").append(getString(R.string.schedules_alerts_general_message_prefix)).append("</b> ").append(generalAlert);
                                 mAlertMessage.setText(Html.fromHtml(message.toString()));
@@ -406,8 +407,7 @@ public class SchedulesRouteSelectionActionBarActivity extends BaseAnalyticsActio
                 try {
                     Log.d(TAG, "A failure in the call to train view service with body |" + retrofitError.getResponse().getBody().in() + "|");
                 } catch (Exception ex) {
-                    // TODO: clean this up
-                    Log.d(TAG, "blah... what is going on?");
+                    Log.d(TAG, ex.getMessage());
                 }
             }
         };

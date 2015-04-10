@@ -10,8 +10,11 @@ package org.septa.android.app.models;
 import android.content.Context;
 import android.util.Log;
 
+import org.septa.android.app.databases.SEPTADatabase;
+import org.septa.android.app.managers.DatabaseManager;
 import org.septa.android.app.utilities.CalendarDateUtilities;
 
+import java.util.Calendar;
 import java.util.HashMap;
 
 public class RouteModel implements Comparable<RouteModel> {
@@ -175,7 +178,9 @@ public class RouteModel implements Comparable<RouteModel> {
     }
 
     public boolean isInService(Context context) {
-        int serviceIdForToday = CalendarDateUtilities.getServiceIdForNow(context);
+        Calendar calendar = Calendar.getInstance();
+        int serviceIdForToday = DatabaseManager.serviceIdForDayOfWeek(new SEPTADatabase(context).getReadableDatabase(),
+                calendar.get(Calendar.DAY_OF_WEEK), RouteTypes.values()[routeType.intValue()]);
         MinMaxHoursModel minMaxHoursModelForToday = getMinMaxHoursForServiceId(String.valueOf(serviceIdForToday));
 
         if (minMaxHoursModelForToday == null) {
@@ -190,7 +195,9 @@ public class RouteModel implements Comparable<RouteModel> {
             return true;
         } else {
             // we must check if we are actually in the range of yesterday's service
-            int serviceIdForYesterday = CalendarDateUtilities.getServiceIdForYesterday(context);
+            calendar.add(Calendar.DATE, -1);
+            int serviceIdForYesterday = DatabaseManager.serviceIdForDayOfWeek(new SEPTADatabase(context).getReadableDatabase(),
+                    calendar.get(Calendar.DAY_OF_WEEK), RouteTypes.values()[routeType.intValue()]);
             MinMaxHoursModel minMaxHoursModelForYesterday = getMinMaxHoursForServiceId(String.valueOf(serviceIdForYesterday));
 
             if (minMaxHoursModelForYesterday == null) {

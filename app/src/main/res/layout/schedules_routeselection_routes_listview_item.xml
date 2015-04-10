@@ -45,49 +45,53 @@
             android:textStyle="bold"
             android:text="|"/>
 
-        <ImageView
-            android:id="@+id/schedules_routeselection_item_serviceadvisory"
+        <LinearLayout
+            android:id="@+id/schedules_routeselection_item_notificationlayout"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_marginBottom="6dp"
-            android:layout_marginTop="6dp"
             android:layout_alignParentRight="true"
-            android:src="@drawable/ic_system_status_advisory"
-            android:scaleType="fitCenter"
-            android:visibility="gone"/>
+            android:orientation="horizontal">
 
-        <ImageView
-            android:id="@+id/schedules_routeselection_item_detour"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="6dp"
-            android:layout_marginTop="6dp"
-            android:layout_toLeftOf="@id/schedules_routeselection_item_serviceadvisory"
-            android:scaleType="fitCenter"
-            android:src="@drawable/ic_system_status_detour"
-            android:visibility="gone"/>
+            <ImageView
+                android:id="@+id/schedules_routeselection_item_linesuspension"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="6dp"
+                android:layout_marginTop="6dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_system_status_suspended"
+                android:visibility="gone"/>
 
-        <ImageView
-            android:id="@+id/schedules_routeselection_item_servicealert"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="6dp"
-            android:layout_marginTop="6dp"
-            android:layout_toLeftOf="@id/schedules_routeselection_item_detour"
-            android:scaleType="fitCenter"
-            android:src="@drawable/ic_system_status_alert"
-            android:visibility="gone"/>
+            <ImageView
+                android:id="@+id/schedules_routeselection_item_servicealert"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="6dp"
+                android:layout_marginTop="6dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_system_status_alert"
+                android:visibility="gone"/>
 
-        <ImageView
-            android:id="@+id/schedules_routeselection_item_linesuspension"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="6dp"
-            android:layout_marginTop="6dp"
-            android:layout_toLeftOf="@id/schedules_routeselection_item_servicealert"
-            android:scaleType="fitCenter"
-            android:src="@drawable/ic_system_status_suspended"
-            android:visibility="gone"/>
+            <ImageView
+                android:id="@+id/schedules_routeselection_item_detour"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="6dp"
+                android:layout_marginTop="6dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_system_status_detour"
+                android:visibility="gone"/>
+
+            <ImageView
+                android:id="@+id/schedules_routeselection_item_serviceadvisory"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="6dp"
+                android:layout_marginTop="6dp"
+                android:src="@drawable/ic_system_status_advisory"
+                android:scaleType="fitCenter"
+                android:visibility="gone"/>
+        </LinearLayout>
 
         <TextView
             android:id="@+id/schedules_routeselection_item_routelongname"
@@ -96,7 +100,7 @@
             android:gravity="left|center_vertical"
             android:singleLine="true"
             android:ellipsize="middle"
-            android:layout_toLeftOf="@id/schedules_routeselection_item_linesuspension"
+            android:layout_toLeftOf="@id/schedules_routeselection_item_notificationlayout"
             android:layout_toRightOf="@id/schedules_routeselection_item_route_spacer"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@android:color/white"

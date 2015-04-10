@@ -9,6 +9,7 @@ package org.septa.android.app.adapters.schedules;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -239,8 +240,9 @@ public class SchedulesRouteSelection_ListViewItem_ArrayAdapter extends BaseAdapt
 
                 // Check for alerts to display
                 AlertManager alertManager = AlertManager.getInstance();
-                if (alertManager != null) {
-                    AlertModel alertModel = alertManager.getAlertForRouteShortName(routes.get(position).getRouteShortName());
+                String routeShortName = route.getRouteShortName();
+                if (alertManager != null && !TextUtils.isEmpty(routeShortName)) {
+                    AlertModel alertModel = alertManager.getAlertForRouteShortName(routeShortName);
                     if (alertModel != null) {
                         // If route has service advisory, display service advisory icon
                         if (alertModel.hasAdvisoryFlag()) {

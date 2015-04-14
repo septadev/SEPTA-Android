@@ -646,72 +646,84 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
                 StringBuilder genericMessage = new StringBuilder();
                 StringBuilder origMessage = new StringBuilder();
                 StringBuilder termMessage = new StringBuilder();
-                for (int i = 0; i < alertModelList.size(); i++) {
-                    AlertModel alertModel = alertModelList.get(i);
-                    if (alertModel != null) {
-                        // Get generic alerts if no routeId provided
-                        if (alertModel.isGeneral()) {
-                            if (BuildConfig.DEBUG) {
-                                Log.d(TAG, "fetchAlerts: Generic");
+                if (alertModelList != null) {
+                    for (int i = 0; i < alertModelList.size(); i++) {
+                        AlertModel alertModel = alertModelList.get(i);
+                        if (alertModel != null) {
+                            // Get generic alerts
+                            if (alertModel.isGeneral()) {
+                                if (BuildConfig.DEBUG) {
+                                    Log.d(TAG, "fetchAlerts: Generic");
+                                }
+                                String generalAlert = alertModel.getCurrentMessage();
+                                // TODO: Link this to contstant once merged
+                                if (!TextUtils.isEmpty(generalAlert) && !generalAlert.equals("Empty")) {
+                                    genericMessage.append("<b>").append(getString(R.string.nexttoarrive_alerts_general_message_prefix)).append("</b> ").append(generalAlert);
+                                }
                             }
-                            String generalAlert = alertModel.getCurrentMessage();
-                            // TODO: Make this a constant ...
-                            if (!TextUtils.isEmpty(generalAlert) && !generalAlert.equals("Empty")) {
-                                genericMessage.append("<b>").append(getString(R.string.nexttoarrive_alerts_general_message_prefix)).append("</b> ").append(generalAlert);
-                            }
-                        }
-                        // Get route-specific alerts if original route provided
-                        else if (!TextUtils.isEmpty(origRouteName) && alertModel.getRouteName().equals(origRouteName)) {
-                            if (BuildConfig.DEBUG) {
-                                Log.d(TAG, "fetchAlerts: " + origRouteName);
-                            }
+                            // Get route-specific alerts if original route provided
+                            else if (!TextUtils.isEmpty(origRouteName) && alertModel.getRouteName().equals(origRouteName)) {
+                                if (BuildConfig.DEBUG) {
+                                    Log.d(TAG, "fetchAlerts: " + origRouteName);
+                                }
 
-                            String origAlert = alertModel.getCurrentMessage();
-                            if (!TextUtils.isEmpty(origAlert) && !origAlert.equals("Empty")) {
-                                origMessage.append("<b>").append(origRouteName).append(":</b> ").append(origAlert);
+                                String origAlert = alertModel.getCurrentMessage();
+                                // TODO: Link this to contstant once merged
+                                if (!TextUtils.isEmpty(origAlert) && !origAlert.equals("Empty")) {
+                                    origMessage.append("<b>").append(origRouteName).append(":</b> ").append(origAlert);
+                                }
                             }
-                        }
-                        // Get route-specific alerts if terminal route provided
-                        else if (!TextUtils.isEmpty(termRouteName) && alertModel.getRouteName().equals(termRouteName)) {
-                            if (BuildConfig.DEBUG) {
-                                Log.d(TAG, "fetchAlerts: " + termRouteName);
-                            }
+                            // Get route-specific alerts if terminal route provided
+                            else if (!TextUtils.isEmpty(termRouteName) && alertModel.getRouteName().equals(termRouteName)) {
+                                if (BuildConfig.DEBUG) {
+                                    Log.d(TAG, "fetchAlerts: " + termRouteName);
+                                }
 
-                            String termAlert = alertModel.getCurrentMessage();
-                            if (!TextUtils.isEmpty(termAlert) && !termAlert.equals("Empty")) {
-                                termMessage.append("<b>").append(termRouteName).append(":</b> ").append(termAlert);
+                                String termAlert = alertModel.getCurrentMessage();
+                                // TODO: Link this to contstant once merged
+                                if (!TextUtils.isEmpty(termAlert) && !termAlert.equals("Empty")) {
+                                    termMessage.append("<b>").append(termRouteName).append(":</b> ").append(termAlert);
+                                }
                             }
                         }
                     }
-                }
-                StringBuilder combinedMessages = new StringBuilder();
-                if (!TextUtils.isEmpty(genericMessage.toString())) {
-                    combinedMessages.append(genericMessage.toString());
-                }
-                // Add orignal route alert, if any
-                if (!TextUtils.isEmpty(origMessage.toString())) {
-                    if (!TextUtils.isEmpty(combinedMessages.toString())) {
-                        combinedMessages.append("<br>");
+
+                    StringBuilder combinedMessages = new StringBuilder();
+
+                    // Add generic alert, if any
+                    if (!TextUtils.isEmpty(genericMessage.toString())) {
+                        combinedMessages.append(genericMessage.toString());
                     }
-                    combinedMessages.append(origMessage.toString());
-                }
-                // Add terminal route alert, if any
-                if (!TextUtils.isEmpty(termMessage.toString())) {
-                    if (!TextUtils.isEmpty(combinedMessages.toString())) {
-                        combinedMessages.append("<br>");
+
+                    // Add orignal route alert, if any
+                    if (!TextUtils.isEmpty(origMessage.toString())) {
+                        // Add line break if other alerts already included
+                        if (!TextUtils.isEmpty(combinedMessages.toString())) {
+                            combinedMessages.append("<br>");
+                        }
+                        combinedMessages.append(origMessage.toString());
                     }
-                    combinedMessages.append(termMessage.toString());
-                }
-                // Show alerts, if any
-                if (!TextUtils.isEmpty(combinedMessages.toString())) {
-                    mAlertMessage.setText(Html.fromHtml(combinedMessages.toString()));
-                    mAlertHeader.setVisibility(View.VISIBLE);
-                    mAlertMessage.setVisibility(View.VISIBLE);
-                }
-                // Otherwise, hide alert header and message views
-                else {
-                    mAlertHeader.setVisibility(View.GONE);
-                    mAlertMessage.setVisibility(View.GONE);
+
+                    // Add terminal route alert, if any
+                    if (!TextUtils.isEmpty(termMessage.toString())) {
+                        // Add line break if other alerts already included
+                        if (!TextUtils.isEmpty(combinedMessages.toString())) {
+                            combinedMessages.append("<br>");
+                        }
+                        combinedMessages.append(termMessage.toString());
+                    }
+
+                    // Show alerts, if any
+                    if (!TextUtils.isEmpty(combinedMessages.toString())) {
+                        mAlertMessage.setText(Html.fromHtml(combinedMessages.toString()));
+                        mAlertHeader.setVisibility(View.VISIBLE);
+                        mAlertMessage.setVisibility(View.VISIBLE);
+                    }
+                    // Otherwise, hide alert header and message views
+                    else {
+                        mAlertHeader.setVisibility(View.GONE);
+                        mAlertMessage.setVisibility(View.GONE);
+                    }
                 }
             }
 

@@ -69,4 +69,10 @@
     <string name="text_search">Search</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+    <!-- Next to Arrive Alerts -->
+    <string name="nexttoarrive_alerts_header">ALERTS</string>
+    <string name="nexttoarrive_alerts_general_message_prefix">Regional Rail Line:</string>
+
+
+
 </resources>

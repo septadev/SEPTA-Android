@@ -22,6 +22,9 @@
     <color name="detour_orange">#E3731D</color>
     <color name="detour_row_dark">#88777777</color>
     <color name="alert_red">#FF0000</color>
+    <color name="alert_header_background">#B30E0E</color>
+    <color name="alert_message_background">#c2c2c2</color>
+
 
 
 </resources>

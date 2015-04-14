@@ -467,8 +467,8 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
 
                 // Check for alerts
                 for (int i = 0; i < mAdapter.getCount(); i++) {
-                    // Recently viewed uses a different data model, grab the first NextToArriveModel
-                    if (!mAdapter.isRecentlyViewed(i)) {
+                    // Recently viewed uses a different data model, grab the first NextToArriveModel (section 3)
+                    if (mAdapter.getSectionForPosition(i) == 3) {
                         NextToArriveModel nextToArriveModel = (NextToArriveModel) mAdapter.getItem(i);
                         // Use orig_line and term_line from API response to fetch alerts
                         if (nextToArriveModel != null) {

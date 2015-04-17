@@ -488,8 +488,7 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
                 try {
                     Log.d(TAG, "A failure in the call to train view service with body |" + retrofitError.getResponse().getBody().in() + "|");
                 } catch (Exception ex) {
-                    // TODO: clean this up
-                    Log.d(TAG, ex.getMessage());
+                    Log.d(TAG, "fetchNextToArrive: retrofit failed");
                 }
             }
         };
@@ -736,7 +735,7 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
                 try {
                     Log.d(TAG, "A failure in the call to train view service with body |" + retrofitError.getResponse().getBody().in() + "|");
                 } catch (Exception ex) {
-                    Log.d(TAG, ex.getMessage());
+                    Log.d(TAG, "fetchAlerts: retrofit failed");
                 }
             }
         };

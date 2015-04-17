@@ -489,7 +489,7 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
                     Log.d(TAG, "A failure in the call to train view service with body |" + retrofitError.getResponse().getBody().in() + "|");
                 } catch (Exception ex) {
                     // TODO: clean this up
-                    Log.d(TAG, "blah... what is going on?");
+                    Log.d(TAG, ex.getMessage());
                 }
             }
         };
@@ -652,6 +652,8 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
                     for (int i = 0; i < alertModelList.size(); i++) {
                         AlertModel alertModel = alertModelList.get(i);
                         if (alertModel != null) {
+                            String routeName = alertModel.getRouteName();
+
                             // Get generic alerts
                             if (alertModel.isGeneral()) {
                                 if (BuildConfig.DEBUG) {
@@ -664,7 +666,7 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
                                 }
                             }
                             // Get route-specific alerts if original route provided
-                            else if (!TextUtils.isEmpty(origRouteName) && alertModel.getRouteName().equals(origRouteName)) {
+                            else if (!TextUtils.isEmpty(origRouteName) && !TextUtils.isEmpty(routeName) && routeName.equals(origRouteName)) {
                                 if (BuildConfig.DEBUG) {
                                     Log.d(TAG, "fetchAlerts: " + origRouteName);
                                 }
@@ -676,7 +678,7 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
                                 }
                             }
                             // Get route-specific alerts if terminal route provided
-                            else if (!TextUtils.isEmpty(termRouteName) && alertModel.getRouteName().equals(termRouteName)) {
+                            else if (!TextUtils.isEmpty(termRouteName) && !TextUtils.isEmpty(routeName) && routeName.equals(termRouteName)) {
                                 if (BuildConfig.DEBUG) {
                                     Log.d(TAG, "fetchAlerts: " + termRouteName);
                                 }

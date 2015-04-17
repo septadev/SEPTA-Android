@@ -7,35 +7,39 @@
 
 package org.septa.android.app.fragments;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayout;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.GridView;
 
 import org.septa.android.app.R;
+import org.septa.android.app.adapters.RealTimeMenuAdapter;
 import org.septa.android.app.managers.AlertManager;
 import org.septa.android.app.managers.SharedPreferencesManager;
+import org.septa.android.app.models.RealTimeMenuItem;
 import org.septa.android.app.models.servicemodels.AlertModel;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
-public class RealtimeMenuFragment extends Fragment implements AlertManager.IAlertListener{
+public class RealtimeMenuFragment extends Fragment implements AlertManager.IAlertListener, OnItemClickListener {
     public static final String TAG = RealtimeMenuFragment.class.getName();
 
     public static Boolean fetchedResults = false;
 
-    private static final long MAX_ALERT_AGE = 1000*60*60;
+    private static RealTimeMenuAdapter mRealTimeMenuAdapter;
+
+    private static final long MAX_ALERT_AGE = 1000 * 60 * 60;
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -44,66 +48,33 @@ public class RealtimeMenuFragment extends Fragment implements AlertManager.IAler
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+            Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.realtime_menu_fragment, container, false);
+        GridView gridview = (GridView) view.findViewById(R.id.gridview);
 
+        final String[] realtime_menu_icon_selectors = getResources().getStringArray(R.array.realtime_menu_icon_selectors_inorder);
         final String[] realtime_menu_icons = getResources().getStringArray(R.array.realtime_menu_icons_inorder);
         final String[] realtime_menu_strings = getResources().getStringArray(R.array.realtime_menu_strings_inorder);
         final String[] realtime_menu_classnames = getResources().getStringArray(R.array.realtime_menu_classnames_inorder);
 
-        GridLayout gridLayout = (GridLayout) view.findViewById(R.id.realtime_menu_icons_gridlayout);
+        List<RealTimeMenuItem> menuItemList = new ArrayList<RealTimeMenuItem>();
+        for (int i = 0; i < realtime_menu_icons.length; i++) {
 
-        int position = 0;
-        for (int row = 0; row < 2; row++) {
-            for (int col = 0; col < 3; col++) {
-                View itemView = inflater.inflate(R.layout.realtime_menu_icontext_item, container, false);
-
-                ImageView imageView = (ImageView)itemView.findViewById(R.id.realtime_menu_icontext_item_imageView);
-                TextView textView = (TextView)itemView.findViewById(R.id.realtime_menu_icontext_item_textView);
-
-                GridLayout.LayoutParams param =new GridLayout.LayoutParams();
-                param.height = GridLayout.LayoutParams.WRAP_CONTENT;
-                param.width = GridLayout.LayoutParams.WRAP_CONTENT;
-                param.setGravity(Gravity.CENTER);
-                param.columnSpec = GridLayout.spec(col);
-                param.rowSpec = GridLayout.spec(row);
-
-                itemView.setLayoutParams (param);
-
-                String resourceName = "realtime_menu_".concat(realtime_menu_icons[position].toLowerCase());
-                Context context = imageView.getContext();
-
-                int id = getResources().getIdentifier(resourceName, "drawable", context.getPackageName());
-                imageView.setImageResource(id);
-
-                try {
-                    imageView.setTag(Class.forName(realtime_menu_classnames[position]));
-                } catch (ClassNotFoundException cnfe) {
-                    Log.e(TAG, "the class with the name "+realtime_menu_classnames[position]+" was not found exception.");
-                }
-
-                // since the onClickListener is an inner class
-                final String titleText = "| " + realtime_menu_strings[position];
-                final String iconText = realtime_menu_icons[position];
-
-                imageView.setOnClickListener(new View.OnClickListener() {
-                    public void onClick(final View v) {
-                        Class intentClass = (Class)v.getTag();
-                        Intent intent = new Intent(getActivity(), intentClass);
-                        intent.putExtra(getString(R.string.actionbar_titletext_key), titleText);
-                        intent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), iconText);
-                        startActivity(intent);
-                    }
-                });
-
-                textView.setText(realtime_menu_strings[position]);
-
-                gridLayout.addView(itemView);
-
-                position++;
+            Class classname = null;
+            try {
+                classname = Class.forName(realtime_menu_classnames[i]);
             }
+            catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+
+            menuItemList.add(new RealTimeMenuItem(classname, realtime_menu_icons[i], realtime_menu_icon_selectors[i], realtime_menu_strings[i]));
         }
+
+        mRealTimeMenuAdapter = new RealTimeMenuAdapter(menuItemList);
+        gridview.setAdapter(mRealTimeMenuAdapter);
+        gridview.setOnItemClickListener(this);
 
         return view;
     }
@@ -126,7 +97,7 @@ public class RealtimeMenuFragment extends Fragment implements AlertManager.IAler
         Date lastUpdate = SharedPreferencesManager.getInstance().getLastAlertUpdate();
         AlertModel alert = AlertManager.getInstance().getGlobalAlert();
         if (alert != null && !alert.getCurrentMessage().isEmpty() && alert.getLastUpdate() != null && (lastUpdate == null || alert.getLastUpdate().compareTo(lastUpdate) != 0)) {
-            Crouton.makeText(getActivity(), alert.getCurrentMessage() , Style.ALERT).show();
+            Crouton.makeText(getActivity(), alert.getCurrentMessage(), Style.ALERT).show();
 
             //save the date of the last retrieved alert for comparison on future requests
             SharedPreferencesManager.getInstance().setLastAlertUpdate(alert.getLastUpdate());
@@ -134,4 +105,18 @@ public class RealtimeMenuFragment extends Fragment implements AlertManager.IAler
 
     }
 
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        RealTimeMenuItem realTimeMenuItem = (RealTimeMenuItem) mRealTimeMenuAdapter.getItem(position);
+        final String iconText = realTimeMenuItem.getIcon();
+        final String titleText = "| " + realTimeMenuItem.getTitle();
+        Class intentClass = realTimeMenuItem.getClassname();
+
+        if (intentClass != null) {
+            Intent intent = new Intent(getActivity(), intentClass);
+            intent.putExtra(getString(R.string.actionbar_titletext_key), titleText);
+            intent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), iconText);
+            startActivity(intent);
+        }
+    }
 }

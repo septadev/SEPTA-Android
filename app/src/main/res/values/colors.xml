@@ -17,7 +17,7 @@
     <color name="route_direction_red">#B30E0E</color>
     <color name="route_direction_blue">#007DC3</color>
 
-    <!-- Alert colors -->
+    <!-- Alert Colors -->
     <color name="advisory_yellow">#F9D518</color>
     <color name="detour_orange">#E3731D</color>
     <color name="detour_row_dark">#88777777</color>
@@ -25,5 +25,10 @@
     <color name="alert_header_background">#B30E0E</color>
     <color name="alert_message_background">#c2c2c2</color>
 
+    <!-- Default Black Selector Colors -->
+    <color name="default_black_selector">#000000</color>
+    <color name="default_black_selector_focused">#222222</color>
+    <color name="default_black_selector_pressed">#222222</color>
+    <color name="default_black_selector_selected">#222222</color>
 
 </resources>

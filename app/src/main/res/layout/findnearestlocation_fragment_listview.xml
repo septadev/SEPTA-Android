@@ -5,18 +5,38 @@
   ~
   ~ Copyright (c) 2014 SEPTA.  All rights reserved.
   -->
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/black">
-    <ListView
-        android:id="@android:id/list"
+
+    <RelativeLayout
+        android:id="@+id/list_container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:divider="@android:color/white"
-        android:dividerHeight="2dp" >
-    </ListView>
-    <include
-        android:id="@android:id/empty"
-        layout="@layout/loading_view"/>
+        android:layout_height="match_parent">
+
+        <ListView
+            android:id="@android:id/list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:divider="@android:color/white"
+            android:dividerHeight="2dp">
+        </ListView>
+
+        <include
+            android:id="@android:id/empty"
+            layout="@layout/loading_view"/>
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/empty_text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/state_list_default_selector_with_fade"
+        android:clickable="true"
+        android:gravity="center"
+        android:lineSpacingMultiplier="1.25"
+        android:textColor="@android:color/white"
+        android:textSize="14sp"/>
 </FrameLayout>

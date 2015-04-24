@@ -7,9 +7,13 @@
 
 package org.septa.android.app.fragments;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -17,8 +21,11 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
 
@@ -34,13 +41,19 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class FindNearestLocationsListFragment extends ListFragment {
+public class FindNearestLocationsListFragment extends ListFragment implements OnClickListener {
     public static final String TAG = FindNearestLocationsListFragment.class.getName();
 
-    private List<LocationModel> mLocationList;
-    private  FindNearestLocation_ListViewItem_ArrayAdapter mAdapter;
+    public interface OnRetryLocationSearchListener {
+        public void onRetryLocationSearch();
+    }
 
+    private FindNearestLocation_ListViewItem_ArrayAdapter mAdapter;
+    private List<LocationModel> mLocationList;
+    private OnRetryLocationSearchListener mLocationSearchCallback;
+    private RelativeLayout mListContainer;
     private RouteStopIdLoader routeStopIdLoader;
+    private TextView mErrorView;
 
     public FindNearestLocationsListFragment() {
         this.mLocationList = Collections.synchronizedList(new ArrayList<LocationModel>());
@@ -53,21 +66,43 @@ public class FindNearestLocationsListFragment extends ListFragment {
     }
 
     public void setLocationList(List<LocationModel> mLocationList) {
-        this.mLocationList = Collections.synchronizedList(mLocationList);
 
-        Collections.sort(this.mLocationList, new Comparator<LocationModel>() {
-            public int compare(LocationModel location1, LocationModel location2) {
-                return new Float(location1.getDistance()).compareTo(new Float(location2.getDistance()));
+        // If GPS is available and enabled, show listview
+        if (hasGpsSensor() && isGpsEnabled()) {
+            mListContainer.setVisibility(View.VISIBLE);
+            mErrorView.setVisibility(View.GONE);
+
+            this.mLocationList = Collections.synchronizedList(mLocationList);
+
+            Collections.sort(this.mLocationList, new Comparator<LocationModel>() {
+                public int compare(LocationModel location1, LocationModel location2) {
+                    return new Float(location1.getDistance()).compareTo(new Float(location2.getDistance()));
+                }
+            });
+
+            if(routeStopIdLoader != null){
+                routeStopIdLoader.cancel(true);
             }
-        });
-
-
-        if(routeStopIdLoader != null){
-            routeStopIdLoader.cancel(true);
+            routeStopIdLoader = new RouteStopIdLoader();
+            routeStopIdLoader.execute(mLocationList);
         }
-        routeStopIdLoader = new RouteStopIdLoader();
-        routeStopIdLoader.execute(mLocationList);
+        // Otherwise, show the error view
+        else {
+            mListContainer.setVisibility(View.GONE);
+            mErrorView.setText(!hasGpsSensor() ? getString(R.string.find_nearest_location_gps_unavailable) : getString(R.string.find_nearest_location_gps_not_enabled));
+            mErrorView.setVisibility(View.VISIBLE);
+        }
+    }
 
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        try {
+            mLocationSearchCallback = (OnRetryLocationSearchListener) activity;
+        } catch (ClassCastException e) {
+            Log.e(TAG, "exception: " + e.getMessage());
+        }
     }
 
     @Override
@@ -83,10 +118,25 @@ public class FindNearestLocationsListFragment extends ListFragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
+        // Setup views
         View view = inflater.inflate(R.layout.findnearestlocation_fragment_listview, null);
+        mListContainer = (RelativeLayout) view.findViewById(R.id.list_container);
+        mErrorView = (TextView) view.findViewById(R.id.empty_text);
+        mErrorView.setOnClickListener(this);
+
+        // If GPS is available and enabled, show listview
+        if (hasGpsSensor() && isGpsEnabled()) {
+            mListContainer.setVisibility(View.VISIBLE);
+            mErrorView.setVisibility(View.GONE);
+        }
+        // Otherwise, show the error view
+        else {
+            mListContainer.setVisibility(View.GONE);
+            mErrorView.setText(!hasGpsSensor() ? getString(R.string.find_nearest_location_gps_unavailable) : getString(R.string.find_nearest_location_gps_not_enabled));
+            mErrorView.setVisibility(View.VISIBLE);
+        }
 
         mAdapter = new FindNearestLocation_ListViewItem_ArrayAdapter(inflater.getContext(), new ArrayList<LocationModel>());
         setListAdapter(mAdapter);
@@ -114,6 +164,30 @@ public class FindNearestLocationsListFragment extends ListFragment {
     @Override
     public void onStart() {
         super.onStart();
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.empty_text:
+                // Retry nearest location search
+                if (mLocationSearchCallback != null) {
+                    mListContainer.setVisibility(View.VISIBLE);
+                    mErrorView.setVisibility(View.GONE);
+                    mLocationSearchCallback.onRetryLocationSearch();
+                }
+                break;
+        }
+    }
+
+    private boolean hasGpsSensor(){
+        PackageManager packageManager = getActivity().getPackageManager();
+        return packageManager.hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS);
+    }
+
+    private boolean isGpsEnabled(){
+        LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
     }
 
     private class RouteStopIdLoader extends AsyncTask<List<LocationModel>, Integer, Boolean> {

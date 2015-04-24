@@ -59,7 +59,7 @@ public class SystemStatusActionBarActivity extends BaseAnalyticsActionBarActivit
         int id = getResources().getIdentifier(resourceName, "drawable", getPackageName());
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("System Status");
+        getSupportActionBar().setTitle("| System Status");
         getSupportActionBar().setIcon(id);
 
         setContentView(R.layout.realtime_systemstatus);

@@ -15,5 +15,5 @@
     android:numColumns="3"
     android:stretchMode="columnWidth"
     android:gravity="center_horizontal"
-    android:listSelector="@android:color/transparent"
+    android:listSelector="@color/transparent_selector"
 />

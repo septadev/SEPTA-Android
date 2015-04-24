@@ -108,13 +108,14 @@ public class RealtimeMenuFragment extends Fragment implements AlertManager.IAler
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         RealTimeMenuItem realTimeMenuItem = (RealTimeMenuItem) mRealTimeMenuAdapter.getItem(position);
-        final String iconText = realTimeMenuItem.getIcon();
-        final String titleText = "| " + realTimeMenuItem.getTitle();
+        String iconText = realTimeMenuItem.getIcon();
+        StringBuilder titleText = new StringBuilder();
+        titleText.append("| ").append(realTimeMenuItem.getTitle());
         Class intentClass = realTimeMenuItem.getClassname();
 
         if (intentClass != null) {
             Intent intent = new Intent(getActivity(), intentClass);
-            intent.putExtra(getString(R.string.actionbar_titletext_key), titleText);
+            intent.putExtra(getString(R.string.actionbar_titletext_key), titleText.toString());
             intent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), iconText);
             startActivity(intent);
         }

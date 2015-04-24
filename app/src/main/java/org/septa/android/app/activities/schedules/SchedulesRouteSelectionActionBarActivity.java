@@ -409,7 +409,7 @@ public class SchedulesRouteSelectionActionBarActivity extends BaseAnalyticsActio
                 try {
                     Log.d(TAG, "A failure in the call to train view service with body |" + retrofitError.getResponse().getBody().in() + "|");
                 } catch (Exception ex) {
-                    Log.d(TAG, ex.getMessage());
+                    Log.d(TAG, "retrofitError");
                 }
             }
         };

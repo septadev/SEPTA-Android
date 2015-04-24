@@ -74,7 +74,10 @@ public class RealTimeMenuAdapter extends BaseAdapter {
 
         RealTimeMenuItem realTimeMenuItem = (RealTimeMenuItem) getItem(position);
 
-        String resourceName = "realtime_menu_".concat(realTimeMenuItem.getSelectableIcon().toLowerCase());
+        StringBuilder resourceNameBuilder = new StringBuilder();
+        resourceNameBuilder.append("realtime_menu_").append(realTimeMenuItem.getSelectableIcon().toLowerCase());
+
+        String resourceName = resourceNameBuilder.toString();
         String title = realTimeMenuItem.getTitle();
 
         int id = holder.icon.getContext().getResources().getIdentifier(resourceName, "drawable", holder.icon.getContext().getPackageName());

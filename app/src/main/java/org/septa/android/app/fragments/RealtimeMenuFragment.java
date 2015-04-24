@@ -36,7 +36,7 @@ public class RealtimeMenuFragment extends Fragment implements AlertManager.IAler
 
     public static Boolean fetchedResults = false;
 
-    private static RealTimeMenuAdapter mRealTimeMenuAdapter;
+    private RealTimeMenuAdapter mRealTimeMenuAdapter;
 
     private static final long MAX_ALERT_AGE = 1000 * 60 * 60;
 
@@ -53,10 +53,10 @@ public class RealtimeMenuFragment extends Fragment implements AlertManager.IAler
         View view = inflater.inflate(R.layout.realtime_menu_fragment, container, false);
         GridView gridview = (GridView) view.findViewById(R.id.gridview);
 
+        final String[] realtime_menu_classnames = getResources().getStringArray(R.array.realtime_menu_classnames_inorder);
         final String[] realtime_menu_icon_selectors = getResources().getStringArray(R.array.realtime_menu_icon_selectors_inorder);
         final String[] realtime_menu_icons = getResources().getStringArray(R.array.realtime_menu_icons_inorder);
         final String[] realtime_menu_strings = getResources().getStringArray(R.array.realtime_menu_strings_inorder);
-        final String[] realtime_menu_classnames = getResources().getStringArray(R.array.realtime_menu_classnames_inorder);
 
         List<RealTimeMenuItem> menuItemList = new ArrayList<RealTimeMenuItem>();
         for (int i = 0; i < realtime_menu_icons.length; i++) {

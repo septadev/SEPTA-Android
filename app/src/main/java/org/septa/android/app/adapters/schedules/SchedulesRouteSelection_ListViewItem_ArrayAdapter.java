@@ -30,6 +30,7 @@ import org.septa.android.app.models.SchedulesFavoriteModel;
 import org.septa.android.app.models.SchedulesRecentlyViewedModel;
 import org.septa.android.app.models.SchedulesRouteModel;
 import org.septa.android.app.models.servicemodels.AlertModel;
+import org.septa.android.app.services.adaptors.AlertsAdaptor;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -240,9 +241,9 @@ public class SchedulesRouteSelection_ListViewItem_ArrayAdapter extends BaseAdapt
 
                 // Check for alerts to display
                 AlertManager alertManager = AlertManager.getInstance();
-                String routeShortName = route.getRouteShortName();
-                if (alertManager != null && !TextUtils.isEmpty(routeShortName)) {
-                    AlertModel alertModel = alertManager.getAlertForRouteShortName(routeShortName);
+                String routeId = AlertsAdaptor.getServiceRouteName(route, routeType);
+                if (alertManager != null && !TextUtils.isEmpty(routeId)) {
+                    AlertModel alertModel = alertManager.getAlertForRouteShortName(routeId);
                     if (alertModel != null) {
                         // If route has service advisory, display service advisory icon
                         if (alertModel.hasAdvisoryFlag()) {

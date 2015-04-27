@@ -23,6 +23,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import org.septa.android.app.BuildConfig;
 import org.septa.android.app.R;
 import org.septa.android.app.activities.GeocoderActivity;
 import org.septa.android.app.adapters.RegionalRail_StopSelection_ListViewItem_ArrayAdapter;
@@ -50,6 +51,9 @@ public class StopSelectionListFragment extends ListFragment implements View.OnCl
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "onCreate");
+        }
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
     }

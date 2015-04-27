@@ -1,24 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ realtime_menu_fragment_fragment.xml
   ~ Last modified on 02-04-2014 08:02-0500 by brianhmayo
   ~
   ~ Copyright (c) 2014 SEPTA.  All rights reserved.
   -->
-
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/main_background">
-
-    <android.support.v7.widget.GridLayout
-        android:id="@+id/realtime_menu_icons_gridlayout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"/>
-
-</RelativeLayout>
+<GridView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/gridview"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="5dp"
+    android:background="@drawable/main_background"
+    android:numColumns="3"
+    android:stretchMode="columnWidth"
+    android:gravity="center_horizontal"
+    android:listSelector="@color/transparent_selector"
+/>

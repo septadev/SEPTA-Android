@@ -1,46 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ nexttoarrive.xml
   ~ Last modified on 05-22-2014 13:02-0400 by brianhmayo
   ~
   ~ Copyright (c) 2014 SEPTA.  All rights reserved.
   -->
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/main_background">
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             android:background="@drawable/main_background"
-             android:orientation="vertical">
-
-    <se.emilsjolander.stickylistheaders.StickyListHeadersListView
-        android:id="@+id/list"
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:drawSelectorOnTop="true"
-        android:scrollbarStyle="outsideOverlay"
-        android:fastScrollEnabled="true"
-        android:overScrollMode="never"
-        android:divider="#D9D8DB"
-        android:dividerHeight="1dp"/>
+        android:orientation="vertical">
 
+        <TextView
+            android:id="@+id/nexttoarrive_alert_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/alert_header_background"
+            android:gravity="center_horizontal"
+            android:paddingBottom="8dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingTop="8dp"
+            android:text="@string/nexttoarrive_alerts_header"
+            android:textColor="@android:color/white"
+            android:textSize="16dp"
+            android:textStyle="bold"
+            android:visibility="gone"/>
+
+        <TextView
+            android:id="@+id/nexttoarrive_alert_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:background="@color/alert_message_background"
+            android:paddingBottom="8dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingTop="8dp"
+            android:textColor="@android:color/black"
+            android:textSize="14dp"
+            android:visibility="gone"/>
+
+        <se.emilsjolander.stickylistheaders.StickyListHeadersListView
+            android:id="@+id/list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:drawSelectorOnTop="true"
+            android:scrollbarStyle="outsideOverlay"
+            android:fastScrollEnabled="true"
+            android:overScrollMode="never"
+            android:divider="#D9D8DB"
+            android:dividerHeight="1dp"/>
+    </LinearLayout>
 
     <FrameLayout
         android:id="@+id/nexttoarrive_menudialog_mainlayout"
         android:layout_width="match_parent"
         android:layout_height="205dp"
+        android:layout_alignParentTop="true"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:background="#FF000000"
         android:visibility="invisible">
 
         <ListView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/nexttoarrive_menudialog_listview"/>
-
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/nexttoarrive_menudialog_listview"/>
     </FrameLayout>
-
-</FrameLayout>
+</RelativeLayout>

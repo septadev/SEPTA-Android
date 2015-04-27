@@ -18,6 +18,17 @@
         <item>tips</item>                          <!-- position col 3 row 2 -->
     </string-array>
 
+    <!--for the realtime menu, this is the list of elements to appear in order -->
+    <string-array name="realtime_menu_icon_selectors_inorder">
+        <item>nexttoarrive_selector</item>                  <!-- position col 1 row 1 -->
+        <item>trainview_selector</item>                     <!-- position col 2 row 1 -->
+        <item>transitview_selector</item>                   <!-- position col 3 row 1 -->
+        <item>systemstatus_selector</item>                  <!-- position col 1 row 2 -->
+        <item>findnearestlocation_selector</item>           <!-- position col 2 row 2 -->
+        <item>tips_selector</item>                          <!-- position col 3 row 2 -->
+    </string-array>
+
+
     <!--for the realtime menu, this is the list of strings to appear in order -->
     <string-array name="realtime_menu_strings_inorder">
         <item>Next to Arrive</item>                <!-- position col 1 row 1 -->

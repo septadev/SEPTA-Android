@@ -58,10 +58,7 @@ public class CalendarDateUtilities {
     }
 
     public static String getStringFromTime(int time) {
-        if (time < 1000)
-            return "0"+String.valueOf(time);
-        else
-            return String.valueOf(time);
+        return String.format("%04d", time);
     }
 
     public static int getNowTimeFormatted() {

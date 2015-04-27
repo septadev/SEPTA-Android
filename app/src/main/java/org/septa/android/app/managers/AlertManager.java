@@ -79,8 +79,6 @@ public class AlertManager implements Callback<ArrayList<AlertModel>> {
     public AlertModel getAlertForRouteShortName(String routeId){
         if(alerts != null ){
             for(AlertModel alert : alerts){
-                // The following check uses "contains" because most routeShortName values contain
-                // alert.getRouteName + " Line" -- this is a hack to handle the existing data model.
                 if(routeId.equals(alert.getRouteId())){
                     return alert;
                 }

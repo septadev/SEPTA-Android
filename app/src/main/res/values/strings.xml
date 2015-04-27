@@ -77,4 +77,8 @@
     <string name="find_nearest_location_gps_unavailable">GPS is unavailable on your device.</string>
     <string name="find_nearest_location_gps_not_enabled">GPS is currently disabled.\nPlease enabled Location Access\nin your device Settings,\nthen tap to retry.</string>
 
+    <!-- Schedule Alerts -->
+    <string name="schedules_alerts_header">ALERTS</string>
+    <string name="schedules_alerts_general_message_prefix">Regional Rail Line:</string>
+
 </resources>

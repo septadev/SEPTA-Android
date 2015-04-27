@@ -26,7 +26,6 @@
     <color name="alert_header_background">#B30E0E</color>
     <color name="alert_message_background">#c2c2c2</color>
 
-
     <!-- Default Black Selector Colors -->
     <color name="default_black_selector">#000000</color>
     <color name="default_black_selector_focused">#222222</color>

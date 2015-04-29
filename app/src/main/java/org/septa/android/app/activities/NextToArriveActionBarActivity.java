@@ -40,8 +40,10 @@ import org.septa.android.app.models.TripDataModel;
 import org.septa.android.app.models.adapterhelpers.TextSubTextImageModel;
 import org.septa.android.app.models.servicemodels.AlertModel;
 import org.septa.android.app.models.servicemodels.NextToArriveModel;
+import org.septa.android.app.models.servicemodels.RouteAlertDataModel;
 import org.septa.android.app.services.apiproxies.AlertsServiceProxy;
 import org.septa.android.app.services.apiproxies.NextToArriveServiceProxy;
+import org.septa.android.app.services.apiproxies.RouteAlertServiceProxy;
 
 import java.util.ArrayList;
 
@@ -72,7 +74,9 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
     private CountDownTimer scheduleRefreshCountDownTimer;
 
     private TextView mAlertHeader;
-    private TextView mAlertMessage;
+    private TextView mGenericAlertMessage;
+    private TextView mOrigAlertMessage;
+    private TextView mTermAlertMessage;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -84,7 +88,9 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
         setContentView(R.layout.nexttoarrive);
 
         mAlertHeader = (TextView) findViewById(R.id.nexttoarrive_alert_header);
-        mAlertMessage = (TextView) findViewById(R.id.nexttoarrive_alert_message);
+        mGenericAlertMessage = (TextView) findViewById(R.id.nexttoarrive_generic_alert_message);
+        mOrigAlertMessage = (TextView) findViewById(R.id.nexttoarrive_orig_alert_message);
+        mTermAlertMessage = (TextView) findViewById(R.id.nexttoarrive_term_alert_message);
 
         String actionBarTitleText = getString(R.string.nexttoarrive_activity_titlebar_text);
         String resourceName = getString(R.string.actionbar_iconimage_imagename_base).concat("nexttoarrive");
@@ -131,7 +137,7 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
-        if(savedInstanceState != null){
+        if (savedInstanceState != null) {
             tripDataModel = savedInstanceState.getParcelable(TRIP_MODEL);
             inProcessOfStartDestinationFlow = savedInstanceState.getBoolean(IN_PROCESS);
             if (tripDataModel != null) {
@@ -141,7 +147,7 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
         }
 
         // Request generic alerts
-        fetchAlerts(null, null);
+        fetchGenericAlert();
     }
 
     @Override
@@ -202,7 +208,8 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
                     if (inProcessOfStartDestinationFlow) {
                         inProcessOfStartDestinationFlow = false;
                     }
-                } else {
+                }
+                else {
                     tripDataModel.setStartStopId(stopId);
                     tripDataModel.setStartStopName(stopName);
 
@@ -305,7 +312,8 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
             store.removeFavorite(nextToArriveFavoriteModel);
             ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).disableRemovedSavedFavorite();
             ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).enableSaveAsFavorite();
-        } else {
+        }
+        else {
             store.addFavorite(nextToArriveFavoriteModel);
             ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).disableSaveAsFavorite();
             ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).enableRemoveSavedFavorite();
@@ -326,7 +334,8 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
                 if (menuRevealed) {
 
                     hideListView();
-                } else {
+                }
+                else {
 
                     revealListView();
                 }
@@ -398,14 +407,14 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
 
     @Override
     public void onStickyHeaderChanged(StickyListHeadersListView l, View header,
-                                      int itemPosition, long headerId) {
+            int itemPosition, long headerId) {
 
     }
 
     private void checkTripStartAndDestinationForNextToArriveDataRequest() {
         // check if we have both the start and destination stops, if yes, fetch the data.
         if ((tripDataModel.getStartStopName() != null) && tripDataModel.getDestinationStopName() != null) {
-            if(menuDialogListView != null && menuDialogListView.getAdapter() != null){
+            if (menuDialogListView != null && menuDialogListView.getAdapter() != null) {
                 ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).enableRefresh();
                 ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).enableSaveAsFavorite();
             }
@@ -427,11 +436,12 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
 
             // check if the selected route is already a favorite, then we allow the option of removing this
             // route from the favorites list.
-            if(menuDialogListView != null) {
+            if (menuDialogListView != null) {
                 if (store.isFavorite(nextToArriveFavoriteModel)) {
                     ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).enableRemoveSavedFavorite();
                     ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).disableSaveAsFavorite();
-                } else {
+                }
+                else {
                     ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).disableRemovedSavedFavorite();
                     ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).enableSaveAsFavorite();
                 }
@@ -447,11 +457,13 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
             if (scheduleRefreshCountDownTimer != null) {
                 scheduleRefreshCountDownTimer.cancel();
                 scheduleRefreshCountDownTimer.start();
-            } else {
+            }
+            else {
                 scheduleRefreshCountDownTimer = createScheduleRefreshCountDownTimer();
                 scheduleRefreshCountDownTimer.start();
             }
-        } else if (menuDialogListView != null && menuDialogListView.getAdapter() != null){
+        }
+        else if (menuDialogListView != null && menuDialogListView.getAdapter() != null) {
             ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).disableRefresh();
             ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).disableSaveAsFavorite();
             ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).disableRemovedSavedFavorite();
@@ -472,9 +484,24 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
                         NextToArriveModel nextToArriveModel = (NextToArriveModel) mAdapter.getItem(i);
                         // Use orig_line and term_line from API response to fetch alerts
                         if (nextToArriveModel != null) {
-                            String origLine = nextToArriveModel.getOriginalLine();
-                            String termLine = nextToArriveModel.getTerminalLine();
-                            fetchAlerts(origLine, termLine);
+
+                            // Fetch generic alerts
+                            fetchGenericAlert();
+
+                            // Fetch alerts for the original line
+                            String origLineName = nextToArriveModel.getOriginalLine();
+                            String origLineId = nextToArriveModel.getOriginalLineId();
+                            if (!TextUtils.isEmpty(origLineId) && !TextUtils.isEmpty(origLineName)) {
+                                fetchOrigRouteAlert(origLineId, origLineName);
+                            }
+
+                            // Fetch alerts for the terminal line
+                            String termLineName = nextToArriveModel.getTerminalLine();
+                            String termLineId = nextToArriveModel.getTerminalLineId();
+                            if (!TextUtils.isEmpty(termLineId) && !TextUtils.isEmpty(termLineName)) {
+                                fetchTermRouteAlert(termLineId, termLineName);
+                            }
+
                             break;
                         }
                     }
@@ -487,14 +514,15 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
 
                 try {
                     Log.d(TAG, "A failure in the call to train view service with body |" + retrofitError.getResponse().getBody().in() + "|");
-                } catch (Exception ex) {
+                }
+                catch (Exception ex) {
                     Log.d(TAG, "fetchNextToArrive: retrofit failed");
                 }
             }
         };
 
         NextToArriveServiceProxy nextToArriveServiceProxy = new NextToArriveServiceProxy();
-//        mAdapter.clearNextToArriveTrainList();
+        //        mAdapter.clearNextToArriveTrainList();
         setProgressBarIndeterminateVisibility(Boolean.TRUE);
 
         String startStopName = tripDataModel.getStartStopName();
@@ -547,8 +575,9 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
             @Override
             public void onTick(long millisUntilFinished) {
 
-                if(menuDialogListView != null && menuDialogListView.getAdapter() != null)
+                if (menuDialogListView != null && menuDialogListView.getAdapter() != null) {
                     ((NextToArrive_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).setNextRefreshInSecondsValue(millisUntilFinished / 1000);
+                }
             }
 
             @Override
@@ -639,94 +668,161 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
         return false;
     }
 
-    private void fetchAlerts(final String origRouteName, final String termRouteName) {
-        Callback callback = new Callback() {
+    private void fetchOrigRouteAlert(final String origRouteId, final String origRouteName) {
+        if (BuildConfig.DEBUG) {
+            Log.v(TAG, "fetchOrigRouteAlert: " + origRouteId);
+        }
+
+        Callback origCallback = new Callback() {
+            @Override
+            public void success(Object o, Response response) {
+                ArrayList<RouteAlertDataModel> routeAlertModelList = (ArrayList<RouteAlertDataModel>) o;
+                StringBuilder origMessage = new StringBuilder();
+
+                if (routeAlertModelList != null) {
+                    for (RouteAlertDataModel routeAlertDataModel : routeAlertModelList) {
+
+                        String routeAlertMessage = routeAlertDataModel.getCurrentMessage();
+                        if (BuildConfig.DEBUG) {
+                            Log.v(TAG, "fetchOrigRouteAlert: currentMessage - " + routeAlertMessage);
+                        }
+
+                        if (!TextUtils.isEmpty(routeAlertMessage)) {
+                            origMessage.append("<b>").append(origRouteName).append(":</b> ").append(routeAlertMessage);
+                            // Show the alert header
+                            mAlertHeader.setVisibility(View.VISIBLE);
+
+                            // Set the original route alert message
+                            mOrigAlertMessage.setText(Html.fromHtml(origMessage.toString()));
+                            mOrigAlertMessage.setVisibility(View.VISIBLE);
+
+                            return;
+                        }
+                    }
+                }
+
+                // If there are no other alerts currently displayed, remove alert header
+                if (mGenericAlertMessage.getVisibility() != View.VISIBLE && mTermAlertMessage.getVisibility() != View.VISIBLE) {
+                    mAlertHeader.setVisibility(View.GONE);
+                }
+                // Remove generic alert
+                mOrigAlertMessage.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void failure(RetrofitError retrofitError) {
+                setProgressBarIndeterminateVisibility(Boolean.FALSE);
+
+                try {
+                    Log.d(TAG, "A failure in the call to train view service with body |" + retrofitError.getResponse().getBody().in() + "|");
+                }
+                catch (Exception ex) {
+                    Log.d(TAG, "fetchOrigRouteAlert: retrofit failed");
+                }
+            }
+        };
+
+        RouteAlertServiceProxy routeAlertServiceProxy = new RouteAlertServiceProxy();
+        routeAlertServiceProxy.getRouteAlertData(origRouteId, origCallback);
+    }
+
+    private void fetchTermRouteAlert(final String termRouteId, final String termRouteName) {
+        if (BuildConfig.DEBUG) {
+            Log.v(TAG, "fetchTermRouteAlert: " + termRouteId);
+        }
+
+        Callback termCallback = new Callback() {
+            @Override
+            public void success(Object o, Response response) {
+                ArrayList<RouteAlertDataModel> routeAlertModelList = (ArrayList<RouteAlertDataModel>) o;
+                StringBuilder origMessage = new StringBuilder();
+
+                if (routeAlertModelList != null) {
+                    for (RouteAlertDataModel routeAlertDataModel : routeAlertModelList) {
+                        String routeAlertMessage = routeAlertDataModel.getCurrentMessage();
+                        if (BuildConfig.DEBUG) {
+                            Log.v(TAG, "fetchTermRouteAlert: currentMessage - " + routeAlertMessage);
+                        }
+
+                        if (!TextUtils.isEmpty(routeAlertMessage)) {
+
+                            origMessage.append("<b>").append(termRouteName).append(":</b> ").append(routeAlertMessage);
+                            // Show the alert header
+                            mAlertHeader.setVisibility(View.VISIBLE);
+
+                            // Set the original route alert message
+                            mTermAlertMessage.setText(Html.fromHtml(origMessage.toString()));
+                            mTermAlertMessage.setVisibility(View.VISIBLE);
+
+                            return;
+                        }
+                    }
+                }
+
+                // If there are no other alerts currently displayed, remove alert header
+                if (mGenericAlertMessage.getVisibility() != View.VISIBLE && mOrigAlertMessage.getVisibility() != View.VISIBLE) {
+                    mAlertHeader.setVisibility(View.GONE);
+                }
+                // Remove generic alert
+                mTermAlertMessage.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void failure(RetrofitError retrofitError) {
+                setProgressBarIndeterminateVisibility(Boolean.FALSE);
+
+                try {
+                    Log.d(TAG, "A failure in the call to train view service with body |" + retrofitError.getResponse().getBody().in() + "|");
+                }
+                catch (Exception ex) {
+                    Log.d(TAG, "fetchTermRouteAlert: retrofit failed");
+                }
+            }
+        };
+
+        RouteAlertServiceProxy routeAlertServiceProxy = new RouteAlertServiceProxy();
+        routeAlertServiceProxy.getRouteAlertData(termRouteId, termCallback);
+    }
+
+    private void fetchGenericAlert() {
+        if (BuildConfig.DEBUG) {
+            Log.v(TAG, "fetchGenericAlert");
+        }
+
+        Callback genCallback = new Callback() {
             @Override
             public void success(Object o, Response response) {
                 ArrayList<AlertModel> alertModelList = (ArrayList<AlertModel>) o;
                 StringBuilder genericMessage = new StringBuilder();
-                StringBuilder origMessage = new StringBuilder();
-                StringBuilder termMessage = new StringBuilder();
                 if (alertModelList != null) {
                     for (int i = 0; i < alertModelList.size(); i++) {
                         AlertModel alertModel = alertModelList.get(i);
                         if (alertModel != null) {
-                            String routeName = alertModel.getRouteName();
 
                             // Get generic alerts
                             if (alertModel.isGeneral()) {
-                                if (BuildConfig.DEBUG) {
-                                    Log.d(TAG, "fetchAlerts: Generic");
-                                }
                                 String generalAlert = alertModel.getCurrentMessage();
-                                // TODO: Link this to contstant once merged
+                                if (BuildConfig.DEBUG) {
+                                    Log.v(TAG, "fetchGenericAlert: currentMessage - " + generalAlert);
+                                }
+
+                                // TODO: Link this to constant once merged
                                 if (!TextUtils.isEmpty(generalAlert) && !generalAlert.equals("Empty")) {
                                     genericMessage.append("<b>").append(getString(R.string.nexttoarrive_alerts_general_message_prefix)).append("</b> ").append(generalAlert);
-                                }
-                            }
-                            // Get route-specific alerts if original route provided
-                            else if (!TextUtils.isEmpty(origRouteName) && !TextUtils.isEmpty(routeName) && routeName.equals(origRouteName)) {
-                                if (BuildConfig.DEBUG) {
-                                    Log.d(TAG, "fetchAlerts: " + origRouteName);
-                                }
-
-                                String origAlert = alertModel.getCurrentMessage();
-                                // TODO: Link this to contstant once merged
-                                if (!TextUtils.isEmpty(origAlert) && !origAlert.equals("Empty")) {
-                                    origMessage.append("<b>").append(origRouteName).append(":</b> ").append(origAlert);
-                                }
-                            }
-                            // Get route-specific alerts if terminal route provided
-                            else if (!TextUtils.isEmpty(termRouteName) && !TextUtils.isEmpty(routeName) && routeName.equals(termRouteName)) {
-                                if (BuildConfig.DEBUG) {
-                                    Log.d(TAG, "fetchAlerts: " + termRouteName);
-                                }
-
-                                String termAlert = alertModel.getCurrentMessage();
-                                // TODO: Link this to contstant once merged
-                                if (!TextUtils.isEmpty(termAlert) && !termAlert.equals("Empty")) {
-                                    termMessage.append("<b>").append(termRouteName).append(":</b> ").append(termAlert);
+                                    mAlertHeader.setVisibility(View.VISIBLE);
+                                    mGenericAlertMessage.setVisibility(View.VISIBLE);
+                                    return;
                                 }
                             }
                         }
                     }
 
-                    StringBuilder combinedMessages = new StringBuilder();
-
-                    // Add generic alert, if any
-                    if (!TextUtils.isEmpty(genericMessage.toString())) {
-                        combinedMessages.append(genericMessage.toString());
-                    }
-
-                    // Add orignal route alert, if any
-                    if (!TextUtils.isEmpty(origMessage.toString())) {
-                        // Add line break if other alerts already included
-                        if (!TextUtils.isEmpty(combinedMessages.toString())) {
-                            combinedMessages.append("<br>");
-                        }
-                        combinedMessages.append(origMessage.toString());
-                    }
-
-                    // Add terminal route alert, if any
-                    if (!TextUtils.isEmpty(termMessage.toString())) {
-                        // Add line break if other alerts already included
-                        if (!TextUtils.isEmpty(combinedMessages.toString())) {
-                            combinedMessages.append("<br>");
-                        }
-                        combinedMessages.append(termMessage.toString());
-                    }
-
-                    // Show alerts, if any
-                    if (!TextUtils.isEmpty(combinedMessages.toString())) {
-                        mAlertMessage.setText(Html.fromHtml(combinedMessages.toString()));
-                        mAlertHeader.setVisibility(View.VISIBLE);
-                        mAlertMessage.setVisibility(View.VISIBLE);
-                    }
-                    // Otherwise, hide alert header and message views
-                    else {
+                    // If there are no other alerts currently displayed, remove alert header
+                    if (mOrigAlertMessage.getVisibility() != View.VISIBLE && mTermAlertMessage.getVisibility() != View.VISIBLE) {
                         mAlertHeader.setVisibility(View.GONE);
-                        mAlertMessage.setVisibility(View.GONE);
                     }
+                    // Remove generic alert
+                    mGenericAlertMessage.setVisibility(View.GONE);
                 }
             }
 
@@ -734,13 +830,14 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
             public void failure(RetrofitError retrofitError) {
                 try {
                     Log.d(TAG, "A failure in the call to train view service with body |" + retrofitError.getResponse().getBody().in() + "|");
-                } catch (Exception ex) {
-                    Log.d(TAG, "fetchAlerts: retrofit failed");
+                }
+                catch (Exception ex) {
+                    Log.d(TAG, "fetchGenericAlert: retrofit failed");
                 }
             }
         };
 
         AlertsServiceProxy alertsServiceProxy = new AlertsServiceProxy();
-        alertsServiceProxy.getAlerts(callback);
+        alertsServiceProxy.getAlerts(genCallback);
     }
 }

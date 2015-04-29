@@ -488,14 +488,14 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
                             // Fetch generic alerts
                             fetchGenericAlert();
 
-                            // Fetch alerts for the original line
+                            // Fetch alerts for the original route
                             String origLineName = nextToArriveModel.getOriginalLine();
                             String origLineId = nextToArriveModel.getOriginalLineId();
                             if (!TextUtils.isEmpty(origLineId) && !TextUtils.isEmpty(origLineName)) {
                                 fetchOrigRouteAlert(origLineId, origLineName);
                             }
 
-                            // Fetch alerts for the terminal line
+                            // Fetch alerts for the terminal route
                             String termLineName = nextToArriveModel.getTerminalLine();
                             String termLineId = nextToArriveModel.getTerminalLineId();
                             if (!TextUtils.isEmpty(termLineId) && !TextUtils.isEmpty(termLineName)) {
@@ -705,7 +705,7 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
                 if (mGenericAlertMessage.getVisibility() != View.VISIBLE && mTermAlertMessage.getVisibility() != View.VISIBLE) {
                     mAlertHeader.setVisibility(View.GONE);
                 }
-                // Remove generic alert
+                // Remove original route alert
                 mOrigAlertMessage.setVisibility(View.GONE);
             }
 
@@ -763,7 +763,7 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
                 if (mGenericAlertMessage.getVisibility() != View.VISIBLE && mOrigAlertMessage.getVisibility() != View.VISIBLE) {
                     mAlertHeader.setVisibility(View.GONE);
                 }
-                // Remove generic alert
+                // Remove terminal route alert
                 mTermAlertMessage.setVisibility(View.GONE);
             }
 

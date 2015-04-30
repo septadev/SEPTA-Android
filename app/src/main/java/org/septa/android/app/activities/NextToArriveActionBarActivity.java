@@ -809,7 +809,12 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
                                 // TODO: Link this to constant once merged
                                 if (!TextUtils.isEmpty(generalAlert) && !generalAlert.equals("Empty")) {
                                     genericMessage.append("<b>").append(getString(R.string.nexttoarrive_alerts_general_message_prefix)).append("</b> ").append(generalAlert);
+
+                                    // Show the alert header
                                     mAlertHeader.setVisibility(View.VISIBLE);
+
+                                    // Set the generic alert message
+                                    mGenericAlertMessage.setText(Html.fromHtml(genericMessage.toString()));
                                     mGenericAlertMessage.setVisibility(View.VISIBLE);
                                     return;
                                 }

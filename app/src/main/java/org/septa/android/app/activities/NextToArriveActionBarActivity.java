@@ -739,6 +739,7 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
 
                 if (routeAlertModelList != null) {
                     for (RouteAlertDataModel routeAlertDataModel : routeAlertModelList) {
+
                         String routeAlertMessage = routeAlertDataModel.getCurrentMessage();
                         if (BuildConfig.DEBUG) {
                             Log.v(TAG, "fetchTermRouteAlert: currentMessage - " + routeAlertMessage);

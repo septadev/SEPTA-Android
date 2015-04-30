@@ -735,7 +735,7 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
             @Override
             public void success(Object o, Response response) {
                 ArrayList<RouteAlertDataModel> routeAlertModelList = (ArrayList<RouteAlertDataModel>) o;
-                StringBuilder origMessage = new StringBuilder();
+                StringBuilder termMessage = new StringBuilder();
 
                 if (routeAlertModelList != null) {
                     for (RouteAlertDataModel routeAlertDataModel : routeAlertModelList) {
@@ -747,12 +747,12 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
 
                         if (!TextUtils.isEmpty(routeAlertMessage)) {
 
-                            origMessage.append("<b>").append(termRouteName).append(":</b> ").append(routeAlertMessage);
+                            termMessage.append("<b>").append(termRouteName).append(":</b> ").append(routeAlertMessage);
                             // Show the alert header
                             mAlertHeader.setVisibility(View.VISIBLE);
 
-                            // Set the original route alert message
-                            mTermAlertMessage.setText(Html.fromHtml(origMessage.toString()));
+                            // Set the terminal route alert message
+                            mTermAlertMessage.setText(Html.fromHtml(termMessage.toString()));
                             mTermAlertMessage.setVisibility(View.VISIBLE);
 
                             return;

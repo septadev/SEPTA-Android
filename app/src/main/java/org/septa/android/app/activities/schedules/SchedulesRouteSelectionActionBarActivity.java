@@ -142,6 +142,7 @@ public class SchedulesRouteSelectionActionBarActivity extends BaseAnalyticsActio
         String routeShortName = "";
 
         SchedulesRouteModel route = (SchedulesRouteModel)mAdapter.getItem(position);
+        route.setRouteType(travelType.ordinal());
         Log.d("f", "onItemClick occurred at position "+position+" with id "+id+" and route short name of "+route.getRouteShortName());
 
         if (!mAdapter.isFavorite(position) && !mAdapter.isRecentlyViewed(position)) {

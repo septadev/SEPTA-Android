@@ -44,6 +44,7 @@ import org.septa.android.app.models.servicemodels.RouteAlertDataModel;
 import org.septa.android.app.services.apiproxies.AlertsServiceProxy;
 import org.septa.android.app.services.apiproxies.NextToArriveServiceProxy;
 import org.septa.android.app.services.apiproxies.RouteAlertServiceProxy;
+import org.septa.android.app.utilities.Constants;
 
 import java.util.ArrayList;
 
@@ -803,14 +804,14 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
                             // Get generic alerts
                             String routeId = alertModel.getRouteId();
                             // TODO: Make this a constant
-                            if (!TextUtils.isEmpty(routeId) && routeId.equals("generic")) {
+                            if (!TextUtils.isEmpty(routeId) && routeId.equals(Constants.VALUE_ALERT_ROUTE_ID_GENERIC)) {
                                 String generalAlert = alertModel.getCurrentMessage();
                                 if (BuildConfig.DEBUG) {
                                     Log.v(TAG, "fetchGenericAlert: currentMessage - " + generalAlert);
                                 }
 
                                 // TODO: Link this to constant once merged
-                                if (!TextUtils.isEmpty(generalAlert) && !generalAlert.equals("Empty") && generalAlert.contains("RRD")) {
+                                if (!TextUtils.isEmpty(generalAlert) && !generalAlert.equals(Constants.VALUE_ALERT_RESPONSE_EMPTY) && generalAlert.contains(Constants.VALUE_RR_ALERT_MESSAGE_PREFIX)) {
                                     genericMessage.append("<b>").append(getString(R.string.nexttoarrive_alerts_general_message_prefix)).append("</b> ").append(generalAlert);
 
                                     // Show the alert header

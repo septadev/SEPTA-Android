@@ -31,4 +31,8 @@ public class Constants {
     public static final String VALUE_TRAVEL_TYPE_NHSL = "NHSL";
     public static final String VALUE_TRAVEL_TYPE_BUS = "BUS";
 
+    public static final String VALUE_ALERT_RESPONSE_EMPTY = "Empty";
+    public static final String VALUE_ALERT_ROUTE_ID_GENERIC = "generic";
+    public static final String VALUE_RR_ALERT_MESSAGE_PREFIX = "RRD";
+
 }

@@ -390,7 +390,6 @@ public class SchedulesRouteSelectionActionBarActivity extends BaseAnalyticsActio
                         AlertModel alertModel = alertModelList.get(i);
                         if (alertModel != null) {
                             String routeId = alertModel.getRouteId();
-                            // TODO: Make this a constant
                             if (!TextUtils.isEmpty(routeId) && routeId.equals(Constants.VALUE_ALERT_ROUTE_ID_GENERIC)) {
                                 String generalAlert = alertModel.getCurrentMessage();
                                 if (BuildConfig.DEBUG) {

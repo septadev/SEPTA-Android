@@ -399,7 +399,7 @@ public class SchedulesRouteSelectionActionBarActivity extends BaseAnalyticsActio
                                     Log.v(TAG, "fetchGenericAlert: currentMessage - " + generalAlert);
                                 }
 
-                                if (!TextUtils.isEmpty(generalAlert) && !generalAlert.equals(VALUE_ALERT_RESPONSE_EMPTY)) {
+                                if (!TextUtils.isEmpty(generalAlert) && !generalAlert.equals(VALUE_ALERT_RESPONSE_EMPTY) && generalAlert.contains("RRD")) {
                                     StringBuilder message = new StringBuilder();
                                     message.append("<b>").append(getString(R.string.schedules_alerts_general_message_prefix)).append("</b> ").append(generalAlert);
                                     if (mAlertMessage != null && mAlertHeader != null) {

@@ -801,7 +801,9 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
                         if (alertModel != null) {
 
                             // Get generic alerts
-                            if (alertModel.isGeneral()) {
+                            String routeId = alertModel.getRouteId();
+                            // TODO: Make this a constant
+                            if (!TextUtils.isEmpty(routeId) && routeId.equals("generic")) {
                                 String generalAlert = alertModel.getCurrentMessage();
                                 if (BuildConfig.DEBUG) {
                                     Log.v(TAG, "fetchGenericAlert: currentMessage - " + generalAlert);

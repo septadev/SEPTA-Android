@@ -29,7 +29,7 @@ public class NextToArriveModel {
         rrRouteId.put("Paoli/Thorndale", "rr_route_pao");
         rrRouteId.put("Trenton", "rr_route_trent");
         rrRouteId.put("Warminster", "rr_route_warm");
-        rrRouteId.put("Wilmington/Neward", "rr_route_wilm");
+        rrRouteId.put("Wilmington/Newark", "rr_route_wilm");
         rrRouteId.put("West Trenton", "rr_route_wtren");
     }
 

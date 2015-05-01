@@ -26,6 +26,7 @@ import android.widget.TextView;
 
 import com.google.gson.Gson;
 
+import org.septa.android.app.BuildConfig;
 import org.septa.android.app.R;
 import org.septa.android.app.activities.BaseAnalyticsActionBarActivity;
 import org.septa.android.app.adapters.schedules.SchedulesRouteSelection_ListViewItem_ArrayAdapter;
@@ -389,15 +390,23 @@ public class SchedulesRouteSelectionActionBarActivity extends BaseAnalyticsActio
                     ArrayList<AlertModel> alertModelList = (ArrayList<AlertModel>) o;
                     for (int i = 0; i < alertModelList.size(); i++) {
                         AlertModel alertModel = alertModelList.get(i);
-                        if (alertModel != null && alertModel.isGeneral()) {
-                            String generalAlert = alertModel.getCurrentMessage();
-                            if (!TextUtils.isEmpty(generalAlert) && !generalAlert.equals(VALUE_ALERT_RESPONSE_EMPTY)) {
-                                StringBuilder message = new StringBuilder();
-                                message.append("<b>").append(getString(R.string.schedules_alerts_general_message_prefix)).append("</b> ").append(generalAlert);
-                                if (mAlertMessage != null && mAlertHeader != null) {
-                                    mAlertMessage.setText(Html.fromHtml(message.toString()));
-                                    mAlertHeader.setVisibility(View.VISIBLE);
-                                    mAlertMessage.setVisibility(View.VISIBLE);
+                        if (alertModel != null) {
+                            String routeId = alertModel.getRouteId();
+                            // TODO: Make this a constant
+                            if (!TextUtils.isEmpty(routeId) && routeId.equals("generic")) {
+                                String generalAlert = alertModel.getCurrentMessage();
+                                if (BuildConfig.DEBUG) {
+                                    Log.v(TAG, "fetchGenericAlert: currentMessage - " + generalAlert);
+                                }
+
+                                if (!TextUtils.isEmpty(generalAlert) && !generalAlert.equals(VALUE_ALERT_RESPONSE_EMPTY)) {
+                                    StringBuilder message = new StringBuilder();
+                                    message.append("<b>").append(getString(R.string.schedules_alerts_general_message_prefix)).append("</b> ").append(generalAlert);
+                                    if (mAlertMessage != null && mAlertHeader != null) {
+                                        mAlertMessage.setText(Html.fromHtml(message.toString()));
+                                        mAlertHeader.setVisibility(View.VISIBLE);
+                                        mAlertMessage.setVisibility(View.VISIBLE);
+                                    }
                                 }
                             }
                         }

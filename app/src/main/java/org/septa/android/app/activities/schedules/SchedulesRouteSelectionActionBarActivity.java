@@ -62,8 +62,6 @@ public class SchedulesRouteSelectionActionBarActivity extends BaseAnalyticsActio
 
     public static final String TAG = SchedulesRouteSelectionActionBarActivity.class.getName();
 
-    public static final String VALUE_ALERT_RESPONSE_EMPTY = "Empty";
-
     private SchedulesRouteSelection_ListViewItem_ArrayAdapter mAdapter;
     private boolean fadeHeader = true;
 
@@ -392,14 +390,13 @@ public class SchedulesRouteSelectionActionBarActivity extends BaseAnalyticsActio
                         AlertModel alertModel = alertModelList.get(i);
                         if (alertModel != null) {
                             String routeId = alertModel.getRouteId();
-                            // TODO: Make this a constant
-                            if (!TextUtils.isEmpty(routeId) && routeId.equals("generic")) {
+                            if (!TextUtils.isEmpty(routeId) && routeId.equals(Constants.VALUE_ALERT_ROUTE_ID_GENERIC)) {
                                 String generalAlert = alertModel.getCurrentMessage();
                                 if (BuildConfig.DEBUG) {
                                     Log.v(TAG, "fetchGenericAlert: currentMessage - " + generalAlert);
                                 }
 
-                                if (!TextUtils.isEmpty(generalAlert) && !generalAlert.equals(VALUE_ALERT_RESPONSE_EMPTY)) {
+                                if (!TextUtils.isEmpty(generalAlert) && !generalAlert.equals(Constants.VALUE_ALERT_RESPONSE_EMPTY) && generalAlert.contains(Constants.VALUE_RR_ALERT_MESSAGE_PREFIX)) {
                                     StringBuilder message = new StringBuilder();
                                     message.append("<b>").append(getString(R.string.schedules_alerts_general_message_prefix)).append("</b> ").append(generalAlert);
                                     if (mAlertMessage != null && mAlertHeader != null) {

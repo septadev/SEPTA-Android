@@ -10,14 +10,11 @@ package org.septa.android.app.services.adaptors;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.internal.bind.DateTypeAdapter;
 
 import org.septa.android.app.models.RouteTypes;
-import org.septa.android.app.models.RoutesModel;
 import org.septa.android.app.models.SchedulesRouteModel;
 import org.septa.android.app.services.ServiceErrorHandler;
 import org.septa.android.app.services.apiinterfaces.AlertsService;
-import org.septa.android.app.services.apiinterfaces.TrainViewService;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -31,6 +28,7 @@ public class AlertsAdaptor {
     private static Map<String, String> railCodes = new HashMap<String, String>();
 
     static {
+        railCodes.put("AIR", "apt");
         railCodes.put("CHE", "che");
         railCodes.put("CHW", "chw");
         railCodes.put("CYN", "cyn");

@@ -251,6 +251,7 @@ public class SchedulesRouteSelection_ListViewItem_ArrayAdapter extends BaseAdapt
                         }
                         // Otherwise, check for other alert icons to display
                         else {
+                            // Remove line suspension icon from view
                             lineSuspensionImageView.setVisibility(View.GONE);
 
                             // If route has service advisory, display service advisory icon

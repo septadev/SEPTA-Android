@@ -245,33 +245,35 @@ public class SchedulesRouteSelection_ListViewItem_ArrayAdapter extends BaseAdapt
                 if (alertManager != null && !TextUtils.isEmpty(routeId)) {
                     AlertModel alertModel = alertManager.getAlertForRouteShortName(routeId);
                     if (alertModel != null) {
-                        // If route has service advisory, display service advisory icon
-                        if (alertModel.hasAdvisoryFlag()) {
-                            serviceAdvisoryImageView.setVisibility(View.VISIBLE);
-                        }
-                        else {
-                            serviceAdvisoryImageView.setVisibility(View.GONE);
-                        }
-                        // If route has detour, display detour icon
-                        if (alertModel.hasDetourFlag()) {
-                            detourImageView.setVisibility(View.VISIBLE);
-                        }
-                        else {
-                            detourImageView.setVisibility(View.GONE);
-                        }
-                        // If route has service alert, display service alert icon
-                        if (alertModel.hasAlertFlag()) {
-                            serviceAlertImageView.setVisibility(View.VISIBLE);
-                        }
-                        else {
-                            serviceAlertImageView.setVisibility(View.GONE);
-                        }
-                        // If route has line suspension, display line suspension icon
+                        // If route is suspended, display line suspension icon and no others
                         if (alertModel.hasSuspendedFlag()) {
                             lineSuspensionImageView.setVisibility(View.VISIBLE);
                         }
+                        // Otherwise, check for other alert icons to display
                         else {
                             lineSuspensionImageView.setVisibility(View.GONE);
+
+                            // If route has service advisory, display service advisory icon
+                            if (alertModel.hasAdvisoryFlag()) {
+                                serviceAdvisoryImageView.setVisibility(View.VISIBLE);
+                            }
+                            else {
+                                serviceAdvisoryImageView.setVisibility(View.GONE);
+                            }
+                            // If route has detour, display detour icon
+                            if (alertModel.hasDetourFlag()) {
+                                detourImageView.setVisibility(View.VISIBLE);
+                            }
+                            else {
+                                detourImageView.setVisibility(View.GONE);
+                            }
+                            // If route has service alert, display service alert icon
+                            if (alertModel.hasAlertFlag()) {
+                                serviceAlertImageView.setVisibility(View.VISIBLE);
+                            }
+                            else {
+                                serviceAlertImageView.setVisibility(View.GONE);
+                            }
                         }
                     }
                 }

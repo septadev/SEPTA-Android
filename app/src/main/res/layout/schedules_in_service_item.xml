@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:id="@+id/train_status_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="12dp"
+        android:layout_gravity="center_vertical|left">
+
+        <TextView
+            android:id="@+id/train_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_black"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            tools:text="1234"/>
+
+        <TextView
+            android:id="@+id/train_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_on_time"
+            android:textSize="14sp"
+            tools:text="On Time"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/track_number_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:layout_gravity="center_vertical|right">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_on_time"
+            android:textSize="14sp"
+            tools:text="Track"/>
+
+        <TextView
+            android:id="@+id/track_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_black"
+            android:textSize="18sp"
+            tools:text="1A"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/destination_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@id/track_number_layout"
+        android:layout_toRightOf="@id/train_status_layout"
+        android:layout_gravity="center">
+
+        <TextView
+            android:id="@+id/next_stop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:textColor="@color/text_black"
+            android:textSize="18sp"
+            tools:text="Next: 30th Street Station"/>
+
+        <TextView
+            android:id="@+id/destination"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:textColor="@color/text_black"
+            android:textSize="18sp"
+            tools:text="Dest: Airport"/>
+    </LinearLayout>
+</RelativeLayout>

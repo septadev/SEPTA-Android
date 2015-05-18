@@ -19,6 +19,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -54,7 +55,9 @@ import org.septa.android.app.models.SortOrder;
 import org.septa.android.app.models.TripObject;
 import org.septa.android.app.models.adapterhelpers.TextSubTextImageModel;
 import org.septa.android.app.models.servicemodels.ServiceAdvisoryModel;
+import org.septa.android.app.models.servicemodels.TrainViewModel;
 import org.septa.android.app.services.adaptors.AlertsAdaptor;
+import org.septa.android.app.services.apiproxies.TrainViewServiceProxy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -253,7 +256,7 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
                     case 2: {       // service advisory
                         Intent intent = new Intent(SchedulesItineraryActionBarActivity.this,
                                 ServiceAdvisoryActivity.class);
-                        intent.putParcelableArrayListExtra(getString(R.string.alerts_extra_alerts) ,alerts);
+                        intent.putParcelableArrayListExtra(getString(R.string.alerts_extra_alerts), alerts);
                         intent.putExtra(getString(R.string.alerts_extra_route_type), travelType);
                         intent.putExtra(getString(R.string.alerts_extra_title), getSupportActionBar().getTitle());
                         intent.putExtra(getString(R.string.alerts_extra_icon), actionBarIconId);
@@ -566,6 +569,11 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
 
             ArrayList<TripObject> trips = schedulesDataModel.createFilteredTripsList(selectedTab);
             mAdapter.setTripObject(trips);
+
+            // TODO: Clean this up/implement correctly
+            if (travelType == RouteTypes.RAIL) {
+                fetchInServiceTrains();
+            }
         }
     }
 
@@ -916,5 +924,50 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
             TextView endRouteNameTextView = (TextView) findViewById(R.id.schedules_itinerary_routedirection_textview);
             endRouteNameTextView.setText("To " + directionHeaderString);
         }
+    }
+
+    private void fetchInServiceTrains() {
+
+        Callback callback = new Callback() {
+            @Override
+            public void success(Object object, Response response) {
+                // TODO: Add explanation
+                ArrayList<TrainViewModel> inServiceArrayList = (ArrayList<TrainViewModel>) object;
+                if (inServiceArrayList != null && inServiceArrayList.size() > 0) {
+                    for (int i = 1; i < mAdapter.getCount(); i++) {
+                        TripObject tripObject = (TripObject) mAdapter.getItem(i);
+                        if (tripObject != null) {
+                            for (TrainViewModel trainViewModel : inServiceArrayList) {
+                                if (trainViewModel != null) {
+                                    Number trainNo = tripObject.getTrainNo();
+                                    String trainNumber = trainViewModel.getTrainNumber();
+                                    if (trainNo != null && !TextUtils.isEmpty(trainNumber)) {
+                                        if (trainNo.intValue() == Integer.parseInt(trainNumber)) {
+                                            // TODO: Change its state
+                                            System.out.println(actionBarTitleText + ": " + trainNumber + " arriving on track " + trainViewModel.getTrack());
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError retrofitError) {
+                setProgressBarIndeterminateVisibility(Boolean.FALSE);
+
+                try {
+                    Log.d(TAG, "fetchInServiceTrains: retrofitError - " + retrofitError.getResponse().getBody().in());
+                } catch (Exception ex) {
+                    Log.d(TAG, "fetchInServiceTrains: retrofitError");
+                }
+            }
+        };
+
+        // Call train view service proxy to get trains in transit
+        TrainViewServiceProxy trainViewServiceProxy = new TrainViewServiceProxy();
+        trainViewServiceProxy.getTrainView(callback);
     }
 }

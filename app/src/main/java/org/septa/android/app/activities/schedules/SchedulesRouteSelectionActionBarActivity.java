@@ -37,8 +37,8 @@ import org.septa.android.app.models.RouteTypes;
 import org.septa.android.app.models.SchedulesFavoriteModel;
 import org.septa.android.app.models.SchedulesRecentlyViewedModel;
 import org.septa.android.app.models.SchedulesRouteModel;
-import org.septa.android.app.models.servicemodels.AlertModel;
-import org.septa.android.app.services.apiproxies.AlertsServiceProxy;
+import org.septa.android.app.models.servicemodels.RouteAlertDataModel;
+import org.septa.android.app.services.apiproxies.RouteAlertServiceProxy;
 import org.septa.android.app.utilities.Constants;
 import org.septa.android.app.views.StatusView;
 
@@ -124,7 +124,7 @@ public class SchedulesRouteSelectionActionBarActivity extends BaseAnalyticsActio
         routesLoader.execute(travelType);
 
         if (actionBarTitleText.equals(Constants.VALUE_REGIONAL_RAIL_LINE)) {
-            fetchAlerts();
+            fetchGenericAlert();
         }
     }
 
@@ -380,31 +380,36 @@ public class SchedulesRouteSelectionActionBarActivity extends BaseAnalyticsActio
         }
     }
 
-    private void fetchAlerts() {
-        Callback callback = new Callback() {
+    private void fetchGenericAlert() {
+        if (BuildConfig.DEBUG) {
+            Log.v(TAG, "fetchGenericAlert");
+        }
+
+        Callback genCallback = new Callback() {
             @Override
             public void success(Object o, Response response) {
-                if (o != null) {
-                    ArrayList<AlertModel> alertModelList = (ArrayList<AlertModel>) o;
-                    for (int i = 0; i < alertModelList.size(); i++) {
-                        AlertModel alertModel = alertModelList.get(i);
-                        if (alertModel != null) {
-                            String routeId = alertModel.getRouteId();
-                            if (!TextUtils.isEmpty(routeId) && routeId.equals(Constants.VALUE_ALERT_ROUTE_ID_GENERIC)) {
-                                String generalAlert = alertModel.getCurrentMessage();
-                                if (BuildConfig.DEBUG) {
-                                    Log.v(TAG, "fetchGenericAlert: currentMessage - " + generalAlert);
-                                }
+                ArrayList<RouteAlertDataModel> routeAlertModelList = (ArrayList<RouteAlertDataModel>) o;
+                if (routeAlertModelList != null) {
+                    for (RouteAlertDataModel routeAlertDataModel : routeAlertModelList) {
+                        if (routeAlertDataModel != null) {
 
-                                if (!TextUtils.isEmpty(generalAlert) && !generalAlert.equals(Constants.VALUE_ALERT_RESPONSE_EMPTY) && generalAlert.contains(Constants.VALUE_RR_ALERT_MESSAGE_PREFIX)) {
-                                    StringBuilder message = new StringBuilder();
-                                    message.append("<b>").append(getString(R.string.schedules_alerts_general_message_prefix)).append("</b> ").append(generalAlert);
-                                    if (mAlertMessage != null && mAlertHeader != null) {
-                                        mAlertMessage.setText(Html.fromHtml(message.toString()));
-                                        mAlertHeader.setVisibility(View.VISIBLE);
-                                        mAlertMessage.setVisibility(View.VISIBLE);
-                                    }
-                                }
+                            // Get generic alert
+                            String routeAlertMessage = routeAlertDataModel.getCurrentMessage();
+                            if (BuildConfig.DEBUG) {
+                                Log.v(TAG, "fetchGenericAlert: currentMessage - " + routeAlertMessage);
+                            }
+
+                            if (!TextUtils.isEmpty(routeAlertMessage)) {
+                                StringBuilder genericMessage = new StringBuilder();
+                                genericMessage.append("<b>").append(getString(R.string.nexttoarrive_alerts_general_message_prefix)).append("</b> ").append(routeAlertMessage);
+
+                                // Show the alert header
+                                mAlertHeader.setVisibility(View.VISIBLE);
+
+                                // Set the generic alert message
+                                mAlertMessage.setText(Html.fromHtml(genericMessage.toString()));
+                                mAlertMessage.setVisibility(View.VISIBLE);
+                                return;
                             }
                         }
                     }
@@ -415,13 +420,14 @@ public class SchedulesRouteSelectionActionBarActivity extends BaseAnalyticsActio
             public void failure(RetrofitError retrofitError) {
                 try {
                     Log.d(TAG, "A failure in the call to train view service with body |" + retrofitError.getResponse().getBody().in() + "|");
-                } catch (Exception ex) {
-                    Log.d(TAG, "retrofitError");
+                }
+                catch (Exception ex) {
+                    Log.d(TAG, "fetchGenericAlert: retrofit failed");
                 }
             }
         };
 
-        AlertsServiceProxy alertsServiceProxy = new AlertsServiceProxy();
-        alertsServiceProxy.getAlerts(callback);
+        RouteAlertServiceProxy routeAlertServiceProxy = new RouteAlertServiceProxy();
+        routeAlertServiceProxy.getRouteAlertData(Constants.VALUE_ALERT_ROUTE_ID_GENERIC, genCallback);
     }
 }

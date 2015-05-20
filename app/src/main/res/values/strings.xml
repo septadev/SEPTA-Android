@@ -81,4 +81,12 @@
     <string name="schedules_alerts_header">ALERTS</string>
     <string name="schedules_alerts_general_message_prefix">Regional Rail Line:</string>
 
+    <!-- In Service Train -->
+    <string name="destination">Dest: %s</string>
+    <string name="in_service_header">IN SERVICE TRAINS</string>
+    <string name="late">%s min late</string>
+    <string name="next_stop">Next: %s</string>
+    <string name="on_time">On time</string>
+    <string name="track">Track</string>
+
 </resources>

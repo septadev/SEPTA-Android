@@ -31,8 +31,13 @@
     <color name="default_black_selector_selected">#222222</color>
 
     <!-- Text Colors -->
-    <color name="text_black">#FFFFFF</color>
+    <color name="text_black">#000000</color>
     <color name="text_on_time">#1D8A24</color>
     <color name="text_late">#B30E0E</color>
+
+    <!-- Background Colors -->
+    <color name="background_white">#FFFFFF</color>
+    <color name="in_service_header_green">#991D8A24</color>
+    <color name="remaining_trips_header_red">#998A1515</color>
 
 </resources>

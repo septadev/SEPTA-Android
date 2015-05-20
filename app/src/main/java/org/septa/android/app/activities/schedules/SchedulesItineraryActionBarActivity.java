@@ -931,9 +931,12 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
         Callback callback = new Callback() {
             @Override
             public void success(Object object, Response response) {
-                // TODO: Add explanation
                 ArrayList<TrainViewModel> inServiceArrayList = (ArrayList<TrainViewModel>) object;
                 if (inServiceArrayList != null && inServiceArrayList.size() > 0) {
+                    // Create flag to update UI
+                    boolean trainsInService = false;
+
+                    // Compare train number from schedule and response to see if currently in service
                     for (int i = 1; i < mAdapter.getCount(); i++) {
                         TripObject tripObject = (TripObject) mAdapter.getItem(i);
                         if (tripObject != null) {
@@ -942,12 +945,22 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
                                     Number trainNo = tripObject.getTrainNo();
                                     String trainNumber = trainViewModel.getTrainNumber();
                                     if (trainNo != null && !TextUtils.isEmpty(trainNumber)) {
-                                        if (trainNo.intValue() == Integer.parseInt(trainNumber)) {
-                                            // TODO: Change its state
-                                            System.out.println(actionBarTitleText + ": " + trainNumber + " arriving on track " + trainViewModel.getTrack());
+                                        // If train is in service, change its state and update its view
+                                        if (Integer.toString(trainNo.intValue()).equals(trainNumber)) {
+                                            String trackInfo = trainViewModel.getTrack();
+                                            if (!TextUtils.isEmpty(trackInfo)) {
+                                                tripObject.setTrainViewModel(trainViewModel);
+                                                trainsInService = true;
+                                                System.out.println(actionBarTitleText + ": " + trainNumber + " arriving on track " + trainViewModel.getTrack() + " (" + i + ")");
+                                            }
                                         }
                                     }
                                 }
+                            }
+
+                            // If any trains are in service, update the UI
+                            if (trainsInService) {
+                                mAdapter.notifyDataSetChanged();
                             }
                         }
                     }

@@ -24,7 +24,9 @@ import org.septa.android.app.utilities.CalendarDateUtilities;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 
@@ -261,7 +263,7 @@ public class SchedulesItinerary_ListViewItem_ArrayAdapter extends BaseAdapter im
                 this.headerView = view;
         }
         // Otherwise, if it is the first list item after in service trains, add remaining trips header
-        else {//if (position >= 1 + getInServiceItemCount()) {
+        else {
             view = mInflater.inflate(R.layout.schedules_routeselection_headerview, parent, false);
             TextView textView = (TextView) view.findViewById(R.id.schedules_routeselection_sectionheader_textview);
 
@@ -315,5 +317,39 @@ public class SchedulesItinerary_ListViewItem_ArrayAdapter extends BaseAdapter im
 
     class ViewHolder {
         TextView text;
+    }
+
+    /**
+     * This method  sorts the trip objects such that in service trains are all at the top.
+     * This should be used prior to updating the adapter, as response from API does not always
+     * put in service items first.
+      */
+    public void sortByInServiceStatus () {
+        List<Boolean> inServiceList = new ArrayList<Boolean>();
+        for (TripObject trip : trips) {
+            if (trip != null) {
+                if (trip.getTrainViewModel() != null) {
+                    inServiceList.add(true);
+                }
+                else {
+                    inServiceList.add(false);
+                }
+            }
+            else {
+                inServiceList.add(false);
+            }
+        }
+
+        for (int i = 1; i < inServiceList.size(); i++) {
+            Boolean status = inServiceList.get(i);
+            if (status != null && status) {
+                for (int j = i - 1; j >= 0; j--) {
+                    Boolean precedingStatus = inServiceList.get(j);
+                    if (precedingStatus != null && !precedingStatus) {
+                        Collections.swap(trips, i, j);
+                    }
+                }
+            }
+        }
     }
 }

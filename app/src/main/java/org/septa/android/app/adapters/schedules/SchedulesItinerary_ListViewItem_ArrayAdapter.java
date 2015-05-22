@@ -26,7 +26,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 
@@ -91,14 +90,14 @@ public class SchedulesItinerary_ListViewItem_ArrayAdapter extends BaseAdapter im
 
     @Override
     public int getCount() {
-        return trips.size()+1;
+        return trips.size() + 1;
     }
 
     @Override
     public Object getItem(int position) {
 
         // position-1 to compensate for the start end selection row
-        return getItems()[(position-1)];
+        return getItems()[(position - 1)];
     }
 
     @Override
@@ -111,7 +110,8 @@ public class SchedulesItinerary_ListViewItem_ArrayAdapter extends BaseAdapter im
 
         if (headerView == null) {
 
-        } else {
+        }
+        else {
             TextView textView = (TextView) headerView.findViewById(R.id.schedules_routeselection_sectionheader_textview);
             textView.setText(text);
         }
@@ -121,11 +121,11 @@ public class SchedulesItinerary_ListViewItem_ArrayAdapter extends BaseAdapter im
     public View getView(int position, View convertView, ViewGroup parent) {
         View rowView;
 
-        if (position == 0 ) {
+        if (position == 0) {
 
             rowView = mInflater.inflate(R.layout.schedules_itinerary_selectstartend_row, parent, false);
-            TextView routeStartStopNameTextView = (TextView)rowView.findViewById(R.id.schedules_itinerary_selectstartend_start_textview);
-            TextView routeEndStopNameTextView = (TextView)rowView.findViewById(R.id.schedules_itinerary_selectstartend_end_textview);
+            TextView routeStartStopNameTextView = (TextView) rowView.findViewById(R.id.schedules_itinerary_selectstartend_start_textview);
+            TextView routeEndStopNameTextView = (TextView) rowView.findViewById(R.id.schedules_itinerary_selectstartend_end_textview);
 
             if (this.routeStartName != null) {
                 routeStartStopNameTextView.setText(routeStartName);
@@ -249,18 +249,18 @@ public class SchedulesItinerary_ListViewItem_ArrayAdapter extends BaseAdapter im
         View view = null;
 
         if (position == 0) {
-            view =  mInflater.inflate(R.layout.schedules_routeselection_sectionheader_hiddenview, parent, false);
+            view = mInflater.inflate(R.layout.schedules_routeselection_sectionheader_hiddenview, parent, false);
         }
         // If it is the first in service list item, add in service header
         else if (getInServiceItemCount() > 0 && position >= 1 && position < 1 + getInServiceItemCount()) {
 
-                view = mInflater.inflate(R.layout.schedules_routeselection_headerview, parent, false);
-                TextView textView = (TextView) view.findViewById(R.id.schedules_routeselection_sectionheader_textview);
+            view = mInflater.inflate(R.layout.schedules_routeselection_headerview, parent, false);
+            TextView textView = (TextView) view.findViewById(R.id.schedules_routeselection_sectionheader_textview);
 
-                textView.setText(view.getContext().getString(R.string.in_service_header));
-                textView.setBackgroundColor(view.getContext().getResources().getColor(R.color.in_service_header_green));
+            textView.setText(view.getContext().getString(R.string.in_service_header));
+            textView.setBackgroundColor(view.getContext().getResources().getColor(R.color.in_service_header_green));
 
-                this.headerView = view;
+            this.headerView = view;
         }
         // Otherwise, if it is the first list item after in service trains, add remaining trips header
         else {
@@ -320,32 +320,22 @@ public class SchedulesItinerary_ListViewItem_ArrayAdapter extends BaseAdapter im
     }
 
     /**
-     * This method  sorts the trip objects such that in service trains are all at the top.
-     * This should be used prior to updating the adapter, as response from API does not always
-     * put in service items first.
-      */
-    public void sortByInServiceStatus () {
-        List<Boolean> inServiceList = new ArrayList<Boolean>();
-        for (TripObject trip : trips) {
-            if (trip != null) {
-                if (trip.getTrainViewModel() != null) {
-                    inServiceList.add(true);
-                }
-                else {
-                    inServiceList.add(false);
-                }
-            }
-            else {
-                inServiceList.add(false);
-            }
-        }
-
-        for (int i = 1; i < inServiceList.size(); i++) {
-            Boolean status = inServiceList.get(i);
-            if (status != null && status) {
+     * This method  sorts the trip objects such that in service trains are all at the top. This
+     * should be used prior to updating the adapter, as response from API does not always put in
+     * service items first.
+     */
+    public void sortByInServiceStatus() {
+        for (int i = 1; i < trips.size(); i++) {
+            TripObject trip = trips.get(i);
+            if (trip != null && trip.getTrainViewModel() != null) {
                 for (int j = i - 1; j >= 0; j--) {
-                    Boolean precedingStatus = inServiceList.get(j);
-                    if (precedingStatus != null && !precedingStatus) {
+                    TripObject precedingTrip = trips.get(j);
+                    if (precedingTrip != null) {
+                        if (precedingTrip.getTrainViewModel() == null) {
+                            Collections.swap(trips, i, j);
+                        }
+                    }
+                    else {
                         Collections.swap(trips, i, j);
                     }
                 }

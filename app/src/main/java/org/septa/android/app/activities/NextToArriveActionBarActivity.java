@@ -38,10 +38,8 @@ import org.septa.android.app.models.NextToArriveRecentlyViewedModel;
 import org.septa.android.app.models.NextToArriveStoredTripModel;
 import org.septa.android.app.models.TripDataModel;
 import org.septa.android.app.models.adapterhelpers.TextSubTextImageModel;
-import org.septa.android.app.models.servicemodels.AlertModel;
 import org.septa.android.app.models.servicemodels.NextToArriveModel;
 import org.septa.android.app.models.servicemodels.RouteAlertDataModel;
-import org.septa.android.app.services.apiproxies.AlertsServiceProxy;
 import org.septa.android.app.services.apiproxies.NextToArriveServiceProxy;
 import org.septa.android.app.services.apiproxies.RouteAlertServiceProxy;
 import org.septa.android.app.utilities.Constants;
@@ -736,7 +734,6 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
             @Override
             public void success(Object o, Response response) {
                 ArrayList<RouteAlertDataModel> routeAlertModelList = (ArrayList<RouteAlertDataModel>) o;
-                StringBuilder termMessage = new StringBuilder();
 
                 if (routeAlertModelList != null) {
                     for (RouteAlertDataModel routeAlertDataModel : routeAlertModelList) {
@@ -747,8 +744,9 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
                         }
 
                         if (!TextUtils.isEmpty(routeAlertMessage)) {
-
+                            StringBuilder termMessage = new StringBuilder();
                             termMessage.append("<b>").append(termRouteName).append(":</b> ").append(routeAlertMessage);
+
                             // Show the alert header
                             mAlertHeader.setVisibility(View.VISIBLE);
 
@@ -794,32 +792,28 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
         Callback genCallback = new Callback() {
             @Override
             public void success(Object o, Response response) {
-                ArrayList<AlertModel> alertModelList = (ArrayList<AlertModel>) o;
-                StringBuilder genericMessage = new StringBuilder();
-                if (alertModelList != null) {
-                    for (int i = 0; i < alertModelList.size(); i++) {
-                        AlertModel alertModel = alertModelList.get(i);
-                        if (alertModel != null) {
+                ArrayList<RouteAlertDataModel> routeAlertModelList = (ArrayList<RouteAlertDataModel>) o;
+                if (routeAlertModelList != null) {
+                    for (RouteAlertDataModel routeAlertDataModel : routeAlertModelList) {
+                        if (routeAlertDataModel != null) {
 
-                            // Get generic alerts
-                            String routeId = alertModel.getRouteId();
-                            if (!TextUtils.isEmpty(routeId) && routeId.equals(Constants.VALUE_ALERT_ROUTE_ID_GENERIC)) {
-                                String generalAlert = alertModel.getCurrentMessage();
-                                if (BuildConfig.DEBUG) {
-                                    Log.v(TAG, "fetchGenericAlert: currentMessage - " + generalAlert);
-                                }
+                            // Get generic alert
+                            String routeAlertMessage = routeAlertDataModel.getCurrentMessage();
+                            if (BuildConfig.DEBUG) {
+                                Log.v(TAG, "fetchGenericAlert: currentMessage - " + routeAlertMessage);
+                            }
 
-                                if (!TextUtils.isEmpty(generalAlert) && !generalAlert.equals(Constants.VALUE_ALERT_RESPONSE_EMPTY) && generalAlert.contains(Constants.VALUE_RR_ALERT_MESSAGE_PREFIX)) {
-                                    genericMessage.append("<b>").append(getString(R.string.nexttoarrive_alerts_general_message_prefix)).append("</b> ").append(generalAlert);
+                            if (!TextUtils.isEmpty(routeAlertMessage)) {
+                                StringBuilder genericMessage = new StringBuilder();
+                                genericMessage.append("<b>").append(getString(R.string.nexttoarrive_alerts_general_message_prefix)).append("</b> ").append(routeAlertMessage);
 
-                                    // Show the alert header
-                                    mAlertHeader.setVisibility(View.VISIBLE);
+                                // Show the alert header
+                                mAlertHeader.setVisibility(View.VISIBLE);
 
-                                    // Set the generic alert message
-                                    mGenericAlertMessage.setText(Html.fromHtml(genericMessage.toString()));
-                                    mGenericAlertMessage.setVisibility(View.VISIBLE);
-                                    return;
-                                }
+                                // Set the generic alert message
+                                mGenericAlertMessage.setText(Html.fromHtml(genericMessage.toString()));
+                                mGenericAlertMessage.setVisibility(View.VISIBLE);
+                                return;
                             }
                         }
                     }
@@ -844,7 +838,7 @@ public class NextToArriveActionBarActivity extends BaseAnalyticsActionBarActivit
             }
         };
 
-        AlertsServiceProxy alertsServiceProxy = new AlertsServiceProxy();
-        alertsServiceProxy.getAlerts(genCallback);
+        RouteAlertServiceProxy routeAlertServiceProxy = new RouteAlertServiceProxy();
+        routeAlertServiceProxy.getRouteAlertData(Constants.VALUE_ALERT_ROUTE_ID_GENERIC, genCallback);
     }
 }

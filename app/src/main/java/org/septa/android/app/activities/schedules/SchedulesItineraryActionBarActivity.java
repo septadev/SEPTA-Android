@@ -568,6 +568,7 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
             }
 
             ArrayList<TripObject> trips = schedulesDataModel.createFilteredTripsList(selectedTab);
+
             mAdapter.setTripObject(trips);
 
             // TODO: Clean this up/implement correctly
@@ -937,6 +938,7 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
                     boolean trainsInService = false;
 
                     // Compare train number from schedule and response to see if currently in service
+                    // Start at 1 to accommodate adapter behavior
                     for (int i = 1; i < mAdapter.getCount(); i++) {
                         TripObject tripObject = (TripObject) mAdapter.getItem(i);
                         if (tripObject != null) {
@@ -951,7 +953,6 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
                                             if (!TextUtils.isEmpty(trackInfo)) {
                                                 tripObject.setTrainViewModel(trainViewModel);
                                                 trainsInService = true;
-                                                System.out.println(actionBarTitleText + ": " + trainNumber + " arriving on track " + trainViewModel.getTrack() + " (" + i + ")");
                                             }
                                         }
                                     }

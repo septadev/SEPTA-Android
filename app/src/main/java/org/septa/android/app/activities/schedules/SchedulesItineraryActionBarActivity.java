@@ -110,6 +110,8 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
     private ArrayList<ServiceAdvisoryModel> alerts;
     private int actionBarIconId;
 
+    private List<TripObject> mInServiceTrips;
+
     @InjectViews({ R.id.schedules_itinerary_tab_now_button
             , R.id.schedules_itinerary_tab_weekday_button
             , R.id.schedules_itinerary_tab_sat_button
@@ -569,6 +571,28 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
 
             ArrayList<TripObject> trips = schedulesDataModel.createFilteredTripsList(selectedTab);
 
+            // Hack to prevent list view from toggling in service view while it waits for network response
+            if (mInServiceTrips != null && travelType == RouteTypes.RAIL) {
+                for (TripObject inServiceTrip : mInServiceTrips) {
+                    if (inServiceTrip != null) {
+                        Number inServiceTripTrainNumber = inServiceTrip.getTrainNo();
+                        if (inServiceTripTrainNumber != null) {
+                            for (TripObject tripObject : trips) {
+                                if (tripObject != null) {
+                                    Number tripObjectTrainNumber = tripObject.getTrainNo();
+                                    if (tripObjectTrainNumber.equals(inServiceTripTrainNumber)) {
+                                        TrainViewModel trainViewModel = inServiceTrip.getTrainViewModel();
+                                        if (trainViewModel != null) {
+                                            tripObject.setTrainViewModel(trainViewModel);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             mAdapter.setTripObject(trips);
 
             // TODO: Clean this up/implement correctly
@@ -933,6 +957,7 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
             @Override
             public void success(Object object, Response response) {
                 ArrayList<TrainViewModel> inServiceArrayList = (ArrayList<TrainViewModel>) object;
+                mInServiceTrips = new ArrayList<TripObject>();
                 if (inServiceArrayList != null && inServiceArrayList.size() > 0) {
                     // Create flag to update UI
                     boolean trainsInService = false;
@@ -952,6 +977,7 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
                                             String trackInfo = trainViewModel.getTrack();
                                             if (!TextUtils.isEmpty(trackInfo)) {
                                                 tripObject.setTrainViewModel(trainViewModel);
+                                                mInServiceTrips.add(tripObject);
                                                 trainsInService = true;
                                             }
                                         }

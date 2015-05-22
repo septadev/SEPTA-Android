@@ -38,17 +38,13 @@ public class SchedulesItinerary_ListViewItem_ArrayAdapter extends BaseAdapter im
 
     String[] resourceEndNames;
     String leftImageStartName;
-    String rightImageBackgroundName;
 
     RouteTypes routeType = null;
 
     private String headerViewText;
     private int selectedTab = 0;
 
-    private int inServiceItemCount;
-
     private View headerView = null;
-    private View inServiceHeaderView;
 
     private String routeStartName;
     private String routeEndName;
@@ -143,7 +139,6 @@ public class SchedulesItinerary_ListViewItem_ArrayAdapter extends BaseAdapter im
 
             if (tripObject.getTrainViewModel() != null && selectedTab == 0) {
 
-                // TODO: Add sticky headers
                 rowView = mInflater.inflate(R.layout.schedules_in_service_item, parent, false);
 
                 TextView destination = (TextView) rowView.findViewById(R.id.destination);
@@ -252,11 +247,10 @@ public class SchedulesItinerary_ListViewItem_ArrayAdapter extends BaseAdapter im
         View view = null;
 
         if (position == 0) {
-
             view =  mInflater.inflate(R.layout.schedules_routeselection_sectionheader_hiddenview, parent, false);
         }
         // If it is the first in service list item, add in service header
-        else if (position == 1 && getInServiceItemCount() > 0) {
+        else if (getInServiceItemCount() > 0 && position >= 1 && position < 1 + getInServiceItemCount()) {
 
                 view = mInflater.inflate(R.layout.schedules_routeselection_headerview, parent, false);
                 TextView textView = (TextView) view.findViewById(R.id.schedules_routeselection_sectionheader_textview);
@@ -267,7 +261,7 @@ public class SchedulesItinerary_ListViewItem_ArrayAdapter extends BaseAdapter im
                 this.headerView = view;
         }
         // Otherwise, if it is the first list item after in service trains, add remaining trips header
-        else if (position == 1 + getInServiceItemCount()) {
+        else {//if (position >= 1 + getInServiceItemCount()) {
             view = mInflater.inflate(R.layout.schedules_routeselection_headerview, parent, false);
             TextView textView = (TextView) view.findViewById(R.id.schedules_routeselection_sectionheader_textview);
 
@@ -289,11 +283,11 @@ public class SchedulesItinerary_ListViewItem_ArrayAdapter extends BaseAdapter im
 
         //
         if (tripObject.getTrainViewModel() != null) {
-            return 2;
+            return 1;
         }
         //
         else {
-            return 1;
+            return 2;
         }
     }
 

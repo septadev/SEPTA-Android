@@ -8,8 +8,6 @@
 package org.septa.android.app.adapters;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,10 +53,10 @@ public class TransitView_RouteList_ListViewItem_ArrayAdapter  extends ArrayAdapt
             } else {
                 trainTimingTextView.setText(""+transitVehicleInformation.getLate()+" "+context.getString(R.string.min));
             }
-            trainTimingTextView.setTextColor(context.getResources().getColor(R.color.late_text));
+            trainTimingTextView.setTextColor(context.getResources().getColor(R.color.text_late));
         } else {
             trainTimingTextView.setText(R.string.ontime);
-            trainTimingTextView.setTextColor(context.getResources().getColor(R.color.ontime_text));
+            trainTimingTextView.setTextColor(context.getResources().getColor(R.color.text_on_time));
         }
 
         TextView transitViewDirectionLabel = (TextView) rowView.findViewById(R.id.transitview_listview_item_startlabel_textview);

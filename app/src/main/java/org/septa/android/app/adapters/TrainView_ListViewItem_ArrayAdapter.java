@@ -8,21 +8,13 @@
 package org.septa.android.app.adapters;
 
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.septa.android.app.R;
-import org.septa.android.app.activities.FareInformationGetMoreDetailsActionBarActivity;
-import org.septa.android.app.activities.TrainViewActionBarActivity;
-import org.septa.android.app.models.adapterhelpers.TextImageModel;
 import org.septa.android.app.models.servicemodels.TrainViewModel;
 
 import java.util.List;
@@ -61,10 +53,10 @@ public class TrainView_ListViewItem_ArrayAdapter extends ArrayAdapter<TrainViewM
             } else {
                 trainTimingTextView.setText(""+trainInformation.getLate()+" min");
             }
-            trainTimingTextView.setTextColor(context.getResources().getColor(R.color.late_text));
+            trainTimingTextView.setTextColor(context.getResources().getColor(R.color.text_late));
         } else {
             trainTimingTextView.setText("On-time");
-            trainTimingTextView.setTextColor(context.getResources().getColor(R.color.ontime_text));
+            trainTimingTextView.setTextColor(context.getResources().getColor(R.color.text_on_time));
         }
 
         TextView trainStart = (TextView) rowView.findViewById(R.id.trainview_listview_item_start_textview);

@@ -579,12 +579,12 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
 
             // Hack to prevent list view from toggling in service view while it waits for network response
             boolean trainsInService = false;
-            if (mInServiceTrips != null && travelType == RouteTypes.RAIL) {
+            if (mInServiceTrips != null && travelType == RouteTypes.RAIL && selectedTab == 0) {
                 for (TripObject inServiceTrip : mInServiceTrips) {
                     if (inServiceTrip != null) {
                         Number inServiceTripTrainNumber = inServiceTrip.getTrainNo();
                         if (inServiceTripTrainNumber != null) {
-                            for (int i = 0; i < trips.size(); i++) { //TripObject tripObject : trips) {
+                            for (int i = 0; i < trips.size(); i++) {
                                 TripObject tripObject = trips.get(i);
                                 if (tripObject != null) {
                                     Number tripObjectTrainNumber = tripObject.getTrainNo();
@@ -608,8 +608,8 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
                 mAdapter.sortByInServiceStatus();
             }
 
-            // TODO: Clean this up/implement correctly
-            if (travelType == RouteTypes.RAIL) {
+            // TODO: Verify that iOS only shows in service trains on 'NOW' tab
+            if (travelType == RouteTypes.RAIL && selectedTab == 0) {
                 fetchInServiceTrains();
             }
         }

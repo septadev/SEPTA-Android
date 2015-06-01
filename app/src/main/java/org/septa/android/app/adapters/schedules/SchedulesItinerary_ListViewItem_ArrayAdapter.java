@@ -24,7 +24,6 @@ import org.septa.android.app.utilities.CalendarDateUtilities;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
@@ -324,30 +323,23 @@ public class SchedulesItinerary_ListViewItem_ArrayAdapter extends BaseAdapter im
      * should be used prior to updating the adapter, as response from API does not always put in
      * service items first.
      */
-    public void sortByInServiceStatus() {
-        // TODO: Clean this up (is there are better way to sort?)
-        for (int i = 1; i < trips.size(); i++) {
-            TripObject trip = trips.get(i);
-            if (trip != null && trip.getTrainViewModel() != null) {
-                int k  = i;
-                for (int j = k - 1; j >= 0; j--) {
-                    TripObject precedingTrip = trips.get(j);
-                    if (precedingTrip != null) {
-                        if (precedingTrip.getTrainViewModel() == null) {
-                            Collections.swap(trips, k, j);
-                            if (k > 0) {
-                                k--;
-                            }
-                        }
-                    }
-                    else {
-                        Collections.swap(trips, k, j);
-                        if (k > 0) {
-                            k--;
-                        }
-                    }
+    public ArrayList<TripObject> sortByInServiceStatus() {
+        ArrayList<TripObject> sortedTrips = new ArrayList<TripObject>();
+        int inServiceIndex = 0;
+        for (TripObject trip : trips) {
+            if (trip != null) {
+                // If trip is in service, move it to the top of the list
+                if (trip.getTrainViewModel() != null) {
+                    sortedTrips.add(inServiceIndex, trip);
+                    inServiceIndex++;
+                }
+                // Otherwise add it to the bottom of the list
+                else {
+                    sortedTrips.add(trip);
                 }
             }
         }
+
+        return sortedTrips;
     }
 }

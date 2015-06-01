@@ -62,7 +62,6 @@ import org.septa.android.app.services.apiproxies.TrainViewServiceProxy;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.List;
 
 import butterknife.ButterKnife;
@@ -581,6 +580,7 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
             ArrayList<TripObject> trips = schedulesDataModel.createFilteredTripsList(selectedTab);
 
             // Hack to prevent list view from toggling in service view while it waits for network response
+            boolean isTrainsInService = false;
             if (mInServiceTrips != null && mInServiceTrips.size() > 0 && travelType == RouteTypes.RAIL) {
                 for (TripObject inServiceTrip : mInServiceTrips) {
                     if (inServiceTrip != null) {
@@ -594,28 +594,7 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
                                         TrainViewModel trainViewModel = inServiceTrip.getTrainViewModel();
                                         if (trainViewModel != null) {
                                             tripObject.setTrainViewModel(trainViewModel);
-
-                                            // TODO: Clean this up (is there are better way to sort?)
-                                            int k = i;
-                                            for (int j = k - 1; j >= 0; j--) {
-
-                                                TripObject precedingTrip = trips.get(j);
-                                                if (precedingTrip != null) {
-                                                    if (precedingTrip.getTrainViewModel() == null) {
-                                                        Collections.swap(trips, k, j);
-                                                        if (k > 0) {
-                                                            k--;
-                                                        }
-
-                                                    }
-                                                }
-                                                else {
-                                                    Collections.swap(trips, k, j);
-                                                    if (k > 0) {
-                                                        k--;
-                                                    }
-                                                }
-                                            }
+                                            isTrainsInService = true;
                                         }
                                     }
                                 }
@@ -625,7 +604,27 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
                 }
             }
 
-            mAdapter.setTripObject(trips);
+            // If trains in service, sort in service items to top of list
+            if (isTrainsInService) {
+                ArrayList<TripObject> sortedTrips = new ArrayList<TripObject>();
+                int inServiceIndex = 0;
+                for (TripObject trip : trips) {
+                    if (trip != null) {
+                        if (trip.getTrainViewModel() != null) {
+                            sortedTrips.add(inServiceIndex, trip);
+                            inServiceIndex++;
+                        }
+                        else {
+                            sortedTrips.add(trip);
+                        }
+                    }
+                }
+                mAdapter.setTripObject(sortedTrips);
+            }
+            // Otherwise, don't sort
+            else {
+                mAdapter.setTripObject(trips);
+            }
 
             boolean shouldCheckForInServiceTrains = false;
             if (selectedTab != 0) {
@@ -1069,8 +1068,8 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
                         }
                         // If any trains are in service, update the UI
                         if (mInServiceTrips != null && mInServiceTrips.size() > 0) {
-                            mAdapter.sortByInServiceStatus();
-                            mAdapter.notifyDataSetChanged();
+                            ArrayList<TripObject> sortedTrips = mAdapter.sortByInServiceStatus();
+                            mAdapter.setTripObject(sortedTrips);
                         }
                     }
                 }

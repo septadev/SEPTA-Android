@@ -139,7 +139,7 @@ public class SchedulesItinerary_ListViewItem_ArrayAdapter extends BaseAdapter im
         else {
             TripObject tripObject = (TripObject) getItem(position);
 
-            if (tripObject.getTrainViewModel() != null && selectedTab == 0) {
+            if (tripObject.getTrainViewModel() != null) {
 
                 rowView = mInflater.inflate(R.layout.schedules_in_service_item, parent, false);
 
@@ -325,18 +325,26 @@ public class SchedulesItinerary_ListViewItem_ArrayAdapter extends BaseAdapter im
      * service items first.
      */
     public void sortByInServiceStatus() {
+        // TODO: Clean this up (is there are better way to sort?)
         for (int i = 1; i < trips.size(); i++) {
             TripObject trip = trips.get(i);
             if (trip != null && trip.getTrainViewModel() != null) {
-                for (int j = i - 1; j >= 0; j--) {
+                int k  = i;
+                for (int j = k - 1; j >= 0; j--) {
                     TripObject precedingTrip = trips.get(j);
                     if (precedingTrip != null) {
                         if (precedingTrip.getTrainViewModel() == null) {
-                            Collections.swap(trips, i, j);
+                            Collections.swap(trips, k, j);
+                            if (k > 0) {
+                                k--;
+                            }
                         }
                     }
                     else {
-                        Collections.swap(trips, i, j);
+                        Collections.swap(trips, k, j);
+                        if (k > 0) {
+                            k--;
+                        }
                     }
                 }
             }

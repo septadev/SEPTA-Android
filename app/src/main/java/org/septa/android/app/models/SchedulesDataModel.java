@@ -63,7 +63,7 @@ public class SchedulesDataModel {
                     Number directionId = cursor.getInt(4);
                     Number serviceId = cursor.getInt(5);
 
-                    TripObject trip = new TripObject();
+                    TripObject trip = new TripObject(null);
                     trip.setTripId(tripId);
                     trip.setTrainNo(trainNumber);
                     trip.setStartSeq(startSequence);

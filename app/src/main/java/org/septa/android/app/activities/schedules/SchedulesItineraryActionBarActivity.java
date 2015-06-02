@@ -579,22 +579,26 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
 
             ArrayList<TripObject> trips = schedulesDataModel.createFilteredTripsList(selectedTab);
 
+            // TODO: Remove local vars and get from public adapter methods
             // Hack to prevent list view from toggling in service view while it waits for network response
-            boolean isTrainsInService = false;
+            ArrayList<TripObject> inServiceItems = new ArrayList<TripObject>();
             if (mInServiceTrips != null && mInServiceTrips.size() > 0 && travelType == RouteTypes.RAIL) {
                 for (TripObject inServiceTrip : mInServiceTrips) {
                     if (inServiceTrip != null) {
-                        Number inServiceTripTrainNumber = inServiceTrip.getTrainNo();
-                        if (inServiceTripTrainNumber != null) {
-                            for (int i = 0; i < trips.size(); i++) {
-                                TripObject tripObject = trips.get(i);
-                                if (tripObject != null) {
-                                    Number tripObjectTrainNumber = tripObject.getTrainNo();
-                                    if (tripObjectTrainNumber.equals(inServiceTripTrainNumber)) {
-                                        TrainViewModel trainViewModel = inServiceTrip.getTrainViewModel();
-                                        if (trainViewModel != null) {
-                                            tripObject.setTrainViewModel(trainViewModel);
-                                            isTrainsInService = true;
+                        TrainViewModel trainViewModel = inServiceTrip.getTrainViewModel();
+                        if (trainViewModel != null) {
+                            String trainNumber = trainViewModel.getTrainNumber();
+                            if (!TextUtils.isEmpty(trainNumber)) {
+                                for (int i = 0; i < trips.size(); i++) {
+                                    TripObject trip = trips.get(i);
+                                    if (trip != null) {
+                                        Number tripTrainNumber = trip.getTrainNo();
+                                        if (tripTrainNumber != null) {
+                                            int tripTrainNumberInt = tripTrainNumber.intValue();
+                                            if (Integer.toString(tripTrainNumberInt).equals(trainNumber)) {
+                                                TripObject newInServiceTrip = new TripObject(trainViewModel);
+                                                inServiceItems.add(newInServiceTrip);
+                                            }
                                         }
                                     }
                                 }
@@ -604,56 +608,84 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
                 }
             }
 
-            // If trains in service, sort in service items to top of list
-            if (isTrainsInService) {
-                ArrayList<TripObject> sortedTrips = new ArrayList<TripObject>();
-                int inServiceIndex = 0;
-                for (TripObject trip : trips) {
-                    if (trip != null) {
-                        if (trip.getTrainViewModel() != null) {
-                            sortedTrips.add(inServiceIndex, trip);
-                            inServiceIndex++;
-                        }
-                        else {
-                            sortedTrips.add(trip);
-                        }
-                    }
-                }
-                mAdapter.setTripObject(sortedTrips);
+            // Add in service items to the top of the list
+            for (int i = 0; i < inServiceItems.size(); i++) {
+                TripObject inServiceItem = inServiceItems.get(i);
+                trips.add(i, inServiceItem);
+                mInServiceTrips.clear();
             }
-            // Otherwise, don't sort
-            else {
-                mAdapter.setTripObject(trips);
-            }
+
+            mAdapter.setTripObject(trips);
 
             boolean shouldCheckForInServiceTrains = false;
             if (selectedTab != 0) {
                 Calendar calendar = Calendar.getInstance();
                 int day = calendar.get(Calendar.DAY_OF_WEEK);
+                int hour = calendar.get(Calendar.HOUR_OF_DAY);
 
-                // TODO: need to handle 25th & 26th hours
-                switch (day) {
-                    case Calendar.SATURDAY:
-                        // If Saturday tab (2) selected & today is Saturday
-                        if (selectedTab == 2) {
-                            shouldCheckForInServiceTrains = true;
-                        }
-                        break;
+                // TODO: Ask Greg if better way to check this
+                // If after 3am or later, don't need to handle 25th & 26th hours
+                if (hour > 3) {
+                    switch (day) {
+                        case Calendar.SATURDAY:
+                            // If Saturday tab (2) selected & today is Saturday
+                            if (selectedTab == 2) {
+                                shouldCheckForInServiceTrains = true;
+                            }
+                            break;
 
-                    case Calendar.SUNDAY:
-                        // If Sunday tab (3) selected & today is Sunday
-                        if (selectedTab == 3) {
-                            shouldCheckForInServiceTrains = true;
-                        }
-                        break;
+                        case Calendar.SUNDAY:
+                            // If Sunday tab (3) selected & today is Sunday
+                            if (selectedTab == 3) {
+                                shouldCheckForInServiceTrains = true;
+                            }
+                            break;
 
-                    default:
-                        // If weekday tab (1) selected & today is weekday
-                        if (selectedTab == 1) {
-                            shouldCheckForInServiceTrains = true;
-                        }
+                        default:
+                            // If weekday tab (1) selected & today is weekday
+                            if (selectedTab == 1) {
+                                shouldCheckForInServiceTrains = true;
+                            }
 
-                        break;
+                            break;
+                    }
+                }
+                // Otherwise, need to handle 25th & 26th hours
+                else {
+                    switch (day) {
+                        case Calendar.SATURDAY:
+                            // Friday 25th & 26th hours
+                            // If weekday tab (1) selected & today is Saturday before 3am
+                            if (selectedTab == 1) {
+                                shouldCheckForInServiceTrains = true;
+                            }
+                            break;
+
+                        case Calendar.SUNDAY:
+                            // Saturday 25th & 26th hours
+                            // If Saturday tab (2) selected & today is Sunday before 3am
+                            if (selectedTab == 2) {
+                                shouldCheckForInServiceTrains = true;
+                            }
+                            break;
+
+                        case Calendar.MONDAY:
+                            // Sunday 25th & 26th hours
+                            // If Sunday tab (3) selected & today is Monday before 3am
+                            if (selectedTab == 3) {
+                                shouldCheckForInServiceTrains = true;
+                            }
+                            break;
+
+                        default:
+                            // Weekday 25th & 26th hours
+                            // If weekday tab (1) selected & today is weekday
+                            if (selectedTab == 1) {
+                                shouldCheckForInServiceTrains = true;
+                            }
+
+                            break;
+                    }
                 }
             }
 
@@ -1059,18 +1091,22 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
                                     if (trainNo != null && !TextUtils.isEmpty(trainNumber)) {
                                         // If train is in service, change its state and update its view
                                         if (Integer.toString(trainNo.intValue()).equals(trainNumber)) {
-                                            tripObject.setTrainViewModel(trainViewModel);
-                                            mInServiceTrips.add(tripObject);
+                                            TripObject inServiceTrip = new TripObject(trainViewModel);
+                                            mInServiceTrips.add(inServiceTrip);
                                         }
                                     }
                                 }
                             }
                         }
-                        // If any trains are in service, update the UI
+                    }
+
+                    // If no in service items currently displayed, update the UI
+                    if (mAdapter.getInServiceItemCount() == 0) {
                         if (mInServiceTrips != null && mInServiceTrips.size() > 0) {
-                            ArrayList<TripObject> sortedTrips = mAdapter.sortByInServiceStatus();
-                            mAdapter.setTripObject(sortedTrips);
+                            mAdapter.addInServiceTrainItems(mInServiceTrips);
                         }
+
+                        mAdapter.notifyDataSetChanged();
                     }
                 }
             }

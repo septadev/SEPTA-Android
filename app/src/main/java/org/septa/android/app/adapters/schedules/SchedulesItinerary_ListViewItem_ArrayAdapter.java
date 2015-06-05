@@ -24,8 +24,8 @@ import org.septa.android.app.utilities.CalendarDateUtilities;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 
@@ -139,7 +139,7 @@ public class SchedulesItinerary_ListViewItem_ArrayAdapter extends BaseAdapter im
         else {
             TripObject tripObject = (TripObject) getItem(position);
 
-            if (tripObject.getTrainViewModel() != null && selectedTab == 0) {
+            if (tripObject.getTrainViewModel() != null) {
 
                 rowView = mInflater.inflate(R.layout.schedules_in_service_item, parent, false);
 
@@ -293,16 +293,6 @@ public class SchedulesItinerary_ListViewItem_ArrayAdapter extends BaseAdapter im
         }
     }
 
-    private int getInServiceItemCount() {
-        int i = 0;
-        for (TripObject tripObject : trips) {
-            if (tripObject.getTrainViewModel() != null) {
-                i++;
-            }
-        }
-        return i;
-    }
-
     public int getSelectedTab() {
         return selectedTab;
     }
@@ -319,27 +309,31 @@ public class SchedulesItinerary_ListViewItem_ArrayAdapter extends BaseAdapter im
         TextView text;
     }
 
-    /**
-     * This method  sorts the trip objects such that in service trains are all at the top. This
-     * should be used prior to updating the adapter, as response from API does not always put in
-     * service items first.
-     */
-    public void sortByInServiceStatus() {
-        for (int i = 1; i < trips.size(); i++) {
+    public void addInServiceTrainItems(List<TripObject> inServiceTrips) {
+        // Remove old in service trips
+        for (int i = 0; i < trips.size(); i++) {
             TripObject trip = trips.get(i);
             if (trip != null && trip.getTrainViewModel() != null) {
-                for (int j = i - 1; j >= 0; j--) {
-                    TripObject precedingTrip = trips.get(j);
-                    if (precedingTrip != null) {
-                        if (precedingTrip.getTrainViewModel() == null) {
-                            Collections.swap(trips, i, j);
-                        }
-                    }
-                    else {
-                        Collections.swap(trips, i, j);
-                    }
-                }
+                trips.remove(i);
             }
         }
+
+        // Add in service trips
+        for (int i = 0; i < inServiceTrips.size(); i++) {
+            TripObject inServiceTrip = inServiceTrips.get(i);
+            if (inServiceTrip != null) {
+                trips.add(i, inServiceTrip);
+            }
+        }
+    }
+
+    public int getInServiceItemCount() {
+        int inServiceItemCount = 0;
+        for (TripObject trip : trips) {
+            if (trip != null && trip.getTrainViewModel() != null) {
+                inServiceItemCount++;
+            }
+        }
+        return inServiceItemCount;
     }
 }

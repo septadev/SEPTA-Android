@@ -20,6 +20,10 @@ public class TripObject {
 
     private TrainViewModel trainViewModel;
 
+    public TripObject (TrainViewModel trainViewModel) {
+        this.trainViewModel = trainViewModel;
+    }
+
     public String print() {
         return "startTime:"+startTime+"  endTime:"+endTime+"   trainNo:"+trainNo+"   routeName:"+routeName+"   serviceId:"+serviceId+"   directionId:"+directionId+"   startSeq:"+startSeq+"   endSeq:"+endSeq+"   tripId:"+ tripId;
     }

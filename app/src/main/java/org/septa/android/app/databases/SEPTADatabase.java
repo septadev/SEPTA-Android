@@ -19,7 +19,7 @@ public class SEPTADatabase extends SQLiteAssetHelper {
     /**
      * Current packaged DB version, update number when packaged DB changes
      */
-    private static final int DATABASE_VERSION = 21;
+    private static final int DATABASE_VERSION = 22;
 
     public SEPTADatabase(Context context) {
 

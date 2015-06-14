@@ -9,6 +9,7 @@ package org.septa.android.app.adapters.schedules;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -16,16 +17,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.SectionIndexer;
 import android.widget.TextView;
 
 import org.septa.android.app.R;
+import org.septa.android.app.managers.AlertManager;
 import org.septa.android.app.managers.SchedulesFavoritesAndRecentlyViewedStore;
 import org.septa.android.app.models.ObjectFactory;
 import org.septa.android.app.models.RouteTypes;
 import org.septa.android.app.models.SchedulesFavoriteModel;
 import org.septa.android.app.models.SchedulesRecentlyViewedModel;
 import org.septa.android.app.models.SchedulesRouteModel;
+import org.septa.android.app.models.servicemodels.AlertModel;
+import org.septa.android.app.services.adaptors.AlertsAdaptor;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -52,7 +57,7 @@ public class SchedulesRouteSelection_ListViewItem_ArrayAdapter extends BaseAdapt
 
     RouteTypes routeType = null;
 
-    private String[] sectionTitles = new String[]{ "Favorites", "Recently Viewed", "Routes"};
+    private String[] sectionTitles = new String[]{"Favorites", "Recently Viewed", "Routes"};
 
     private List<String> sections;
 
@@ -151,7 +156,8 @@ public class SchedulesRouteSelection_ListViewItem_ArrayAdapter extends BaseAdapt
     public View getView(int position, View convertView, ViewGroup parent) {
         View rowView = null;
 
-        if (isFavorite(adjustedPosition(position))) {     // favorite position rows
+        // favorite position rows
+        if (isFavorite(adjustedPosition(position))) {
             rowView = mInflater.inflate(R.layout.schedules_routeselection_favoriteandrecentlyviewed_listview_item, parent, false);
 
             TextView routeIdTextView = (TextView)rowView.findViewById(R.id.schedules_routeselection_favoriterecentlyviewed_routeid_textview);
@@ -169,10 +175,13 @@ public class SchedulesRouteSelection_ListViewItem_ArrayAdapter extends BaseAdapt
             View transparentView = (View)rowView.findViewById(R.id.schedules_routeselection_favoriteandrecentlyviewed_transparentview);
             if (adjustedPosition(position) == favorites.size()) {
                 transparentView.setVisibility(View.VISIBLE);
-            } else {
+            }
+            else {
                 transparentView.setVisibility(View.GONE);
             }
-        } else {                        // recently viewed position rows
+        }
+        // recently viewed position rows
+        else {
             if (isRecentlyViewed(adjustedPosition(position))) {
                 rowView = mInflater.inflate(R.layout.schedules_routeselection_favoriteandrecentlyviewed_listview_item, parent, false);
 
@@ -194,14 +203,21 @@ public class SchedulesRouteSelection_ListViewItem_ArrayAdapter extends BaseAdapt
                 } else {
                     transparentView.setVisibility(View.GONE);
                 }
-            } else{
+            }
+            else{
                 String[] routeTypeLabels = mContext.getResources().getStringArray(R.array.schedulesfragment_listview_bothimage_endnames);
 
                 SchedulesRouteModel rtm = (SchedulesRouteModel)getItem(position);
 
                 rowView = mInflater.inflate(R.layout.schedules_routeselection_routes_listview_item, parent, false);
                 ImageView leftIconImageView = (ImageView)rowView.findViewById(R.id.schedules_routeselect_item_leftImageView);
-                ImageView rightBackgroundImageView = (ImageView)rowView.findViewById(R.id.schedules_routeselection_item_rightImageBackgroundview);
+
+                ImageView serviceAdvisoryImageView = (ImageView) rowView.findViewById(R.id.schedules_routeselection_item_serviceadvisory);
+                ImageView detourImageView = (ImageView) rowView.findViewById(R.id.schedules_routeselection_item_detour);
+                ImageView serviceAlertImageView = (ImageView) rowView.findViewById(R.id.schedules_routeselection_item_servicealert);
+                ImageView lineSuspensionImageView = (ImageView) rowView.findViewById(R.id.schedules_routeselection_item_linesuspension);
+
+                RelativeLayout rowRelativeLayout = (RelativeLayout)rowView.findViewById(R.id.schedules_routeselection_rl_background);
                 TextView routeIdTextView = (TextView)rowView.findViewById(R.id.schedules_routeselection_item_routeid);
                 TextView routeLongNameTextView = (TextView)rowView.findViewById(R.id.schedules_routeselection_item_routelongname);
 
@@ -211,17 +227,57 @@ public class SchedulesRouteSelection_ListViewItem_ArrayAdapter extends BaseAdapt
                     leftIconImageView.setImageResource(id);
 
                     id = mContext.getResources().getIdentifier(rightImageBackgroundName + routeTypeLabels[RouteTypes.BUS.ordinal()], "drawable", mContext.getPackageName());
-                    rightBackgroundImageView.setImageResource(id);
+                    rowRelativeLayout.setBackgroundResource(id);
                 } else {
                     int id = mContext.getResources().getIdentifier(leftImageStartName + routeTypeLabels[routeType.ordinal()] + "_small", "drawable", mContext.getPackageName());
                     leftIconImageView.setImageResource(id);
 
                     id = mContext.getResources().getIdentifier(rightImageBackgroundName + routeTypeLabels[routeType.ordinal()], "drawable", mContext.getPackageName());
-                    rightBackgroundImageView.setImageResource(id);
+                    rowRelativeLayout.setBackgroundResource(id);
                 }
                 SchedulesRouteModel route = (SchedulesRouteModel)getItems()[adjustedPosition(position)];
 
                 routeIdTextView.setText(route.getRouteId());
+
+                // Check for alerts to display
+                AlertManager alertManager = AlertManager.getInstance();
+                String routeId = AlertsAdaptor.getServiceRouteName(route, routeType);
+                if (alertManager != null && !TextUtils.isEmpty(routeId)) {
+                    AlertModel alertModel = alertManager.getAlertForRouteShortName(routeId);
+                    if (alertModel != null) {
+                        // If route is suspended, display line suspension icon and no others
+                        if (alertModel.hasSuspendedFlag()) {
+                            lineSuspensionImageView.setVisibility(View.VISIBLE);
+                        }
+                        // Otherwise, check for other alert icons to display
+                        else {
+                            // Remove line suspension icon from view
+                            lineSuspensionImageView.setVisibility(View.GONE);
+
+                            // If route has service advisory, display service advisory icon
+                            if (alertModel.hasAdvisoryFlag()) {
+                                serviceAdvisoryImageView.setVisibility(View.VISIBLE);
+                            }
+                            else {
+                                serviceAdvisoryImageView.setVisibility(View.GONE);
+                            }
+                            // If route has detour, display detour icon
+                            if (alertModel.hasDetourFlag()) {
+                                detourImageView.setVisibility(View.VISIBLE);
+                            }
+                            else {
+                                detourImageView.setVisibility(View.GONE);
+                            }
+                            // If route has service alert, display service alert icon
+                            if (alertModel.hasAlertFlag()) {
+                                serviceAlertImageView.setVisibility(View.VISIBLE);
+                            }
+                            else {
+                                serviceAlertImageView.setVisibility(View.GONE);
+                            }
+                        }
+                    }
+                }
 
                 switch (route.getRouteId().length()) {
                     case 6: {

@@ -24,6 +24,8 @@ public class TrainViewModel implements Comparable<TrainViewModel> {
     @SerializedName("nextstop") private String nextStop;
     @SerializedName("late") private int late;
     @SerializedName("SOURCE") private String source;
+    @SerializedName("TRACK") private String track;
+    @SerializedName("TRACK_CHANGE") private String trackChange;
 
     private double distanceFromCurrentLocation;
 
@@ -49,6 +51,22 @@ public class TrainViewModel implements Comparable<TrainViewModel> {
 
     public void setTrainNumber(String trainNumber) {
         this.trainNumber = trainNumber;
+    }
+
+    public String getTrack() {
+        return track;
+    }
+
+    public void setTrack(String track) {
+        this.track = track;
+    }
+
+    public String getTrackChange() {
+        return trackChange;
+    }
+
+    public void setTrackChange(String trackChange) {
+        this.trackChange = trackChange;
     }
 
     public String getDestination() {

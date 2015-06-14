@@ -18,6 +18,7 @@ import android.widget.ListView;
 import org.septa.android.app.R;
 import org.septa.android.app.activities.schedules.SchedulesRouteSelectionActionBarActivity;
 import org.septa.android.app.adapters.schedules.Schedules_ListFragment_ArrayAdapter;
+import org.septa.android.app.utilities.Constants;
 
 public class SchedulesListFragment extends ListFragment {
     private static final String TAG = SchedulesListFragment.class.getName();
@@ -48,10 +49,10 @@ public class SchedulesListFragment extends ListFragment {
             case 0: // regional rail line
 
                 schedulesRouteSelectionIntent = new Intent(getActivity(), SchedulesRouteSelectionActionBarActivity.class);
-                schedulesRouteSelectionIntent.putExtra(getString(R.string.actionbar_titletext_key), "Regional Rail Line");
-                schedulesRouteSelectionIntent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), "schedules_routeselection_rrl");
+                schedulesRouteSelectionIntent.putExtra(getString(R.string.actionbar_titletext_key), Constants.VALUE_REGIONAL_RAIL_LINE);
+                schedulesRouteSelectionIntent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), Constants.ACTION_BAR_IMAGE_SUFFIX_RRL);
                 schedulesRouteSelectionIntent.putExtra(getString(R.string.schedules_routeselect_travelType),
-                        "RAIL");
+                        Constants.VALUE_TRAVEL_TYPE_RRL);
 
                 startActivity(schedulesRouteSelectionIntent);
 
@@ -59,10 +60,10 @@ public class SchedulesListFragment extends ListFragment {
 
             case 1: // mfl
                 schedulesRouteSelectionIntent = new Intent(getActivity(), SchedulesRouteSelectionActionBarActivity.class);
-                schedulesRouteSelectionIntent.putExtra(getString(R.string.actionbar_titletext_key), "Market-Frankford Line");
-                schedulesRouteSelectionIntent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), "schedules_routeselection_mfl");
+                schedulesRouteSelectionIntent.putExtra(getString(R.string.actionbar_titletext_key), Constants.VALUE_MARKET_FRANKFORD_LINE);
+                schedulesRouteSelectionIntent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), Constants.ACTION_BAR_IMAGE_SUFFIX_MFL);
                 schedulesRouteSelectionIntent.putExtra(getString(R.string.schedules_routeselect_travelType),
-                        "MFL");
+                        Constants.VALUE_TRAVEL_TYPE_MFL);
 
                 startActivity(schedulesRouteSelectionIntent);
 
@@ -70,10 +71,10 @@ public class SchedulesListFragment extends ListFragment {
 
             case 2: // bsl
                 schedulesRouteSelectionIntent = new Intent(getActivity(), SchedulesRouteSelectionActionBarActivity.class);
-                schedulesRouteSelectionIntent.putExtra(getString(R.string.actionbar_titletext_key), "Broad Street Line");
-                schedulesRouteSelectionIntent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), "schedules_routeselection_bsl");
+                schedulesRouteSelectionIntent.putExtra(getString(R.string.actionbar_titletext_key), Constants.VALUE_BROAD_STREET_LINE);
+                schedulesRouteSelectionIntent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), Constants.ACTION_BAR_IMAGE_SUFFIX_BSL);
                 schedulesRouteSelectionIntent.putExtra(getString(R.string.schedules_routeselect_travelType),
-                        "BSL");
+                        Constants.VALUE_TRAVEL_TYPE_BSL);
 
                 startActivity(schedulesRouteSelectionIntent);
 
@@ -81,10 +82,10 @@ public class SchedulesListFragment extends ListFragment {
 
             case 3: // trolley
                 schedulesRouteSelectionIntent = new Intent(getActivity(), SchedulesRouteSelectionActionBarActivity.class);
-                schedulesRouteSelectionIntent.putExtra(getString(R.string.actionbar_titletext_key), "Trolley");
-                schedulesRouteSelectionIntent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), "schedules_routeselection_trolley");
+                schedulesRouteSelectionIntent.putExtra(getString(R.string.actionbar_titletext_key), Constants.VALUE_TROLLEY);
+                schedulesRouteSelectionIntent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), Constants.ACTION_BAR_IMAGE_SUFFIX_TROLLEY);
                 schedulesRouteSelectionIntent.putExtra(getString(R.string.schedules_routeselect_travelType),
-                        "TROLLEY");
+                        Constants.VALUE_TRAVEL_TYPE_TROLLEY);
 
                 startActivity(schedulesRouteSelectionIntent);
 
@@ -92,10 +93,10 @@ public class SchedulesListFragment extends ListFragment {
 
             case 4: // nhsl
                 schedulesRouteSelectionIntent = new Intent(getActivity(), SchedulesRouteSelectionActionBarActivity.class);
-                schedulesRouteSelectionIntent.putExtra(getString(R.string.actionbar_titletext_key), "NHSL");
-                schedulesRouteSelectionIntent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), "schedules_routeselection_nhsl");
+                schedulesRouteSelectionIntent.putExtra(getString(R.string.actionbar_titletext_key), Constants.VALUE_NHSL);
+                schedulesRouteSelectionIntent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), Constants.ACTION_BAR_IMAGE_SUFFIX_NHSL);
                 schedulesRouteSelectionIntent.putExtra(getString(R.string.schedules_routeselect_travelType),
-                        "NHSL");
+                        Constants.VALUE_TRAVEL_TYPE_NHSL);
 
                 startActivity(schedulesRouteSelectionIntent);
 
@@ -103,10 +104,10 @@ public class SchedulesListFragment extends ListFragment {
 
             case 5: // bus
                 schedulesRouteSelectionIntent = new Intent(getActivity(), SchedulesRouteSelectionActionBarActivity.class);
-                schedulesRouteSelectionIntent.putExtra(getString(R.string.actionbar_titletext_key), "Bus");
-                schedulesRouteSelectionIntent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), "schedules_routeselection_bus");
+                schedulesRouteSelectionIntent.putExtra(getString(R.string.actionbar_titletext_key), Constants.VALUE_BUS);
+                schedulesRouteSelectionIntent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), Constants.ACTION_BAR_IMAGE_SUFFIX_BUS);
                 schedulesRouteSelectionIntent.putExtra(getString(R.string.schedules_routeselect_travelType),
-                        "BUS");
+                        Constants.VALUE_TRAVEL_TYPE_BUS);
 
                 startActivity(schedulesRouteSelectionIntent);
 

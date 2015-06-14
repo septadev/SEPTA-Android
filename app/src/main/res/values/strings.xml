@@ -69,4 +69,24 @@
     <string name="text_search">Search</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+    <!-- Next to Arrive Alerts -->
+    <string name="nexttoarrive_alerts_header">ALERTS</string>
+    <string name="nexttoarrive_alerts_general_message_prefix">Regional Rail Line:</string>
+
+    <!-- Find nearest location -->
+    <string name="find_nearest_location_gps_unavailable">GPS is unavailable on your device.</string>
+    <string name="find_nearest_location_gps_not_enabled">GPS is currently disabled.\nPlease enabled Location Access\nin your device Settings,\nthen tap to retry.</string>
+
+    <!-- Schedule Alerts -->
+    <string name="schedules_alerts_header">ALERTS</string>
+    <string name="schedules_alerts_general_message_prefix">Regional Rail Line:</string>
+
+    <!-- In Service Train -->
+    <string name="destination">Dest: %s</string>
+    <string name="in_service_header">IN SERVICE TRAINS</string>
+    <string name="late">%s min late</string>
+    <string name="next_stop">Next: %s</string>
+    <string name="on_time">On time</string>
+    <string name="track">Track</string>
+
 </resources>

@@ -19,6 +19,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,6 +37,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import org.apache.http.HttpStatus;
+import org.septa.android.app.BuildConfig;
 import org.septa.android.app.R;
 import org.septa.android.app.activities.BaseAnalyticsActionBarActivity;
 import org.septa.android.app.activities.FareInformationActionBarActivity;
@@ -54,9 +56,12 @@ import org.septa.android.app.models.SortOrder;
 import org.septa.android.app.models.TripObject;
 import org.septa.android.app.models.adapterhelpers.TextSubTextImageModel;
 import org.septa.android.app.models.servicemodels.ServiceAdvisoryModel;
+import org.septa.android.app.models.servicemodels.TrainViewModel;
 import org.septa.android.app.services.adaptors.AlertsAdaptor;
+import org.septa.android.app.services.apiproxies.TrainViewServiceProxy;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import butterknife.ButterKnife;
@@ -78,7 +83,6 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
     static final String SCHEDULE_MODEL = "scheduleModel";
     static final String SELECTED_TAB = "selectedTab";
     static final String IN_PROCESS = "inProcess";
-
 
     private SchedulesItinerary_ListViewItem_ArrayAdapter mAdapter;
     private boolean fadeHeader = true;
@@ -107,10 +111,12 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
     private ArrayList<ServiceAdvisoryModel> alerts;
     private int actionBarIconId;
 
-    @InjectViews({ R.id.schedules_itinerary_tab_now_button
+    private List<TripObject> mInServiceTrips;
+
+    @InjectViews({R.id.schedules_itinerary_tab_now_button
             , R.id.schedules_itinerary_tab_weekday_button
             , R.id.schedules_itinerary_tab_sat_button
-            , R.id.schedules_itinerary_tab_sun_button })
+            , R.id.schedules_itinerary_tab_sun_button})
     List<Button> tabs;
 
     @Override
@@ -129,7 +135,8 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
         String stringTravelType = getIntent().getStringExtra(getString(R.string.schedules_itinerary_travelType));
         if (stringTravelType != null) {
             travelType = valueOf(getIntent().getStringExtra(getString(R.string.schedules_itinerary_travelType)));
-        } else {
+        }
+        else {
             Log.d("f", "travelType is null...");
         }
 
@@ -150,7 +157,6 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
         schedulesRouteModel = gson.fromJson(schedulesRouteModelJSONString, new TypeToken<SchedulesRouteModel>() {
         }.getType());
 
-
         String iconPrefix = getResources().getString(R.string.schedules_itinerary_menu_icon_imageBase);
         String[] texts = getResources().getStringArray(R.array.schedules_itinerary_menu_listview_items_texts);
         String[] subTexts = getResources().getStringArray(R.array.schedules_itinerary_menu_listview_items_subtexts);
@@ -164,7 +170,6 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
         ListView menuListView = (ListView) findViewById(R.id.schedules_itinerary_menudialog_listview);
         this.menuDialogListView = menuListView;
         menuListView.setAdapter(new Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter(this, listMenuItems));
-
 
         stickyList = (StickyListHeadersListView) findViewById(R.id.list);
         stickyList.setOnItemClickListener(this);
@@ -182,7 +187,7 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
 
         routesModel = new ArrayList<SchedulesRouteModel>();
 
-        if(savedInstanceState != null){
+        if (savedInstanceState != null) {
             schedulesRouteModel = savedInstanceState.getParcelable(SCHEDULE_MODEL);
             selectedTab = savedInstanceState.getInt(SELECTED_TAB);
             inProcessOfStartDestinationFlow = savedInstanceState.getBoolean(IN_PROCESS);
@@ -217,11 +222,11 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
         selectTab(selectedTab);
     }
 
-//    @Override
-//    public boolean onPrepareOptionsMenu(Menu menu) {
-//
-//        return true;
-//    }
+    //    @Override
+    //    public boolean onPrepareOptionsMenu(Menu menu) {
+    //
+    //        return true;
+    //    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -253,7 +258,7 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
                     case 2: {       // service advisory
                         Intent intent = new Intent(SchedulesItineraryActionBarActivity.this,
                                 ServiceAdvisoryActivity.class);
-                        intent.putParcelableArrayListExtra(getString(R.string.alerts_extra_alerts) ,alerts);
+                        intent.putParcelableArrayListExtra(getString(R.string.alerts_extra_alerts), alerts);
                         intent.putExtra(getString(R.string.alerts_extra_route_type), travelType);
                         intent.putExtra(getString(R.string.alerts_extra_title), getSupportActionBar().getTitle());
                         intent.putExtra(getString(R.string.alerts_extra_icon), actionBarIconId);
@@ -296,7 +301,8 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
             store.removeFavorite(this.travelType.name(), schedulesFavoriteModel);
             ((Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).disableRemoveSavedFavorite();
             ((Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).enableSaveAsFavorite();
-        } else {
+        }
+        else {
             Log.d("tt", "adding as a favorite");
             store.addFavorite(this.travelType.name(), schedulesFavoriteModel);
             ((Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter) menuDialogListView.getAdapter()).disableSaveAsFavorite();
@@ -312,7 +318,8 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
                 if (menuRevealed) {
 
                     hideListView();
-                } else {
+                }
+                else {
 
                     revealListView();
                 }
@@ -428,48 +435,52 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
     public void reverseStartEndSelected(View view) {
         // Attempt to use the reverseStopSearch table to help plan the reverse trip
         if ((schedulesRouteModel.getRouteStartName() != null) &&
-                !schedulesRouteModel.getRouteStartName().isEmpty() &&
-                (schedulesRouteModel.getRouteEndName() != null) &&
-                !schedulesRouteModel.getRouteEndName().isEmpty() &&
-                (RouteTypes.BUS == travelType || RouteTypes.TROLLEY == travelType ||
-                "MFO".equals(schedulesRouteModel.getRouteId()) || "BSO".equals(schedulesRouteModel.getRouteId()))) {
+            !schedulesRouteModel.getRouteStartName().isEmpty() &&
+            (schedulesRouteModel.getRouteEndName() != null) &&
+            !schedulesRouteModel.getRouteEndName().isEmpty() &&
+            (RouteTypes.BUS == travelType || RouteTypes.TROLLEY == travelType ||
+             "MFO".equals(schedulesRouteModel.getRouteId()) || "BSO".equals(schedulesRouteModel.getRouteId()))) {
             try {
                 SQLiteDatabase database = new SEPTADatabase(this).getReadableDatabase();
                 String queryString = "SELECT reverseStopSearch.stop_id,reverse_stop_id,stop_name FROM " +
-                        "reverseStopSearch JOIN stops_bus ON reverseStopSearch.reverse_stop_id=stops_bus.stop_id " +
-                        "WHERE (reverseStopSearch.stop_id="+ schedulesRouteModel.getRouteStartStopId() +" " +
-                        "OR reverseStopSearch.stop_id=" + schedulesRouteModel.getRouteEndStopId() + ") " +
-                        "AND route_short_name='" + schedulesRouteModel.getRouteShortName() + "' GROUP BY reverseStopSearch.stop_id";
+                                     "reverseStopSearch JOIN stops_bus ON reverseStopSearch.reverse_stop_id=stops_bus.stop_id " +
+                                     "WHERE (reverseStopSearch.stop_id=" + schedulesRouteModel.getRouteStartStopId() + " " +
+                                     "OR reverseStopSearch.stop_id=" + schedulesRouteModel.getRouteEndStopId() + ") " +
+                                     "AND route_short_name='" + schedulesRouteModel.getRouteShortName() + "' GROUP BY reverseStopSearch.stop_id";
                 Cursor cursor = database.rawQuery(queryString, null);
                 Log.d(TAG, "Reverse query: " + queryString);
                 SchedulesRouteModel tempModel = new SchedulesRouteModel();
                 tempModel.setRouteStartStopId(schedulesRouteModel.getRouteStartStopId());
                 tempModel.setRouteEndStopId(schedulesRouteModel.getRouteEndStopId());
-                if(cursor != null && cursor.moveToFirst()) {
+                if (cursor != null && cursor.moveToFirst()) {
                     do {
                         String stopId = String.valueOf(cursor.getInt(0));
                         String reverseStopId = String.valueOf(cursor.getInt(1));
                         String stopName = cursor.getString(2);
-                        if(tempModel.getRouteStartStopId().equals(stopId)) {
+                        if (tempModel.getRouteStartStopId().equals(stopId)) {
                             schedulesRouteModel.setRouteStartName(stopName);
                             schedulesRouteModel.setRouteStartStopId(reverseStopId);
-                        } else if(tempModel.getRouteEndStopId().equals(stopId)) {
+                        }
+                        else if (tempModel.getRouteEndStopId().equals(stopId)) {
                             schedulesRouteModel.setRouteEndName(stopName);
                             schedulesRouteModel.setRouteEndStopId(reverseStopId);
                         }
-                    } while(cursor.moveToNext());
+                    } while (cursor.moveToNext());
                     cursor.close();
                 }
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 Log.e(TAG, "Reverse query failed", e);
-            } finally {
+            }
+            finally {
                 schedulesRouteModel.reverseStartAndDestinationStops();
             }
 
-        } else {
+        }
+        else {
             schedulesRouteModel.reverseStartAndDestinationStops();
         }
-        schedulesRouteModel.setDirectionId((schedulesRouteModel.getDirectionId() == 1) ? 0: 1);
+        schedulesRouteModel.setDirectionId((schedulesRouteModel.getDirectionId() == 1) ? 0 : 1);
         SchedulesItinerary_ListViewItem_ArrayAdapter schedulesListViewItemArrayAdapter = (SchedulesItinerary_ListViewItem_ArrayAdapter) stickyList.getAdapter();
         schedulesListViewItemArrayAdapter.setRouteStartName(schedulesRouteModel.getRouteStartName());
         schedulesListViewItemArrayAdapter.setRouteEndName(schedulesRouteModel.getRouteEndName());
@@ -482,9 +493,9 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
         Log.d(TAG, "check trip start and destination");
         // check if we have both the start and destination stops, if yes, fetch the data.
         if ((schedulesRouteModel.getRouteStartName() != null) &&
-                !schedulesRouteModel.getRouteStartName().isEmpty() &&
-                (schedulesRouteModel.getRouteEndName() != null) &&
-                !schedulesRouteModel.getRouteEndName().isEmpty()) {
+            !schedulesRouteModel.getRouteStartName().isEmpty() &&
+            (schedulesRouteModel.getRouteEndName() != null) &&
+            !schedulesRouteModel.getRouteEndName().isEmpty()) {
 
             ListView menuListView = (ListView) findViewById(R.id.schedules_itinerary_menudialog_listview);
 
@@ -494,7 +505,8 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
             if (schedulesItineraryRefreshCountDownTimer != null) {
                 schedulesItineraryRefreshCountDownTimer.cancel();
                 schedulesItineraryRefreshCountDownTimer.start();
-            } else {
+            }
+            else {
                 schedulesItineraryRefreshCountDownTimer = createScheduleItineraryRefreshCountDownTimer();
                 schedulesItineraryRefreshCountDownTimer.start();
             }
@@ -533,7 +545,8 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
             if (store.isFavorite(this.travelType.name(), schedulesFavoriteModel)) {
                 ((Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter) menuListView.getAdapter()).enableRemoveSavedFavorite();
                 ((Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter) menuListView.getAdapter()).disableSaveAsFavorite();
-            } else {
+            }
+            else {
                 ((Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter) menuListView.getAdapter()).disableRemoveSavedFavorite();
                 ((Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter) menuListView.getAdapter()).enableSaveAsFavorite();
             }
@@ -565,7 +578,124 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
             }
 
             ArrayList<TripObject> trips = schedulesDataModel.createFilteredTripsList(selectedTab);
+
+            // TODO: Remove local vars and get from public adapter methods
+            // Hack to prevent list view from toggling in service view while it waits for network response
+            ArrayList<TripObject> inServiceItems = new ArrayList<TripObject>();
+            if (mInServiceTrips != null && mInServiceTrips.size() > 0 && travelType == RouteTypes.RAIL) {
+                for (TripObject inServiceTrip : mInServiceTrips) {
+                    if (inServiceTrip != null) {
+                        TrainViewModel trainViewModel = inServiceTrip.getTrainViewModel();
+                        if (trainViewModel != null) {
+                            String trainNumber = trainViewModel.getTrainNumber();
+                            if (!TextUtils.isEmpty(trainNumber)) {
+                                for (int i = 0; i < trips.size(); i++) {
+                                    TripObject trip = trips.get(i);
+                                    if (trip != null) {
+                                        Number tripTrainNumber = trip.getTrainNo();
+                                        if (tripTrainNumber != null) {
+                                            int tripTrainNumberInt = tripTrainNumber.intValue();
+                                            if (Integer.toString(tripTrainNumberInt).equals(trainNumber)) {
+                                                TripObject newInServiceTrip = new TripObject(trainViewModel);
+                                                inServiceItems.add(newInServiceTrip);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Add in service items to the top of the list
+            for (int i = 0; i < inServiceItems.size(); i++) {
+                TripObject inServiceItem = inServiceItems.get(i);
+                trips.add(i, inServiceItem);
+                mInServiceTrips.clear();
+            }
+
             mAdapter.setTripObject(trips);
+
+            boolean shouldCheckForInServiceTrains = false;
+            if (selectedTab != 0) {
+                Calendar calendar = Calendar.getInstance();
+                int day = calendar.get(Calendar.DAY_OF_WEEK);
+                int hour = calendar.get(Calendar.HOUR_OF_DAY);
+
+                // TODO: Ask Greg if better way to check this
+                // If after 3am or later, don't need to handle 25th & 26th hours
+                if (hour > 3) {
+                    switch (day) {
+                        case Calendar.SATURDAY:
+                            // If Saturday tab (2) selected & today is Saturday
+                            if (selectedTab == 2) {
+                                shouldCheckForInServiceTrains = true;
+                            }
+                            break;
+
+                        case Calendar.SUNDAY:
+                            // If Sunday tab (3) selected & today is Sunday
+                            if (selectedTab == 3) {
+                                shouldCheckForInServiceTrains = true;
+                            }
+                            break;
+
+                        default:
+                            // If weekday tab (1) selected & today is weekday
+                            if (selectedTab == 1) {
+                                shouldCheckForInServiceTrains = true;
+                            }
+
+                            break;
+                    }
+                }
+                // Otherwise, need to handle 25th & 26th hours
+                else {
+                    switch (day) {
+                        case Calendar.SATURDAY:
+                            // Friday 25th & 26th hours
+                            // If weekday tab (1) selected & today is Saturday before 3am
+                            if (selectedTab == 1) {
+                                shouldCheckForInServiceTrains = true;
+                            }
+                            break;
+
+                        case Calendar.SUNDAY:
+                            // Saturday 25th & 26th hours
+                            // If Saturday tab (2) selected & today is Sunday before 3am
+                            if (selectedTab == 2) {
+                                shouldCheckForInServiceTrains = true;
+                            }
+                            break;
+
+                        case Calendar.MONDAY:
+                            // Sunday 25th & 26th hours
+                            // If Sunday tab (3) selected & today is Monday before 3am
+                            if (selectedTab == 3) {
+                                shouldCheckForInServiceTrains = true;
+                            }
+                            break;
+
+                        default:
+                            // Weekday 25th & 26th hours
+                            // If weekday tab (1) selected & today is weekday
+                            if (selectedTab == 1) {
+                                shouldCheckForInServiceTrains = true;
+                            }
+
+                            break;
+                    }
+                }
+            }
+
+            else {
+                shouldCheckForInServiceTrains = true;
+            }
+
+            if (travelType == RouteTypes.RAIL && shouldCheckForInServiceTrains) {
+                fetchInServiceTrains();
+            }
         }
     }
 
@@ -583,7 +713,8 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
                     if (inProcessOfStartDestinationFlow) {
                         inProcessOfStartDestinationFlow = false;
                     }
-                } else {
+                }
+                else {
                     schedulesRouteModel.setRouteStartStopId(stopId);
                     schedulesRouteModel.setRouteStartName(stopName);
 
@@ -602,13 +733,15 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
                 schedulesListViewItemArrayAdapter.setRouteEndName(schedulesRouteModel.getRouteEndName());
 
                 checkTripStartAndDestinationForNextToArriveDataRequest();
-            } else {
+            }
+            else {
                 if (resultCode == RESULT_CANCELED) {
                     Log.d(TAG, "the result is canceled");
                     //Write your code if there's no result
                 }
             }
-        } else {
+        }
+        else {
             if (requestCode == getResources().getInteger(R.integer.schedules_itinerary_stopselection_activityforresult_request_code)) {
                 if (resultCode == RESULT_OK) {
                     String stopName = data.getStringExtra("stop_name");
@@ -626,7 +759,8 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
                             Log.d(TAG, "inproces was true");
                             inProcessOfStartDestinationFlow = false;
                         }
-                    } else {
+                    }
+                    else {
                         Log.d(TAG, "not in selection mode of desintation as " + selectionMode);
                         schedulesRouteModel.setRouteStartStopId(stopId);
                         schedulesRouteModel.setRouteStartName(stopName);
@@ -642,8 +776,8 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
                                     travelType.name());
                             stopSelectionIntent.putExtra(getString(R.string.schedules_itinerary_routeShortName), schedulesRouteModel.getRouteShortName());
                             stopSelectionIntent.putExtra(getString(R.string.schedules_stopselection_startordestination), "Destination");
-                            if(data.hasExtra(getString(R.string.schedules_stopselection_sort_order))) {
-                                SortOrder sortOrder = (SortOrder)data.getSerializableExtra(getString(R.string.schedules_stopselection_sort_order));
+                            if (data.hasExtra(getString(R.string.schedules_stopselection_sort_order))) {
+                                SortOrder sortOrder = (SortOrder) data.getSerializableExtra(getString(R.string.schedules_stopselection_sort_order));
                                 stopSelectionIntent.putExtra(getString(R.string.schedules_stopselection_sort_order), sortOrder);
                             }
 
@@ -656,7 +790,8 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
                     schedulesListViewItemArrayAdapter.setRouteEndName(schedulesRouteModel.getRouteEndName());
 
                     checkTripStartAndDestinationForNextToArriveDataRequest();
-                } else {
+                }
+                else {
                     if (resultCode == RESULT_CANCELED) {
                         Log.d(TAG, "the result is canceled");
                         //Write your code if there's no result
@@ -667,21 +802,27 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
     }
 
     public void tabSelected(View view) {
+
+        // Clear in service trips for new tab
+        if (mInServiceTrips != null) {
+            mInServiceTrips.clear();
+        }
+
         switch (view.getId()) {
             case R.id.schedules_itinerary_tab_weekday_button: {
-                Log.d(TAG, "heard the tab selected: weekday" );
+                Log.d(TAG, "heard the tab selected: weekday");
                 selectTab(1);
 
                 break;
             }
             case R.id.schedules_itinerary_tab_sat_button: {
-                Log.d(TAG, "heard the tab selected: sat" );
+                Log.d(TAG, "heard the tab selected: sat");
                 selectTab(2);
 
                 break;
             }
             case R.id.schedules_itinerary_tab_sun_button: {
-                Log.d(TAG, "heard the tab selected: sun" );
+                Log.d(TAG, "heard the tab selected: sun");
                 selectTab(3);
                 break;
             }
@@ -691,30 +832,31 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
         }
     }
 
-    public void selectTab(int index){
+    public void selectTab(int index) {
         selectedTab = index;
         setTabSelected(tabs.get(selectedTab));
 
-        for(int i = 0 ; i < tabs.size(); i++){
-            if(i != selectedTab){
+        for (int i = 0; i < tabs.size(); i++) {
+            if (i != selectedTab) {
                 setTabUnselected(tabs.get(i));
             }
         }
 
-        switch (index){
+        switch (index) {
 
-            case 1:{
+            case 1: {
                 mAdapter.setHeaderViewText(tabLabels[selectedTab]);
                 break;
             }
-            case 2:{
+            case 2: {
                 mAdapter.setHeaderViewText(tabLabels[selectedTab]);
                 break;
             }
-            case 3:{
+            case 3: {
                 mAdapter.setHeaderViewText(tabLabels[selectedTab]);
                 break;
-            } default:{
+            }
+            default: {
                 mAdapter.setHeaderViewText("REMAINING TRIPS FOR TODAY");
             }
         }
@@ -723,16 +865,16 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
         checkTripStartAndDestinationForNextToArriveDataRequest();
     }
 
-    private void setTabSelected(Button button){
+    private void setTabSelected(Button button) {
         String color = this.getResources().getStringArray(R.array.schedules_routeselection_routesheader_solid_colors)[travelType.ordinal()];
-        GradientDrawable gradientDrawable = (GradientDrawable)button.getBackground();
+        GradientDrawable gradientDrawable = (GradientDrawable) button.getBackground();
 
         gradientDrawable.setColor(Color.parseColor(color));
         button.setTextColor(Color.WHITE);
     }
 
-    private void setTabUnselected(Button button){
-        GradientDrawable gradientDrawable = (GradientDrawable)button.getBackground();
+    private void setTabUnselected(Button button) {
+        GradientDrawable gradientDrawable = (GradientDrawable) button.getBackground();
         gradientDrawable.setColor(Color.LTGRAY);
         button.setTextColor(Color.BLACK);
     }
@@ -749,7 +891,7 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
 
     @Override
     public void onHeaderClick(StickyListHeadersListView l, View header,
-                              int itemPosition, long headerId, boolean currentlySticky) {
+            int itemPosition, long headerId, boolean currentlySticky) {
 
     }
 
@@ -763,7 +905,7 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
 
     @Override
     public void onStickyHeaderChanged(StickyListHeadersListView l, View header,
-                                      int itemPosition, long headerId) {
+            int itemPosition, long headerId) {
 
     }
 
@@ -771,7 +913,7 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
     protected void onPause() {
         super.onPause();
 
-        if(schedulesItineraryRefreshCountDownTimer != null) {
+        if (schedulesItineraryRefreshCountDownTimer != null) {
             schedulesItineraryRefreshCountDownTimer.cancel();
             schedulesItineraryRefreshCountDownTimer = null;
         }
@@ -783,9 +925,9 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
 
         schedulesItineraryRefreshCountDownTimer = createScheduleItineraryRefreshCountDownTimer();
         if ((schedulesRouteModel.getRouteStartName() != null) &&
-                !schedulesRouteModel.getRouteStartName().isEmpty() &&
-                (schedulesRouteModel.getRouteEndName() != null) &&
-                !schedulesRouteModel.getRouteEndName().isEmpty()) {
+            !schedulesRouteModel.getRouteStartName().isEmpty() &&
+            (schedulesRouteModel.getRouteEndName() != null) &&
+            !schedulesRouteModel.getRouteEndName().isEmpty()) {
             schedulesItineraryRefreshCountDownTimer.start();
         }
     }
@@ -801,7 +943,7 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
             @Override
             public void onTick(long millisUntilFinished) {
 
-//                ((Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter)menuDialogListView.getAdapter()).setNextRefreshInSecondsValue(millisUntilFinished/1000);
+                //                ((Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter)menuDialogListView.getAdapter()).setNextRefreshInSecondsValue(millisUntilFinished/1000);
             }
 
             @Override
@@ -814,28 +956,34 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
 
     @Override
     public void success(ArrayList<ServiceAdvisoryModel> serviceAdvisoryModels, Response response) {
-        if(response.getStatus() == HttpStatus.SC_OK && serviceAdvisoryModels != null) {
+        if (response.getStatus() == HttpStatus.SC_OK && serviceAdvisoryModels != null) {
             MenuItem item = menu.findItem(R.id.actionmenu_nexttoarrive_revealactions);
             AnimationDrawable animationDrawable;
             alerts = serviceAdvisoryModels;
-            if(ServiceAdvisoryModel.hasValidAdvisory(alerts)
-                    && ServiceAdvisoryModel.hasValidDetours(alerts)
-                    && ServiceAdvisoryModel.hasValidAlerts(alerts)) {
+            if (ServiceAdvisoryModel.hasValidAdvisory(alerts)
+                && ServiceAdvisoryModel.hasValidDetours(alerts)
+                && ServiceAdvisoryModel.hasValidAlerts(alerts)) {
                 animationDrawable = (AnimationDrawable) getResources().getDrawable(R.drawable.actionmenu_detour_alert_advisroy_animation);
-            } else if(ServiceAdvisoryModel.hasValidAdvisory(alerts)
-                    && ServiceAdvisoryModel.hasValidDetours(alerts)) {
+            }
+            else if (ServiceAdvisoryModel.hasValidAdvisory(alerts)
+                     && ServiceAdvisoryModel.hasValidDetours(alerts)) {
                 animationDrawable = (AnimationDrawable) getResources().getDrawable(R.drawable.actionmenu_detour_advisory_animation);
-            } else if(ServiceAdvisoryModel.hasValidAlerts(alerts)
-                    && ServiceAdvisoryModel.hasValidAdvisory(alerts)) {
+            }
+            else if (ServiceAdvisoryModel.hasValidAlerts(alerts)
+                     && ServiceAdvisoryModel.hasValidAdvisory(alerts)) {
                 animationDrawable = (AnimationDrawable) getResources().getDrawable(R.drawable.actionmenu_advisory_alert_animation);
-            } else if(ServiceAdvisoryModel.hasValidAlerts(alerts)
-                    && ServiceAdvisoryModel.hasValidDetours(alerts)) {
+            }
+            else if (ServiceAdvisoryModel.hasValidAlerts(alerts)
+                     && ServiceAdvisoryModel.hasValidDetours(alerts)) {
                 animationDrawable = (AnimationDrawable) getResources().getDrawable(R.drawable.actionmenu_detour_alert_animation);
-            } else if(ServiceAdvisoryModel.hasValidDetours(alerts)) {
+            }
+            else if (ServiceAdvisoryModel.hasValidDetours(alerts)) {
                 animationDrawable = (AnimationDrawable) getResources().getDrawable(R.drawable.actionmenu_detour_animation);
-            } else if(ServiceAdvisoryModel.hasValidAdvisory(alerts)) {
+            }
+            else if (ServiceAdvisoryModel.hasValidAdvisory(alerts)) {
                 animationDrawable = (AnimationDrawable) getResources().getDrawable(R.drawable.actionmenu_advisory_animation);
-            } else if(ServiceAdvisoryModel.hasValidAlerts(alerts)) {
+            }
+            else if (ServiceAdvisoryModel.hasValidAlerts(alerts)) {
                 animationDrawable = (AnimationDrawable) getResources().getDrawable(R.drawable.actionmenu_alert_animation);
             }
             else {
@@ -891,7 +1039,8 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
                     }
 
                     cursor.close();
-                } else {
+                }
+                else {
                     Log.d("f", "cursor is null");
                 }
 
@@ -916,5 +1065,67 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
             TextView endRouteNameTextView = (TextView) findViewById(R.id.schedules_itinerary_routedirection_textview);
             endRouteNameTextView.setText("To " + directionHeaderString);
         }
+    }
+
+    private void fetchInServiceTrains() {
+
+        if (BuildConfig.DEBUG) {
+            Log.v(TAG, "fetchInServiceTrains");
+        }
+
+        Callback callback = new Callback() {
+            @Override
+            public void success(Object object, Response response) {
+                ArrayList<TrainViewModel> inServiceArrayList = (ArrayList<TrainViewModel>) object;
+                mInServiceTrips = new ArrayList<TripObject>();
+                if (inServiceArrayList != null && inServiceArrayList.size() > 0) {
+                    // Compare train number from schedule and response to see if currently in service
+                    // Start at 1 to accommodate adapter behavior
+                    for (int i = 1; i < mAdapter.getCount(); i++) {
+                        TripObject tripObject = (TripObject) mAdapter.getItem(i);
+                        if (tripObject != null) {
+                            for (TrainViewModel trainViewModel : inServiceArrayList) {
+                                if (trainViewModel != null) {
+                                    Number trainNo = tripObject.getTrainNo();
+                                    String trainNumber = trainViewModel.getTrainNumber();
+                                    if (trainNo != null && !TextUtils.isEmpty(trainNumber)) {
+                                        // If train is in service, change its state and update its view
+                                        if (Integer.toString(trainNo.intValue()).equals(trainNumber)) {
+                                            TripObject inServiceTrip = new TripObject(trainViewModel);
+                                            mInServiceTrips.add(inServiceTrip);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // If no in service items currently displayed, update the UI
+                    if (mAdapter.getInServiceItemCount() == 0) {
+                        if (mInServiceTrips != null && mInServiceTrips.size() > 0) {
+                            mAdapter.addInServiceTrainItems(mInServiceTrips);
+                        }
+
+                        mAdapter.notifyDataSetChanged();
+                    }
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError retrofitError) {
+                setProgressBarIndeterminateVisibility(Boolean.FALSE);
+
+                try {
+                    Log.d(TAG, "fetchInServiceTrains: retrofitError - " + retrofitError.getResponse().getBody().in());
+                }
+                catch (Exception ex) {
+                    Log.d(TAG, "fetchInServiceTrains: retrofitError");
+                }
+            }
+        };
+
+        // Call train view service proxy to get trains in transit
+        TrainViewServiceProxy trainViewServiceProxy = new TrainViewServiceProxy();
+        trainViewServiceProxy.getTrainView(callback);
     }
 }

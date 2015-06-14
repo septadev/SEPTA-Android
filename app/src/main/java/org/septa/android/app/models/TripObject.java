@@ -1,5 +1,7 @@
 package org.septa.android.app.models;
 
+import org.septa.android.app.models.servicemodels.TrainViewModel;
+
 public class TripObject {
 
     private Number startTime;
@@ -15,6 +17,12 @@ public class TripObject {
     private Number endSeq;
 
     private String tripId;
+
+    private TrainViewModel trainViewModel;
+
+    public TripObject (TrainViewModel trainViewModel) {
+        this.trainViewModel = trainViewModel;
+    }
 
     public String print() {
         return "startTime:"+startTime+"  endTime:"+endTime+"   trainNo:"+trainNo+"   routeName:"+routeName+"   serviceId:"+serviceId+"   directionId:"+directionId+"   startSeq:"+startSeq+"   endSeq:"+endSeq+"   tripId:"+ tripId;
@@ -90,6 +98,14 @@ public class TripObject {
 
     public void setTripId(String tripId) {
         this.tripId = tripId;
+    }
+
+    public TrainViewModel getTrainViewModel() {
+        return trainViewModel;
+    }
+
+    public void setTrainViewModel(TrainViewModel trainViewModel) {
+        this.trainViewModel = trainViewModel;
     }
 
     @Override

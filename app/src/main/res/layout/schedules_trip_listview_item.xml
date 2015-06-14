@@ -30,7 +30,7 @@
             android:id="@+id/schedules_trip_listview_timeuntilstart"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#FF22CC22"
+            android:textColor="@color/text_on_time"
             android:textSize="10sp"/>
 
     </LinearLayout>

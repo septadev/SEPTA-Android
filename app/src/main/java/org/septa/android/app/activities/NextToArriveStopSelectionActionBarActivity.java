@@ -9,7 +9,9 @@ package org.septa.android.app.activities;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 
+import org.septa.android.app.BuildConfig;
 import org.septa.android.app.R;
 import org.septa.android.app.adapters.RegionalRail_StopSelection_ListViewItem_ArrayAdapter;
 import org.septa.android.app.fragments.StopSelectionListFragment;
@@ -25,6 +27,10 @@ public class NextToArriveStopSelectionActionBarActivity extends BaseAnalyticsAct
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "onCreate");
+        }
+
         super.onCreate(savedInstanceState);
 
         String resourceName = getString(R.string.actionbar_iconimage_imagename_base).concat("nexttoarrive");

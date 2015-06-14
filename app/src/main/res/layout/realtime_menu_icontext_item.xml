@@ -19,7 +19,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/realtime_menu_icontext_item_imageView"
-        android:clickable="true"/>
+        android:scaleType="fitCenter"/>
 
     <TextView
         android:id="@+id/realtime_menu_icontext_item_textView"
@@ -30,6 +30,6 @@
         android:textColor="#FFFFFF"
         android:gravity="center"
         android:layout_gravity="bottom|center_horizontal"
-        android:layout_marginBottom="5dp"/>
+        android:layout_marginBottom="10dp"/>
 
 </FrameLayout>

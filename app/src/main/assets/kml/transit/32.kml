@@ -2,7 +2,7 @@
 <kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
 <Document>
 	<name>32.kml</name>
-	<Schema name="TrapezeRoutesSpring2015_schema" id="TrapezeRoutesSpring2015_schema">
+	<Schema name="TrapezeRoutesSummer2015a_schema" id="TrapezeRoutesSummer2015a_schema">
 		<SimpleField type="int" name="FID"><displayName>FID</displayName>
 </SimpleField>
 		<SimpleField type="string" name="LINEABBR"><displayName>LINEABBR</displayName>
@@ -34,7 +34,7 @@
 		<SimpleField type="string" name="tpField071"><displayName>tpField071</displayName>
 </SimpleField>
 	</Schema>
-	<Style id="TrapezeRoutesSpring2015">
+	<Style id="TrapezeRoutesSummer2015a">
 		<IconStyle>
 			<color>bfffffff</color>
 			<scale>0.8</scale>
@@ -43,15 +43,15 @@
 			</Icon>
 		</IconStyle>
 		<LineStyle>
-			<color>ff918300</color>
+			<color>ff120099</color>
 		</LineStyle>
 	</Style>
 	<Placemark>
 		<name>32</name>
-		<styleUrl>#TrapezeRoutesSpring2015</styleUrl>
+		<styleUrl>#TrapezeRoutesSummer2015a</styleUrl>
 		<ExtendedData>
-			<SchemaData schemaUrl="#TrapezeRoutesSpring2015_schema">
-				<SimpleData name="FID">32</SimpleData>
+			<SchemaData schemaUrl="#TrapezeRoutesSummer2015a_schema">
+				<SimpleData name="FID">31</SimpleData>
 				<SimpleData name="LINEABBR">32</SimpleData>
 				<SimpleData name="LINENAME">Broad-Carpenter to Ridge-Lyceum</SimpleData>
 				<SimpleData name="tpField00">32</SimpleData>
@@ -70,7 +70,7 @@
 		</ExtendedData>
 		<MultiGeometry>
 			<Point>
-				<coordinates>-75.176052,39.964022,0</coordinates>
+				<coordinates>-75.175414,39.963477,0</coordinates>
 			</Point>
 			<LineString>
 				<tessellate>1</tessellate>
@@ -622,12 +622,6 @@
 				<tessellate>1</tessellate>
 				<coordinates>
 					-75.163838,39.953458,0 -75.164226,39.953508,0 
-				</coordinates>
-			</LineString>
-			<LineString>
-				<tessellate>1</tessellate>
-				<coordinates>
-					-75.164226,39.953508,0 -75.165059,39.953609,0 
 				</coordinates>
 			</LineString>
 			<LineString>
@@ -5386,6 +5380,18 @@
 				<tessellate>1</tessellate>
 				<coordinates>
 					-75.180064,40.009764,0 -75.18001,40.009822,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.164226,39.953508,0 -75.164787,39.953572,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.164787,39.953572,0 -75.165059,39.953609,0 
 				</coordinates>
 			</LineString>
 		</MultiGeometry>

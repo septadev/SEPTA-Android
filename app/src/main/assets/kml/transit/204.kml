@@ -2,7 +2,7 @@
 <kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
 <Document>
 	<name>204.kml</name>
-	<Schema name="TrapezeRoutesSpring2015_schema" id="TrapezeRoutesSpring2015_schema">
+	<Schema name="TrapezeRoutesSummer2015b_schema" id="TrapezeRoutesSummer2015b_schema">
 		<SimpleField type="int" name="FID"><displayName>FID</displayName>
 </SimpleField>
 		<SimpleField type="string" name="LINEABBR"><displayName>LINEABBR</displayName>
@@ -34,7 +34,7 @@
 		<SimpleField type="string" name="tpField071"><displayName>tpField071</displayName>
 </SimpleField>
 	</Schema>
-	<Style id="TrapezeRoutesSpring2015">
+	<Style id="TrapezeRoutesSummer2015b">
 		<IconStyle>
 			<color>bfffffff</color>
 			<scale>0.8</scale>
@@ -43,15 +43,15 @@
 			</Icon>
 		</IconStyle>
 		<LineStyle>
-			<color>ff918300</color>
+			<color>ff9c4300</color>
 		</LineStyle>
 	</Style>
 	<Placemark>
 		<name>204</name>
-		<styleUrl>#TrapezeRoutesSpring2015</styleUrl>
+		<styleUrl>#TrapezeRoutesSummer2015b</styleUrl>
 		<ExtendedData>
-			<SchemaData schemaUrl="#TrapezeRoutesSpring2015_schema">
-				<SimpleData name="FID">99</SimpleData>
+			<SchemaData schemaUrl="#TrapezeRoutesSummer2015b_schema">
+				<SimpleData name="FID">1</SimpleData>
 				<SimpleData name="LINEABBR">204</SimpleData>
 				<SimpleData name="LINENAME">Eagleview to Paoli Train Station</SimpleData>
 				<SimpleData name="tpField00">204</SimpleData>
@@ -70,7 +70,7 @@
 		</ExtendedData>
 		<MultiGeometry>
 			<Point>
-				<coordinates>-75.586654,40.032774,0</coordinates>
+				<coordinates>-75.585193,40.03297,0</coordinates>
 			</Point>
 			<LineString>
 				<tessellate>1</tessellate>
@@ -7840,6 +7840,144 @@
 				<tessellate>1</tessellate>
 				<coordinates>
 					-75.53252500000001,40.044203,0 -75.53246799999999,40.044046,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.639702,40.053433,0 -75.63972099999999,40.053404,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.639697,40.053453,0 -75.639702,40.053433,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.639704,40.053473,0 -75.639697,40.053453,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.639768,40.053554,0 -75.639704,40.053473,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.639848,40.053658,0 -75.639768,40.053554,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.63996899999999,40.053816,0 -75.639848,40.053658,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.64010399999999,40.054001,0 -75.63996899999999,40.053816,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.64031199999999,40.05432,0 -75.64010399999999,40.054001,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.640385,40.054438,0 -75.64031199999999,40.05432,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.64045299999999,40.054564,0 -75.640385,40.054438,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.640514,40.054687,0 -75.64045299999999,40.054564,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.64057,40.054822,0 -75.640514,40.054687,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.64058799999999,40.054876,0 -75.64057,40.054822,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.640607,40.054932,0 -75.64058799999999,40.054876,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.640619,40.054991,0 -75.640607,40.054932,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.640627,40.05504,0 -75.640619,40.054991,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.64063899999999,40.05511,0 -75.640627,40.05504,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.64079099999999,40.05506,0 -75.64063899999999,40.05511,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.640957,40.055005,0 -75.64079099999999,40.05506,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.64111699999999,40.054959,0 -75.640957,40.055005,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.641277,40.054904,0 -75.64111699999999,40.054959,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.641446,40.054849,0 -75.641277,40.054904,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.64156199999999,40.054818,0 -75.641446,40.054849,0 
 				</coordinates>
 			</LineString>
 		</MultiGeometry>

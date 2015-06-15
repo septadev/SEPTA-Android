@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document>
+	<name>316.kml</name>
+	<Schema name="TrapezeRoutesSummer2015b_schema" id="TrapezeRoutesSummer2015b_schema">
+		<SimpleField type="int" name="FID"><displayName>FID</displayName>
+</SimpleField>
+		<SimpleField type="string" name="LINEABBR"><displayName>LINEABBR</displayName>
+</SimpleField>
+		<SimpleField type="string" name="LINENAME"><displayName>LINENAME</displayName>
+</SimpleField>
+		<SimpleField type="int" name="tpField00"><displayName>tpField00</displayName>
+</SimpleField>
+		<SimpleField type="string" name="tpField01"><displayName>tpField01</displayName>
+</SimpleField>
+		<SimpleField type="string" name="tpField02"><displayName>tpField02</displayName>
+</SimpleField>
+		<SimpleField type="string" name="tpField03"><displayName>tpField03</displayName>
+</SimpleField>
+		<SimpleField type="string" name="tpField04"><displayName>tpField04</displayName>
+</SimpleField>
+		<SimpleField type="string" name="tpField05"><displayName>tpField05</displayName>
+</SimpleField>
+		<SimpleField type="string" name="tpField06"><displayName>tpField06</displayName>
+</SimpleField>
+		<SimpleField type="string" name="REVENUENO"><displayName>REVENUENO</displayName>
+</SimpleField>
+		<SimpleField type="int" name="DIRNUM0"><displayName>DIRNUM0</displayName>
+</SimpleField>
+		<SimpleField type="int" name="DIRNUM1"><displayName>DIRNUM1</displayName>
+</SimpleField>
+		<SimpleField type="string" name="tpField070"><displayName>tpField070</displayName>
+</SimpleField>
+		<SimpleField type="string" name="tpField071"><displayName>tpField071</displayName>
+</SimpleField>
+	</Schema>
+	<Style id="TrapezeRoutesSummer2015b">
+		<IconStyle>
+			<color>bfffffff</color>
+			<scale>0.8</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/info-i.png</href>
+			</Icon>
+		</IconStyle>
+		<LineStyle>
+			<color>ff9c4300</color>
+		</LineStyle>
+	</Style>
+	<Placemark>
+		<name>316</name>
+		<styleUrl>#TrapezeRoutesSummer2015b</styleUrl>
+		<ExtendedData>
+			<SchemaData schemaUrl="#TrapezeRoutesSummer2015b_schema">
+				<SimpleData name="FID">4</SimpleData>
+				<SimpleData name="LINEABBR">316</SimpleData>
+				<SimpleData name="LINENAME">LUCY Loops</SimpleData>
+				<SimpleData name="tpField00">316</SimpleData>
+				<SimpleData name="tpField01">GER</SimpleData>
+				<SimpleData name="tpField02"></SimpleData>
+				<SimpleData name="tpField03"></SimpleData>
+				<SimpleData name="tpField04"></SimpleData>
+				<SimpleData name="tpField05"></SimpleData>
+				<SimpleData name="tpField06"></SimpleData>
+				<SimpleData name="REVENUENO"></SimpleData>
+				<SimpleData name="DIRNUM0">0</SimpleData>
+				<SimpleData name="DIRNUM1">0</SimpleData>
+				<SimpleData name="tpField070">LOOP</SimpleData>
+				<SimpleData name="tpField071"></SimpleData>
+			</SchemaData>
+		</ExtendedData>
+	</Placemark>
+</Document>
+</kml>

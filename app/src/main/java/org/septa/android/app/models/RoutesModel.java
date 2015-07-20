@@ -12,11 +12,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import org.septa.android.app.databases.SEPTADatabase;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import org.septa.android.app.databases.SEPTADatabase;
 
 public class RoutesModel {
     private static final String TAG = RoutesModel.class.getName();

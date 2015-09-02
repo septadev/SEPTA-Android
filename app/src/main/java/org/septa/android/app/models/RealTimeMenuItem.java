@@ -1,5 +1,7 @@
 package org.septa.android.app.models;
 
+import org.septa.android.app.utilities.PapalVisitUtils;
+
 /**
  * Created by jhunchar on 4/17/15.
  */
@@ -12,10 +14,15 @@ public class RealTimeMenuItem {
 
     public RealTimeMenuItem(Class classname, String icon, String selectableIcon, String title) {
         super();
+
         this.classname = classname;
         this.icon = icon;
         this.selectableIcon = selectableIcon;
         this.title = title;
+    }
+
+    public boolean isDisabled() {
+        return PapalVisitUtils.isDisabledMenuItem(classname);
     }
 
     /**

@@ -63,6 +63,7 @@ public class RealTimeMenuAdapter extends BaseAdapter {
             convertView = inflater.inflate(R.layout.realtime_menu_icontext_item, parent, false);
 
             holder = new ViewHolder();
+            holder.disabledMask = (ImageView) convertView.findViewById(R.id.realtime_menu_icontext_item_disabled_mask);
             holder.icon = (ImageView) convertView.findViewById(R.id.realtime_menu_icontext_item_imageView);
             holder.title = (TextView) convertView.findViewById(R.id.realtime_menu_icontext_item_textView);
 
@@ -73,6 +74,8 @@ public class RealTimeMenuAdapter extends BaseAdapter {
         }
 
         RealTimeMenuItem realTimeMenuItem = (RealTimeMenuItem) getItem(position);
+
+        holder.disabledMask.setVisibility(realTimeMenuItem.isDisabled() ? View.VISIBLE : View.GONE);
 
         StringBuilder resourceNameBuilder = new StringBuilder();
         resourceNameBuilder.append("realtime_menu_").append(realTimeMenuItem.getSelectableIcon().toLowerCase());
@@ -88,6 +91,7 @@ public class RealTimeMenuAdapter extends BaseAdapter {
     }
 
     private static class ViewHolder {
+        ImageView disabledMask;
         ImageView icon;
         TextView title;
     }

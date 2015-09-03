@@ -297,6 +297,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.schedules.SchedulesItineraryActionBarActivity" />
         </activity>
+        <service
+            android:name=".PapalVisit.PopeNetworkService"
+            android:exported="false">
+        </service>
 
         <activity android:name=".activities.GeocoderActivity"></activity>
 

@@ -1,4 +1,4 @@
-package org.septa.android.app.utilities;
+package org.septa.android.app.PapalVisit;
 
 import android.util.Log;
 
@@ -9,8 +9,8 @@ import java.util.Date;
 /**
  * Created by jhunchar on 9/2/15.
  */
-public class PapalVisitUtils {
-    private static final String TAG = PapalVisitUtils.class.getName();
+public class PopeUtils {
+    private static final String TAG = PopeUtils.class.getName();
 
     // FIXME: Set correct Papal visit dates (JCH)
     private static final String PAPAL_SATURDAY_START_DATE = "Thu Sep 03 00:00:01 EDT 2015";

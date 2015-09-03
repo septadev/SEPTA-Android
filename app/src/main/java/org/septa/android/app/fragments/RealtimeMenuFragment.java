@@ -63,8 +63,7 @@ public class RealtimeMenuFragment extends Fragment implements AlertManager.IAler
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.realtime_menu_fragment, container, false);
 
@@ -86,24 +85,17 @@ public class RealtimeMenuFragment extends Fragment implements AlertManager.IAler
         mTransitViewImage.setImageResource(isPapalVisit ? R.drawable.realtime_menu_transitview_selector_disabled : R.drawable.realtime_menu_transitview_selector);
 
         // Set click listeners
+        mFindNearestLocationImage.setOnClickListener(this);
+        mNextToArriveImage.setOnClickListener(this);
         mSystemStatusImage.setOnClickListener(this);
         mTipsImage.setOnClickListener(this);
+        mTrainViewImage.setOnClickListener(this);
+        mTransitViewImage.setOnClickListener(this);
 
         if (isPapalVisit) {
 
             mPapalVisitMessage.setOnClickListener(this);
         }
-
-        else {
-
-            mFindNearestLocationImage.setOnClickListener(this);
-            mNextToArriveImage.setOnClickListener(this);
-            mTrainViewImage.setOnClickListener(this);
-            mTransitViewImage.setOnClickListener(this);
-        }
-
-        // Set visibility
-        mPapalVisitMessage.setVisibility(isPapalVisit ? View.VISIBLE : View.GONE);
 
         return view;
     }
@@ -143,55 +135,103 @@ public class RealtimeMenuFragment extends Fragment implements AlertManager.IAler
 
             case R.id.realtime_menu_find_nearest_location_image_view:
 
+                if (!PapalVisitUtils.isPopeVisitingToday()) {
+
                 intent = new Intent(getActivity(), FindNearestLocationActionBarActivity.class);
 
                 intent.putExtra(getString(R.string.actionbar_titletext_key), getString(R.string.page_title_find_nearest_location));
                 intent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), getString(R.string.page_icon_id_find_nearest_location));
 
+                }
+
+                else {
+                    mPapalVisitMessage.setVisibility(View.VISIBLE);
+                }
+
                 break;
 
             case R.id.realtime_menu_next_to_arrive_image_view:
 
-                intent = new Intent(getActivity(), NextToArriveActionBarActivity.class);
+                if (!PapalVisitUtils.isPopeVisitingToday()) {
+
+                    intent = new Intent(getActivity(), NextToArriveActionBarActivity.class);
 
                 intent.putExtra(getString(R.string.actionbar_titletext_key), getString(R.string.page_title_next_to_arrive));
                 intent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), getString(R.string.page_icon_id_next_to_arrive));
+
+                }
+
+                else {
+                    mPapalVisitMessage.setVisibility(View.VISIBLE);
+                }
 
                 break;
 
             case R.id.realtime_menu_system_status_image_view:
 
-                intent = new Intent(getActivity(), SystemStatusActionBarActivity.class);
+                if (!PapalVisitUtils.isPopeVisitingToday()) {
+
+                    intent = new Intent(getActivity(), SystemStatusActionBarActivity.class);
 
                 intent.putExtra(getString(R.string.actionbar_titletext_key), getString(R.string.page_title_system_status));
                 intent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), getString(R.string.page_icon_id_system_status));
+
+                }
+
+                else {
+                    mPapalVisitMessage.setVisibility(View.VISIBLE);
+                }
 
                 break;
 
             case R.id.realtime_menu_tips_image_view:
 
-                intent = new Intent(getActivity(), TipsActionBarActivity.class);
+                if (!PapalVisitUtils.isPopeVisitingToday()) {
+
+                    intent = new Intent(getActivity(), TipsActionBarActivity.class);
 
                 intent.putExtra(getString(R.string.actionbar_titletext_key), getString(R.string.page_title_tips));
                 intent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), getString(R.string.page_icon_id_tips));
+
+                }
+
+                else {
+                    mPapalVisitMessage.setVisibility(View.VISIBLE);
+                }
 
                 break;
 
             case R.id.realtime_menu_trainview_image_view:
 
-                intent = new Intent(getActivity(), TrainViewActionBarActivity.class);
+                if (!PapalVisitUtils.isPopeVisitingToday()) {
+
+                    intent = new Intent(getActivity(), TrainViewActionBarActivity.class);
 
                 intent.putExtra(getString(R.string.actionbar_titletext_key), getString(R.string.page_title_train_view));
                 intent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), getString(R.string.page_icon_id_trainview));
+
+                }
+
+                else {
+                    mPapalVisitMessage.setVisibility(View.VISIBLE);
+                }
 
                 break;
 
             case R.id.realtime_menu_transitview_image_view:
 
                 intent = new Intent(getActivity(), TransitViewActionBarActivity.class);
+                if (!PapalVisitUtils.isPopeVisitingToday()) {
 
-                intent.putExtra(getString(R.string.actionbar_titletext_key), getString(R.string.page_title_transit_view));
+
+                    intent.putExtra(getString(R.string.actionbar_titletext_key), getString(R.string.page_title_transit_view));
                 intent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), getString(R.string.page_icon_id_transitview));
+
+                }
+
+                else {
+                    mPapalVisitMessage.setVisibility(View.VISIBLE);
+                }
 
                 break;
 

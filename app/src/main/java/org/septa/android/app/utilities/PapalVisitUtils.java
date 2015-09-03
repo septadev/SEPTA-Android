@@ -12,9 +12,10 @@ import java.util.Date;
 public class PapalVisitUtils {
     private static final String TAG = PapalVisitUtils.class.getName();
 
-    private static final String PAPAL_SATURDAY_START_DATE = "Sat Sep 26 00:00:01 EDT 2015";
-    private static final String PAPAL_SUNDAY_START_DATE = "Sun Sep 27 00:00:01 EDT 2015";
-    private static final String PAPAL_MONDAY_END_DATE = "Mon Sep 28 00:00:01 EDT 2015";
+    // FIXME: Set correct Papal visit dates (JCH)
+    private static final String PAPAL_SATURDAY_START_DATE = "Thu Sep 03 00:00:01 EDT 2015";
+    private static final String PAPAL_SUNDAY_START_DATE = "Fri Sep 04 00:00:01 EDT 2015";
+    private static final String PAPAL_MONDAY_END_DATE = "Sat Sep 05 00:00:01 EDT 2015";
 
 
     public static boolean isPopeVisitingToday() {
@@ -45,8 +46,6 @@ public class PapalVisitUtils {
 
         return false;
     }
-
-    // TODO: Is it better to check if week of ... or is it better to advance date value to next sat?
 
     public static boolean isPopeVisitingSaturday() {
 

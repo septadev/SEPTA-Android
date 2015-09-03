@@ -33,13 +33,4 @@
         android:textColor="#FFFFFF"
         android:textSize="10sp"
         tools:text="Find Nearest Location"/>
-
-    <ImageView
-        android:id="@+id/realtime_menu_icontext_item_disabled_mask"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:scaleType="fitCenter"
-        android:src="@drawable/realtime_menu_disabled"
-        android:visibility="gone"
-        tools:visibility="visible"/>
 </FrameLayout>

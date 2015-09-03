@@ -89,4 +89,7 @@
     <string name="on_time">On time</string>
     <string name="track">Track</string>
 
+    <!-- Papal Visit -->
+    <string name="default_papal_message">Real-time data is not available this weekend.  Visit www.septa.org/papalvisitphilly for service information</string>
+
 </resources>

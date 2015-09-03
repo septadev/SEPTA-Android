@@ -26,7 +26,7 @@ public class PapalVisitUtils {
 
     // TODO: Clean this up with official dates (JCH)
     private static final String START_DATE = "Wed Sep 02 15:30:00 EDT 2015";
-    private static final String END_DATE = "Wed Sep 02 23:59:59 EDT 2015";
+    private static final String END_DATE = "Thu Sep 03 23:59:59 EDT 2015";
 
     public static boolean isPapalVisit() {
 

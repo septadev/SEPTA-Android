@@ -5,15 +5,45 @@
   ~
   ~ Copyright (c) 2014 SEPTA.  All rights reserved.
   -->
-<GridView
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/gridview"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="5dp"
-    android:background="@drawable/main_background"
-    android:numColumns="3"
-    android:stretchMode="columnWidth"
-    android:gravity="center_horizontal"
-    android:listSelector="@color/transparent_selector"
-/>
+    android:background="@drawable/main_background">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="vertical">
+
+            <GridView
+                android:id="@+id/gridview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:listSelector="@color/transparent_selector"
+                android:numColumns="3"
+                android:padding="5dp"
+                android:stretchMode="columnWidth"/>
+
+            <TextView
+                android:id="@+id/realtime_menu_papal_message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:background="@drawable/state_list_default_white_selector_with_rounded_corners"
+                android:gravity="center_horizontal"
+                android:padding="16dp"
+                android:text="@string/default_papal_message"
+                android:textColor="@color/text_white"
+                android:textSize="18sp"
+                android:visibility="gone"/>
+        </LinearLayout>
+    </ScrollView>
+</FrameLayout>

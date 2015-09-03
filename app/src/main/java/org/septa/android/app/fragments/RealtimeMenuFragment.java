@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
+import android.widget.TextView;
 
 import org.septa.android.app.R;
 import org.septa.android.app.adapters.RealTimeMenuAdapter;
@@ -37,6 +38,7 @@ public class RealtimeMenuFragment extends Fragment implements AlertManager.IAler
     public static Boolean fetchedResults = false;
 
     private RealTimeMenuAdapter mRealTimeMenuAdapter;
+    private TextView mPapalVisitMessage;
 
     private static final long MAX_ALERT_AGE = 1000 * 60 * 60;
 
@@ -51,7 +53,9 @@ public class RealtimeMenuFragment extends Fragment implements AlertManager.IAler
             Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.realtime_menu_fragment, container, false);
+        
         GridView gridview = (GridView) view.findViewById(R.id.gridview);
+        mPapalVisitMessage = (TextView) view.findViewById(R.id.realtime_menu_papal_message);
 
         final String[] realtime_menu_classnames = getResources().getStringArray(R.array.realtime_menu_classnames_inorder);
         final String[] realtime_menu_icon_selectors = getResources().getStringArray(R.array.realtime_menu_icon_selectors_inorder);

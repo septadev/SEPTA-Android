@@ -55,6 +55,21 @@ public class RealTimeMenuAdapter extends BaseAdapter {
     }
 
     @Override
+    public boolean isEnabled(int position) {
+
+        // Get the menu item
+        RealTimeMenuItem realTimeMenuItem = (RealTimeMenuItem) getItem(position);
+
+        // Return true if not disabled
+        if (realTimeMenuItem != null && !realTimeMenuItem.isDisabled()) {
+            return true;
+        }
+
+        // Otherwise, return false
+        return false;
+    }
+
+    @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         final ViewHolder holder;
 
@@ -63,7 +78,6 @@ public class RealTimeMenuAdapter extends BaseAdapter {
             convertView = inflater.inflate(R.layout.realtime_menu_icontext_item, parent, false);
 
             holder = new ViewHolder();
-            holder.disabledMask = (ImageView) convertView.findViewById(R.id.realtime_menu_icontext_item_disabled_mask);
             holder.icon = (ImageView) convertView.findViewById(R.id.realtime_menu_icontext_item_imageView);
             holder.title = (TextView) convertView.findViewById(R.id.realtime_menu_icontext_item_textView);
 
@@ -75,10 +89,12 @@ public class RealTimeMenuAdapter extends BaseAdapter {
 
         RealTimeMenuItem realTimeMenuItem = (RealTimeMenuItem) getItem(position);
 
-        holder.disabledMask.setVisibility(realTimeMenuItem.isDisabled() ? View.VISIBLE : View.GONE);
-
         StringBuilder resourceNameBuilder = new StringBuilder();
         resourceNameBuilder.append("realtime_menu_").append(realTimeMenuItem.getSelectableIcon().toLowerCase());
+
+        if (!isEnabled(position)) {
+            resourceNameBuilder.append("_disabled");
+        }
 
         String resourceName = resourceNameBuilder.toString();
         String title = realTimeMenuItem.getTitle();
@@ -91,7 +107,6 @@ public class RealTimeMenuAdapter extends BaseAdapter {
     }
 
     private static class ViewHolder {
-        ImageView disabledMask;
         ImageView icon;
         TextView title;
     }

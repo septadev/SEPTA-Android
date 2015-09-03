@@ -17,24 +17,30 @@ public class GsonObject {
 
     @Override
     public String toString() {
+
         return toJsonString(true);
     }
 
     public static <T> T fromJson(String jsonString, Class<T> classType) {
+
         if (jsonString != null) {
+
             try {
                 return new Gson().fromJson(jsonString, classType);
             }
+
             catch (JsonSyntaxException e) {
                 if (BuildConfig.DEBUG) {
                     Log.e(TAG, "fromJson: invalid json entered", e);
                 }
             }
         }
+
         return null;
     }
 
     public static String convertObjectToJsonString(Object objectToConvert, boolean prettyPrint) {
+
         GsonBuilder gsonBuilder = new GsonBuilder()
                 .setFieldNamingPolicy(FieldNamingPolicy.IDENTITY)
                 .serializeNulls();
@@ -47,10 +53,12 @@ public class GsonObject {
     }
 
     public static String convertObjectToJson(Object objectToConvert) {
+
         return convertObjectToJsonString(objectToConvert, false);
     }
 
     public String toJsonString(boolean prettyPrint) {
+
         return convertObjectToJsonString(this, prettyPrint);
     }
 }

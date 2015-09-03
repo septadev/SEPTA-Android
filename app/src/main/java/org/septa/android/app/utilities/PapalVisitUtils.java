@@ -2,11 +2,6 @@ package org.septa.android.app.utilities;
 
 import android.util.Log;
 
-import org.septa.android.app.activities.FindNearestLocationActionBarActivity;
-import org.septa.android.app.activities.NextToArriveActionBarActivity;
-import org.septa.android.app.activities.TrainViewActionBarActivity;
-import org.septa.android.app.activities.TransitViewActionBarActivity;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -17,18 +12,12 @@ import java.util.Date;
 public class PapalVisitUtils {
     private static final String TAG = PapalVisitUtils.class.getName();
 
-    private static final Class[] disabledMenuItems = {
-            NextToArriveActionBarActivity.class,
-            TrainViewActionBarActivity.class,
-            TransitViewActionBarActivity.class,
-            FindNearestLocationActionBarActivity.class
-    };
+    private static final String PAPAL_SATURDAY_START_DATE = "Sat Sep 26 00:00:01 EDT 2015";
+    private static final String PAPAL_SUNDAY_START_DATE = "Sun Sep 27 00:00:01 EDT 2015";
+    private static final String PAPAL_MONDAY_END_DATE = "Mon Sep 28 00:00:01 EDT 2015";
 
-    // TODO: Clean this up with official dates (JCH)
-    private static final String START_DATE = "Wed Sep 02 15:30:00 EDT 2015";
-    private static final String END_DATE = "Thu Sep 03 23:59:59 EDT 2015";
 
-    public static boolean isPapalVisit() {
+    public static boolean isPopeVisitingToday() {
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy");
 
@@ -39,11 +28,11 @@ public class PapalVisitUtils {
             long currentDateMillis = currentDate.getTime();
 
             // Get the papal visit start date
-            Date startDate = simpleDateFormat.parse(START_DATE);
+            Date startDate = simpleDateFormat.parse(PAPAL_SATURDAY_START_DATE);
             long startDateMillis = startDate.getTime();
 
             // Get the papal visit end date
-            Date endDate = simpleDateFormat.parse(END_DATE);
+            Date endDate = simpleDateFormat.parse(PAPAL_MONDAY_END_DATE);
             long endDateMillis = endDate.getTime();
 
             return (currentDateMillis >= startDateMillis && currentDateMillis <= endDateMillis) ? true : false;
@@ -57,14 +46,55 @@ public class PapalVisitUtils {
         return false;
     }
 
-    public static boolean isDisabledMenuItem(Class classname) {
+    // TODO: Is it better to check if week of ... or is it better to advance date value to next sat?
 
-        if (isPapalVisit()) {
-            for (int i = 0; i < disabledMenuItems.length; i++) {
-                if (classname.equals(disabledMenuItems[i])) {
-                    return true;
-                }
-            }
+    public static boolean isPopeVisitingSaturday() {
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy");
+
+        try {
+
+            // Get the current date
+            Date currentDate = new Date();
+            long currentDateMillis = currentDate.getTime();
+
+            // Get the papal visit start date
+            Date startDate = simpleDateFormat.parse(PAPAL_SUNDAY_START_DATE);
+            long startDateMillis = startDate.getTime();
+
+            // Check if saturday pope visit is within week
+
+        }
+
+        catch (ParseException e) {
+
+            Log.w(TAG, e.getMessage());
+        }
+
+        return false;
+    }
+
+    public static boolean isPopeVisitingSunday() {
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy");
+
+        try {
+
+            // Get the current date
+            Date currentDate = new Date();
+            long currentDateMillis = currentDate.getTime();
+
+            // Get the papal visit end date
+            Date endDate = simpleDateFormat.parse(PAPAL_MONDAY_END_DATE);
+            long endDateMillis = endDate.getTime();
+
+            // Check if saturday pope visit is within week
+
+        }
+
+        catch (ParseException e) {
+
+            Log.w(TAG, e.getMessage());
         }
 
         return false;

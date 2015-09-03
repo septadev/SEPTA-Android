@@ -8,39 +8,53 @@
 package org.septa.android.app.fragments;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.septa.android.app.BuildConfig;
 import org.septa.android.app.R;
-import org.septa.android.app.adapters.RealTimeMenuAdapter;
+import org.septa.android.app.activities.FindNearestLocationActionBarActivity;
+import org.septa.android.app.activities.NextToArriveActionBarActivity;
+import org.septa.android.app.activities.SystemStatusActionBarActivity;
+import org.septa.android.app.activities.TipsActionBarActivity;
+import org.septa.android.app.activities.TrainViewActionBarActivity;
+import org.septa.android.app.activities.TransitViewActionBarActivity;
 import org.septa.android.app.managers.AlertManager;
 import org.septa.android.app.managers.SharedPreferencesManager;
-import org.septa.android.app.models.RealTimeMenuItem;
 import org.septa.android.app.models.servicemodels.AlertModel;
+import org.septa.android.app.utilities.PapalVisitUtils;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
-public class RealtimeMenuFragment extends Fragment implements AlertManager.IAlertListener, OnItemClickListener {
-    public static final String TAG = RealtimeMenuFragment.class.getName();
-
-    public static Boolean fetchedResults = false;
-
-    private RealTimeMenuAdapter mRealTimeMenuAdapter;
-    private TextView mPapalVisitMessage;
+public class RealtimeMenuFragment extends Fragment implements AlertManager.IAlertListener, OnClickListener {
+    private static final String TAG = RealtimeMenuFragment.class.getName();
 
     private static final long MAX_ALERT_AGE = 1000 * 60 * 60;
+    private static final String PAPAL_VISIT_DEFAULT_URL = "http://www.septa.org/papalvisitphilly";
+
+    private ImageView mFindNearestLocationImage;
+    private ImageView mNextToArriveImage;
+    private ImageView mSystemStatusImage;
+    private ImageView mTipsImage;
+    private ImageView mTrainViewImage;
+    private ImageView mTransitViewImage;
+    private TextView mPapalVisitMessage;
+
+    private String mPapalVisitUrl;
+
+    public static Boolean fetchedResults = false;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -53,32 +67,43 @@ public class RealtimeMenuFragment extends Fragment implements AlertManager.IAler
             Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.realtime_menu_fragment, container, false);
-        
-        GridView gridview = (GridView) view.findViewById(R.id.gridview);
+
+        // Setup views
         mPapalVisitMessage = (TextView) view.findViewById(R.id.realtime_menu_papal_message);
+        mFindNearestLocationImage = (ImageView) view.findViewById(R.id.realtime_menu_find_nearest_location_image_view);
+        mNextToArriveImage = (ImageView) view.findViewById(R.id.realtime_menu_next_to_arrive_image_view);
+        mSystemStatusImage = (ImageView) view.findViewById(R.id.realtime_menu_system_status_image_view);
+        mTipsImage = (ImageView) view.findViewById(R.id.realtime_menu_tips_image_view);
+        mTrainViewImage = (ImageView) view.findViewById(R.id.realtime_menu_trainview_image_view);
+        mTransitViewImage = (ImageView) view.findViewById(R.id.realtime_menu_transitview_image_view);
 
-        final String[] realtime_menu_classnames = getResources().getStringArray(R.array.realtime_menu_classnames_inorder);
-        final String[] realtime_menu_icon_selectors = getResources().getStringArray(R.array.realtime_menu_icon_selectors_inorder);
-        final String[] realtime_menu_icons = getResources().getStringArray(R.array.realtime_menu_icons_inorder);
-        final String[] realtime_menu_strings = getResources().getStringArray(R.array.realtime_menu_strings_inorder);
+        boolean isPapalVisit = PapalVisitUtils.isPopeVisitingToday();
 
-        List<RealTimeMenuItem> menuItemList = new ArrayList<RealTimeMenuItem>();
-        for (int i = 0; i < realtime_menu_icons.length; i++) {
+        // Set image resources
+        mNextToArriveImage.setImageResource(isPapalVisit ? R.drawable.realtime_menu_nexttoarrive_selector_disabled : R.drawable.realtime_menu_nexttoarrive_selector);
+        mFindNearestLocationImage.setImageResource(isPapalVisit ? R.drawable.realtime_menu_findnearestlocation_selector_disabled : R.drawable.realtime_menu_findnearestlocation_selector);
+        mTrainViewImage.setImageResource(isPapalVisit ? R.drawable.realtime_menu_trainview_selector_disabled : R.drawable.realtime_menu_trainview_selector);
+        mTransitViewImage.setImageResource(isPapalVisit ? R.drawable.realtime_menu_transitview_selector_disabled : R.drawable.realtime_menu_transitview_selector);
 
-            Class classname = null;
-            try {
-                classname = Class.forName(realtime_menu_classnames[i]);
-            }
-            catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
+        // Set click listeners
+        mSystemStatusImage.setOnClickListener(this);
+        mTipsImage.setOnClickListener(this);
 
-            menuItemList.add(new RealTimeMenuItem(classname, realtime_menu_icons[i], realtime_menu_icon_selectors[i], realtime_menu_strings[i]));
+        if (isPapalVisit) {
+
+            mPapalVisitMessage.setOnClickListener(this);
         }
 
-        mRealTimeMenuAdapter = new RealTimeMenuAdapter(menuItemList);
-        gridview.setAdapter(mRealTimeMenuAdapter);
-        gridview.setOnItemClickListener(this);
+        else {
+
+            mFindNearestLocationImage.setOnClickListener(this);
+            mNextToArriveImage.setOnClickListener(this);
+            mTrainViewImage.setOnClickListener(this);
+            mTransitViewImage.setOnClickListener(this);
+        }
+
+        // Set visibility
+        mPapalVisitMessage.setVisibility(isPapalVisit ? View.VISIBLE : View.GONE);
 
         return view;
     }
@@ -110,17 +135,84 @@ public class RealtimeMenuFragment extends Fragment implements AlertManager.IAler
     }
 
     @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        RealTimeMenuItem realTimeMenuItem = (RealTimeMenuItem) mRealTimeMenuAdapter.getItem(position);
-        String iconText = realTimeMenuItem.getIcon();
-        StringBuilder titleText = new StringBuilder();
-        titleText.append("| ").append(realTimeMenuItem.getTitle());
-        Class intentClass = realTimeMenuItem.getClassname();
+    public void onClick(View v) {
 
-        if (intentClass != null) {
-            Intent intent = new Intent(getActivity(), intentClass);
-            intent.putExtra(getString(R.string.actionbar_titletext_key), titleText.toString());
-            intent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), iconText);
+        Intent intent = null;
+
+        switch (v.getId()) {
+
+            case R.id.realtime_menu_find_nearest_location_image_view:
+
+                intent = new Intent(getActivity(), FindNearestLocationActionBarActivity.class);
+
+                intent.putExtra(getString(R.string.actionbar_titletext_key), getString(R.string.page_title_find_nearest_location));
+                intent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), getString(R.string.page_icon_id_find_nearest_location));
+
+                break;
+
+            case R.id.realtime_menu_next_to_arrive_image_view:
+
+                intent = new Intent(getActivity(), NextToArriveActionBarActivity.class);
+
+                intent.putExtra(getString(R.string.actionbar_titletext_key), getString(R.string.page_title_next_to_arrive));
+                intent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), getString(R.string.page_icon_id_next_to_arrive));
+
+                break;
+
+            case R.id.realtime_menu_system_status_image_view:
+
+                intent = new Intent(getActivity(), SystemStatusActionBarActivity.class);
+
+                intent.putExtra(getString(R.string.actionbar_titletext_key), getString(R.string.page_title_system_status));
+                intent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), getString(R.string.page_icon_id_system_status));
+
+                break;
+
+            case R.id.realtime_menu_tips_image_view:
+
+                intent = new Intent(getActivity(), TipsActionBarActivity.class);
+
+                intent.putExtra(getString(R.string.actionbar_titletext_key), getString(R.string.page_title_tips));
+                intent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), getString(R.string.page_icon_id_tips));
+
+                break;
+
+            case R.id.realtime_menu_trainview_image_view:
+
+                intent = new Intent(getActivity(), TrainViewActionBarActivity.class);
+
+                intent.putExtra(getString(R.string.actionbar_titletext_key), getString(R.string.page_title_train_view));
+                intent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), getString(R.string.page_icon_id_trainview));
+
+                break;
+
+            case R.id.realtime_menu_transitview_image_view:
+
+                intent = new Intent(getActivity(), TransitViewActionBarActivity.class);
+
+                intent.putExtra(getString(R.string.actionbar_titletext_key), getString(R.string.page_title_transit_view));
+                intent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), getString(R.string.page_icon_id_transitview));
+
+                break;
+
+            // Papal Visit Special Message
+            case R.id.realtime_menu_papal_message:
+
+                Uri uri = Uri.parse(!TextUtils.isEmpty(mPapalVisitUrl) ? mPapalVisitUrl : PAPAL_VISIT_DEFAULT_URL);
+                intent = new Intent(Intent.ACTION_VIEW, uri);
+
+                break;
+
+            default:
+
+                if (BuildConfig.DEBUG) {
+                    Log.w(TAG, "onClick: unknown view clicked");
+                }
+
+                break;
+        }
+
+        if (intent != null) {
             startActivity(intent);
         }
     }

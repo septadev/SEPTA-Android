@@ -2,6 +2,7 @@ package org.septa.android.app.PapalVisit;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import org.septa.android.app.BuildConfig;
@@ -79,6 +80,6 @@ public class PopeNetworkService extends IntentService {
             intent.putExtra(PopeConstants.KEY_JSON_RESPONSE, forecastJson);
         }
 
-        sendBroadcast(intent);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 }

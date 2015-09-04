@@ -15,6 +15,7 @@ import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -101,11 +102,35 @@ public class RealtimeMenuFragment extends Fragment implements
                         }
 
                         if (mMessage != null) {
+
+                            // Get the start and end dates from the response object
+                            String endDate = mMessage.getSpecialEventEndDate();
+                            String startDate = mMessage.getSpecialEventStartDate();
+
+                            boolean updateEndDate = PopeUtils.updatePopeVisitEndDate(getActivity(), endDate);
+                            boolean updateStartDate = PopeUtils.updatePopeVisitStartDate(getActivity(), startDate);
+
+                            // If start or end date is different than date saved to device, update the date and check if pope is visiting today
+                            if (updateEndDate || updateStartDate) {
+
+                                isPopeVisitingToday = PopeUtils.isPopeVisitingToday(getActivity());
+                            }
+
+                            if (isPopeVisitingToday) {
+
+                                // Set image resources
+                                mNextToArriveImage.setImageResource(isPopeVisitingToday ? R.drawable.realtime_menu_nexttoarrive_selector_disabled : R.drawable.realtime_menu_nexttoarrive_selector);
+                                mFindNearestLocationImage.setImageResource(isPopeVisitingToday ? R.drawable.realtime_menu_findnearestlocation_selector_disabled : R.drawable.realtime_menu_findnearestlocation_selector);
+                                mTrainViewImage.setImageResource(isPopeVisitingToday ? R.drawable.realtime_menu_trainview_selector_disabled : R.drawable.realtime_menu_trainview_selector);
+                                mTransitViewImage.setImageResource(isPopeVisitingToday ? R.drawable.realtime_menu_transitview_selector_disabled : R.drawable.realtime_menu_transitview_selector);
+
+                                mPapalVisitUrl = mMessage.getSpecialEventUrl();
+                            }
+
+                            // Set the event message and its visibility
                             String specialEventMessage = mMessage.getSpecialEventMessage();
                             mPapalVisitMessage.setText(!TextUtils.isEmpty(specialEventMessage) ? specialEventMessage : getString(R.string.default_papal_message));
-                            mPapalVisitMessage.setVisibility(PopeUtils.isPopeVisitingToday() && !TextUtils.isEmpty(specialEventMessage) ? View.VISIBLE : View.GONE);
-
-                            mPapalVisitUrl = mMessage.getSpecialEventUrl();
+                            mPapalVisitMessage.setVisibility(isPopeVisitingToday && !TextUtils.isEmpty(specialEventMessage) ? View.VISIBLE : View.GONE);
                         }
                     }
 
@@ -161,7 +186,7 @@ public class RealtimeMenuFragment extends Fragment implements
         mTrainViewImage = (ImageView) view.findViewById(R.id.realtime_menu_trainview_image_view);
         mTransitViewImage = (ImageView) view.findViewById(R.id.realtime_menu_transitview_image_view);
 
-        isPopeVisitingToday = PopeUtils.isPopeVisitingToday();
+        isPopeVisitingToday = PopeUtils.isPopeVisitingToday(getActivity());
 
         // Set image resources
         mNextToArriveImage.setImageResource(isPopeVisitingToday ? R.drawable.realtime_menu_nexttoarrive_selector_disabled : R.drawable.realtime_menu_nexttoarrive_selector);
@@ -172,14 +197,11 @@ public class RealtimeMenuFragment extends Fragment implements
         // Set click listeners
         mFindNearestLocationImage.setOnClickListener(this);
         mNextToArriveImage.setOnClickListener(this);
+        mPapalVisitMessage.setOnClickListener(this);
         mSystemStatusImage.setOnClickListener(this);
         mTipsImage.setOnClickListener(this);
         mTrainViewImage.setOnClickListener(this);
         mTransitViewImage.setOnClickListener(this);
-
-        if (isPopeVisitingToday) {
-            mPapalVisitMessage.setOnClickListener(this);
-        }
 
         // If this is the first creation, default state variables
         if (savedInstanceState == null) {
@@ -244,7 +266,7 @@ public class RealtimeMenuFragment extends Fragment implements
         AlertManager.getInstance().addListener(this);
         AlertManager.getInstance().fetchGlobalAlert();
 
-        getActivity().registerReceiver(mPopeReceiver, new IntentFilter(PopeNetworkService.NOTIFICATION));
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mPopeReceiver, new IntentFilter(PopeNetworkService.NOTIFICATION));
 
         // Start the pope network service if he is visiting today and we do not have the message
         if (isPopeVisitingToday && mMessage == null) {
@@ -258,7 +280,7 @@ public class RealtimeMenuFragment extends Fragment implements
         AlertManager.getInstance().removeListener(this);
         super.onPause();
 
-        getActivity().unregisterReceiver(mPopeReceiver);
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mPopeReceiver);
     }
 
     @Override
@@ -337,7 +359,7 @@ public class RealtimeMenuFragment extends Fragment implements
 
             case R.id.realtime_menu_find_nearest_location_image_view:
 
-                if (!PopeUtils.isPopeVisitingToday()) {
+                if (!isPopeVisitingToday) {
 
                     intent = new Intent(getActivity(), FindNearestLocationActionBarActivity.class);
 
@@ -354,7 +376,7 @@ public class RealtimeMenuFragment extends Fragment implements
 
             case R.id.realtime_menu_next_to_arrive_image_view:
 
-                if (!PopeUtils.isPopeVisitingToday()) {
+                if (!isPopeVisitingToday) {
 
                     intent = new Intent(getActivity(), NextToArriveActionBarActivity.class);
 
@@ -371,7 +393,7 @@ public class RealtimeMenuFragment extends Fragment implements
 
             case R.id.realtime_menu_system_status_image_view:
 
-                if (!PopeUtils.isPopeVisitingToday()) {
+                if (!isPopeVisitingToday) {
 
                     intent = new Intent(getActivity(), SystemStatusActionBarActivity.class);
 
@@ -388,7 +410,7 @@ public class RealtimeMenuFragment extends Fragment implements
 
             case R.id.realtime_menu_tips_image_view:
 
-                if (!PopeUtils.isPopeVisitingToday()) {
+                if (!isPopeVisitingToday) {
 
                     intent = new Intent(getActivity(), TipsActionBarActivity.class);
 
@@ -405,7 +427,7 @@ public class RealtimeMenuFragment extends Fragment implements
 
             case R.id.realtime_menu_trainview_image_view:
 
-                if (!PopeUtils.isPopeVisitingToday()) {
+                if (!isPopeVisitingToday) {
 
                     intent = new Intent(getActivity(), TrainViewActionBarActivity.class);
 
@@ -422,7 +444,7 @@ public class RealtimeMenuFragment extends Fragment implements
 
             case R.id.realtime_menu_transitview_image_view:
 
-                if (!PopeUtils.isPopeVisitingToday()) {
+                if (!isPopeVisitingToday) {
 
                     intent = new Intent(getActivity(), TransitViewActionBarActivity.class);
 

@@ -15,6 +15,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.GradientDrawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -32,12 +33,15 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.ViewFlipper;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import org.apache.http.HttpStatus;
 import org.septa.android.app.BuildConfig;
+import org.septa.android.app.PapalVisit.PopeConstants;
+import org.septa.android.app.PapalVisit.PopeUtils;
 import org.septa.android.app.R;
 import org.septa.android.app.activities.BaseAnalyticsActionBarActivity;
 import org.septa.android.app.activities.FareInformationActionBarActivity;
@@ -77,7 +81,8 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
         AdapterView.OnItemClickListener, StickyListHeadersListView.OnHeaderClickListener,
         StickyListHeadersListView.OnStickyHeaderOffsetChangedListener,
         StickyListHeadersListView.OnStickyHeaderChangedListener, View.OnTouchListener,
-        Callback<ArrayList<ServiceAdvisoryModel>> {
+        Callback<ArrayList<ServiceAdvisoryModel>>,
+        View.OnClickListener {
 
     public static final String TAG = SchedulesItineraryActionBarActivity.class.getName();
     static final String SCHEDULE_MODEL = "scheduleModel";
@@ -119,9 +124,17 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
             , R.id.schedules_itinerary_tab_sun_button})
     List<Button> tabs;
 
+    private TextView mSpecialMessage;
+    private ViewFlipper mViewFlipper;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (BuildConfig.DEBUG) {
+            Log.v(TAG, "onCreate");
+        }
+
         setContentView(R.layout.schedules_itinerary);
         ButterKnife.inject(this);
 
@@ -171,7 +184,7 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
         this.menuDialogListView = menuListView;
         menuListView.setAdapter(new Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter(this, listMenuItems));
 
-        stickyList = (StickyListHeadersListView) findViewById(R.id.list);
+        stickyList = (StickyListHeadersListView) findViewById(R.id.schedules_itinerary_listview);
         stickyList.setOnItemClickListener(this);
         stickyList.setOnHeaderClickListener(this);
         stickyList.setOnStickyHeaderChangedListener(this);
@@ -186,6 +199,12 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
         getSupportActionBar().setHomeButtonEnabled(true);
 
         routesModel = new ArrayList<SchedulesRouteModel>();
+
+        mSpecialMessage = (TextView) findViewById(R.id.schedules_itinerary_special_event_message);
+        mSpecialMessage.setOnClickListener(this);
+
+        mViewFlipper = (ViewFlipper) findViewById(R.id.schedules_itinerary_view_flipper);
+        updateViewFlipperDisplayChild();
 
         if (savedInstanceState != null) {
             schedulesRouteModel = savedInstanceState.getParcelable(SCHEDULE_MODEL);
@@ -861,6 +880,9 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
             }
         }
 
+        // Update the view flipper display child if special event
+        updateViewFlipperDisplayChild();
+
         mAdapter.setSelectedTab(selectedTab);
         checkTripStartAndDestinationForNextToArriveDataRequest();
     }
@@ -1000,6 +1022,20 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
         Log.e(TAG, error.getMessage());
     }
 
+    @Override
+    public void onClick(View v) {
+
+        switch (v.getId()) {
+
+            case R.id.schedules_itinerary_special_event_message:
+
+                Uri uri = Uri.parse(PopeConstants.VALUE_POPE_VISIT_DEFAULT_URL);
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                startActivity(intent);
+                break;
+        }
+    }
+
     private class DirectionHeaderLoader extends AsyncTask<SchedulesDataModel, Integer, Boolean> {
         String routeShortName;
         SchedulesDataModel schedulesDataModel;
@@ -1127,5 +1163,52 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
         // Call train view service proxy to get trains in transit
         TrainViewServiceProxy trainViewServiceProxy = new TrainViewServiceProxy();
         trainViewServiceProxy.getTrainView(callback);
+    }
+
+    private void updateViewFlipperDisplayChild() {
+
+        Integer scheduleViewResId = null;
+
+        switch (selectedTab) {
+
+            // Working with legacy code (0 maps to NOW tab)
+            case 0:
+
+                scheduleViewResId = PopeUtils.isRailScheduleAvailableToday() ? R.id.schedules_itinerary_special_event_message : R.id.schedules_itinerary_listview;
+
+                break;
+
+            // Working with legacy code (2 maps to SAT tab)
+            case 2:
+
+                scheduleViewResId = PopeUtils.isPopeVisitingSaturday() ? R.id.schedules_itinerary_special_event_message : R.id.schedules_itinerary_listview;
+                break;
+
+            // Working with legacy code (3 maps to SUN tab)
+            case 3:
+
+                scheduleViewResId = PopeUtils.isPopeVisitingSunday() ? R.id.schedules_itinerary_special_event_message : R.id.schedules_itinerary_listview;
+                break;
+
+            // Default to showing the schedule
+            default:
+
+                scheduleViewResId = R.id.schedules_itinerary_listview;
+                break;
+        }
+
+        // Set the view flipper to the schedule view
+        if (scheduleViewResId != null) {
+            for (int i = 0; i < mViewFlipper.getChildCount(); i++) {
+                View childFlipperView = mViewFlipper.getChildAt(i);
+                if (childFlipperView != null && scheduleViewResId == childFlipperView.getId()) {
+                    mViewFlipper.setDisplayedChild(i);
+                    return;
+                }
+            }
+        }
+
+        // Otherwise, default to the list
+        mViewFlipper.setDisplayedChild(R.id.schedules_itinerary_listview);
     }
 }

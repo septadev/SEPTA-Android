@@ -85,7 +85,7 @@ public class RealtimeMenuFragment extends Fragment implements
                         }
 
                         // Set the default message
-                        mPapalVisitMessage.setText(R.string.default_papal_message);
+                        mPapalVisitMessage.setText(R.string.realtime_menu_default_papal_message);
                         mPapalVisitMessage.setVisibility(View.VISIBLE);
                     }
 
@@ -129,7 +129,7 @@ public class RealtimeMenuFragment extends Fragment implements
 
                             // Set the event message and its visibility
                             String specialEventMessage = mMessage.getSpecialEventMessage();
-                            mPapalVisitMessage.setText(!TextUtils.isEmpty(specialEventMessage) ? specialEventMessage : getString(R.string.default_papal_message));
+                            mPapalVisitMessage.setText(!TextUtils.isEmpty(specialEventMessage) ? specialEventMessage : getString(R.string.realtime_menu_default_papal_message));
                             mPapalVisitMessage.setVisibility(isPopeVisitingToday && !TextUtils.isEmpty(specialEventMessage) ? View.VISIBLE : View.GONE);
                         }
                     }

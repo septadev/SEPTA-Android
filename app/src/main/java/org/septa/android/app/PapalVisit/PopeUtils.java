@@ -81,7 +81,7 @@ public class PopeUtils {
             long endDateMillis = endDate.getTime();
 
             if (BuildConfig.DEBUG) {
-                Log.v(TAG, "isPopeVisitingToday: " + (currentDateMillis >= startDateMillis && currentDateMillis <= endDateMillis));
+                Log.v(TAG, "isRailScheduleAvailableToday: " + (currentDateMillis >= startDateMillis && currentDateMillis <= endDateMillis));
             }
 
             return currentDateMillis >= startDateMillis && currentDateMillis <= endDateMillis;

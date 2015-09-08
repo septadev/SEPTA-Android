@@ -1170,14 +1170,14 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
         Integer scheduleViewResId = null;
 
         // Always show the schedule if it is not RR
-        if (travelType != null && travelType != RouteTypes.RAIL) {
+        if (travelType != null && !travelType.equals(RouteTypes.RAIL)) {
 
             scheduleViewResId = R.id.schedules_itinerary_listview;
         }
 
         // Otherwise, check if schedule is available
         else {
-            
+
             switch (selectedTab) {
 
                 // Working with legacy code (0 maps to NOW tab)

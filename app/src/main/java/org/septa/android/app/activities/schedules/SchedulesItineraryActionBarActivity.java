@@ -1169,32 +1169,42 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
 
         Integer scheduleViewResId = null;
 
-        switch (selectedTab) {
+        // Always show the schedule if it is not RR
+        if (travelType != null && travelType != RouteTypes.RAIL) {
 
-            // Working with legacy code (0 maps to NOW tab)
-            case 0:
+            scheduleViewResId = R.id.schedules_itinerary_listview;
+        }
 
-                scheduleViewResId = PopeUtils.isRailScheduleAvailableToday() ? R.id.schedules_itinerary_special_event_message : R.id.schedules_itinerary_listview;
+        // Otherwise, check if schedule is available
+        else {
+            
+            switch (selectedTab) {
 
-                break;
+                // Working with legacy code (0 maps to NOW tab)
+                case 0:
 
-            // Working with legacy code (2 maps to SAT tab)
-            case 2:
+                    scheduleViewResId = PopeUtils.isRailScheduleAvailableToday() ? R.id.schedules_itinerary_special_event_message : R.id.schedules_itinerary_listview;
 
-                scheduleViewResId = PopeUtils.isPopeVisitingSaturday() ? R.id.schedules_itinerary_special_event_message : R.id.schedules_itinerary_listview;
-                break;
+                    break;
 
-            // Working with legacy code (3 maps to SUN tab)
-            case 3:
+                // Working with legacy code (2 maps to SAT tab)
+                case 2:
 
-                scheduleViewResId = PopeUtils.isPopeVisitingSunday() ? R.id.schedules_itinerary_special_event_message : R.id.schedules_itinerary_listview;
-                break;
+                    scheduleViewResId = PopeUtils.isPopeVisitingSaturday() ? R.id.schedules_itinerary_special_event_message : R.id.schedules_itinerary_listview;
+                    break;
 
-            // Default to showing the schedule
-            default:
+                // Working with legacy code (3 maps to SUN tab)
+                case 3:
 
-                scheduleViewResId = R.id.schedules_itinerary_listview;
-                break;
+                    scheduleViewResId = PopeUtils.isPopeVisitingSunday() ? R.id.schedules_itinerary_special_event_message : R.id.schedules_itinerary_listview;
+                    break;
+
+                // Default to showing the schedule
+                default:
+
+                    scheduleViewResId = R.id.schedules_itinerary_listview;
+                    break;
+            }
         }
 
         // Set the view flipper to the schedule view

@@ -1,4 +1,4 @@
-package org.septa.android.app.PapalVisit;
+package org.septa.android.app.events.model;
 
 import android.util.Log;
 

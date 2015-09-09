@@ -1,6 +1,8 @@
-package org.septa.android.app.PapalVisit;
+package org.septa.android.app.events.model;
 
 import com.google.gson.annotations.SerializedName;
+
+import org.septa.android.app.events.model.GsonObject;
 
 /**
  * Created by jhunchar on 9/3/15.

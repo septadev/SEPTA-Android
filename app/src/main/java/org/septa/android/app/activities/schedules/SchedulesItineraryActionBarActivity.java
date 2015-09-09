@@ -40,8 +40,8 @@ import com.google.gson.reflect.TypeToken;
 
 import org.apache.http.HttpStatus;
 import org.septa.android.app.BuildConfig;
-import org.septa.android.app.PapalVisit.PopeConstants;
-import org.septa.android.app.PapalVisit.PopeUtils;
+import org.septa.android.app.events.EventsConstants;
+import org.septa.android.app.events.util.PopeUtils;
 import org.septa.android.app.R;
 import org.septa.android.app.activities.BaseAnalyticsActionBarActivity;
 import org.septa.android.app.activities.FareInformationActionBarActivity;
@@ -1029,7 +1029,7 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
 
             case R.id.schedules_itinerary_special_event_message:
 
-                Uri uri = Uri.parse(PopeConstants.VALUE_POPE_VISIT_DEFAULT_URL);
+                Uri uri = Uri.parse(EventsConstants.VALUE_POPE_VISIT_DEFAULT_URL);
                 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                 startActivity(intent);
                 break;

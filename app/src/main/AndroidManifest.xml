@@ -298,7 +298,7 @@
                 android:value=".activities.schedules.SchedulesItineraryActionBarActivity" />
         </activity>
         <service
-            android:name=".PapalVisit.PopeNetworkService"
+            android:name=".events.network.EventsNetworkService"
             android:exported="false">
         </service>
 

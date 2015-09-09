@@ -1,4 +1,4 @@
-package org.septa.android.app.PapalVisit;
+package org.septa.android.app.events.network;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -6,6 +6,9 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import org.septa.android.app.BuildConfig;
+import org.septa.android.app.events.EventsConstants;
+import org.septa.android.app.events.model.GsonObject;
+import org.septa.android.app.events.model.Message;
 
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -13,13 +16,14 @@ import retrofit.client.Response;
 /**
  * Created by jhunchar on 9/3/15.
  */
-public class PopeNetworkService extends IntentService {
+public class EventsNetworkService extends IntentService {
 
-    private static final String TAG = PopeNetworkService.class.getName();
+    private static final String TAG = EventsNetworkService.class.getName();
+
     public static final String NOTIFICATION = "org.septa.android.app";
 
-    public PopeNetworkService() {
-        super("NetworkService");
+    public EventsNetworkService() {
+        super("EventsNetworkService");
     }
 
     @Override
@@ -31,7 +35,7 @@ public class PopeNetworkService extends IntentService {
         // Request message
         try {
 
-            Message message = BuildConfig.DEBUG ? PopeRestClient.get().getDebugMessage() : PopeRestClient.get().getMessage();
+            Message message = BuildConfig.DEBUG ? EventsRestClient.get().getDebugMessage() : EventsRestClient.get().getMessage();
 
             success(message, null);
         }
@@ -46,13 +50,13 @@ public class PopeNetworkService extends IntentService {
         // Response was successful
         // Show results
         if (message != null) {
-            handleResult(PopeConstants.VALUE_SUCCESS, message);
+            handleResult(EventsConstants.VALUE_EVENTS_NETWORK_SUCCESS, message);
         }
 
         // No content available, but there always should be
         // Show error view
         else {
-            handleResult(PopeConstants.VALUE_ERROR, null);
+            handleResult(EventsConstants.VALUE_EVENTS_NETWORK_ERROR, null);
         }
     }
 
@@ -63,7 +67,7 @@ public class PopeNetworkService extends IntentService {
 
         // Network error
         // Show error view
-        handleResult(PopeConstants.VALUE_ERROR, null);
+        handleResult(EventsConstants.VALUE_EVENTS_NETWORK_ERROR, null);
     }
 
     private void handleResult(String result, Object object) {
@@ -73,11 +77,11 @@ public class PopeNetworkService extends IntentService {
 
         // Broadcast result
         Intent intent = new Intent(NOTIFICATION);
-        intent.putExtra(PopeConstants.KEY_RESULT, result);
+        intent.putExtra(EventsConstants.KEY_RESULT, result);
 
         if (object != null) {
             String forecastJson = GsonObject.convertObjectToJsonString(object, false);
-            intent.putExtra(PopeConstants.KEY_JSON_RESPONSE, forecastJson);
+            intent.putExtra(EventsConstants.KEY_EVENTS_JSON_RESPONSE, forecastJson);
         }
 
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);

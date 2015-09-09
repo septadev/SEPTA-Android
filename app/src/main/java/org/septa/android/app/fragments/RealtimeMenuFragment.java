@@ -26,11 +26,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.septa.android.app.BuildConfig;
-import org.septa.android.app.PapalVisit.GsonObject;
-import org.septa.android.app.PapalVisit.Message;
-import org.septa.android.app.PapalVisit.PopeConstants;
-import org.septa.android.app.PapalVisit.PopeNetworkService;
-import org.septa.android.app.PapalVisit.PopeUtils;
+import org.septa.android.app.events.model.GsonObject;
+import org.septa.android.app.events.model.Message;
+import org.septa.android.app.events.EventsConstants;
+import org.septa.android.app.events.network.EventsNetworkService;
+import org.septa.android.app.events.util.PopeUtils;
 import org.septa.android.app.R;
 import org.septa.android.app.activities.FindNearestLocationActionBarActivity;
 import org.septa.android.app.activities.NextToArriveActionBarActivity;
@@ -76,10 +76,10 @@ public class RealtimeMenuFragment extends Fragment implements
 
             Bundle bundle = intent.getExtras();
             if (bundle != null) {
-                String result = intent.getStringExtra(PopeConstants.KEY_RESULT);
+                String result = intent.getStringExtra(EventsConstants.KEY_RESULT);
 
                 if (result != null) {
-                    if (result.equals(PopeConstants.VALUE_ERROR)) {
+                    if (result.equals(EventsConstants.VALUE_EVENTS_NETWORK_ERROR)) {
                         if (BuildConfig.DEBUG) {
                             Log.v(TAG, "error");
                         }
@@ -89,13 +89,13 @@ public class RealtimeMenuFragment extends Fragment implements
                         mPapalVisitMessage.setVisibility(View.VISIBLE);
                     }
 
-                    else if (result.equals(PopeConstants.VALUE_SUCCESS)) {
+                    else if (result.equals(EventsConstants.VALUE_EVENTS_NETWORK_SUCCESS)) {
                         if (BuildConfig.DEBUG) {
                             Log.v(TAG, "success");
                         }
 
                         // Get response object
-                        String messageJson = intent.getStringExtra(PopeConstants.KEY_JSON_RESPONSE);
+                        String messageJson = intent.getStringExtra(EventsConstants.KEY_EVENTS_JSON_RESPONSE);
 
                         if (!TextUtils.isEmpty(messageJson)) {
                             mMessage = GsonObject.fromJson(messageJson, Message.class);
@@ -266,11 +266,11 @@ public class RealtimeMenuFragment extends Fragment implements
         AlertManager.getInstance().addListener(this);
         AlertManager.getInstance().fetchGlobalAlert();
 
-        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mPopeReceiver, new IntentFilter(PopeNetworkService.NOTIFICATION));
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mPopeReceiver, new IntentFilter(EventsNetworkService.NOTIFICATION));
 
         // Start the pope network service if he is visiting today and we do not have the message
         if (isPopeVisitingToday && mMessage == null) {
-            Intent intent = new Intent(getActivity(), PopeNetworkService.class);
+            Intent intent = new Intent(getActivity(), EventsNetworkService.class);
             getActivity().startService(intent);
         }
     }
@@ -462,7 +462,7 @@ public class RealtimeMenuFragment extends Fragment implements
             // Papal Visit Special Message
             case R.id.realtime_menu_papal_message:
 
-                Uri uri = Uri.parse(!TextUtils.isEmpty(mPapalVisitUrl) ? mPapalVisitUrl : PopeConstants.VALUE_POPE_VISIT_DEFAULT_URL);
+                Uri uri = Uri.parse(!TextUtils.isEmpty(mPapalVisitUrl) ? mPapalVisitUrl : EventsConstants.VALUE_POPE_VISIT_DEFAULT_URL);
                 intent = new Intent(Intent.ACTION_VIEW, uri);
 
                 break;

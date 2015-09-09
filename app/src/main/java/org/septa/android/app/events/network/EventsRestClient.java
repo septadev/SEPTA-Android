@@ -1,4 +1,4 @@
-package org.septa.android.app.PapalVisit;
+package org.septa.android.app.events.network;
 
 import com.squareup.okhttp.OkHttpClient;
 
@@ -10,29 +10,29 @@ import retrofit.client.OkClient;
 /**
  * Created by jhunchar on 9/3/15.
  */
-public class PopeRestClient {
+public class EventsRestClient {
 
-    private static PopeApi REST_CLIENT;
+    private static EventsApi REST_CLIENT;
     private static String ROOT = "http://www3.septa.org/";
 
     static {
-        setupPopeRestClient();
+        setupEventsRestClient();
     }
 
-    private PopeRestClient() {
+    private EventsRestClient() {
     }
 
-    public static PopeApi get() {
+    public static EventsApi get() {
         return REST_CLIENT;
     }
 
-    private static void setupPopeRestClient() {
+    private static void setupEventsRestClient() {
         Builder builder = new Builder()
                 .setEndpoint(ROOT)
                 .setLogLevel(LogLevel.FULL)
                 .setClient(new OkClient(new OkHttpClient()));
 
         RestAdapter restAdapter = builder.build();
-        REST_CLIENT = restAdapter.create(PopeApi.class);
+        REST_CLIENT = restAdapter.create(EventsApi.class);
     }
 }

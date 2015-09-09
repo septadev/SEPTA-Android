@@ -48,13 +48,11 @@ public class EventsNetworkService extends IntentService {
     public void success(Message message, Response response) {
 
         // Response was successful
-        // Show results
         if (message != null) {
             handleResult(EventsConstants.VALUE_EVENTS_NETWORK_SUCCESS, message);
         }
 
-        // No content available, but there always should be
-        // Show error view
+        // Response was empty
         else {
             handleResult(EventsConstants.VALUE_EVENTS_NETWORK_ERROR, null);
         }
@@ -66,7 +64,6 @@ public class EventsNetworkService extends IntentService {
         }
 
         // Network error
-        // Show error view
         handleResult(EventsConstants.VALUE_EVENTS_NETWORK_ERROR, null);
     }
 

@@ -1183,7 +1183,7 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
                 // Working with legacy code (0 maps to NOW tab)
                 case 0:
 
-                    scheduleViewResId = PopeUtils.isRailScheduleAvailableToday() ? R.id.schedules_itinerary_special_event_message : R.id.schedules_itinerary_listview;
+                    scheduleViewResId = PopeUtils.isRailScheduleAvailableToday() ? R.id.schedules_itinerary_listview : R.id.schedules_itinerary_special_event_message;
 
                     break;
 

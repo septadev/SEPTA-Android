@@ -153,7 +153,7 @@
                         android:layout_gravity="bottom|center_horizontal"
                         android:layout_marginBottom="10dp"
                         android:gravity="center"
-                        android:text="@string/realtime_menu_item_next_to_arrive"
+                        android:text="@string/realtime_menu_item_system_status"
                         android:textAppearance="?android:attr/textAppearanceSmall"
                         android:textColor="#FFFFFF"
                         android:textSize="10sp"/>

@@ -26,11 +26,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.septa.android.app.BuildConfig;
-import org.septa.android.app.events.model.GsonObject;
-import org.septa.android.app.events.model.Message;
-import org.septa.android.app.events.EventsConstants;
-import org.septa.android.app.events.network.EventsNetworkService;
-import org.septa.android.app.events.util.PopeUtils;
 import org.septa.android.app.R;
 import org.septa.android.app.activities.FindNearestLocationActionBarActivity;
 import org.septa.android.app.activities.NextToArriveActionBarActivity;
@@ -38,6 +33,11 @@ import org.septa.android.app.activities.SystemStatusActionBarActivity;
 import org.septa.android.app.activities.TipsActionBarActivity;
 import org.septa.android.app.activities.TrainViewActionBarActivity;
 import org.septa.android.app.activities.TransitViewActionBarActivity;
+import org.septa.android.app.events.EventsConstants;
+import org.septa.android.app.events.model.GsonObject;
+import org.septa.android.app.events.model.Message;
+import org.septa.android.app.events.network.EventsNetworkService;
+import org.septa.android.app.events.util.PopeUtils;
 import org.septa.android.app.managers.AlertManager;
 import org.septa.android.app.managers.SharedPreferencesManager;
 import org.septa.android.app.models.servicemodels.AlertModel;
@@ -116,16 +116,13 @@ public class RealtimeMenuFragment extends Fragment implements
                                 isPopeVisitingToday = PopeUtils.isPopeVisitingToday(getActivity());
                             }
 
-                            if (isPopeVisitingToday) {
+                            // Set image resources
+                            mNextToArriveImage.setImageResource(isPopeVisitingToday ? R.drawable.realtime_menu_nexttoarrive_selector_disabled : R.drawable.realtime_menu_nexttoarrive_selector);
+                            mFindNearestLocationImage.setImageResource(isPopeVisitingToday ? R.drawable.realtime_menu_findnearestlocation_selector_disabled : R.drawable.realtime_menu_findnearestlocation_selector);
+                            mTrainViewImage.setImageResource(isPopeVisitingToday ? R.drawable.realtime_menu_trainview_selector_disabled : R.drawable.realtime_menu_trainview_selector);
+                            mTransitViewImage.setImageResource(isPopeVisitingToday ? R.drawable.realtime_menu_transitview_selector_disabled : R.drawable.realtime_menu_transitview_selector);
 
-                                // Set image resources
-                                mNextToArriveImage.setImageResource(isPopeVisitingToday ? R.drawable.realtime_menu_nexttoarrive_selector_disabled : R.drawable.realtime_menu_nexttoarrive_selector);
-                                mFindNearestLocationImage.setImageResource(isPopeVisitingToday ? R.drawable.realtime_menu_findnearestlocation_selector_disabled : R.drawable.realtime_menu_findnearestlocation_selector);
-                                mTrainViewImage.setImageResource(isPopeVisitingToday ? R.drawable.realtime_menu_trainview_selector_disabled : R.drawable.realtime_menu_trainview_selector);
-                                mTransitViewImage.setImageResource(isPopeVisitingToday ? R.drawable.realtime_menu_transitview_selector_disabled : R.drawable.realtime_menu_transitview_selector);
-
-                                mPapalVisitUrl = mMessage.getSpecialEventUrl();
-                            }
+                            mPapalVisitUrl = mMessage.getSpecialEventUrl();
 
                             // Set the event message and its visibility
                             String specialEventMessage = mMessage.getSpecialEventMessage();

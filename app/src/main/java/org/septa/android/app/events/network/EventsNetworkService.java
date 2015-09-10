@@ -35,7 +35,7 @@ public class EventsNetworkService extends IntentService {
         // Request message
         try {
 
-            Message message = BuildConfig.DEBUG ? EventsRestClient.get().getDebugMessage() : EventsRestClient.get().getMessage();
+            Message message = EventsRestClient.get().getMessage();
 
             success(message, null);
         }

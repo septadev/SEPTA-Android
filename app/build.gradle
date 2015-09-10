@@ -61,7 +61,7 @@ android {
         minSdkVersion 10
         targetSdkVersion 19
         versionCode 95
-        versionName '1.3.12'
+        versionName '1.3.13'
         project.ext.set("archivesBaseName", project.parent.name + "-v" + versionName + "-b" + versionCode)
     }
     sourceSets {

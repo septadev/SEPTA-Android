@@ -86,7 +86,7 @@ public class RealtimeMenuFragment extends Fragment implements
 
                         // Set the default message
                         mPapalVisitMessage.setText(R.string.realtime_menu_default_papal_message);
-                        mPapalVisitMessage.setVisibility(View.VISIBLE);
+                        mPapalVisitMessage.setVisibility(isPopeVisitingToday ? View.VISIBLE : View.GONE);
                     }
 
                     else if (result.equals(EventsConstants.VALUE_EVENTS_NETWORK_SUCCESS)) {

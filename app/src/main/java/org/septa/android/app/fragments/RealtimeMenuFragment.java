@@ -266,7 +266,10 @@ public class RealtimeMenuFragment extends Fragment implements
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mPopeReceiver, new IntentFilter(EventsNetworkService.NOTIFICATION));
 
         // Start the pope network service if he is visiting today and we do not have the message
-        if (isPopeVisitingToday && mMessage == null) {
+        // if (isPopeVisitingToday && mMessage == null) {
+
+        // Due to variability of soft-coded dates, removing check of whether pope is visiting today
+        if (mMessage == null) {
             Intent intent = new Intent(getActivity(), EventsNetworkService.class);
             getActivity().startService(intent);
         }

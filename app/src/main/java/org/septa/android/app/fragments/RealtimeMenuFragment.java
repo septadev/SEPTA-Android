@@ -393,35 +393,19 @@ public class RealtimeMenuFragment extends Fragment implements
 
             case R.id.realtime_menu_system_status_image_view:
 
-                if (!isPopeVisitingToday) {
-
                     intent = new Intent(getActivity(), SystemStatusActionBarActivity.class);
 
                     intent.putExtra(getString(R.string.actionbar_titletext_key), getString(R.string.page_title_system_status));
                     intent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), getString(R.string.page_icon_id_system_status));
 
-                }
-
-                else {
-                    mPapalVisitMessage.setVisibility(View.VISIBLE);
-                }
-
                 break;
 
             case R.id.realtime_menu_tips_image_view:
-
-                if (!isPopeVisitingToday) {
 
                     intent = new Intent(getActivity(), TipsActionBarActivity.class);
 
                     intent.putExtra(getString(R.string.actionbar_titletext_key), getString(R.string.page_title_tips));
                     intent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), getString(R.string.page_icon_id_tips));
-
-                }
-
-                else {
-                    mPapalVisitMessage.setVisibility(View.VISIBLE);
-                }
 
                 break;
 

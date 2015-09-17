@@ -8,7 +8,10 @@
 package org.septa.android.app.activities.schedules;
 
 import android.annotation.TargetApi;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -20,6 +23,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -40,8 +44,6 @@ import com.google.gson.reflect.TypeToken;
 
 import org.apache.http.HttpStatus;
 import org.septa.android.app.BuildConfig;
-import org.septa.android.app.events.EventsConstants;
-import org.septa.android.app.events.util.PopeUtils;
 import org.septa.android.app.R;
 import org.septa.android.app.activities.BaseAnalyticsActionBarActivity;
 import org.septa.android.app.activities.FareInformationActionBarActivity;
@@ -49,6 +51,11 @@ import org.septa.android.app.activities.NextToArriveRealTimeWebViewActionBarActi
 import org.septa.android.app.adapters.schedules.SchedulesItinerary_ListViewItem_ArrayAdapter;
 import org.septa.android.app.adapters.schedules.Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter;
 import org.septa.android.app.databases.SEPTADatabase;
+import org.septa.android.app.events.EventsConstants;
+import org.septa.android.app.events.model.GsonObject;
+import org.septa.android.app.events.model.Message;
+import org.septa.android.app.events.network.EventsNetworkService;
+import org.septa.android.app.events.util.PopeUtils;
 import org.septa.android.app.managers.SchedulesFavoritesAndRecentlyViewedStore;
 import org.septa.android.app.models.ObjectFactory;
 import org.septa.android.app.models.RouteTypes;
@@ -124,8 +131,64 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
             , R.id.schedules_itinerary_tab_sun_button})
     List<Button> tabs;
 
+    private String mSpecialEventUrl;
+    private Message mMessage;
     private TextView mSpecialMessage;
     private ViewFlipper mViewFlipper;
+
+    private BroadcastReceiver mSpecialEventReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (BuildConfig.DEBUG) {
+                Log.v(TAG, "onReceive");
+            }
+
+            Bundle bundle = intent.getExtras();
+            if (bundle != null) {
+                String result = intent.getStringExtra(EventsConstants.KEY_RESULT);
+
+                if (result != null) {
+                    if (result.equals(EventsConstants.VALUE_EVENTS_NETWORK_ERROR)) {
+                        if (BuildConfig.DEBUG) {
+                            Log.v(TAG, "error");
+                        }
+
+                        // Set the default message
+                        mSpecialMessage.setText(R.string.realtime_menu_default_special_event_message);
+                    }
+
+                    else if (result.equals(EventsConstants.VALUE_EVENTS_NETWORK_SUCCESS)) {
+                        if (BuildConfig.DEBUG) {
+                            Log.v(TAG, "success");
+                        }
+
+                        // Get response object
+                        String messageJson = intent.getStringExtra(EventsConstants.KEY_EVENTS_JSON_RESPONSE);
+
+                        if (!TextUtils.isEmpty(messageJson)) {
+                            mMessage = GsonObject.fromJson(messageJson, Message.class);
+                        }
+
+                        if (mMessage != null) {
+
+                            mSpecialEventUrl = mMessage.getSpecialEventUrl();
+
+                            // Set the event message and its visibility
+                            String specialEventMessage = mMessage.getSpecialEventMessage();
+                            mSpecialMessage.setText(!TextUtils.isEmpty(specialEventMessage) ? specialEventMessage : getString(R.string.realtime_menu_default_special_event_message));
+                        }
+                    }
+
+                    else {
+                        if (BuildConfig.DEBUG) {
+                            Log.v(TAG, "unknown result");
+                        }
+                    }
+                }
+            }
+        }
+    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -218,6 +281,17 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
 
         }
 
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(mSpecialEventReceiver, new IntentFilter(EventsNetworkService.NOTIFICATION));
+
+        // Per design requirement, call network every time user resumes page
+        Intent intent = new Intent(this, EventsNetworkService.class);
+        startService(intent);
     }
 
     @Override
@@ -939,6 +1013,8 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
             schedulesItineraryRefreshCountDownTimer.cancel();
             schedulesItineraryRefreshCountDownTimer = null;
         }
+
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mSpecialEventReceiver);
     }
 
     @Override
@@ -1029,7 +1105,8 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
 
             case R.id.schedules_itinerary_special_event_message:
 
-                Uri uri = Uri.parse(EventsConstants.VALUE_POPE_VISIT_DEFAULT_URL);
+                // Use API response URL if available
+                Uri uri = Uri.parse(!TextUtils.isEmpty(mSpecialEventUrl) ? mSpecialEventUrl : EventsConstants.VALUE_POPE_VISIT_DEFAULT_URL);
                 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                 startActivity(intent);
                 break;

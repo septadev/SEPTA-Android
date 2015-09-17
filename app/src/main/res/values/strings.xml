@@ -114,7 +114,7 @@
     <string name="page_icon_id_transitview">transitview</string>
 
     <!-- Papal Visit -->
-    <string name="realtime_menu_default_papal_message">Real-time data and Regional Rail schedule is not available this weekend. Please visit www.septa.org/papalvisitphilly for real-time system alerts and other service information</string>
+    <string name="realtime_menu_default_special_event_message">Real-time data and Regional Rail schedule is not available this weekend. Please visit www.septa.org/papalvisitphilly for real-time system alerts and other service information</string>
     <string name="schedules_itinerary_default_papal_message">Real-time data is not available this weekend. Visit www.septa.org/papalvisitphilly for service information</string>
 
 </resources>

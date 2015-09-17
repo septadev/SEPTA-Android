@@ -60,13 +60,13 @@ public class RealtimeMenuFragment extends Fragment implements
     private ImageView mTipsImage;
     private ImageView mTrainViewImage;
     private ImageView mTransitViewImage;
-    private TextView mPapalVisitMessage;
+    private TextView mSpecialEventMessage;
 
     private boolean isPopeVisitingToday;
     private Message mMessage;
-    private String mPapalVisitUrl;
+    private String mSpecialEventUrl;
 
-    private BroadcastReceiver mPopeReceiver = new BroadcastReceiver() {
+    private BroadcastReceiver mSpecialEventReceiver = new BroadcastReceiver() {
 
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -85,8 +85,8 @@ public class RealtimeMenuFragment extends Fragment implements
                         }
 
                         // Set the default message
-                        mPapalVisitMessage.setText(R.string.realtime_menu_default_papal_message);
-                        mPapalVisitMessage.setVisibility(isPopeVisitingToday ? View.VISIBLE : View.GONE);
+                        mSpecialEventMessage.setText(R.string.realtime_menu_default_special_event_message);
+                        mSpecialEventMessage.setVisibility(isPopeVisitingToday ? View.VISIBLE : View.GONE);
                     }
 
                     else if (result.equals(EventsConstants.VALUE_EVENTS_NETWORK_SUCCESS)) {
@@ -122,12 +122,12 @@ public class RealtimeMenuFragment extends Fragment implements
                             mTrainViewImage.setImageResource(isPopeVisitingToday ? R.drawable.realtime_menu_trainview_selector_disabled : R.drawable.realtime_menu_trainview_selector);
                             mTransitViewImage.setImageResource(isPopeVisitingToday ? R.drawable.realtime_menu_transitview_selector_disabled : R.drawable.realtime_menu_transitview_selector);
 
-                            mPapalVisitUrl = mMessage.getSpecialEventUrl();
+                            mSpecialEventUrl = mMessage.getSpecialEventUrl();
 
                             // Set the event message and its visibility
                             String specialEventMessage = mMessage.getSpecialEventMessage();
-                            mPapalVisitMessage.setText(!TextUtils.isEmpty(specialEventMessage) ? specialEventMessage : getString(R.string.realtime_menu_default_papal_message));
-                            mPapalVisitMessage.setVisibility(isPopeVisitingToday && !TextUtils.isEmpty(specialEventMessage) ? View.VISIBLE : View.GONE);
+                            mSpecialEventMessage.setText(!TextUtils.isEmpty(specialEventMessage) ? specialEventMessage : getString(R.string.realtime_menu_default_special_event_message));
+                            mSpecialEventMessage.setVisibility(isPopeVisitingToday && !TextUtils.isEmpty(specialEventMessage) ? View.VISIBLE : View.GONE);
                         }
                     }
 
@@ -172,10 +172,14 @@ public class RealtimeMenuFragment extends Fragment implements
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
+        if (BuildConfig.DEBUG) {
+            Log.v(TAG, "onCreateView: savedInstanceState" + (savedInstanceState != null ? " != " : " == ") + "null");
+        }
+
         View view = inflater.inflate(R.layout.realtime_menu_fragment, container, false);
 
         // Setup views
-        mPapalVisitMessage = (TextView) view.findViewById(R.id.realtime_menu_papal_message);
+        mSpecialEventMessage = (TextView) view.findViewById(R.id.realtime_menu_papal_message);
         mFindNearestLocationImage = (ImageView) view.findViewById(R.id.realtime_menu_find_nearest_location_image_view);
         mNextToArriveImage = (ImageView) view.findViewById(R.id.realtime_menu_next_to_arrive_image_view);
         mSystemStatusImage = (ImageView) view.findViewById(R.id.realtime_menu_system_status_image_view);
@@ -194,7 +198,7 @@ public class RealtimeMenuFragment extends Fragment implements
         // Set click listeners
         mFindNearestLocationImage.setOnClickListener(this);
         mNextToArriveImage.setOnClickListener(this);
-        mPapalVisitMessage.setOnClickListener(this);
+        mSpecialEventMessage.setOnClickListener(this);
         mSystemStatusImage.setOnClickListener(this);
         mTipsImage.setOnClickListener(this);
         mTrainViewImage.setOnClickListener(this);
@@ -213,6 +217,11 @@ public class RealtimeMenuFragment extends Fragment implements
                 String messageJson = savedInstanceState.getString(KEY_ARG_MESSAGE_JSON);
                 if (!TextUtils.isEmpty(messageJson)) {
                     mMessage = GsonObject.fromJson(messageJson, Message.class);
+                    if (mMessage != null) {
+                        String specialMessage = mMessage.getSpecialEventMessage();
+                        mSpecialEventMessage.setText(specialMessage != null ? specialMessage : "");
+                        mSpecialEventMessage.setVisibility(!TextUtils.isEmpty(specialMessage) ? View.VISIBLE : View.GONE);
+                    }
                 }
             }
         }
@@ -263,16 +272,11 @@ public class RealtimeMenuFragment extends Fragment implements
         AlertManager.getInstance().addListener(this);
         AlertManager.getInstance().fetchGlobalAlert();
 
-        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mPopeReceiver, new IntentFilter(EventsNetworkService.NOTIFICATION));
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mSpecialEventReceiver, new IntentFilter(EventsNetworkService.NOTIFICATION));
 
-        // Start the pope network service if he is visiting today and we do not have the message
-        // if (isPopeVisitingToday && mMessage == null) {
-
-        // Due to variability of soft-coded dates, removing check of whether pope is visiting today
-        if (mMessage == null) {
-            Intent intent = new Intent(getActivity(), EventsNetworkService.class);
-            getActivity().startService(intent);
-        }
+        // Per design requirement, call network every time user resumes page
+        Intent intent = new Intent(getActivity(), EventsNetworkService.class);
+        getActivity().startService(intent);
     }
 
     @Override
@@ -280,7 +284,7 @@ public class RealtimeMenuFragment extends Fragment implements
         AlertManager.getInstance().removeListener(this);
         super.onPause();
 
-        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mPopeReceiver);
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mSpecialEventReceiver);
     }
 
     @Override
@@ -369,7 +373,7 @@ public class RealtimeMenuFragment extends Fragment implements
                 }
 
                 else {
-                    mPapalVisitMessage.setVisibility(View.VISIBLE);
+                    mSpecialEventMessage.setVisibility(View.VISIBLE);
                 }
 
                 break;
@@ -386,7 +390,7 @@ public class RealtimeMenuFragment extends Fragment implements
                 }
 
                 else {
-                    mPapalVisitMessage.setVisibility(View.VISIBLE);
+                    mSpecialEventMessage.setVisibility(View.VISIBLE);
                 }
 
                 break;
@@ -421,7 +425,7 @@ public class RealtimeMenuFragment extends Fragment implements
                 }
 
                 else {
-                    mPapalVisitMessage.setVisibility(View.VISIBLE);
+                    mSpecialEventMessage.setVisibility(View.VISIBLE);
                 }
 
                 break;
@@ -438,7 +442,7 @@ public class RealtimeMenuFragment extends Fragment implements
                 }
 
                 else {
-                    mPapalVisitMessage.setVisibility(View.VISIBLE);
+                    mSpecialEventMessage.setVisibility(View.VISIBLE);
                 }
 
                 break;
@@ -446,7 +450,7 @@ public class RealtimeMenuFragment extends Fragment implements
             // Papal Visit Special Message
             case R.id.realtime_menu_papal_message:
 
-                Uri uri = Uri.parse(!TextUtils.isEmpty(mPapalVisitUrl) ? mPapalVisitUrl : EventsConstants.VALUE_POPE_VISIT_DEFAULT_URL);
+                Uri uri = Uri.parse(!TextUtils.isEmpty(mSpecialEventUrl) ? mSpecialEventUrl : EventsConstants.VALUE_POPE_VISIT_DEFAULT_URL);
                 intent = new Intent(Intent.ACTION_VIEW, uri);
 
                 break;

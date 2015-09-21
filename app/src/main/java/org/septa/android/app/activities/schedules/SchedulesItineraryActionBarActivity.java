@@ -8,17 +8,22 @@
 package org.septa.android.app.activities.schedules;
 
 import android.annotation.TargetApi;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.GradientDrawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -32,6 +37,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.ViewFlipper;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -45,6 +51,11 @@ import org.septa.android.app.activities.NextToArriveRealTimeWebViewActionBarActi
 import org.septa.android.app.adapters.schedules.SchedulesItinerary_ListViewItem_ArrayAdapter;
 import org.septa.android.app.adapters.schedules.Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter;
 import org.septa.android.app.databases.SEPTADatabase;
+import org.septa.android.app.events.EventsConstants;
+import org.septa.android.app.events.model.GsonObject;
+import org.septa.android.app.events.model.Message;
+import org.septa.android.app.events.network.EventsNetworkService;
+import org.septa.android.app.events.util.PopeUtils;
 import org.septa.android.app.managers.SchedulesFavoritesAndRecentlyViewedStore;
 import org.septa.android.app.models.ObjectFactory;
 import org.septa.android.app.models.RouteTypes;
@@ -77,7 +88,8 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
         AdapterView.OnItemClickListener, StickyListHeadersListView.OnHeaderClickListener,
         StickyListHeadersListView.OnStickyHeaderOffsetChangedListener,
         StickyListHeadersListView.OnStickyHeaderChangedListener, View.OnTouchListener,
-        Callback<ArrayList<ServiceAdvisoryModel>> {
+        Callback<ArrayList<ServiceAdvisoryModel>>,
+        View.OnClickListener {
 
     public static final String TAG = SchedulesItineraryActionBarActivity.class.getName();
     static final String SCHEDULE_MODEL = "scheduleModel";
@@ -119,9 +131,73 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
             , R.id.schedules_itinerary_tab_sun_button})
     List<Button> tabs;
 
+    private String mSpecialEventUrl;
+    private Message mMessage;
+    private TextView mSpecialMessage;
+    private ViewFlipper mViewFlipper;
+
+    private BroadcastReceiver mSpecialEventReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (BuildConfig.DEBUG) {
+                Log.v(TAG, "onReceive");
+            }
+
+            Bundle bundle = intent.getExtras();
+            if (bundle != null) {
+                String result = intent.getStringExtra(EventsConstants.KEY_RESULT);
+
+                if (result != null) {
+                    if (result.equals(EventsConstants.VALUE_EVENTS_NETWORK_ERROR)) {
+                        if (BuildConfig.DEBUG) {
+                            Log.v(TAG, "error");
+                        }
+
+                        // Set the default message
+                        mSpecialMessage.setText(R.string.realtime_menu_default_special_event_message);
+                    }
+
+                    else if (result.equals(EventsConstants.VALUE_EVENTS_NETWORK_SUCCESS)) {
+                        if (BuildConfig.DEBUG) {
+                            Log.v(TAG, "success");
+                        }
+
+                        // Get response object
+                        String messageJson = intent.getStringExtra(EventsConstants.KEY_EVENTS_JSON_RESPONSE);
+
+                        if (!TextUtils.isEmpty(messageJson)) {
+                            mMessage = GsonObject.fromJson(messageJson, Message.class);
+                        }
+
+                        if (mMessage != null) {
+
+                            mSpecialEventUrl = mMessage.getSpecialEventUrl();
+
+                            // Set the event message and its visibility
+                            String specialEventMessage = mMessage.getSpecialEventMessage();
+                            mSpecialMessage.setText(!TextUtils.isEmpty(specialEventMessage) ? specialEventMessage : getString(R.string.realtime_menu_default_special_event_message));
+                        }
+                    }
+
+                    else {
+                        if (BuildConfig.DEBUG) {
+                            Log.v(TAG, "unknown result");
+                        }
+                    }
+                }
+            }
+        }
+    };
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (BuildConfig.DEBUG) {
+            Log.v(TAG, "onCreate");
+        }
+
         setContentView(R.layout.schedules_itinerary);
         ButterKnife.inject(this);
 
@@ -171,7 +247,7 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
         this.menuDialogListView = menuListView;
         menuListView.setAdapter(new Schedules_Itinerary_MenuDialog_ListViewItem_ArrayAdapter(this, listMenuItems));
 
-        stickyList = (StickyListHeadersListView) findViewById(R.id.list);
+        stickyList = (StickyListHeadersListView) findViewById(R.id.schedules_itinerary_listview);
         stickyList.setOnItemClickListener(this);
         stickyList.setOnHeaderClickListener(this);
         stickyList.setOnStickyHeaderChangedListener(this);
@@ -187,6 +263,12 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
 
         routesModel = new ArrayList<SchedulesRouteModel>();
 
+        mSpecialMessage = (TextView) findViewById(R.id.schedules_itinerary_special_event_message);
+        mSpecialMessage.setOnClickListener(this);
+
+        mViewFlipper = (ViewFlipper) findViewById(R.id.schedules_itinerary_view_flipper);
+        updateViewFlipperDisplayChild();
+
         if (savedInstanceState != null) {
             schedulesRouteModel = savedInstanceState.getParcelable(SCHEDULE_MODEL);
             selectedTab = savedInstanceState.getInt(SELECTED_TAB);
@@ -199,6 +281,17 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
 
         }
 
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(mSpecialEventReceiver, new IntentFilter(EventsNetworkService.NOTIFICATION));
+
+        // Per design requirement, call network every time user resumes page
+        Intent intent = new Intent(this, EventsNetworkService.class);
+        startService(intent);
     }
 
     @Override
@@ -861,6 +954,9 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
             }
         }
 
+        // Update the view flipper display child if special event
+        updateViewFlipperDisplayChild();
+
         mAdapter.setSelectedTab(selectedTab);
         checkTripStartAndDestinationForNextToArriveDataRequest();
     }
@@ -917,6 +1013,8 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
             schedulesItineraryRefreshCountDownTimer.cancel();
             schedulesItineraryRefreshCountDownTimer = null;
         }
+
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mSpecialEventReceiver);
     }
 
     @Override
@@ -998,6 +1096,21 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
     @Override
     public void failure(RetrofitError error) {
         Log.e(TAG, error.getMessage());
+    }
+
+    @Override
+    public void onClick(View v) {
+
+        switch (v.getId()) {
+
+            case R.id.schedules_itinerary_special_event_message:
+
+                // Use API response URL if available
+                Uri uri = Uri.parse(!TextUtils.isEmpty(mSpecialEventUrl) ? mSpecialEventUrl : EventsConstants.VALUE_POPE_VISIT_DEFAULT_URL);
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                startActivity(intent);
+                break;
+        }
     }
 
     private class DirectionHeaderLoader extends AsyncTask<SchedulesDataModel, Integer, Boolean> {
@@ -1127,5 +1240,62 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
         // Call train view service proxy to get trains in transit
         TrainViewServiceProxy trainViewServiceProxy = new TrainViewServiceProxy();
         trainViewServiceProxy.getTrainView(callback);
+    }
+
+    private void updateViewFlipperDisplayChild() {
+
+        Integer scheduleViewResId = null;
+
+        // Always show the schedule if it is not RR
+        if (travelType != null && !travelType.equals(RouteTypes.RAIL)) {
+
+            scheduleViewResId = R.id.schedules_itinerary_listview;
+        }
+
+        // Otherwise, check if schedule is available
+        else {
+
+            switch (selectedTab) {
+
+                // Working with legacy code (0 maps to NOW tab)
+                case 0:
+
+                    scheduleViewResId = PopeUtils.isRailScheduleAvailableToday() ? R.id.schedules_itinerary_listview : R.id.schedules_itinerary_special_event_message;
+
+                    break;
+
+                // Working with legacy code (2 maps to SAT tab)
+                case 2:
+
+                    scheduleViewResId = PopeUtils.isPopeVisitingSaturday() ? R.id.schedules_itinerary_special_event_message : R.id.schedules_itinerary_listview;
+                    break;
+
+                // Working with legacy code (3 maps to SUN tab)
+                case 3:
+
+                    scheduleViewResId = PopeUtils.isPopeVisitingSunday() ? R.id.schedules_itinerary_special_event_message : R.id.schedules_itinerary_listview;
+                    break;
+
+                // Default to showing the schedule
+                default:
+
+                    scheduleViewResId = R.id.schedules_itinerary_listview;
+                    break;
+            }
+        }
+
+        // Set the view flipper to the schedule view
+        if (scheduleViewResId != null) {
+            for (int i = 0; i < mViewFlipper.getChildCount(); i++) {
+                View childFlipperView = mViewFlipper.getChildAt(i);
+                if (childFlipperView != null && scheduleViewResId == childFlipperView.getId()) {
+                    mViewFlipper.setDisplayedChild(i);
+                    return;
+                }
+            }
+        }
+
+        // Otherwise, default to the list
+        mViewFlipper.setDisplayedChild(R.id.schedules_itinerary_listview);
     }
 }

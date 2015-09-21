@@ -33,7 +33,7 @@
         android:id="@+id/empty_text"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/state_list_default_selector_with_fade"
+        android:background="@drawable/state_list_default_black_selector"
         android:clickable="true"
         android:gravity="center"
         android:lineSpacingMultiplier="1.25"

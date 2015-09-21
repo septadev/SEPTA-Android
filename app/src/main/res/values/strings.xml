@@ -89,4 +89,32 @@
     <string name="on_time">On time</string>
     <string name="track">Track</string>
 
+    <!-- Real-time Menu Items -->
+    <string name="realtime_menu_item_next_to_arrive">Next to Arrive</string>
+    <string name="realtime_menu_item_train_view">TrainView</string>
+    <string name="realtime_menu_item_transit_view">TransitView</string>
+    <string name="realtime_menu_item_system_status">System Status</string>
+    <string name="realtime_menu_item_find_nearest_location">Find Nearest Location</string>
+    <string name="realtime_menu_item_tips">Tips</string>
+
+    <!-- Page Titles -->
+    <string name="page_title_find_nearest_location">| Find Nearest Location</string>
+    <string name="page_title_next_to_arrive">| Next To Arrive</string>
+    <string name="page_title_system_status">| System Status</string>
+    <string name="page_title_tips">| Tips</string>
+    <string name="page_title_train_view">| TrainView</string>
+    <string name="page_title_transit_view">| TransitView</string>
+
+    <!-- Page Icon Identifiers -->
+    <string name="page_icon_id_find_nearest_location">findnearestlocation</string>
+    <string name="page_icon_id_next_to_arrive">nexttoarrive</string>
+    <string name="page_icon_id_system_status">systemstatus</string>
+    <string name="page_icon_id_tips">tips</string>
+    <string name="page_icon_id_trainview">trainview</string>
+    <string name="page_icon_id_transitview">transitview</string>
+
+    <!-- Papal Visit -->
+    <string name="realtime_menu_default_special_event_message">Real-time data and Regional Rail schedule is not available this weekend. Please visit www.septa.org/papalvisitphilly for real-time system alerts and other service information</string>
+    <string name="schedules_itinerary_default_papal_message">Real-time data is not available this weekend. Visit www.septa.org/papalvisitphilly for service information</string>
+
 </resources>

@@ -214,7 +214,7 @@
                         android:layout_gravity="bottom|center_horizontal"
                         android:layout_marginBottom="10dp"
                         android:gravity="center"
-                        android:text="@string/realtime_menu_item_tips"
+                        android:text="@string/realtime_menu_item_special_events"
                         android:textAppearance="?android:attr/textAppearanceSmall"
                         android:textColor="#FFFFFF"
                         android:textSize="10sp"/>

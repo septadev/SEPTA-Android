@@ -408,7 +408,7 @@ public class RealtimeMenuFragment extends Fragment implements
 
                     intent = new Intent(getActivity(), TipsActionBarActivity.class);
 
-                    intent.putExtra(getString(R.string.actionbar_titletext_key), getString(R.string.page_title_tips));
+                    intent.putExtra(getString(R.string.actionbar_titletext_key), getString(R.string.page_title_special_events));
                     intent.putExtra(getString(R.string.actionbar_iconimage_imagenamesuffix_key), getString(R.string.page_icon_id_tips));
 
                 break;

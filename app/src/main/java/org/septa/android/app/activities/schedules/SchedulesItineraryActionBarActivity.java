@@ -386,6 +386,7 @@ public class SchedulesItineraryActionBarActivity extends BaseAnalyticsActionBarA
         schedulesFavoriteModel.setRouteEndStopId(schedulesRouteModel.getRouteEndStopId());
         schedulesFavoriteModel.setRouteEndName(schedulesRouteModel.getRouteEndName());
         schedulesFavoriteModel.setRouteShortName(schedulesRouteModel.getRouteShortName());
+        schedulesFavoriteModel.setDirectionId(schedulesRouteModel.getDirectionId());
 
         // check if the selected route is already a favorite, then we allow the option of removing this
         // route from the favorites list.

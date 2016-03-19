@@ -394,7 +394,7 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
                     if (mMap != null) {
                         Marker marker = mMap.addMarker(new MarkerOptions()
                                 .position(transitViewVehicle.getLatLng())
-                                .title("Vehicle: " + transitViewVehicle.getVehicleId() + " (updated: "+transitViewVehicle.getOffset()+" min)")
+                                .title("Vehicle: " + transitViewVehicle.getVehicleId())
                                 .icon(transitIcon)
                                 .snippet("Destination: " + transitViewVehicle.getDestination()));
                         markerList.add(marker);

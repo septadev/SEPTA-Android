@@ -29,14 +29,6 @@
             android:textSize="22sp"
             android:id="@+id/transitview_listview_item_train_number_textview"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="15dp"
-            android:textStyle="bold"
-            android:textSize="13sp"
-            android:layout_below="@id/transitview_listview_item_train_number_textview"
-            android:id="@+id/transitview_listview_item_train_timing_textview"/>
-
     </RelativeLayout>
 
     <RelativeLayout

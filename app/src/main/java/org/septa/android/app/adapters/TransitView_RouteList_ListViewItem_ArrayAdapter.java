@@ -43,21 +43,7 @@ public class TransitView_RouteList_ListViewItem_ArrayAdapter  extends ArrayAdapt
         rowView = inflater.inflate(R.layout.transitview_routelist_listview_item, parent, false);
 
         TextView transitViewVehicleIdTextView = (TextView) rowView.findViewById(R.id.transitview_listview_item_train_number_textview);
-        TextView trainTimingTextView = (TextView) rowView.findViewById(R.id.transitview_listview_item_train_timing_textview);
-
         transitViewVehicleIdTextView.setText("" + transitVehicleInformation.getVehicleId());
-
-        if (transitVehicleInformation.isLate()) {
-            if (transitVehicleInformation.getLate() > 1) {
-                trainTimingTextView.setText(""+transitVehicleInformation.getLate()+" "+context.getString(R.string.mins));
-            } else {
-                trainTimingTextView.setText(""+transitVehicleInformation.getLate()+" "+context.getString(R.string.min));
-            }
-            trainTimingTextView.setTextColor(context.getResources().getColor(R.color.text_late));
-        } else {
-            trainTimingTextView.setText(R.string.ontime);
-            trainTimingTextView.setTextColor(context.getResources().getColor(R.color.text_on_time));
-        }
 
         TextView transitViewDirectionLabel = (TextView) rowView.findViewById(R.id.transitview_listview_item_startlabel_textview);
         transitViewDirectionLabel.setText(context.getString(R.string.dir)+context.getString(R.string.field_separator));

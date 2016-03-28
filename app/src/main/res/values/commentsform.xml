@@ -7,6 +7,8 @@
   -->
 
 <resources>
+    <string name="commentsForm_subject_stringtemplate">SEPTA Android (%1$s) Customer Service Comment</string>
+
     <string name="commentsForm_submitPath">/cs/comment/FormMail.cgi</string>
     <string name="formPost_content_type">application/x-www-form-urlencoded</string>
 
@@ -33,5 +35,6 @@
     <string name="reasonPersonnelText">IF THE REASON FOR CONTACT INVOLVES SEPTA PERSONNEL, PLEASE PROVIDE NAME, EMPLOYEE NUMBER, OR GIVE A BRIEF PYSICAL DESCRIPTION</string>
     <string name="commentTypeText">PLEASE CHOOSE YOUR COMMENT TYPE</string>
 
-    <string name="submitText">Submit</string>
+    <string name="attachImageText">Attach Image</string>
+    <string name="submitText">Submit via Email</string>
 </resources>

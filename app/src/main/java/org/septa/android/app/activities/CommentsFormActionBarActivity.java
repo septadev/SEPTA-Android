@@ -7,6 +7,8 @@
 
 package org.septa.android.app.activities;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -15,16 +17,21 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
+import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.septa.android.app.BuildConfig;
 import org.septa.android.app.R;
-import org.septa.android.app.strategies.CommentsFormSubmissionStrategy;
+import org.septa.android.app.utilities.EmailLaunch;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class CommentsFormActionBarActivity extends BaseAnalyticsActionBarActivity {
     public static final String TAG = CommentsFormActionBarActivity.class.getName();
+
+    private static final int OBTAIN_IMAGE_REQUESTCODE = 1;
 
     private EditText nameEditText;
     private EditText phoneEditText;
@@ -42,8 +49,11 @@ public class CommentsFormActionBarActivity extends BaseAnalyticsActionBarActivit
     private EditText descriptionEditText;
     private EditText detailsEditText;
 
-    private List collectFormFieldValues() {
-        List formValuesList = new ArrayList();
+    private Uri selectedImageUri;
+
+    private List<NameValuePair> collectFormFieldValues() {
+        List<NameValuePair> formValuesList = new ArrayList<NameValuePair>();
+        formValuesList.add(new BasicNameValuePair("App version", BuildConfig.VERSIONNAME));
         formValuesList.add(new BasicNameValuePair("recipient", getString(R.string.commentsForm_recipient)));
         formValuesList.add(new BasicNameValuePair("wl_tp", getString(R.string.commentsForm_wl_tp)));
         formValuesList.add(new BasicNameValuePair("subject", getString(R.string.commentsForm_subject)));
@@ -90,12 +100,7 @@ public class CommentsFormActionBarActivity extends BaseAnalyticsActionBarActivit
         submitCommentsFormButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
-                Log.d(TAG, "detected the click on the submit button");
-                Log.d(TAG, "about to execute the network call with the form field values...");
-                new CommentsFormSubmissionStrategy(getApplicationContext()).execute(collectFormFieldValues());
-                Log.d(TAG, "executed the network call with the form field values");
-
-                // TODO: do better checking to see if the form posted successfully before clearing it out.
+                sendEmail(collectFormFieldValues());
                 resetFormFields();
             }
         });
@@ -136,6 +141,15 @@ public class CommentsFormActionBarActivity extends BaseAnalyticsActionBarActivit
         nameEditText.addTextChangedListener(editTextFieldWatcher);
         phoneEditText.addTextChangedListener(editTextFieldWatcher);
         emailEditText.addTextChangedListener(editTextFieldWatcher);
+
+        Button attachImageButton = (Button) findViewById(R.id.commentsForm_attach_image_button);
+        attachImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(intent, OBTAIN_IMAGE_REQUESTCODE);
+            }
+        });
     }
 
     private void resetFormFields() {
@@ -156,5 +170,49 @@ public class CommentsFormActionBarActivity extends BaseAnalyticsActionBarActivit
         detailsEditText.setText("");
 
         nameEditText.requestFocus();
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
+        super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
+
+        switch(requestCode) {
+            case OBTAIN_IMAGE_REQUESTCODE:
+                if(resultCode == RESULT_OK){
+                    Log.d(TAG, "received a result ok for the activity result to obtain an image");
+                    this.selectedImageUri = imageReturnedIntent.getData();
+                } else {
+                    Log.d(TAG, "receive a result of not okay for the activity result to obtain an image");
+                }
+                break;
+            default:
+                Log.d(TAG, "a request code of "+requestCode+" was seen but not anticipated");
+                break;
+        }
+    }
+
+    private void sendEmail(List<NameValuePair> nameValuePairs) {
+        StringBuilder body = new StringBuilder();
+        for( NameValuePair pair: nameValuePairs) {
+            body.append(pair.getName());
+            body.append(" : ");
+            body.append(pair.getValue());
+            body.append("\n");
+        }
+
+        Intent emailIntent = new Intent(Intent.ACTION_SEND);
+        emailIntent.setType("*/*");
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{getString(R.string.commentsForm_recipient)});
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.commentsForm_subject_stringtemplate, BuildConfig.VERSIONNAME));
+        emailIntent.putExtra(Intent.EXTRA_TEXT, body.toString());
+        if (this.selectedImageUri != null) {
+            emailIntent.putExtra(Intent.EXTRA_STREAM, this.selectedImageUri);
+        }
+
+        if (emailIntent.resolveActivity(getPackageManager()) != null) {
+            startActivity(emailIntent);
+        } else {
+            Toast.makeText(this, "Unable to send email", Toast.LENGTH_SHORT).show();
+            Log.w(TAG, "There are no email clients installed.");
+        }
     }
 }

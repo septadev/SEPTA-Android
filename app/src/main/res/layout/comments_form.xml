@@ -356,6 +356,17 @@
         <View style="@style/commentsForm_dividerLine"
               android:id="@+id/commentsForm_dividerLine12_textView"
               android:layout_below="@id/commentsForm_dividerBox6_textView"/>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginBottom="20dp"
+            android:id="@+id/commentsForm_attach_image_button"
+            android:text="@string/attachImageText"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_below="@id/commentsForm_dividerLine12_textView"/>
+
 
         <Button
             android:layout_width="match_parent"
@@ -366,7 +377,7 @@
             android:textStyle="bold"
             android:gravity="center"
             android:background="#FFFF6428"
-            android:layout_below="@id/commentsForm_dividerLine12_textView"/>
+            android:layout_below="@id/commentsForm_attach_image_button"/>
 
         <View style="@style/commentsForm_dividerLine"
               android:id="@+id/commentsForm_dividerLine13_textView"

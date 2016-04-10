@@ -95,15 +95,6 @@ public class ConnectListFragment extends ListFragment {
                 startActivity(commentsFormIntent);
 
                 break;
-
-            case 5:
-                Log.d(TAG, "launch the leave feedback activity");
-                Intent appFeedbackFormIntent = new Intent(getActivity(), AppFeedbackFormActivity.class);
-                appFeedbackFormIntent.putExtra(getString(R.string.actionbar_titletext_key), "| App Feedback");
-                startActivity(appFeedbackFormIntent);
-
-                break;
-
             default:
                 Log.d(TAG, "should not get here");
 

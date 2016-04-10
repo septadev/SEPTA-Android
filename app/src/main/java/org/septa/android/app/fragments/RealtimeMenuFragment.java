@@ -16,6 +16,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
+import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -44,6 +45,7 @@ import org.septa.android.app.models.servicemodels.AlertModel;
 
 import java.util.Date;
 
+import de.keyboardsurfer.android.widget.crouton.Configuration;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
@@ -343,13 +345,12 @@ public class RealtimeMenuFragment extends Fragment implements
 
     @Override
     public void alertsDidUpdate() {
-        Date lastUpdate = SharedPreferencesManager.getInstance().getLastAlertUpdate();
         AlertModel alert = AlertManager.getInstance().getGlobalAlert();
-        if (alert != null && !alert.getCurrentMessage().isEmpty() && alert.getLastUpdate() != null && (lastUpdate == null || alert.getLastUpdate().compareTo(lastUpdate) != 0)) {
-            Crouton.makeText(getActivity(), alert.getCurrentMessage(), Style.ALERT).show();
-
-            //save the date of the last retrieved alert for comparison on future requests
-            SharedPreferencesManager.getInstance().setLastAlertUpdate(alert.getLastUpdate());
+        if (alert != null && !alert.getCurrentMessage().isEmpty()) {
+            Crouton crouton = Crouton.makeText(getActivity(), Html.fromHtml(alert.getCurrentMessage()),
+                    Style.ALERT, Configuration.DURATION_LONG);
+            crouton.setConfiguration(new Configuration.Builder().setDuration(Configuration.DURATION_SHORT).build());
+            crouton.show();
         }
 
     }

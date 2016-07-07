@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 public class SchedulesDataModel {
     private static final String TAG = SchedulesDataModel.class.getName();
@@ -203,14 +204,14 @@ public class SchedulesDataModel {
         filteredTripsList.clear();
 
         int nowTime = -1;
-        int serviceId = -1;
+        List<Integer> serviceIds = new ArrayList<Integer>();
 
         SEPTADatabase septaDatabase = new SEPTADatabase(context);
         SQLiteDatabase database = septaDatabase.getReadableDatabase();
 
         switch(tab) {
             case 0: { // Now
-                serviceId = DatabaseManager.serviceIdForDayOfWeek(database,
+                serviceIds = DatabaseManager.serviceIdsForDayOfWeek(database,
                         CalendarDateUtilities.getDayOfTheWeek(), route.getRouteType());
                 nowTime = CalendarDateUtilities.getNowTimeFormatted();
                 // Check for holiday
@@ -221,18 +222,19 @@ public class SchedulesDataModel {
                     tempServiceId = DatabaseManager.isTodayBusHoliday(database, new Date());
                 }
                 if(tempServiceId != -1) {
+                    serviceIds.clear();
+                    serviceIds.add(tempServiceId);
                     Toast.makeText(context, "Holiday", Toast.LENGTH_SHORT).show();
                 }
-                serviceId = (tempServiceId != -1) ? tempServiceId : serviceId;
                 break;
             }
             case 1: {  // Weekday
-                serviceId = DatabaseManager.serviceIdForDayOfWeek(database,
+                serviceIds = DatabaseManager.serviceIdsForDayOfWeek(database,
                         Calendar.FRIDAY, route.getRouteType());
                 break;
             }
             case 2: {  // Saturday
-                serviceId = DatabaseManager.serviceIdForDayOfWeek(database,
+                serviceIds = DatabaseManager.serviceIdsForDayOfWeek(database,
                         Calendar.SATURDAY, route.getRouteType());
                 // Check for holiday
                 int tempServiceId;
@@ -244,13 +246,14 @@ public class SchedulesDataModel {
                             DatabaseManager.nearestDayOfWeek(Calendar.SATURDAY));
                 }
                 if(tempServiceId != -1) {
+                    serviceIds.clear();
+                    serviceIds.add(tempServiceId);
                     Toast.makeText(context, "Holiday", Toast.LENGTH_SHORT).show();
                 }
-                serviceId = (tempServiceId != -1) ? tempServiceId : serviceId;
                 break;
             }
             case 3: {  // Sunday
-                serviceId = DatabaseManager.serviceIdForDayOfWeek(database,
+                serviceIds = DatabaseManager.serviceIdsForDayOfWeek(database,
                         Calendar.SUNDAY, route.getRouteType());
                 // Check for holiday
                 int tempServiceId;
@@ -262,15 +265,16 @@ public class SchedulesDataModel {
                             DatabaseManager.nearestDayOfWeek(Calendar.SUNDAY));
                 }
                 if(tempServiceId != -1) {
+                    serviceIds.clear();
+                    serviceIds.add(tempServiceId);
                     Toast.makeText(context, "Holiday", Toast.LENGTH_SHORT).show();
                 }
-                serviceId = (tempServiceId != -1) ? tempServiceId : serviceId;
                 break;
             }
         }
 
         for (TripObject trip : masterTripsList) {
-            if (trip.getServiceId().intValue() == serviceId &&
+            if (serviceIds.contains(trip.getServiceId()) &&
                (trip.getStartTime().intValue() > nowTime) &&
                (trip.getDirectionId().intValue() == getCurrentDisplayDirection())
                 && !filteredTripsList.contains(trip)) {

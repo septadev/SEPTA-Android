@@ -1,6 +1,5 @@
 package org.septa.android.app.managers;
 
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
@@ -10,9 +9,11 @@ import org.septa.android.app.models.RouteTypes;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 /**
  * Future handler of database interactions
@@ -83,13 +84,15 @@ public class DatabaseManager {
     }
 
     /**
-     * Retrieves the service id for the specified day of the week
+     * Retrieves the service ids for the specified day of the week
      *
      * @param database database object
      * @param day day of the week constant from the Calendar class
-     * @return service id
+     * @param routeType route type
+     * @return
      */
-    public static int serviceIdForDayOfWeek(SQLiteDatabase database, int day, RouteTypes routeType) {
+    public static List<Integer> serviceIdsForDayOfWeek(SQLiteDatabase database, int day, RouteTypes routeType) {
+        List<Integer> serviceIds = new ArrayList<Integer>();
         // Default to Friday(weekday)
         int dbDay = 2;
         switch (day) {
@@ -127,14 +130,16 @@ public class DatabaseManager {
         try {
             cursor = database.rawQuery(query, null);
             if(cursor != null && cursor.moveToFirst()) {
-                serviceId = cursor.getInt(0);
+                do {
+                    serviceIds.add(cursor.getInt(0));
+                } while(cursor.moveToNext());
                 cursor.close();
             }
         } catch (Exception e) {
-            Log.e(TAG, "Error fetching service id", e);
+            Log.e(TAG, "Error fetching service ids", e);
         }
 
-        return serviceId;
+        return serviceIds;
     }
 
     /**

@@ -14,8 +14,10 @@ import org.septa.android.app.databases.SEPTADatabase;
 import org.septa.android.app.managers.DatabaseManager;
 import org.septa.android.app.utilities.CalendarDateUtilities;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 
 public class RouteModel implements Comparable<RouteModel> {
     private static final String TAG = RouteModel.class.getName();
@@ -50,9 +52,15 @@ public class RouteModel implements Comparable<RouteModel> {
         this.hours = new HashMap<String, MinMaxHoursModel>();
     }
 
-    public MinMaxHoursModel getMinMaxHoursForServiceId(String serviceId) {
-
-        return hours.get(serviceId);
+    public List<MinMaxHoursModel> getMinMaxHoursForServiceIds(List<Integer> serviceIds) {
+        List<MinMaxHoursModel> models = new ArrayList<MinMaxHoursModel>();
+        for (Integer serviceId : serviceIds) {
+            MinMaxHoursModel model = hours.get(serviceId.toString());
+            if (model != null) {
+                models.add(model);
+            }
+        }
+        return models;
     }
 
     public void addMinMaxHoursToRoute(String serviceId, MinMaxHoursModel minMaxHours) {
@@ -179,43 +187,51 @@ public class RouteModel implements Comparable<RouteModel> {
 
     public boolean isInService(Context context) {
         Calendar calendar = Calendar.getInstance();
-        int serviceIdForToday = DatabaseManager.serviceIdForDayOfWeek(new SEPTADatabase(context).getReadableDatabase(),
+        List<Integer> serviceIds = DatabaseManager.serviceIdsForDayOfWeek(new SEPTADatabase(context).getReadableDatabase(),
                 calendar.get(Calendar.DAY_OF_WEEK), RouteTypes.values()[routeType.intValue()]);
-        MinMaxHoursModel minMaxHoursModelForToday = getMinMaxHoursForServiceId(String.valueOf(serviceIdForToday));
-
-        if (minMaxHoursModelForToday == null) {
-            Log.d(TAG, "the minMaxHoursModelForToday is null, we must not have this for this service Id of: "+serviceIdForToday);
-            return false;
-        }
+        List<MinMaxHoursModel> models = getMinMaxHoursForServiceIds(serviceIds);
 
         int nowTime = CalendarDateUtilities.getNowTimeFormatted();
 
-        if (minMaxHoursModelForToday.inMinMaxRange(nowTime)) {
-            Log.d(TAG, "we are in the range, thus in service");
-            return true;
-        } else {
-            // we must check if we are actually in the range of yesterday's service
-            calendar.add(Calendar.DATE, -1);
-            int serviceIdForYesterday = DatabaseManager.serviceIdForDayOfWeek(new SEPTADatabase(context).getReadableDatabase(),
-                    calendar.get(Calendar.DAY_OF_WEEK), RouteTypes.values()[routeType.intValue()]);
-            MinMaxHoursModel minMaxHoursModelForYesterday = getMinMaxHoursForServiceId(String.valueOf(serviceIdForYesterday));
+        if (models.isEmpty()) {
+            Log.d(TAG, "the minMaxHoursModelForToday is empty, we must not have this for this service Id");
+            return false;
+        }
 
-            if (minMaxHoursModelForYesterday == null) {
-                Log.d(TAG, "the minMaxHoursModelForYesterday is null, we must not have this for this service Id of: "+serviceIdForYesterday);
-                return false;
-            }
-
-            // since we are winding the day back we need to add 24 hours to our nowTime
-            nowTime+=2400;
-
-            if (minMaxHoursModelForToday.inMinMaxRange(nowTime)) {
-                Log.d(TAG, "we are in the range for yesterday's service, thus in service");
-                return true;
-            } else {
-                Log.d(TAG, "even after winding the clock back 1 day, we are still not in service, return false");
-                return false;
+        // Check if in range of today's schedule
+        if (!models.isEmpty()) {
+            for (MinMaxHoursModel model : models) {
+                if (model.inMinMaxRange(nowTime)) {
+                    return true;
+                }
             }
         }
+
+        // we must check if we are actually in the range of yesterday's service
+        calendar.add(Calendar.DATE, -1);
+        serviceIds = DatabaseManager.serviceIdsForDayOfWeek(new SEPTADatabase(context).getReadableDatabase(),
+                calendar.get(Calendar.DAY_OF_WEEK), RouteTypes.values()[routeType.intValue()]);
+        models = getMinMaxHoursForServiceIds(serviceIds);
+
+        if (models.isEmpty()) {
+            Log.d(TAG, "the minMaxHoursModelForYesterday is null, we must not have this for this service Id");
+            return false;
+        }
+
+        // since we are winding the day back we need to add 24 hours to our nowTime
+        nowTime+=2400;
+
+        // Check if in range of today's schedule
+        if (!models.isEmpty()) {
+            for (MinMaxHoursModel model : models) {
+                if (model.inMinMaxRange(nowTime)) {
+                    return true;
+                }
+            }
+        }
+
+        // Even after checking yesterday's schedule still not in service
+        return false;
     }
 
     public void setInService(boolean inService) {

@@ -40,10 +40,7 @@ import org.septa.android.app.events.model.Message;
 import org.septa.android.app.events.network.EventsNetworkService;
 import org.septa.android.app.events.util.PopeUtils;
 import org.septa.android.app.managers.AlertManager;
-import org.septa.android.app.managers.SharedPreferencesManager;
 import org.septa.android.app.models.servicemodels.AlertModel;
-
-import java.util.Date;
 
 import de.keyboardsurfer.android.widget.crouton.Configuration;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
@@ -55,6 +52,7 @@ public class RealtimeMenuFragment extends Fragment implements
     private static final String TAG = RealtimeMenuFragment.class.getName();
 
     private static final String KEY_ARG_MESSAGE_JSON = "KEY_ARG_MESSAGE_JSON";
+    private static final String URI_PASS_PERKS = "http://www.iseptaphilly.com/perks";
 
     private ImageView mFindNearestLocationImage;
     private ImageView mNextToArriveImage;
@@ -62,6 +60,7 @@ public class RealtimeMenuFragment extends Fragment implements
     private ImageView mTipsImage;
     private ImageView mTrainViewImage;
     private ImageView mTransitViewImage;
+    private ImageView mPassPerksImageView;
     private TextView mSpecialEventMessage;
 
     private boolean isPopeVisitingToday;
@@ -188,6 +187,7 @@ public class RealtimeMenuFragment extends Fragment implements
         mTipsImage = (ImageView) view.findViewById(R.id.realtime_menu_tips_image_view);
         mTrainViewImage = (ImageView) view.findViewById(R.id.realtime_menu_trainview_image_view);
         mTransitViewImage = (ImageView) view.findViewById(R.id.realtime_menu_transitview_image_view);
+        mPassPerksImageView = (ImageView) view.findViewById(R.id.realtime_menu_pass_perks_image_view);
 
         isPopeVisitingToday = PopeUtils.isPopeVisitingToday(getActivity());
 
@@ -205,6 +205,7 @@ public class RealtimeMenuFragment extends Fragment implements
         mTipsImage.setOnClickListener(this);
         mTrainViewImage.setOnClickListener(this);
         mTransitViewImage.setOnClickListener(this);
+        mPassPerksImageView.setOnClickListener(this);
 
         // If this is the first creation, default state variables
         if (savedInstanceState == null) {
@@ -454,6 +455,11 @@ public class RealtimeMenuFragment extends Fragment implements
                 Uri uri = Uri.parse(!TextUtils.isEmpty(mSpecialEventUrl) ? mSpecialEventUrl : EventsConstants.VALUE_POPE_VISIT_DEFAULT_URL);
                 intent = new Intent(Intent.ACTION_VIEW, uri);
 
+                break;
+
+            // Pass perks
+            case R.id.realtime_menu_pass_perks_image_view:
+                intent = new Intent(Intent.ACTION_VIEW, Uri.parse(URI_PASS_PERKS));
                 break;
 
             default:

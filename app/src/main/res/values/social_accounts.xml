@@ -11,10 +11,10 @@
     <string name="facebook">facebook</string>
     <string name="twitter">twitter</string>
 
-    <string name="septa_facebook_app_uri">fb://profile/174505962565714</string>
+    <string name="septa_facebook_app_uri">fb://page/174505962565714</string>
     <string name="septa_facebook_http_uri">https://www.facebook.com/septaphilly</string>
 
-    <string name="septa_twitter_app_uri">twitter://user?screen_name=@SEPTA_SOCIAL</string>
-    <string name="septa_twitter_http_uri">https://mobile.twitter.com/#!/@SEPTA_SOCIAL</string>
+    <string name="septa_twitter_app_uri">https://twitter.com/SEPTA_SOCIAL</string>
+    <string name="septa_twitter_http_uri">https://twitter.com/SEPTA_SOCIAL</string>
 
 </resources>

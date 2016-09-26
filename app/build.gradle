@@ -60,8 +60,8 @@ android {
     defaultConfig {
         minSdkVersion 10
         targetSdkVersion 19
-        versionCode 150
-        versionName '1.3.50'
+        versionCode 151
+        versionName '1.3.51'
         project.ext.set("archivesBaseName", project.parent.name + "-v" + versionName + "-b" + versionCode)
     }
     sourceSets {

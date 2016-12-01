@@ -121,4 +121,9 @@
     <string name="realtime_menu_item_special_events">Special Events</string>
     <string name="special_events_webview_url">http://www.septa.org/service/special-events-mobile.html</string>
 
+    <!-- Transit View Map -->
+    <string name="transit_view_map_info_window_title">Vehicle: %1$d (updated: %2$d min)</string>
+    <string name="transit_view_map_info_window_block">Block ID: %1$d</string>
+    <string name="transit_view_map_info_window_destination">Destination: %1$s</string>
+
 </resources>

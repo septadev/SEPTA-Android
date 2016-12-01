@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,6 +22,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -53,7 +55,8 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsActionBarActivity {
+public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsActionBarActivity
+        implements GoogleMap.InfoWindowAdapter {
     public static final String TAG = TransitViewMapAndRouteListActionBarActivity.class.getName();
     public static final int MAP_PADDING = 20;
 
@@ -158,6 +161,8 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
                         }
                     }
                 }
+                // Set map info window adapter
+                mMap.setInfoWindowAdapter(this);
                 this.fetchTransitViewDataForRoute(routeShortName);
             } catch (NumberFormatException e) {
                 Log.e(TAG, String.format("Error parsing KML for route:%s" ,routeShortName),e);
@@ -373,6 +378,7 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
                 }
                 markerList.clear();
 
+                int count = 0;
                 for (TransitViewVehicleModel transitViewVehicle: transitViewVehicleArrayList) {
                     BitmapDescriptor transitIcon;
 
@@ -394,11 +400,11 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
                     if (mMap != null) {
                         Marker marker = mMap.addMarker(new MarkerOptions()
                                 .position(transitViewVehicle.getLatLng())
-                                .title("Vehicle: " + transitViewVehicle.getVehicleId() + " (updated: "+transitViewVehicle.getOffset()+" min)")
                                 .icon(transitIcon)
-                                .snippet("Destination: " + transitViewVehicle.getDestination()));
+                                .title(Integer.toString(count))); // Title used to store index of TransitViewVehicleModel
                         markerList.add(marker);
                     }
+                    count++;
                 }
 
                 Collections.sort(transitViewVehicleArrayList);
@@ -421,5 +427,40 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
         TransitViewServiceProxy transitViewServiceProxy = new TransitViewServiceProxy();
         setProgressBarIndeterminateVisibility(Boolean.TRUE);
         transitViewServiceProxy.getTransitViewForRoute(routeShortName, callback);
+    }
+
+    @Override
+    public View getInfoWindow(Marker marker) {
+        return null;
+    }
+
+    @Override
+    public View getInfoContents(Marker marker) {
+        if (marker != null && !TextUtils.isEmpty(marker.getTitle())) {
+            int index = 0;
+            try {
+                index = Integer.parseInt(marker.getTitle());
+            } catch (NumberFormatException e) {
+                Log.e(TAG, "Error parsing transit map marker info window position", e);
+                return null;
+            }
+            TransitViewVehicleModel model = transitViewVehicleArrayList.get(index);
+            if (model != null) {
+                View view = getLayoutInflater().inflate(R.layout.transit_view_map_info_window_content, null, false);
+                TextView title = (TextView) view.findViewById(R.id.transit_view_map_info_window_content_title);
+                TextView block = (TextView) view.findViewById(R.id.transit_view_map_info_window_content_block);
+                TextView destination = (TextView) view.findViewById(R.id.transit_view_map_info_window_content_destination);
+
+                title.setText(getString(R.string.transit_view_map_info_window_title,
+                        model.getVehicleId(), model.getOffset()));
+                block.setText(getString(R.string.transit_view_map_info_window_block,
+                        model.getBlockId()));
+                destination.setText(getString(R.string.transit_view_map_info_window_destination,
+                        model.getDestination()));
+                return view;
+            }
+        }
+
+        return null;
     }
 }

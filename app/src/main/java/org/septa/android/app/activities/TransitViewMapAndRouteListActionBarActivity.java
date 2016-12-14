@@ -362,7 +362,10 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
             public void success(Object o, Response response) {
                 setProgressBarIndeterminateVisibility(Boolean.FALSE);
 
-                transitViewVehicleArrayList = ((TransitViewModel)o).getActiveVehicleModelList();
+                transitViewVehicleArrayList = ((TransitViewModel)o).getVehicleModelList();
+                if (transitViewVehicleArrayList == null) {
+                    transitViewVehicleArrayList = new ArrayList<TransitViewVehicleModel>();
+                }
 
                 TransitViewRouteViewListFragment listFragment1 = (TransitViewRouteViewListFragment) getSupportFragmentManager().findFragmentById(R.id.transitview_list_fragment);
 
@@ -390,10 +393,12 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
 //                        break;
 //                    }
 
-                    if (transitViewVehicle.isSouthBound() || transitViewVehicle.isEastBound()) {
+                    if (transitViewVehicle.isNorthBound() || transitViewVehicle.isEastBound()) {
                         transitIcon = BitmapDescriptorFactory.fromResource(R.drawable.ic_transitview_bus_blue);
-                    } else {
+                    } else if (transitViewVehicle.isSouthBound() || transitViewVehicle.isWestBound()) {
                         transitIcon = BitmapDescriptorFactory.fromResource(R.drawable.ic_transitview_bus_red);
+                    } else {
+                        transitIcon = BitmapDescriptorFactory.fromResource(R.drawable.ic_transitview_bus_orange);
                     }
 
                     // check to make sure that mMap is not null

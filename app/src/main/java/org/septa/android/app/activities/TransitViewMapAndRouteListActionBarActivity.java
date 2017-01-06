@@ -13,6 +13,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -77,6 +78,7 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
     private LatLng currentLocation = null;
 
     private List<TransitViewVehicleModel> transitViewVehicleArrayList = new ArrayList<TransitViewVehicleModel>();
+    SparseArray<TransitViewVehicleModel> transitViewVehicleModelSparseArray = new SparseArray<TransitViewVehicleModel>();
 
     private LatLngBounds.Builder latLngBuilder;
 
@@ -365,6 +367,14 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
                 transitViewVehicleArrayList = ((TransitViewModel)o).getVehicleModelList();
                 if (transitViewVehicleArrayList == null) {
                     transitViewVehicleArrayList = new ArrayList<TransitViewVehicleModel>();
+                    transitViewVehicleModelSparseArray = new SparseArray<TransitViewVehicleModel>();
+                } else {
+                    transitViewVehicleModelSparseArray.clear();
+                    for (TransitViewVehicleModel transitViewVehicleModel : transitViewVehicleArrayList) {
+                        if (transitViewVehicleModel != null) {
+                            transitViewVehicleModelSparseArray.put(transitViewVehicleModel.getVehicleId(), transitViewVehicleModel);
+                        }
+                    }
                 }
 
                 TransitViewRouteViewListFragment listFragment1 = (TransitViewRouteViewListFragment) getSupportFragmentManager().findFragmentById(R.id.transitview_list_fragment);
@@ -381,7 +391,6 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
                 }
                 markerList.clear();
 
-                int count = 0;
                 for (TransitViewVehicleModel transitViewVehicle: transitViewVehicleArrayList) {
                     BitmapDescriptor transitIcon;
 
@@ -406,10 +415,9 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
                         Marker marker = mMap.addMarker(new MarkerOptions()
                                 .position(transitViewVehicle.getLatLng())
                                 .icon(transitIcon)
-                                .title(Integer.toString(count))); // Title used to store index of TransitViewVehicleModel
+                                .title(Integer.toString(transitViewVehicle.getVehicleId()))); // Title used to store index of TransitViewVehicleModel
                         markerList.add(marker);
                     }
-                    count++;
                 }
 
                 Collections.sort(transitViewVehicleArrayList);
@@ -449,7 +457,7 @@ public class TransitViewMapAndRouteListActionBarActivity extends BaseAnalyticsAc
                 Log.e(TAG, "Error parsing transit map marker info window position", e);
                 return null;
             }
-            TransitViewVehicleModel model = transitViewVehicleArrayList.get(index);
+            TransitViewVehicleModel model = transitViewVehicleModelSparseArray.get(index);
             if (model != null) {
                 View view = getLayoutInflater().inflate(R.layout.transit_view_map_info_window_content, null, false);
                 TextView title = (TextView) view.findViewById(R.id.transit_view_map_info_window_content_title);

@@ -158,14 +158,6 @@ public class MainTabbarActivity extends BaseAnalyticsActionBarActivity implement
                 startActivity(intent);
 
                 return true;
-
-            case R.id.menuoption_leavefeedback:
-                Log.d(TAG, "selected the leavefeedback menu option");
-                intent = new Intent(this, AppFeedbackFormActivity.class);
-                intent.putExtra(getString(R.string.actionbar_titletext_key), "| App Feedback");
-                startActivity(intent);
-
-                return true;
         }
 
         return super.onOptionsItemSelected(item);

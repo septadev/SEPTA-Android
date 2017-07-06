@@ -35,13 +35,13 @@
 
     <!-- for the connect tab and fare Information -->
     <string-array name="connect_fares_listview_item_texts">
-        <item>Transit Cash Fare: $2.25*\n*Except Bus Routes 123, 124, 125, &amp; 150 and Norristown High Speed Line</item>
-        <item>Tokens: $1.80\nTransfer: $1.00</item>
-        <item>Weekly TransPass: $24.00\nMonthly TransPass: $91.00</item>
+        <item>Transit Cash Fare: $2.50 \n SEPTA Key Transit Quick Trip: $2.50</item>
+        <item>Tokens: 2 pack $4.00\nTransfer - paper: $1.00</item>
+        <item>Weekly TransPass: $25.50\nMonthly TransPass: $96.00</item>
         <item>Weekly and Monthly TrailPasses: Price varies according to Zone</item>
-        <item>Weekly Cross County Pass: $29.00\nMonthly Cross County Pass: $109.00</item>
-        <item>One Day Convenience Pass: $8.00 -good for 8 rides on any Transit route (not valid on Regional Rail)</item>
-        <item>One Day Individual Independence Pass: $12.00\nOne Day Family Independence Pass: $29.00</item>
+        <item>Weekly Cross County Pass: $30.75\nMonthly Cross County Pass: $115.00</item>
+        <item>One Day Convenience Pass: $9.00 -good for 8 rides on any Transit route (not valid on Regional Rail)</item>
+        <item>One Day Individual Independence Pass: $13.00\nOne Day Family Independence Pass: $30.00</item>
     </string-array>
 
     <string-array name="connect_fares_listview_item_image_suffixes">

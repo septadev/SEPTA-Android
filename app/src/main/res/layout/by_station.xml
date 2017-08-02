@@ -1,0 +1,44 @@
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/station_coordinator"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v4.view.ViewPager xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/station_container"
+            android:layout_width="match_parent"
+            android:layout_height="400dp"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <android.support.design.widget.TabLayout
+                android:id="@+id/station_picker_tab"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top"
+                android:background="@color/colorPrimary"
+                app:tabIndicatorColor="@android:color/darker_gray"
+                app:tabSelectedTextColor="@android:color/darker_gray"
+                app:tabTextColor="@android:color/white" />
+        </android.support.v4.view.ViewPager>
+
+        <Button
+            android:id="@+id/select_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/station_container"
+            android:layout_alignParentRight="true"
+            android:text="SELECT" />
+
+        <Button
+            android:id="@+id/cancel_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/station_container"
+            android:layout_toLeftOf="@id/select_button"
+            android:text="CANCEL"/>
+    </RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>
+

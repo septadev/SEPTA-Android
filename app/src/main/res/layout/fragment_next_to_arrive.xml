@@ -6,7 +6,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="app.android.septa.org.septa_android.NextToArrive$PlaceholderFragment">
+    tools:context="org.septa.android.app.nextarrive.NextToArrive$PlaceholderFragment">
 
     <TextView
         android:id="@+id/section_label"

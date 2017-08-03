@@ -18,7 +18,9 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import org.septa.android.app.R;
-import org.septa.android.app.nextarrive.org.septa.android.app.support.TabActivityHandler;
+import org.septa.android.app.domain.StopModel;
+import org.septa.android.app.support.Consumer;
+import org.septa.android.app.support.TabActivityHandler;
 
 
 /**
@@ -33,9 +35,15 @@ public class RailStationPickerFragment extends DialogFragment implements Navigat
     TabActivityHandler tabActivityHandlers[];
     private EditText target;
 
+    int selectedTab = 0;
+
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
+
+    private StopModel currentStop;
+
+    private Consumer<StopModel> consumer;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -45,8 +53,18 @@ public class RailStationPickerFragment extends DialogFragment implements Navigat
         View dialogView = getActivity().getLayoutInflater().inflate(R.layout.by_station, null);
 
         tabActivityHandlers = new TabActivityHandler[2];
-        tabActivityHandlers[0] = new ByStationTabActivityHandler("BY STATION", target);
-        tabActivityHandlers[1] = new ByAddressTabActivityHandler("BY ADDRESS", target);
+        tabActivityHandlers[0] = new ByStationTabActivityHandler("BY STATION", new Consumer<StopModel>() {
+            @Override
+            public void accept(StopModel var1) {
+                currentStop = var1;
+            }
+        });
+        tabActivityHandlers[1] = new ByAddressTabActivityHandler("BY ADDRESS", new Consumer<StopModel>() {
+            @Override
+            public void accept(StopModel var1) {
+                currentStop = var1;
+            }
+        });
 
         mSectionsPagerAdapter = new RailStationPickerFragment.SectionsPagerAdapter(getChildFragmentManager());
 
@@ -56,11 +74,30 @@ public class RailStationPickerFragment extends DialogFragment implements Navigat
 
         TabLayout tabLayout = (TabLayout) dialogView.findViewById(R.id.station_picker_tab);
         tabLayout.setupWithViewPager(mViewPager);
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                selectedTab = tab.getPosition();
+                Log.d(TAG, "onTabSelected");
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+                Log.d(TAG, "onTabReselected");
+                selectedTab = tab.getPosition();
+            }
+        });
 
         Button cancel = (Button) dialogView.findViewById(R.id.cancel_button);
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Log.d(TAG, "Current Possition is:" + selectedTab);
                 getDialog().dismiss();
             }
         });
@@ -69,6 +106,13 @@ public class RailStationPickerFragment extends DialogFragment implements Navigat
         select.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Log.d(TAG, "Current Possition is:" + selectedTab);
+
+                if (currentStop != null)
+                    Log.d(TAG, "Station is:" + currentStop.getStopName());
+                else
+                    Log.d(TAG, "No Station");
+                consumer.accept(currentStop);
                 getDialog().dismiss();
             }
         });
@@ -83,8 +127,8 @@ public class RailStationPickerFragment extends DialogFragment implements Navigat
         return false;
     }
 
-    public void setTarget(EditText target) {
-        this.target = target;
+    public void setConsumer(Consumer<StopModel> consumer) {
+        this.consumer = consumer;
     }
 
 
@@ -112,9 +156,12 @@ public class RailStationPickerFragment extends DialogFragment implements Navigat
         public CharSequence getPageTitle(int position) {
             return tabActivityHandlers[position].getTabTitle();
         }
+
     }
 
-    public static RailStationPickerFragment newInstance() {
-        return new RailStationPickerFragment();
+    public static RailStationPickerFragment newInstance(Consumer<StopModel> consumer) {
+        RailStationPickerFragment fragment = new RailStationPickerFragment();
+        fragment.setConsumer(consumer);
+        return fragment;
     }
 }

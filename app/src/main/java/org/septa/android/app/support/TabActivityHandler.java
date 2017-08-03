@@ -1,4 +1,4 @@
-package org.septa.android.app.nextarrive.org.septa.android.app.support;
+package org.septa.android.app.support;
 
 import android.support.v4.app.Fragment;
 

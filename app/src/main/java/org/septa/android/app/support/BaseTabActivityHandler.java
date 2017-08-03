@@ -1,4 +1,4 @@
-package org.septa.android.app.nextarrive.org.septa.android.app.support;
+package org.septa.android.app.support;
 
 /**
  * Created by jkampf on 7/29/17.

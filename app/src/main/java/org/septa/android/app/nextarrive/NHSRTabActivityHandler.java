@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.septa.android.app.R;
-import org.septa.android.app.nextarrive.org.septa.android.app.support.BaseTabActivityHandler;
+import org.septa.android.app.support.BaseTabActivityHandler;
 
 
 /**

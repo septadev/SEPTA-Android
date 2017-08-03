@@ -44,7 +44,7 @@ public class DatabaseManager {
 
     public List<StopModel> getRailStops(Context context) {
         List<StopModel> railStops = new ArrayList<>();
-        String queryString = "SELECT stop_id, stop_name, wheelchair_boarding, stop_lat, stop_lon FROM stops_rail ORDER BY stop_name";
+        String queryString = "SELECT stop_id, stop_name, wheelchair_boarding, stop_lat, stop_lon, rowid AS _id FROM stops_rail ORDER BY stop_name";
         Cursor cursor = getDatabase(context).rawQuery(queryString, null);
         if (cursor != null) {
             if (cursor.moveToFirst()) {

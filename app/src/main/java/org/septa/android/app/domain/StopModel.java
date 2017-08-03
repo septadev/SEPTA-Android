@@ -7,7 +7,9 @@
 
 package org.septa.android.app.domain;
 
-public class StopModel implements Comparable<StopModel> {
+import java.io.Serializable;
+
+public class StopModel implements Comparable<StopModel>, Serializable {
 
     private String stopId;
     private String stopName;

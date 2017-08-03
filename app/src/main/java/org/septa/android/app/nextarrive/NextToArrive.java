@@ -16,7 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import org.septa.android.app.R;
-import org.septa.android.app.nextarrive.org.septa.android.app.support.TabActivityHandler;
+import org.septa.android.app.support.TabActivityHandler;
 
 
 public class NextToArrive extends AppCompatActivity

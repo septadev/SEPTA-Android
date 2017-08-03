@@ -8,7 +8,9 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import org.septa.android.app.R;
-import org.septa.android.app.nextarrive.org.septa.android.app.support.BaseTabActivityHandler;
+import org.septa.android.app.domain.StopModel;
+import org.septa.android.app.support.BaseTabActivityHandler;
+import org.septa.android.app.support.Consumer;
 
 /**
  * Created by jkampf on 7/30/17.
@@ -16,7 +18,7 @@ import org.septa.android.app.nextarrive.org.septa.android.app.support.BaseTabAct
 
 class ByAddressTabActivityHandler extends BaseTabActivityHandler {
 
-    public ByAddressTabActivityHandler(String s, EditText target) {
+    public ByAddressTabActivityHandler(String s, Consumer<StopModel> consumer) {
         super(s);
     }
 

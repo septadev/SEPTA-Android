@@ -15,7 +15,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import app.android.septa.org.septa_android.R;
+import org.septa.android.app.R;
 import org.septa.android.app.nextarrive.org.septa.android.app.support.TabActivityHandler;
 
 

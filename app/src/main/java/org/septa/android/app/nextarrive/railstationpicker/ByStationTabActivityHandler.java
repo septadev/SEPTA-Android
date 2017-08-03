@@ -11,7 +11,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import app.android.septa.org.septa_android.R;
+import org.septa.android.app.R;
 import org.septa.android.app.nextarrive.org.septa.android.app.support.BaseTabActivityHandler;
 
 

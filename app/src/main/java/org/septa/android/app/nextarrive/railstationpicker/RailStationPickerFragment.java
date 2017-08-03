@@ -17,7 +17,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
-import app.android.septa.org.septa_android.R;
+import org.septa.android.app.R;
 import org.septa.android.app.nextarrive.org.septa.android.app.support.TabActivityHandler;
 
 

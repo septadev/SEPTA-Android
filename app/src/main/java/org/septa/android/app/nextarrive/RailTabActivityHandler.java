@@ -1,7 +1,9 @@
 package org.septa.android.app.nextarrive;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,7 +15,10 @@ import android.widget.EditText;
 import org.septa.android.app.R;
 import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.nextarrive.railstationpicker.RailStationPickerFragment;
+import org.septa.android.app.nextarrive.railstationpicker.RailStationQuery;
+import org.septa.android.app.nextarrive.railstationpicker.RailStationResults;
 import org.septa.android.app.support.BaseTabActivityHandler;
+import org.septa.android.app.support.BiConsumer;
 import org.septa.android.app.support.Consumer;
 
 
@@ -21,7 +26,7 @@ import org.septa.android.app.support.Consumer;
  * Created by jkampf on 7/29/17.
  */
 
-public class RailTabActivityHandler extends BaseTabActivityHandler  {
+public class RailTabActivityHandler extends BaseTabActivityHandler {
     private static final String TAG = "RailTabActivityHandler";
 
     public RailTabActivityHandler(String title) {
@@ -36,75 +41,32 @@ public class RailTabActivityHandler extends BaseTabActivityHandler  {
 
 
     public static class PlaceholderFragment extends Fragment {
+        public static final String RAIL_QUERY = "RailQuery";
+        public static final String RAIL_RESULTS = "RailResults";
+        private FragmentManager manager;
+
         public static PlaceholderFragment newInstance() {
             PlaceholderFragment fragment = new PlaceholderFragment();
             return fragment;
         }
 
-        private StopModel startingStation;
-        private StopModel endingStation;
-
+        @Nullable
         @Override
-        public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
-                                 Bundle savedInstanceState) {
-            final View rootView = inflater.inflate(R.layout.rail_next_to_arrive, container, false);
+        public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+            View fragementView = inflater.inflate(R.layout.fragment_holder, container, false);
+            manager = getChildFragmentManager();
 
-            final EditText startingStationEditText = (EditText) rootView.findViewById(R.id.starting_rail_station);
-            final EditText endingStationEditText = (EditText) rootView.findViewById(R.id.ending_rail_station);
+            manager.beginTransaction().add(R.id.fragment_content, RailStationQuery.newInstance(new BiConsumer<StopModel, StopModel>() {
+                @Override
+                public void accept(StopModel var1, StopModel var2) {
+                    manager.beginTransaction().replace(R.id.fragment_content, RailStationResults.newInstance(var1, var2), RAIL_RESULTS).addToBackStack(null).commit();
 
-            startingStationEditText.setOnTouchListener(new StationPickerOnTouchListener(this, new Consumer<StopModel>() {
-                        @Override
-                        public void accept(StopModel var1) {
-                            startingStation = var1;
-                            startingStationEditText.setText(var1.getStopName());
-                        }
-                    })
-            );
-
-            endingStationEditText.setOnTouchListener(new StationPickerOnTouchListener(this, new Consumer<StopModel>() {
-                        @Override
-                        public void accept(StopModel var1) {
-                            endingStation = var1;
-                            endingStationEditText.setText(var1.getStopName());
-                        }
-                    })
-            );
-
-            return rootView;
-        }
-
-        public static class StationPickerOnTouchListener implements View.OnTouchListener {
-            private Fragment parent;
-            private Consumer<StopModel> consumer;
-
-            StationPickerOnTouchListener(Fragment parent, Consumer<StopModel> consumer) {
-                this.parent = parent;
-                this.consumer = consumer;
-            }
-
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                Log.d(TAG, "onTouch");
-                int action = motionEvent.getActionMasked();
-                if (action == MotionEvent.ACTION_UP) {
-                    Log.d(TAG,
-                            parent.getActivity().getClass().getCanonicalName());
-
-                    FragmentTransaction ft = parent.getFragmentManager().beginTransaction();
-                    Fragment prev = parent.getFragmentManager().findFragmentByTag("dialog");
-                    if (prev != null) {
-                        ft.remove(prev);
-                    }
-                    ft.addToBackStack(null);
-
-                    // Create and show the dialog.
-                    RailStationPickerFragment newFragment = RailStationPickerFragment.newInstance(consumer);
-                    newFragment.show(ft, "dialog");
-
-                    return true;
                 }
-                return false;
-            }
+            }), RAIL_QUERY).addToBackStack(null).commit();
+
+            return fragementView;
         }
     }
+
+
 }

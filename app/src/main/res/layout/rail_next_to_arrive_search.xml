@@ -46,6 +46,7 @@
         android:maxLines="1" />
 
     <Button
+        android:id="@+id/view_trains_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="30dp"

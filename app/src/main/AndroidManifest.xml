@@ -14,7 +14,7 @@
         android:theme="@style/AppTheme">
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCJEOyZm0sZBldxlGxk3yGQItKBlx5XlAA" />
+            android:value="AIzaSyA3wNnR0R29Db7QOoDc8TqXPTvYEc0heiA" />
 
         <activity
             android:name="org.septa.android.app.nextarrive.NextToArrive"

@@ -1,4 +1,30 @@
+// ------------------
+//defiinition entries
+// ------------------
+def getGitHash = { ->
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        commandLine 'git', 'rev-parse', '--short', 'HEAD'
+        standardOutput = stdout
+    }
+    return '-'+stdout.toString().trim()
+}
+
+def getSprintRound = { ->
+    if (project.hasProperty("SPRINT_ROUND")) {
+        return project.property("SPRINT_ROUND")
+    } else {
+        return ''
+    }
+}
+
 apply plugin: 'com.android.application'
+
+// check that the SEPTA.signing gradle property exists and that its value is the filename to a file
+//  that has the extension of gradle
+if (project.hasProperty("SEPTA.signing") && file(project.property("SEPTA.signing") + ".gradle").exists()) {
+    apply from: project.property("SEPTA.signing") + ".gradle"
+}
 
 android {
     compileSdkVersion 25
@@ -11,11 +37,69 @@ android {
         versionName "2.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+
+    signingConfigs {
+        prerelease {
+            storeFile file("${SEPTA_DEVELOPMENT_KEYSTORE_FILE}")
+            storePassword SEPTA_DEVELOPMENT_KEYSTORE_PASSWORD
+            keyAlias 'prerelease'
+            keyPassword PRERELEASE_KEYALIAS_PASSWORD
+        }
+        alpha {
+            storeFile file("${SEPTA_DEVELOPMENT_KEYSTORE_FILE}")
+            storePassword SEPTA_DEVELOPMENT_KEYSTORE_PASSWORD
+            keyAlias 'alpha'
+            keyPassword ALPHA_KEYALIAS_PASSWORD
+        }
+        beta {
+            storeFile file("${SEPTA_DEVELOPMENT_KEYSTORE_FILE}")
+            storePassword SEPTA_DEVELOPMENT_KEYSTORE_PASSWORD
+            keyAlias 'beta'
+            keyPassword BETA_KEYALIAS_PASSWORD
+        }
+        release {
+            storeFile file("${SEPTA_DEVELOPMENT_KEYSTORE_FILE}")
+            storePassword SEPTA_DEVELOPMENT_KEYSTORE_PASSWORD
+            keyAlias 'prerelease'
+            keyPassword PRERELEASE_KEYALIAS_PASSWORD
+        }
+    }
     buildTypes {
+        debug {
+            minifyEnabled false
+            debuggable true
+            zipAlignEnabled false
+            signingConfig signingConfigs.prerelease
+            versionNameSuffix "d" + "${getSprintRound}" + "${getGitHash}"
+            buildConfigField "String", "VERSIONNAME", "\"${defaultConfig.versionName}-b${defaultConfig.versionCode}\""
+        }
+        alpha {
+            minifyEnabled false
+            debuggable false
+            zipAlignEnabled true
+            signingConfig signingConfigs.prerelease
+            versionNameSuffix "a" + "${getSprintRound}" + "${getGitHash}"
+            buildConfigField "String", "VERSIONNAME", "\"${defaultConfig.versionName}-b${defaultConfig.versionCode}\""
+        }
+        beta {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            debuggable false
+            zipAlignEnabled true
+            signingConfig signingConfigs.prerelease
+            versionNameSuffix "b" + "${getSprintRound}" + "${getGitHash}"
+            buildConfigField "String", "VERSIONNAME", "\"${defaultConfig.versionName}-b${defaultConfig.versionCode}\""
+        }
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            debuggable false
+            zipAlignEnabled true
+            signingConfig signingConfigs.prerelease
+            buildConfigField "String", "VERSIONNAME", "\"${defaultConfig.versionName}\""
         }
+    }
+    productFlavors {
     }
 
 }

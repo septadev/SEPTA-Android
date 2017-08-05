@@ -16,8 +16,11 @@ import android.widget.TextView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMapOptions;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
@@ -33,10 +36,11 @@ import java.util.concurrent.Executor;
  * Created by jkampf on 8/3/17.
  */
 
-public class RailStationResults extends Fragment {
+public class RailStationResults extends Fragment implements OnMapReadyCallback {
     public static final String TAG = RailStationResults.class.getSimpleName();
     private StopModel start;
     private StopModel end;
+    private GoogleMap googleMap;
 
     FusedLocationProviderClient mFusedLocationClient;
 
@@ -72,13 +76,20 @@ public class RailStationResults extends Fragment {
         TextView destinationStationNameText = (TextView) rootView.findViewById(R.id.destination_station_name);
         destinationStationNameText.setText(end.getStopName());
 
-        CameraPosition pos = new CameraPosition.Builder().target(new LatLng(39.9600888, -75.1570133)).zoom(10).build();
-        GoogleMapOptions options = new GoogleMapOptions();
-        options.camera(pos);
-
-        SupportMapFragment mapFragment = SupportMapFragment.newInstance(options);
+        SupportMapFragment mapFragment = SupportMapFragment.newInstance();
+        mapFragment.getMapAsync(this);
 
         getChildFragmentManager().beginTransaction().add(R.id.map_container, mapFragment).commit();
+
+        return rootView;
+    }
+
+    @Override
+    public void onMapReady(final GoogleMap googleMap) {
+        this.googleMap = googleMap;
+
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(39.9600888, -75.1570133)));
+        googleMap.moveCamera(CameraUpdateFactory.zoomTo(10));
 
         int permissionCheck = ContextCompat.checkSelfPermission(getActivity(),
                 Manifest.permission.ACCESS_FINE_LOCATION);
@@ -92,19 +103,14 @@ public class RailStationResults extends Fragment {
                             // Got last known location. In some rare situations this can be null.
                             if (location != null) {
                                 LatLng latLong = new LatLng(location.getLatitude(), location.getLongitude());
-                                CameraPosition pos = new CameraPosition.Builder().target(latLong).zoom(15).build();
-                                GoogleMapOptions options = new GoogleMapOptions();
-                                options.camera(pos);
-                                SupportMapFragment updatedMapFragment = SupportMapFragment.newInstance(options);
-                                getChildFragmentManager().beginTransaction().replace(R.id.map_container, updatedMapFragment).commit();
-                            } else {
+                                googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLong));
+                                googleMap.moveCamera(CameraUpdateFactory.zoomTo(15));
+                             } else {
                                 Log.d(TAG, "location was null");
                             }
                         }
                     });
         }
 
-
-        return rootView;
     }
 }

@@ -22,6 +22,7 @@ import org.septa.android.app.nextarrive.railstationpicker.RailStationResults;
 import org.septa.android.app.support.BaseTabActivityHandler;
 import org.septa.android.app.support.BiConsumer;
 import org.septa.android.app.support.Consumer;
+import org.septa.android.app.support.CursorAdapterSupplier;
 
 
 /**
@@ -31,16 +32,18 @@ import org.septa.android.app.support.Consumer;
 public class RailTabActivityHandler extends BaseTabActivityHandler {
     private static final String TAG = "RailTabActivityHandler";
     FusedLocationProviderClient mFusedLocationClient;
+    private CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
 
-    public RailTabActivityHandler(String title, FusedLocationProviderClient mFusedLocationClient) {
+    public RailTabActivityHandler(String title, FusedLocationProviderClient mFusedLocationClient, CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
         super(title);
         this.mFusedLocationClient = mFusedLocationClient;
+        this.cursorAdapterSupplier = cursorAdapterSupplier;
     }
 
 
     @Override
     public Fragment getFragment() {
-        return RailTabActivityHandler.PlaceholderFragment.newInstance(mFusedLocationClient);
+        return RailTabActivityHandler.PlaceholderFragment.newInstance(mFusedLocationClient, cursorAdapterSupplier);
     }
 
 
@@ -51,14 +54,22 @@ public class RailTabActivityHandler extends BaseTabActivityHandler {
 
         FusedLocationProviderClient mFusedLocationClient;
 
-        public static PlaceholderFragment newInstance(FusedLocationProviderClient mFusedLocationClient) {
+
+        CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
+
+        public static PlaceholderFragment newInstance(FusedLocationProviderClient mFusedLocationClient, CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
             PlaceholderFragment fragment = new PlaceholderFragment();
             fragment.setmFusedLocationClient(mFusedLocationClient);
+            fragment.setCursorAdapterSupplier(cursorAdapterSupplier);
             return fragment;
         }
 
         public void setmFusedLocationClient(FusedLocationProviderClient mFusedLocationClient) {
             this.mFusedLocationClient = mFusedLocationClient;
+        }
+
+        public void setCursorAdapterSupplier(CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
+            this.cursorAdapterSupplier = cursorAdapterSupplier;
         }
 
         @Nullable
@@ -73,7 +84,7 @@ public class RailTabActivityHandler extends BaseTabActivityHandler {
                     manager.beginTransaction().replace(R.id.fragment_content, RailStationResults.newInstance(var1, var2, mFusedLocationClient), RAIL_RESULTS).addToBackStack(null).commit();
 
                 }
-            }), RAIL_QUERY).addToBackStack(null).commit();
+            }, cursorAdapterSupplier), RAIL_QUERY).addToBackStack(null).commit();
 
             return fragementView;
         }

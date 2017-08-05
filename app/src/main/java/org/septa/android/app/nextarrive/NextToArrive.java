@@ -28,6 +28,7 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 
 import org.septa.android.app.R;
+import org.septa.android.app.database.DatabaseManager;
 import org.septa.android.app.support.TabActivityHandler;
 
 
@@ -54,13 +55,14 @@ public class NextToArrive extends AppCompatActivity
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
+        DatabaseManager dbManager = DatabaseManager.getInstance(this);
 
         tabActivityHandlers = new TabActivityHandler[5];
-        tabActivityHandlers[0] = new RailTabActivityHandler(getString(R.string.rail_tab), mFusedLocationClient);
+        tabActivityHandlers[0] = new RailTabActivityHandler(getString(R.string.rail_tab), mFusedLocationClient, dbManager.getRailStopCursorAdapterSupplier());
         tabActivityHandlers[1] = new BusTabActivityHandler(getString(R.string.bus_tab));
         tabActivityHandlers[2] = new TrollyTabActivityHandler(getString(R.string.trolly_tab));
         tabActivityHandlers[3] = new SubwayTabActivityHandler(getString(R.string.subway_tab));
-        tabActivityHandlers[4] = new NHSRTabActivityHandler(getString(R.string.nhsl_tab));
+        tabActivityHandlers[4] = new RailTabActivityHandler(getString(R.string.nhsl_tab), mFusedLocationClient, dbManager.getNhslStopCursorAdapterSupplier());
 
         setContentView(R.layout.activity_next_to_arrive);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

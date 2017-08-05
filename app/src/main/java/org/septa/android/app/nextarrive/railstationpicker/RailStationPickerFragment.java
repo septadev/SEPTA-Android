@@ -20,6 +20,7 @@ import android.widget.EditText;
 import org.septa.android.app.R;
 import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.support.Consumer;
+import org.septa.android.app.support.CursorAdapterSupplier;
 import org.septa.android.app.support.TabActivityHandler;
 
 
@@ -37,13 +38,13 @@ public class RailStationPickerFragment extends DialogFragment implements Navigat
 
     int selectedTab = 0;
 
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
 
     private StopModel currentStop;
 
     private Consumer<StopModel> consumer;
+
+
+    private CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -58,7 +59,8 @@ public class RailStationPickerFragment extends DialogFragment implements Navigat
             public void accept(StopModel var1) {
                 currentStop = var1;
             }
-        });
+        }, cursorAdapterSupplier);
+
         tabActivityHandlers[1] = new ByAddressTabActivityHandler("BY ADDRESS", new Consumer<StopModel>() {
             @Override
             public void accept(StopModel var1) {
@@ -159,9 +161,18 @@ public class RailStationPickerFragment extends DialogFragment implements Navigat
 
     }
 
-    public static RailStationPickerFragment newInstance(Consumer<StopModel> consumer) {
+    public static RailStationPickerFragment newInstance(Consumer<StopModel> consumer, CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
         RailStationPickerFragment fragment = new RailStationPickerFragment();
         fragment.setConsumer(consumer);
+        fragment.setCursorAdapterSupplier(cursorAdapterSupplier);
         return fragment;
     }
+
+    public void setCursorAdapterSupplier(CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
+        this.cursorAdapterSupplier = cursorAdapterSupplier;
+    }
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
 }

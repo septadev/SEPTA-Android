@@ -17,6 +17,7 @@ import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.nextarrive.RailTabActivityHandler;
 import org.septa.android.app.support.BiConsumer;
 import org.septa.android.app.support.Consumer;
+import org.septa.android.app.support.CursorAdapterSupplier;
 
 /**
  * Created by jkampf on 8/3/17.
@@ -29,10 +30,12 @@ public class RailStationQuery extends Fragment {
 
     private BiConsumer<StopModel, StopModel> consumer;
 
+    private CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
 
-    public static RailStationQuery newInstance(BiConsumer<StopModel, StopModel> consumer) {
+    public static RailStationQuery newInstance(BiConsumer<StopModel, StopModel> consumer, CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
         RailStationQuery fragment = new RailStationQuery();
         fragment.setConsumer(consumer);
+        fragment.setCursorAdapterSupplier(cursorAdapterSupplier);
         return fragment;
     }
 
@@ -51,7 +54,7 @@ public class RailStationQuery extends Fragment {
                         startingStation = var1;
                         startingStationEditText.setText(var1.getStopName());
                     }
-                })
+                }, cursorAdapterSupplier)
         );
 
         endingStationEditText.setOnTouchListener(new RailStationQuery.StationPickerOnTouchListener(this, new Consumer<StopModel>() {
@@ -60,7 +63,7 @@ public class RailStationQuery extends Fragment {
                         endingStation = var1;
                         endingStationEditText.setText(var1.getStopName());
                     }
-                })
+                }, cursorAdapterSupplier)
         );
 
         queryButton.setOnClickListener(new View.OnClickListener() {
@@ -81,10 +84,12 @@ public class RailStationQuery extends Fragment {
     public static class StationPickerOnTouchListener implements View.OnTouchListener {
         private Fragment parent;
         private Consumer<StopModel> consumer;
+        private CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
 
-        StationPickerOnTouchListener(Fragment parent, Consumer<StopModel> consumer) {
+        StationPickerOnTouchListener(Fragment parent, Consumer<StopModel> consumer, CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
             this.parent = parent;
             this.consumer = consumer;
+            this.cursorAdapterSupplier = cursorAdapterSupplier;
         }
 
         @Override
@@ -100,7 +105,7 @@ public class RailStationQuery extends Fragment {
                 ft.addToBackStack(null);
 
                 // Create and show the dialog.
-                RailStationPickerFragment newFragment = RailStationPickerFragment.newInstance(consumer);
+                RailStationPickerFragment newFragment = RailStationPickerFragment.newInstance(consumer, cursorAdapterSupplier);
                 newFragment.show(ft, "dialog");
 
                 return true;
@@ -111,6 +116,10 @@ public class RailStationQuery extends Fragment {
 
     public void setConsumer(BiConsumer<StopModel, StopModel> consumer) {
         this.consumer = consumer;
+    }
+
+    public void setCursorAdapterSupplier(CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
+        this.cursorAdapterSupplier = cursorAdapterSupplier;
     }
 
 }

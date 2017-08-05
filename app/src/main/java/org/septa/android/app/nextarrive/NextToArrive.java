@@ -1,19 +1,31 @@
 package org.septa.android.app.nextarrive;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 
 import org.septa.android.app.R;
 import org.septa.android.app.support.TabActivityHandler;
@@ -22,8 +34,11 @@ import org.septa.android.app.support.TabActivityHandler;
 public class NextToArrive extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    public static final String TAG = NextToArrive.class.getSimpleName();
+
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
+    private FusedLocationProviderClient mFusedLocationClient;
 
     TabActivityHandler tabActivityHandlers[];
 
@@ -31,8 +46,17 @@ public class NextToArrive extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
+
+
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+
         tabActivityHandlers = new TabActivityHandler[5];
-        tabActivityHandlers[0] = new RailTabActivityHandler(getString(R.string.rail_tab));
+        tabActivityHandlers[0] = new RailTabActivityHandler(getString(R.string.rail_tab), mFusedLocationClient);
         tabActivityHandlers[1] = new BusTabActivityHandler(getString(R.string.bus_tab));
         tabActivityHandlers[2] = new TrollyTabActivityHandler(getString(R.string.trolly_tab));
         tabActivityHandlers[3] = new SubwayTabActivityHandler(getString(R.string.subway_tab));
@@ -63,6 +87,7 @@ public class NextToArrive extends AppCompatActivity
 
 
     }
+
 
     @Override
     public void onBackPressed() {

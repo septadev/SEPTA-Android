@@ -39,7 +39,7 @@ public class RailStationPickerFragment extends DialogFragment implements Navigat
     int selectedTab = 0;
 
 
-    private StopModel currentStop;
+    private StopModel[] currentStop;
 
     private Consumer<StopModel> consumer;
 
@@ -53,18 +53,19 @@ public class RailStationPickerFragment extends DialogFragment implements Navigat
 
         View dialogView = getActivity().getLayoutInflater().inflate(R.layout.by_station, null);
 
+        currentStop = new StopModel[2];
         tabActivityHandlers = new TabActivityHandler[2];
         tabActivityHandlers[0] = new ByStationTabActivityHandler("BY STATION", new Consumer<StopModel>() {
             @Override
             public void accept(StopModel var1) {
-                currentStop = var1;
+                currentStop[0] = var1;
             }
         }, cursorAdapterSupplier);
 
         tabActivityHandlers[1] = new ByAddressTabActivityHandler("BY ADDRESS", new Consumer<StopModel>() {
             @Override
             public void accept(StopModel var1) {
-                currentStop = var1;
+                currentStop[1] = var1;
             }
         });
 
@@ -110,11 +111,12 @@ public class RailStationPickerFragment extends DialogFragment implements Navigat
             public void onClick(View view) {
                 Log.d(TAG, "Current Possition is:" + selectedTab);
 
-                if (currentStop != null)
-                    Log.d(TAG, "Station is:" + currentStop.getStopName());
-                else
+                if (currentStop[selectedTab] == null) {
                     Log.d(TAG, "No Station");
-                consumer.accept(currentStop);
+                    return;
+                }
+                Log.d(TAG, "Station is:" + currentStop[selectedTab].getStopName());
+                consumer.accept(currentStop[selectedTab]);
                 getDialog().dismiss();
             }
         });
@@ -171,6 +173,7 @@ public class RailStationPickerFragment extends DialogFragment implements Navigat
     public void setCursorAdapterSupplier(CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
         this.cursorAdapterSupplier = cursorAdapterSupplier;
     }
+
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }

@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.LocationServices;
@@ -58,6 +59,7 @@ public class RailStationQuery extends Fragment {
 
         final EditText startingStationEditText = (EditText) rootView.findViewById(R.id.starting_rail_station);
         final EditText endingStationEditText = (EditText) rootView.findViewById(R.id.ending_rail_station);
+        final TextView closestStationText = (TextView) rootView.findViewById(R.id.closest_station);
         final Button queryButton = (Button) rootView.findViewById(R.id.view_trains_button);
 
 
@@ -115,6 +117,7 @@ public class RailStationQuery extends Fragment {
                 if (stopModel != null && startingStation == null) {
                     startingStation = stopModel;
                     startingStationEditText.setText(stopModel.getStopName());
+                    closestStationText.setVisibility(View.VISIBLE);
                 }
             }
 
@@ -140,6 +143,7 @@ public class RailStationQuery extends Fragment {
                     public void accept(StopModel var1) {
                         startingStation = var1;
                         startingStationEditText.setText(var1.getStopName());
+                        closestStationText.setVisibility(View.INVISIBLE);
                     }
                 }, cursorAdapterSupplier)
         );

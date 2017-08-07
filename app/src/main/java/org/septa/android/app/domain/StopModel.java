@@ -13,6 +13,8 @@ public class StopModel implements Comparable<StopModel>, Serializable {
 
     private String stopId;
     private String stopName;
+
+
     private int stopSequence = 0;
     private boolean wheelchairBoarding;
     private double latitude;
@@ -138,6 +140,42 @@ public class StopModel implements Comparable<StopModel>, Serializable {
     @Override
     public int compareTo(StopModel another) {
         return this.getStopName().compareTo(another.getStopName());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        StopModel stopModel = (StopModel) o;
+
+        if (stopSequence != stopModel.stopSequence) return false;
+        if (wheelchairBoarding != stopModel.wheelchairBoarding) return false;
+        if (Double.compare(stopModel.latitude, latitude) != 0) return false;
+        if (Double.compare(stopModel.longitude, longitude) != 0) return false;
+        if (Float.compare(stopModel.distance, distance) != 0) return false;
+        if (directionId != stopModel.directionId) return false;
+        if (stopId != null ? !stopId.equals(stopModel.stopId) : stopModel.stopId != null)
+            return false;
+        return stopName != null ? stopName.equals(stopModel.stopName) : stopModel.stopName == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result;
+        long temp;
+        result = stopId != null ? stopId.hashCode() : 0;
+        result = 31 * result + (stopName != null ? stopName.hashCode() : 0);
+        result = 31 * result + stopSequence;
+        result = 31 * result + (wheelchairBoarding ? 1 : 0);
+        temp = Double.doubleToLongBits(latitude);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(longitude);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        result = 31 * result + (distance != +0.0f ? Float.floatToIntBits(distance) : 0);
+        result = 31 * result + directionId;
+        return result;
     }
 }
 

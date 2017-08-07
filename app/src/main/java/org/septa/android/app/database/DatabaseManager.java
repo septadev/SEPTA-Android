@@ -43,24 +43,6 @@ public class DatabaseManager {
         return database;
     }
 
-    public List<StopModel> getRailStops(Context context) {
-        List<StopModel> railStops = new ArrayList<>();
-        String queryString = "SELECT stop_id, stop_name, wheelchair_boarding, stop_lat, stop_lon, rowid AS _id FROM stops_rail ORDER BY stop_name";
-        Cursor cursor = getDatabase(context).rawQuery(queryString, null);
-        if (cursor != null) {
-            if (cursor.moveToFirst()) {
-                do {
-                    StopModel stopModel = new StopModel(cursor.getString(0), cursor.getString(1),
-                            (cursor.getInt(2) == 1), cursor.getString(3), cursor.getString(4));
-                    railStops.add(stopModel);
-                } while (cursor.moveToNext());
-            }
-
-            cursor.close();
-        }
-        return railStops;
-    }
-
     public CursorAdapterSupplier<StopModel> getRailStopCursorAdapterSupplier() {
         return new RailStopCursorAdapterSupplier();
     }
@@ -72,11 +54,16 @@ public class DatabaseManager {
     public class NhslStopCursorAdapterSupplier implements CursorAdapterSupplier<StopModel> {
         private static final String SELECT_CLAUSE = "SELECT DISTINCT a.stop_id, stop_name, wheelchair_boarding, stop_lat, stop_lon, a.rowid AS _id FROM stops_bus a, stop_times_NHSL b WHERE b.stop_id = a.stop_id";
 
-
         @Override
-        public Cursor getCursor(Context context) {
-            String queryString =  SELECT_CLAUSE + " ORDER BY a.stop_name";
-            Cursor cursor = getDatabase(context).rawQuery(queryString, null);
+        public Cursor getCursor(Context context, String whereClause) {
+            StringBuilder queryString =  new StringBuilder(SELECT_CLAUSE);
+            if (whereClause != null) {
+                queryString.append(" AND ");
+                queryString.append(whereClause);
+            }
+            queryString.append(" ORDER BY a.stop_name");
+
+            Cursor cursor = getDatabase(context).rawQuery(queryString.toString(), null);
 
             return cursor;
         }
@@ -111,9 +98,15 @@ public class DatabaseManager {
 
 
         @Override
-        public Cursor getCursor(Context context) {
-            String queryString =  SELECT_CLAUSE + " ORDER BY stop_name";
-            Cursor cursor = getDatabase(context).rawQuery(queryString, null);
+        public Cursor getCursor(Context context, String whereClause) {
+            StringBuilder queryString = new StringBuilder(SELECT_CLAUSE);
+            if (whereClause != null){
+                queryString.append(" WHERE ");
+                queryString.append(whereClause);
+            }
+            queryString.append(" ORDER BY stop_name");
+
+            Cursor cursor = getDatabase(context).rawQuery(queryString.toString(), null);
 
             return cursor;
         }

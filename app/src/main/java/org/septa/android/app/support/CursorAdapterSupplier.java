@@ -5,7 +5,7 @@ import android.database.Cursor;
 
 
 public interface CursorAdapterSupplier<T> {
-    Cursor getCursor(Context context);
+    Cursor getCursor(Context context, String whereClause);
 
     T getCurrentItemFromCursor(Cursor cursor);
 

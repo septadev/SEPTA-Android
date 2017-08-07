@@ -2,10 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.septa.android.app">
 
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
-        android:name="org.septa.android.app.MainApplication"
+        android:name=".MainApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
@@ -17,7 +17,7 @@
             android:value="AIzaSyA3wNnR0R29Db7QOoDc8TqXPTvYEc0heiA" />
 
         <activity
-            android:name="org.septa.android.app.nextarrive.NextToArrive"
+            android:name=".nextarrive.NextToArrive"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -26,6 +26,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".nextarrive.NextToArriveResultsActivity"
+            android:label="@string/title_activity_next_to_arrive_results"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

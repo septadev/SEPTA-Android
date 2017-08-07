@@ -90,6 +90,7 @@ public class RailStationResults extends Fragment implements OnMapReadyCallback {
 
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(39.9600888, -75.1570133)));
         googleMap.moveCamera(CameraUpdateFactory.zoomTo(10));
+        googleMap.setMyLocationEnabled(true);
 
         int permissionCheck = ContextCompat.checkSelfPermission(getActivity(),
                 Manifest.permission.ACCESS_FINE_LOCATION);

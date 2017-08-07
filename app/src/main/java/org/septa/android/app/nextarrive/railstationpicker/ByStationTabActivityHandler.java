@@ -10,19 +10,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import org.septa.android.app.R;
-import org.septa.android.app.database.DatabaseManager;
 import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.support.BaseTabActivityHandler;
 import org.septa.android.app.support.Consumer;
 import org.septa.android.app.support.CursorAdapterSupplier;
-
-import java.util.List;
 
 
 /**
@@ -114,7 +109,7 @@ public class ByStationTabActivityHandler extends BaseTabActivityHandler {
         private CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
 
         public StationNameAdapter(Context context, CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
-            super(context, cursorAdapterSupplier.getCursor(context), 0);
+            super(context, cursorAdapterSupplier.getCursor(context, null), 0);
             this.context = context;
             this.cursorAdapterSupplier = cursorAdapterSupplier;
         }

@@ -32,4 +32,5 @@
     <string name="destionation_station_hint">Destionation Station</string>
     <string name="starting_station_hint">Starting Station</string>
     <string name="view_trains_button">VIEW TRAINS</string>
+    <string name="title_activity_next_to_arrive_results">NextToArriveResultsActivity</string>
 </resources>

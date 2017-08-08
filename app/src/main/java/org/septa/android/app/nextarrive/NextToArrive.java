@@ -39,7 +39,6 @@ public class NextToArrive extends AppCompatActivity
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
-    private FusedLocationProviderClient mFusedLocationClient;
 
     TabActivityHandler tabActivityHandlers[];
 
@@ -53,16 +52,14 @@ public class NextToArrive extends AppCompatActivity
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
 
 
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-
         DatabaseManager dbManager = DatabaseManager.getInstance(this);
 
         tabActivityHandlers = new TabActivityHandler[5];
-        tabActivityHandlers[0] = new RailTabActivityHandler(getString(R.string.rail_tab), mFusedLocationClient, dbManager.getRailStopCursorAdapterSupplier());
+        tabActivityHandlers[0] = new RailTabActivityHandler(getString(R.string.rail_tab), dbManager.getRailStopCursorAdapterSupplier());
         tabActivityHandlers[1] = new BusTabActivityHandler(getString(R.string.bus_tab));
         tabActivityHandlers[2] = new TrollyTabActivityHandler(getString(R.string.trolly_tab));
         tabActivityHandlers[3] = new SubwayTabActivityHandler(getString(R.string.subway_tab));
-        tabActivityHandlers[4] = new RailTabActivityHandler(getString(R.string.nhsl_tab), mFusedLocationClient, dbManager.getNhslStopCursorAdapterSupplier());
+        tabActivityHandlers[4] = new RailTabActivityHandler(getString(R.string.nhsl_tab), dbManager.getNhslStopCursorAdapterSupplier());
 
         setContentView(R.layout.activity_next_to_arrive);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

@@ -9,7 +9,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
+import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -20,13 +20,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
 import org.septa.android.app.R;
 import org.septa.android.app.domain.StopModel;
-import org.septa.android.app.nextarrive.RailTabActivityHandler;
 import org.septa.android.app.support.BiConsumer;
 import org.septa.android.app.support.Consumer;
 import org.septa.android.app.support.CursorAdapterSupplier;
@@ -39,7 +42,8 @@ import org.septa.android.app.support.LocationMathHelper;
 public class RailStationQuery extends Fragment {
     private StopModel startingStation;
     private StopModel endingStation;
-
+    private EditText startingStationEditText;
+    private TextView closestStationText;
 
     private BiConsumer<StopModel, StopModel> consumer;
 
@@ -57,11 +61,10 @@ public class RailStationQuery extends Fragment {
                              Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.rail_next_to_arrive_search, container, false);
 
-        final EditText startingStationEditText = (EditText) rootView.findViewById(R.id.starting_rail_station);
+        startingStationEditText = (EditText) rootView.findViewById(R.id.starting_rail_station);
         final EditText endingStationEditText = (EditText) rootView.findViewById(R.id.ending_rail_station);
-        final TextView closestStationText = (TextView) rootView.findViewById(R.id.closest_station);
+        closestStationText = (TextView) rootView.findViewById(R.id.closest_station);
         final Button queryButton = (Button) rootView.findViewById(R.id.view_trains_button);
-
 
         final AsyncTask<Location, Void, StopModel> task = new AsyncTask<Location, Void, StopModel>() {
 
@@ -115,9 +118,7 @@ public class RailStationQuery extends Fragment {
             @Override
             protected void onPostExecute(StopModel stopModel) {
                 if (stopModel != null && startingStation == null) {
-                    startingStation = stopModel;
-                    startingStationEditText.setText(stopModel.getStopName());
-                    closestStationText.setVisibility(View.VISIBLE);
+                    setStartingStation(stopModel, View.VISIBLE);
                 }
             }
 
@@ -141,9 +142,7 @@ public class RailStationQuery extends Fragment {
         startingStationEditText.setOnTouchListener(new RailStationQuery.StationPickerOnTouchListener(this, new Consumer<StopModel>() {
                     @Override
                     public void accept(StopModel var1) {
-                        startingStation = var1;
-                        startingStationEditText.setText(var1.getStopName());
-                        closestStationText.setVisibility(View.INVISIBLE);
+                        setStartingStation(var1, View.INVISIBLE);
                     }
                 }, cursorAdapterSupplier)
         );
@@ -167,7 +166,6 @@ public class RailStationQuery extends Fragment {
                 consumer.accept(startingStation, endingStation);
             }
         });
-
 
         return rootView;
     }
@@ -211,6 +209,12 @@ public class RailStationQuery extends Fragment {
 
     public void setCursorAdapterSupplier(CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
         this.cursorAdapterSupplier = cursorAdapterSupplier;
+    }
+
+    private void setStartingStation(StopModel start, int invisible) {
+        startingStation = start;
+        startingStationEditText.setText(startingStation.getStopName());
+        closestStationText.setVisibility(invisible);
     }
 
 }

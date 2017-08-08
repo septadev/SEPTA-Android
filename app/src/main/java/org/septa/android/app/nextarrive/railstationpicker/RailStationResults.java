@@ -42,19 +42,12 @@ public class RailStationResults extends Fragment implements OnMapReadyCallback {
     private StopModel end;
     private GoogleMap googleMap;
 
-    FusedLocationProviderClient mFusedLocationClient;
-
-    public static RailStationResults newInstance(StopModel start, StopModel end, FusedLocationProviderClient mFusedLocationClient) {
+    public static RailStationResults newInstance(StopModel start, StopModel end) {
         RailStationResults fragement = new RailStationResults();
         fragement.setStart(start);
         fragement.setEnd(end);
-        fragement.setmFusedLocationClient(mFusedLocationClient);
 
         return fragement;
-    }
-
-    public void setmFusedLocationClient(FusedLocationProviderClient mFusedLocationClient) {
-        this.mFusedLocationClient = mFusedLocationClient;
     }
 
     public void setEnd(StopModel end) {
@@ -97,7 +90,7 @@ public class RailStationResults extends Fragment implements OnMapReadyCallback {
 
         if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
             Log.d(TAG, "Location Permission Granted.");
-            Task<Location> locationTask = mFusedLocationClient.getLastLocation()
+            Task<Location> locationTask = LocationServices.getFusedLocationProviderClient(getActivity()).getLastLocation()
                     .addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
                         @Override
                         public void onSuccess(Location location) {

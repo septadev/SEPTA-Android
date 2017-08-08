@@ -27,8 +27,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".nextarrive.NextToArriveResultsActivity"
-            android:label="@string/title_activity_next_to_arrive_results"
+            android:name=".nextarrive.RailStationNextToArriveResults"
+            android:label="@string/RailStationNextToArriveResults"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

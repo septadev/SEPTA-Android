@@ -69,7 +69,7 @@ public class RailStationNextToArriveResults extends AppCompatActivity implements
         destination = (StopModel) intent.getExtras().get(DESTINATAION_STATION);
         start = (StopModel) intent.getExtras().get(STARTING_STATION);
 
-        if (start!= null && destination !=null) {
+        if (start != null && destination != null) {
             TextView startingStationNameText = (TextView) findViewById(R.id.starting_station_name);
             startingStationNameText.setText(start.getStopName());
 
@@ -87,9 +87,8 @@ public class RailStationNextToArriveResults extends AppCompatActivity implements
     public void onMapReady(final GoogleMap googleMap) {
         this.googleMap = googleMap;
 
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(39.9600888, -75.1570133)));
-        googleMap.moveCamera(CameraUpdateFactory.zoomTo(10));
-        googleMap.setMyLocationEnabled(true);
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(start.getLatitude(), start.getLongitude())));
+        googleMap.moveCamera(CameraUpdateFactory.zoomTo(15));
 
         int permissionCheck = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION);
@@ -102,10 +101,13 @@ public class RailStationNextToArriveResults extends AppCompatActivity implements
                         public void onSuccess(Location location) {
                             // Got last known location. In some rare situations this can be null.
                             if (location != null) {
-                                LatLng latLong = new LatLng(location.getLatitude(), location.getLongitude());
-                                googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLong));
-                                googleMap.moveCamera(CameraUpdateFactory.zoomTo(15));
-                             } else {
+                                int permissionCheck = ContextCompat.checkSelfPermission(RailStationNextToArriveResults.this,
+                                        Manifest.permission.ACCESS_FINE_LOCATION);
+                                googleMap.setMyLocationEnabled(true);
+//                                LatLng latLong = new LatLng(location.getLatitude(), location.getLongitude());
+//                                googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLong));
+//                                googleMap.moveCamera(CameraUpdateFactory.zoomTo(15));
+                            } else {
                                 Log.d(TAG, "location was null");
                             }
                         }

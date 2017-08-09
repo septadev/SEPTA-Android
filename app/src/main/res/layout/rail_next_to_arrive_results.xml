@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rail_next_to_arrive_results_coordinator"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -26,9 +27,11 @@
 
         </android.support.design.widget.AppBarLayout>
 
-        <RelativeLayout
+        <RelativeLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/main_content"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
 
             <TextView
@@ -94,4 +97,7 @@
 
         </RelativeLayout>
     </LinearLayout>
+
+    <include layout="@layout/rail_next_to_arrive_results_bottom_sheet" />
+
 </android.support.design.widget.CoordinatorLayout>

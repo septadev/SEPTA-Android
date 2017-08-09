@@ -5,10 +5,14 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.location.LocationServices;
@@ -32,6 +36,7 @@ public class RailStationNextToArriveResults extends AppCompatActivity implements
     private StopModel start;
     private StopModel destination;
     private GoogleMap googleMap;
+    ViewGroup bottomSheetLayout;
 
     public static final String STARTING_STATION = "starting_station";
     public static final String DESTINATAION_STATION = "destination_station";
@@ -61,9 +66,11 @@ public class RailStationNextToArriveResults extends AppCompatActivity implements
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        bottomSheetLayout = (ViewGroup) findViewById(R.id.bottomSheetLayout);
+
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-
 
         Intent intent = getIntent();
         destination = (StopModel) intent.getExtras().get(DESTINATAION_STATION);
@@ -85,10 +92,17 @@ public class RailStationNextToArriveResults extends AppCompatActivity implements
 
     @Override
     public void onMapReady(final GoogleMap googleMap) {
+        View mapContainer = findViewById(R.id.map_container);
+        ViewGroup.LayoutParams layoutParams =
+                bottomSheetLayout.getLayoutParams();
+        layoutParams.height = mapContainer.getHeight();
+        bottomSheetLayout.setLayoutParams(layoutParams);
+
+
         this.googleMap = googleMap;
 
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(start.getLatitude(), start.getLongitude())));
         googleMap.moveCamera(CameraUpdateFactory.zoomTo(15));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(start.getLatitude(), start.getLongitude())));
 
         int permissionCheck = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION);
@@ -104,9 +118,6 @@ public class RailStationNextToArriveResults extends AppCompatActivity implements
                                 int permissionCheck = ContextCompat.checkSelfPermission(RailStationNextToArriveResults.this,
                                         Manifest.permission.ACCESS_FINE_LOCATION);
                                 googleMap.setMyLocationEnabled(true);
-//                                LatLng latLong = new LatLng(location.getLatitude(), location.getLongitude());
-//                                googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLong));
-//                                googleMap.moveCamera(CameraUpdateFactory.zoomTo(15));
                             } else {
                                 Log.d(TAG, "location was null");
                             }

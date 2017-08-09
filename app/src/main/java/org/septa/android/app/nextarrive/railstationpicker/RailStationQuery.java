@@ -73,9 +73,9 @@ public class RailStationQuery extends Fragment {
                 StopModel closestStop = null;
                 Location location = locations[0];
 
-                LatLng center = new LatLng(location.getLatitude(), location.getLongitude());
-
                 if (location != null) {
+                    LatLng center = new LatLng(location.getLatitude(), location.getLongitude());
+
                     LatLng p1 = LocationMathHelper.calculateDerivedPosition(center, 5, 0);
                     LatLng p2 = LocationMathHelper.calculateDerivedPosition(center, 5, 90);
                     LatLng p3 = LocationMathHelper.calculateDerivedPosition(center, 5, 180);

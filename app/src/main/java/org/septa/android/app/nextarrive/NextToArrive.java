@@ -59,8 +59,8 @@ public class NextToArrive extends AppCompatActivity
         tabActivityHandlers[1] = new BusTabActivityHandler(getString(R.string.bus_tab));
         tabActivityHandlers[2] = new TrollyTabActivityHandler(getString(R.string.trolly_tab));
         tabActivityHandlers[3] = new SubwayTabActivityHandler(getString(R.string.subway_tab));
-        //tabActivityHandlers[4] = new RailTabActivityHandler(getString(R.string.nhsl_tab), dbManager.getNhslStopCursorAdapterSupplier());
-        tabActivityHandlers[4] = new SubwayTabActivityHandler(getString(R.string.nhsl_tab));
+        tabActivityHandlers[4] = new RailTabActivityHandler(getString(R.string.nhsl_tab), dbManager.getNhslStopCursorAdapterSupplier());
+        //tabActivityHandlers[4] = new SubwayTabActivityHandler(getString(R.string.nhsl_tab));
 
         setContentView(R.layout.activity_next_to_arrive);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

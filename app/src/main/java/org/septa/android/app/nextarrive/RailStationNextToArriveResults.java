@@ -21,6 +21,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
@@ -101,8 +102,13 @@ public class RailStationNextToArriveResults extends AppCompatActivity implements
 
         this.googleMap = googleMap;
 
+        LatLng stationLatLng = new LatLng(start.getLatitude(), start.getLongitude());
         googleMap.moveCamera(CameraUpdateFactory.zoomTo(15));
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(start.getLatitude(), start.getLongitude())));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(stationLatLng));
+
+        MarkerOptions marker = new MarkerOptions();
+        marker.position(stationLatLng).title(start.getStopName());
+        googleMap.addMarker(marker);
 
         int permissionCheck = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION);

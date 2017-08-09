@@ -26,4 +26,9 @@
         android:text="Next Trains To Arrive"
         android:textAlignment="center"
         android:textSize="12pt" />
+
+    <ListView
+        android:id="@+id/lines_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </LinearLayout>

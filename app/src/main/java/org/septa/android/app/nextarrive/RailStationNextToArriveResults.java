@@ -1,17 +1,25 @@
 package org.septa.android.app.nextarrive;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.annotation.LayoutRes;
+import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -21,12 +29,18 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
 import org.septa.android.app.R;
+import org.septa.android.app.domain.ArrivalUnit;
+import org.septa.android.app.domain.NextToArriveLine;
 import org.septa.android.app.domain.StopModel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by jkampf on 8/3/17.
@@ -88,6 +102,13 @@ public class RailStationNextToArriveResults extends AppCompatActivity implements
             mapFragment.getMapAsync(this);
 
             getSupportFragmentManager().beginTransaction().add(R.id.map_container, mapFragment).commit();
+
+            ListView linesListView = (ListView) findViewById(R.id.lines_list_view);
+
+            List<NextToArriveLine> linesList = new ArrayList<NextToArriveLine>(2);
+            linesList.add(new NextToArriveLine());
+            linesList.add(new NextToArriveLine());
+            linesListView.setAdapter(new LinesListAdapater(this, linesList));
         }
     }
 
@@ -102,13 +123,20 @@ public class RailStationNextToArriveResults extends AppCompatActivity implements
 
         this.googleMap = googleMap;
 
-        LatLng stationLatLng = new LatLng(start.getLatitude(), start.getLongitude());
-        googleMap.moveCamera(CameraUpdateFactory.zoomTo(15));
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(stationLatLng));
+        LatLng startingStationLatLng = new LatLng(start.getLatitude(), start.getLongitude());
+        LatLng destinationStationLatLng = new LatLng(destination.getLatitude(), destination.getLongitude());
 
-        MarkerOptions marker = new MarkerOptions();
-        marker.position(stationLatLng).title(start.getStopName());
-        googleMap.addMarker(marker);
+        //googleMap.moveCamera(CameraUpdateFactory.zoomTo(15));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(startingStationLatLng));
+
+        googleMap.addMarker(new MarkerOptions().position(startingStationLatLng).title(start.getStopName()));
+        googleMap.addMarker(new MarkerOptions().position(destinationStationLatLng).title(destination.getStopName()));
+
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+        builder.include(startingStationLatLng);
+        builder.include(destinationStationLatLng);
+        LatLngBounds bounds = builder.build();
+        googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 40, getResources().getDisplayMetrics())));
 
         int permissionCheck = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION);
@@ -124,6 +152,8 @@ public class RailStationNextToArriveResults extends AppCompatActivity implements
                                 int permissionCheck = ContextCompat.checkSelfPermission(RailStationNextToArriveResults.this,
                                         Manifest.permission.ACCESS_FINE_LOCATION);
                                 googleMap.setMyLocationEnabled(true);
+                                googleMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude())).title("Current Location"));
+
                             } else {
                                 Log.d(TAG, "location was null");
                             }
@@ -138,4 +168,35 @@ public class RailStationNextToArriveResults extends AppCompatActivity implements
         onBackPressed();
         return true;
     }
+
+    private class LinesListAdapater extends ArrayAdapter<NextToArriveLine> {
+
+        public LinesListAdapater(@NonNull Context context, List<NextToArriveLine> list) {
+            super(context, 0, list);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            if (convertView == null) {
+                convertView = LayoutInflater.from(getContext()).inflate(R.layout.rail_next_to_arrive_line, parent, false);
+            }
+
+            LinearLayout arrivalList = (LinearLayout) convertView.findViewById(R.id.arrival_list);
+            arrivalList.removeAllViews();
+
+            for (int x : new int[]{1, 2, 3}) {
+                View line = LayoutInflater.from(getContext()).inflate(R.layout.rail_next_to_arrive_unit, null, false);
+                TextView arrivalTimeText = (TextView) line.findViewById(R.id.arrival_time_text);
+                arrivalTimeText.setText("9:" + position + "" + x + "AM");
+                arrivalList.addView(line);
+            }
+
+            return convertView;
+        }
+    }
+
+
 }
+
+
+

@@ -35,7 +35,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
 import org.septa.android.app.R;
-import org.septa.android.app.domain.ArrivalUnit;
 import org.septa.android.app.domain.NextToArriveLine;
 import org.septa.android.app.domain.StopModel;
 

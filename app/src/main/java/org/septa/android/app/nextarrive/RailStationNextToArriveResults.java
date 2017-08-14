@@ -6,10 +6,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -18,9 +18,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.location.LocationServices;
@@ -35,11 +35,19 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
 import org.septa.android.app.R;
-import org.septa.android.app.domain.NextToArriveLine;
 import org.septa.android.app.domain.StopModel;
+import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
+import org.septa.android.app.services.apiinterfaces.model.NextToArriveModel;
+import org.septa.android.app.support.MapUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by jkampf on 8/3/17.
@@ -51,6 +59,8 @@ public class RailStationNextToArriveResults extends AppCompatActivity implements
     private StopModel destination;
     private GoogleMap googleMap;
     ViewGroup bottomSheetLayout;
+    ListView linesListView;
+    ImageView refresh;
 
     public static final String STARTING_STATION = "starting_station";
     public static final String DESTINATAION_STATION = "destination_station";
@@ -81,6 +91,14 @@ public class RailStationNextToArriveResults extends AppCompatActivity implements
         setSupportActionBar(toolbar);
 
         bottomSheetLayout = (ViewGroup) findViewById(R.id.bottomSheetLayout);
+        final BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLayout);
+
+
+        // Prevent the bottom sheet from being dragged to be opened.  Force it to use the anchor image.
+        BottomSheetHandler myBottomSheetBehaviorCallBack  = new BottomSheetHandler(bottomSheetBehavior);
+        bottomSheetBehavior.setBottomSheetCallback(myBottomSheetBehaviorCallBack);
+        View anchor = findViewById(R.id.bottom_sheet_anchor);
+        anchor.setOnClickListener(myBottomSheetBehaviorCallBack);
 
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -102,25 +120,32 @@ public class RailStationNextToArriveResults extends AppCompatActivity implements
 
             getSupportFragmentManager().beginTransaction().add(R.id.map_container, mapFragment).commit();
 
-            ListView linesListView = (ListView) findViewById(R.id.lines_list_view);
-
-            List<NextToArriveLine> linesList = new ArrayList<NextToArriveLine>(2);
-            linesList.add(new NextToArriveLine());
-            linesList.add(new NextToArriveLine());
-            linesListView.setAdapter(new LinesListAdapater(this, linesList));
+            linesListView = (ListView) findViewById(R.id.lines_list_view);
         }
+
+        refresh = (ImageView) findViewById(R.id.refresh_image);
+
     }
 
     @Override
     public void onMapReady(final GoogleMap googleMap) {
+        this.googleMap = googleMap;
+
+        updateNextToArriveData();
+        refresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                updateNextToArriveData();
+            }
+        });
+
+
         View mapContainer = findViewById(R.id.map_container);
         ViewGroup.LayoutParams layoutParams =
                 bottomSheetLayout.getLayoutParams();
         layoutParams.height = mapContainer.getHeight();
         bottomSheetLayout.setLayoutParams(layoutParams);
 
-
-        this.googleMap = googleMap;
 
         LatLng startingStationLatLng = new LatLng(start.getLatitude(), start.getLongitude());
         LatLng destinationStationLatLng = new LatLng(destination.getLatitude(), destination.getLongitude());
@@ -168,6 +193,43 @@ public class RailStationNextToArriveResults extends AppCompatActivity implements
         return true;
     }
 
+
+    private void updateNextToArriveData() {
+        if (start != null && destination != null) {
+            Call<ArrayList<NextToArriveModel>> results = SeptaServiceFactory.getNextToArriveService().views(start.getStopName(), destination.getStopName(), 3);
+            results.enqueue(new Callback<ArrayList<NextToArriveModel>>() {
+                @Override
+                public void onResponse(Call<ArrayList<NextToArriveModel>> call, Response<ArrayList<NextToArriveModel>> response) {
+                    Map<String, NextToArriveLine> map = new HashMap<String, NextToArriveLine>();
+
+                    if (response.body() != null) {
+                        for (NextToArriveModel item : response.body()) {
+                            if (!map.containsKey(item.getOriginalLine())) {
+                                map.put(item.getOriginalLine(), new NextToArriveLine(item.getOriginalLine()));
+                            }
+                            map.get(item.getOriginalLine()).addItem(item);
+                        }
+
+                        linesListView.setAdapter(new LinesListAdapater(RailStationNextToArriveResults.this, new ArrayList<NextToArriveLine>(map.values())));
+                    }
+
+                    List<String> linesToDraw = new ArrayList<String>(map.values().size());
+                    linesToDraw.addAll(map.keySet());
+
+                    MapUtils.drawTrainLine(googleMap, RailStationNextToArriveResults.this, linesToDraw);
+
+                }
+
+                @Override
+                public void onFailure(Call<ArrayList<NextToArriveModel>> call, Throwable t) {
+                    new AlertDialog.Builder(RailStationNextToArriveResults.this).setTitle("Error communicating with service.").show();
+                }
+            });
+        }
+
+    }
+
+
     private class LinesListAdapater extends ArrayAdapter<NextToArriveLine> {
 
         public LinesListAdapater(@NonNull Context context, List<NextToArriveLine> list) {
@@ -180,14 +242,23 @@ public class RailStationNextToArriveResults extends AppCompatActivity implements
                 convertView = LayoutInflater.from(getContext()).inflate(R.layout.rail_next_to_arrive_line, parent, false);
             }
 
+            TextView lineNameText = (TextView) convertView.findViewById(R.id.line_name_text);
+            lineNameText.setText(getItem(position).lineName);
             LinearLayout arrivalList = (LinearLayout) convertView.findViewById(R.id.arrival_list);
             arrivalList.removeAllViews();
 
-            for (int x : new int[]{1, 2, 3}) {
+            for (NextToArriveModel unit : getItem(position).getList()) {
                 View line = LayoutInflater.from(getContext()).inflate(R.layout.rail_next_to_arrive_unit, null, false);
                 TextView arrivalTimeText = (TextView) line.findViewById(R.id.arrival_time_text);
-                arrivalTimeText.setText("9:" + position + "" + x + "AM");
+                arrivalTimeText.setText(unit.getOriginalDepartureTime().trim() + " - " + unit.getOriginalArrivalTime());
                 arrivalList.addView(line);
+
+                TextView tripNumberText = (TextView) line.findViewById(R.id.trip_number_text);
+                tripNumberText.setText(unit.getOriginalTrain() + " to " + unit.getOriginalLine());
+
+                TextView tardyText = (TextView) line.findViewById(R.id.tardy_text);
+                tardyText.setText(unit.getOriginalDelay());
+
             }
 
             return convertView;
@@ -195,6 +266,77 @@ public class RailStationNextToArriveResults extends AppCompatActivity implements
     }
 
 
+    private class NextToArriveLine {
+        List<NextToArriveModel> nextToArriveModels = new ArrayList<NextToArriveModel>();
+        String lineName;
+
+        NextToArriveLine(String lineName) {
+            this.lineName = lineName;
+        }
+
+        List<NextToArriveModel> getList() {
+            return nextToArriveModels;
+        }
+
+        void addItem(NextToArriveModel item) {
+            nextToArriveModels.add(item);
+        }
+
+        @Override
+        public int hashCode() {
+            if (lineName == null)
+                return 0;
+
+            return lineName.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null && lineName == null)
+                return true;
+            if (lineName != null)
+                return lineName.equals(obj);
+
+            return false;
+        }
+
+
+    }
+
+    private static class BottomSheetHandler extends BottomSheetBehavior.BottomSheetCallback implements View.OnClickListener {
+        BottomSheetBehavior bottomSheetBehavior;
+
+        int targetState;
+
+        BottomSheetHandler(BottomSheetBehavior bottomSheetBehavior) {
+            this.bottomSheetBehavior = bottomSheetBehavior;
+            targetState = bottomSheetBehavior.getState();
+        }
+
+        @Override
+        public void onStateChanged(@NonNull View bottomSheet, int newState) {
+            if (newState == BottomSheetBehavior.STATE_DRAGGING) {
+                bottomSheetBehavior.setState(targetState);
+            }
+        }
+
+        @Override
+        public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+
+        }
+
+        @Override
+        public void onClick(View view) {
+            Log.d(TAG, "state is:" + bottomSheetBehavior.getState());
+            if (targetState == BottomSheetBehavior.STATE_EXPANDED) {
+                targetState = BottomSheetBehavior.STATE_COLLAPSED;
+            } else if (targetState == BottomSheetBehavior.STATE_COLLAPSED) {
+                targetState = BottomSheetBehavior.STATE_EXPANDED;
+            }
+
+            bottomSheetBehavior.setState(targetState);
+        }
+    }
 }
 
 

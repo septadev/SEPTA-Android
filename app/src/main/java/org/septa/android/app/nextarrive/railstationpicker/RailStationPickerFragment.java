@@ -67,7 +67,7 @@ public class RailStationPickerFragment extends DialogFragment implements Navigat
             public void accept(StopModel var1) {
                 currentStop[1] = var1;
             }
-        });
+        }, cursorAdapterSupplier);
 
         mSectionsPagerAdapter = new RailStationPickerFragment.SectionsPagerAdapter(getChildFragmentManager());
 
@@ -177,5 +177,7 @@ public class RailStationPickerFragment extends DialogFragment implements Navigat
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
+
+
 
 }

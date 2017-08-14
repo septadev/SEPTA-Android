@@ -60,6 +60,7 @@ public class RailTabActivityHandler extends BaseTabActivityHandler {
         private StopModel endingStation;
         private EditText startingStationEditText;
         private TextView closestStationText;
+        private boolean startingStationAutoChoice = false;
 
         private CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
 
@@ -79,13 +80,17 @@ public class RailTabActivityHandler extends BaseTabActivityHandler {
             closestStationText = (TextView) rootView.findViewById(R.id.closest_station);
             final Button queryButton = (Button) rootView.findViewById(R.id.view_trains_button);
 
+            if (startingStationAutoChoice)
+                closestStationText.setVisibility(View.VISIBLE);
+            else closestStationText.setVisibility(View.INVISIBLE);
+
             final AsyncTask<Location, Void, StopModel> task = new AsyncTask<Location, Void, StopModel>() {
 
                 @Override
                 protected StopModel doInBackground(Location... locations) {
-                    StopModel closestStop = null;
                     Location location = locations[0];
 
+                    StopModel closestStop = null;
                     if (location != null) {
                         LatLng center = new LatLng(location.getLatitude(), location.getLongitude());
 
@@ -131,6 +136,7 @@ public class RailTabActivityHandler extends BaseTabActivityHandler {
                 @Override
                 protected void onPostExecute(StopModel stopModel) {
                     if (stopModel != null && startingStation == null) {
+                        startingStationAutoChoice = true;
                         setStartingStation(stopModel, View.VISIBLE);
                     }
                 }
@@ -155,6 +161,7 @@ public class RailTabActivityHandler extends BaseTabActivityHandler {
             startingStationEditText.setOnTouchListener(new RailStationQuery.StationPickerOnTouchListener(this, new Consumer<StopModel>() {
                         @Override
                         public void accept(StopModel var1) {
+                            startingStationAutoChoice = false;
                             setStartingStation(var1, View.INVISIBLE);
                         }
                     }, cursorAdapterSupplier)

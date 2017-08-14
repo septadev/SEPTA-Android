@@ -55,10 +55,10 @@ public class NextToArrive extends AppCompatActivity
         DatabaseManager dbManager = DatabaseManager.getInstance(this);
 
         tabActivityHandlers = new TabActivityHandler[5];
-        tabActivityHandlers[0] = new RailTabActivityHandler(getString(R.string.rail_tab), dbManager.getRailStopCursorAdapterSupplier());
-        tabActivityHandlers[1] = new BusTabActivityHandler(getString(R.string.bus_tab));
-        tabActivityHandlers[2] = new TrollyTabActivityHandler(getString(R.string.trolly_tab));
-        tabActivityHandlers[3] = new SubwayTabActivityHandler(getString(R.string.subway_tab));
+        tabActivityHandlers[1] = new RailTabActivityHandler(getString(R.string.rail_tab), dbManager.getRailStopCursorAdapterSupplier());
+        tabActivityHandlers[0] = new BusTabActivityHandler(getString(R.string.bus_tab));
+        tabActivityHandlers[3] = new TrollyTabActivityHandler(getString(R.string.trolly_tab));
+        tabActivityHandlers[2] = new SubwayTabActivityHandler(getString(R.string.subway_tab));
         tabActivityHandlers[4] = new RailTabActivityHandler(getString(R.string.nhsl_tab), dbManager.getNhslStopCursorAdapterSupplier());
         //tabActivityHandlers[4] = new SubwayTabActivityHandler(getString(R.string.nhsl_tab));
 
@@ -81,7 +81,6 @@ public class NextToArrive extends AppCompatActivity
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-        //mViewPager.setOffscreenPageLimit(5);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);

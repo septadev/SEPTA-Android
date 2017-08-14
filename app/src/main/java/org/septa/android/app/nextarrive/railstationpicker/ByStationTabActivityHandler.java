@@ -45,13 +45,8 @@ public class ByStationTabActivityHandler extends BaseTabActivityHandler {
 
 
     public static class PlaceholderFragment extends Fragment {
-        ListView list;
-        StopModel currentStop;
-
-        public void setConsumer(Consumer<StopModel> target) {
-            this.consumer = target;
-        }
-
+        private ListView list;
+        private StopModel currentStop;
         private Consumer<StopModel> consumer;
         private CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
 
@@ -77,7 +72,7 @@ public class ByStationTabActivityHandler extends BaseTabActivityHandler {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.rail_station_picker, container, false);
+            View rootView = inflater.inflate(R.layout.rail_station_picker_by_station, container, false);
             list = (ListView) rootView.findViewById(R.id.rail_station_list);
 
             //cursorAdapterSupplier = DatabaseManager.getInstance(getActivity()).getRailStopCursorAdapterSupplier();
@@ -98,6 +93,9 @@ public class ByStationTabActivityHandler extends BaseTabActivityHandler {
             return rootView;
         }
 
+        public void setConsumer(Consumer<StopModel> target) {
+            this.consumer = target;
+        }
         public void setCursorAdapterSupplier(CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
             this.cursorAdapterSupplier = cursorAdapterSupplier;
         }

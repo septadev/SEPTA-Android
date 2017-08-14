@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="2dp"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/address_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Address"
+        android:textSize="8pt" />
+
+    <EditText
+        android:id="@+id/address_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/address_label"
+        android:hint="Address"
+        android:inputType="text"
+        android:maxLines="1"
+        android:paddingRight="20dp" />
+
+    <ImageView
+        android:id="@+id/my_location_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/address_edit"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/address_label"
+        android:src="@drawable/ic_my_location_black_18dp" />
+
+    <ListView android:id="@+id/stop_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/address_edit"
+        android:choiceMode="singleChoice"
+        android:listSelector="#666666"/>
+
+</RelativeLayout>

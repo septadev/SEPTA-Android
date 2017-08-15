@@ -22,8 +22,8 @@
         android:id="@+id/starting_rail_station"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
         android:hint="@string/starting_station_hint"
+        android:layout_marginLeft="10dp"
         android:inputType="text"
         android:lines="1"
         android:maxLines="1" />

@@ -14,8 +14,8 @@ import org.septa.android.app.support.BaseTabActivityHandler;
  */
 
 public class TrollyTabActivityHandler extends BaseTabActivityHandler {
-    public TrollyTabActivityHandler(String title) {
-        super(title);
+    public TrollyTabActivityHandler(String title, int iconDrawable) {
+        super(title, iconDrawable);
     }
 
     @Override

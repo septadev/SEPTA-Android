@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/top"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:layout_marginLeft="5dp"
+            android:text="FIND NEXT BUS" />
+
+        <Spinner android:id="@+id/route_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Route"
+            android:layout_marginLeft="10dp" />
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/colorPrimaryDark" />
+    </LinearLayout>
+
+
+    <LinearLayout android:visibility="invisible"
+        android:padding="2dp"
+        android:id="@+id/secondary_selection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/top"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="10dp"
+            android:text="Starting Stop" />
+
+        <EditText
+            android:id="@+id/starting_rail_station"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:hint="Starting Stop"
+            android:inputType="text"
+            android:lines="1"
+            android:maxLines="1" />
+
+        <TextView
+            android:id="@+id/closest_station"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="10dp"
+            android:text="Showing closest stop"
+            android:visibility="invisible" />
+
+        <EditText
+            android:id="@+id/ending_rail_station"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:hint="Destination Stop"
+            android:inputType="text"
+            android:lines="1"
+            android:maxLines="1" />
+
+        <Button
+            android:id="@+id/view_trains_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:text="VIEW BUSES" />
+    </LinearLayout>
+</RelativeLayout>

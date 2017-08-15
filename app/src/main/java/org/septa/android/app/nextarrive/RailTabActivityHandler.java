@@ -44,8 +44,8 @@ public class RailTabActivityHandler extends BaseTabActivityHandler {
     private static final String TAG = "RailTabActivityHandler";
     private CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
 
-    public RailTabActivityHandler(String title, CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
-        super(title);
+    public RailTabActivityHandler(String title, CursorAdapterSupplier<StopModel> cursorAdapterSupplier, int iconDrawable) {
+        super(title, iconDrawable);
         this.cursorAdapterSupplier = cursorAdapterSupplier;
     }
 

@@ -14,8 +14,8 @@ import org.septa.android.app.support.BaseTabActivityHandler;
  */
 
 public class SubwayTabActivityHandler extends BaseTabActivityHandler {
-    public SubwayTabActivityHandler(String title) {
-        super(title);
+    public SubwayTabActivityHandler(String title, int iconDrawable) {
+        super(title, iconDrawable);
     }
 
     @Override

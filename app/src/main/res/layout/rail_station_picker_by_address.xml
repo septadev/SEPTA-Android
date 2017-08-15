@@ -36,6 +36,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/address_edit"
         android:choiceMode="singleChoice"
-        android:listSelector="#666666"/>
+        android:listSelector="#666666"
+        android:fastScrollEnabled="true"/>
 
 </RelativeLayout>

@@ -19,8 +19,10 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -55,11 +57,11 @@ public class NextToArrive extends AppCompatActivity
         DatabaseManager dbManager = DatabaseManager.getInstance(this);
 
         tabActivityHandlers = new TabActivityHandler[5];
-        tabActivityHandlers[1] = new RailTabActivityHandler(getString(R.string.rail_tab), dbManager.getRailStopCursorAdapterSupplier());
-        tabActivityHandlers[0] = new BusTabActivityHandler(getString(R.string.bus_tab));
-        tabActivityHandlers[3] = new TrollyTabActivityHandler(getString(R.string.trolly_tab));
-        tabActivityHandlers[2] = new SubwayTabActivityHandler(getString(R.string.subway_tab));
-        tabActivityHandlers[4] = new RailTabActivityHandler(getString(R.string.nhsl_tab), dbManager.getNhslStopCursorAdapterSupplier());
+        tabActivityHandlers[1] = new RailTabActivityHandler(getString(R.string.rail_tab), dbManager.getRailStopCursorAdapterSupplier(), R.drawable.rail_white);
+        tabActivityHandlers[0] = new BusTabActivityHandler(getString(R.string.bus_tab), dbManager.getBusRouteCursorAdapterSupplier(), R.drawable.bus_white);
+        tabActivityHandlers[3] = new TrollyTabActivityHandler(getString(R.string.trolly_tab), R.drawable.trolley_white);
+        tabActivityHandlers[2] = new SubwayTabActivityHandler(getString(R.string.subway_tab), R.drawable.subway_white);
+        tabActivityHandlers[4] = new RailTabActivityHandler(getString(R.string.nhsl_tab), dbManager.getNhslStopCursorAdapterSupplier(), R.drawable.nhsl_white);
         //tabActivityHandlers[4] = new SubwayTabActivityHandler(getString(R.string.nhsl_tab));
 
         setContentView(R.layout.activity_next_to_arrive);
@@ -84,8 +86,18 @@ public class NextToArrive extends AppCompatActivity
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
+        setUpTabs(tabLayout);
 
 
+    }
+
+    private void setUpTabs(TabLayout tabLayout) {
+        for (int i = 0; i < tabActivityHandlers.length; i++) {
+            TextView tab = (TextView) LayoutInflater.from(this).inflate(R.layout.custom_tab, null);
+            tab.setText(tabActivityHandlers[i].getTabTitle());
+            tab.setCompoundDrawablesWithIntrinsicBounds(tabActivityHandlers[i].getDrawableId(), 0, 0, 0);
+            tabLayout.getTabAt(i).setCustomView(tab);
+        }
     }
 
 

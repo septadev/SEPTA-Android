@@ -12,6 +12,7 @@ import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -22,6 +23,7 @@ import org.septa.android.app.domain.RouteModel;
 import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.support.BaseTabActivityHandler;
 import org.septa.android.app.support.CursorAdapterSupplier;
+import org.septa.android.app.support.RouteModelComparator;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,6 +39,7 @@ import okhttp3.Route;
 
 public class BusTabActivityHandler extends BaseTabActivityHandler {
     CursorAdapterSupplier<RouteModel> cursorAdapterSupplier;
+    List<RouteModel> routes;
 
     public BusTabActivityHandler(String title, CursorAdapterSupplier<RouteModel> cursorAdapterSupplier, int iconDrawable) {
         super(title, iconDrawable);
@@ -52,6 +55,8 @@ public class BusTabActivityHandler extends BaseTabActivityHandler {
 
     public static class PlaceholderFragment extends Fragment {
         CursorAdapterSupplier<RouteModel> cursorAdapterSupplier;
+        Spinner routeSpinner;
+
 
         public static PlaceholderFragment newInstance() {
             PlaceholderFragment fragment = new PlaceholderFragment();
@@ -63,62 +68,10 @@ public class BusTabActivityHandler extends BaseTabActivityHandler {
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.bus_next_to_arrive, container, false);
 
-            final Spinner routeSpinner = (Spinner) rootView.findViewById(R.id.route_spinner);
+            routeSpinner = (Spinner) rootView.findViewById(R.id.route_spinner);
 
-            AsyncTask<Void, Void, List<RouteModel>> task = new AsyncTask<Void, Void, List<RouteModel>>() {
-                @Override
-                protected List<RouteModel> doInBackground(Void... voids) {
-
-                    List<RouteModel> routes = new ArrayList<RouteModel>();
-                    Cursor cursor = cursorAdapterSupplier.getCursor(getActivity(), null);
-                    if (cursor != null) {
-                        if (cursor.moveToFirst()) {
-
-                            do {
-                                routes.add(cursorAdapterSupplier.getCurrentItemFromCursor(cursor));
-                            } while (cursor.moveToNext());
-                        }
-                    }
-
-                    return routes;
-                }
-
-                @Override
-                protected void onPostExecute(List<RouteModel> routeModels) {
-                    Collections.sort(routeModels, new Comparator<RouteModel>() {
-                        @Override
-                        public int compare(RouteModel x, RouteModel y) {
-                            StringBuilder xNumber = new StringBuilder();
-                            int i = 0;
-                            while (i < x.getRouteShortName().length() && Character.isDigit(x.getRouteShortName().charAt(i))) {
-                                xNumber.append(x.getRouteShortName().charAt(i++));
-                            }
-                            double x1 = Double.MAX_VALUE;
-                            if (i > 0)
-                                x1 = Double.parseDouble(xNumber.toString());
-                            String x2 = x.getRouteShortName().substring(i);
-
-                            StringBuilder yNumber = new StringBuilder();
-                            int j = 0;
-                            while (j < y.getRouteShortName().length() && Character.isDigit(y.getRouteShortName().charAt(j))) {
-                                yNumber.append(y.getRouteShortName().charAt(j++));
-                            }
-
-                            double y1 = Double.MAX_VALUE;
-                            if (j > 0)
-                                y1 = Double.parseDouble(yNumber.toString());
-                            String y2 = y.getRouteShortName().substring(j);
-
-                            if (x1 != y1)
-                                return (int) (x1 - y1);
-
-                            return x2.compareTo(y2);
-                        }
-                    });
-
-                    routeSpinner.setAdapter(new RouteAdapter(getActivity(), routeModels));
-                }
-            }.execute();
+            PopulateRouteSpinnerTask task = new PopulateRouteSpinnerTask(PlaceholderFragment.this);
+            task.execute();
 
 
             return rootView;
@@ -154,6 +107,55 @@ public class BusTabActivityHandler extends BaseTabActivityHandler {
 
             return convertView;
         }
+    }
 
+    private static class PopulateRouteSpinnerTask extends AsyncTask<Void, Void, List<RouteModel>> {
+        PlaceholderFragment fragment;
+
+        public PopulateRouteSpinnerTask(PlaceholderFragment fragment) {
+            this.fragment = fragment;
+        }
+
+        @Override
+        protected List<RouteModel> doInBackground(Void... voids) {
+
+            List<RouteModel> routes = new ArrayList<RouteModel>();
+            Cursor cursor = fragment.cursorAdapterSupplier.getCursor(fragment.getActivity(), null);
+            if (cursor != null) {
+                if (cursor.moveToFirst()) {
+
+                    do {
+                        routes.add(fragment.cursorAdapterSupplier.getCurrentItemFromCursor(cursor));
+                    } while (cursor.moveToNext());
+                }
+            }
+
+            return routes;
+        }
+
+        @Override
+        protected void onPostExecute(List<RouteModel> routeModels) {
+            Collections.sort(routeModels, new RouteModelComparator());
+
+            fragment.routeSpinner.setAdapter(new RouteAdapter(fragment.getActivity(), routeModels));
+            fragment.routeSpinner.setOnItemSelectedListener(new OnRouteSelection(fragment));
+        }
+    }
+
+    private static class OnRouteSelection implements AdapterView.OnItemSelectedListener {
+
+        public OnRouteSelection(PlaceholderFragment placeholderFragment) {
+
+        }
+
+        @Override
+        public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> adapterView) {
+
+        }
     }
 }

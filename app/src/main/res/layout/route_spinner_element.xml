@@ -6,7 +6,7 @@
 
     <TextView
         android:id="@+id/route_short_name"
-        android:layout_width="40dp"
+        android:layout_width="60dp"
         android:layout_height="wrap_content"
         android:gravity="left"
         android:text="84" />

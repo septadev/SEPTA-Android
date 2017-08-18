@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <LinearLayout
         android:id="@+id/top"
@@ -90,4 +91,24 @@
             android:layout_marginRight="30dp"
             android:text="VIEW BUSES" />
     </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/progress_view"
+        android:layout_below="@id/top"
+        android:visibility="gone"
+        tools:visibility="visible"
+        tools:alpha="128"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#44000000"
+        tools:background="0x00000000">
+
+        <ProgressBar
+            tools:alpha="128"
+            android:indeterminate="true"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+    </FrameLayout>
 </RelativeLayout>

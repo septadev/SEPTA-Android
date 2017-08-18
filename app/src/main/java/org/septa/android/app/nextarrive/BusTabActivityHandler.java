@@ -76,6 +76,7 @@ public class BusTabActivityHandler extends BaseTabActivityHandler {
 
         Spinner routeSpinner;
         View secondaryView;
+        View progressView;
         EditText startingStopEditText;
         private StopModel startingStation;
         private StopModel endingStation;
@@ -96,6 +97,8 @@ public class BusTabActivityHandler extends BaseTabActivityHandler {
             View rootView = inflater.inflate(R.layout.bus_next_to_arrive, container, false);
 
             secondaryView = rootView.findViewById(R.id.secondary_selection);
+
+            progressView = rootView.findViewById(R.id.progress_view);
 
             routeSpinner = (Spinner) rootView.findViewById(R.id.route_spinner);
 
@@ -226,6 +229,10 @@ public class BusTabActivityHandler extends BaseTabActivityHandler {
         public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
             if (i != 0) {
                 fragment.secondaryView.setVisibility(View.VISIBLE);
+                fragment.startingStation = null;
+                fragment.endingStation=null;
+                fragment.startingStopEditText.setText(null);
+                fragment.destinationStopEditText.setText(null);
 
 
                 final AsyncTask<Location, Void, StopModel> task = new FinderClosestStationTask(fragment.getActivity(), new RouteSpecificCursorAdapterSupplier(fragment.stopCursorAdapterSupplier,fragment,false), new Consumer<StopModel>() {
@@ -233,6 +240,7 @@ public class BusTabActivityHandler extends BaseTabActivityHandler {
                     public void accept(StopModel stopModel) {
                         if (stopModel != null)
                             fragment.setStartingStation(stopModel, View.VISIBLE);
+                        fragment.progressView.setVisibility(View.GONE);
                     }
                 });
 
@@ -241,7 +249,7 @@ public class BusTabActivityHandler extends BaseTabActivityHandler {
                 if (permissionCheck == PackageManager.PERMISSION_GRANTED)
 
                 {
-
+                    fragment.progressView.setVisibility(View.VISIBLE);
                     Task<Location> locationTask = LocationServices.getFusedLocationProviderClient(fragment.getActivity()).getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
                         @Override
                         public void onSuccess(Location location) {

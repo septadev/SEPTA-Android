@@ -47,6 +47,12 @@ public class RailStationPickerFragment extends DialogFragment implements Navigat
     private CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
 
     @Override
+    public void onResume() {
+        Log.d(TAG, "onResume()");
+        super.onResume();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.d(TAG, "onCreateDialog");

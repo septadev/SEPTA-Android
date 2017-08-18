@@ -1,15 +1,19 @@
 package org.septa.android.app.nextarrive;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.CursorAdapter;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -18,19 +22,24 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+
 import org.septa.android.app.R;
-import org.septa.android.app.domain.RouteModel;
+import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.domain.StopModel;
+import org.septa.android.app.nextarrive.railstationpicker.FinderClosestStationTask;
+import org.septa.android.app.nextarrive.railstationpicker.RailStationPickerFragment;
 import org.septa.android.app.support.BaseTabActivityHandler;
+import org.septa.android.app.support.Consumer;
+import org.septa.android.app.support.Criteria;
 import org.septa.android.app.support.CursorAdapterSupplier;
 import org.septa.android.app.support.RouteModelComparator;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-
-import okhttp3.Route;
 
 
 /**
@@ -38,24 +47,42 @@ import okhttp3.Route;
  */
 
 public class BusTabActivityHandler extends BaseTabActivityHandler {
-    CursorAdapterSupplier<RouteModel> cursorAdapterSupplier;
-    List<RouteModel> routes;
+    CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier;
+    CursorAdapterSupplier<StopModel> stopCursorAdapterSupplier;
+    CursorAdapterSupplier<StopModel> busStopAfterCursorAdapterSupplier;
 
-    public BusTabActivityHandler(String title, CursorAdapterSupplier<RouteModel> cursorAdapterSupplier, int iconDrawable) {
+
+    public BusTabActivityHandler(String title, CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier, CursorAdapterSupplier<StopModel> busStopCursorAdapterSupplier, CursorAdapterSupplier<StopModel> busStopAfterCursorAdapterSupplier, int iconDrawable) {
         super(title, iconDrawable);
-        this.cursorAdapterSupplier = cursorAdapterSupplier;
+        this.routeCursorAdapterSupplier = routeCursorAdapterSupplier;
+        this.stopCursorAdapterSupplier = busStopCursorAdapterSupplier;
+        this.busStopAfterCursorAdapterSupplier = busStopAfterCursorAdapterSupplier;
     }
 
     @Override
     public Fragment getFragment() {
         BusTabActivityHandler.PlaceholderFragment fragment = BusTabActivityHandler.PlaceholderFragment.newInstance();
-        fragment.setCursorAdapterSupplier(cursorAdapterSupplier);
+        fragment.setRouteCursorAdapterSupplier(routeCursorAdapterSupplier);
+        fragment.setStopCursorAdapterSupplier(stopCursorAdapterSupplier);
+        fragment.setStopAfterCursorAdapterSupplier(busStopAfterCursorAdapterSupplier);
+
         return fragment;
     }
 
     public static class PlaceholderFragment extends Fragment {
-        CursorAdapterSupplier<RouteModel> cursorAdapterSupplier;
+        CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier;
+        CursorAdapterSupplier<StopModel> stopCursorAdapterSupplier;
+        CursorAdapterSupplier<StopModel> stopAfterCursorAdapterSupplier;
+
         Spinner routeSpinner;
+        View secondaryView;
+        EditText startingStopEditText;
+        private StopModel startingStation;
+        private StopModel endingStation;
+
+        List<RouteDirectionModel> routes;
+        private TextView closestStopText;
+        private EditText destinationStopEditText;
 
 
         public static PlaceholderFragment newInstance() {
@@ -68,22 +95,60 @@ public class BusTabActivityHandler extends BaseTabActivityHandler {
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.bus_next_to_arrive, container, false);
 
+            secondaryView = rootView.findViewById(R.id.secondary_selection);
+
             routeSpinner = (Spinner) rootView.findViewById(R.id.route_spinner);
 
             PopulateRouteSpinnerTask task = new PopulateRouteSpinnerTask(PlaceholderFragment.this);
             task.execute();
+            startingStopEditText = (EditText) rootView.findViewById(R.id.starting_stop);
+            destinationStopEditText = (EditText) rootView.findViewById(R.id.destination_stop);
+            closestStopText = (TextView) rootView.findViewById(R.id.closest_stop);
 
+            startingStopEditText.setOnTouchListener(new StopPickerOnTouchListener(this, new Consumer<StopModel>() {
+                        @Override
+                        public void accept(StopModel var1) {
+                            setStartingStation(var1, View.INVISIBLE);
+                        }
+                    }, stopCursorAdapterSupplier, false)
+            );
+
+            destinationStopEditText.setOnTouchListener(new StopPickerOnTouchListener(this, new Consumer<StopModel>() {
+                        @Override
+                        public void accept(StopModel var1) {
+                            endingStation = var1;
+                            destinationStopEditText.setText(endingStation.getStopName());
+                        }
+                    }, stopAfterCursorAdapterSupplier, true)
+            );
 
             return rootView;
         }
 
-        public void setCursorAdapterSupplier(CursorAdapterSupplier<RouteModel> cursorAdapterSupplier) {
-            this.cursorAdapterSupplier = cursorAdapterSupplier;
+        public void setRouteCursorAdapterSupplier(CursorAdapterSupplier<RouteDirectionModel> cursorAdapterSupplier) {
+            this.routeCursorAdapterSupplier = cursorAdapterSupplier;
+        }
+
+        public void setStopCursorAdapterSupplier(CursorAdapterSupplier<StopModel> stopCursorAdapterSupplier) {
+            this.stopCursorAdapterSupplier = stopCursorAdapterSupplier;
+        }
+
+        private void setStartingStation(StopModel start, int invisible) {
+            startingStation = start;
+            startingStopEditText.setText(startingStation.getStopName());
+            closestStopText.setVisibility(invisible);
+            destinationStopEditText.setText(null);
+            endingStation = null;
+        }
+
+        public void setStopAfterCursorAdapterSupplier(CursorAdapterSupplier<StopModel> stopAfterCursorAdapterSupplier) {
+            this.stopAfterCursorAdapterSupplier = stopAfterCursorAdapterSupplier;
         }
     }
 
-    public static class RouteAdapter extends ArrayAdapter<RouteModel> {
-        public RouteAdapter(@NonNull Context context, @NonNull List<RouteModel> objects) {
+
+    public static class RouteAdapter extends ArrayAdapter<RouteDirectionModel> {
+        public RouteAdapter(@NonNull Context context, @NonNull List<RouteDirectionModel> objects) {
             super(context, 0, objects);
         }
 
@@ -98,18 +163,23 @@ public class BusTabActivityHandler extends BaseTabActivityHandler {
             if (convertView == null)
                 convertView = LayoutInflater.from(getContext()).inflate(R.layout.route_spinner_element, parent, false);
 
-            RouteModel route = getItem(position);
             TextView short_name = (TextView) convertView.findViewById(R.id.route_short_name);
-            short_name.setText(route.getRouteShortName());
-
             TextView long_name = (TextView) convertView.findViewById(R.id.route_long_name);
-            long_name.setText(route.getRouteLongName());
+
+            RouteDirectionModel route = getItem(position);
+            if (route != null) {
+                short_name.setText(route.getRouteShortName());
+                long_name.setText(route.getDirectionDescription());
+            } else {
+                short_name.setText(null);
+                long_name.setText(null);
+            }
 
             return convertView;
         }
     }
 
-    private static class PopulateRouteSpinnerTask extends AsyncTask<Void, Void, List<RouteModel>> {
+    private static class PopulateRouteSpinnerTask extends AsyncTask<Void, Void, List<RouteDirectionModel>> {
         PlaceholderFragment fragment;
 
         public PopulateRouteSpinnerTask(PlaceholderFragment fragment) {
@@ -117,15 +187,15 @@ public class BusTabActivityHandler extends BaseTabActivityHandler {
         }
 
         @Override
-        protected List<RouteModel> doInBackground(Void... voids) {
+        protected List<RouteDirectionModel> doInBackground(Void... voids) {
 
-            List<RouteModel> routes = new ArrayList<RouteModel>();
-            Cursor cursor = fragment.cursorAdapterSupplier.getCursor(fragment.getActivity(), null);
+            List<RouteDirectionModel> routes = new ArrayList<RouteDirectionModel>();
+            Cursor cursor = fragment.routeCursorAdapterSupplier.getCursor(fragment.getActivity(), null);
             if (cursor != null) {
                 if (cursor.moveToFirst()) {
 
                     do {
-                        routes.add(fragment.cursorAdapterSupplier.getCurrentItemFromCursor(cursor));
+                        routes.add(fragment.routeCursorAdapterSupplier.getCurrentItemFromCursor(cursor));
                     } while (cursor.moveToNext());
                 }
             }
@@ -134,28 +204,137 @@ public class BusTabActivityHandler extends BaseTabActivityHandler {
         }
 
         @Override
-        protected void onPostExecute(List<RouteModel> routeModels) {
-            Collections.sort(routeModels, new RouteModelComparator());
+        protected void onPostExecute(List<RouteDirectionModel> routeDirectionModels) {
+            routeDirectionModels.add(0, null);
+            Collections.sort(routeDirectionModels, new RouteModelComparator());
 
-            fragment.routeSpinner.setAdapter(new RouteAdapter(fragment.getActivity(), routeModels));
+            fragment.routes = routeDirectionModels;
+
+            fragment.routeSpinner.setAdapter(new RouteAdapter(fragment.getActivity(), routeDirectionModels));
             fragment.routeSpinner.setOnItemSelectedListener(new OnRouteSelection(fragment));
         }
     }
 
     private static class OnRouteSelection implements AdapterView.OnItemSelectedListener {
+        PlaceholderFragment fragment;
 
-        public OnRouteSelection(PlaceholderFragment placeholderFragment) {
-
+        public OnRouteSelection(PlaceholderFragment fragment) {
+            this.fragment = fragment;
         }
 
         @Override
         public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+            if (i != 0) {
+                fragment.secondaryView.setVisibility(View.VISIBLE);
 
+
+                final AsyncTask<Location, Void, StopModel> task = new FinderClosestStationTask(fragment.getActivity(), new RouteSpecificCursorAdapterSupplier(fragment.stopCursorAdapterSupplier,fragment,false), new Consumer<StopModel>() {
+                    @Override
+                    public void accept(StopModel stopModel) {
+                        if (stopModel != null)
+                            fragment.setStartingStation(stopModel, View.VISIBLE);
+                    }
+                });
+
+                int permissionCheck = ContextCompat.checkSelfPermission(fragment.getActivity(),
+                        Manifest.permission.ACCESS_FINE_LOCATION);
+                if (permissionCheck == PackageManager.PERMISSION_GRANTED)
+
+                {
+
+                    Task<Location> locationTask = LocationServices.getFusedLocationProviderClient(fragment.getActivity()).getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            task.execute(location);
+                        }
+                    });
+                }
+
+
+            } else
+                fragment.secondaryView.setVisibility(View.INVISIBLE);
         }
 
         @Override
         public void onNothingSelected(AdapterView<?> adapterView) {
 
+        }
+    }
+
+    public static class StopPickerOnTouchListener implements View.OnTouchListener {
+        private PlaceholderFragment parent;
+        private Consumer<StopModel> consumer;
+        private CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
+        private boolean userAfter;
+
+        StopPickerOnTouchListener(PlaceholderFragment parent, Consumer<StopModel> consumer, CursorAdapterSupplier<StopModel> cursorAdapterSupplier, boolean userAfter) {
+            this.parent = parent;
+            this.consumer = consumer;
+            this.cursorAdapterSupplier = cursorAdapterSupplier;
+            this.userAfter = userAfter;
+        }
+
+        @Override
+        public boolean onTouch(View view, MotionEvent motionEvent) {
+            int action = motionEvent.getActionMasked();
+            if (action == MotionEvent.ACTION_UP) {
+                if (userAfter && parent.startingStation == null)
+                    return true;
+
+                FragmentTransaction ft = parent.getFragmentManager().beginTransaction();
+                Fragment prev = parent.getFragmentManager().findFragmentByTag("dialog");
+                if (prev != null) {
+                    ft.remove(prev);
+                }
+                ft.addToBackStack(null);
+
+                CursorAdapterSupplier<StopModel> routeSpecificCursorAdapterSupplier = new RouteSpecificCursorAdapterSupplier(cursorAdapterSupplier, parent, userAfter);
+
+                // Create and show the dialog.
+                RailStationPickerFragment newFragment = RailStationPickerFragment.newInstance(consumer, routeSpecificCursorAdapterSupplier);
+                newFragment.show(ft, "dialog");
+
+                return true;
+            }
+            return false;
+        }
+    }
+
+    static class RouteSpecificCursorAdapterSupplier implements CursorAdapterSupplier<StopModel> {
+        CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
+        PlaceholderFragment parent;
+        private boolean userAfter;
+
+
+        public RouteSpecificCursorAdapterSupplier(CursorAdapterSupplier<StopModel> cursorAdapterSupplier, PlaceholderFragment parent, boolean userAfter) {
+            this.cursorAdapterSupplier = cursorAdapterSupplier;
+            this.parent = parent;
+            this.userAfter = userAfter;
+        }
+
+        @Override
+        public Cursor getCursor(Context context, List<Criteria> whereClause) {
+            StringBuilder whereClauseBuilder = new StringBuilder();
+            if (whereClause == null) {
+                whereClause = new ArrayList<Criteria>();
+            }
+            whereClause.add(new Criteria("route_id", Criteria.Operation.EQ, parent.routes.get(parent.routeSpinner.getSelectedItemPosition()).getRouteId()));
+            whereClause.add(new Criteria("direction_id", Criteria.Operation.EQ, parent.routes.get(parent.routeSpinner.getSelectedItemPosition()).getDirectionCode()));
+            if (userAfter) {
+                whereClause.add(new Criteria("after_stop_id", Criteria.Operation.EQ, parent.startingStation.getStopId()));
+            }
+
+            return cursorAdapterSupplier.getCursor(context, whereClause);
+        }
+
+        @Override
+        public StopModel getCurrentItemFromCursor(Cursor cursor) {
+            return cursorAdapterSupplier.getCurrentItemFromCursor(cursor);
+        }
+
+        @Override
+        public StopModel getItemFromId(Context context, Object id) {
+            return cursorAdapterSupplier.getItemFromId(context, id);
         }
     }
 }

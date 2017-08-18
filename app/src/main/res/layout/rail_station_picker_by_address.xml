@@ -31,12 +31,13 @@
         android:layout_below="@id/address_label"
         android:src="@drawable/ic_my_location_black_18dp" />
 
-    <ListView android:id="@+id/stop_list"
+    <ListView
+        android:id="@+id/stop_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/address_edit"
         android:choiceMode="singleChoice"
-        android:listSelector="#666666"
-        android:fastScrollEnabled="true"/>
+        android:fastScrollEnabled="true"
+        android:listSelector="#666666" />
 
 </RelativeLayout>

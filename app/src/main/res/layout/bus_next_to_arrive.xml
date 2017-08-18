@@ -16,12 +16,19 @@
             android:layout_marginLeft="5dp"
             android:text="FIND NEXT BUS" />
 
-        <Spinner android:id="@+id/route_spinner"
+        <Spinner
+            android:id="@+id/route_spinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Route"
-            android:layout_marginLeft="10dp" />
+            android:layout_marginLeft="10dp"
+            android:hint="Route" />
 
+        <Spinner
+            android:id="@+id/route_direction"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:visibility="invisible" />
 
         <View
             android:layout_width="match_parent"
@@ -30,13 +37,14 @@
     </LinearLayout>
 
 
-    <LinearLayout android:visibility="invisible"
-        android:padding="2dp"
+    <LinearLayout
         android:id="@+id/secondary_selection"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/top"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="2dp"
+        android:visibility="invisible">
 
         <TextView
             android:layout_width="wrap_content"
@@ -46,7 +54,7 @@
             android:text="Starting Stop" />
 
         <EditText
-            android:id="@+id/starting_rail_station"
+            android:id="@+id/starting_stop"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
@@ -56,7 +64,7 @@
             android:maxLines="1" />
 
         <TextView
-            android:id="@+id/closest_station"
+            android:id="@+id/closest_stop"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
@@ -65,7 +73,7 @@
             android:visibility="invisible" />
 
         <EditText
-            android:id="@+id/ending_rail_station"
+            android:id="@+id/destination_stop"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
@@ -75,7 +83,7 @@
             android:maxLines="1" />
 
         <Button
-            android:id="@+id/view_trains_button"
+            android:id="@+id/view_buses_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="30dp"

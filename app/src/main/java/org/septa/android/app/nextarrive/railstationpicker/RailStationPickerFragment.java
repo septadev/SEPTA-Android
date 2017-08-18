@@ -174,6 +174,7 @@ public class RailStationPickerFragment extends DialogFragment implements Navigat
         this.cursorAdapterSupplier = cursorAdapterSupplier;
     }
 
+
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }

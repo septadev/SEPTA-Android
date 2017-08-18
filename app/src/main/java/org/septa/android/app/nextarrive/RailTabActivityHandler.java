@@ -28,12 +28,17 @@ import com.google.android.gms.tasks.Task;
 
 import org.septa.android.app.R;
 import org.septa.android.app.domain.StopModel;
+import org.septa.android.app.nextarrive.railstationpicker.FinderClosestStationTask;
 import org.septa.android.app.nextarrive.railstationpicker.RailStationPickerFragment;
 import org.septa.android.app.support.BaseTabActivityHandler;
 import org.septa.android.app.support.BiConsumer;
 import org.septa.android.app.support.Consumer;
+import org.septa.android.app.support.Criteria;
 import org.septa.android.app.support.CursorAdapterSupplier;
 import org.septa.android.app.support.LocationMathHelper;
+
+import java.util.LinkedList;
+import java.util.List;
 
 
 /**
@@ -84,65 +89,15 @@ public class RailTabActivityHandler extends BaseTabActivityHandler {
                 closestStationText.setVisibility(View.VISIBLE);
             else closestStationText.setVisibility(View.INVISIBLE);
 
-            final AsyncTask<Location, Void, StopModel> task = new AsyncTask<Location, Void, StopModel>() {
-
+            final AsyncTask<Location, Void, StopModel> task = new FinderClosestStationTask(getActivity(), cursorAdapterSupplier, new Consumer<StopModel>() {
                 @Override
-                protected StopModel doInBackground(Location... locations) {
-                    Location location = locations[0];
-
-                    StopModel closestStop = null;
-                    if (location != null) {
-                        LatLng center = new LatLng(location.getLatitude(), location.getLongitude());
-
-                        LatLng p1 = LocationMathHelper.calculateDerivedPosition(center, 5, 0);
-                        LatLng p2 = LocationMathHelper.calculateDerivedPosition(center, 5, 90);
-                        LatLng p3 = LocationMathHelper.calculateDerivedPosition(center, 5, 180);
-                        LatLng p4 = LocationMathHelper.calculateDerivedPosition(center, 5, 270);
-
-                        String whereCaluse = "CAST(stop_lon as decimal)>" + String.valueOf(p4.longitude) +
-                                " AND CAST(stop_lon as decimal)<" + String.valueOf(p2.longitude) +
-                                " AND CAST(stop_lat as decimal)<" + String.valueOf(p1.latitude) +
-                                " AND CAST(stop_lat as decimal)>" + String.valueOf(p3.latitude);
-
-                        Cursor cursor = null;
-                        try {
-                            cursor = cursorAdapterSupplier.getCursor(getActivity(), whereCaluse);
-
-                            double closestDistance = Double.MAX_VALUE;
-                            if (cursor.moveToFirst()) {
-                                StopModel stop = cursorAdapterSupplier.getCurrentItemFromCursor(cursor);
-                                while (stop != null) {
-                                    LatLng stopPoint = new LatLng(stop.getLatitude(), stop.getLongitude());
-                                    double distance = LocationMathHelper.distance(center, stopPoint);
-                                    if (distance < closestDistance) {
-                                        closestStop = stop;
-                                        closestDistance = distance;
-                                    }
-                                    if (cursor.moveToNext())
-                                        stop = cursorAdapterSupplier.getCurrentItemFromCursor(cursor);
-                                    else stop = null;
-                                }
-                            }
-                        } finally {
-                            if (cursor != null)
-                                cursor.close();
-                        }
-                    }
-
-
-                    return closestStop;
-                }
-
-                @Override
-                protected void onPostExecute(StopModel stopModel) {
+                public void accept(StopModel stopModel) {
                     if (stopModel != null && startingStation == null) {
                         startingStationAutoChoice = true;
                         setStartingStation(stopModel, View.VISIBLE);
                     }
                 }
-
-            };
-
+            });
 
             int permissionCheck = ContextCompat.checkSelfPermission(getActivity(),
                     Manifest.permission.ACCESS_FINE_LOCATION);

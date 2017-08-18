@@ -31,6 +31,7 @@ import org.septa.android.app.R;
 import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.support.BaseTabActivityHandler;
 import org.septa.android.app.support.Consumer;
+import org.septa.android.app.support.Criteria;
 import org.septa.android.app.support.CursorAdapterSupplier;
 import org.septa.android.app.support.LocationMathHelper;
 import org.septa.android.app.support.MapUtils;
@@ -38,6 +39,7 @@ import org.septa.android.app.support.MapUtils;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -136,19 +138,15 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
             if (location != null) {
                 LatLng center = new LatLng(location.getLatitude(), location.getLongitude());
 
-                LatLng p1 = LocationMathHelper.calculateDerivedPosition(center, 5, 0);
-                LatLng p2 = LocationMathHelper.calculateDerivedPosition(center, 5, 90);
-                LatLng p3 = LocationMathHelper.calculateDerivedPosition(center, 5, 180);
-                LatLng p4 = LocationMathHelper.calculateDerivedPosition(center, 5, 270);
-
-                String whereCaluse = "CAST(stop_lon as decimal)>" + String.valueOf(p4.longitude) +
-                        " AND CAST(stop_lon as decimal)<" + String.valueOf(p2.longitude) +
-                        " AND CAST(stop_lat as decimal)<" + String.valueOf(p1.latitude) +
-                        " AND CAST(stop_lat as decimal)>" + String.valueOf(p3.latitude);
+                List<Criteria> criteria = new LinkedList<Criteria>();
+                criteria.add(new Criteria("stop_lon", Criteria.Operation.GT, LocationMathHelper.calculateDerivedPosition(center, 5, 270).longitude));
+                criteria.add(new Criteria("stop_lon", Criteria.Operation.LT, LocationMathHelper.calculateDerivedPosition(center, 5, 90).longitude));
+                criteria.add(new Criteria("stop_lat", Criteria.Operation.LT, LocationMathHelper.calculateDerivedPosition(center, 5, 0).latitude));
+                criteria.add(new Criteria("stop_lat", Criteria.Operation.GT, LocationMathHelper.calculateDerivedPosition(center, 5, 180).latitude));
 
                 Cursor cursor = null;
                 try {
-                    cursor = fragment.cursorAdapterSupplier.getCursor(fragment.getActivity(), whereCaluse);
+                    cursor = fragment.cursorAdapterSupplier.getCursor(fragment.getActivity(), criteria);
 
                     double closestDistance = Double.MAX_VALUE;
                     if (cursor.moveToFirst()) {

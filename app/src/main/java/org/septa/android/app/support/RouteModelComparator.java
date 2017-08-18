@@ -2,7 +2,7 @@ package org.septa.android.app.support;
 
 import android.support.annotation.NonNull;
 
-import org.septa.android.app.domain.RouteModel;
+import org.septa.android.app.domain.RouteDirectionModel;
 
 import java.util.Comparator;
 
@@ -11,30 +11,36 @@ import java.util.Comparator;
  */
 
 
-public class RouteModelComparator implements Comparator<RouteModel> {
+public class RouteModelComparator implements Comparator<RouteDirectionModel> {
 
     @Override
-    public int compare(RouteModel x, RouteModel y) {
+    public int compare(RouteDirectionModel x, RouteDirectionModel y) {
+        if (x == y) return 0;
+        if (x == null)
+            return Integer.MIN_VALUE;
+        if (y == null)
+            return Integer.MAX_VALUE;
+
         ShortRouteNameParts xPart = getParts(x);
         ShortRouteNameParts yPart = getParts(y);
 
         return xPart.compareTo(yPart);
     }
 
-    private ShortRouteNameParts getParts(RouteModel routeModel){
+    private ShortRouteNameParts getParts(RouteDirectionModel routeDirectionModel){
         ShortRouteNameParts returnShortRouteNameParts = new ShortRouteNameParts();
 
         StringBuilder numberStringBuilder = new StringBuilder();
         int i = 0;
-        while (i < routeModel.getRouteShortName().length() && Character.isDigit(routeModel.getRouteShortName().charAt(i))) {
-            numberStringBuilder.append(routeModel.getRouteShortName().charAt(i++));
+        while (i < routeDirectionModel.getRouteShortName().length() && Character.isDigit(routeDirectionModel.getRouteShortName().charAt(i))) {
+            numberStringBuilder.append(routeDirectionModel.getRouteShortName().charAt(i++));
         }
 
         if (i > 0)
             returnShortRouteNameParts.number = Double.parseDouble(numberStringBuilder.toString());
         else returnShortRouteNameParts.number = Double.MAX_VALUE;
 
-        returnShortRouteNameParts.text = routeModel.getRouteShortName().substring(i);
+        returnShortRouteNameParts.text = routeDirectionModel.getRouteShortName().substring(i);
 
         return returnShortRouteNameParts;
     }

@@ -3,7 +3,7 @@
     package="org.septa.android.app">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:name=".MainApplication"
@@ -19,7 +19,7 @@
 
         <activity
             android:name=".nextarrive.NextToArrive"
-            android:label="@string/app_name"
+            android:label="@string/next_to_arrive"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -30,6 +30,10 @@
         <activity
             android:name=".nextarrive.RailStationNextToArriveResults"
             android:label="@string/RailStationNextToArriveResults"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".schedules.SchedulesActivity"
+            android:label="Schedules"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

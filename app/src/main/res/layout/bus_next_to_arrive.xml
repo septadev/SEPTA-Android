@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <TextView
+        <TextView android:id="@+id/find_next_label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
@@ -93,6 +93,7 @@
     </LinearLayout>
 
     <FrameLayout
+        android:clickable="true"
         android:id="@+id/progress_view"
         android:layout_below="@id/top"
         android:visibility="gone"

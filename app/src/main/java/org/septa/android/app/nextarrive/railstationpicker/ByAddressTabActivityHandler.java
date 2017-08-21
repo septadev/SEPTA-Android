@@ -7,6 +7,8 @@ import android.database.Cursor;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -68,6 +70,7 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
         MyLocationClickListener myLocationClickListener;
         ListView stopsListView;
         EditText edittext;
+        View progressView;
 
         public static ByAddressFragement newInstance(Consumer<StopModel> consumer, CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
             ByAddressFragement fragment = new ByAddressFragement();
@@ -85,11 +88,11 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
             View myLocationButton = rootView.findViewById(R.id.my_location_button);
             stopsListView = (ListView) rootView.findViewById(R.id.stop_list);
             edittext = (EditText) rootView.findViewById(R.id.address_edit);
+            progressView = rootView.findViewById(R.id.progress_view);
 
             final FindClosestStationTask task = new FindClosestStationTask(this);
 
             myLocationClickListener = new MyLocationClickListener(this);
-
             myLocationButton.setOnClickListener(myLocationClickListener);
             edittext.setOnKeyListener(new View.OnKeyListener() {
                 public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -97,6 +100,7 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
                     EditText editText = (EditText) v;
                     if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
                             (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                        progressView.setVisibility(View.VISIBLE);
                         FindAddressTask findAddressTask = new FindAddressTask(ByAddressFragement.this);
                         String[] args = new String[1];
                         args[0] = editText.getText().toString();
@@ -126,10 +130,11 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
 
         ByAddressFragement fragment;
 
-
         FindClosestStationTask(ByAddressFragement fragment) {
             this.fragment = fragment;
         }
+
+
 
         @Override
         protected List<StopModelWithDistance> doInBackground(Location... locations) {
@@ -181,7 +186,7 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
                 }
             });
             fragment.myLocationClickListener.setActive(true);
-
+            fragment.progressView.setVisibility(View.GONE);
         }
 
     }
@@ -210,6 +215,7 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
             if (permissionCheck == PackageManager.PERMISSION_GRANTED)
 
             {
+                fragment.progressView.setVisibility(View.VISIBLE);
                 final FindClosestStationTask task = new FindClosestStationTask(fragment);
 
                 Task<Location> locationTask = LocationServices.getFusedLocationProviderClient(fragment.getActivity()).getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
@@ -266,7 +272,6 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
 
         public FindAddressTask(ByAddressFragement fragment) {
             this.fragment = fragment;
-
         }
 
         @Override

@@ -19,18 +19,15 @@ public class SEPTADatabase extends SQLiteAssetHelper {
         // Causes database to overwrite when version changes
         setForcedUpgrade();
 
+        execSQL(new String[]{"CREATE INDEX tripsBUSIDX on trips_bus(trip_id)"});
+        execSQL(new String[]{"CREATE INDEX stopsBUSSTOPID on stop_times_bus(stop_id)"});
+        execSQL(new String[]{"CREATE INDEX stopsBUSSSEQ on stop_times_bus(stop_sequence)"});
+    }
+
+    private void execSQL(String statements[]) {
         try {
-            getWritableDatabase().execSQL("CREATE INDEX tripsBUSIDX on trips_bus(trip_id)");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        try {
-            getWritableDatabase().execSQL("CREATE INDEX stopsBUSSTOPID on stop_times_bus(stop_id)");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        try {
-            getWritableDatabase().execSQL("CREATE INDEX stopsBUSSSEQ on stop_times_bus(stop_sequence)");
+            for (String sql : statements)
+                getWritableDatabase().execSQL(sql);
         } catch (SQLException e) {
             e.printStackTrace();
         }

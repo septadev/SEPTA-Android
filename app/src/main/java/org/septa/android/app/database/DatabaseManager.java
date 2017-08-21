@@ -2,6 +2,7 @@ package org.septa.android.app.database;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
@@ -23,6 +24,10 @@ public class DatabaseManager {
 
     private static DatabaseManager instance;
     private static SQLiteDatabase database;
+
+    private static final int BUS = 3;
+    private static final int TROLLY = 0;
+
 
     private DatabaseManager(Context context) {
     }
@@ -62,10 +67,33 @@ public class DatabaseManager {
     }
 
     public CursorAdapterSupplier<RouteDirectionModel> getBusRouteCursorAdapterSupplier() {
-        return new BusRouteCursorAdapterSupplier();
+        return new BusRouteCursorAdapterSupplier(BUS);
     }
 
     public CursorAdapterSupplier<StopModel> getBusStopAfterCursorAdapterSupplier() {
+        return new BusStopAfterCursorAdapterSupplier();
+    }
+
+    public CursorAdapterSupplier<StopModel> getTrollyStopCursorAdapterSupplier() {
+        return new BusStopCursorAdapterSupplier();
+    }
+    public CursorAdapterSupplier<StopModel> getSubwayStopCursorAdapterSupplier() {
+        return new SubwayStopCursorAdapterSupplier();
+    }
+
+    public CursorAdapterSupplier<RouteDirectionModel> getTrollyRouteCursorAdapterSupplier() {
+        return new BusRouteCursorAdapterSupplier(TROLLY);
+    }
+
+    public CursorAdapterSupplier<RouteDirectionModel> getSubwayRouteCursorAdapterSupplier() {
+        return new SubwayRouteCursorAdapterSupplier();
+    }
+
+    public CursorAdapterSupplier<StopModel> getTrollyStopAfterCursorAdapterSupplier() {
+        return new BusStopAfterCursorAdapterSupplier();
+    }
+
+    public CursorAdapterSupplier<StopModel> getSubwayStopAfterCursorAdapterSupplier() {
         return new BusStopAfterCursorAdapterSupplier();
     }
 
@@ -310,11 +338,15 @@ public class DatabaseManager {
 
 
     public class BusRouteCursorAdapterSupplier implements CursorAdapterSupplier<RouteDirectionModel> {
-        private static final String SELECT_CLAUSE = "SELECT a.route_id, a.route_short_name, a.route_long_name, b.DirectionDescription, b.dircode, a.route_type, a.rowid AS _id from routes_bus a, bus_stop_directions b WHERE route_type=3 AND a.route_id=b.route";
+        String selectClause;
+
+        BusRouteCursorAdapterSupplier(int type) {
+            selectClause = "SELECT a.route_id, a.route_short_name, a.route_long_name, b.DirectionDescription, b.dircode, a.route_type, a.rowid AS _id from routes_bus a, bus_stop_directions b WHERE route_type=" + type + "  AND a.route_id=b.route";
+        }
 
         @Override
         public Cursor getCursor(Context context, List<Criteria> whereClause) {
-            StringBuilder queryString = new StringBuilder(SELECT_CLAUSE);
+            StringBuilder queryString = new StringBuilder(selectClause);
             if (whereClause != null) {
                 queryString.append(" AND ");
                 queryString.append(whereClause);
@@ -346,6 +378,122 @@ public class DatabaseManager {
                 cursor.close();
             }
             return routeDirectionModel;
+        }
+    }
+
+    public class SubwayRouteCursorAdapterSupplier implements CursorAdapterSupplier<RouteDirectionModel> {
+        String selectClause;
+
+        SubwayRouteCursorAdapterSupplier() {
+            selectClause = "SELECT Route, Route, Route, DirectionDescription, dircode, routeType, rowid AS _id from bus_stop_directions WHERE RouteType='RailTransit' and Route<>'NHSL'";
+        }
+
+        @Override
+        public Cursor getCursor(Context context, List<Criteria> whereClause) {
+
+
+            StringBuilder queryString = new StringBuilder(selectClause);
+            queryString.append(" ORDER BY Route");
+
+            Cursor cursor = getDatabase(context).rawQuery(queryString.toString(), null);
+            Log.d(TAG, "Creating cursor:" + queryString.toString());
+
+            return cursor;
+        }
+
+        @Override
+        public RouteDirectionModel getCurrentItemFromCursor(Cursor cursor) {
+            return new RouteDirectionModel(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getInt(5));
+        }
+
+        @Override
+        public RouteDirectionModel getItemFromId(Context context, Object id) {
+            List<Criteria> criteria = new ArrayList<Criteria>(1);
+            criteria.add(new Criteria("route_id", Criteria.Operation.EQ, id.toString()));
+            Cursor cursor = getCursor(context, criteria);
+            RouteDirectionModel routeDirectionModel = null;
+
+            if (cursor != null) {
+                if (cursor.moveToFirst()) {
+                    routeDirectionModel = getCurrentItemFromCursor(cursor);
+                }
+                cursor.close();
+            }
+            return routeDirectionModel;
+        }
+    }
+
+
+    public class SubwayStopCursorAdapterSupplier implements CursorAdapterSupplier<StopModel> {
+
+        private static final String SELECT_CLAUSE = "SELECT DISTINCT a.stop_id, stop_name, wheelchair_boarding, stop_lat, stop_lon, a.rowid AS _id FROM stops_bus a, {0} b, {1} c WHERE c.trip_id=b.trip_id and c.stop_id=a.stop_id";
+
+
+        @Override
+        public Cursor getCursor(Context context, List<Criteria> whereClause) {
+            StringBuilder queryString = new StringBuilder(SELECT_CLAUSE);
+
+            String tripsTable = "trips_bus";
+            String stopsTable = "stop_times_bus";
+
+            if (whereClause != null)
+                for (Criteria c : whereClause) {
+                    queryString.append(" AND ");
+
+                    if ("stop_lon".equals(c.getFieldName()) || "stop_lat".equals(c.getFieldName())) {
+                        queryString.append("CAST(a.").append(c.getFieldName()).append(" as decimal)")
+                                .append(c.getOperation()).append(c.getValue().toString());
+                        continue;
+                    } else if ("route_id".equals(c.getFieldName()) || "direction_id".equals(c.getFieldName())) {
+                        queryString.append("b.");
+                    } else queryString.append("a.");
+
+                    queryString.append(c.getFieldName()).append(c.getOperation()).append("''").append(c.getValue().toString()).append("''");
+
+                    if ("route_id".equals(c.getFieldName())) {
+                        if ("MFL".equals(c.getValue())) {
+                            tripsTable = "trips_MFL";
+                            stopsTable = "stop_times_MFL";
+                        } else if ("BSL".equals(c.getValue())) {
+                            tripsTable = "trips_BSL";
+                            stopsTable = "stop_times_BSL";
+                        }
+                    }
+                }
+
+            queryString.append(" ORDER BY stop_name");
+
+            MessageFormat form = new MessageFormat(queryString.toString());
+            String query = form.format(new Object[]{tripsTable, stopsTable});
+
+            Log.d(TAG, "SubwayStopCursorAdapterSupplier Creating cursor:" + query);
+
+            Cursor cursor = getDatabase(context).rawQuery(query, null);
+
+            return cursor;
+        }
+
+        @Override
+        public StopModel getCurrentItemFromCursor(Cursor cursor) {
+            StopModel stopModel = new StopModel(cursor.getString(0), cursor.getString(1),
+                    (cursor.getInt(2) == 1), cursor.getString(3), cursor.getString(4));
+            return stopModel;
+        }
+
+        @Override
+        public StopModel getItemFromId(Context context, Object id) {
+            String queryString = "SELECT DISTINCT a.stop_id, stop_name, wheelchair_boarding, stop_lat, stop_lon, a.rowid AS _id FROM stops_bus a where a.stop_id='" + id.toString() + "'";
+
+            StopModel stopModel = null;
+            Cursor cursor = getDatabase(context).rawQuery(queryString.toString(), null);
+            if (cursor != null) {
+                if (cursor.moveToFirst()) {
+                    stopModel = getCurrentItemFromCursor(cursor);
+                }
+                cursor.close();
+            }
+
+            return stopModel;
         }
     }
 

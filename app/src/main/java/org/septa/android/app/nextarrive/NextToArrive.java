@@ -59,8 +59,8 @@ public class NextToArrive extends AppCompatActivity
         tabActivityHandlers = new TabActivityHandler[5];
         tabActivityHandlers[1] = new RailTabActivityHandler(getString(R.string.rail_tab), dbManager.getRailStopCursorAdapterSupplier(), R.drawable.rail_white);
         tabActivityHandlers[0] = new BusTabActivityHandler(getString(R.string.bus_tab), dbManager.getBusRouteCursorAdapterSupplier(), dbManager.getBusStopCursorAdapterSupplier(), dbManager.getBusStopAfterCursorAdapterSupplier(), R.drawable.bus_white);
-        tabActivityHandlers[3] = new TrollyTabActivityHandler(getString(R.string.trolly_tab), R.drawable.trolley_white);
-        tabActivityHandlers[2] = new SubwayTabActivityHandler(getString(R.string.subway_tab), R.drawable.subway_white);
+        tabActivityHandlers[3] = new BusTabActivityHandler(getString(R.string.trolly_tab), dbManager.getTrollyRouteCursorAdapterSupplier(), dbManager.getTrollyStopCursorAdapterSupplier(), dbManager.getTrollyStopAfterCursorAdapterSupplier(), R.drawable.trolley_white);
+        tabActivityHandlers[2] = new BusTabActivityHandler(getString(R.string.subway_tab), dbManager.getSubwayRouteCursorAdapterSupplier(), dbManager.getSubwayStopCursorAdapterSupplier(), dbManager.getSubwayStopAfterCursorAdapterSupplier(), R.drawable.subway_white);
         tabActivityHandlers[4] = new RailTabActivityHandler(getString(R.string.nhsl_tab), dbManager.getNhslStopCursorAdapterSupplier(), R.drawable.nhsl_white);
         //tabActivityHandlers[4] = new SubwayTabActivityHandler(getString(R.string.nhsl_tab));
 

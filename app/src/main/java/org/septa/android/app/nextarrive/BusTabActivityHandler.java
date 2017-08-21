@@ -16,8 +16,10 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -65,6 +67,7 @@ public class BusTabActivityHandler extends BaseTabActivityHandler {
         fragment.setRouteCursorAdapterSupplier(routeCursorAdapterSupplier);
         fragment.setStopCursorAdapterSupplier(stopCursorAdapterSupplier);
         fragment.setStopAfterCursorAdapterSupplier(busStopAfterCursorAdapterSupplier);
+        fragment.setTabName(this.getTabTitle());
 
         return fragment;
     }
@@ -81,6 +84,8 @@ public class BusTabActivityHandler extends BaseTabActivityHandler {
         private StopModel startingStation;
         private StopModel endingStation;
 
+        private String tabName;
+
         List<RouteDirectionModel> routes;
         private TextView closestStopText;
         private EditText destinationStopEditText;
@@ -95,6 +100,8 @@ public class BusTabActivityHandler extends BaseTabActivityHandler {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.bus_next_to_arrive, container, false);
+
+            ((TextView)rootView.findViewById(R.id.find_next_label)).setText("FIND NEXT " + tabName);
 
             secondaryView = rootView.findViewById(R.id.secondary_selection);
 
@@ -125,6 +132,9 @@ public class BusTabActivityHandler extends BaseTabActivityHandler {
                     }, stopAfterCursorAdapterSupplier, true)
             );
 
+            Button findButton = (Button) rootView.findViewById(R.id.view_buses_button);
+            findButton.setText("VIEW " + tabName);
+
             return rootView;
         }
 
@@ -134,6 +144,10 @@ public class BusTabActivityHandler extends BaseTabActivityHandler {
 
         public void setStopCursorAdapterSupplier(CursorAdapterSupplier<StopModel> stopCursorAdapterSupplier) {
             this.stopCursorAdapterSupplier = stopCursorAdapterSupplier;
+        }
+
+        public void setTabName(String tabName) {
+            this.tabName = tabName;
         }
 
         private void setStartingStation(StopModel start, int invisible) {
@@ -241,6 +255,7 @@ public class BusTabActivityHandler extends BaseTabActivityHandler {
                         if (stopModel != null)
                             fragment.setStartingStation(stopModel, View.VISIBLE);
                         fragment.progressView.setVisibility(View.GONE);
+                        //fragment.getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                     }
                 });
 
@@ -250,6 +265,8 @@ public class BusTabActivityHandler extends BaseTabActivityHandler {
 
                 {
                     fragment.progressView.setVisibility(View.VISIBLE);
+                   // fragment.getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                   //         WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                     Task<Location> locationTask = LocationServices.getFusedLocationProviderClient(fragment.getActivity()).getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
                         @Override
                         public void onSuccess(Location location) {
@@ -345,4 +362,5 @@ public class BusTabActivityHandler extends BaseTabActivityHandler {
             return cursorAdapterSupplier.getItemFromId(context, id);
         }
     }
+
 }

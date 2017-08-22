@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document>
+	<name>46.kml</name>
+	<Schema name="rt2_schema" id="rt2_schema">
+		<SimpleField type="int" name="FID"><displayName>FID</displayName>
+</SimpleField>
+		<SimpleField type="int" name="ET_ID"><displayName>ET_ID</displayName>
+</SimpleField>
+		<SimpleField type="string" name="LINE"><displayName>LINE</displayName>
+</SimpleField>
+		<SimpleField type="double" name="route_id"><displayName>route_id</displayName>
+</SimpleField>
+		<SimpleField type="string" name="FIRST_ro_2"><displayName>FIRST_ro_2</displayName>
+</SimpleField>
+		<SimpleField type="double" name="FIRST_ro_1"><displayName>FIRST_ro_1</displayName>
+</SimpleField>
+	</Schema>
+	<Style id="rt2">
+		<IconStyle>
+			<color>bfffffff</color>
+			<scale>0.8</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/info-i.png</href>
+			</Icon>
+		</IconStyle>
+		<LineStyle>
+			<color>ff004799</color>
+		</LineStyle>
+	</Style>
+	<Placemark>
+		<name>46</name>
+		<styleUrl>#rt2</styleUrl>
+		<ExtendedData>
+			<SchemaData schemaUrl="#rt2_schema">
+				<SimpleData name="FID">20</SimpleData>
+				<SimpleData name="ET_ID">89</SimpleData>
+				<SimpleData name="LINE">46</SimpleData>
+				<SimpleData name="route_id">14208</SimpleData>
+				<SimpleData name="FIRST_ro_2">58th-Baltimore to 63rd-Malvern</SimpleData>
+				<SimpleData name="FIRST_ro_1">46</SimpleData>
+			</SchemaData>
+		</ExtendedData>
+		<MultiGeometry>
+			<Point>
+				<coordinates>-75.241613,39.957884,0</coordinates>
+			</Point>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.239969,39.94638,0 -75.23987099999999,39.946847,0 -75.239751,39.947413,0 -75.24172299999999,39.947647,0 -75.24355,39.948648,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.24355,39.948648,0 -75.243703,39.947894,0 -75.24386199999999,39.94713,0 -75.243931,39.946788,0 -75.24403599999999,39.946325,0 -75.24418799999999,39.945561,0 -75.24433999999999,39.944855,0 -75.24440800000001,39.944531,0 -75.244415,39.944477,0 -75.244406,39.944429,0 -75.243456,39.944708,0 -75.242588,39.945017,0 -75.24200399999999,39.945225,0 -75.24176799999999,39.945311,0 -75.240869,39.945637,0 -75.24072,39.945692,0 -75.24026499999999,39.945857,0 -75.240157,39.945882,0 -75.240106,39.945894,0 -75.24003399999999,39.94591,0 -75.240039,39.945969,0 -75.24003399999999,39.946034,0 -75.240015,39.946138,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.239942,39.974368,0 -75.23966299999999,39.972803,0 -75.239544,39.972139,0 -75.239429,39.971503,0 -75.239204,39.970392,0 -75.239143,39.970124,0 -75.23912300000001,39.969964,0 -75.239124,39.969933,0 -75.239124,39.969885,0 -75.239125,39.969854,0 -75.239149,39.969652,0 -75.239296,39.969003,0 -75.23948,39.968087,0 -75.23971899999999,39.967102,0 -75.23981499999999,39.966575,0 -75.23989400000001,39.966145,0 -75.239953,39.965896,0 -75.24004600000001,39.965492,0 -75.24014099999999,39.965057,0 -75.240297,39.964241,0 -75.24043,39.963547,0 -75.240697,39.962241,0 -75.240726,39.962077,0 -75.240746,39.961985,0 -75.240769,39.961895,0 -75.24091799999999,39.961192,0 -75.241078,39.960437,0 -75.241242,39.959686,0 -75.24139,39.958928,0 -75.241545,39.958196,0 -75.241635,39.957784,0 -75.24172299999999,39.957369,0 -75.241754,39.95721,0 -75.241806,39.956959,0 -75.241884,39.956559,0 -75.241974,39.95614,0 -75.242003,39.956019,0 -75.24211,39.955498,0 -75.242217,39.954972,0 -75.242271,39.954724,0 -75.24231399999999,39.95451,0 -75.24243199999999,39.953979,0 -75.242588,39.95321,0 -75.242751,39.952435,0 -75.242907,39.951695,0 -75.24306300000001,39.950936,0 -75.243233,39.950171,0 -75.24338899999999,39.949413,0 -75.24355,39.948648,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.239942,39.974368,0 -75.240735,39.974277,0 -75.241508,39.974193,0 -75.241691,39.975119,0 -75.241005,39.975826,0 -75.240234,39.975908,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.240234,39.975908,0 -75.239942,39.974368,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.246016,39.983812,0 -75.24611,39.983812,0 -75.24619300000001,39.983821,0 -75.246252,39.983839,0 -75.246347,39.983884,0 -75.246382,39.983964,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.246382,39.983964,0 -75.247057,39.983388,0 -75.24701399999999,39.98316,0 -75.24669,39.981434,0 -75.246582,39.980858,0 -75.24654099999999,39.98064,0 -75.24279799999999,39.981045,0 -75.241227,39.981224,0 -75.24113,39.980709,0 -75.241023,39.980222,0 -75.24090700000001,39.979529,0 -75.240815,39.978882,0 -75.240505,39.97736,0 -75.240234,39.975908,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.246382,39.983964,0 -75.246017,39.984137,0 -75.245885,39.98407,0 -75.24582599999999,39.984026,0 -75.245791,39.983963,0 -75.245791,39.98391,0 -75.24582700000001,39.983847,0 -75.24594500000001,39.983812,0 
+				</coordinates>
+			</LineString>
+		</MultiGeometry>
+	</Placemark>
+</Document>
+</kml>

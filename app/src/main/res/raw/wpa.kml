@@ -1,0 +1,1884 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document>
+	<name>WPA.kml</name>
+	<Schema name="TrapezeRoutesSummer2015a_schema" id="TrapezeRoutesSummer2015a_schema">
+		<SimpleField type="int" name="FID"><displayName>FID</displayName>
+</SimpleField>
+		<SimpleField type="string" name="LINEABBR"><displayName>LINEABBR</displayName>
+</SimpleField>
+		<SimpleField type="string" name="LINENAME"><displayName>LINENAME</displayName>
+</SimpleField>
+		<SimpleField type="int" name="tpField00"><displayName>tpField00</displayName>
+</SimpleField>
+		<SimpleField type="string" name="tpField01"><displayName>tpField01</displayName>
+</SimpleField>
+		<SimpleField type="string" name="tpField02"><displayName>tpField02</displayName>
+</SimpleField>
+		<SimpleField type="string" name="tpField03"><displayName>tpField03</displayName>
+</SimpleField>
+		<SimpleField type="string" name="tpField04"><displayName>tpField04</displayName>
+</SimpleField>
+		<SimpleField type="string" name="tpField05"><displayName>tpField05</displayName>
+</SimpleField>
+		<SimpleField type="string" name="tpField06"><displayName>tpField06</displayName>
+</SimpleField>
+		<SimpleField type="string" name="REVENUENO"><displayName>REVENUENO</displayName>
+</SimpleField>
+		<SimpleField type="int" name="DIRNUM0"><displayName>DIRNUM0</displayName>
+</SimpleField>
+		<SimpleField type="int" name="DIRNUM1"><displayName>DIRNUM1</displayName>
+</SimpleField>
+		<SimpleField type="string" name="tpField070"><displayName>tpField070</displayName>
+</SimpleField>
+		<SimpleField type="string" name="tpField071"><displayName>tpField071</displayName>
+</SimpleField>
+	</Schema>
+	<Style id="TrapezeRoutesSummer2015a">
+		<IconStyle>
+			<color>bfffffff</color>
+			<scale>0.8</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/info-i.png</href>
+			</Icon>
+		</IconStyle>
+		<LineStyle>
+			<color>ff120099</color>
+		</LineStyle>
+	</Style>
+	<Placemark>
+		<name>WPA</name>
+		<styleUrl>#TrapezeRoutesSummer2015a</styleUrl>
+		<ExtendedData>
+			<SchemaData schemaUrl="#TrapezeRoutesSummer2015a_schema">
+				<SimpleData name="FID">89</SimpleData>
+				<SimpleData name="LINEABBR">WPA</SimpleData>
+				<SimpleData name="LINENAME">WEST PHILA SCH SUPP</SimpleData>
+				<SimpleData name="tpField00">715</SimpleData>
+				<SimpleData name="tpField01">CAL</SimpleData>
+				<SimpleData name="tpField02">SOU</SimpleData>
+				<SimpleData name="tpField03"></SimpleData>
+				<SimpleData name="tpField04"></SimpleData>
+				<SimpleData name="tpField05">400 Series</SimpleData>
+				<SimpleData name="tpField06">400 Series</SimpleData>
+				<SimpleData name="REVENUENO">City</SimpleData>
+				<SimpleData name="DIRNUM0">0</SimpleData>
+				<SimpleData name="DIRNUM1">1</SimpleData>
+				<SimpleData name="tpField070">Outbound</SimpleData>
+				<SimpleData name="tpField071">Inbound</SimpleData>
+			</SchemaData>
+		</ExtendedData>
+		<MultiGeometry>
+			<Point>
+				<coordinates>-75.219173,39.936537,0</coordinates>
+			</Point>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.230322,39.922204,0 -75.231574,39.921347,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.233391,39.920843,0 -75.23290299999999,39.920418,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.233672,39.921092,0 -75.233391,39.920843,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.233741,39.92115,0 -75.233672,39.921092,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.23460300000001,39.921869,0 -75.233741,39.92115,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.234791,39.922053,0 -75.23460300000001,39.921869,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.234883,39.922128,0 -75.234791,39.922053,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.23494,39.922176,0 -75.234883,39.922128,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.234984,39.922208,0 -75.23494,39.922176,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.235006,39.922231,0 -75.234984,39.922208,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.23504200000001,39.922256,0 -75.235006,39.922231,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.23509,39.922297,0 -75.23504200000001,39.922256,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.235141,39.922339,0 -75.23509,39.922297,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.23536799999999,39.922523,0 -75.235141,39.922339,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.235675,39.922771,0 -75.23536799999999,39.922523,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.21898899999999,39.936383,0 -75.219442,39.936065,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.219442,39.936065,0 -75.219827,39.935797,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.219827,39.935797,0 -75.220353,39.935423,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.220353,39.935423,0 -75.22112199999999,39.934881,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.22112199999999,39.934881,0 -75.221328,39.934736,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.221328,39.934736,0 -75.22172500000001,39.934459,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.22172500000001,39.934459,0 -75.222461,39.933941,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.222461,39.933941,0 -75.223238,39.933395,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.223238,39.933395,0 -75.22367800000001,39.933087,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.22367800000001,39.933087,0 -75.22407699999999,39.932811,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.22407699999999,39.932811,0 -75.22457300000001,39.93244,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.22457300000001,39.93244,0 -75.2253,39.931929,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.2253,39.931929,0 -75.22583299999999,39.931553,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.22583299999999,39.931553,0 -75.22715599999999,39.930622,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.22715599999999,39.930622,0 -75.22757300000001,39.930332,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.22757300000001,39.930332,0 -75.227638,39.930288,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.227638,39.930288,0 -75.22775799999999,39.930203,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.22775799999999,39.930203,0 -75.22818,39.929908,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.22818,39.929908,0 -75.228717,39.929522,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.228717,39.929522,0 -75.229232,39.929157,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.229232,39.929157,0 -75.229412,39.929038,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.229412,39.929038,0 -75.230232,39.928463,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.230232,39.928463,0 -75.230656,39.928163,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.230656,39.928163,0 -75.23081500000001,39.928056,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.23081500000001,39.928056,0 -75.231121,39.927831,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.231121,39.927831,0 -75.231712,39.92742,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.231712,39.92742,0 -75.232128,39.927133,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.232128,39.927133,0 -75.23244699999999,39.92691,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.23244699999999,39.92691,0 -75.232894,39.92659,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.232894,39.92659,0 -75.233085,39.926459,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.233085,39.926459,0 -75.233682,39.92603,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.233682,39.92603,0 -75.23432699999999,39.925582,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.23432699999999,39.925582,0 -75.23475999999999,39.925281,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.23475999999999,39.925281,0 -75.235092,39.925042,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.235092,39.925042,0 -75.235563,39.924713,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.235563,39.924713,0 -75.235681,39.924628,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.235681,39.924628,0 -75.235833,39.924521,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.235833,39.924521,0 -75.236131,39.924307,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.236131,39.924307,0 -75.23622400000001,39.92424,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.23622400000001,39.92424,0 -75.236886,39.923787,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.224941,39.959933,0 -75.225032,39.959454,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.225032,39.959454,0 -75.225076,39.959199,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.225076,39.959199,0 -75.22511299999999,39.959013,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.22511299999999,39.959013,0 -75.225138,39.958877,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.225138,39.958877,0 -75.22521399999999,39.958467,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.22521399999999,39.958467,0 -75.225347,39.957695,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.225347,39.957695,0 -75.225512,39.956955,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.21196999999999,39.940312,0 -75.21140200000001,39.939838,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.212619,39.940858,0 -75.21196999999999,39.940312,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.210308,39.938628,0 -75.210323,39.938542,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.21030399999999,39.938676,0 -75.210308,39.938628,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.210308,39.938717,0 -75.21030399999999,39.938676,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.21031499999999,39.938773,0 -75.210308,39.938717,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.21033799999999,39.938841,0 -75.21031499999999,39.938773,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.21037699999999,39.938905,0 -75.21033799999999,39.938841,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.210433,39.938972,0 -75.21037699999999,39.938905,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.21067600000001,39.939184,0 -75.210433,39.938972,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.210741,39.939243,0 -75.21067600000001,39.939184,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.21090599999999,39.939402,0 -75.210741,39.939243,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.21140200000001,39.939838,0 -75.21090599999999,39.939402,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.210351,39.938469,0 -75.210393,39.938406,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.210323,39.938542,0 -75.210351,39.938469,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.233176,39.959468,0 -75.23383699999999,39.95955,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.23383699999999,39.95955,0 -75.235187,39.95972,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.240157,39.945882,0 -75.24026499999999,39.945857,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.240106,39.945894,0 -75.240157,39.945882,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.24003399999999,39.94591,0 -75.240106,39.945894,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.239322,39.946042,0 -75.24003399999999,39.94591,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.23868899999999,39.946171,0 -75.239322,39.946042,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.237926,39.946324,0 -75.23868899999999,39.946171,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.210393,39.938406,0 -75.21045599999999,39.93834,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.21045599999999,39.93834,0 -75.21054599999999,39.938266,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.21054599999999,39.938266,0 -75.210679,39.938173,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.210679,39.938173,0 -75.21073,39.93814,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.21073,39.93814,0 -75.212242,39.937075,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.212242,39.937075,0 -75.212707,39.936751,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.212707,39.936751,0 -75.21302,39.936529,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.21302,39.936529,0 -75.213776,39.935997,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.213776,39.935997,0 -75.21384500000001,39.935947,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.21384500000001,39.935947,0 -75.213886,39.935913,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.213886,39.935913,0 -75.213926,39.935866,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.213926,39.935866,0 -75.214168,39.935516,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.214168,39.935516,0 -75.21439,39.935196,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.21439,39.935196,0 -75.214592,39.934903,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.214592,39.934903,0 -75.21556699999999,39.933481,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.21556699999999,39.933481,0 -75.215757,39.933214,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.215757,39.933214,0 -75.215833,39.933101,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.215833,39.933101,0 -75.215898,39.933008,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.215898,39.933008,0 -75.21600599999999,39.932842,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.21600599999999,39.932842,0 -75.216105,39.932705,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.216105,39.932705,0 -75.216264,39.932476,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.216264,39.932476,0 -75.21663100000001,39.931919,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.21663100000001,39.931919,0 -75.216678,39.931846,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.216678,39.931846,0 -75.216725,39.931784,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.216725,39.931784,0 -75.21678,39.931734,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.21678,39.931734,0 -75.21683899999999,39.931689,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.21683899999999,39.931689,0 -75.217033,39.931553,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.217033,39.931553,0 -75.217435,39.931276,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.217435,39.931276,0 -75.21773,39.931067,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.21773,39.931067,0 -75.21836999999999,39.930667,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.21836999999999,39.930667,0 -75.218783,39.93037,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.218783,39.93037,0 -75.219217,39.930022,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.219217,39.930022,0 -75.21974299999999,39.929648,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.21974299999999,39.929648,0 -75.220579,39.929052,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.220579,39.929052,0 -75.221088,39.928699,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.221088,39.928699,0 -75.221994,39.928125,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.221994,39.928125,0 -75.22276599999999,39.927575,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.22276599999999,39.927575,0 -75.22308,39.927364,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.22308,39.927364,0 -75.223282,39.92723,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.223282,39.92723,0 -75.22340199999999,39.927149,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.22340199999999,39.927149,0 -75.22349,39.927091,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.22349,39.927091,0 -75.223563,39.927042,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.223563,39.927042,0 -75.223871,39.926829,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.223871,39.926829,0 -75.22438,39.926469,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.22438,39.926469,0 -75.224859,39.926127,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.224859,39.926127,0 -75.22536599999999,39.925768,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.22536599999999,39.925768,0 -75.225847,39.92543,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.225847,39.92543,0 -75.22633999999999,39.925075,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.22633999999999,39.925075,0 -75.226471,39.924982,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.226471,39.924982,0 -75.226906,39.924693,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.226906,39.924693,0 -75.227104,39.924473,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.227104,39.924473,0 -75.227705,39.924043,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.227705,39.924043,0 -75.22815799999999,39.923732,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.22815799999999,39.923732,0 -75.22909,39.923094,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.22909,39.923094,0 -75.230322,39.922204,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.219612,39.936904,0 -75.21898899999999,39.936383,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.220255,39.937441,0 -75.219612,39.936904,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.220755,39.937857,0 -75.220255,39.937441,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.221142,39.938176,0 -75.220755,39.937857,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.22133100000001,39.938331,0 -75.221142,39.938176,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.221407,39.938399,0 -75.22133100000001,39.938331,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.221451,39.938449,0 -75.221407,39.938399,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.22149400000001,39.938503,0 -75.221451,39.938449,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.221532,39.938544,0 -75.22149400000001,39.938503,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.221648,39.938642,0 -75.221532,39.938544,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.22206,39.938993,0 -75.221648,39.938642,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.222257,39.939164,0 -75.22206,39.938993,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.222326,39.939212,0 -75.222257,39.939164,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.22237699999999,39.939248,0 -75.222326,39.939212,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.22246199999999,39.939302,0 -75.22237699999999,39.939248,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.222549,39.939354,0 -75.22246199999999,39.939302,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.222619,39.939402,0 -75.222549,39.939354,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.22275500000001,39.93951,0 -75.222619,39.939402,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.222944,39.939674,0 -75.22275500000001,39.93951,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.223546,39.94018,0 -75.222944,39.939674,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.224153,39.940698,0 -75.223546,39.94018,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.224632,39.941094,0 -75.224153,39.940698,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.225027,39.941421,0 -75.224632,39.941094,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.225534,39.941865,0 -75.225027,39.941421,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.226339,39.942553,0 -75.225534,39.941865,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.226794,39.942944,0 -75.226339,39.942553,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.227284,39.943365,0 -75.226794,39.942944,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.22769700000001,39.943725,0 -75.227284,39.943365,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.228163,39.944134,0 -75.22769700000001,39.943725,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.228669,39.944555,0 -75.228163,39.944134,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.229078,39.944888,0 -75.228669,39.944555,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.229587,39.945304,0 -75.229078,39.944888,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.228718,39.945921,0 -75.229587,39.945304,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.228436,39.946126,0 -75.228718,39.945921,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.228329,39.946202,0 -75.228436,39.946126,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.228281,39.946233,0 -75.228329,39.946202,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.22824,39.946262,0 -75.228281,39.946233,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.228117,39.946348,0 -75.22824,39.946262,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.22682,39.947244,0 -75.228117,39.946348,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.227373,39.947708,0 -75.22682,39.947244,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.227419,39.947764,0 -75.227373,39.947708,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.22742599999999,39.947784,0 -75.227419,39.947764,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.227429,39.947824,0 -75.22742599999999,39.947784,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.22742,39.947896,0 -75.227429,39.947824,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.227339,39.948235,0 -75.22742,39.947896,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.227288,39.94849,0 -75.227339,39.948235,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.22726299999999,39.948612,0 -75.227288,39.94849,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.227195,39.948955,0 -75.22726299999999,39.948612,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.22711,39.949352,0 -75.227195,39.948955,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.22703799999999,39.949689,0 -75.22711,39.949352,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.22694799999999,39.950099,0 -75.22703799999999,39.949689,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.22686899999999,39.950462,0 -75.22694799999999,39.950099,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.226789,39.950834,0 -75.22686899999999,39.950462,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.226753,39.951007,0 -75.226789,39.950834,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.226705,39.951265,0 -75.226753,39.951007,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.226663,39.951477,0 -75.226705,39.951265,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.226624,39.951659,0 -75.226663,39.951477,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.226553,39.951994,0 -75.226624,39.951659,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.226479,39.952378,0 -75.226553,39.951994,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.226452,39.952512,0 -75.226479,39.952378,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.22635699999999,39.95298,0 -75.226452,39.952512,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.226317,39.953181,0 -75.22635699999999,39.95298,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.226248,39.95353,0 -75.226317,39.953181,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.22616600000001,39.953902,0 -75.226248,39.95353,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.226135,39.954048,0 -75.22616600000001,39.953902,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.22609799999999,39.954212,0 -75.226135,39.954048,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.226017,39.954583,0 -75.22609799999999,39.954212,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.225934,39.954987,0 -75.226017,39.954583,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.22589000000001,39.955203,0 -75.225934,39.954987,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.22584000000001,39.955447,0 -75.22589000000001,39.955203,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.22576599999999,39.955814,0 -75.22584000000001,39.955447,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.225686,39.956193,0 -75.22576599999999,39.955814,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.225651,39.956365,0 -75.225686,39.956193,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.22560300000001,39.95657,0 -75.225651,39.956365,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.225512,39.956955,0 -75.22560300000001,39.95657,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.22584999999999,39.933498,0 -75.22457300000001,39.93244,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.226884,39.934368,0 -75.22584999999999,39.933498,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.227267,39.934689,0 -75.226884,39.934368,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.227284,39.934704,0 -75.227267,39.934689,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.22739799999999,39.9348,0 -75.227284,39.934704,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.22839399999999,39.935633,0 -75.22739799999999,39.9348,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.228522,39.935739,0 -75.22839399999999,39.935633,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.228714,39.935903,0 -75.228522,39.935739,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.22912599999999,39.936254,0 -75.228714,39.935903,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.22971200000001,39.936764,0 -75.22912599999999,39.936254,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.23021799999999,39.937186,0 -75.22971200000001,39.936764,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.230541,39.937457,0 -75.23021799999999,39.937186,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.230622,39.937525,0 -75.230541,39.937457,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.23111,39.93794,0 -75.230622,39.937525,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.231757,39.938469,0 -75.23111,39.93794,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.23239100000001,39.939018,0 -75.231757,39.938469,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.232562,39.939176,0 -75.23239100000001,39.939018,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.232609,39.93922,0 -75.232562,39.939176,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.232629,39.939242,0 -75.232609,39.93922,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.232799,39.939432,0 -75.232629,39.939242,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.233009,39.939668,0 -75.232799,39.939432,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.233135,39.939812,0 -75.233009,39.939668,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.233217,39.939904,0 -75.233135,39.939812,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.233358,39.940059,0 -75.233217,39.939904,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.233469,39.940176,0 -75.233358,39.940059,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.23361800000001,39.940325,0 -75.233469,39.940176,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.233802,39.940479,0 -75.23361800000001,39.940325,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.234132,39.940756,0 -75.233802,39.940479,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.23432699999999,39.940897,0 -75.234132,39.940756,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.23456899999999,39.941084,0 -75.23432699999999,39.940897,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.235051,39.941469,0 -75.23456899999999,39.941084,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.235731,39.942043,0 -75.235051,39.941469,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.23642100000001,39.942651,0 -75.235731,39.942043,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.236436,39.942664,0 -75.23642100000001,39.942651,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.237115,39.943225,0 -75.236436,39.942664,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.237832,39.943836,0 -75.237115,39.943225,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.238214,39.94414,0 -75.237832,39.943836,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.238457,39.944342,0 -75.238214,39.94414,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.23861599999999,39.944466,0 -75.238457,39.944342,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.238895,39.944683,0 -75.23861599999999,39.944466,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.23919600000001,39.944935,0 -75.238895,39.944683,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.2397,39.945361,0 -75.23919600000001,39.944935,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.239738,39.945397,0 -75.2397,39.945361,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.240043,39.945681,0 -75.239738,39.945397,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.240145,39.945777,0 -75.240043,39.945681,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.240195,39.945816,0 -75.240145,39.945777,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.24026499999999,39.945857,0 -75.240195,39.945816,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.23302,39.960217,0 -75.233176,39.959468,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.23286,39.960915,0 -75.23302,39.960217,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.235187,39.95972,0 -75.235343,39.958953,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.235343,39.958953,0 -75.235506,39.958186,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.235506,39.958186,0 -75.235742,39.957054,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.235742,39.957054,0 -75.235974,39.955941,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.235974,39.955941,0 -75.235997,39.955832,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.235997,39.955832,0 -75.236026,39.955697,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.236026,39.955697,0 -75.23611699999999,39.955276,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.23611699999999,39.955276,0 -75.236221,39.954758,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.236221,39.954758,0 -75.236265,39.954552,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.236265,39.954552,0 -75.23633599999999,39.954223,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.23633599999999,39.954223,0 -75.236423,39.953762,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.236423,39.953762,0 -75.23653,39.953243,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.23653,39.953243,0 -75.23663999999999,39.952714,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.23663999999999,39.952714,0 -75.23674,39.952245,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.23674,39.952245,0 -75.236857,39.951701,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.236857,39.951701,0 -75.23697799999999,39.951144,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.23697799999999,39.951144,0 -75.237072,39.950696,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.237072,39.950696,0 -75.237177,39.950209,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.237177,39.950209,0 -75.237332,39.949438,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.237332,39.949438,0 -75.237495,39.948689,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.237495,39.948689,0 -75.237599,39.948139,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.237599,39.948139,0 -75.23769299999999,39.947697,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.23769299999999,39.947697,0 -75.237809,39.94716,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.237809,39.94716,0 -75.237934,39.946531,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.237934,39.946531,0 -75.237948,39.946446,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.237948,39.946446,0 -75.237945,39.94638,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.237945,39.94638,0 -75.237939,39.946359,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.237939,39.946359,0 -75.237926,39.946324,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.231728,39.921468,0 -75.231574,39.921352,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.236886,39.923787,0 -75.236803,39.923715,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.236803,39.923715,0 -75.23673599999999,39.923657,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.23673599999999,39.923657,0 -75.23639300000001,39.923372,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.23639300000001,39.923372,0 -75.23606,39.923089,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.23606,39.923089,0 -75.235784,39.922861,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.235784,39.922861,0 -75.235675,39.922771,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.21562299999999,39.933505,0 -75.21559499999999,39.933493,0 
+				</coordinates>
+			</LineString>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-75.21559499999999,39.933493,0 -75.21556699999999,39.933481,0 
+				</coordinates>
+			</LineString>
+		</MultiGeometry>
+	</Placemark>
+</Document>
+</kml>

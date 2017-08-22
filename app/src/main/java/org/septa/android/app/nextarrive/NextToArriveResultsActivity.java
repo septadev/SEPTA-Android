@@ -33,15 +33,23 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.maps.android.data.kml.KmlLayer;
 
 import org.septa.android.app.R;
 import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalModelResponse;
 import org.septa.android.app.services.apiinterfaces.model.NextToArriveModel;
+import org.septa.android.app.support.MapUtils;
+import org.xmlpull.v1.XmlPullParserException;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -151,7 +159,6 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         LatLng startingStationLatLng = new LatLng(start.getLatitude(), start.getLongitude());
         LatLng destinationStationLatLng = new LatLng(destination.getLatitude(), destination.getLongitude());
 
-        //googleMap.moveCamera(CameraUpdateFactory.zoomTo(15));
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(startingStationLatLng));
 
         googleMap.addMarker(new MarkerOptions().position(startingStationLatLng).title(start.getStopName()));
@@ -177,8 +184,6 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                                 int permissionCheck = ContextCompat.checkSelfPermission(NextToArriveResultsActivity.this,
                                         Manifest.permission.ACCESS_FINE_LOCATION);
                                 googleMap.setMyLocationEnabled(true);
-                                googleMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude())).title("Current Location"));
-
                             } else {
                                 Log.d(TAG, "location was null");
                             }
@@ -197,13 +202,55 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
     private void updateNextToArriveData() {
         if (start != null && destination != null) {
-            //Call<ArrayList<NextToArriveModel>> results = SeptaServiceFactory.getNextToArriveService().views(start.getStopName(), destination.getStopName(), 3);
             Call<NextArrivalModelResponse> results = SeptaServiceFactory.getNextArrivalService().getNextArriaval(Integer.parseInt(start.getStopId()), Integer.parseInt(destination.getStopId()), "RAIL", null);
 
             results.enqueue(new Callback<NextArrivalModelResponse>() {
                 @Override
                 public void onResponse(Call<NextArrivalModelResponse> call, Response<NextArrivalModelResponse> response) {
                     Log.d(TAG, response.toString());
+                    Log.d(TAG, response.body().toString());
+
+                    Map<String, List<NextArrivalModelResponse.NextArrivalRecord>> map = new HashMap<String, List<NextArrivalModelResponse.NextArrivalRecord>>();
+                    Set<String> kmlSet = new HashSet<String>();
+
+
+                    for (NextArrivalModelResponse.NextArrivalRecord data : response.body().getNextArrivalRecords()) {
+                        String key = data.getOrigRouteId() + "." + data.getTermRouteId();
+                        if (!map.containsKey(key)) {
+                            map.put(key, new ArrayList<NextArrivalModelResponse.NextArrivalRecord>());
+                        }
+
+                        map.get(key).add(data);
+
+                        if (!kmlSet.contains(data.getOrigRouteId())) {
+                            kmlSet.add(data.getOrigRouteId());
+                            KmlLayer layer = MapUtils.getKMLByLineId(NextToArriveResultsActivity.this, googleMap, data.getOrigRouteId());
+                            if (layer != null)
+                                try {
+                                    layer.addLayerToMap();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                } catch (XmlPullParserException e) {
+                                    e.printStackTrace();
+                                }
+                        }
+
+                        if (data.getConnectionStationId() != null)
+                            if (!kmlSet.contains(data.getTermRouteId())) {
+                                kmlSet.add(data.getTermRouteId());
+                                KmlLayer layer = MapUtils.getKMLByLineId(NextToArriveResultsActivity.this, googleMap, data.getTermRouteId());
+                                if (layer != null)
+                                    try {
+                                        layer.addLayerToMap();
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    } catch (XmlPullParserException e) {
+                                        e.printStackTrace();
+                                    }
+                            }
+                    }
+
+
                 }
 
                 @Override
@@ -212,6 +259,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
                 }
             });
+
 
 //            results.enqueue(new Callback<ArrayList<NextToArriveModel>>() {
 //                @Override
@@ -258,43 +306,42 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                 convertView = LayoutInflater.from(getContext()).inflate(R.layout.rail_next_to_arrive_line, parent, false);
             }
 
-            TextView lineNameText = (TextView) convertView.findViewById(R.id.line_name_text);
-            lineNameText.setText(getItem(position).lineName);
-            LinearLayout arrivalList = (LinearLayout) convertView.findViewById(R.id.arrival_list);
-            arrivalList.removeAllViews();
-
-            for (NextToArriveModel unit : getItem(position).getList()) {
-                View line = LayoutInflater.from(getContext()).inflate(R.layout.rail_next_to_arrive_unit, null, false);
-                TextView arrivalTimeText = (TextView) line.findViewById(R.id.arrival_time_text);
-                arrivalTimeText.setText(unit.getOriginalDepartureTime().trim() + " - " + unit.getOriginalArrivalTime());
-                arrivalList.addView(line);
-
-                TextView tripNumberText = (TextView) line.findViewById(R.id.trip_number_text);
-                tripNumberText.setText(unit.getOriginalTrain() + " to " + unit.getOriginalLine());
-
-                TextView tardyText = (TextView) line.findViewById(R.id.tardy_text);
-                tardyText.setText(unit.getOriginalDelay());
-
-            }
+//            TextView lineNameText = (TextView) convertView.findViewById(R.id.line_name_text);
+//            lineNameText.setText(getItem(position).lineName);
+//            LinearLayout arrivalList = (LinearLayout) convertView.findViewById(R.id.arrival_list);
+//            arrivalList.removeAllViews();
+//
+//            for (NextToArriveModel unit : getItem(position).getList()) {
+//                View line = LayoutInflater.from(getContext()).inflate(R.layout.rail_next_to_arrive_unit, null, false);
+//                TextView arrivalTimeText = (TextView) line.findViewById(R.id.arrival_time_text);
+//                arrivalTimeText.setText(unit.getOriginalDepartureTime().trim() + " - " + unit.getOriginalArrivalTime());
+//                arrivalList.addView(line);
+//
+//                TextView tripNumberText = (TextView) line.findViewById(R.id.trip_number_text);
+//                tripNumberText.setText(unit.getOriginalTrain() + " to " + unit.getOriginalLine());
+//
+//                TextView tardyText = (TextView) line.findViewById(R.id.tardy_text);
+//                tardyText.setText(unit.getOriginalDelay());
+//
+//            }
 
             return convertView;
         }
     }
 
-
     private class NextToArriveLine {
-        List<NextToArriveModel> nextToArriveModels = new ArrayList<NextToArriveModel>();
+        List<NextArrivalModelResponse.NextArrivalRecord> nextToArriveModels = new ArrayList<NextArrivalModelResponse.NextArrivalRecord>();
         String lineName;
 
         NextToArriveLine(String lineName) {
             this.lineName = lineName;
         }
 
-        List<NextToArriveModel> getList() {
+        List<NextArrivalModelResponse.NextArrivalRecord> getList() {
             return nextToArriveModels;
         }
 
-        void addItem(NextToArriveModel item) {
+        void addItem(NextArrivalModelResponse.NextArrivalRecord item) {
             nextToArriveModels.add(item);
         }
 

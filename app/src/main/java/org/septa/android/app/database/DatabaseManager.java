@@ -177,6 +177,9 @@ public class DatabaseManager {
                     }
                 }
             }
+
+            queryString.append(" ORDER BY stop_name");
+
             Log.d(TAG, "Creating cursor:" + queryString.toString());
 
             Cursor cursor = getDatabase(context).rawQuery(queryString.toString(), null);

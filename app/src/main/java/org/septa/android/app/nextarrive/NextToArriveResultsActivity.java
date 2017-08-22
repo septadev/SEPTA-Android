@@ -210,17 +210,22 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                     Log.d(TAG, response.toString());
                     Log.d(TAG, response.body().toString());
 
-                    Map<String, List<NextArrivalModelResponse.NextArrivalRecord>> map = new HashMap<String, List<NextArrivalModelResponse.NextArrivalRecord>>();
+                    Map<String, NextToArriveLine> map = new HashMap<String, NextToArriveLine>();
                     Set<String> kmlSet = new HashSet<String>();
 
 
                     for (NextArrivalModelResponse.NextArrivalRecord data : response.body().getNextArrivalRecords()) {
-                        String key = data.getOrigRouteId() + "." + data.getTermRouteId();
+                        String key;
+                        if (data.getOrigRouteId() == data.getTermRouteId()) {
+                            key = data.getOrigRouteId();
+                        } else
+                            key = data.getOrigRouteId() + "." + data.getTermRouteId();
+
                         if (!map.containsKey(key)) {
-                            map.put(key, new ArrayList<NextArrivalModelResponse.NextArrivalRecord>());
+                            map.put(key, new NextToArriveLine(data.getOrigRouteName()));
                         }
 
-                        map.get(key).add(data);
+                        map.get(key).addItem(data);
 
                         if (!kmlSet.contains(data.getOrigRouteId())) {
                             kmlSet.add(data.getOrigRouteId());
@@ -249,7 +254,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                                     }
                             }
                     }
-
+                    linesListView.setAdapter(new LinesListAdapater(NextToArriveResultsActivity.this, new ArrayList<NextToArriveLine>(map.values())));
 
                 }
 
@@ -260,35 +265,6 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                 }
             });
 
-
-//            results.enqueue(new Callback<ArrayList<NextToArriveModel>>() {
-//                @Override
-//                public void onResponse(Call<ArrayList<NextToArriveModel>> call, Response<ArrayList<NextToArriveModel>> response) {
-//                    Map<String, NextToArriveLine> map = new HashMap<String, NextToArriveLine>();
-//
-//                    if (response.body() != null) {
-//                        for (NextToArriveModel item : response.body()) {
-//                            if (!map.containsKey(item.getOriginalLine())) {
-//                                map.put(item.getOriginalLine(), new NextToArriveLine(item.getOriginalLine()));
-//                            }
-//                            map.get(item.getOriginalLine()).addItem(item);
-//                        }
-//
-//                        linesListView.setAdapter(new LinesListAdapater(NextToArriveResultsActivity.this, new ArrayList<NextToArriveLine>(map.values())));
-//                    }
-//
-//                    List<String> linesToDraw = new ArrayList<String>(map.values().size());
-//                    linesToDraw.addAll(map.keySet());
-//
-//                    MapUtils.drawTrainLine(googleMap, NextToArriveResultsActivity.this, linesToDraw);
-//
-//                }
-//
-//                @Override
-//                public void onFailure(Call<ArrayList<NextToArriveModel>> call, Throwable t) {
-//                    new AlertDialog.Builder(NextToArriveResultsActivity.this).setTitle("Error communicating with service.").show();
-//                }
-//            });
         }
 
     }
@@ -306,24 +282,26 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                 convertView = LayoutInflater.from(getContext()).inflate(R.layout.rail_next_to_arrive_line, parent, false);
             }
 
-//            TextView lineNameText = (TextView) convertView.findViewById(R.id.line_name_text);
-//            lineNameText.setText(getItem(position).lineName);
-//            LinearLayout arrivalList = (LinearLayout) convertView.findViewById(R.id.arrival_list);
-//            arrivalList.removeAllViews();
-//
-//            for (NextToArriveModel unit : getItem(position).getList()) {
-//                View line = LayoutInflater.from(getContext()).inflate(R.layout.rail_next_to_arrive_unit, null, false);
-//                TextView arrivalTimeText = (TextView) line.findViewById(R.id.arrival_time_text);
-//                arrivalTimeText.setText(unit.getOriginalDepartureTime().trim() + " - " + unit.getOriginalArrivalTime());
-//                arrivalList.addView(line);
-//
-//                TextView tripNumberText = (TextView) line.findViewById(R.id.trip_number_text);
-//                tripNumberText.setText(unit.getOriginalTrain() + " to " + unit.getOriginalLine());
-//
-//                TextView tardyText = (TextView) line.findViewById(R.id.tardy_text);
-//                tardyText.setText(unit.getOriginalDelay());
-//
-//            }
+            TextView lineNameText = (TextView) convertView.findViewById(R.id.line_name_text);
+            lineNameText.setText(getItem(position).lineName);
+            LinearLayout arrivalList = (LinearLayout) convertView.findViewById(R.id.arrival_list);
+            arrivalList.removeAllViews();
+
+            for (NextArrivalModelResponse.NextArrivalRecord unit : getItem(position).getList()) {
+                View line = LayoutInflater.from(getContext()).inflate(R.layout.rail_next_to_arrive_unit, null, false);
+                TextView arrivalTimeText = (TextView) line.findViewById(R.id.arrival_time_text);
+                arrivalTimeText.setText(unit.getSchedDepartureTime() + " - " + unit.getSchedArrivalTime());
+                arrivalList.addView(line);
+
+                TextView tripNumberText = (TextView) line.findViewById(R.id.trip_number_text);
+                tripNumberText.setText(unit.getOrigLineTripId() + " to " + unit.getOrigLastStopName());
+
+                TextView tardyText = (TextView) line.findViewById(R.id.tardy_text);
+                if (unit.getOrigDelayMinutes() > 0) {
+                    tardyText.setText(String.valueOf(unit.getOrigDelayMinutes()));
+                } else
+                    tardyText.setText("On time");
+            }
 
             return convertView;
         }

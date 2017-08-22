@@ -46,7 +46,7 @@ import javax.xml.xpath.XPathFactory;
 public class MapUtils {
 
     public static KmlLayer getKMLByLineId(Context context, GoogleMap googleMap, String lineId) {
-        int resourceId = context.getResources().getIdentifier(lineId.toLowerCase(), "raw", R.class.getPackage().getName());
+        int resourceId = context.getResources().getIdentifier("kml_" + lineId.toLowerCase(), "raw", R.class.getPackage().getName());
         try {
             return new KmlLayer(googleMap, resourceId, context);
         } catch (XmlPullParserException e) {

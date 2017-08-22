@@ -18,8 +18,8 @@
             android:value="AIzaSyA3wNnR0R29Db7QOoDc8TqXPTvYEc0heiA" />
 
         <activity
-            android:name=".nextarrive.NextToArrive"
-            android:label="@string/next_to_arrive"
+            android:name=".MainActivity"
+            android:label="@string/septa"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,11 +28,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".nextarrive.RailStationNextToArriveResults"
-            android:label="@string/RailStationNextToArriveResults"
+            android:name=".nextarrive.NextToArriveResultsActivity"
+            android:label="@string/septa"
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
-            android:name=".schedules.SchedulesActivity"
+            android:name=".schedules.SchedulesFragment"
             android:label="Schedules"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>

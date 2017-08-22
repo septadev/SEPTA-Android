@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -30,6 +29,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -37,13 +37,11 @@ import com.google.android.gms.tasks.Task;
 import org.septa.android.app.R;
 import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
+import org.septa.android.app.services.apiinterfaces.model.NextArrivalModelResponse;
 import org.septa.android.app.services.apiinterfaces.model.NextToArriveModel;
-import org.septa.android.app.support.MapUtils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -53,8 +51,8 @@ import retrofit2.Response;
  * Created by jkampf on 8/3/17.
  */
 
-public class RailStationNextToArriveResults extends AppCompatActivity implements OnMapReadyCallback {
-    public static final String TAG = RailStationNextToArriveResults.class.getSimpleName();
+public class NextToArriveResultsActivity extends AppCompatActivity implements OnMapReadyCallback {
+    public static final String TAG = NextToArriveResultsActivity.class.getSimpleName();
     private StopModel start;
     private StopModel destination;
     private GoogleMap googleMap;
@@ -65,8 +63,8 @@ public class RailStationNextToArriveResults extends AppCompatActivity implements
     public static final String STARTING_STATION = "starting_station";
     public static final String DESTINATAION_STATION = "destination_station";
 
-    public static RailStationNextToArriveResults newInstance(StopModel start, StopModel end) {
-        RailStationNextToArriveResults fragement = new RailStationNextToArriveResults();
+    public static NextToArriveResultsActivity newInstance(StopModel start, StopModel end) {
+        NextToArriveResultsActivity fragement = new NextToArriveResultsActivity();
         fragement.setStart(start);
         fragement.setDestination(end);
 
@@ -95,7 +93,7 @@ public class RailStationNextToArriveResults extends AppCompatActivity implements
 
 
         // Prevent the bottom sheet from being dragged to be opened.  Force it to use the anchor image.
-        BottomSheetHandler myBottomSheetBehaviorCallBack  = new BottomSheetHandler(bottomSheetBehavior);
+        BottomSheetHandler myBottomSheetBehaviorCallBack = new BottomSheetHandler(bottomSheetBehavior);
         bottomSheetBehavior.setBottomSheetCallback(myBottomSheetBehaviorCallBack);
         View anchor = findViewById(R.id.bottom_sheet_anchor);
         anchor.setOnClickListener(myBottomSheetBehaviorCallBack);
@@ -130,6 +128,9 @@ public class RailStationNextToArriveResults extends AppCompatActivity implements
     @Override
     public void onMapReady(final GoogleMap googleMap) {
         this.googleMap = googleMap;
+        MapStyleOptions mapStyle = MapStyleOptions.loadRawResourceStyle(this, R.raw.maps_json_styling);
+
+        googleMap.setMapStyle(mapStyle);
 
         updateNextToArriveData();
         refresh.setOnClickListener(new View.OnClickListener() {
@@ -173,7 +174,7 @@ public class RailStationNextToArriveResults extends AppCompatActivity implements
                         public void onSuccess(Location location) {
                             // Got last known location. In some rare situations this can be null.
                             if (location != null) {
-                                int permissionCheck = ContextCompat.checkSelfPermission(RailStationNextToArriveResults.this,
+                                int permissionCheck = ContextCompat.checkSelfPermission(NextToArriveResultsActivity.this,
                                         Manifest.permission.ACCESS_FINE_LOCATION);
                                 googleMap.setMyLocationEnabled(true);
                                 googleMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude())).title("Current Location"));
@@ -196,35 +197,50 @@ public class RailStationNextToArriveResults extends AppCompatActivity implements
 
     private void updateNextToArriveData() {
         if (start != null && destination != null) {
-            Call<ArrayList<NextToArriveModel>> results = SeptaServiceFactory.getNextToArriveService().views(start.getStopName(), destination.getStopName(), 3);
-            results.enqueue(new Callback<ArrayList<NextToArriveModel>>() {
+            //Call<ArrayList<NextToArriveModel>> results = SeptaServiceFactory.getNextToArriveService().views(start.getStopName(), destination.getStopName(), 3);
+            Call<NextArrivalModelResponse> results = SeptaServiceFactory.getNextArrivalService().getNextArriaval(Integer.parseInt(start.getStopId()), Integer.parseInt(destination.getStopId()), "RAIL", null);
+
+            results.enqueue(new Callback<NextArrivalModelResponse>() {
                 @Override
-                public void onResponse(Call<ArrayList<NextToArriveModel>> call, Response<ArrayList<NextToArriveModel>> response) {
-                    Map<String, NextToArriveLine> map = new HashMap<String, NextToArriveLine>();
-
-                    if (response.body() != null) {
-                        for (NextToArriveModel item : response.body()) {
-                            if (!map.containsKey(item.getOriginalLine())) {
-                                map.put(item.getOriginalLine(), new NextToArriveLine(item.getOriginalLine()));
-                            }
-                            map.get(item.getOriginalLine()).addItem(item);
-                        }
-
-                        linesListView.setAdapter(new LinesListAdapater(RailStationNextToArriveResults.this, new ArrayList<NextToArriveLine>(map.values())));
-                    }
-
-                    List<String> linesToDraw = new ArrayList<String>(map.values().size());
-                    linesToDraw.addAll(map.keySet());
-
-                    MapUtils.drawTrainLine(googleMap, RailStationNextToArriveResults.this, linesToDraw);
-
+                public void onResponse(Call<NextArrivalModelResponse> call, Response<NextArrivalModelResponse> response) {
+                    Log.d(TAG, response.toString());
                 }
 
                 @Override
-                public void onFailure(Call<ArrayList<NextToArriveModel>> call, Throwable t) {
-                    new AlertDialog.Builder(RailStationNextToArriveResults.this).setTitle("Error communicating with service.").show();
+                public void onFailure(Call<NextArrivalModelResponse> call, Throwable t) {
+                    t.printStackTrace();
+
                 }
             });
+
+//            results.enqueue(new Callback<ArrayList<NextToArriveModel>>() {
+//                @Override
+//                public void onResponse(Call<ArrayList<NextToArriveModel>> call, Response<ArrayList<NextToArriveModel>> response) {
+//                    Map<String, NextToArriveLine> map = new HashMap<String, NextToArriveLine>();
+//
+//                    if (response.body() != null) {
+//                        for (NextToArriveModel item : response.body()) {
+//                            if (!map.containsKey(item.getOriginalLine())) {
+//                                map.put(item.getOriginalLine(), new NextToArriveLine(item.getOriginalLine()));
+//                            }
+//                            map.get(item.getOriginalLine()).addItem(item);
+//                        }
+//
+//                        linesListView.setAdapter(new LinesListAdapater(NextToArriveResultsActivity.this, new ArrayList<NextToArriveLine>(map.values())));
+//                    }
+//
+//                    List<String> linesToDraw = new ArrayList<String>(map.values().size());
+//                    linesToDraw.addAll(map.keySet());
+//
+//                    MapUtils.drawTrainLine(googleMap, NextToArriveResultsActivity.this, linesToDraw);
+//
+//                }
+//
+//                @Override
+//                public void onFailure(Call<ArrayList<NextToArriveModel>> call, Throwable t) {
+//                    new AlertDialog.Builder(NextToArriveResultsActivity.this).setTitle("Error communicating with service.").show();
+//                }
+//            });
         }
 
     }

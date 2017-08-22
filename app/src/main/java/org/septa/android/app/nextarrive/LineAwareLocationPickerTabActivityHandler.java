@@ -16,7 +16,6 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -31,8 +30,8 @@ import com.google.android.gms.tasks.Task;
 import org.septa.android.app.R;
 import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.domain.StopModel;
-import org.septa.android.app.nextarrive.railstationpicker.FinderClosestStationTask;
-import org.septa.android.app.nextarrive.railstationpicker.RailStationPickerFragment;
+import org.septa.android.app.nextarrive.locationpicker.FinderClosestStopTask;
+import org.septa.android.app.nextarrive.locationpicker.LocationPickerFragment;
 import org.septa.android.app.support.BaseTabActivityHandler;
 import org.septa.android.app.support.Consumer;
 import org.septa.android.app.support.Criteria;
@@ -48,13 +47,13 @@ import java.util.List;
  * Created by jkampf on 7/29/17.
  */
 
-public class BusTabActivityHandler extends BaseTabActivityHandler {
+public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHandler {
     CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier;
     CursorAdapterSupplier<StopModel> stopCursorAdapterSupplier;
     CursorAdapterSupplier<StopModel> busStopAfterCursorAdapterSupplier;
 
 
-    public BusTabActivityHandler(String title, CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier, CursorAdapterSupplier<StopModel> busStopCursorAdapterSupplier, CursorAdapterSupplier<StopModel> busStopAfterCursorAdapterSupplier, int iconDrawable) {
+    public LineAwareLocationPickerTabActivityHandler(String title, CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier, CursorAdapterSupplier<StopModel> busStopCursorAdapterSupplier, CursorAdapterSupplier<StopModel> busStopAfterCursorAdapterSupplier, int iconDrawable) {
         super(title, iconDrawable);
         this.routeCursorAdapterSupplier = routeCursorAdapterSupplier;
         this.stopCursorAdapterSupplier = busStopCursorAdapterSupplier;
@@ -63,7 +62,7 @@ public class BusTabActivityHandler extends BaseTabActivityHandler {
 
     @Override
     public Fragment getFragment() {
-        BusTabActivityHandler.PlaceholderFragment fragment = BusTabActivityHandler.PlaceholderFragment.newInstance();
+        LineAwareLocationPickerTabActivityHandler.PlaceholderFragment fragment = LineAwareLocationPickerTabActivityHandler.PlaceholderFragment.newInstance();
         fragment.setRouteCursorAdapterSupplier(routeCursorAdapterSupplier);
         fragment.setStopCursorAdapterSupplier(stopCursorAdapterSupplier);
         fragment.setStopAfterCursorAdapterSupplier(busStopAfterCursorAdapterSupplier);
@@ -99,7 +98,7 @@ public class BusTabActivityHandler extends BaseTabActivityHandler {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.bus_next_to_arrive, container, false);
+            View rootView = inflater.inflate(R.layout.line_aware_next_to_arrive_search, container, false);
 
             ((TextView)rootView.findViewById(R.id.find_next_label)).setText("FIND NEXT " + tabName);
 
@@ -178,7 +177,7 @@ public class BusTabActivityHandler extends BaseTabActivityHandler {
         @Override
         public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
             if (convertView == null)
-                convertView = LayoutInflater.from(getContext()).inflate(R.layout.route_spinner_element, parent, false);
+                convertView = LayoutInflater.from(getContext()).inflate(R.layout.line_spinner_element, parent, false);
 
             TextView short_name = (TextView) convertView.findViewById(R.id.route_short_name);
             TextView long_name = (TextView) convertView.findViewById(R.id.route_long_name);
@@ -249,7 +248,7 @@ public class BusTabActivityHandler extends BaseTabActivityHandler {
                 fragment.destinationStopEditText.setText(null);
 
 
-                final AsyncTask<Location, Void, StopModel> task = new FinderClosestStationTask(fragment.getActivity(), new RouteSpecificCursorAdapterSupplier(fragment.stopCursorAdapterSupplier,fragment,false), new Consumer<StopModel>() {
+                final AsyncTask<Location, Void, StopModel> task = new FinderClosestStopTask(fragment.getActivity(), new RouteSpecificCursorAdapterSupplier(fragment.stopCursorAdapterSupplier,fragment,false), new Consumer<StopModel>() {
                     @Override
                     public void accept(StopModel stopModel) {
                         if (stopModel != null)
@@ -316,7 +315,7 @@ public class BusTabActivityHandler extends BaseTabActivityHandler {
                 CursorAdapterSupplier<StopModel> routeSpecificCursorAdapterSupplier = new RouteSpecificCursorAdapterSupplier(cursorAdapterSupplier, parent, userAfter);
 
                 // Create and show the dialog.
-                RailStationPickerFragment newFragment = RailStationPickerFragment.newInstance(consumer, routeSpecificCursorAdapterSupplier);
+                LocationPickerFragment newFragment = LocationPickerFragment.newInstance(consumer, routeSpecificCursorAdapterSupplier);
                 newFragment.show(ft, "dialog");
 
                 return true;

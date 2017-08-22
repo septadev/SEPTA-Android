@@ -1,10 +1,9 @@
-package org.septa.android.app.nextarrive.railstationpicker;
+package org.septa.android.app.nextarrive.locationpicker;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.location.Location;
 import android.os.AsyncTask;
-import android.view.View;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -21,12 +20,12 @@ import java.util.List;
  * Created by jkampf on 8/17/17.
  */
 
-public class FinderClosestStationTask extends AsyncTask<Location, Void, StopModel> {
+public class FinderClosestStopTask extends AsyncTask<Location, Void, StopModel> {
     CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
     Context context;
     Consumer<StopModel> consumer;
 
-    public FinderClosestStationTask(Context context, CursorAdapterSupplier<StopModel> cursorAdapterSupplier, Consumer<StopModel> consumer) {
+    public FinderClosestStopTask(Context context, CursorAdapterSupplier<StopModel> cursorAdapterSupplier, Consumer<StopModel> consumer) {
         this.cursorAdapterSupplier = cursorAdapterSupplier;
         this.context = context;
         this.consumer = consumer;

@@ -1,0 +1,125 @@
+package org.septa.android.app.nextarrive;
+
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.os.Bundle;
+import android.os.Parcelable;
+import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentTabHost;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+import org.septa.android.app.R;
+import org.septa.android.app.database.DatabaseManager;
+import org.septa.android.app.support.TabActivityHandler;
+
+
+public class NextToArriveFragement extends Fragment {
+
+    public static final String TAG = NextToArriveFragement.class.getSimpleName();
+
+    private SectionsPagerAdapter mSectionsPagerAdapter;
+    private ViewPager mViewPager;
+
+    TabActivityHandler tabActivityHandlers[];
+
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
+
+        if (ContextCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
+
+
+        DatabaseManager dbManager = DatabaseManager.getInstance(getActivity());
+
+        tabActivityHandlers = new TabActivityHandler[5];
+        tabActivityHandlers[1] = new LineUnawareLocationPickerTabActivityHandler(getString(R.string.rail_tab), dbManager.getRailStopCursorAdapterSupplier(), R.drawable.rail_white);
+        tabActivityHandlers[0] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.bus_tab), dbManager.getBusRouteCursorAdapterSupplier(), dbManager.getBusStopCursorAdapterSupplier(), dbManager.getBusStopAfterCursorAdapterSupplier(), R.drawable.bus_white);
+        tabActivityHandlers[3] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.trolly_tab), dbManager.getTrollyRouteCursorAdapterSupplier(), dbManager.getTrollyStopCursorAdapterSupplier(), dbManager.getTrollyStopAfterCursorAdapterSupplier(), R.drawable.trolley_white);
+        tabActivityHandlers[2] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.subway_tab), dbManager.getSubwayRouteCursorAdapterSupplier(), dbManager.getSubwayStopCursorAdapterSupplier(), dbManager.getSubwayStopAfterCursorAdapterSupplier(), R.drawable.subway_white);
+        tabActivityHandlers[4] = new LineUnawareLocationPickerTabActivityHandler(getString(R.string.nhsl_tab), dbManager.getNhslStopCursorAdapterSupplier(), R.drawable.nhsl_white);
+
+
+        View fragmentView = inflater.inflate(R.layout.next_to_arrive_main, null);
+
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getChildFragmentManager());
+
+        // Set up the ViewPager with the sections adapter.
+        mViewPager = (ViewPager) fragmentView.findViewById(R.id.container);
+        mViewPager.setAdapter(mSectionsPagerAdapter);
+
+        TabLayout tabLayout = (TabLayout) fragmentView.findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(mViewPager);
+        setUpTabs(tabLayout, inflater);
+
+        return fragmentView;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable("org.septa.android.app.nextarrive.NextToArriveFragement.mSectionsPagerAdapter", mSectionsPagerAdapter.saveState());
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if (savedInstanceState != null) {
+            Parcelable parcelable = savedInstanceState.getParcelable("org.septa.android.app.nextarrive.NextToArriveFragement.mSectionsPagerAdapter");
+            if (parcelable != null)
+                mSectionsPagerAdapter.restoreState(parcelable, this.getClass().getClassLoader());
+        }
+    }
+
+    private void setUpTabs(TabLayout tabLayout, LayoutInflater inflater) {
+        for (int i = 0; i < tabActivityHandlers.length; i++) {
+            TextView tab = (TextView) inflater.inflate(R.layout.custom_tab, null);
+            tab.setText(tabActivityHandlers[i].getTabTitle());
+            tab.setCompoundDrawablesWithIntrinsicBounds(tabActivityHandlers[i].getDrawableId(), 0, 0, 0);
+            tabLayout.getTabAt(i).setCustomView(tab);
+        }
+    }
+
+
+    /**
+     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
+     * one of the sections/tabs/pages.
+     */
+    public class SectionsPagerAdapter extends FragmentPagerAdapter {
+
+        public SectionsPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            // getItem is called to instantiate the fragment for the given page.
+            // Return a PlaceholderFragment (defined as a static inner class below).
+            return tabActivityHandlers[position].getFragment();
+        }
+
+        @Override
+        public int getCount() {
+            return tabActivityHandlers.length;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return tabActivityHandlers[position].getTabTitle();
+        }
+    }
+
+}

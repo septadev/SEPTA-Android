@@ -3,13 +3,10 @@ package org.septa.android.app.nextarrive;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
@@ -22,34 +19,27 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
 import org.septa.android.app.R;
 import org.septa.android.app.domain.StopModel;
-import org.septa.android.app.nextarrive.railstationpicker.FinderClosestStationTask;
-import org.septa.android.app.nextarrive.railstationpicker.RailStationPickerFragment;
+import org.septa.android.app.nextarrive.locationpicker.FinderClosestStopTask;
+import org.septa.android.app.nextarrive.locationpicker.LocationPickerFragment;
 import org.septa.android.app.support.BaseTabActivityHandler;
-import org.septa.android.app.support.BiConsumer;
 import org.septa.android.app.support.Consumer;
-import org.septa.android.app.support.Criteria;
 import org.septa.android.app.support.CursorAdapterSupplier;
-import org.septa.android.app.support.LocationMathHelper;
-
-import java.util.LinkedList;
-import java.util.List;
 
 
 /**
  * Created by jkampf on 7/29/17.
  */
 
-public class RailTabActivityHandler extends BaseTabActivityHandler {
-    private static final String TAG = "RailTabActivityHandler";
+public class LineUnawareLocationPickerTabActivityHandler extends BaseTabActivityHandler {
+    private static final String TAG = "LineUnawareLocationPickerTabActivityHandler";
     private CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
 
-    public RailTabActivityHandler(String title, CursorAdapterSupplier<StopModel> cursorAdapterSupplier, int iconDrawable) {
+    public LineUnawareLocationPickerTabActivityHandler(String title, CursorAdapterSupplier<StopModel> cursorAdapterSupplier, int iconDrawable) {
         super(title, iconDrawable);
         this.cursorAdapterSupplier = cursorAdapterSupplier;
     }
@@ -57,7 +47,7 @@ public class RailTabActivityHandler extends BaseTabActivityHandler {
 
     @Override
     public Fragment getFragment() {
-        return RailTabActivityHandler.RailStationQuery.newInstance(cursorAdapterSupplier);
+        return LineUnawareLocationPickerTabActivityHandler.RailStationQuery.newInstance(cursorAdapterSupplier);
     }
 
     public static class RailStationQuery extends Fragment {
@@ -78,7 +68,7 @@ public class RailTabActivityHandler extends BaseTabActivityHandler {
         @Override
         public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                                  Bundle savedInstanceState) {
-            final View rootView = inflater.inflate(R.layout.rail_next_to_arrive_search, container, false);
+            final View rootView = inflater.inflate(R.layout.line_unaware_next_to_arrive_search, container, false);
 
             startingStationEditText = (EditText) rootView.findViewById(R.id.starting_rail_station);
             final EditText endingStationEditText = (EditText) rootView.findViewById(R.id.ending_rail_station);
@@ -89,7 +79,7 @@ public class RailTabActivityHandler extends BaseTabActivityHandler {
                 closestStationText.setVisibility(View.VISIBLE);
             else closestStationText.setVisibility(View.INVISIBLE);
 
-            final AsyncTask<Location, Void, StopModel> task = new FinderClosestStationTask(getActivity(), cursorAdapterSupplier, new Consumer<StopModel>() {
+            final AsyncTask<Location, Void, StopModel> task = new FinderClosestStopTask(getActivity(), cursorAdapterSupplier, new Consumer<StopModel>() {
                 @Override
                 public void accept(StopModel stopModel) {
                     if (stopModel != null && startingStation == null) {
@@ -138,9 +128,9 @@ public class RailTabActivityHandler extends BaseTabActivityHandler {
                         Toast.makeText(getActivity(), "Need to choose a start and end station.", Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    Intent intent = new Intent(getActivity(), RailStationNextToArriveResults.class);
-                    intent.putExtra(RailStationNextToArriveResults.STARTING_STATION, startingStation);
-                    intent.putExtra(RailStationNextToArriveResults.DESTINATAION_STATION, endingStation);
+                    Intent intent = new Intent(getActivity(), NextToArriveResultsActivity.class);
+                    intent.putExtra(NextToArriveResultsActivity.STARTING_STATION, startingStation);
+                    intent.putExtra(NextToArriveResultsActivity.DESTINATAION_STATION, endingStation);
 
                     startActivity(intent);
                 }
@@ -173,7 +163,7 @@ public class RailTabActivityHandler extends BaseTabActivityHandler {
                     ft.addToBackStack(null);
 
                     // Create and show the dialog.
-                    RailStationPickerFragment newFragment = RailStationPickerFragment.newInstance(consumer, cursorAdapterSupplier);
+                    LocationPickerFragment newFragment = LocationPickerFragment.newInstance(consumer, cursorAdapterSupplier);
                     newFragment.show(ft, "dialog");
 
                     return true;

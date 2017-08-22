@@ -19,10 +19,6 @@ public class SeptaServiceFactory {
             .baseUrl("http://apitest.septa.org/").addConverterFactory(GsonConverterFactory.create())
             .build();
 
-    public static NextToArriveService getNextToArriveService() {
-        return singleton.create(NextToArriveService.class);
-    }
-
     public static NextArrivalService getNextArrivalService() {
         return singleton2.create(NextArrivalService.class);
     }

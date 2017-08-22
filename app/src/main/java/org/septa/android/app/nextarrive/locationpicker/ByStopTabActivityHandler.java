@@ -1,4 +1,4 @@
-package org.septa.android.app.nextarrive.railstationpicker;
+package org.septa.android.app.nextarrive.locationpicker;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -6,7 +6,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.CursorAdapter;
@@ -14,7 +13,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -34,13 +32,13 @@ import java.util.List;
  * Created by jkampf on 7/30/17.
  */
 
-public class ByStationTabActivityHandler extends BaseTabActivityHandler {
+public class ByStopTabActivityHandler extends BaseTabActivityHandler {
 
     public static final String TAG = "ByStationTabActivity";
     final private Consumer<StopModel> consumer;
     final private CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
 
-    public ByStationTabActivityHandler(String s, Consumer<StopModel> consumer, CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
+    public ByStopTabActivityHandler(String s, Consumer<StopModel> consumer, CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
         super(s);
         this.consumer = consumer;
         this.cursorAdapterSupplier = cursorAdapterSupplier;
@@ -48,7 +46,7 @@ public class ByStationTabActivityHandler extends BaseTabActivityHandler {
 
     @Override
     public Fragment getFragment() {
-        ByStationTabActivityHandler.PlaceholderFragment fragment = ByStationTabActivityHandler.PlaceholderFragment.newInstance(consumer, cursorAdapterSupplier);
+        ByStopTabActivityHandler.PlaceholderFragment fragment = ByStopTabActivityHandler.PlaceholderFragment.newInstance(consumer, cursorAdapterSupplier);
 
         return fragment;
     }
@@ -65,8 +63,8 @@ public class ByStationTabActivityHandler extends BaseTabActivityHandler {
 
         private static final int URL_LOADER = 0;
 
-        public static ByStationTabActivityHandler.PlaceholderFragment newInstance(Consumer<StopModel> consumer, CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
-            ByStationTabActivityHandler.PlaceholderFragment fragment = new ByStationTabActivityHandler.PlaceholderFragment();
+        public static ByStopTabActivityHandler.PlaceholderFragment newInstance(Consumer<StopModel> consumer, CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
+            ByStopTabActivityHandler.PlaceholderFragment fragment = new ByStopTabActivityHandler.PlaceholderFragment();
             fragment.setConsumer(consumer);
             fragment.setCursorAdapterSupplier(cursorAdapterSupplier);
             return fragment;
@@ -92,7 +90,7 @@ public class ByStationTabActivityHandler extends BaseTabActivityHandler {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             Log.d(TAG, "onCreateView()");
-            View rootView = inflater.inflate(R.layout.rail_station_picker_by_station, container, false);
+            View rootView = inflater.inflate(R.layout.location_picker_by_stop, container, false);
             list = (ListView) rootView.findViewById(R.id.rail_station_list);
             progressView = rootView.findViewById(R.id.progress_view);
 
@@ -165,7 +163,7 @@ public class ByStationTabActivityHandler extends BaseTabActivityHandler {
             // Get the data item for this position
             // Check if an existing view is being reused, otherwise inflate the view
             if (convertView == null) {
-                convertView = LayoutInflater.from(getContext()).inflate(R.layout.rail_station_picker_item, parent, false);
+                convertView = LayoutInflater.from(getContext()).inflate(R.layout.stop_picker_item, parent, false);
             }
 
             StopModel stop = getItem(position);
@@ -193,7 +191,7 @@ public class ByStationTabActivityHandler extends BaseTabActivityHandler {
 
         @Override
         public View newView(Context context, Cursor cursor, ViewGroup parent) {
-            return LayoutInflater.from(context).inflate(R.layout.rail_station_picker_item, parent, false);
+            return LayoutInflater.from(context).inflate(R.layout.stop_picker_item, parent, false);
         }
 
         @Override

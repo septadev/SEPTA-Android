@@ -1,4 +1,4 @@
-package org.septa.android.app.nextarrive.railstationpicker;
+package org.septa.android.app.nextarrive.locationpicker;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -28,10 +28,10 @@ import org.septa.android.app.support.TabActivityHandler;
  * Created by jkampf on 7/30/17.
  */
 
-public class RailStationPickerFragment extends DialogFragment implements NavigationView.OnNavigationItemSelectedListener {
+public class LocationPickerFragment extends DialogFragment implements NavigationView.OnNavigationItemSelectedListener {
     public static final String TAG = "RailStationPickerFrag";
 
-    private RailStationPickerFragment.SectionsPagerAdapter mSectionsPagerAdapter;
+    private LocationPickerFragment.SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
     TabActivityHandler tabActivityHandlers[];
     private EditText target;
@@ -61,7 +61,7 @@ public class RailStationPickerFragment extends DialogFragment implements Navigat
 
         currentStop = new StopModel[2];
         tabActivityHandlers = new TabActivityHandler[2];
-        tabActivityHandlers[0] = new ByStationTabActivityHandler("BY STATION", new Consumer<StopModel>() {
+        tabActivityHandlers[0] = new ByStopTabActivityHandler("BY STATION", new Consumer<StopModel>() {
             @Override
             public void accept(StopModel var1) {
                 currentStop[0] = var1;
@@ -75,7 +75,7 @@ public class RailStationPickerFragment extends DialogFragment implements Navigat
             }
         }, cursorAdapterSupplier);
 
-        mSectionsPagerAdapter = new RailStationPickerFragment.SectionsPagerAdapter(getChildFragmentManager());
+        mSectionsPagerAdapter = new LocationPickerFragment.SectionsPagerAdapter(getChildFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) dialogView.findViewById(R.id.station_container);
@@ -169,8 +169,8 @@ public class RailStationPickerFragment extends DialogFragment implements Navigat
 
     }
 
-    public static RailStationPickerFragment newInstance(Consumer<StopModel> consumer, CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
-        RailStationPickerFragment fragment = new RailStationPickerFragment();
+    public static LocationPickerFragment newInstance(Consumer<StopModel> consumer, CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
+        LocationPickerFragment fragment = new LocationPickerFragment();
         fragment.setConsumer(consumer);
         fragment.setCursorAdapterSupplier(cursorAdapterSupplier);
         return fragment;

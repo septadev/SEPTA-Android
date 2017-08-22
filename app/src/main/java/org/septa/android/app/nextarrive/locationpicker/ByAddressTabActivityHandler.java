@@ -1,4 +1,4 @@
-package org.septa.android.app.nextarrive.railstationpicker;
+package org.septa.android.app.nextarrive.locationpicker;
 
 import android.Manifest;
 import android.content.Context;
@@ -7,8 +7,6 @@ import android.database.Cursor;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -82,7 +80,7 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.rail_station_picker_by_address, container, false);
+            View rootView = inflater.inflate(R.layout.location_picker_by_address, container, false);
 
 
             View myLocationButton = rootView.findViewById(R.id.my_location_button);
@@ -210,6 +208,7 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
                 return;
 
             active = false;
+            fragment.progressView.setVisibility(View.VISIBLE);
             int permissionCheck = ContextCompat.checkSelfPermission(fragment.getActivity(),
                     Manifest.permission.ACCESS_FINE_LOCATION);
             if (permissionCheck == PackageManager.PERMISSION_GRANTED)

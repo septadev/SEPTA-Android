@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -44,7 +45,11 @@ import org.septa.android.app.support.MapUtils;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -67,6 +72,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     ViewGroup bottomSheetLayout;
     ListView linesListView;
     ImageView refresh;
+    View progressView;
 
     public static final String STARTING_STATION = "starting_station";
     public static final String DESTINATAION_STATION = "destination_station";
@@ -93,6 +99,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
         setContentView(R.layout.rail_next_to_arrive_results);
 
+        progressView = findViewById(R.id.progress_view);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -203,6 +210,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     private void updateNextToArriveData() {
         if (start != null && destination != null) {
             Call<NextArrivalModelResponse> results = SeptaServiceFactory.getNextArrivalService().getNextArriaval(Integer.parseInt(start.getStopId()), Integer.parseInt(destination.getStopId()), "RAIL", null);
+            progressView.setVisibility(View.VISIBLE);
 
             results.enqueue(new Callback<NextArrivalModelResponse>() {
                 @Override
@@ -254,14 +262,25 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                                     }
                             }
                     }
-                    linesListView.setAdapter(new LinesListAdapater(NextToArriveResultsActivity.this, new ArrayList<NextToArriveLine>(map.values())));
 
+                    List<NextToArriveLine> nextToArriveLinesList = new ArrayList<NextToArriveLine>(map.values());
+                    Collections.sort(nextToArriveLinesList, new Comparator<NextToArriveLine>() {
+                        @Override
+                        public int compare(NextToArriveLine x, NextToArriveLine y) {
+                            if (x.getSoonestDeparture() != null)
+                                return x.getSoonestDeparture().compareTo(y.getSoonestDeparture());
+                            else return Integer.MAX_VALUE;
+                        }
+                    });
+
+                    linesListView.setAdapter(new LinesListAdapater(NextToArriveResultsActivity.this, nextToArriveLinesList));
+                    progressView.setVisibility(View.GONE);
                 }
 
                 @Override
                 public void onFailure(Call<NextArrivalModelResponse> call, Throwable t) {
+                    progressView.setVisibility(View.GONE);
                     t.printStackTrace();
-
                 }
             });
 
@@ -287,20 +306,42 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
             LinearLayout arrivalList = (LinearLayout) convertView.findViewById(R.id.arrival_list);
             arrivalList.removeAllViews();
 
-            for (NextArrivalModelResponse.NextArrivalRecord unit : getItem(position).getList()) {
+            DateFormat dateFormat = DateFormat.getTimeInstance(DateFormat.SHORT);
+
+            List<NextArrivalModelResponse.NextArrivalRecord> tripList = getItem(position).getList();
+            Collections.sort(
+                    tripList, new Comparator<NextArrivalModelResponse.NextArrivalRecord>() {
+                        @Override
+                        public int compare(NextArrivalModelResponse.NextArrivalRecord x, NextArrivalModelResponse.NextArrivalRecord y) {
+                            return x.getSchedDepartureTime().compareTo(y.getSchedDepartureTime());
+                        }
+                    });
+
+            tripList = tripList.subList(0, (3 < tripList.size()) ? 3 : tripList.size());
+
+            for (NextArrivalModelResponse.NextArrivalRecord unit : tripList) {
                 View line = LayoutInflater.from(getContext()).inflate(R.layout.rail_next_to_arrive_unit, null, false);
                 TextView arrivalTimeText = (TextView) line.findViewById(R.id.arrival_time_text);
-                arrivalTimeText.setText(unit.getSchedDepartureTime() + " - " + unit.getSchedArrivalTime());
+                arrivalTimeText.setText(dateFormat.format(unit.getSchedDepartureTime()) + " - " + dateFormat.format(unit.getSchedArrivalTime()));
                 arrivalList.addView(line);
 
                 TextView tripNumberText = (TextView) line.findViewById(R.id.trip_number_text);
                 tripNumberText.setText(unit.getOrigLineTripId() + " to " + unit.getOrigLastStopName());
 
+                TextView departureTime = (TextView) line.findViewById(R.id.depature_time);
+                int departsInMinutes = ((int) (unit.getSchedDepartureTime().getTime() + (unit.getOrigDelayMinutes() * 60000) - System.currentTimeMillis()) / 60000);
+                departureTime.setText(String.valueOf(departsInMinutes + " Minutes"));
+
                 TextView tardyText = (TextView) line.findViewById(R.id.tardy_text);
                 if (unit.getOrigDelayMinutes() > 0) {
-                    tardyText.setText(String.valueOf(unit.getOrigDelayMinutes()));
-                } else
+                    tardyText.setText(unit.getOrigDelayMinutes() + " min late.");
+                    tardyText.setTextColor(Color.parseColor("#d72e11"));
+                    View departingBorder = line.findViewById(R.id.departing_border);
+                    departingBorder.setBackground(getResources().getDrawable(R.drawable.late_boarder));
+                } else {
                     tardyText.setText("On time");
+                    tardyText.setTextColor(Color.parseColor("#539e00"));
+                }
             }
 
             return convertView;
@@ -310,6 +351,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     private class NextToArriveLine {
         List<NextArrivalModelResponse.NextArrivalRecord> nextToArriveModels = new ArrayList<NextArrivalModelResponse.NextArrivalRecord>();
         String lineName;
+        Date soonestDeparture;
 
         NextToArriveLine(String lineName) {
             this.lineName = lineName;
@@ -321,6 +363,16 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
         void addItem(NextArrivalModelResponse.NextArrivalRecord item) {
             nextToArriveModels.add(item);
+            if (soonestDeparture != null) {
+                if (item.getSchedDepartureTime().getTime() + (item.getOrigDelayMinutes() * 60000) > soonestDeparture.getTime())
+                    return;
+            }
+
+            soonestDeparture = new Date(item.getSchedDepartureTime().getTime() + (item.getOrigDelayMinutes() * 60000));
+        }
+
+        public Date getSoonestDeparture() {
+            return soonestDeparture;
         }
 
         @Override

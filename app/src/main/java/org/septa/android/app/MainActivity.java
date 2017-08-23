@@ -105,8 +105,11 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void switchToBundle(int navItem, Fragment targetFragment, int title) {
+        if ((currentBundleKey != null) && navItem == currentBundleKey)
+            return;
+
         // TODO Need to implement saving the state of the fragements.
-        if (activeFragement !=null) {
+        if (activeFragement != null) {
             Bundle bundle = new Bundle();
             activeFragement.onSaveInstanceState(bundle);
             fragmentStateMap.put(currentBundleKey, bundle);

@@ -1,58 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:paddingTop="16dp">
 
     <TextView
         android:id="@+id/arrival_time_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="2dp"
-        android:padding="2dp"
-        android:text="9:29AM" />
+        android:layout_marginLeft="17dp"
+        android:text="9:29 AM - 10:03 AM"
+        android:textSize="14sp"
+        android:textStyle="bold" />
 
     <TextView
-        android:padding="2dp"
         android:id="@+id/tardy_text"
         android:layout_width="wrap_content"
+
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/arrival_time_text"
-        android:text="On Time" />
+        android:layout_below="@id/arrival_time_text"
+        android:layout_marginLeft="17dp"
+        android:layout_marginTop="3dp"
+        android:text="On Time"
+        android:textSize="14sp"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/trip_number_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/arrival_time_text"
-        android:layout_marginLeft="2dp"
-        android:padding="2dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="3dp"
+        android:layout_toRightOf="@id/tardy_text"
         android:text="2345 to Thorndale" />
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <RelativeLayout android:id="@+id/departing_border"
+        android:layout_width="81dp"
+        android:layout_height="42dp"
         android:layout_alignParentRight="true"
-        android:layout_marginRight="2dp"
-        android:background="@color/colorAccent"
-        android:orientation="vertical"
-        android:padding="2dp">
+        android:background="@drawable/ontime_boarder">
 
         <TextView
+            android:id="@+id/departing_label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/white"
+            android:layout_marginTop="8dp"
             android:text="Departing"
-            android:padding="2dp"
-            android:textAlignment="center" />
+            android:textAlignment="center"
+            android:textSize="10sp" />
 
         <TextView
+            android:id="@+id/depature_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/white"
-            android:padding="2dp"
+            android:layout_below="@id/departing_label"
+            android:layout_marginTop="1dp"
             android:text="5m"
-            android:textAlignment="center" />
-    </LinearLayout>
+            android:textAlignment="center"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+    </RelativeLayout>
 
 
 </RelativeLayout>

@@ -1,101 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/rail_next_to_arrive_results_coordinator"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rail_next_to_arrive_results_coordinator"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="org.septa.android.app.nextarrive.NextToArriveResultsActivity">
 
-    <LinearLayout
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/app_bar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+    </android.support.design.widget.AppBarLayout>
+
+    <LinearLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/main_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <android.support.design.widget.AppBarLayout
-            android:id="@+id/app_bar_layout"
+
+        <RelativeLayout
+            android:id="@+id/header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:theme="@style/AppTheme.AppBarOverlay">
-
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:background="?attr/colorPrimary"
-                app:popupTheme="@style/AppTheme.PopupOverlay" />
-
-        </android.support.design.widget.AppBarLayout>
-
-        <RelativeLayout xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/main_content"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
+            android:background="#215291"
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/starting_station_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Starting Station"
-                android:textColor="@android:color/holo_green_dark" />
+                android:layout_marginLeft="13dp"
+                android:fontFamily="sans-serif"
+                android:text="Start:"
+                android:textColor="#ffffff"
+                android:textSize="14sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/starting_station_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/starting_station_label"
+                android:layout_alignTop="@id/starting_station_label"
                 android:layout_marginBottom="2dp"
                 android:layout_marginLeft="5dp"
-                android:layout_marginTop="2dp"
+                android:layout_toRightOf="@id/starting_station_label"
                 android:text="placeholder Starting"
-                android:textSize="12pt" />
-
-            <FrameLayout
-                android:id="@+id/starting_station_divider"
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:layout_below="@id/starting_station_name"
-                android:layout_marginBottom="2dp"
-                android:background="@android:color/holo_green_dark" />
-
+                android:textColor="#ffffff"
+                android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/destination_station_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/starting_station_divider"
-                android:text="Destination Station"
-                android:textColor="@android:color/holo_green_dark" />
+                android:layout_below="@+id/starting_station_label"
+                android:layout_marginLeft="13dp"
+                android:text="Destination:"
+                android:textColor="#ffffff"
+
+                android:textSize="14sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/destination_station_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/destination_station_label"
+                android:layout_below="@+id/starting_station_label"
                 android:layout_marginBottom="2dp"
                 android:layout_marginLeft="5dp"
-                android:layout_marginTop="2dp"
+                android:layout_toRightOf="@id/destination_station_label"
                 android:text="placeholder Destination"
-                android:textSize="12pt" />
-
-            <FrameLayout
-                android:id="@+id/destination_station_divider"
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:layout_below="@id/destination_station_name"
-                android:background="@android:color/holo_green_dark" />
-
-            <FrameLayout
-                android:id="@+id/map_container"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_below="@id/destination_station_divider"
-                android:background="@android:color/darker_gray" />
-
+                android:textColor="#ffffff"
+                android:textSize="14sp" />
 
         </RelativeLayout>
+
+        <FrameLayout
+            android:id="@+id/map_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/header"
+            android:background="@android:color/darker_gray" />
+
     </LinearLayout>
 
     <include layout="@layout/rail_next_to_arrive_results_bottom_sheet" />

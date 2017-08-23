@@ -28,6 +28,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
@@ -37,10 +39,10 @@ import com.google.android.gms.tasks.Task;
 import com.google.maps.android.data.kml.KmlLayer;
 
 import org.septa.android.app.R;
+import org.septa.android.app.TransitType;
 import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalModelResponse;
-import org.septa.android.app.services.apiinterfaces.model.NextToArriveModel;
 import org.septa.android.app.support.MapUtils;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -165,11 +167,10 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
         LatLng startingStationLatLng = new LatLng(start.getLatitude(), start.getLongitude());
         LatLng destinationStationLatLng = new LatLng(destination.getLatitude(), destination.getLongitude());
-
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(startingStationLatLng));
-
         googleMap.addMarker(new MarkerOptions().position(startingStationLatLng).title(start.getStopName()));
         googleMap.addMarker(new MarkerOptions().position(destinationStationLatLng).title(destination.getStopName()));
+
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(startingStationLatLng));
 
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
         builder.include(startingStationLatLng);
@@ -221,6 +222,14 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                     Map<String, NextToArriveLine> map = new HashMap<String, NextToArriveLine>();
                     Set<String> kmlSet = new HashSet<String>();
 
+                    BitmapDescriptor vehicleBitMap = BitmapDescriptorFactory.fromResource(TransitType.valueOf(response.body().getTransType()).getMapMarkerResource());
+
+                    googleMap.clear();
+
+                    LatLng startingStationLatLng = new LatLng(start.getLatitude(), start.getLongitude());
+                    LatLng destinationStationLatLng = new LatLng(destination.getLatitude(), destination.getLongitude());
+                    googleMap.addMarker(new MarkerOptions().position(startingStationLatLng).title(start.getStopName()));
+                    googleMap.addMarker(new MarkerOptions().position(destinationStationLatLng).title(destination.getStopName()));
 
                     for (NextArrivalModelResponse.NextArrivalRecord data : response.body().getNextArrivalRecords()) {
                         String key;
@@ -234,6 +243,11 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                         }
 
                         map.get(key).addItem(data);
+
+                        if (data.getVehicle_lat() != null && data.getVehicle_lon() != null) {
+                            LatLng vehicleLatLng = new LatLng(data.getVehicle_lat(), data.getVehicle_lon());
+                            googleMap.addMarker(new MarkerOptions().position(vehicleLatLng).title(data.getOrigLineTripId()).icon(vehicleBitMap));
+                        }
 
                         if (!kmlSet.contains(data.getOrigRouteId())) {
                             kmlSet.add(data.getOrigRouteId());
@@ -272,6 +286,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                             else return Integer.MAX_VALUE;
                         }
                     });
+
 
                     linesListView.setAdapter(new LinesListAdapater(NextToArriveResultsActivity.this, nextToArriveLinesList));
                     progressView.setVisibility(View.GONE);

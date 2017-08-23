@@ -19,7 +19,7 @@
 
         <activity
             android:name=".MainActivity"
-            android:label="@string/septa"
+            android:label="@string/septa" android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -29,12 +29,9 @@
         </activity>
         <activity
             android:name=".nextarrive.NextToArriveResultsActivity"
-            android:label="@string/septa"
+            android:label="@string/septa" android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity
-            android:name=".schedules.SchedulesFragment"
-            android:label="Schedules"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+
     </application>
 
 </manifest>

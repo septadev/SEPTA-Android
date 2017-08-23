@@ -45,7 +45,8 @@
             android:id="@+id/lines_list_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/title_txt" />
+            android:layout_below="@id/title_txt"
+            />
     </RelativeLayout>
     <FrameLayout
         android:id="@+id/progress_view"

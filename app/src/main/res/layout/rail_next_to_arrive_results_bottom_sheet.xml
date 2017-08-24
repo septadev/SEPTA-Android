@@ -15,14 +15,28 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ImageView
+        <LinearLayout
             android:id="@+id/bottom_sheet_anchor"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginBottom="10dp"
+            android:layout_width="179dp"
+            android:layout_height="36dp"
+            android:layout_centerHorizontal="true"
+            android:clickable="true"
+            android:orientation="vertical"
+            android:paddingTop="12dp">
 
-            android:src="@drawable/ic_view_headline_black_24dp" />
+            <FrameLayout
+                android:layout_width="35dp"
+                android:layout_height="2dp"
+                android:layout_gravity="center"
+                android:background="#dadada" />
+
+            <FrameLayout
+                android:layout_width="35dp"
+                android:layout_height="2dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="3dp"
+                android:background="#dadada" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/title_txt"
@@ -46,8 +60,47 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@id/title_txt"
-            />
+            android:layout_marginTop="24dp" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/lines_list_view"
+            android:background="#fff6f4">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="13dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="13dp"
+                android:text="Need to see later trains?"
+                android:textStyle="bold"
+                android:textColor="#d73a11"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/view_sched_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginBottom="14dp"
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="26dp"
+                android:layout_marginTop="14dp"
+                android:text="View Schedules"
+                android:textSize="12sp" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="4dp"
+                android:layout_marginTop="11dp"
+                android:layout_toLeftOf="@id/view_sched_label"
+                android:src="@drawable/group_13" />
+        </RelativeLayout>
     </RelativeLayout>
+
     <FrameLayout
         android:id="@+id/progress_view"
         android:layout_width="match_parent"

@@ -96,6 +96,6 @@
 
     </LinearLayout>
 
-    <include layout="@layout/rail_next_to_arrive_results_bottom_sheet" />
+    <include layout="@layout/next_to_arrive_results_bottom_sheet" />
 
 </android.support.design.widget.CoordinatorLayout>

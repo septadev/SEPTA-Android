@@ -99,7 +99,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.rail_next_to_arrive_results);
+        setContentView(R.layout.next_to_arrive_results);
 
         progressView = findViewById(R.id.progress_view);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -313,7 +313,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             if (convertView == null) {
-                convertView = LayoutInflater.from(getContext()).inflate(R.layout.rail_next_to_arrive_line, parent, false);
+                convertView = LayoutInflater.from(getContext()).inflate(R.layout.next_to_arrive_line, parent, false);
             }
 
             TextView lineNameText = (TextView) convertView.findViewById(R.id.line_name_text);
@@ -335,7 +335,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
             tripList = tripList.subList(0, (3 < tripList.size()) ? 3 : tripList.size());
 
             for (NextArrivalModelResponse.NextArrivalRecord unit : tripList) {
-                View line = LayoutInflater.from(getContext()).inflate(R.layout.rail_next_to_arrive_unit, null, false);
+                View line = LayoutInflater.from(getContext()).inflate(R.layout.next_to_arrive_unit, null, false);
                 TextView arrivalTimeText = (TextView) line.findViewById(R.id.arrival_time_text);
                 arrivalTimeText.setText(dateFormat.format(unit.getSchedDepartureTime()) + " - " + dateFormat.format(unit.getSchedArrivalTime()));
                 arrivalList.addView(line);

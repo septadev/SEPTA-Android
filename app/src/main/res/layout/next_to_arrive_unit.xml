@@ -2,11 +2,11 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="16dp"
-    android:clickable="true">
+    android:clickable="true"
+    android:paddingTop="16dp">
 
     <TextView
-        android:id="@+id/arrival_time_text"
+        android:id="@+id/orig_arrival_time_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="17dp"
@@ -15,11 +15,11 @@
         android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/tardy_text"
+        android:id="@+id/orig_tardy_text"
         android:layout_width="wrap_content"
 
         android:layout_height="wrap_content"
-        android:layout_below="@id/arrival_time_text"
+        android:layout_below="@id/orig_arrival_time_text"
         android:layout_marginLeft="17dp"
         android:layout_marginTop="3dp"
         android:text="On Time"
@@ -27,23 +27,26 @@
         android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/trip_number_text"
-        android:layout_width="wrap_content"
+        android:id="@+id/orig_trip_number_text"
+        android:layout_width="360dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/arrival_time_text"
+        android:layout_below="@id/orig_arrival_time_text"
         android:layout_marginLeft="5dp"
         android:layout_marginTop="3dp"
-        android:layout_toRightOf="@id/tardy_text"
-        android:text="2345 to Thorndale" />
+        android:layout_toRightOf="@id/orig_tardy_text"
+        android:ellipsize="end"
+        android:text="2345 to 30th Street Station" />
 
-    <RelativeLayout android:id="@+id/departing_border"
+    <RelativeLayout
+        android:id="@+id/orig_departing_border"
         android:layout_width="81dp"
         android:layout_height="42dp"
         android:layout_alignParentRight="true"
+        android:layout_marginRight="15dp"
         android:background="@drawable/ontime_boarder">
 
         <TextView
-            android:id="@+id/departing_label"
+            android:id="@+id/orig_departing_label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
@@ -52,10 +55,10 @@
             android:textSize="10sp" />
 
         <TextView
-            android:id="@+id/depature_time"
+            android:id="@+id/orig_depature_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/departing_label"
+            android:layout_below="@id/orig_departing_label"
             android:layout_marginTop="1dp"
             android:text="5m"
             android:textAlignment="center"

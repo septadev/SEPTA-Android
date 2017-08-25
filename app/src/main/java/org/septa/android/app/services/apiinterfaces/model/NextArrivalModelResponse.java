@@ -83,10 +83,14 @@ public class NextArrivalModelResponse {
         private String origLineTripId;
         @SerializedName("term_line_trip_id")
         private String termLineTripId;
-        @SerializedName("sched_departure_time")
-        private Date schedDepartureTime;
-        @SerializedName("sched_arrival_time")
-        private Date schedArrivalTime;
+        @SerializedName("orig_departure_time")
+        private Date origDepartureTime;
+        @SerializedName("orig_arrival_time")
+        private Date origArrivalTime;
+        @SerializedName("term_departure_time")
+        private Date termDepartureTime;
+        @SerializedName("term_arrival_time")
+        private Date termArrivalTime;
         @SerializedName("orig_delay_minutes")
         private int origDelayMinutes;
         @SerializedName("term_delay_minutes")
@@ -141,16 +145,24 @@ public class NextArrivalModelResponse {
             return termLineTripId;
         }
 
-        public Date getSchedDepartureTime() {
-            return schedDepartureTime;
+        public Date getOrigDepartureTime() {
+            return origDepartureTime;
         }
 
-        public Date getSchedArrivalTime() {
-            return schedArrivalTime;
+        public Date getOrigArrivalTime() {
+            return origArrivalTime;
         }
 
         public int getOrigDelayMinutes() {
             return origDelayMinutes;
+        }
+
+        public Date getTermDepartureTime() {
+            return termDepartureTime;
+        }
+
+        public Date getTermArrivalTime() {
+            return termArrivalTime;
         }
 
         public int getTermDelayMinutes() {
@@ -200,8 +212,10 @@ public class NextArrivalModelResponse {
                     ", connectionStationName='" + connectionStationName + '\'' +
                     ", origLineTripId='" + origLineTripId + '\'' +
                     ", termLineTripId='" + termLineTripId + '\'' +
-                    ", schedDepartureTime=" + schedDepartureTime +
-                    ", schedArrivalTime=" + schedArrivalTime +
+                    ", origDepartureTime=" + origDepartureTime +
+                    ", origArrivalTime=" + origArrivalTime +
+                    ", termDepartureTime=" + termDepartureTime +
+                    ", termArrivalTime=" + termArrivalTime +
                     ", origDelayMinutes=" + origDelayMinutes +
                     ", termDelayMinutes=" + termDelayMinutes +
                     ", origLastStopId=" + origLastStopId +

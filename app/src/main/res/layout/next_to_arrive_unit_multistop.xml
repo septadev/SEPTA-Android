@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:paddingTop="16dp">
+
+        <LinearLayout
+            android:id="@+id/orig_line_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_gravity="center"
+                android:layout_weight="5"
+                android:background="@color/colorPrimaryDark" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="1dp"
+                android:layout_marginRight="1dp"
+                android:layout_weight="1">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/pao_line_marker" />
+
+                <TextView
+                    android:id="@+id/orig_line_name_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginLeft="11dp"
+                    android:layout_marginRight="11dp"
+                    android:text="Paoli/Thorndale"
+                    android:textAlignment="center" />
+            </LinearLayout>
+
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_gravity="center"
+                android:layout_weight="5"
+                android:background="@color/colorPrimaryDark" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/stop_start_circle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/orig_line_header"
+            android:layout_marginLeft="17dp"
+            android:layout_marginTop="11dp"
+            android:src="@drawable/multi_stop_start_circle" />
+
+        <ImageView
+            android:layout_width="1dp"
+            android:layout_height="37dp"
+            android:layout_alignLeft="@id/stop_start_circle"
+            android:layout_below="@id/stop_start_circle"
+            android:src="@drawable/multi_stop_connect_vertical_line" />
+
+        <TextView
+            android:id="@+id/orig_arrival_time_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/orig_line_header"
+            android:layout_marginLeft="12dp"
+            android:layout_marginTop="11dp"
+            android:layout_toRightOf="@id/stop_start_circle"
+            android:text="9:29 AM - 10:03 AM"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/orig_tardy_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/orig_arrival_time_text"
+            android:layout_marginLeft="12dp"
+            android:layout_marginTop="3dp"
+            android:layout_toRightOf="@id/stop_start_circle"
+            android:text="On Time"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/orig_trip_number_text"
+            android:layout_width="360dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/orig_arrival_time_text"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="3dp"
+            android:layout_toRightOf="@id/orig_tardy_text"
+            android:ellipsize="end"
+            android:text="2345 to 30th Street Station" />
+
+        <RelativeLayout
+            android:id="@+id/orig_departing_border"
+            android:layout_width="81dp"
+            android:layout_height="42dp"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/orig_line_header"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="11dp"
+            android:background="@drawable/ontime_boarder">
+
+            <TextView
+                android:id="@+id/orig_departing_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Departing"
+                android:textAlignment="center"
+                android:textSize="10sp" />
+
+            <TextView
+                android:id="@+id/orig_depature_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/orig_departing_label"
+                android:layout_marginBottom="8dp"
+                android:text="5m"
+                android:textAlignment="center"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="27dp"
+        android:background="#e6f1fd">
+
+
+        <ImageView
+            android:id="@+id/connection_diamond"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="17dp"
+            android:padding="1dp"
+            android:src="@drawable/multi_stop_connect_diamond" />
+
+        <TextView
+            android:id="@+id/connection_station_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="13dp"
+            android:layout_toRightOf="@id/connection_diamond"
+            android:fontFamily="sans-serif-medium"
+            android:text="Connect @ 30th Street Station"
+            android:textColor="#144b88"
+            android:textSize="12sp"
+            android:textStyle="italic" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="16dp"
+        android:id="@+id/term_line_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_gravity="center"
+            android:layout_weight="5"
+            android:background="@color/colorPrimaryDark" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="1dp"
+            android:layout_marginRight="1dp"
+            android:layout_weight="1">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/pao_line_marker" />
+
+            <TextView
+                android:id="@+id/term_line_name_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginLeft="11dp"
+                android:layout_marginRight="11dp"
+                android:text="Paoli/Thorndale"
+                android:textAlignment="center" />
+        </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_gravity="center"
+            android:layout_weight="5"
+            android:background="@color/colorPrimaryDark" />
+    </LinearLayout>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:paddingTop="16dp">
+
+        <ImageView
+            android:id="@+id/arrival_drop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="17dp"
+            android:src="@drawable/fill_1_copy" />
+
+
+        <TextView
+            android:id="@+id/term_arrival_time_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:layout_toRightOf="@id/arrival_drop"
+            android:text="9:29 AM - 10:03 AM"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/term_tardy_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/term_arrival_time_text"
+            android:layout_marginLeft="12dp"
+            android:layout_marginTop="3dp"
+            android:layout_toRightOf="@id/arrival_drop"
+            android:text="On Time"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/term_trip_number_text"
+            android:layout_width="360dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/term_arrival_time_text"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="3dp"
+            android:layout_toRightOf="@id/term_tardy_text"
+            android:ellipsize="end"
+            android:text="2345 to 30th Street Station" />
+
+        <RelativeLayout
+            android:id="@+id/term_departing_border"
+            android:layout_width="81dp"
+            android:layout_height="42dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="15dp"
+            android:background="@drawable/ontime_boarder">
+
+            <TextView
+                android:id="@+id/term_departing_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Departing"
+                android:textAlignment="center"
+                android:textSize="10sp" />
+
+            <TextView
+                android:id="@+id/term_depature_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/term_departing_label"
+                android:layout_marginBottom="8dp"
+                android:text="5m"
+                android:textAlignment="center"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+    </RelativeLayout>
+</LinearLayout>
+

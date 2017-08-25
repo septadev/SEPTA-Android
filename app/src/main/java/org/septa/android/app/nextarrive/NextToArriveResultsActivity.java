@@ -239,7 +239,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                             key = data.getOrigRouteId() + "." + data.getTermRouteId();
 
                         if (!map.containsKey(key)) {
-                            map.put(key, new NextToArriveLine(data.getOrigRouteName()));
+                            map.put(key, new NextToArriveLine(data.getOrigRouteName(), (data.getOrigRouteId() != data.getTermRouteId())));
                         }
 
                         map.get(key).addItem(data);
@@ -312,6 +312,37 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
+            List<NextArrivalModelResponse.NextArrivalRecord> tripList = getItem(position).getList();
+            Collections.sort(
+                    tripList, new Comparator<NextArrivalModelResponse.NextArrivalRecord>() {
+                        @Override
+                        public int compare(NextArrivalModelResponse.NextArrivalRecord x, NextArrivalModelResponse.NextArrivalRecord y) {
+                            return x.getOrigDepartureTime().compareTo(y.getOrigDepartureTime());
+                        }
+                    });
+
+            tripList = tripList.subList(0, (3 < tripList.size()) ? 3 : tripList.size());
+
+            if (getItem(position).isMultiStop()) {
+                convertView = getMultiStopTripView(position, convertView, parent, tripList);
+            } else {
+                convertView = getSingleStopTripView(position, convertView, parent, tripList);
+            }
+
+            return convertView;
+        }
+
+        @NonNull
+        private View getMultiStopTripView(int position, View convertView, ViewGroup parent, List<NextArrivalModelResponse.NextArrivalRecord> tripList) {
+            if (convertView == null) {
+                convertView = LayoutInflater.from(getContext()).inflate(R.layout.next_to_arrive_line, parent, false);
+            }
+
+            return convertView;
+        }
+
+        @NonNull
+        private View getSingleStopTripView(int position, View convertView, ViewGroup parent, List<NextArrivalModelResponse.NextArrivalRecord> tripList) {
             if (convertView == null) {
                 convertView = LayoutInflater.from(getContext()).inflate(R.layout.next_to_arrive_line, parent, false);
             }
@@ -323,42 +354,36 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
             DateFormat dateFormat = DateFormat.getTimeInstance(DateFormat.SHORT);
 
-            List<NextArrivalModelResponse.NextArrivalRecord> tripList = getItem(position).getList();
-            Collections.sort(
-                    tripList, new Comparator<NextArrivalModelResponse.NextArrivalRecord>() {
-                        @Override
-                        public int compare(NextArrivalModelResponse.NextArrivalRecord x, NextArrivalModelResponse.NextArrivalRecord y) {
-                            return x.getSchedDepartureTime().compareTo(y.getSchedDepartureTime());
-                        }
-                    });
-
-            tripList = tripList.subList(0, (3 < tripList.size()) ? 3 : tripList.size());
-
             for (NextArrivalModelResponse.NextArrivalRecord unit : tripList) {
                 View line = LayoutInflater.from(getContext()).inflate(R.layout.next_to_arrive_unit, null, false);
-                TextView arrivalTimeText = (TextView) line.findViewById(R.id.arrival_time_text);
-                arrivalTimeText.setText(dateFormat.format(unit.getSchedDepartureTime()) + " - " + dateFormat.format(unit.getSchedArrivalTime()));
+
+                TextView origArrivalTimeText = (TextView) line.findViewById(R.id.orig_arrival_time_text);
+                origArrivalTimeText.setText(dateFormat.format(unit.getOrigDepartureTime()) + " - " + dateFormat.format(unit.getOrigArrivalTime()));
                 arrivalList.addView(line);
 
-                TextView tripNumberText = (TextView) line.findViewById(R.id.trip_number_text);
-                tripNumberText.setText(unit.getOrigLineTripId() + " to " + unit.getOrigLastStopName());
+                TextView origTripNumberText = (TextView) line.findViewById(R.id.orig_trip_number_text);
+                origTripNumberText.setText(unit.getOrigLineTripId() + " to " + unit.getOrigLastStopName());
 
-                TextView departureTime = (TextView) line.findViewById(R.id.depature_time);
-                int departsInMinutes = ((int) (unit.getSchedDepartureTime().getTime() + (unit.getOrigDelayMinutes() * 60000) - System.currentTimeMillis()) / 60000);
-                departureTime.setText(String.valueOf(departsInMinutes + " Minutes"));
+                TextView origDepartureTime = (TextView) line.findViewById(R.id.orig_depature_time);
+                int origDepartsInMinutes = ((int) (unit.getOrigDepartureTime().getTime() + (unit.getOrigDelayMinutes() * 60000) - System.currentTimeMillis()) / 60000);
+                origDepartureTime.setText(String.valueOf(origDepartsInMinutes + " Minutes"));
 
-                TextView tardyText = (TextView) line.findViewById(R.id.tardy_text);
+                TextView origTardyText = (TextView) line.findViewById(R.id.orig_tardy_text);
                 if (unit.getOrigDelayMinutes() > 0) {
-                    tardyText.setText(unit.getOrigDelayMinutes() + " min late.");
-                    tardyText.setTextColor(Color.parseColor("#d72e11"));
-                    View departingBorder = line.findViewById(R.id.departing_border);
-                    departingBorder.setBackground(getResources().getDrawable(R.drawable.late_boarder));
+                    origTardyText.setText(unit.getOrigDelayMinutes() + " min late.");
+                    origTardyText.setTextColor(Color.parseColor("#d72e11"));
+                    View origDepartingBorder = line.findViewById(R.id.orig_departing_border);
+                    origDepartingBorder.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.late_boarder));
                 } else {
-                    tardyText.setText("On time");
-                    tardyText.setTextColor(Color.parseColor("#539e00"));
+                    origTardyText.setText("On time");
+                    origTardyText.setTextColor(Color.parseColor("#539e00"));
+                }
+
+
+                if (unit.getConnectionStationId() != null) {
+
                 }
             }
-
             return convertView;
         }
     }
@@ -367,9 +392,11 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         List<NextArrivalModelResponse.NextArrivalRecord> nextToArriveModels = new ArrayList<NextArrivalModelResponse.NextArrivalRecord>();
         String lineName;
         Date soonestDeparture;
+        boolean multiStop;
 
-        NextToArriveLine(String lineName) {
+        NextToArriveLine(String lineName, boolean multiStop) {
             this.lineName = lineName;
+            this.multiStop = multiStop;
         }
 
         List<NextArrivalModelResponse.NextArrivalRecord> getList() {
@@ -379,15 +406,19 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         void addItem(NextArrivalModelResponse.NextArrivalRecord item) {
             nextToArriveModels.add(item);
             if (soonestDeparture != null) {
-                if (item.getSchedDepartureTime().getTime() + (item.getOrigDelayMinutes() * 60000) > soonestDeparture.getTime())
+                if (item.getOrigDepartureTime().getTime() + (item.getOrigDelayMinutes() * 60000) > soonestDeparture.getTime())
                     return;
             }
 
-            soonestDeparture = new Date(item.getSchedDepartureTime().getTime() + (item.getOrigDelayMinutes() * 60000));
+            soonestDeparture = new Date(item.getOrigDepartureTime().getTime() + (item.getOrigDelayMinutes() * 60000));
         }
 
         public Date getSoonestDeparture() {
             return soonestDeparture;
+        }
+
+        public boolean isMultiStop() {
+            return multiStop;
         }
 
         @Override

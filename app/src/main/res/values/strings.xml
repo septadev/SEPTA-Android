@@ -34,4 +34,8 @@
     <string name="view_trains_button">VIEW TRAINS</string>
     <string name="title_activity_next_to_arrive_results">NextToArriveResultsActivity</string>
     <string name="RailStationNextToArriveResults">Next To Arrive Rail</string>
+
+    <!-- FONTS -->
+    <string name="font_roboto_regular">fonts/Roboto-Regular.ttf</string>
+    <string name="font_roboto_bold">fonts/Roboto-Bold.ttf</string>
 </resources>

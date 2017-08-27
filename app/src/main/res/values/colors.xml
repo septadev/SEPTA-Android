@@ -3,4 +3,33 @@
     <color name="colorPrimary">#215291</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+
+
+    <color name="line_color_air">#944e6f</color>
+    <color name="line_color_cyn">#6f5aa7</color>
+    <color name="line_color_fox">#ff8638</color>
+    <color name="line_color_med">#0080cb</color>
+    <color name="line_color_nor">#f44c64</color>
+    <color name="line_color_pao">#12845a</color>
+    <color name="line_color_tre">#f984c4</color>
+    <color name="line_color_wtr">#445bb2</color>
+    <color name="line_color_war">#ffb23a</color>
+    <color name="line_color_che">#9d7534</color>
+    <color name="line_color_chw">#00bbb3</color>
+    <color name="line_color_lan">#7e5d48</color>
+    <color name="line_color_wil">#96cf64</color>
+
+    <color name="line_color_bsl">@android:color/black</color>
+    <color name="line_color_bso">@android:color/black</color>
+    <color name="line_color_mfl">@android:color/black</color>
+    <color name="line_color_mfo">@android:color/black</color>
+
+
+    <color name="line_color_bus">@android:color/black</color>
+    <color name="line_color_nhsl">@android:color/black</color>
+    <color name="line_color_trolly">@android:color/black</color>
+
+
+    <color name="default_line_color">@android:color/holo_red_dark</color>
+
 </resources>

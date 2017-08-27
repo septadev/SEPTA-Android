@@ -1,295 +1,430 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <RelativeLayout
+    <!-- TODO: Extract constraint layouts into views as needed, remove text -->
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        android:paddingTop="16dp">
+        android:layout_height="wrap_content">
+
+        <View
+            android:id="@+id/view2"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="#CCC"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/linearLayout1"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <LinearLayout
-            android:id="@+id/orig_line_header"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <FrameLayout
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_gravity="center"
-                android:layout_weight="5"
-                android:background="@color/colorPrimaryDark" />
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="1dp"
-                android:layout_marginRight="1dp"
-                android:layout_weight="1">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:src="@drawable/pao_line_marker" />
-
-                <TextView
-                    android:id="@+id/orig_line_name_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginLeft="11dp"
-                    android:layout_marginRight="11dp"
-                    android:text="Paoli/Thorndale"
-                    android:textAlignment="center" />
-            </LinearLayout>
-
-            <FrameLayout
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_gravity="center"
-                android:layout_weight="5"
-                android:background="@color/colorPrimaryDark" />
-        </LinearLayout>
-
-        <ImageView
-            android:id="@+id/stop_start_circle"
+            android:id="@+id/linearLayout1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/orig_line_header"
-            android:layout_marginLeft="17dp"
-            android:layout_marginTop="11dp"
-            android:src="@drawable/multi_stop_start_circle" />
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toRightOf="@+id/view2"
+            app:layout_constraintRight_toLeftOf="@+id/view3"
+            app:layout_constraintTop_toTopOf="parent">
+
+
+            <ImageView
+                android:id="@+id/orig_line_marker_left"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@drawable/shape_line_marker"
+                android:tint="#12845A" />
+
+            <TextView
+                android:id="@+id/orig_line_name_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_weight="5"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="Paoli / Throndale" />
+
+            <ImageView
+                android:id="@+id/orig_line_marker_right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@drawable/shape_line_marker"
+                android:tint="#12845A" />
+        </LinearLayout>
+
+        <View
+            android:id="@+id/view3"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginLeft="0dp"
+            android:layout_marginTop="0dp"
+            android:background="#CCC"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toRightOf="@+id/linearLayout1"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true">
 
         <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="2dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/shape_circle"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/view1"
             android:layout_width="1dp"
-            android:layout_height="37dp"
-            android:layout_alignLeft="@id/stop_start_circle"
-            android:layout_below="@id/stop_start_circle"
-            android:src="@drawable/multi_stop_connect_vertical_line" />
+            android:layout_height="0dp"
+            android:layout_marginRight="0dp"
+            android:background="#A1B8D1"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="@+id/imageView"
+            app:layout_constraintRight_toRightOf="@+id/imageView"
+            app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
         <TextView
             android:id="@+id/orig_arrival_time_text"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_below="@id/orig_line_header"
-            android:layout_marginLeft="12dp"
-            android:layout_marginTop="11dp"
-            android:layout_toRightOf="@id/stop_start_circle"
+            android:layout_marginLeft="32dp"
+            android:layout_marginRight="32dp"
+            android:layout_marginTop="0dp"
+            android:maxLines="1"
             android:text="9:29 AM - 10:03 AM"
-            android:textSize="14sp"
-            android:textStyle="bold" />
+            android:textColor="#000"
+            android:textStyle="bold"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/orig_departing_border"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/orig_tardy_text"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_below="@id/orig_arrival_time_text"
-            android:layout_marginLeft="12dp"
-            android:layout_marginTop="3dp"
-            android:layout_toRightOf="@id/stop_start_circle"
-            android:text="On Time"
-            android:textSize="14sp"
-            android:textStyle="bold" />
+            android:layout_marginLeft="0dp"
+            android:layout_marginTop="0dp"
+            android:text="3 min late"
+            android:textColor="#F00"
+            android:textStyle="bold"
+            app:layout_constraintLeft_toLeftOf="@+id/orig_arrival_time_text"
+            app:layout_constraintTop_toBottomOf="@+id/orig_arrival_time_text" />
 
         <TextView
             android:id="@+id/orig_trip_number_text"
-            android:layout_width="360dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_below="@id/orig_arrival_time_text"
-            android:layout_marginLeft="5dp"
-            android:layout_marginTop="3dp"
-            android:layout_toRightOf="@id/orig_tardy_text"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="32dp"
+            android:layout_marginTop="0dp"
             android:ellipsize="end"
-            android:text="2345 to 30th Street Station" />
+            android:maxLines="1"
+            android:text="#546 to 30th Street"
+            app:layout_constraintLeft_toRightOf="@+id/orig_tardy_text"
+            app:layout_constraintRight_toLeftOf="@+id/orig_departing_border"
+            app:layout_constraintTop_toBottomOf="@+id/orig_arrival_time_text" />
 
-        <RelativeLayout
+        <LinearLayout
             android:id="@+id/orig_departing_border"
-            android:layout_width="81dp"
-            android:layout_height="42dp"
-            android:layout_alignParentRight="true"
-            android:layout_below="@id/orig_line_header"
-            android:layout_marginRight="15dp"
-            android:layout_marginTop="11dp"
-            android:background="@drawable/ontime_boarder">
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginRight="32dp"
+            android:layout_marginTop="0dp"
+            android:background="@drawable/ontime_boarder"
+            android:orientation="vertical"
+            android:padding="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0">
 
             <TextView
                 android:id="@+id/orig_departing_label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="Departing"
-                android:textAlignment="center"
-                android:textSize="10sp" />
+                android:text="DEPARTING"
+                android:textAlignment="center" />
 
             <TextView
                 android:id="@+id/orig_depature_time"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/orig_departing_label"
-                android:layout_marginBottom="8dp"
-                android:text="5m"
+                android:text="25 min"
                 android:textAlignment="center"
-                android:textSize="12sp"
+                android:textColor="#F00"
                 android:textStyle="bold" />
-        </RelativeLayout>
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="27dp"
-        android:background="#e6f1fd">
-
+        </LinearLayout>
 
         <ImageView
-            android:id="@+id/connection_diamond"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="0dp"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="0dp"
+            android:layout_marginTop="0dp"
+            android:src="@drawable/ic_keyboard_arrow_right_black_24dp"
+            android:tint="@color/colorPrimaryDark"
+            app:layout_constraintBottom_toBottomOf="@+id/orig_departing_border"
+            app:layout_constraintLeft_toRightOf="@+id/orig_departing_border"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/orig_departing_border" />
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shape_blue_gradient">
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+            android:background="#A1B8D1"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="@+id/imageView2"
+            app:layout_constraintRight_toRightOf="@+id/imageView2"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/imageView2"
             android:layout_width="10dp"
             android:layout_height="10dp"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="17dp"
-            android:padding="1dp"
-            android:src="@drawable/multi_stop_connect_diamond" />
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="8dp"
+            android:tint="@color/colorPrimary"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/shape_diamond" />
 
         <TextView
             android:id="@+id/connection_station_name"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="13dp"
-            android:layout_toRightOf="@id/connection_diamond"
-            android:fontFamily="sans-serif-medium"
+            android:layout_marginBottom="0dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="0dp"
             android:text="Connect @ 30th Street Station"
-            android:textColor="#144b88"
-            android:textSize="12sp"
-            android:textStyle="italic" />
-    </RelativeLayout>
+            android:textColor="@color/colorPrimaryDark"
+            android:textStyle="italic"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toRightOf="@+id/imageView2"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </android.support.constraint.ConstraintLayout>
 
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="16dp"
-        android:id="@+id/term_line_header"
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content">
 
-        <FrameLayout
+        <View
+            android:id="@+id/view7"
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+            android:layout_marginLeft="20.5dp"
+            android:background="#A1B8D1"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <View
+            android:id="@+id/view4"
             android:layout_width="0dp"
             android:layout_height="1dp"
-            android:layout_gravity="center"
-            android:layout_weight="5"
-            android:background="@color/colorPrimaryDark" />
+            android:layout_marginLeft="32dp"
+            android:background="#CCC"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/linearLayout2"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <LinearLayout
+            android:id="@+id/linearLayout2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="1dp"
-            android:layout_marginRight="1dp"
-            android:layout_weight="1">
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingBottom="16dp"
+            android:paddingTop="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toRightOf="@+id/view4"
+            app:layout_constraintRight_toLeftOf="@+id/view5"
+            app:layout_constraintTop_toTopOf="parent">
+
 
             <ImageView
+                android:id="@+id/term_line_marker_left"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:src="@drawable/pao_line_marker" />
+                android:layout_weight="1"
+                android:src="@drawable/shape_line_marker"
+                android:tint="#6F549C" />
 
             <TextView
                 android:id="@+id/term_line_name_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_marginLeft="11dp"
-                android:layout_marginRight="11dp"
-                android:text="Paoli/Thorndale"
-                android:textAlignment="center" />
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_weight="5"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="Cynwyd / Line" />
+
+            <ImageView
+                android:id="@+id/term_line_marker_right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@drawable/shape_line_marker"
+                android:tint="#6F549C" />
         </LinearLayout>
 
-        <FrameLayout
+        <View
+            android:id="@+id/view5"
             android:layout_width="0dp"
             android:layout_height="1dp"
-            android:layout_gravity="center"
-            android:layout_weight="5"
-            android:background="@color/colorPrimaryDark" />
-    </LinearLayout>
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="32dp"
+            android:layout_marginTop="0dp"
+            android:background="#CCC"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toRightOf="@+id/linearLayout2"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </android.support.constraint.ConstraintLayout>
 
-
-    <RelativeLayout
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:clickable="true"
-        android:paddingTop="16dp">
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true">
 
         <ImageView
-            android:id="@+id/arrival_drop"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="17dp"
-            android:src="@drawable/fill_1_copy" />
+            android:id="@+id/imageView7"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="2dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/fill_1_copy"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
+        <View
+            android:id="@+id/view6"
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+            android:background="#A1B8D1"
+            app:layout_constraintBottom_toTopOf="@+id/imageView7"
+            app:layout_constraintLeft_toLeftOf="@+id/imageView7"
+            app:layout_constraintRight_toRightOf="@+id/imageView7"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/term_arrival_time_text"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="12dp"
-            android:layout_toRightOf="@id/arrival_drop"
+            android:layout_marginLeft="32dp"
+            android:layout_marginRight="32dp"
+            android:layout_marginTop="0dp"
+            android:maxLines="1"
             android:text="9:29 AM - 10:03 AM"
-            android:textSize="14sp"
-            android:textStyle="bold" />
+            android:textColor="#000"
+            android:textStyle="bold"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/term_departing_border"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/term_tardy_text"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_below="@id/term_arrival_time_text"
-            android:layout_marginLeft="12dp"
-            android:layout_marginTop="3dp"
-            android:layout_toRightOf="@id/arrival_drop"
+            android:layout_marginLeft="0dp"
+            android:layout_marginTop="0dp"
             android:text="On Time"
-            android:textSize="14sp"
-            android:textStyle="bold" />
+            android:textColor="#4B9900"
+            android:textStyle="bold"
+            app:layout_constraintLeft_toLeftOf="@+id/term_arrival_time_text"
+            app:layout_constraintTop_toBottomOf="@+id/term_arrival_time_text" />
 
         <TextView
             android:id="@+id/term_trip_number_text"
-            android:layout_width="360dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_below="@id/term_arrival_time_text"
-            android:layout_marginLeft="5dp"
-            android:layout_marginTop="3dp"
-            android:layout_toRightOf="@id/term_tardy_text"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="32dp"
             android:ellipsize="end"
-            android:text="2345 to 30th Street Station" />
+            android:maxLines="1"
+            android:text="#1081 to Cynwyd"
+            app:layout_constraintLeft_toRightOf="@+id/term_tardy_text"
+            app:layout_constraintRight_toLeftOf="@+id/term_departing_border"
+            app:layout_constraintTop_toBottomOf="@+id/term_arrival_time_text" />
 
-        <RelativeLayout
+        <LinearLayout
             android:id="@+id/term_departing_border"
-            android:layout_width="81dp"
-            android:layout_height="42dp"
-            android:layout_alignParentRight="true"
-            android:layout_marginRight="15dp"
-            android:background="@drawable/ontime_boarder">
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="50dp"
+            android:layout_marginRight="32dp"
+            android:background="@drawable/ontime_boarder"
+            android:orientation="vertical"
+            android:padding="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0">
 
             <TextView
                 android:id="@+id/term_departing_label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="Departing"
-                android:textAlignment="center"
-                android:textSize="10sp" />
+                android:text="DEPARTING"
+                android:textAlignment="center" />
 
             <TextView
                 android:id="@+id/term_depature_time"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/term_departing_label"
-                android:layout_marginBottom="8dp"
-                android:text="5m"
+                android:text="42 min"
                 android:textAlignment="center"
-                android:textSize="12sp"
-                android:textStyle="bold" />
-        </RelativeLayout>
-    </RelativeLayout>
-</LinearLayout>
+                android:textColor="@color/colorPrimaryDark"
+                android:textStyle="bold"
+                />
+        </LinearLayout>
 
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_keyboard_arrow_right_black_24dp"
+            android:tint="@color/colorPrimaryDark"
+            app:layout_constraintBottom_toBottomOf="@+id/term_departing_border"
+            app:layout_constraintLeft_toRightOf="@+id/term_departing_border"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/term_departing_border" />
+    </android.support.constraint.ConstraintLayout>
+</LinearLayout>

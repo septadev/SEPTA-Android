@@ -1,70 +1,94 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:clickable="true"
-    android:paddingTop="16dp">
+    android:layout_height="wrap_content"
+    android:background="?android:attr/selectableItemBackground"
+    android:clickable="true">
 
     <TextView
         android:id="@+id/orig_arrival_time_text"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="17dp"
+        android:layout_marginLeft="32dp"
+        android:layout_marginRight="32dp"
+        android:layout_marginTop="0dp"
+        android:maxLines="1"
         android:text="9:29 AM - 10:03 AM"
-        android:textSize="14sp"
-        android:textStyle="bold" />
+        android:textColor="#000"
+        android:textStyle="bold"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/orig_departing_border"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/orig_tardy_text"
-        android:layout_width="wrap_content"
-
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/orig_arrival_time_text"
-        android:layout_marginLeft="17dp"
-        android:layout_marginTop="3dp"
-        android:text="On Time"
-        android:textSize="14sp"
-        android:textStyle="bold" />
+        android:layout_marginLeft="0dp"
+        android:layout_marginTop="0dp"
+        android:text="3 min late"
+        android:textColor="#F00"
+        android:textStyle="bold"
+        app:layout_constraintLeft_toLeftOf="@+id/orig_arrival_time_text"
+        app:layout_constraintTop_toBottomOf="@+id/orig_arrival_time_text" />
 
     <TextView
         android:id="@+id/orig_trip_number_text"
-        android:layout_width="360dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/orig_arrival_time_text"
-        android:layout_marginLeft="5dp"
-        android:layout_marginTop="3dp"
-        android:layout_toRightOf="@id/orig_tardy_text"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="32dp"
+        android:layout_marginTop="0dp"
         android:ellipsize="end"
-        android:text="2345 to 30th Street Station" />
+        android:maxLines="1"
+        android:text="#546 to 30th Street"
+        app:layout_constraintLeft_toRightOf="@+id/orig_tardy_text"
+        app:layout_constraintRight_toLeftOf="@+id/orig_departing_border"
+        app:layout_constraintTop_toBottomOf="@+id/orig_arrival_time_text" />
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/orig_departing_border"
-        android:layout_width="81dp"
-        android:layout_height="42dp"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="15dp"
-        android:background="@drawable/ontime_boarder">
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginRight="32dp"
+        android:layout_marginTop="0dp"
+        android:background="@drawable/ontime_boarder"
+        android:orientation="vertical"
+        android:padding="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
 
         <TextView
             android:id="@+id/orig_departing_label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Departing"
-            android:textAlignment="center"
-            android:textSize="10sp" />
+            android:text="DEPARTING"
+            android:textAlignment="center" />
 
         <TextView
             android:id="@+id/orig_depature_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/orig_departing_label"
-            android:layout_marginTop="1dp"
-            android:text="5m"
+            android:text="25 min"
             android:textAlignment="center"
-            android:textSize="12sp"
+            android:textColor="#F00"
             android:textStyle="bold" />
-    </RelativeLayout>
+    </LinearLayout>
 
-
-</RelativeLayout>
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="0dp"
+        android:layout_marginLeft="0dp"
+        android:layout_marginRight="0dp"
+        android:layout_marginTop="0dp"
+        android:src="@drawable/ic_keyboard_arrow_right_black_24dp"
+        android:tint="@color/colorPrimaryDark"
+        app:layout_constraintBottom_toBottomOf="@+id/orig_departing_border"
+        app:layout_constraintLeft_toRightOf="@+id/orig_departing_border"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/orig_departing_border" />
+</android.support.constraint.ConstraintLayout>

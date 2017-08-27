@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.content.ContextCompat;
@@ -47,6 +48,7 @@ import org.septa.android.app.support.MapUtils;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -231,12 +233,18 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                     googleMap.addMarker(new MarkerOptions().position(startingStationLatLng).title(start.getStopName()));
                     googleMap.addMarker(new MarkerOptions().position(destinationStationLatLng).title(destination.getStopName()));
 
+                    int multiStopCount = 0;
+                    int singleStopCount = 0;
+
                     for (NextArrivalModelResponse.NextArrivalRecord data : response.body().getNextArrivalRecords()) {
                         String key;
-                        if (data.getOrigRouteId() == data.getTermRouteId()) {
+                        if (data.getOrigRouteId().equals(data.getTermRouteId())) {
                             key = data.getOrigRouteId();
-                        } else
+                            singleStopCount++;
+                        } else {
                             key = data.getOrigRouteId() + "." + data.getTermRouteId();
+                            multiStopCount++;
+                        }
 
                         if (!map.containsKey(key)) {
                             map.put(key, new NextToArriveLine(data.getOrigRouteName(), (data.getOrigRouteId() != data.getTermRouteId())));
@@ -277,18 +285,39 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                             }
                     }
 
-                    List<NextToArriveLine> nextToArriveLinesList = new ArrayList<NextToArriveLine>(map.values());
-                    Collections.sort(nextToArriveLinesList, new Comparator<NextToArriveLine>() {
-                        @Override
-                        public int compare(NextToArriveLine x, NextToArriveLine y) {
-                            if (x.getSoonestDeparture() != null)
-                                return x.getSoonestDeparture().compareTo(y.getSoonestDeparture());
-                            else return Integer.MAX_VALUE;
-                        }
-                    });
+                    if (singleStopCount > 0 && multiStopCount > 0) {
+                        //TODO Need an error message here.
+                        throw new RuntimeException("We multi-stop and single stop next to arrive in the same response.  This is unexpected.");
+                    }
+
+                    if (singleStopCount > 0) {
+                        List<NextToArriveLine> nextToArriveLinesList = new ArrayList<NextToArriveLine>(map.values());
+                        Collections.sort(nextToArriveLinesList, new Comparator<NextToArriveLine>() {
+                            @Override
+                            public int compare(NextToArriveLine x, NextToArriveLine y) {
+                                if (x.getSoonestDeparture() != null)
+                                    return x.getSoonestDeparture().compareTo(y.getSoonestDeparture());
+                                else return Integer.MAX_VALUE;
+                            }
+                        });
 
 
-                    linesListView.setAdapter(new LinesListAdapater(NextToArriveResultsActivity.this, nextToArriveLinesList));
+                        linesListView.setAdapter(new SingleLinesListAdapater(NextToArriveResultsActivity.this, nextToArriveLinesList));
+                    }
+
+                    if (multiStopCount > 0) {
+                        Collections.sort(response.body().getNextArrivalRecords(), new Comparator<NextArrivalModelResponse.NextArrivalRecord>() {
+                            @Override
+                            public int compare(NextArrivalModelResponse.NextArrivalRecord x, NextArrivalModelResponse.NextArrivalRecord y) {
+                                if (x == y)
+                                    return 0;
+                                return (int) (x.getOrigDepartureTime().getTime() + (60000 * x.getOrigDelayMinutes())
+                                        - y.getOrigDepartureTime().getTime() + (60000 * y.getOrigDelayMinutes()));
+                            }
+                        });
+                        List<NextArrivalModelResponse.NextArrivalRecord> multiStopList = response.body().getNextArrivalRecords().subList(0, (3 < response.body().getNextArrivalRecords().size()) ? 3 : response.body().getNextArrivalRecords().size());
+                        linesListView.setAdapter(new MultiLinesListAdapater(NextToArriveResultsActivity.this, multiStopList));
+                    }
                     progressView.setVisibility(View.GONE);
                 }
 
@@ -304,9 +333,52 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     }
 
 
-    private class LinesListAdapater extends ArrayAdapter<NextToArriveLine> {
+    private class MultiLinesListAdapater extends ArrayAdapter<NextArrivalModelResponse.NextArrivalRecord> {
 
-        public LinesListAdapater(@NonNull Context context, List<NextToArriveLine> list) {
+        public MultiLinesListAdapater(@NonNull Context context, List<NextArrivalModelResponse.NextArrivalRecord> list) {
+            super(context, 0, list);
+        }
+
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            if (convertView == null) {
+                convertView = LayoutInflater.from(getContext()).inflate(R.layout.next_to_arrive_unit_multistop, parent, false);
+            }
+            TextView lineNameText = (TextView) convertView.findViewById(R.id.orig_line_name_text);
+            lineNameText.setText(getItem(position).getOrigRouteName());
+
+            DateFormat dateFormat = DateFormat.getTimeInstance(DateFormat.SHORT);
+
+            TextView origArrivalTimeText = (TextView) convertView.findViewById(R.id.orig_arrival_time_text);
+            origArrivalTimeText.setText(dateFormat.format(getItem(position).getOrigDepartureTime()) + " - " + dateFormat.format(getItem(position).getOrigArrivalTime()));
+
+            TextView origTripNumberText = (TextView) convertView.findViewById(R.id.orig_trip_number_text);
+            origTripNumberText.setText(getItem(position).getOrigLineTripId() + " to " + getItem(position).getOrigLastStopName());
+
+            TextView origDepartureTime = (TextView) convertView.findViewById(R.id.orig_depature_time);
+            int origDepartsInMinutes = ((int) (getItem(position).getOrigDepartureTime().getTime() + (getItem(position).getOrigDelayMinutes() * 60000) - System.currentTimeMillis()) / 60000);
+            origDepartureTime.setText(String.valueOf(origDepartsInMinutes + " Minutes"));
+
+            TextView origTardyText = (TextView) convertView.findViewById(R.id.orig_tardy_text);
+            if (getItem(position).getOrigDelayMinutes() > 0) {
+                origTardyText.setText(getItem(position).getOrigDelayMinutes() + " min late.");
+                origTardyText.setTextColor(Color.parseColor("#d72e11"));
+                View origDepartingBorder = convertView.findViewById(R.id.orig_departing_border);
+                origDepartingBorder.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.late_boarder));
+            } else {
+                origTardyText.setText("On time");
+                origTardyText.setTextColor(Color.parseColor("#539e00"));
+            }
+
+            return convertView;
+
+        }
+    }
+
+    private class SingleLinesListAdapater extends ArrayAdapter<NextToArriveLine> {
+
+        public SingleLinesListAdapater(@NonNull Context context, List<NextToArriveLine> list) {
             super(context, 0, list);
         }
 
@@ -323,26 +395,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
             tripList = tripList.subList(0, (3 < tripList.size()) ? 3 : tripList.size());
 
-            if (getItem(position).isMultiStop()) {
-                convertView = getMultiStopTripView(position, convertView, parent, tripList);
-            } else {
-                convertView = getSingleStopTripView(position, convertView, parent, tripList);
-            }
 
-            return convertView;
-        }
-
-        @NonNull
-        private View getMultiStopTripView(int position, View convertView, ViewGroup parent, List<NextArrivalModelResponse.NextArrivalRecord> tripList) {
-            if (convertView == null) {
-                convertView = LayoutInflater.from(getContext()).inflate(R.layout.next_to_arrive_line, parent, false);
-            }
-
-            return convertView;
-        }
-
-        @NonNull
-        private View getSingleStopTripView(int position, View convertView, ViewGroup parent, List<NextArrivalModelResponse.NextArrivalRecord> tripList) {
             if (convertView == null) {
                 convertView = LayoutInflater.from(getContext()).inflate(R.layout.next_to_arrive_line, parent, false);
             }

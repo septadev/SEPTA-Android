@@ -38,4 +38,7 @@
     <!-- FONTS -->
     <string name="font_roboto_regular">fonts/Roboto-Regular.ttf</string>
     <string name="font_roboto_bold">fonts/Roboto-Bold.ttf</string>
+    <string name="font_roboto_light">fonts/Roboto-Light.ttf</string>
+    <string name="font_roboto_medium_italic">fonts/Roboto-MediumItalic.ttf</string>
+
 </resources>

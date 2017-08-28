@@ -41,7 +41,7 @@
                 android:src="@drawable/shape_line_marker"
                 android:tint="#12845A" />
 
-            <TextView
+            <org.septa.android.app.view.TextView
                 android:id="@+id/orig_line_name_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -50,7 +50,8 @@
                 android:layout_weight="5"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:text="Paoli / Throndale" />
+                android:text="Paoli / Throndale"
+                app:font="@string/font_roboto_regular" />
 
             <ImageView
                 android:id="@+id/orig_line_marker_right"

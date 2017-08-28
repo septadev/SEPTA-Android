@@ -80,6 +80,8 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     ViewGroup bottomSheetLayout;
     ListView linesListView;
     View progressView;
+    View progressViewBottom;
+    View refresh;
 
     public static NextToArriveResultsActivity newInstance(StopModel start, StopModel end) {
         NextToArriveResultsActivity fragement = new NextToArriveResultsActivity();
@@ -101,17 +103,21 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        setTitle(R.string.next_to_arrive);
         setContentView(R.layout.next_to_arrive_results);
 
         progressView = findViewById(R.id.progress_view);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        refresh = findViewById(R.id.refresh_button);
+
         bottomSheetLayout = (ViewGroup) findViewById(R.id.bottomSheetLayout);
         final BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLayout);
+        progressViewBottom = findViewById(R.id.progress_view_bottom);
 
 
-        // Prevent the bottom sheet from being dragged to be opened.  Force it to use the anchor image.
+                // Prevent the bottom sheet from being dragged to be opened.  Force it to use the anchor image.
         BottomSheetHandler myBottomSheetBehaviorCallBack = new BottomSheetHandler(bottomSheetBehavior);
         bottomSheetBehavior.setBottomSheetCallback(myBottomSheetBehaviorCallBack);
         View anchor = findViewById(R.id.bottom_sheet_anchor);
@@ -194,6 +200,12 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                     });
         }
 
+        refresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                updateNextToArriveData();
+            }
+        });
     }
 
     @Override
@@ -210,7 +222,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
             if (routeDirectionModel != null)
                 routeId = routeDirectionModel.getRouteId();
             Call<NextArrivalModelResponse> results = SeptaServiceFactory.getNextArrivalService().getNextArriaval(Integer.parseInt(start.getStopId()), Integer.parseInt(destination.getStopId()), transitType.name(), routeId);
-            progressView.setVisibility(View.VISIBLE);
+            progressVisibility(View.VISIBLE);
 
             results.enqueue(new Callback<NextArrivalModelResponse>() {
                 @Override
@@ -315,18 +327,23 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                         List<NextArrivalModelResponse.NextArrivalRecord> multiStopList = response.body().getNextArrivalRecords().subList(0, (3 < response.body().getNextArrivalRecords().size()) ? 3 : response.body().getNextArrivalRecords().size());
                         linesListView.setAdapter(new MultiLinesListAdapater(NextToArriveResultsActivity.this, multiStopList));
                     }
-                    progressView.setVisibility(View.GONE);
+                    progressVisibility(View.GONE);
                 }
 
                 @Override
                 public void onFailure(Call<NextArrivalModelResponse> call, Throwable t) {
-                    progressView.setVisibility(View.GONE);
+                    progressVisibility(View.GONE);
                     t.printStackTrace();
                 }
             });
 
         }
 
+    }
+
+    private void progressVisibility(int visibility){
+        progressView.setVisibility(visibility);
+        progressViewBottom.setVisibility(visibility);
     }
 
 

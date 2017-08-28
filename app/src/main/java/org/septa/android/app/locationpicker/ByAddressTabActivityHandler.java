@@ -22,7 +22,11 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceSelectionListener;
+import com.google.android.gms.location.places.ui.SupportPlaceAutocompleteFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -67,7 +71,7 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
         CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
         MyLocationClickListener myLocationClickListener;
         ListView stopsListView;
-        EditText edittext;
+        SupportPlaceAutocompleteFragment addressEntry;
         View progressView;
 
         public static ByAddressFragement newInstance(Consumer<StopModel> consumer, CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
@@ -81,35 +85,31 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.location_picker_by_address, container, false);
-
+            addressEntry = (SupportPlaceAutocompleteFragment)
+                    getChildFragmentManager().findFragmentById(R.id.address_fragement);
 
             View myLocationButton = rootView.findViewById(R.id.my_location_button);
             stopsListView = (ListView) rootView.findViewById(R.id.stop_list);
-            edittext = (EditText) rootView.findViewById(R.id.address_edit);
             progressView = rootView.findViewById(R.id.progress_view);
 
             final FindClosestStationTask task = new FindClosestStationTask(this);
 
             myLocationClickListener = new MyLocationClickListener(this);
             myLocationButton.setOnClickListener(myLocationClickListener);
-            edittext.setOnKeyListener(new View.OnKeyListener() {
-                public boolean onKey(View v, int keyCode, KeyEvent event) {
-                    // If the event is a key-down event on the "enter" button
-                    EditText editText = (EditText) v;
-                    if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
-                            (keyCode == KeyEvent.KEYCODE_ENTER)) {
-                        progressView.setVisibility(View.VISIBLE);
-                        FindAddressTask findAddressTask = new FindAddressTask(ByAddressFragement.this);
-                        String[] args = new String[1];
-                        args[0] = editText.getText().toString();
-                        findAddressTask.execute(args);
 
-                        return true;
-                    }
-                    return false;
+            addressEntry.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+                @Override
+                public void onPlaceSelected(Place place) {
+                    progressView.setVisibility(View.VISIBLE);
+                    final FindClosestStationTask task = new FindClosestStationTask(ByAddressFragement.this);
+                    task.execute(place.getLatLng());
+                }
+
+                @Override
+                public void onError(Status status) {
+
                 }
             });
-
 
             return rootView;
         }
@@ -124,7 +124,7 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
     }
 
 
-    static class FindClosestStationTask extends AsyncTask<Location, Void, List<StopModelWithDistance>> {
+    static class FindClosestStationTask extends AsyncTask<LatLng, Void, List<StopModelWithDistance>> {
 
         ByAddressFragement fragment;
 
@@ -133,19 +133,17 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
         }
 
 
-
         @Override
-        protected List<StopModelWithDistance> doInBackground(Location... locations) {
-            Location location = locations[0];
+        protected List<StopModelWithDistance> doInBackground(LatLng... locations) {
+            LatLng location = locations[0];
             List<StopModelWithDistance> returnList = new ArrayList<StopModelWithDistance>();
             if (location != null) {
-                LatLng center = new LatLng(location.getLatitude(), location.getLongitude());
 
                 List<Criteria> criteria = new LinkedList<Criteria>();
-                criteria.add(new Criteria("stop_lon", Criteria.Operation.GT, LocationMathHelper.calculateDerivedPosition(center, 5, 270).longitude));
-                criteria.add(new Criteria("stop_lon", Criteria.Operation.LT, LocationMathHelper.calculateDerivedPosition(center, 5, 90).longitude));
-                criteria.add(new Criteria("stop_lat", Criteria.Operation.LT, LocationMathHelper.calculateDerivedPosition(center, 5, 0).latitude));
-                criteria.add(new Criteria("stop_lat", Criteria.Operation.GT, LocationMathHelper.calculateDerivedPosition(center, 5, 180).latitude));
+                criteria.add(new Criteria("stop_lon", Criteria.Operation.GT, LocationMathHelper.calculateDerivedPosition(location, 5, 270).longitude));
+                criteria.add(new Criteria("stop_lon", Criteria.Operation.LT, LocationMathHelper.calculateDerivedPosition(location, 5, 90).longitude));
+                criteria.add(new Criteria("stop_lat", Criteria.Operation.LT, LocationMathHelper.calculateDerivedPosition(location, 5, 0).latitude));
+                criteria.add(new Criteria("stop_lat", Criteria.Operation.GT, LocationMathHelper.calculateDerivedPosition(location, 5, 180).latitude));
 
                 Cursor cursor = null;
                 try {
@@ -156,7 +154,7 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
                         StopModel stop = fragment.cursorAdapterSupplier.getCurrentItemFromCursor(cursor);
                         while (stop != null) {
                             LatLng stopPoint = new LatLng(stop.getLatitude(), stop.getLongitude());
-                            double distance = LocationMathHelper.distance(center, stopPoint);
+                            double distance = LocationMathHelper.distance(location, stopPoint);
                             returnList.add(new StopModelWithDistance(distance, stop));
                             if (cursor.moveToNext())
                                 stop = fragment.cursorAdapterSupplier.getCurrentItemFromCursor(cursor);
@@ -222,9 +220,9 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
                     public void onSuccess(Location location) {
                         String currentAddress = MapUtils.getCurrentAddress(fragment.getActivity());
                         if (currentAddress != null) {
-                            fragment.edittext.setText(currentAddress);
+                            fragment.addressEntry.setText(currentAddress);
                         }
-                        task.execute(location);
+                        task.execute(new LatLng(location.getLatitude(), location.getLongitude()));
                     }
                 });
 
@@ -266,7 +264,7 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
         @Override
         protected void onPostExecute(Location location) {
             FindClosestStationTask task = new FindClosestStationTask(fragment);
-            task.execute(location);
+            task.execute(new LatLng(location.getLatitude(), location.getLongitude()));
         }
 
         public FindAddressTask(ByAddressFragement fragment) {

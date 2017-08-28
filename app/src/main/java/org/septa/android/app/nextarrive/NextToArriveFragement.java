@@ -10,7 +10,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentTabHost;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
@@ -21,6 +20,8 @@ import android.widget.TextView;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
 import org.septa.android.app.database.DatabaseManager;
+import org.septa.android.app.locationpicker.LineAwareLocationPickerTabActivityHandler;
+import org.septa.android.app.locationpicker.LineUnawareLocationPickerTabActivityHandler;
 import org.septa.android.app.support.TabActivityHandler;
 
 

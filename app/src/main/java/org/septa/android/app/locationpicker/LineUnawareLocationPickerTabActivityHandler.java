@@ -1,4 +1,4 @@
-package org.septa.android.app.nextarrive;
+package org.septa.android.app.locationpicker;
 
 import android.Manifest;
 import android.content.Intent;
@@ -26,8 +26,6 @@ import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
 import org.septa.android.app.domain.StopModel;
-import org.septa.android.app.nextarrive.locationpicker.FinderClosestStopTask;
-import org.septa.android.app.nextarrive.locationpicker.LocationPickerFragment;
 import org.septa.android.app.support.BaseTabActivityHandler;
 import org.septa.android.app.support.Consumer;
 import org.septa.android.app.support.CursorAdapterSupplier;

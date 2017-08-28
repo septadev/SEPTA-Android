@@ -1,4 +1,4 @@
-package org.septa.android.app.nextarrive.locationpicker;
+package org.septa.android.app.locationpicker;
 
 import android.Manifest;
 import android.content.Context;

@@ -104,12 +104,18 @@ android {
 
 }
 
+repositories {
+    mavenCentral()
+    maven { url 'http://mvnrepository.com/artifact/' }
+    maven { url 'http://download.crashlytics.com/maven' }
+}
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+    compile 'com.crashlytics.android:crashlytics:1.0.1'
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support:design:25.3.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.0'

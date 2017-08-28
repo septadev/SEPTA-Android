@@ -256,7 +256,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
                         if (!kmlSet.contains(data.getOrigRouteId())) {
                             kmlSet.add(data.getOrigRouteId());
-                            KmlLayer layer = MapUtils.getKMLByLineId(NextToArriveResultsActivity.this, googleMap, data.getOrigRouteId());
+                            KmlLayer layer = MapUtils.getKMLByLineId(NextToArriveResultsActivity.this, googleMap, data.getOrigRouteId(), transitType);
                             if (layer != null)
                                 try {
                                     layer.addLayerToMap();
@@ -270,7 +270,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                         if (data.getConnectionStationId() != null)
                             if (!kmlSet.contains(data.getTermRouteId())) {
                                 kmlSet.add(data.getTermRouteId());
-                                KmlLayer layer = MapUtils.getKMLByLineId(NextToArriveResultsActivity.this, googleMap, data.getTermRouteId());
+                                KmlLayer layer = MapUtils.getKMLByLineId(NextToArriveResultsActivity.this, googleMap, data.getTermRouteId(), transitType);
                                 if (layer != null)
                                     try {
                                         layer.addLayerToMap();

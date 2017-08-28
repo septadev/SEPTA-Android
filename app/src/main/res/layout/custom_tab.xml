@@ -3,4 +3,5 @@
     android:id="@+id/tab"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:drawablePadding="6dp"
     android:textColor="@android:color/white" android:gravity="center"/>

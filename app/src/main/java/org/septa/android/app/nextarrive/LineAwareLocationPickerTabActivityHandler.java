@@ -1,6 +1,7 @@
 package org.septa.android.app.nextarrive;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -29,6 +30,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
+import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
 import org.septa.android.app.domain.RouteDirectionModel;
@@ -55,14 +57,16 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
     CursorAdapterSupplier<StopModel> stopCursorAdapterSupplier;
     CursorAdapterSupplier<StopModel> busStopAfterCursorAdapterSupplier;
     TransitType transitType;
+    Class targetClass;
 
 
-    public LineAwareLocationPickerTabActivityHandler(String title, TransitType transitType, CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier, CursorAdapterSupplier<StopModel> busStopCursorAdapterSupplier, CursorAdapterSupplier<StopModel> busStopAfterCursorAdapterSupplier, int iconDrawable) {
+    public LineAwareLocationPickerTabActivityHandler(String title, TransitType transitType, CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier, CursorAdapterSupplier<StopModel> busStopCursorAdapterSupplier, CursorAdapterSupplier<StopModel> busStopAfterCursorAdapterSupplier, Class targetClass, int iconDrawable) {
         super(title, iconDrawable);
         this.routeCursorAdapterSupplier = routeCursorAdapterSupplier;
         this.stopCursorAdapterSupplier = busStopCursorAdapterSupplier;
         this.busStopAfterCursorAdapterSupplier = busStopAfterCursorAdapterSupplier;
         this.transitType = transitType;
+        this.targetClass = targetClass;
     }
 
     @Override
@@ -73,6 +77,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
         fragment.setStopAfterCursorAdapterSupplier(busStopAfterCursorAdapterSupplier);
         fragment.setTransitType(transitType);
         fragment.setTabName(this.getTabTitle());
+        fragment.setTargetClass(targetClass);
 
         return fragment;
     }
@@ -82,6 +87,8 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
         CursorAdapterSupplier<StopModel> stopCursorAdapterSupplier;
         CursorAdapterSupplier<StopModel> stopAfterCursorAdapterSupplier;
         TransitType transitType;
+        Class targetClass;
+
 
         Spinner routeSpinner;
         View secondaryView;
@@ -147,11 +154,11 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                         Toast.makeText(getActivity(), "Need to choose a start and end station.", Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    Intent intent = new Intent(getActivity(), NextToArriveResultsActivity.class);
-                    intent.putExtra(NextToArriveResultsActivity.STARTING_STATION, startingStation);
-                    intent.putExtra(NextToArriveResultsActivity.DESTINATAION_STATION, endingStation);
-                    intent.putExtra(NextToArriveResultsActivity.TRANSIT_TYPE, transitType);
-                    intent.putExtra(NextToArriveResultsActivity.LINE_ID, routes.get(routeSpinner.getSelectedItemPosition()));
+                    Intent intent = new Intent(getActivity(), targetClass);
+                    intent.putExtra(Constants.STARTING_STATION, startingStation);
+                    intent.putExtra(Constants.DESTINATAION_STATION, endingStation);
+                    intent.putExtra(Constants.TRANSIT_TYPE, transitType);
+                    intent.putExtra(Constants.LINE_ID, routes.get(routeSpinner.getSelectedItemPosition()));
 
                     startActivity(intent);
                 }
@@ -186,6 +193,10 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
 
         public void setTransitType(TransitType transitType) {
             this.transitType = transitType;
+        }
+
+        public void setTargetClass(Class targetClass) {
+            this.targetClass = targetClass;
         }
     }
 

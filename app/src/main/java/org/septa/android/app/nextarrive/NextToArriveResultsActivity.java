@@ -39,6 +39,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.maps.android.data.kml.KmlLayer;
 
+import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
 import org.septa.android.app.domain.RouteDirectionModel;
@@ -71,10 +72,6 @@ import retrofit2.Response;
 
 public class NextToArriveResultsActivity extends AppCompatActivity implements OnMapReadyCallback {
     public static final String TAG = NextToArriveResultsActivity.class.getSimpleName();
-    public static final String TRANSIT_TYPE = "transit_type";
-    public static final String LINE_ID = "line_id";
-    public static final String STARTING_STATION = "starting_station";
-    public static final String DESTINATAION_STATION = "destination_station";
     private StopModel start;
     private StopModel destination;
     private TransitType transitType;
@@ -125,10 +122,10 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         Intent intent = getIntent();
-        destination = (StopModel) intent.getExtras().get(DESTINATAION_STATION);
-        start = (StopModel) intent.getExtras().get(STARTING_STATION);
-        transitType = (TransitType) intent.getExtras().get(TRANSIT_TYPE);
-        routeDirectionModel = (RouteDirectionModel) intent.getExtras().get(LINE_ID);
+        destination = (StopModel) intent.getExtras().get(Constants.DESTINATAION_STATION);
+        start = (StopModel) intent.getExtras().get(Constants.STARTING_STATION);
+        transitType = (TransitType) intent.getExtras().get(Constants.TRANSIT_TYPE);
+        routeDirectionModel = (RouteDirectionModel) intent.getExtras().get(Constants.LINE_ID);
 
         if (start != null && destination != null && transitType != null) {
             TextView startingStationNameText = (TextView) findViewById(R.id.starting_station_name);

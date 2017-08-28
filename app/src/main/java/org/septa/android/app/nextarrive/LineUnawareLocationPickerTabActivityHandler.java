@@ -22,6 +22,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
+import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
 import org.septa.android.app.domain.StopModel;
@@ -40,17 +41,19 @@ public class LineUnawareLocationPickerTabActivityHandler extends BaseTabActivity
     private static final String TAG = "LineUnawareLocationPickerTabActivityHandler";
     private CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
     private TransitType transitType;
+    private Class targetClass;
 
-    public LineUnawareLocationPickerTabActivityHandler(String title, TransitType transitType, CursorAdapterSupplier<StopModel> cursorAdapterSupplier, int iconDrawable) {
+    public LineUnawareLocationPickerTabActivityHandler(String title, TransitType transitType, CursorAdapterSupplier<StopModel> cursorAdapterSupplier, Class targetClass, int iconDrawable) {
         super(title, iconDrawable);
         this.cursorAdapterSupplier = cursorAdapterSupplier;
         this.transitType = transitType;
+        this.targetClass = targetClass;
     }
 
 
     @Override
     public Fragment getFragment() {
-        return LineUnawareLocationPickerTabActivityHandler.RailStationQuery.newInstance(cursorAdapterSupplier, transitType);
+        return LineUnawareLocationPickerTabActivityHandler.RailStationQuery.newInstance(cursorAdapterSupplier, transitType, targetClass);
     }
 
     public static class RailStationQuery extends Fragment {
@@ -60,13 +63,15 @@ public class LineUnawareLocationPickerTabActivityHandler extends BaseTabActivity
         private TextView closestStationText;
         private boolean startingStationAutoChoice = false;
         private TransitType transitType;
+        private Class targetClass;
 
         private CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
 
-        public static RailStationQuery newInstance(CursorAdapterSupplier<StopModel> cursorAdapterSupplier, TransitType transitType) {
+        public static RailStationQuery newInstance(CursorAdapterSupplier<StopModel> cursorAdapterSupplier, TransitType transitType, Class targetClass) {
             RailStationQuery fragment = new RailStationQuery();
             fragment.setCursorAdapterSupplier(cursorAdapterSupplier);
             fragment.setTransitType(transitType);
+            fragment.setTargetClass(targetClass);
             return fragment;
         }
 
@@ -133,16 +138,20 @@ public class LineUnawareLocationPickerTabActivityHandler extends BaseTabActivity
                         Toast.makeText(getActivity(), "Need to choose a start and end station.", Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    Intent intent = new Intent(getActivity(), NextToArriveResultsActivity.class);
-                    intent.putExtra(NextToArriveResultsActivity.STARTING_STATION, startingStation);
-                    intent.putExtra(NextToArriveResultsActivity.DESTINATAION_STATION, endingStation);
-                    intent.putExtra(NextToArriveResultsActivity.TRANSIT_TYPE, transitType);
+                    Intent intent = new Intent(getActivity(), targetClass);
+                    intent.putExtra(Constants.STARTING_STATION, startingStation);
+                    intent.putExtra(Constants.DESTINATAION_STATION, endingStation);
+                    intent.putExtra(Constants.TRANSIT_TYPE, transitType);
 
                     startActivity(intent);
                 }
             });
 
             return rootView;
+        }
+
+        public void setTargetClass(Class targetClass) {
+            this.targetClass = targetClass;
         }
 
         public static class StationPickerOnTouchListener implements View.OnTouchListener {

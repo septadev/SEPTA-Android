@@ -23,6 +23,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
 import org.septa.android.app.R;
+import org.septa.android.app.TransitType;
 import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.nextarrive.locationpicker.FinderClosestStopTask;
 import org.septa.android.app.nextarrive.locationpicker.LocationPickerFragment;
@@ -38,16 +39,18 @@ import org.septa.android.app.support.CursorAdapterSupplier;
 public class LineUnawareLocationPickerTabActivityHandler extends BaseTabActivityHandler {
     private static final String TAG = "LineUnawareLocationPickerTabActivityHandler";
     private CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
+    private TransitType transitType;
 
-    public LineUnawareLocationPickerTabActivityHandler(String title, CursorAdapterSupplier<StopModel> cursorAdapterSupplier, int iconDrawable) {
+    public LineUnawareLocationPickerTabActivityHandler(String title, TransitType transitType, CursorAdapterSupplier<StopModel> cursorAdapterSupplier, int iconDrawable) {
         super(title, iconDrawable);
         this.cursorAdapterSupplier = cursorAdapterSupplier;
+        this.transitType = transitType;
     }
 
 
     @Override
     public Fragment getFragment() {
-        return LineUnawareLocationPickerTabActivityHandler.RailStationQuery.newInstance(cursorAdapterSupplier);
+        return LineUnawareLocationPickerTabActivityHandler.RailStationQuery.newInstance(cursorAdapterSupplier, transitType);
     }
 
     public static class RailStationQuery extends Fragment {
@@ -56,12 +59,14 @@ public class LineUnawareLocationPickerTabActivityHandler extends BaseTabActivity
         private EditText startingStationEditText;
         private TextView closestStationText;
         private boolean startingStationAutoChoice = false;
+        private TransitType transitType;
 
         private CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
 
-        public static RailStationQuery newInstance(CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
+        public static RailStationQuery newInstance(CursorAdapterSupplier<StopModel> cursorAdapterSupplier, TransitType transitType) {
             RailStationQuery fragment = new RailStationQuery();
             fragment.setCursorAdapterSupplier(cursorAdapterSupplier);
+            fragment.setTransitType(transitType);
             return fragment;
         }
 
@@ -131,6 +136,7 @@ public class LineUnawareLocationPickerTabActivityHandler extends BaseTabActivity
                     Intent intent = new Intent(getActivity(), NextToArriveResultsActivity.class);
                     intent.putExtra(NextToArriveResultsActivity.STARTING_STATION, startingStation);
                     intent.putExtra(NextToArriveResultsActivity.DESTINATAION_STATION, endingStation);
+                    intent.putExtra(NextToArriveResultsActivity.TRANSIT_TYPE, transitType);
 
                     startActivity(intent);
                 }
@@ -174,6 +180,10 @@ public class LineUnawareLocationPickerTabActivityHandler extends BaseTabActivity
 
         public void setCursorAdapterSupplier(CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
             this.cursorAdapterSupplier = cursorAdapterSupplier;
+        }
+
+        public void setTransitType(TransitType transitType) {
+            this.transitType = transitType;
         }
 
         private void setStartingStation(StopModel start, int invisible) {

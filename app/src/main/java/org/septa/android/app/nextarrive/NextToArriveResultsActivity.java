@@ -41,6 +41,7 @@ import com.google.maps.android.data.kml.KmlLayer;
 
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
+import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalModelResponse;
@@ -70,15 +71,18 @@ import retrofit2.Response;
 
 public class NextToArriveResultsActivity extends AppCompatActivity implements OnMapReadyCallback {
     public static final String TAG = NextToArriveResultsActivity.class.getSimpleName();
+    public static final String TRANSIT_TYPE = "transit_type";
+    public static final String LINE_ID = "line_id";
+    public static final String STARTING_STATION = "starting_station";
+    public static final String DESTINATAION_STATION = "destination_station";
     private StopModel start;
     private StopModel destination;
+    private TransitType transitType;
+    private RouteDirectionModel routeDirectionModel;
     private GoogleMap googleMap;
     ViewGroup bottomSheetLayout;
     ListView linesListView;
     View progressView;
-
-    public static final String STARTING_STATION = "starting_station";
-    public static final String DESTINATAION_STATION = "destination_station";
 
     public static NextToArriveResultsActivity newInstance(StopModel start, StopModel end) {
         NextToArriveResultsActivity fragement = new NextToArriveResultsActivity();
@@ -123,8 +127,10 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         Intent intent = getIntent();
         destination = (StopModel) intent.getExtras().get(DESTINATAION_STATION);
         start = (StopModel) intent.getExtras().get(STARTING_STATION);
+        transitType = (TransitType) intent.getExtras().get(TRANSIT_TYPE);
+        routeDirectionModel = (RouteDirectionModel) intent.getExtras().get(LINE_ID);
 
-        if (start != null && destination != null) {
+        if (start != null && destination != null && transitType != null) {
             TextView startingStationNameText = (TextView) findViewById(R.id.starting_station_name);
             startingStationNameText.setText(start.getStopName());
 
@@ -202,7 +208,11 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
     private void updateNextToArriveData() {
         if (start != null && destination != null) {
-            Call<NextArrivalModelResponse> results = SeptaServiceFactory.getNextArrivalService().getNextArriaval(Integer.parseInt(start.getStopId()), Integer.parseInt(destination.getStopId()), "RAIL", null);
+
+            String routeId = null;
+            if (routeDirectionModel != null)
+                routeId = routeDirectionModel.getRouteId();
+            Call<NextArrivalModelResponse> results = SeptaServiceFactory.getNextArrivalService().getNextArriaval(Integer.parseInt(start.getStopId()), Integer.parseInt(destination.getStopId()), transitType.name(), routeId);
             progressView.setVisibility(View.VISIBLE);
 
             results.enqueue(new Callback<NextArrivalModelResponse>() {
@@ -359,14 +369,14 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
             TextView origTardyText = (TextView) convertView.findViewById(R.id.orig_tardy_text);
             if (item.getOrigDelayMinutes() > 0) {
                 origTardyText.setText(item.getOrigDelayMinutes() + " min late.");
-                origTardyText.setTextColor(Color.parseColor("#d72e11"));
+                origTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.delay_minutes));
                 View origDepartingBorder = convertView.findViewById(R.id.orig_departing_border);
                 origDepartingBorder.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.late_boarder));
-                origDepartureTime.setTextColor(Color.parseColor("#d72e11"));
+                origDepartureTime.setTextColor(ContextCompat.getColor(getContext(), R.color.late_departing));
             } else {
                 origTardyText.setText("On time");
-                origTardyText.setTextColor(Color.parseColor("#539e00"));
-                origDepartureTime.setTextColor(Color.parseColor("#144b88"));
+                origTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.no_delay_minutes));
+                origDepartureTime.setTextColor(ContextCompat.getColor(getContext(), R.color.late_departing));
             }
 
             TextView connectionStationText = (TextView) convertView.findViewById(R.id.connection_station_name);
@@ -391,14 +401,14 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
             TextView termTardyText = (TextView) convertView.findViewById(R.id.term_tardy_text);
             if (item.getTermDelayMinutes() > 0) {
                 termTardyText.setText(item.getTermDelayMinutes() + " min late.");
-                termTardyText.setTextColor(Color.parseColor("#d72e11"));
-                View termDepartingBorder = convertView.findViewById(R.id.term_departing_border);
+                termTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.delay_minutes));
+                View termDepartingBorder = convertView.findViewById(R.id.orig_departing_border);
                 termDepartingBorder.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.late_boarder));
-                termDepartureTime.setTextColor(Color.parseColor("#d72e11"));
+                termDepartureTime.setTextColor(ContextCompat.getColor(getContext(), R.color.late_departing));
             } else {
                 termTardyText.setText("On time");
-                termTardyText.setTextColor(Color.parseColor("#539e00"));
-                termDepartureTime.setTextColor(Color.parseColor("#144b88"));
+                termTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.no_delay_minutes));
+                termDepartureTime.setTextColor(ContextCompat.getColor(getContext(), R.color.on_time_departing));
             }
 
 
@@ -458,20 +468,16 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                 TextView origTardyText = (TextView) line.findViewById(R.id.orig_tardy_text);
                 if (unit.getOrigDelayMinutes() > 0) {
                     origTardyText.setText(unit.getOrigDelayMinutes() + " min late.");
-                    origTardyText.setTextColor(Color.parseColor("#d72e11"));
+                    origTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.delay_minutes));
                     View origDepartingBorder = line.findViewById(R.id.orig_departing_border);
                     origDepartingBorder.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.late_boarder));
-                    origDepartureTime.setTextColor(Color.parseColor("#d72e11"));
+                    origDepartureTime.setTextColor(ContextCompat.getColor(getContext(), R.color.late_departing));
                 } else {
                     origTardyText.setText("On time");
-                    origTardyText.setTextColor(Color.parseColor("#539e00"));
-                    origDepartureTime.setTextColor(Color.parseColor("#144b88"));
+                    origTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.no_delay_minutes));
+                    origDepartureTime.setTextColor(ContextCompat.getColor(getContext(), R.color.on_time_departing));
                 }
 
-
-                if (unit.getConnectionStationId() != null) {
-
-                }
             }
             return convertView;
         }

@@ -124,7 +124,7 @@
             android:layout_marginLeft="0dp"
             android:layout_marginTop="0dp"
             android:text="3 min late"
-            android:textColor="#F00"
+            android:textColor="@color/no_delay_minutes"
             android:textStyle="bold"
             app:layout_constraintLeft_toLeftOf="@+id/orig_arrival_time_text"
             app:layout_constraintTop_toBottomOf="@+id/orig_arrival_time_text" />
@@ -163,6 +163,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="DEPARTING"
+                android:textColor="#6d6d6d"
                 android:textAlignment="center" />
 
             <TextView
@@ -171,7 +172,7 @@
                 android:layout_height="wrap_content"
                 android:text="25 min"
                 android:textAlignment="center"
-                android:textColor="#F00"
+                android:textColor="@color/on_time_departing"
                 android:textStyle="bold" />
         </LinearLayout>
 
@@ -367,7 +368,7 @@
             android:layout_marginLeft="0dp"
             android:layout_marginTop="0dp"
             android:text="On Time"
-            android:textColor="#4B9900"
+            android:textColor="@color/no_delay_minutes"
             android:textStyle="bold"
             app:layout_constraintLeft_toLeftOf="@+id/term_arrival_time_text"
             app:layout_constraintTop_toBottomOf="@+id/term_arrival_time_text" />
@@ -404,6 +405,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="DEPARTING"
+                android:textColor="#6d6d6d"
                 android:textAlignment="center" />
 
             <TextView
@@ -412,7 +414,7 @@
                 android:layout_height="wrap_content"
                 android:text="42 min"
                 android:textAlignment="center"
-                android:textColor="@color/colorPrimaryDark"
+                android:textColor="@color/on_time_departing"
                 android:textStyle="bold"
                 />
         </LinearLayout>

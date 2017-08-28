@@ -2,11 +2,13 @@ package org.septa.android.app;
 
 import android.content.Context;
 
+import java.io.Serializable;
+
 /**
  * Created by jkampf on 8/23/17.
  */
 
-public enum TransitType {
+public enum TransitType implements Serializable {
     RAIL(R.drawable.pin_rail, R.drawable.rail_final_icon_white, new RailColorProvider()),
     BUS(R.drawable.pin_bus, R.drawable.bus_final_icon_white, new BasicColorProvider(R.color.line_color_bus)),
     TROLLY(R.drawable.pin_trolley, R.drawable.trolley_final_icon_white, new BasicColorProvider(R.color.line_color_trolly)),

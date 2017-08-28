@@ -47,11 +47,11 @@ public class NextToArriveFragement extends Fragment {
         DatabaseManager dbManager = DatabaseManager.getInstance(getActivity());
 
         tabActivityHandlers = new TabActivityHandler[5];
-        tabActivityHandlers[1] = new LineUnawareLocationPickerTabActivityHandler(getString(R.string.rail_tab), dbManager.getRailStopCursorAdapterSupplier(), TransitType.RAIL.getTabImageResource());
-        tabActivityHandlers[0] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.bus_tab), dbManager.getBusRouteCursorAdapterSupplier(), dbManager.getBusStopCursorAdapterSupplier(), dbManager.getBusStopAfterCursorAdapterSupplier(), TransitType.BUS.getTabImageResource());
-        tabActivityHandlers[3] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.trolly_tab), dbManager.getTrollyRouteCursorAdapterSupplier(), dbManager.getTrollyStopCursorAdapterSupplier(), dbManager.getTrollyStopAfterCursorAdapterSupplier(), TransitType.TROLLY.getTabImageResource());
-        tabActivityHandlers[2] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.subway_tab), dbManager.getSubwayRouteCursorAdapterSupplier(), dbManager.getSubwayStopCursorAdapterSupplier(), dbManager.getSubwayStopAfterCursorAdapterSupplier(), TransitType.SUBWAY.getTabImageResource());
-        tabActivityHandlers[4] = new LineUnawareLocationPickerTabActivityHandler(getString(R.string.nhsl_tab), dbManager.getNhslStopCursorAdapterSupplier(), TransitType.NHSL.getTabImageResource());
+        tabActivityHandlers[1] = new LineUnawareLocationPickerTabActivityHandler(getString(R.string.rail_tab), TransitType.RAIL, dbManager.getRailStopCursorAdapterSupplier(), TransitType.RAIL.getTabImageResource());
+        tabActivityHandlers[0] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.bus_tab), TransitType.BUS, dbManager.getBusRouteCursorAdapterSupplier(), dbManager.getBusStopCursorAdapterSupplier(), dbManager.getBusStopAfterCursorAdapterSupplier(), TransitType.BUS.getTabImageResource());
+        tabActivityHandlers[3] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.trolly_tab), TransitType.TROLLY, dbManager.getTrollyRouteCursorAdapterSupplier(), dbManager.getTrollyStopCursorAdapterSupplier(), dbManager.getTrollyStopAfterCursorAdapterSupplier(), TransitType.TROLLY.getTabImageResource());
+        tabActivityHandlers[2] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.subway_tab), TransitType.SUBWAY, dbManager.getSubwayRouteCursorAdapterSupplier(), dbManager.getSubwayStopCursorAdapterSupplier(), dbManager.getSubwayStopAfterCursorAdapterSupplier(), TransitType.SUBWAY.getTabImageResource());
+        tabActivityHandlers[4] = new LineUnawareLocationPickerTabActivityHandler(getString(R.string.nhsl_tab), TransitType.NHSL, dbManager.getNhslStopCursorAdapterSupplier(), TransitType.NHSL.getTabImageResource());
 
 
         View fragmentView = inflater.inflate(R.layout.next_to_arrive_main, null);

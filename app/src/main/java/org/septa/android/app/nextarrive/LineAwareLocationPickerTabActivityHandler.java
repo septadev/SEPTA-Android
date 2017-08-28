@@ -2,6 +2,7 @@ package org.septa.android.app.nextarrive;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.location.Location;
@@ -22,12 +23,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
 import org.septa.android.app.R;
+import org.septa.android.app.TransitType;
 import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.nextarrive.locationpicker.FinderClosestStopTask;
@@ -51,13 +54,15 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
     CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier;
     CursorAdapterSupplier<StopModel> stopCursorAdapterSupplier;
     CursorAdapterSupplier<StopModel> busStopAfterCursorAdapterSupplier;
+    TransitType transitType;
 
 
-    public LineAwareLocationPickerTabActivityHandler(String title, CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier, CursorAdapterSupplier<StopModel> busStopCursorAdapterSupplier, CursorAdapterSupplier<StopModel> busStopAfterCursorAdapterSupplier, int iconDrawable) {
+    public LineAwareLocationPickerTabActivityHandler(String title, TransitType transitType, CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier, CursorAdapterSupplier<StopModel> busStopCursorAdapterSupplier, CursorAdapterSupplier<StopModel> busStopAfterCursorAdapterSupplier, int iconDrawable) {
         super(title, iconDrawable);
         this.routeCursorAdapterSupplier = routeCursorAdapterSupplier;
         this.stopCursorAdapterSupplier = busStopCursorAdapterSupplier;
         this.busStopAfterCursorAdapterSupplier = busStopAfterCursorAdapterSupplier;
+        this.transitType = transitType;
     }
 
     @Override
@@ -66,6 +71,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
         fragment.setRouteCursorAdapterSupplier(routeCursorAdapterSupplier);
         fragment.setStopCursorAdapterSupplier(stopCursorAdapterSupplier);
         fragment.setStopAfterCursorAdapterSupplier(busStopAfterCursorAdapterSupplier);
+        fragment.setTransitType(transitType);
         fragment.setTabName(this.getTabTitle());
 
         return fragment;
@@ -75,6 +81,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
         CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier;
         CursorAdapterSupplier<StopModel> stopCursorAdapterSupplier;
         CursorAdapterSupplier<StopModel> stopAfterCursorAdapterSupplier;
+        TransitType transitType;
 
         Spinner routeSpinner;
         View secondaryView;
@@ -100,7 +107,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.line_aware_next_to_arrive_search, container, false);
 
-            ((TextView)rootView.findViewById(R.id.find_next_label)).setText("FIND NEXT " + tabName);
+            ((TextView) rootView.findViewById(R.id.find_next_label)).setText("FIND NEXT " + tabName);
 
             secondaryView = rootView.findViewById(R.id.secondary_selection);
 
@@ -131,8 +138,24 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                     }, stopAfterCursorAdapterSupplier, true)
             );
 
-            Button findButton = (Button) rootView.findViewById(R.id.view_buses_button);
-            findButton.setText("VIEW " + tabName);
+            Button queryButton = (Button) rootView.findViewById(R.id.view_buses_button);
+            queryButton.setText("VIEW " + tabName);
+            queryButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (startingStation == null || endingStation == null) {
+                        Toast.makeText(getActivity(), "Need to choose a start and end station.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    Intent intent = new Intent(getActivity(), NextToArriveResultsActivity.class);
+                    intent.putExtra(NextToArriveResultsActivity.STARTING_STATION, startingStation);
+                    intent.putExtra(NextToArriveResultsActivity.DESTINATAION_STATION, endingStation);
+                    intent.putExtra(NextToArriveResultsActivity.TRANSIT_TYPE, transitType);
+                    intent.putExtra(NextToArriveResultsActivity.LINE_ID, routes.get(routeSpinner.getSelectedItemPosition()));
+
+                    startActivity(intent);
+                }
+            });
 
             return rootView;
         }
@@ -159,6 +182,10 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
 
         public void setStopAfterCursorAdapterSupplier(CursorAdapterSupplier<StopModel> stopAfterCursorAdapterSupplier) {
             this.stopAfterCursorAdapterSupplier = stopAfterCursorAdapterSupplier;
+        }
+
+        public void setTransitType(TransitType transitType) {
+            this.transitType = transitType;
         }
     }
 
@@ -243,12 +270,12 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
             if (i != 0) {
                 fragment.secondaryView.setVisibility(View.VISIBLE);
                 fragment.startingStation = null;
-                fragment.endingStation=null;
+                fragment.endingStation = null;
                 fragment.startingStopEditText.setText(null);
                 fragment.destinationStopEditText.setText(null);
 
 
-                final AsyncTask<Location, Void, StopModel> task = new FinderClosestStopTask(fragment.getActivity(), new RouteSpecificCursorAdapterSupplier(fragment.stopCursorAdapterSupplier,fragment,false), new Consumer<StopModel>() {
+                final AsyncTask<Location, Void, StopModel> task = new FinderClosestStopTask(fragment.getActivity(), new RouteSpecificCursorAdapterSupplier(fragment.stopCursorAdapterSupplier, fragment, false), new Consumer<StopModel>() {
                     @Override
                     public void accept(StopModel stopModel) {
                         if (stopModel != null)
@@ -264,8 +291,8 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
 
                 {
                     fragment.progressView.setVisibility(View.VISIBLE);
-                   // fragment.getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-                   //         WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                    // fragment.getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                    //         WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                     Task<Location> locationTask = LocationServices.getFusedLocationProviderClient(fragment.getActivity()).getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
                         @Override
                         public void onSuccess(Location location) {

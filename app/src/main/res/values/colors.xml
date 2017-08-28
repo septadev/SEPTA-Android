@@ -5,6 +5,13 @@
     <color name="colorAccent">#FF4081</color>
 
 
+    <!-- Next To Arrive Colors -->
+    <color name="delay_minutes">#d72e11</color>
+    <color name="no_delay_minutes">#539e00</color>
+    <color name="late_departing">#d72e11</color>
+    <color name="on_time_departing">#144b88</color>
+
+
     <color name="line_color_air">#944e6f</color>
     <color name="line_color_cyn">#6f5aa7</color>
     <color name="line_color_fox">#ff8638</color>

@@ -93,7 +93,7 @@
                 android:layout_marginRight="4dp"
                 android:layout_marginTop="11dp"
                 android:layout_toLeftOf="@id/view_sched_label"
-                android:src="@drawable/group_13" />
+                android:src="@drawable/ic_schedule_fill" />
         </RelativeLayout>
     </LinearLayout>
 

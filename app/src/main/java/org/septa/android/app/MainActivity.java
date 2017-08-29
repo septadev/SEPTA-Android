@@ -1,5 +1,6 @@
 package org.septa.android.app;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.IntDef;
 import android.support.annotation.IntegerRes;
@@ -31,8 +32,9 @@ public class MainActivity extends AppCompatActivity
     NextToArriveFragement nextToArriveFragment = new NextToArriveFragement();
     SchedulesFragment schedules = new SchedulesFragment();
     Map<Integer, Bundle> fragmentStateMap = new HashMap<Integer, Bundle>();
-    Integer currentBundleKey;
     Fragment activeFragement;
+    Drawable previousIcon;
+    MenuItem currentMenu;
 
     @Override
     public final void onCreate(@Nullable Bundle savedInstanceState) {
@@ -45,6 +47,7 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        navigationView.setItemIconTintList(null);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -94,32 +97,39 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
 
         if (id == R.id.nav_next_to_arrive) {
-            switchToBundle(R.id.nav_next_to_arrive, nextToArriveFragment, R.string.next_to_arrive);
+            switchToBundle(item, nextToArriveFragment, R.string.next_to_arrive, R.drawable.ic_next_to_arrive_fill);
         }
 
         if (id == R.id.nav_schedule) {
-            switchToBundle(R.id.nav_schedule, schedules, R.string.schedule);
+            switchToBundle(item, schedules, R.string.schedule, R.drawable.ic_schedule_fill);
         }
 
         return true;
     }
 
-    private void switchToBundle(int navItem, Fragment targetFragment, int title) {
-        if ((currentBundleKey != null) && navItem == currentBundleKey)
+    private void switchToBundle(MenuItem item, Fragment targetFragment, int title, int highlitghtedIcon) {
+        if ((currentMenu != null) && item.getItemId() == currentMenu.getItemId())
             return;
 
         // TODO Need to implement saving the state of the fragements.
         if (activeFragement != null) {
             Bundle bundle = new Bundle();
             activeFragement.onSaveInstanceState(bundle);
-            fragmentStateMap.put(currentBundleKey, bundle);
+            fragmentStateMap.put(item.getItemId(), bundle);
         }
 
-        currentBundleKey = navItem;
-        Bundle targetBundle = fragmentStateMap.get(currentBundleKey);
+        if (previousIcon != null){
+            currentMenu.setIcon(previousIcon);
+        }
+        currentMenu = item;
+        previousIcon = item.getIcon();
+        currentMenu.setIcon(highlitghtedIcon);
+        Bundle targetBundle = fragmentStateMap.get(item.getItemId());
         activeFragement = targetFragment;
         if (targetBundle != null)
             targetFragment.setArguments(targetBundle);
+
+
         getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, targetFragment).commit();
 
         setTitle(title);

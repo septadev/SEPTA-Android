@@ -20,7 +20,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -90,7 +89,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
         Spinner routeSpinner;
         View secondaryView;
         View progressView;
-        EditText startingStopEditText;
+        TextView startingStopEditText;
         private StopModel startingStation;
         private StopModel endingStation;
 
@@ -98,7 +97,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
 
         List<RouteDirectionModel> routes;
         private TextView closestStopText;
-        private EditText destinationStopEditText;
+        private TextView destinationStopEditText;
 
 
         public static PlaceholderFragment newInstance() {
@@ -111,9 +110,9 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.line_aware_next_to_arrive_search, container, false);
 
-            ((TextView) rootView.findViewById(R.id.find_next_label)).setText("FIND NEXT " + tabName);
+            //((TextView) rootView.findViewById(R.id.find_next_label)).setText("FIND NEXT " + tabName);
 
-            secondaryView = rootView.findViewById(R.id.secondary_selection);
+            //secondaryView = rootView.findViewById(R.id.secondary_selection);
 
             progressView = rootView.findViewById(R.id.progress_view);
 
@@ -121,8 +120,8 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
 
             PopulateRouteSpinnerTask task = new PopulateRouteSpinnerTask(PlaceholderFragment.this);
             task.execute();
-            startingStopEditText = (EditText) rootView.findViewById(R.id.starting_stop);
-            destinationStopEditText = (EditText) rootView.findViewById(R.id.destination_stop);
+            startingStopEditText = (TextView) rootView.findViewById(R.id.starting_stop);
+            destinationStopEditText = (TextView) rootView.findViewById(R.id.destination_stop);
             closestStopText = (TextView) rootView.findViewById(R.id.closest_stop);
 
             startingStopEditText.setOnTouchListener(new StopPickerOnTouchListener(this, new Consumer<StopModel>() {
@@ -276,7 +275,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
         @Override
         public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
             if (i != 0) {
-                fragment.secondaryView.setVisibility(View.VISIBLE);
+                //fragment.secondaryView.setVisibility(View.VISIBLE);
                 fragment.startingStation = null;
                 fragment.endingStation = null;
                 fragment.startingStopEditText.setText(null);
@@ -311,7 +310,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
 
 
             } else
-                fragment.secondaryView.setVisibility(View.INVISIBLE);
+                ;//fragment.secondaryView.setVisibility(View.INVISIBLE);
         }
 
         @Override

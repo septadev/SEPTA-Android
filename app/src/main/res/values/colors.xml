@@ -38,5 +38,4 @@
 
 
     <color name="default_line_color">@android:color/holo_red_dark</color>
-
 </resources>

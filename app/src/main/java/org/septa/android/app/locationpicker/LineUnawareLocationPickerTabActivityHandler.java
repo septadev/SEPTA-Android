@@ -41,8 +41,8 @@ public class LineUnawareLocationPickerTabActivityHandler extends BaseTabActivity
     private TransitType transitType;
     private Class targetClass;
 
-    public LineUnawareLocationPickerTabActivityHandler(String title, TransitType transitType, CursorAdapterSupplier<StopModel> cursorAdapterSupplier, Class targetClass, int inactiveIconDrawable, int activeIconDrawable) {
-        super(title, inactiveIconDrawable, activeIconDrawable);
+    public LineUnawareLocationPickerTabActivityHandler(String title, TransitType transitType, CursorAdapterSupplier<StopModel> cursorAdapterSupplier, Class targetClass) {
+        super(title, transitType.getTabInactiveImageResource(), transitType.getTabActiveImageResource());
         this.cursorAdapterSupplier = cursorAdapterSupplier;
         this.transitType = transitType;
         this.targetClass = targetClass;

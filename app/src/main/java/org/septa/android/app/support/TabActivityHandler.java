@@ -11,6 +11,7 @@ public interface TabActivityHandler
 
     public String getTabTitle();
     public Fragment getFragment();
-    public Integer getDrawableId();
+    public Integer getInactiveDrawableId();
+    public Integer getActiveDrawableId();
 
 }

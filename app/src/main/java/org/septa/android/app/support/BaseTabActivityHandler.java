@@ -7,15 +7,17 @@ package org.septa.android.app.support;
 public abstract class BaseTabActivityHandler implements TabActivityHandler {
 
     private String title;
-    private Integer iconDrawable;
+    private Integer inactiveIconDrawable;
+    private Integer activeIconDrawable;
 
-    public BaseTabActivityHandler(String title){
+    public BaseTabActivityHandler(String title) {
         this.title = title;
     }
 
-    public BaseTabActivityHandler(String title, Integer iconDrawable){
+    public BaseTabActivityHandler(String title, Integer inactiveIconDrawable, Integer activeIconDrawable) {
         this.title = title;
-        this.iconDrawable = iconDrawable;
+        this.inactiveIconDrawable = inactiveIconDrawable;
+        this.activeIconDrawable = activeIconDrawable;
     }
 
 
@@ -25,7 +27,13 @@ public abstract class BaseTabActivityHandler implements TabActivityHandler {
     }
 
     @Override
-    public Integer getDrawableId() {
-        return iconDrawable;
+    public Integer getInactiveDrawableId() {
+        return inactiveIconDrawable;
     }
+
+    @Override
+    public Integer getActiveDrawableId() {
+        return activeIconDrawable;
+    }
+
 }

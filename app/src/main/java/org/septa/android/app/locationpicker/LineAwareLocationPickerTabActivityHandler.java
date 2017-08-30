@@ -57,8 +57,8 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
     Class targetClass;
 
 
-    public LineAwareLocationPickerTabActivityHandler(String title, TransitType transitType, CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier, CursorAdapterSupplier<StopModel> busStopCursorAdapterSupplier, CursorAdapterSupplier<StopModel> busStopAfterCursorAdapterSupplier, Class targetClass, int iconDrawable) {
-        super(title, iconDrawable);
+    public LineAwareLocationPickerTabActivityHandler(String title, TransitType transitType, CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier, CursorAdapterSupplier<StopModel> busStopCursorAdapterSupplier, CursorAdapterSupplier<StopModel> busStopAfterCursorAdapterSupplier, Class targetClass, int inactiveIconDrawable, int activeIconDrawable) {
+        super(title, inactiveIconDrawable, activeIconDrawable);
         this.routeCursorAdapterSupplier = routeCursorAdapterSupplier;
         this.stopCursorAdapterSupplier = busStopCursorAdapterSupplier;
         this.busStopAfterCursorAdapterSupplier = busStopAfterCursorAdapterSupplier;

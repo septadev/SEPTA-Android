@@ -372,8 +372,8 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
             TextView origLineNameText = (TextView) convertView.findViewById(R.id.orig_line_name_text);
             origLineNameText.setText(item.getOrigRouteName());
 
-            ((ImageView) convertView.findViewById(R.id.orig_line_marker_left)).setColorFilter(ContextCompat.getColor(getContext(), TransitType.RAIL.getLineColor(item.getOrigRouteId(), getContext())));
-            ((ImageView) convertView.findViewById(R.id.orig_line_marker_right)).setColorFilter(ContextCompat.getColor(getContext(), TransitType.RAIL.getLineColor(item.getOrigRouteId(), getContext())));
+            ((ImageView) convertView.findViewById(R.id.orig_line_marker_left)).setColorFilter(ContextCompat.getColor(getContext(), transitType.getLineColor(item.getOrigRouteId(), getContext())));
+            ((ImageView) convertView.findViewById(R.id.orig_line_marker_right)).setColorFilter(ContextCompat.getColor(getContext(), transitType.getLineColor(item.getOrigRouteId(), getContext())));
 
 
             TextView origArrivalTimeText = (TextView) convertView.findViewById(R.id.orig_arrival_time_text);
@@ -405,8 +405,8 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
             TextView termLineNameText = (TextView) convertView.findViewById(R.id.term_line_name_text);
             termLineNameText.setText(item.getTermRouteName());
 
-            ((ImageView) convertView.findViewById(R.id.term_line_marker_left)).setColorFilter(ContextCompat.getColor(getContext(), TransitType.RAIL.getLineColor(item.getTermRouteId(), getContext())));
-            ((ImageView) convertView.findViewById(R.id.term_line_marker_right)).setColorFilter(ContextCompat.getColor(getContext(), TransitType.RAIL.getLineColor(item.getTermRouteId(), getContext())));
+            ((ImageView) convertView.findViewById(R.id.term_line_marker_left)).setColorFilter(ContextCompat.getColor(getContext(), transitType.getLineColor(item.getTermRouteId(), getContext())));
+            ((ImageView) convertView.findViewById(R.id.term_line_marker_right)).setColorFilter(ContextCompat.getColor(getContext(), transitType.getLineColor(item.getTermRouteId(), getContext())));
 
             TextView termArrivalTimeText = (TextView) convertView.findViewById(R.id.term_arrival_time_text);
             termArrivalTimeText.setText(dateFormat.format(item.getTermDepartureTime()) + " - " + dateFormat.format(item.getTermArrivalTime()));
@@ -463,8 +463,8 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
             TextView lineNameText = (TextView) convertView.findViewById(R.id.orig_line_name_text);
             lineNameText.setText(getItem(position).lineName);
-            ((ImageView) convertView.findViewById(R.id.orig_line_marker_left)).setColorFilter(ContextCompat.getColor(getContext(), TransitType.RAIL.getLineColor(getItem(position).getList().get(0).getOrigRouteId(), getContext())));
-            ((ImageView) convertView.findViewById(R.id.orig_line_marker_right)).setColorFilter(ContextCompat.getColor(getContext(), TransitType.RAIL.getLineColor(getItem(position).getList().get(0).getOrigRouteId(), getContext())));
+            ((ImageView) convertView.findViewById(R.id.orig_line_marker_left)).setColorFilter(ContextCompat.getColor(getContext(), transitType.getLineColor(getItem(position).getList().get(0).getOrigRouteId(), getContext())));
+            ((ImageView) convertView.findViewById(R.id.orig_line_marker_right)).setColorFilter(ContextCompat.getColor(getContext(), transitType.getLineColor(getItem(position).getList().get(0).getOrigRouteId(), getContext())));
 
             LinearLayout arrivalList = (LinearLayout) convertView.findViewById(R.id.arrival_list);
             arrivalList.removeAllViews();

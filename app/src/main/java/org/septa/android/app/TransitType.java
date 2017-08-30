@@ -9,19 +9,21 @@ import java.io.Serializable;
  */
 
 public enum TransitType implements Serializable {
-    RAIL(R.drawable.pin_rail, R.drawable.rail_final_icon_white, new RailColorProvider()),
-    BUS(R.drawable.pin_bus, R.drawable.bus_final_icon_white, new BasicColorProvider(R.color.line_color_bus)),
-    TROLLY(R.drawable.pin_trolley, R.drawable.trolley_final_icon_white, new BasicColorProvider(R.color.line_color_trolly)),
-    SUBWAY(R.drawable.pin_subway, R.drawable.subway_final_icon_white, new RailColorProvider()),
-    NHSL(R.drawable.pin_nhsl, R.drawable.nthsl_final_icon_white, new BasicColorProvider(R.color.line_color_nhsl));
+    RAIL(R.drawable.pin_rail, R.drawable.rail_final_icon_white, R.drawable.rail_active_final, new RailColorProvider()),
+    BUS(R.drawable.pin_bus, R.drawable.bus_final_icon_white, R.drawable.bus_active_final, new BasicColorProvider(R.color.line_color_bus)),
+    TROLLY(R.drawable.pin_trolley, R.drawable.trolley_final_icon_white, R.drawable.trolley_active_final, new BasicColorProvider(R.color.line_color_trolly)),
+    SUBWAY(R.drawable.pin_subway, R.drawable.subway_final_icon_white, R.drawable.subway_active_final, new RailColorProvider()),
+    NHSL(R.drawable.pin_nhsl, R.drawable.nthsl_final_icon_white, R.drawable.nhsl_active_final, new BasicColorProvider(R.color.line_color_nhsl));
 
     private int mapMarkerResource;
-    private int tabImageResource;
+    private int tabInactiveImageResource;
+    private int tabActiveImageResource;
     private ColorProvider colorProvider;
 
-    TransitType(int mapMarkerResource, int tabImageResource, ColorProvider colorProvider) {
+    TransitType(int mapMarkerResource, int tabInactiveImageResource, int tabActiveImageResource, ColorProvider colorProvider) {
         this.mapMarkerResource = mapMarkerResource;
-        this.tabImageResource = tabImageResource;
+        this.tabInactiveImageResource = tabInactiveImageResource;
+        this.tabActiveImageResource = tabActiveImageResource;
         this.colorProvider = colorProvider;
 
     }
@@ -30,8 +32,12 @@ public enum TransitType implements Serializable {
         return mapMarkerResource;
     }
 
-    public int getTabImageResource() {
-        return tabImageResource;
+    public int getTabInactiveImageResource() {
+        return tabInactiveImageResource;
+    }
+
+    public int getTabActiveImageResource() {
+        return tabActiveImageResource;
     }
 
     public int getLineColor(String lineId, Context context) {

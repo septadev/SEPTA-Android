@@ -72,7 +72,9 @@ class PlacesAutoCompleteAdapter extends ArrayAdapter<String> implements Filterab
             autocompleteTextView.setText(resultList.get(position));
             autocompleteTextView.setVisibility(View.VISIBLE);
             googleLogo.setVisibility(View.GONE);
+            convertView.setClickable(true);
         } else {
+            convertView.setClickable(false);
             autocompleteTextView.setVisibility(View.GONE);
             googleLogo.setVisibility(View.VISIBLE);
         }

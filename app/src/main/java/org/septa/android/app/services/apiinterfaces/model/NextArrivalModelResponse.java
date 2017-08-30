@@ -10,19 +10,19 @@ import java.util.List;
  */
 
 public class NextArrivalModelResponse {
-    @SerializedName("start_station_id")
+    @SerializedName("origin")
     private int startStationId;
-    @SerializedName("dest_station_id")
+    @SerializedName("destination")
     private int destStationId;
-    @SerializedName("trans_type")
+    @SerializedName("type")
     private String transType;
-    @SerializedName("route_id")
+    @SerializedName("route")
     private String routeId;
     @SerializedName("success")
     private boolean success;
     @SerializedName("status")
     private int status;
-    @SerializedName("data")
+    @SerializedName("arrivals")
     private List<NextArrivalRecord> nextArrivalRecords;
 
     public int getStartStationId() {

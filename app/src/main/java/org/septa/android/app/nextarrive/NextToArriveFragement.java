@@ -48,11 +48,11 @@ public class NextToArriveFragement extends Fragment {
         DatabaseManager dbManager = DatabaseManager.getInstance(getActivity());
 
         tabActivityHandlers = new TabActivityHandler[5];
-        tabActivityHandlers[1] = new LineUnawareLocationPickerTabActivityHandler(getString(R.string.rail_tab), TransitType.RAIL, dbManager.getRailStopCursorAdapterSupplier(), NextToArriveResultsActivity.class, TransitType.RAIL.getTabImageResource());
-        tabActivityHandlers[0] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.bus_tab), TransitType.BUS, dbManager.getBusRouteCursorAdapterSupplier(), dbManager.getBusStopCursorAdapterSupplier(), dbManager.getBusStopAfterCursorAdapterSupplier(), NextToArriveResultsActivity.class, TransitType.BUS.getTabImageResource());
-        tabActivityHandlers[3] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.trolly_tab), TransitType.TROLLY, dbManager.getTrollyRouteCursorAdapterSupplier(), dbManager.getTrollyStopCursorAdapterSupplier(), dbManager.getTrollyStopAfterCursorAdapterSupplier(), NextToArriveResultsActivity.class, TransitType.TROLLY.getTabImageResource());
-        tabActivityHandlers[2] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.subway_tab), TransitType.SUBWAY, dbManager.getSubwayRouteCursorAdapterSupplier(), dbManager.getSubwayStopCursorAdapterSupplier(), dbManager.getSubwayStopAfterCursorAdapterSupplier(), NextToArriveResultsActivity.class, TransitType.SUBWAY.getTabImageResource());
-        tabActivityHandlers[4] = new LineUnawareLocationPickerTabActivityHandler(getString(R.string.nhsl_tab), TransitType.NHSL, dbManager.getNhslStopCursorAdapterSupplier(), NextToArriveResultsActivity.class, TransitType.NHSL.getTabImageResource());
+        tabActivityHandlers[1] = new LineUnawareLocationPickerTabActivityHandler(getString(R.string.rail_tab), TransitType.RAIL, dbManager.getRailStopCursorAdapterSupplier(), NextToArriveResultsActivity.class, TransitType.RAIL.getTabInactiveImageResource(), TransitType.RAIL.getTabActiveImageResource());
+        tabActivityHandlers[0] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.bus_tab), TransitType.BUS, dbManager.getBusRouteCursorAdapterSupplier(), dbManager.getBusStopCursorAdapterSupplier(), dbManager.getBusStopAfterCursorAdapterSupplier(), NextToArriveResultsActivity.class, TransitType.BUS.getTabInactiveImageResource(), TransitType.BUS.getTabActiveImageResource());
+        tabActivityHandlers[3] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.trolly_tab), TransitType.TROLLY, dbManager.getTrollyRouteCursorAdapterSupplier(), dbManager.getTrollyStopCursorAdapterSupplier(), dbManager.getTrollyStopAfterCursorAdapterSupplier(), NextToArriveResultsActivity.class, TransitType.TROLLY.getTabInactiveImageResource(), TransitType.TROLLY.getTabActiveImageResource());
+        tabActivityHandlers[2] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.subway_tab), TransitType.SUBWAY, dbManager.getSubwayRouteCursorAdapterSupplier(), dbManager.getSubwayStopCursorAdapterSupplier(), dbManager.getSubwayStopAfterCursorAdapterSupplier(), NextToArriveResultsActivity.class, TransitType.SUBWAY.getTabInactiveImageResource(), TransitType.SUBWAY.getTabActiveImageResource());
+        tabActivityHandlers[4] = new LineUnawareLocationPickerTabActivityHandler(getString(R.string.nhsl_tab), TransitType.NHSL, dbManager.getNhslStopCursorAdapterSupplier(), NextToArriveResultsActivity.class, TransitType.NHSL.getTabInactiveImageResource(), TransitType.NHSL.getTabActiveImageResource());
 
 
         View fragmentView = inflater.inflate(R.layout.next_to_arrive_main, null);
@@ -63,9 +63,25 @@ public class NextToArriveFragement extends Fragment {
         mViewPager = (ViewPager) fragmentView.findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
-        TabLayout tabLayout = (TabLayout) fragmentView.findViewById(R.id.tabs);
+        final TabLayout tabLayout = (TabLayout) fragmentView.findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
         setUpTabs(tabLayout, inflater);
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                ((TextView) tab.getCustomView()).setCompoundDrawablesWithIntrinsicBounds(tabActivityHandlers[tab.getPosition()].getActiveDrawableId(), 0, 0, 0);
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+                ((TextView) tab.getCustomView()).setCompoundDrawablesWithIntrinsicBounds(tabActivityHandlers[tab.getPosition()].getInactiveDrawableId(), 0, 0, 0);
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
 
         return fragmentView;
     }
@@ -90,7 +106,7 @@ public class NextToArriveFragement extends Fragment {
         for (int i = 0; i < tabActivityHandlers.length; i++) {
             TextView tab = (TextView) inflater.inflate(R.layout.custom_tab, null);
             tab.setText(tabActivityHandlers[i].getTabTitle());
-            tab.setCompoundDrawablesWithIntrinsicBounds(tabActivityHandlers[i].getDrawableId(), 0, 0, 0);
+            tab.setCompoundDrawablesWithIntrinsicBounds(tabActivityHandlers[i].getInactiveDrawableId(), 0, 0, 0);
             tabLayout.getTabAt(i).setCustomView(tab);
         }
     }

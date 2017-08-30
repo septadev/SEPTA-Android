@@ -31,9 +31,17 @@ public class NextToArriveFragement extends Fragment {
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
-
+    private TabLayout tabLayout;
     TabActivityHandler tabActivityHandlers[];
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        ((TextView) tabLayout.getTabAt(tabLayout.getSelectedTabPosition()).getCustomView())
+                .setCompoundDrawablesWithIntrinsicBounds(tabActivityHandlers[tabLayout.getSelectedTabPosition()]
+                        .getActiveDrawableId(), 0, 0, 0);
+    }
 
     @Nullable
     @Override
@@ -63,7 +71,7 @@ public class NextToArriveFragement extends Fragment {
         mViewPager = (ViewPager) fragmentView.findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
-        final TabLayout tabLayout = (TabLayout) fragmentView.findViewById(R.id.tabs);
+        tabLayout = (TabLayout) fragmentView.findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
         setUpTabs(tabLayout, inflater);
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {

@@ -13,19 +13,20 @@
         android:text="Address"
         android:textSize="8pt" />
 
-    <fragment
-        android:id="@+id/address_fragement"
-        android:name="com.google.android.gms.location.places.ui.SupportPlaceAutocompleteFragment"
+    <AutoCompleteTextView
+        android:id="@+id/address_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/address_label"
-        android:paddingRight="20dp"/>
+        android:paddingRight="20dp">
+
+    </AutoCompleteTextView>
 
     <ImageView
         android:id="@+id/my_location_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@id/address_fragement"
+        android:layout_alignBottom="@id/address_text"
         android:layout_alignParentRight="true"
         android:layout_below="@id/address_label"
         android:src="@drawable/ic_my_location_black_18dp" />
@@ -34,7 +35,7 @@
         android:id="@+id/stop_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/address_fragement"
+        android:layout_below="@id/address_text"
         android:choiceMode="singleChoice"
         android:fastScrollEnabled="true"
         android:listSelector="#666666" />

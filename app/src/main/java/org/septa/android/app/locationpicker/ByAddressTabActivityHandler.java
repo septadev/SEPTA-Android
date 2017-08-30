@@ -16,17 +16,16 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.ui.PlaceSelectionListener;
-import com.google.android.gms.location.places.ui.SupportPlaceAutocompleteFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -71,7 +70,7 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
         CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
         MyLocationClickListener myLocationClickListener;
         ListView stopsListView;
-        SupportPlaceAutocompleteFragment addressEntry;
+        AutoCompleteTextView addressEntry;
         View progressView;
 
         public static ByAddressFragement newInstance(Consumer<StopModel> consumer, CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
@@ -84,9 +83,8 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.location_picker_by_address, container, false);
-            addressEntry = (SupportPlaceAutocompleteFragment)
-                    getChildFragmentManager().findFragmentById(R.id.address_fragement);
+            final View rootView = inflater.inflate(R.layout.location_picker_by_address, container, false);
+
 
             View myLocationButton = rootView.findViewById(R.id.my_location_button);
             stopsListView = (ListView) rootView.findViewById(R.id.stop_list);
@@ -97,17 +95,58 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
             myLocationClickListener = new MyLocationClickListener(this);
             myLocationButton.setOnClickListener(myLocationClickListener);
 
-            addressEntry.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            addressEntry = (AutoCompleteTextView) rootView.findViewById(R.id.address_text);
+
+            int permissionCheck = ContextCompat.checkSelfPermission(getActivity(),
+                    Manifest.permission.ACCESS_FINE_LOCATION);
+            if (permissionCheck == PackageManager.PERMISSION_GRANTED)
+
+            {
+                Task<Location> locationTask = LocationServices.getFusedLocationProviderClient(getActivity()).getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        PlacesAutoCompleteAdapter placesAutoCompleteAdapter = new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item, new LatLng(location.getLatitude(), location.getLongitude()));
+                        addressEntry.setAdapter(placesAutoCompleteAdapter);
+                        addressEntry.addTextChangedListener(placesAutoCompleteAdapter);
+                    }
+                });
+
+            }
+
+            addressEntry.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
-                public void onPlaceSelected(Place place) {
-                    progressView.setVisibility(View.VISIBLE);
-                    final FindClosestStationTask task = new FindClosestStationTask(ByAddressFragement.this);
-                    task.execute(place.getLatLng());
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    if (position == 0) return;
+                    getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(rootView.getWindowToken(), 0);
+                    String description = (String) parent.getItemAtPosition(position);
+                    FindAddressTask findAddressTask = new FindAddressTask(ByAddressFragement.this);
+                    String[] args = new String[1];
+                    args[0] = description;
+                    findAddressTask.execute(args);
                 }
+            });
 
-                @Override
-                public void onError(Status status) {
 
+            addressEntry.setOnKeyListener(new View.OnKeyListener() {
+                public boolean onKey(View v, int keyCode, KeyEvent event) {
+                    // If the event is a key-down event on the "enter" button
+                    if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
+                            (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+                        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                        AutoCompleteTextView editText = (AutoCompleteTextView) v;
+                        editText.dismissDropDown();
+                        FindAddressTask findAddressTask = new FindAddressTask(ByAddressFragement.this);
+                        String[] args = new String[1];
+                        args[0] = editText.getText().toString();
+                        findAddressTask.execute(args);
+
+                        return true;
+                    }
+                    return false;
                 }
             });
 
@@ -263,8 +302,10 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
 
         @Override
         protected void onPostExecute(Location location) {
-            FindClosestStationTask task = new FindClosestStationTask(fragment);
-            task.execute(new LatLng(location.getLatitude(), location.getLongitude()));
+            if (location != null) {
+                FindClosestStationTask task = new FindClosestStationTask(fragment);
+                task.execute(new LatLng(location.getLatitude(), location.getLongitude()));
+            }
         }
 
         public FindAddressTask(ByAddressFragement fragment) {

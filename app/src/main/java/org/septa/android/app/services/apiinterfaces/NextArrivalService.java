@@ -12,6 +12,6 @@ import retrofit2.http.Query;
 
 public interface NextArrivalService {
 
-    @GET("/beta/realtimearrivals/index.php")
+    @GET("/prod/realtimearrivals")
     public Call<NextArrivalModelResponse> getNextArriaval(@Query("start_station_id") int startStationId, @Query("dest_station_id") int destStationId, @Query("type") String transType, @Query("route_id") String routeId);
 }

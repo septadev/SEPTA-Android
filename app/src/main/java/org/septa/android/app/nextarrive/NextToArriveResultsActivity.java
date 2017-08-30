@@ -117,7 +117,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         progressViewBottom = findViewById(R.id.progress_view_bottom);
 
 
-                // Prevent the bottom sheet from being dragged to be opened.  Force it to use the anchor image.
+        // Prevent the bottom sheet from being dragged to be opened.  Force it to use the anchor image.
         BottomSheetHandler myBottomSheetBehaviorCallBack = new BottomSheetHandler(bottomSheetBehavior);
         bottomSheetBehavior.setBottomSheetCallback(myBottomSheetBehaviorCallBack);
         View anchor = findViewById(R.id.bottom_sheet_anchor);
@@ -227,62 +227,53 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
             results.enqueue(new Callback<NextArrivalModelResponse>() {
                 @Override
                 public void onResponse(Call<NextArrivalModelResponse> call, Response<NextArrivalModelResponse> response) {
-                    Log.d(TAG, response.toString());
-                    Log.d(TAG, response.body().toString());
+                    if (response == null || response.body() == null) {
+                        Log.w(TAG, "invalid response from service.");
+                    } else {
 
-                    Map<String, NextToArriveLine> map = new HashMap<String, NextToArriveLine>();
-                    Set<String> kmlSet = new HashSet<String>();
+                        Log.d(TAG, response.toString());
+                        Log.d(TAG, response.body().toString());
 
-                    BitmapDescriptor vehicleBitMap = BitmapDescriptorFactory.fromResource(TransitType.valueOf(response.body().getTransType()).getMapMarkerResource());
 
-                    googleMap.clear();
+                        Map<String, NextToArriveLine> map = new HashMap<String, NextToArriveLine>();
+                        Set<String> kmlSet = new HashSet<String>();
 
-                    LatLng startingStationLatLng = new LatLng(start.getLatitude(), start.getLongitude());
-                    LatLng destinationStationLatLng = new LatLng(destination.getLatitude(), destination.getLongitude());
-                    googleMap.addMarker(new MarkerOptions().position(startingStationLatLng).title(start.getStopName()));
-                    googleMap.addMarker(new MarkerOptions().position(destinationStationLatLng).title(destination.getStopName()));
+                        BitmapDescriptor vehicleBitMap = BitmapDescriptorFactory.fromResource(TransitType.valueOf(response.body().getTransType()).getMapMarkerResource());
 
-                    int multiStopCount = 0;
-                    int singleStopCount = 0;
+                        googleMap.clear();
 
-                    for (NextArrivalModelResponse.NextArrivalRecord data : response.body().getNextArrivalRecords()) {
-                        String key;
-                        if (data.getOrigRouteId().equals(data.getTermRouteId())) {
-                            key = data.getOrigRouteId();
-                            singleStopCount++;
-                        } else {
-                            key = data.getOrigRouteId() + "." + data.getTermRouteId();
-                            multiStopCount++;
-                        }
+                        LatLng startingStationLatLng = new LatLng(start.getLatitude(), start.getLongitude());
+                        LatLng destinationStationLatLng = new LatLng(destination.getLatitude(), destination.getLongitude());
+                        googleMap.addMarker(new MarkerOptions().position(startingStationLatLng).title(start.getStopName()));
+                        googleMap.addMarker(new MarkerOptions().position(destinationStationLatLng).title(destination.getStopName()));
 
-                        if (!map.containsKey(key)) {
-                            map.put(key, new NextToArriveLine(data.getOrigRouteName(), (data.getOrigRouteId() != data.getTermRouteId())));
-                        }
+                        int multiStopCount = 0;
+                        int singleStopCount = 0;
 
-                        map.get(key).addItem(data);
+                        for (NextArrivalModelResponse.NextArrivalRecord data : response.body().getNextArrivalRecords()) {
+                            String key;
+                            if (data.getOrigRouteId().equals(data.getTermRouteId())) {
+                                key = data.getOrigRouteId();
+                                singleStopCount++;
+                            } else {
+                                key = data.getOrigRouteId() + "." + data.getTermRouteId();
+                                multiStopCount++;
+                            }
 
-                        if (data.getVehicle_lat() != null && data.getVehicle_lon() != null) {
-                            LatLng vehicleLatLng = new LatLng(data.getVehicle_lat(), data.getVehicle_lon());
-                            googleMap.addMarker(new MarkerOptions().position(vehicleLatLng).title(data.getOrigLineTripId()).icon(vehicleBitMap));
-                        }
+                            if (!map.containsKey(key)) {
+                                map.put(key, new NextToArriveLine(data.getOrigRouteName(), (data.getOrigRouteId() != data.getTermRouteId())));
+                            }
 
-                        if (!kmlSet.contains(data.getOrigRouteId())) {
-                            kmlSet.add(data.getOrigRouteId());
-                            KmlLayer layer = MapUtils.getKMLByLineId(NextToArriveResultsActivity.this, googleMap, data.getOrigRouteId(), transitType);
-                            if (layer != null)
-                                try {
-                                    layer.addLayerToMap();
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                } catch (XmlPullParserException e) {
-                                    e.printStackTrace();
-                                }
-                        }
+                            map.get(key).addItem(data);
 
-                        if (data.getConnectionStationId() != null)
-                            if (!kmlSet.contains(data.getTermRouteId())) {
-                                kmlSet.add(data.getTermRouteId());
-                                KmlLayer layer = MapUtils.getKMLByLineId(NextToArriveResultsActivity.this, googleMap, data.getTermRouteId(), transitType);
+                            if (data.getVehicle_lat() != null && data.getVehicle_lon() != null) {
+                                LatLng vehicleLatLng = new LatLng(data.getVehicle_lat(), data.getVehicle_lon());
+                                googleMap.addMarker(new MarkerOptions().position(vehicleLatLng).title(data.getOrigLineTripId()).icon(vehicleBitMap));
+                            }
+
+                            if (!kmlSet.contains(data.getOrigRouteId())) {
+                                kmlSet.add(data.getOrigRouteId());
+                                KmlLayer layer = MapUtils.getKMLByLineId(NextToArriveResultsActivity.this, googleMap, data.getOrigRouteId(), transitType);
                                 if (layer != null)
                                     try {
                                         layer.addLayerToMap();
@@ -292,40 +283,55 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                                         e.printStackTrace();
                                     }
                             }
-                    }
 
-                    if (singleStopCount > 0 && multiStopCount > 0) {
-                        //TODO Need an error message here.
-                        throw new RuntimeException("We multi-stop and single stop next to arrive in the same response.  This is unexpected.");
-                    }
+                            if (data.getConnectionStationId() != null)
+                                if (!kmlSet.contains(data.getTermRouteId())) {
+                                    kmlSet.add(data.getTermRouteId());
+                                    KmlLayer layer = MapUtils.getKMLByLineId(NextToArriveResultsActivity.this, googleMap, data.getTermRouteId(), transitType);
+                                    if (layer != null)
+                                        try {
+                                            layer.addLayerToMap();
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        } catch (XmlPullParserException e) {
+                                            e.printStackTrace();
+                                        }
+                                }
+                        }
 
-                    if (singleStopCount > 0) {
-                        List<NextToArriveLine> nextToArriveLinesList = new ArrayList<NextToArriveLine>(map.values());
-                        Collections.sort(nextToArriveLinesList, new Comparator<NextToArriveLine>() {
-                            @Override
-                            public int compare(NextToArriveLine x, NextToArriveLine y) {
-                                if (x.getSoonestDeparture() != null)
-                                    return x.getSoonestDeparture().compareTo(y.getSoonestDeparture());
-                                else return Integer.MAX_VALUE;
-                            }
-                        });
+                        if (singleStopCount > 0 && multiStopCount > 0) {
+                            //TODO Need an error message here.
+                            throw new RuntimeException("We multi-stop and single stop next to arrive in the same response.  This is unexpected.");
+                        }
+
+                        if (singleStopCount > 0) {
+                            List<NextToArriveLine> nextToArriveLinesList = new ArrayList<NextToArriveLine>(map.values());
+                            Collections.sort(nextToArriveLinesList, new Comparator<NextToArriveLine>() {
+                                @Override
+                                public int compare(NextToArriveLine x, NextToArriveLine y) {
+                                    if (x.getSoonestDeparture() != null)
+                                        return x.getSoonestDeparture().compareTo(y.getSoonestDeparture());
+                                    else return Integer.MAX_VALUE;
+                                }
+                            });
 
 
-                        linesListView.setAdapter(new SingleLinesListAdapater(NextToArriveResultsActivity.this, nextToArriveLinesList));
-                    }
+                            linesListView.setAdapter(new SingleLinesListAdapater(NextToArriveResultsActivity.this, nextToArriveLinesList));
+                        }
 
-                    if (multiStopCount > 0) {
-                        Collections.sort(response.body().getNextArrivalRecords(), new Comparator<NextArrivalModelResponse.NextArrivalRecord>() {
-                            @Override
-                            public int compare(NextArrivalModelResponse.NextArrivalRecord x, NextArrivalModelResponse.NextArrivalRecord y) {
-                                if (x == y)
-                                    return 0;
-                                return (int) (x.getOrigDepartureTime().getTime() + (60000 * x.getOrigDelayMinutes())
-                                        - y.getOrigDepartureTime().getTime() + (60000 * y.getOrigDelayMinutes()));
-                            }
-                        });
-                        List<NextArrivalModelResponse.NextArrivalRecord> multiStopList = response.body().getNextArrivalRecords().subList(0, (3 < response.body().getNextArrivalRecords().size()) ? 3 : response.body().getNextArrivalRecords().size());
-                        linesListView.setAdapter(new MultiLinesListAdapater(NextToArriveResultsActivity.this, multiStopList));
+                        if (multiStopCount > 0) {
+                            Collections.sort(response.body().getNextArrivalRecords(), new Comparator<NextArrivalModelResponse.NextArrivalRecord>() {
+                                @Override
+                                public int compare(NextArrivalModelResponse.NextArrivalRecord x, NextArrivalModelResponse.NextArrivalRecord y) {
+                                    if (x == y)
+                                        return 0;
+                                    return (int) (x.getOrigDepartureTime().getTime() + (60000 * x.getOrigDelayMinutes())
+                                            - y.getOrigDepartureTime().getTime() + (60000 * y.getOrigDelayMinutes()));
+                                }
+                            });
+                            List<NextArrivalModelResponse.NextArrivalRecord> multiStopList = response.body().getNextArrivalRecords().subList(0, (3 < response.body().getNextArrivalRecords().size()) ? 3 : response.body().getNextArrivalRecords().size());
+                            linesListView.setAdapter(new MultiLinesListAdapater(NextToArriveResultsActivity.this, multiStopList));
+                        }
                     }
                     progressVisibility(View.GONE);
                 }
@@ -341,7 +347,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
     }
 
-    private void progressVisibility(int visibility){
+    private void progressVisibility(int visibility) {
         progressView.setVisibility(visibility);
         progressViewBottom.setVisibility(visibility);
     }

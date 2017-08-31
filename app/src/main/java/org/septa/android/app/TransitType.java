@@ -18,7 +18,7 @@ public enum TransitType implements Serializable {
     NHSL(R.drawable.pin_nhsl, R.drawable.nthsl_final_icon_white, R.drawable.nhsl_active_final, new BasicColorProvider(R.color.line_color_nhsl), new BasicLineIconProvider(R.drawable.ic_line_nhsl));
 
 
-    private static final String TAG = "org.septa.android.app.TransitType";
+    private static final String TAG = "org.septa...TransitType";
 
     private int mapMarkerResource;
     private int tabInactiveImageResource;
@@ -52,6 +52,11 @@ public enum TransitType implements Serializable {
 
     public int getIconForLine(String lineId, Context context) {
         return lineIconProvider.getIconForLine(lineId, context);
+    }
+
+    public String getString(String name, Context context) {
+        int resId = context.getResources().getIdentifier(name + "_" + name().toLowerCase(), "string", R.class.getPackage().getName());
+        return context.getString(resId);
     }
 
     private interface ColorProvider {
@@ -112,11 +117,11 @@ public enum TransitType implements Serializable {
         @Override
         public int getIconForLine(String lineId, Context context) {
             try {
-                int returnVal =  context.getResources().getIdentifier("ic_line_" + lineId.toLowerCase(), "drawable", R.class.getPackage().getName());
+                int returnVal = context.getResources().getIdentifier("ic_line_" + lineId.toLowerCase(), "drawable", R.class.getPackage().getName());
                 Log.d(TAG, "IconForLine: " + returnVal + " for " + lineId.toLowerCase());
                 if (returnVal == 0)
                     return defaultValue;
-                return  returnVal;
+                return returnVal;
             } catch (Exception e) {
                 e.printStackTrace();
                 Log.d(TAG, "IconForLine: returning default value:" + defaultValue);

@@ -54,17 +54,21 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
     CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier;
     CursorAdapterSupplier<StopModel> stopCursorAdapterSupplier;
     CursorAdapterSupplier<StopModel> busStopAfterCursorAdapterSupplier;
+    String headerStringName;
     TransitType transitType;
     Class targetClass;
+    String buttonText;
 
 
-    public LineAwareLocationPickerTabActivityHandler(String title, TransitType transitType, CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier, CursorAdapterSupplier<StopModel> busStopCursorAdapterSupplier, CursorAdapterSupplier<StopModel> busStopAfterCursorAdapterSupplier, Class targetClass) {
+    public LineAwareLocationPickerTabActivityHandler(String title, String headerStringName, String buttonText, TransitType transitType, CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier, CursorAdapterSupplier<StopModel> busStopCursorAdapterSupplier, CursorAdapterSupplier<StopModel> busStopAfterCursorAdapterSupplier, Class targetClass) {
         super(title, transitType.getTabInactiveImageResource(), transitType.getTabActiveImageResource());
         this.routeCursorAdapterSupplier = routeCursorAdapterSupplier;
         this.stopCursorAdapterSupplier = busStopCursorAdapterSupplier;
         this.busStopAfterCursorAdapterSupplier = busStopAfterCursorAdapterSupplier;
         this.transitType = transitType;
         this.targetClass = targetClass;
+        this.headerStringName = headerStringName;
+        this.buttonText = buttonText;
     }
 
     @Override
@@ -76,6 +80,8 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
         fragment.setTransitType(transitType);
         fragment.setTabName(this.getTabTitle());
         fragment.setTargetClass(targetClass);
+        fragment.setHeaderStringName(headerStringName);
+        fragment.setButtonText(buttonText);
 
         return fragment;
     }
@@ -86,9 +92,9 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
         CursorAdapterSupplier<StopModel> stopAfterCursorAdapterSupplier;
         TransitType transitType;
         Class targetClass;
+        String headerStringName;
+        String buttonText;
 
-
-        View secondaryView;
         View progressView;
         private StopModel startingStation;
         private StopModel endingStation;
@@ -113,9 +119,8 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.line_aware_next_to_arrive_search, container, false);
 
-            //((TextView) rootView.findViewById(R.id.find_next_label)).setText("FIND NEXT " + tabName);
-
-            //secondaryView = rootView.findViewById(R.id.secondary_selection);
+            TextView pickerHeaderText = (TextView) rootView.findViewById(R.id.picker_header_text);
+            pickerHeaderText.setText(transitType.getString(headerStringName, getContext()));
 
             lineText = (TextView) rootView.findViewById(R.id.line_text);
             lineText.setOnClickListener(new View.OnClickListener() {
@@ -171,7 +176,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
             );
 
             queryButton = (Button) rootView.findViewById(R.id.view_buses_button);
-            queryButton.setText("VIEW " + tabName);
+            queryButton.setText(buttonText);
             queryButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -248,6 +253,14 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
 
         public void setTargetClass(Class targetClass) {
             this.targetClass = targetClass;
+        }
+
+        public void setHeaderStringName(String headerStringName) {
+            this.headerStringName = headerStringName;
+        }
+
+        public void setButtonText(String buttonText) {
+            this.buttonText = buttonText;
         }
     }
 

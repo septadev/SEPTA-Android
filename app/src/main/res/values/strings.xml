@@ -16,9 +16,6 @@
     <string name="fares_and_transit_info">Fares and Transit Info</string>
     <string name="connect_with_septa">Connect With SEPTA</string>
 
-
-    <string name="title_activity_next_to_arrive">SEPTA | Next To Arrive</string>
-
     <!-- Transit Type Tab Names -->
     <string name="rail_tab">RAIL</string>
     <string name="bus_tab">BUS</string>
@@ -46,4 +43,14 @@
     <string name="subway_map">Subway Map</string>
     <string name="events">Events</string>
 
+
+    <!-- Next to Arrive String by Transit Type -->
+    <string name="nta_picker_title_train">Regional Rail</string>
+    <string name="nta_picker_title_bus">Bus</string>
+    <string name="nta_picker_title_subway">Subway</string>
+    <string name="nta_picker_title_trolly">Trolly</string>
+    <string name="nta_picker_title_NHSL">Norristown High Speed Line</string>
+
+    <!-- Next To Arrive General -->
+    <string name="nta_query_button_text">Next To Arrive</string>
 </resources>

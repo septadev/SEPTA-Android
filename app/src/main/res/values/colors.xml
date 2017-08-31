@@ -26,15 +26,15 @@
     <color name="line_color_lan">#7e5d48</color>
     <color name="line_color_wil">#96cf64</color>
 
-    <color name="line_color_bsl">@android:color/black</color>
-    <color name="line_color_bso">@android:color/black</color>
-    <color name="line_color_mfl">@android:color/black</color>
-    <color name="line_color_mfo">@android:color/black</color>
+    <color name="line_color_bsl">#f58220</color>
+    <color name="line_color_bso">#41525c</color>
+    <color name="line_color_mfl">#4187c7</color>
+    <color name="line_color_mfo">#41525c</color>
 
 
-    <color name="line_color_bus">@android:color/black</color>
-    <color name="line_color_nhsl">@android:color/black</color>
-    <color name="line_color_trolly">@android:color/black</color>
+    <color name="line_color_bus">#41525c</color>
+    <color name="line_color_nhsl">#9d4295</color>
+    <color name="line_color_trolly">#207200</color>
 
 
     <color name="default_line_color">@android:color/holo_red_dark</color>

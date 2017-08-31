@@ -72,9 +72,7 @@ class PlacesAutoCompleteAdapter extends ArrayAdapter<String> implements Filterab
             autocompleteTextView.setText(resultList.get(position));
             autocompleteTextView.setVisibility(View.VISIBLE);
             googleLogo.setVisibility(View.GONE);
-            convertView.setClickable(true);
         } else {
-            convertView.setClickable(false);
             autocompleteTextView.setVisibility(View.GONE);
             googleLogo.setVisibility(View.VISIBLE);
         }
@@ -138,7 +136,7 @@ class PlacesAutoCompleteAdapter extends ArrayAdapter<String> implements Filterab
             public void onResponse(Call<PlacePredictions> call, Response<PlacePredictions> response) {
                 List<PlaceAutoComplete> serviceResponses = response.body().getPlaces();
                 List<String> newResults = new ArrayList<String>(serviceResponses.size() + 1);
-                newResults.add("Logo");
+                newResults.add(null);
                 for (PlaceAutoComplete place : serviceResponses)
                     newResults.add(place.getPlaceDesc());
 

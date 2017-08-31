@@ -96,7 +96,6 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
             myLocationButton.setOnClickListener(myLocationClickListener);
 
             addressEntry = (AutoCompleteTextView) rootView.findViewById(R.id.address_text);
-
             int permissionCheck = ContextCompat.checkSelfPermission(getActivity(),
                     Manifest.permission.ACCESS_FINE_LOCATION);
             if (permissionCheck == PackageManager.PERMISSION_GRANTED)
@@ -105,9 +104,11 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
                 Task<Location> locationTask = LocationServices.getFusedLocationProviderClient(getActivity()).getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
                     @Override
                     public void onSuccess(Location location) {
-                        PlacesAutoCompleteAdapter placesAutoCompleteAdapter = new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item, new LatLng(location.getLatitude(), location.getLongitude()));
-                        addressEntry.setAdapter(placesAutoCompleteAdapter);
-                        addressEntry.addTextChangedListener(placesAutoCompleteAdapter);
+                        if (location != null) {
+                            PlacesAutoCompleteAdapter placesAutoCompleteAdapter = new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item, new LatLng(location.getLatitude(), location.getLongitude()));
+                            addressEntry.setAdapter(placesAutoCompleteAdapter);
+                            addressEntry.addTextChangedListener(placesAutoCompleteAdapter);
+                        }
                     }
                 });
 
@@ -116,7 +117,6 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
             addressEntry.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    if (position == 0) return;
                     getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
                     InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(rootView.getWindowToken(), 0);

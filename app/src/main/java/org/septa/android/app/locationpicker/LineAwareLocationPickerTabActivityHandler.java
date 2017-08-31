@@ -17,6 +17,8 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -86,19 +88,20 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
         Class targetClass;
 
 
-        Spinner routeSpinner;
         View secondaryView;
         View progressView;
-        TextView startingStopEditText;
         private StopModel startingStation;
         private StopModel endingStation;
 
         private String tabName;
 
         List<RouteDirectionModel> routes;
+        RouteDirectionModel selectedRoute;
+        private TextView startingStopEditText;
         private TextView closestStopText;
         private TextView destinationStopEditText;
-
+        private TextView lineText;
+        private Button queryButton;
 
         public static PlaceholderFragment newInstance() {
             PlaceholderFragment fragment = new PlaceholderFragment();
@@ -114,9 +117,31 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
 
             //secondaryView = rootView.findViewById(R.id.secondary_selection);
 
-            progressView = rootView.findViewById(R.id.progress_view);
+            lineText = (TextView) rootView.findViewById(R.id.line_text);
+            lineText.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    FragmentTransaction ft = getChildFragmentManager().beginTransaction();
 
-            routeSpinner = (Spinner) rootView.findViewById(R.id.route_spinner);
+                    LinePickerFragment newFragment = LinePickerFragment.newInstance(routeCursorAdapterSupplier, new Consumer<RouteDirectionModel>() {
+                        @Override
+                        public void accept(RouteDirectionModel var1) {
+                            selectedRoute = var1;
+                            lineText.setText(selectedRoute.getRouteLongName());
+                            startingStation = null;
+                            activateView(startingStopEditText);
+                            startingStopEditText.setText("");
+                            endingStation = null;
+                            disableView(destinationStopEditText);
+                            destinationStopEditText.setText("");
+                            disableView(queryButton);
+                        }
+                    });
+
+                    newFragment.show(ft, "line_picker");
+                }
+            });
+            progressView = rootView.findViewById(R.id.progress_view);
 
             PopulateRouteSpinnerTask task = new PopulateRouteSpinnerTask(PlaceholderFragment.this);
             task.execute();
@@ -128,6 +153,9 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                         @Override
                         public void accept(StopModel var1) {
                             setStartingStation(var1, View.INVISIBLE);
+                            activateView(destinationStopEditText);
+                            destinationStopEditText.setText("");
+                            disableView(queryButton);
                         }
                     }, stopCursorAdapterSupplier, false)
             );
@@ -137,11 +165,12 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                         public void accept(StopModel var1) {
                             endingStation = var1;
                             destinationStopEditText.setText(endingStation.getStopName());
+                            activateView(queryButton);
                         }
                     }, stopAfterCursorAdapterSupplier, true)
             );
 
-            Button queryButton = (Button) rootView.findViewById(R.id.view_buses_button);
+            queryButton = (Button) rootView.findViewById(R.id.view_buses_button);
             queryButton.setText("VIEW " + tabName);
             queryButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -154,13 +183,39 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                     intent.putExtra(Constants.STARTING_STATION, startingStation);
                     intent.putExtra(Constants.DESTINATAION_STATION, endingStation);
                     intent.putExtra(Constants.TRANSIT_TYPE, transitType);
-                    intent.putExtra(Constants.LINE_ID, routes.get(routeSpinner.getSelectedItemPosition()));
+                    intent.putExtra(Constants.LINE_ID, selectedRoute);
 
                     startActivity(intent);
                 }
             });
 
+            View resetView = rootView.findViewById(R.id.reset_button);
+            resetView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    selectedRoute = null;
+                    lineText.setText("");
+                    startingStation = null;
+                    disableView(startingStopEditText);
+                    startingStopEditText.setText("");
+                    endingStation = null;
+                    disableView(destinationStopEditText);
+                    destinationStopEditText.setText("");
+                    disableView(queryButton);
+                }
+            });
+
             return rootView;
+        }
+
+        private void disableView(View view) {
+            view.setAlpha((float) .3);
+            view.setClickable(false);
+        }
+
+        private void activateView(View view) {
+            view.setAlpha(1);
+            view.setClickable(true);
         }
 
         public void setRouteCursorAdapterSupplier(CursorAdapterSupplier<RouteDirectionModel> cursorAdapterSupplier) {
@@ -260,8 +315,6 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
 
             fragment.routes = routeDirectionModels;
 
-            fragment.routeSpinner.setAdapter(new RouteAdapter(fragment.getActivity(), routeDirectionModels));
-            fragment.routeSpinner.setOnItemSelectedListener(new OnRouteSelection(fragment));
         }
     }
 
@@ -376,8 +429,8 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
             if (whereClause == null) {
                 whereClause = new ArrayList<Criteria>();
             }
-            whereClause.add(new Criteria("route_id", Criteria.Operation.EQ, parent.routes.get(parent.routeSpinner.getSelectedItemPosition()).getRouteId()));
-            whereClause.add(new Criteria("direction_id", Criteria.Operation.EQ, parent.routes.get(parent.routeSpinner.getSelectedItemPosition()).getDirectionCode()));
+            whereClause.add(new Criteria("route_id", Criteria.Operation.EQ, parent.selectedRoute.getRouteId()));
+            whereClause.add(new Criteria("direction_id", Criteria.Operation.EQ, parent.selectedRoute.getDirectionCode()));
             if (userAfter) {
                 whereClause.add(new Criteria("after_stop_id", Criteria.Operation.EQ, parent.startingStation.getStopId()));
             }

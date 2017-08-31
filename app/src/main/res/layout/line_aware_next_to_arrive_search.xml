@@ -45,12 +45,14 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="15dp"
                     android:layout_marginTop="13dp"
+                    android:clickable="true"
                     android:text="Rail Line"
                     android:textColor="#6d6d6d"
                     android:textSize="12sp"
                     app:font="@string/font_roboto_regular" />
 
                 <org.septa.android.app.view.TextView
+                    android:id="@+id/reset_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
@@ -59,10 +61,12 @@
                     android:text="Reset"
                     android:textColor="#6d6d6d"
                     android:textSize="12sp"
+                    android:clickable="true"
                     app:font="@string/font_roboto_regular" />
             </RelativeLayout>
 
             <org.septa.android.app.view.TextView
+                android:id="@+id/line_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="15dp"
@@ -85,7 +89,7 @@
                 android:layout_marginTop="20dp"
                 android:alpha=".3"
                 android:background="@drawable/stop_picker_background"
-                android:drawableRight="@drawable/ic_line_picker"
+                android:drawableRight="@drawable/ic_search"
                 android:paddingBottom="14dp"
                 android:paddingLeft="10dp"
                 android:paddingRight="13dp"
@@ -108,7 +112,7 @@
                 android:layout_marginTop="10dp"
                 android:alpha=".3"
                 android:background="@drawable/stop_picker_background"
-                android:drawableRight="@drawable/ic_line_picker"
+                android:drawableRight="@drawable/ic_search"
                 android:paddingBottom="14dp"
                 android:paddingLeft="10dp"
                 android:paddingRight="13dp"
@@ -125,6 +129,7 @@
                 android:layout_marginTop="30dp"
                 android:alpha=".3"
                 android:background="@drawable/button_gradient_background"
+                android:clickable="false"
                 android:text="View Schedules" />
 
             <Spinner

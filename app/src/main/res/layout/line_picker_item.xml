@@ -19,7 +19,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginRight="18dp"
         android:layout_marginTop="8dp"
-        android:src="@drawable/ic_train_air" />
+        android:src="@drawable/ic_line_air" />
 
     <org.septa.android.app.view.TextView
         android:id="@+id/line_title"

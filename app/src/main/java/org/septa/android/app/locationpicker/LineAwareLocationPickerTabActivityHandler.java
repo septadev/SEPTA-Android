@@ -123,7 +123,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                 public void onClick(View view) {
                     FragmentTransaction ft = getChildFragmentManager().beginTransaction();
 
-                    LinePickerFragment newFragment = LinePickerFragment.newInstance(routeCursorAdapterSupplier, new Consumer<RouteDirectionModel>() {
+                    LinePickerFragment newFragment = LinePickerFragment.newInstance(routeCursorAdapterSupplier, transitType, new Consumer<RouteDirectionModel>() {
                         @Override
                         public void accept(RouteDirectionModel var1) {
                             selectedRoute = var1;

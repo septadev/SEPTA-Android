@@ -27,6 +27,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import org.septa.android.app.R;
+import org.septa.android.app.TransitType;
 import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.support.Consumer;
 import org.septa.android.app.support.CursorAdapterSupplier;
@@ -46,6 +47,7 @@ public class LinePickerFragment extends DialogFragment {
     LineArrayAdapater lineArrayAdapater;
     EditText filterText;
     Consumer<RouteDirectionModel> consumer;
+    TransitType transitType;
 
     @Override
     public void onResume() {
@@ -106,11 +108,12 @@ public class LinePickerFragment extends DialogFragment {
 
     }
 
-    public static LinePickerFragment newInstance(CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier, Consumer<RouteDirectionModel> consumer) {
+    public static LinePickerFragment newInstance(CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier, TransitType transitType, Consumer<RouteDirectionModel> consumer) {
         LinePickerFragment fragment;
         fragment = new LinePickerFragment();
         fragment.setRouteCursorAdapterSupplier(routeCursorAdapterSupplier);
         fragment.setConsumer(consumer);
+        fragment.setTransitType(transitType);
 
         return fragment;
     }
@@ -123,16 +126,21 @@ public class LinePickerFragment extends DialogFragment {
         this.consumer = consumer;
     }
 
+    public void setTransitType(TransitType transitType) {
+        this.transitType = transitType;
+    }
+
     static class LineArrayAdapater extends ArrayAdapter<RouteDirectionModel> implements Filterable {
 
         List<RouteDirectionModel> origRoutes;
         List<RouteDirectionModel> filterRoutes;
+        TransitType transitType;
 
-
-        public LineArrayAdapater(Context context, List<RouteDirectionModel> routes) {
+        public LineArrayAdapater(Context context, List<RouteDirectionModel> routes, TransitType transitType) {
             super(context, 0, routes);
             this.origRoutes = routes;
             this.filterRoutes = routes;
+            this.transitType = transitType;
         }
 
         @NonNull
@@ -149,6 +157,7 @@ public class LinePickerFragment extends DialogFragment {
                 TextView titleText = (TextView) convertView.findViewById(R.id.line_title);
                 TextView descText = (TextView) convertView.findViewById(R.id.line_desc);
                 ImageView lineIcon = (ImageView) convertView.findViewById(R.id.route_icon);
+                lineIcon.setImageResource(transitType.getIconForLine(route.getRouteId(), getContext()));
 
                 titleText.setText(route.getRouteShortName() + " " + route.getRouteLongName());
                 descText.setText("to " + route.getDirectionDescription());
@@ -256,7 +265,7 @@ public class LinePickerFragment extends DialogFragment {
         @Override
         protected void onPostExecute(List<RouteDirectionModel> routeDirectionModels) {
             Collections.sort(routeDirectionModels, new RouteModelComparator());
-            fragment.lineArrayAdapater = new LineArrayAdapater(fragment.getContext(), routeDirectionModels);
+            fragment.lineArrayAdapater = new LineArrayAdapater(fragment.getContext(), routeDirectionModels, fragment.transitType);
             fragment.linesList.setAdapter(fragment.lineArrayAdapater);
             fragment.lineArrayAdapater.getFilter().filter(fragment.filterText.getText());
         }

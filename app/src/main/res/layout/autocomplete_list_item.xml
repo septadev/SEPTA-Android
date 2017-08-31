@@ -15,6 +15,5 @@
         android:layout_height="wrap_content"
         android:visibility="gone"
         tools:visibility="visible"
-        android:clickable="false"
         android:src="@drawable/powered_by_google_light" />
 </FrameLayout>

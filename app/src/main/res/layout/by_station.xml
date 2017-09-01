@@ -17,11 +17,12 @@
             android:layout_marginBottom="12dp"
             android:layout_marginLeft="10dp"
             android:background="@drawable/bg_stop_picker_inactive"
+            android:clickable="true"
             android:paddingBottom="5dp"
             android:paddingTop="5dp"
             android:text="Search By Station"
             android:textAlignment="center"
-            android:textColor="@color/find_station_tab_active_text"
+            android:textColor="@color/find_station_tab_inactive_text"
             android:textSize="11sp"
             app:font="@string/font_roboto_medium" />
 
@@ -32,11 +33,12 @@
             android:layout_marginBottom="12dp"
             android:layout_toRightOf="@id/search_by_station_tab"
             android:background="@drawable/bg_stop_picker_active"
+            android:clickable="true"
             android:paddingBottom="5dp"
             android:paddingTop="5dp"
-            android:text="Search By Address"
+            android:text="Search Near Address"
             android:textAlignment="center"
-            android:textColor="@color/find_station_tab_inactive_text"
+            android:textColor="@color/find_station_tab_active_text"
             android:textSize="11sp"
             app:font="@string/font_roboto_medium" />
 

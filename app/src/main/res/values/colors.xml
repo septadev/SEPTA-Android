@@ -40,10 +40,10 @@
 
 
     <!-- Find Station/Stop Colors -->
-    <color name="find_station_tab_active_text">#144b88</color>
+    <color name="find_station_tab_active_text">#ffffff</color>
     <color name="find_station_tab_active_background">#ffffff</color>
-    <color name="find_station_tab_inactive_text">#ffffff</color>
-    <color name="find_station_tab_inactive_background">#144b88</color>
+    <color name="find_station_tab_inactive_text">#144b88</color>
+    <color name="find_station_tab_inactive_background">#144b88</color>144b88
 
 
 </resources>

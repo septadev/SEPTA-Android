@@ -8,6 +8,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,6 +18,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import org.septa.android.app.R;
 import org.septa.android.app.domain.StopModel;
@@ -35,6 +37,9 @@ public class LocationPickerFragment extends DialogFragment {
     TabActivityHandler tabActivityHandlers[];
     private Consumer<StopModel> consumer;
 
+    private TextView searchByStationTab;
+    private TextView searchByAddressTab;
+
 
     private CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
 
@@ -47,6 +52,7 @@ public class LocationPickerFragment extends DialogFragment {
 
         super.onResume();
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -82,6 +88,29 @@ public class LocationPickerFragment extends DialogFragment {
             }
         });
 
+
+        searchByStationTab = (TextView) dialogView.findViewById(R.id.search_by_station_tab);
+        searchByAddressTab = (TextView) dialogView.findViewById(R.id.search_by_address_tab);
+
+        searchByStationTab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setActive(searchByStationTab, searchByAddressTab);
+                getChildFragmentManager()
+                        .beginTransaction().replace(R.id.stop_picker_container, tabActivityHandlers[0].getFragment()).commit();
+            }
+        });
+
+        searchByAddressTab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setActive(searchByAddressTab, searchByStationTab);
+                getChildFragmentManager()
+                        .beginTransaction().replace(R.id.stop_picker_container, tabActivityHandlers[1].getFragment()).commit();
+
+            }
+        });
+
 //        Button select = (Button) dialogView.findViewById(R.id.select_button);
 //        select.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -101,6 +130,15 @@ public class LocationPickerFragment extends DialogFragment {
 
         Log.d(TAG, "End - onCreateView");
         return dialogView;
+    }
+
+    private void setActive(TextView active, TextView inactive) {
+        active.setBackgroundResource(R.drawable.bg_stop_picker_active);
+        inactive.setBackgroundResource(R.drawable.bg_stop_picker_inactive);
+
+        active.setTextColor(ContextCompat.getColor(getContext(), R.color.find_station_tab_active_text));
+        inactive.setTextColor(ContextCompat.getColor(getContext(), R.color.find_station_tab_inactive_text));
+
     }
 
 

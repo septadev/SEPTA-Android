@@ -45,11 +45,11 @@
 
 
     <!-- Next to Arrive String by Transit Type -->
-    <string name="nta_picker_title_train">Regional Rail</string>
+    <string name="nta_picker_title_rail">Regional Rail</string>
     <string name="nta_picker_title_bus">Bus</string>
     <string name="nta_picker_title_subway">Subway</string>
     <string name="nta_picker_title_trolly">Trolly</string>
-    <string name="nta_picker_title_NHSL">Norristown High Speed Line</string>
+    <string name="nta_picker_title_nhsl">Norristown High Speed Line</string>
 
     <!-- Next To Arrive General -->
     <string name="nta_query_button_text">Next To Arrive</string>

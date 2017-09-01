@@ -40,36 +40,44 @@ public class LineUnawareLocationPickerTabActivityHandler extends BaseTabActivity
     private CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
     private TransitType transitType;
     private Class targetClass;
+    String headerStringName;
+    String buttonText;
 
-    public LineUnawareLocationPickerTabActivityHandler(String title, TransitType transitType, CursorAdapterSupplier<StopModel> cursorAdapterSupplier, Class targetClass) {
+    public LineUnawareLocationPickerTabActivityHandler(String title, String headerStringName, String buttonText, TransitType transitType, CursorAdapterSupplier<StopModel> cursorAdapterSupplier, Class targetClass) {
         super(title, transitType.getTabInactiveImageResource(), transitType.getTabActiveImageResource());
         this.cursorAdapterSupplier = cursorAdapterSupplier;
         this.transitType = transitType;
         this.targetClass = targetClass;
+        this.headerStringName = headerStringName;
+        this.buttonText = buttonText;
     }
 
 
     @Override
     public Fragment getFragment() {
-        return LineUnawareLocationPickerTabActivityHandler.RailStationQuery.newInstance(cursorAdapterSupplier, transitType, targetClass);
+        return LineUnawareLocationPickerTabActivityHandler.RailStationQuery.newInstance(cursorAdapterSupplier, transitType, targetClass, headerStringName, buttonText);
     }
 
     public static class RailStationQuery extends Fragment {
         private StopModel startingStation;
         private StopModel endingStation;
-        private EditText startingStationEditText;
+        private TextView startingStationEditText;
         private TextView closestStationText;
         private boolean startingStationAutoChoice = false;
         private TransitType transitType;
         private Class targetClass;
+        private String headerStringName;
+        private String buttonText;
 
         private CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
 
-        public static RailStationQuery newInstance(CursorAdapterSupplier<StopModel> cursorAdapterSupplier, TransitType transitType, Class targetClass) {
+        public static RailStationQuery newInstance(CursorAdapterSupplier<StopModel> cursorAdapterSupplier, TransitType transitType, Class targetClass, String headerStringName, String buttonText) {
             RailStationQuery fragment = new RailStationQuery();
             fragment.setCursorAdapterSupplier(cursorAdapterSupplier);
             fragment.setTransitType(transitType);
             fragment.setTargetClass(targetClass);
+            fragment.setHeaderStringName(headerStringName);
+            fragment.setButtonText(buttonText);
             return fragment;
         }
 
@@ -78,10 +86,13 @@ public class LineUnawareLocationPickerTabActivityHandler extends BaseTabActivity
                                  Bundle savedInstanceState) {
             final View rootView = inflater.inflate(R.layout.line_unaware_next_to_arrive_search, container, false);
 
-            startingStationEditText = (EditText) rootView.findViewById(R.id.starting_rail_station);
-            final EditText endingStationEditText = (EditText) rootView.findViewById(R.id.ending_rail_station);
-            closestStationText = (TextView) rootView.findViewById(R.id.closest_station);
-            final Button queryButton = (Button) rootView.findViewById(R.id.view_trains_button);
+            startingStationEditText = (TextView) rootView.findViewById(R.id.starting_stop);
+            final TextView endingStationEditText = (TextView) rootView.findViewById(R.id.destination_stop);
+            closestStationText = (TextView) rootView.findViewById(R.id.closest_stop);
+            final Button queryButton = (Button) rootView.findViewById(R.id.view_buses_button);
+
+            TextView pickerHeaderText = (TextView) rootView.findViewById(R.id.picker_header_text);
+            pickerHeaderText.setText(transitType.getString(headerStringName, getContext()));
 
             if (startingStationAutoChoice)
                 closestStationText.setVisibility(View.VISIBLE);
@@ -129,6 +140,7 @@ public class LineUnawareLocationPickerTabActivityHandler extends BaseTabActivity
                     }, cursorAdapterSupplier)
             );
 
+            queryButton.setText(buttonText);
             queryButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -150,6 +162,14 @@ public class LineUnawareLocationPickerTabActivityHandler extends BaseTabActivity
 
         public void setTargetClass(Class targetClass) {
             this.targetClass = targetClass;
+        }
+
+        public void setHeaderStringName(String headerStringName) {
+            this.headerStringName = headerStringName;
+        }
+
+        public void setButtonText(String buttonText) {
+            this.buttonText = buttonText;
         }
 
         public static class StationPickerOnTouchListener implements View.OnTouchListener {

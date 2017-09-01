@@ -1,63 +1,126 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
-        android:layout_marginLeft="5dp"
-        android:text="@string/find_next_train" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
-        android:layout_marginLeft="10dp"
-        android:text="@string/starting_station" />
-
-    <EditText
-        android:id="@+id/starting_rail_station"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/starting_station_hint"
-        android:layout_marginLeft="10dp"
-        android:inputType="text"
-        android:lines="1"
-        android:maxLines="1" />
+        android:layout_height="match_parent"
+        android:background="@drawable/full_page_gradient_background"
+        android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/closest_station"
+
+        <org.septa.android.app.view.TextView
+            android:id="@+id/picker_header_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="13dp"
+            android:layout_marginLeft="12dp"
+            android:layout_marginTop="12dp"
+            android:text="Regional Rail"
+            android:textColor="#144b88"
+            android:textSize="20sp"
+            app:font="@string/font_roboto_bold" />
+
+        <LinearLayout
+            android:id="@+id/top"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="#ffffff"
+            android:orientation="vertical">
+
+
+            <org.septa.android.app.view.TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="13dp"
+                android:clickable="true"
+                android:text="Select a start and destination to view the next trains to arrive for that route."
+                android:textColor="#6d6d6d"
+                android:textSize="12sp"
+                app:font="@string/font_roboto_regular" />
+
+
+            <org.septa.android.app.view.TextView
+                android:id="@+id/starting_stop"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/stop_picker_background"
+                android:drawableRight="@drawable/ic_search"
+                android:paddingBottom="14dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="13dp"
+                android:paddingTop="15dp"
+                android:text="Starting Station"
+                android:clickable="true"/>
+
+            <org.septa.android.app.view.TextView
+                android:id="@+id/closest_stop"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Showing closest stop"
+                android:visibility="gone" />
+
+            <org.septa.android.app.view.TextView
+                android:id="@+id/destination_stop"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/stop_picker_background"
+                android:drawableRight="@drawable/ic_search"
+                android:paddingBottom="14dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="13dp"
+                android:paddingTop="15dp"
+                android:text="Destination Station"
+                android:clickable="true"/>
+
+            <Button
+                android:id="@+id/view_buses_button"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginBottom="15dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginTop="30dp"
+                android:background="@drawable/button_gradient_background"
+                android:clickable="true"
+                android:text="View Schedules" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+    <FrameLayout
+        android:id="@+id/progress_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
-        android:layout_marginLeft="10dp"
-        android:text="@string/showing_closest_station"
-        android:visibility="invisible"/>
+        android:layout_height="match_parent"
+        android:layout_below="@id/top"
+        android:background="#44000000"
+        android:clickable="true"
+        android:visibility="gone"
+        tools:alpha="128"
+        tools:background="0x00000000"
+        tools:visibility="visible">
 
-    <EditText
-        android:id="@+id/ending_rail_station"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:hint="@string/destionation_station_hint"
-        android:inputType="text"
-        android:lines="1"
-        android:maxLines="1" />
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminate="true"
+            tools:alpha="128" />
 
-    <Button
-        android:id="@+id/view_trains_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
-        android:text="@string/view_trains_button" />
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@android:color/darker_gray"/>
-
-
-</LinearLayout>
+    </FrameLayout>
+</FrameLayout>

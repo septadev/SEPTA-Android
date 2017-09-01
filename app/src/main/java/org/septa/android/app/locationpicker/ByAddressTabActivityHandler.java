@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.text.InputType;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -112,25 +114,28 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
                     }
                 });
 
+                addressEntry.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        final int DRAWABLE_LEFT = 0;
+                        final int DRAWABLE_TOP = 1;
+                        final int DRAWABLE_RIGHT = 2;
+                        final int DRAWABLE_BOTTOM = 3;
+
+                        if (event.getAction() == MotionEvent.ACTION_UP) {
+                            if (event.getRawX() >= (addressEntry.getRight() - addressEntry.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                                myLocationClickListener.onClick(v);
+                                return true;
+                            }
+                        }
+                        return false;
+                    }
+                });
+            } else {
+                Drawable[] drawables = addressEntry.getCompoundDrawables();
+                addressEntry.setCompoundDrawablesWithIntrinsicBounds(drawables[0], drawables[1], ContextCompat.getDrawable(getContext(), R.drawable.ic_gps_not_fixed_black_24_px), drawables[3]);
             }
 
-            addressEntry.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    final int DRAWABLE_LEFT = 0;
-                    final int DRAWABLE_TOP = 1;
-                    final int DRAWABLE_RIGHT = 2;
-                    final int DRAWABLE_BOTTOM = 3;
-
-                    if (event.getAction() == MotionEvent.ACTION_UP) {
-                        if (event.getRawX() >= (addressEntry.getRight() - addressEntry.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
-                            myLocationClickListener.onClick(v);
-                            return true;
-                        }
-                    }
-                    return false;
-                }
-            });
 
             addressEntry.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
@@ -167,6 +172,7 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
                     return false;
                 }
             });
+
 
             return rootView;
         }
@@ -263,13 +269,13 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
                 return;
 
             active = false;
-            fragment.progressView.setVisibility(View.VISIBLE);
             int permissionCheck = ContextCompat.checkSelfPermission(fragment.getActivity(),
                     Manifest.permission.ACCESS_FINE_LOCATION);
             if (permissionCheck == PackageManager.PERMISSION_GRANTED)
 
             {
                 fragment.progressView.setVisibility(View.VISIBLE);
+                fragment.progressView.requestFocus();
                 final FindClosestStationTask task = new FindClosestStationTask(fragment);
 
                 Task<Location> locationTask = LocationServices.getFusedLocationProviderClient(fragment.getActivity()).getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {

@@ -9,12 +9,17 @@ import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.CursorAdapter;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -58,7 +63,6 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
         private Consumer<StopModel> consumer;
         private CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
         View progressView;
-        StationNameAdapter itemsAdapter;
         StationNameAdapter2 itemAdapater2;
 
         private static final int URL_LOADER = 0;
@@ -108,7 +112,7 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
                             @Override
                             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                                 Log.d(TAG, this.hashCode() + "onItemSelected " + i);
-                                consumer.accept(cursorAdapterSupplier.getItemFromId(getActivity(), view.getTag()));
+                                consumer.accept(cursorAdapterSupplier.getItemFromId(getContext(), view.getTag()));
                             }
                         });
                         progressView.setVisibility(View.GONE);
@@ -124,20 +128,42 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
                 protected Void doInBackground(Void... voids) {
                     Log.d(TAG, "creating cursor Adapater");
                     List<StopModel> stops = new ArrayList<StopModel>();
-                    Cursor c = cursorAdapterSupplier.getCursor(getActivity(), null);
+                    Cursor c = cursorAdapterSupplier.getCursor(getContext(), null);
                     if (c.moveToFirst()) {
                         do {
                             StopModel stop = cursorAdapterSupplier.getCurrentItemFromCursor(c);
                             stops.add(stop);
                         } while (c.moveToNext());
                     }
-                    itemAdapater2 =
-                            new StationNameAdapter2(getActivity(), stops);
-                    Log.d(TAG, "creating cursor Adapater - Done");
+                    Context context = getContext();
+                    if (context != null) {
+                        itemAdapater2 =
+                                new StationNameAdapter2(getContext(), stops);
+                        Log.d(TAG, "creating cursor Adapater - Done");
+                    }
                     h.sendEmptyMessage(0);
                     return null;
                 }
             }.execute();
+
+            EditText filterText = (EditText) rootView.findViewById(R.id.station_filter);
+
+            filterText.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                    if (itemAdapater2 != null)
+                        itemAdapater2.getFilter().filter(charSequence.toString());
+                }
+
+                @Override
+                public void afterTextChanged(Editable editable) {
+                }
+            });
 
             Log.d(TAG, "onCreateView() - DONE");
             return rootView;
@@ -153,9 +179,15 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
     }
 
 
-    public static class StationNameAdapter2 extends ArrayAdapter<StopModel> {
+    public static class StationNameAdapter2 extends ArrayAdapter<StopModel> implements Filterable {
+
+        List<StopModel> origRoutes;
+        List<StopModel> filterRoutes;
+
         public StationNameAdapter2(@NonNull Context context, @NonNull List<StopModel> objects) {
-            super(context, 0, objects);
+            super(context, R.layout.stop_picker_item, objects);
+            origRoutes = objects;
+            filterRoutes = objects;
         }
 
         @Override
@@ -174,34 +206,70 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
             return convertView;
         }
 
-    }
-
-
-    public static class StationNameAdapter extends CursorAdapter {
-
-        private Context context;
-        private CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
-
-        public StationNameAdapter(Context context, CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
-            super(context, cursorAdapterSupplier.getCursor(context, null), 0);
-            this.context = context;
-            this.cursorAdapterSupplier = cursorAdapterSupplier;
-        }
-
-
+        @NonNull
         @Override
-        public View newView(Context context, Cursor cursor, ViewGroup parent) {
-            return LayoutInflater.from(context).inflate(R.layout.stop_picker_item, parent, false);
+        public Filter getFilter() {
+            return new Filter() {
+                @Override
+                protected FilterResults performFiltering(CharSequence constraint) {
+                    FilterResults filterResults = new FilterResults();
+                    if (constraint == null || "".equals(constraint.toString().trim())) {
+                        filterResults.values = origRoutes;
+                        filterResults.count = origRoutes.size();
+
+                        return filterResults;
+                    }
+
+                    ArrayList<StopModel> tempList = new ArrayList<StopModel>();
+
+                    String constraintString = constraint.toString().toLowerCase();
+
+                    for (StopModel item : origRoutes) {
+                        if (safeContains(item.getStopId(), constraintString) ||
+                                safeContains(item.getStopName(), constraintString)) {
+                            tempList.add(item);
+                        }
+                    }
+
+                    filterResults.values = tempList;
+                    filterResults.count = tempList.size();
+
+                    return filterResults;
+                }
+
+                @SuppressWarnings("unchecked")
+                @Override
+                protected void publishResults(CharSequence contraint, FilterResults results) {
+                    filterRoutes = (List<StopModel>) results.values;
+                    if (results.count > 0) {
+                        notifyDataSetChanged();
+                    } else {
+                        notifyDataSetInvalidated();
+                    }
+                }
+            };
         }
 
-        @Override
-        public void bindView(View view, Context context, Cursor cursor) {
-            StopModel stop = cursorAdapterSupplier.getCurrentItemFromCursor(cursor);
-            TextView station_name = (TextView) view.findViewById(R.id.station_name);
-            station_name.setText(stop.getStopName());
-            view.setTag(stop.getStopId());
+        public int getCount() {
+            return filterRoutes.size();
         }
+
+        public StopModel getItem(int position) {
+            return filterRoutes.get(position);
+        }
+
+        public long getItemId(int position) {
+            return position;
+        }
+
+        static boolean safeContains(String target, String input) {
+            if (target == null) {
+                return false;
+            }
+
+            return target.toLowerCase().contains(input);
+        }
+
     }
-
 
 }

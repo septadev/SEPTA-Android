@@ -101,7 +101,6 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
 
         private String tabName;
 
-        List<RouteDirectionModel> routes;
         RouteDirectionModel selectedRoute;
         private TextView startingStopEditText;
         private TextView closestStopText;
@@ -148,8 +147,6 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
             });
             progressView = rootView.findViewById(R.id.progress_view);
 
-            PopulateRouteSpinnerTask task = new PopulateRouteSpinnerTask(PlaceholderFragment.this);
-            task.execute();
             startingStopEditText = (TextView) rootView.findViewById(R.id.starting_stop);
             destinationStopEditText = (TextView) rootView.findViewById(R.id.destination_stop);
             closestStopText = (TextView) rootView.findViewById(R.id.closest_stop);
@@ -265,125 +262,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
     }
 
 
-    public static class RouteAdapter extends ArrayAdapter<RouteDirectionModel> {
-        public RouteAdapter(@NonNull Context context, @NonNull List<RouteDirectionModel> objects) {
-            super(context, 0, objects);
-        }
 
-        @Override
-        public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-            return getView(position, convertView, parent);
-        }
-
-        @NonNull
-        @Override
-        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-            if (convertView == null)
-                convertView = LayoutInflater.from(getContext()).inflate(R.layout.line_spinner_element, parent, false);
-
-            TextView short_name = (TextView) convertView.findViewById(R.id.route_short_name);
-            TextView long_name = (TextView) convertView.findViewById(R.id.route_long_name);
-
-            RouteDirectionModel route = getItem(position);
-            if (route != null) {
-                short_name.setText(route.getRouteShortName());
-                long_name.setText(route.getDirectionDescription());
-            } else {
-                short_name.setText(null);
-                long_name.setText(null);
-            }
-
-            return convertView;
-        }
-    }
-
-    private static class PopulateRouteSpinnerTask extends AsyncTask<Void, Void, List<RouteDirectionModel>> {
-        PlaceholderFragment fragment;
-
-        public PopulateRouteSpinnerTask(PlaceholderFragment fragment) {
-            this.fragment = fragment;
-        }
-
-        @Override
-        protected List<RouteDirectionModel> doInBackground(Void... voids) {
-
-            List<RouteDirectionModel> routes = new ArrayList<RouteDirectionModel>();
-            Cursor cursor = fragment.routeCursorAdapterSupplier.getCursor(fragment.getActivity(), null);
-            if (cursor != null) {
-                if (cursor.moveToFirst()) {
-
-                    do {
-                        routes.add(fragment.routeCursorAdapterSupplier.getCurrentItemFromCursor(cursor));
-                    } while (cursor.moveToNext());
-                }
-            }
-
-            return routes;
-        }
-
-        @Override
-        protected void onPostExecute(List<RouteDirectionModel> routeDirectionModels) {
-            routeDirectionModels.add(0, null);
-            Collections.sort(routeDirectionModels, new RouteModelComparator());
-
-            fragment.routes = routeDirectionModels;
-
-        }
-    }
-
-    private static class OnRouteSelection implements AdapterView.OnItemSelectedListener {
-        PlaceholderFragment fragment;
-
-        public OnRouteSelection(PlaceholderFragment fragment) {
-            this.fragment = fragment;
-        }
-
-        @Override
-        public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-            if (i != 0) {
-                //fragment.secondaryView.setVisibility(View.VISIBLE);
-                fragment.startingStation = null;
-                fragment.endingStation = null;
-                fragment.startingStopEditText.setText(null);
-                fragment.destinationStopEditText.setText(null);
-
-
-                final AsyncTask<Location, Void, StopModel> task = new FinderClosestStopTask(fragment.getActivity(), new RouteSpecificCursorAdapterSupplier(fragment.stopCursorAdapterSupplier, fragment, false), new Consumer<StopModel>() {
-                    @Override
-                    public void accept(StopModel stopModel) {
-                        if (stopModel != null)
-                            fragment.setStartingStation(stopModel, View.VISIBLE);
-                        fragment.progressView.setVisibility(View.GONE);
-                        //fragment.getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-                    }
-                });
-
-                int permissionCheck = ContextCompat.checkSelfPermission(fragment.getActivity(),
-                        Manifest.permission.ACCESS_FINE_LOCATION);
-                if (permissionCheck == PackageManager.PERMISSION_GRANTED)
-
-                {
-                    fragment.progressView.setVisibility(View.VISIBLE);
-                    // fragment.getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-                    //         WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-                    Task<Location> locationTask = LocationServices.getFusedLocationProviderClient(fragment.getActivity()).getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
-                        @Override
-                        public void onSuccess(Location location) {
-                            task.execute(location);
-                        }
-                    });
-                }
-
-
-            } else
-                ;//fragment.secondaryView.setVisibility(View.INVISIBLE);
-        }
-
-        @Override
-        public void onNothingSelected(AdapterView<?> adapterView) {
-
-        }
-    }
 
     public static class StopPickerOnTouchListener implements View.OnTouchListener {
         private PlaceholderFragment parent;

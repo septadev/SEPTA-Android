@@ -306,7 +306,7 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
             TextView stationName = (TextView) convertView.findViewById(R.id.station_name_text);
             TextView distance = (TextView) convertView.findViewById(R.id.station_distance_text);
             stationName.setText(this.getItem(position).getStopModel().getStopName());
-            DecimalFormat numberFormat = new DecimalFormat("0.0mi");
+            DecimalFormat numberFormat = new DecimalFormat("0.0m");
             distance.setText(numberFormat.format(this.getItem(position).getDistance()));
             return convertView;
 

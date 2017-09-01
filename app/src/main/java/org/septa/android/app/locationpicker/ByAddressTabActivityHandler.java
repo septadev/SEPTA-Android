@@ -14,6 +14,7 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -32,6 +33,7 @@ import com.google.android.gms.tasks.Task;
 
 import org.septa.android.app.R;
 import org.septa.android.app.domain.StopModel;
+import org.septa.android.app.services.apiinterfaces.model.PlaceAutoComplete;
 import org.septa.android.app.support.BaseTabActivityHandler;
 import org.septa.android.app.support.Consumer;
 import org.septa.android.app.support.Criteria;
@@ -86,14 +88,12 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
             final View rootView = inflater.inflate(R.layout.location_picker_by_address, container, false);
 
 
-            View myLocationButton = rootView.findViewById(R.id.my_location_button);
             stopsListView = (ListView) rootView.findViewById(R.id.stop_list);
             progressView = rootView.findViewById(R.id.progress_view);
 
             final FindClosestStationTask task = new FindClosestStationTask(this);
 
             myLocationClickListener = new MyLocationClickListener(this);
-            myLocationButton.setOnClickListener(myLocationClickListener);
 
             addressEntry = (AutoCompleteTextView) rootView.findViewById(R.id.address_text);
             int permissionCheck = ContextCompat.checkSelfPermission(getActivity(),
@@ -114,13 +114,31 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
 
             }
 
+            addressEntry.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    final int DRAWABLE_LEFT = 0;
+                    final int DRAWABLE_TOP = 1;
+                    final int DRAWABLE_RIGHT = 2;
+                    final int DRAWABLE_BOTTOM = 3;
+
+                    if (event.getAction() == MotionEvent.ACTION_UP) {
+                        if (event.getRawX() >= (addressEntry.getRight() - addressEntry.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                            myLocationClickListener.onClick(v);
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+            });
+
             addressEntry.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
                     InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(rootView.getWindowToken(), 0);
-                    String description = (String) parent.getItemAtPosition(position);
+                    String description = ((PlaceAutoComplete) parent.getItemAtPosition(position)).getPlaceDesc();
                     FindAddressTask findAddressTask = new FindAddressTask(ByAddressFragement.this);
                     String[] args = new String[1];
                     args[0] = description;

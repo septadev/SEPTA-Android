@@ -1,44 +1,61 @@
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/station_coordinator"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingTop="16dp">
 
-        <android.support.v4.view.ViewPager xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/station_container"
-            android:layout_width="match_parent"
-            android:layout_height="400dp"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        <org.septa.android.app.view.TextView
+            android:id="@+id/search_by_station_tab"
+            android:layout_width="131dp"
+            android:layout_height="28dp"
+            android:layout_marginBottom="12dp"
+            android:layout_marginLeft="10dp"
+            android:background="@drawable/bg_stop_picker_inactive"
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp"
+            android:text="Search By Station"
+            android:textAlignment="center"
+            android:textColor="@color/find_station_tab_active_text"
+            android:textSize="11sp"
+            app:font="@string/font_roboto_medium" />
 
-            <android.support.design.widget.TabLayout
-                android:id="@+id/station_picker_tab"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="top"
-                android:background="@color/colorPrimary"
-                app:tabIndicatorColor="@android:color/darker_gray"
-                app:tabSelectedTextColor="@android:color/darker_gray"
-                app:tabTextColor="@android:color/white" />
-        </android.support.v4.view.ViewPager>
+        <org.septa.android.app.view.TextView
+            android:id="@+id/search_by_address_tab"
+            android:layout_width="131dp"
+            android:layout_height="28dp"
+            android:layout_marginBottom="12dp"
+            android:layout_toRightOf="@id/search_by_station_tab"
+            android:background="@drawable/bg_stop_picker_active"
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp"
+            android:text="Search By Address"
+            android:textAlignment="center"
+            android:textColor="@color/find_station_tab_inactive_text"
+            android:textSize="11sp"
+            app:font="@string/font_roboto_medium" />
 
-        <Button
-            android:id="@+id/select_button"
+        <ImageView
+            android:id="@+id/exit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/station_container"
             android:layout_alignParentRight="true"
-            android:text="SELECT" />
-
-        <Button
-            android:id="@+id/cancel_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/station_container"
-            android:layout_toLeftOf="@id/select_button"
-            android:text="CANCEL"/>
+            android:layout_alignTop="@id/search_by_address_tab"
+            android:layout_centerHorizontal="true"
+            android:layout_marginRight="17dp"
+            android:layout_marginTop="6dp"
+            android:src="@drawable/ic_exit" />
     </RelativeLayout>
-</android.support.design.widget.CoordinatorLayout>
 
+    <FrameLayout
+        android:id="@+id/stop_picker_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/darker_gray" />
+
+</LinearLayout>

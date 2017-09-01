@@ -1,44 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_margin="2dp"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-
-    <TextView
-        android:id="@+id/address_label"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Address"
-        android:textSize="8pt" />
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-    <AutoCompleteTextView
-        android:id="@+id/address_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/address_label"
-        android:paddingRight="20dp">
+        <org.septa.android.app.view.AutoCompleteTextView
+            android:id="@+id/address_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/line_picker_background"
+            android:drawableLeft="@drawable/ic_search"
+            android:drawablePadding="4dp"
+            android:drawableRight="@drawable/ic_gps_fixed_black_24_px"
+            android:hint="Type station name or select"
+            android:paddingBottom="12dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="8dp"
+            android:paddingTop="12dp"
+            android:textColor="#144b88"
+            android:textSize="14sp"
+            app:font="@string/font_roboto_regular" />
 
-    </AutoCompleteTextView>
+        <ListView
+            android:id="@+id/stop_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:choiceMode="singleChoice"
+            android:fastScrollEnabled="true" />
 
-    <ImageView
-        android:id="@+id/my_location_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@id/address_text"
-        android:layout_alignParentRight="true"
-        android:layout_below="@id/address_label"
-        android:src="@drawable/ic_my_location_black_18dp" />
-
-    <ListView
-        android:id="@+id/stop_list"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/address_text"
-        android:choiceMode="singleChoice"
-        android:fastScrollEnabled="true"
-        android:listSelector="#666666" />
+    </LinearLayout>
 
     <FrameLayout
         android:id="@+id/progress_view"
@@ -54,5 +53,4 @@
             android:indeterminate="true" />
     </FrameLayout>
 
-
-</RelativeLayout>
+</FrameLayout>

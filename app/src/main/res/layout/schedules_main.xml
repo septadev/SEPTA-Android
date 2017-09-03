@@ -1,11 +1,231 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@drawable/shape_vertical_blue_gradient"
+    >
 
-    <ImageView android:layout_gravity="center"
-        android:id="@+id/stop_start_circle"
+    <TextView
+        android:id="@+id/routeNameTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/pao_line_marker" />
-</LinearLayout>
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:textSize="20sp"
+        android:fontFamily="sans-serif"
+        android:textStyle="bold"
+        android:textColor="#144b88"
+        android:letterSpacing="-0.02"
+        android:layout_alignParentLeft="true"
+        />
+    <TextView
+        android:id="@+id/routeDescriptionTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:textSize="12sp"
+        android:fontFamily="sans-serif"
+        android:textStyle="normal"
+        android:textColor="#144b88"
+        android:letterSpacing="-0.02"
+        android:layout_below="@+id/routeNameTextView"
+        />
+    <ImageView
+        android:id="@+id/transitLineColorImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="15dp"
+        android:src="@drawable/shape_line_marker_square"
+        android:layout_alignParentRight="true"/>
+
+    <ImageView
+        android:id="@+id/transitTypeImageView"
+        android:layout_width="18dp"
+        android:layout_height="30dp"
+        android:scaleType="fitXY"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="20.5dp"
+        android:layout_marginTop="15dp"
+        android:src="@drawable/rail_final_icon_white"
+        android:layout_alignParentRight="true"/>
+
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="#ffff"
+        android:layout_below="@+id/routeDescriptionTextView">
+
+        <RelativeLayout
+            android:id="@+id/lineStationLayout"
+            android:layout_width="match_parent"
+            android:layout_height="70dp">
+
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="18dp"
+                android:src="@drawable/multi_stop_start_circle"
+                android:layout_alignParentLeft="true"/>
+
+            <TextView
+                android:id="@+id/startStationTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="30dp"
+                android:layout_marginTop="15dp"
+                android:textSize="12sp"
+                android:fontFamily="sans-serif-medium"
+                android:textStyle="normal"
+                android:textColor="#000000"
+                android:letterSpacing="-0.02"
+                />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="0dp"
+                android:layout_marginTop="40dp"
+                android:src="@drawable/ic_destination_pin"
+                android:layout_alignParentLeft="true"/>
+
+            <TextView
+                android:id="@+id/destinationStationTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/startStationTextView"
+                android:layout_marginLeft="30dp"
+                android:layout_marginTop="10dp"
+                android:textSize="12sp"
+                android:fontFamily="sans-serif-medium"
+                android:textStyle="normal"
+                android:textColor="#000000"
+                android:letterSpacing="-0.02"
+                />
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="105dp"
+                android:layout_marginTop="20dp"
+                android:src="@drawable/ic_next_to_arrive_fill"
+                android:layout_alignParentRight="true"
+                />
+            <TextView
+                android:id ="@+id/nextToArriveLabel"
+                android:layout_width="75dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="25dp"
+                android:layout_marginTop="20dp"
+                android:textSize="10sp"
+                android:fontFamily="sans-serif-medium"
+                android:textStyle="normal"
+                android:textColor="#000000"
+                android:letterSpacing="-0.02"
+                android:text="Next To Arrive for this Route"
+                android:layout_alignParentRight="true"
+                />
+        </RelativeLayout>
+
+
+        <LinearLayout
+            android:id="@+id/lineStatusLayout"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/shape_orange_gradient">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="5dp"
+                android:textSize="12sp"
+                android:fontFamily="sans-serif-medium"
+                android:textStyle="normal"
+                android:textColor="#000000"
+                android:letterSpacing="-0.02"
+                android:text="Line Status"
+                />
+        </LinearLayout>
+        <RadioGroup
+            android:id="@+id/radioButtonGroup"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_margin="8dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/WeekDay_Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="0dp"
+                android:paddingLeft="30dp"
+                android:paddingRight="30dp"
+                android:paddingTop="6dp"
+                android:paddingBottom="6dp"
+                android:background="@drawable/radio_btn_background_selector"
+                android:button="@null"
+                android:text="Weekday"
+                android:gravity="center"
+                android:textColor="@drawable/radio_btn_font_color_selector"
+                />
+
+            <RadioButton
+                android:id="@+id/Saturday_Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="30dp"
+                android:paddingRight="30dp"
+                android:paddingTop="6dp"
+                android:paddingBottom="6dp"
+                android:layout_margin="0dp"
+                android:background="@drawable/radio_btn_background_selector"
+                android:button="@null"
+                android:text="Saturday"
+                android:gravity="center"
+                android:textColor="@drawable/radio_btn_font_color_selector"
+                />
+
+            <RadioButton
+                android:id="@+id/Sunday_Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="30dp"
+                android:paddingRight="30dp"
+                android:paddingTop="6dp"
+                android:paddingBottom="6dp"
+                android:layout_margin="0dp"
+                android:background="@drawable/radio_btn_background_selector"
+                android:text="Sunday"
+                android:button="@null"
+                android:gravity="center"
+                android:textColor="@drawable/radio_btn_font_color_selector"
+                />
+        </RadioGroup>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ListView
+                android:id="@+id/scheduleListView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"></ListView>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

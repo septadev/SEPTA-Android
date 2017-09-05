@@ -17,6 +17,7 @@ import android.view.MenuItem;
 
 import org.septa.android.app.nextarrive.NextToArriveFragement;
 import org.septa.android.app.schedules.SchedulesFragment;
+import org.septa.android.app.temp.ComingSoonFragement;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,10 +32,19 @@ public class MainActivity extends AppCompatActivity
     public static final String TAG = MainActivity.class.getSimpleName();
     NextToArriveFragement nextToArriveFragment = new NextToArriveFragement();
     SchedulesFragment schedules = new SchedulesFragment();
+
     Map<Integer, Bundle> fragmentStateMap = new HashMap<Integer, Bundle>();
     Fragment activeFragement;
     Drawable previousIcon;
     MenuItem currentMenu;
+
+    Fragment favorites = new ComingSoonFragement();
+    Fragment systemStatus = new ComingSoonFragement();
+    Fragment faresTransitInfo = new ComingSoonFragement();
+    Fragment subwayMap = new ComingSoonFragement();
+    Fragment events = new ComingSoonFragement();
+    Fragment connect = new ComingSoonFragement();
+    Fragment about = new ComingSoonFragement();
 
     @Override
     public final void onCreate(@Nullable Bundle savedInstanceState) {
@@ -104,6 +114,35 @@ public class MainActivity extends AppCompatActivity
             switchToBundle(item, schedules, R.string.schedule, R.drawable.ic_schedule_fill);
         }
 
+        if (id == R.id.nav_favorites) {
+            switchToBundle(item, favorites, R.string.favorites, R.drawable.ic_heart_fill);
+        }
+
+        if (id == R.id.nav_system_status) {
+            switchToBundle(item, systemStatus, R.string.system_status, R.drawable.ic_status_fill);
+
+        }
+
+        if (id == R.id.nav_fares_transit_info) {
+            switchToBundle(item, faresTransitInfo, R.string.fares_and_transit_info, R.drawable.ic_fairs_fill);
+        }
+
+        if (id == R.id.nav_subway_map) {
+            switchToBundle(item, subwayMap, R.string.subway_map, R.drawable.ic_subway_map_fill);
+        }
+
+        if (id == R.id.nav_events) {
+            switchToBundle(item, events, R.string.events, R.drawable.ic_events_fill);
+        }
+
+        if (id == R.id.nav_connect) {
+            switchToBundle(item, connect, R.string.connect_with_septa, 0);
+        }
+
+        if (id == R.id.nav_about_app) {
+            switchToBundle(item, about, R.string.about_the_septa_app, 0);
+        }
+
         return true;
     }
 
@@ -118,12 +157,13 @@ public class MainActivity extends AppCompatActivity
             fragmentStateMap.put(item.getItemId(), bundle);
         }
 
-        if (previousIcon != null){
+        if (previousIcon != null) {
             currentMenu.setIcon(previousIcon);
         }
         currentMenu = item;
         previousIcon = item.getIcon();
-        currentMenu.setIcon(highlitghtedIcon);
+        if (highlitghtedIcon != 0)
+            currentMenu.setIcon(highlitghtedIcon);
         Bundle targetBundle = fragmentStateMap.get(item.getItemId());
         activeFragement = targetFragment;
         if (targetBundle != null)

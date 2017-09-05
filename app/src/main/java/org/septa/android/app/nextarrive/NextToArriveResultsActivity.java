@@ -4,10 +4,8 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.content.ContextCompat;
@@ -50,7 +48,6 @@ import org.septa.android.app.support.MapUtils;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -72,10 +69,10 @@ import retrofit2.Response;
 
 public class NextToArriveResultsActivity extends AppCompatActivity implements OnMapReadyCallback {
     public static final String TAG = NextToArriveResultsActivity.class.getSimpleName();
-    private StopModel start;
-    private StopModel destination;
-    private TransitType transitType;
-    private RouteDirectionModel routeDirectionModel;
+    StopModel start;
+    StopModel destination;
+    TransitType transitType;
+    RouteDirectionModel routeDirectionModel;
     private GoogleMap googleMap;
     ViewGroup bottomSheetLayout;
     ListView linesListView;
@@ -247,6 +244,9 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                         googleMap.addMarker(new MarkerOptions().position(startingStationLatLng).title(start.getStopName()));
                         googleMap.addMarker(new MarkerOptions().position(destinationStationLatLng).title(destination.getStopName()));
 
+                        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
                         int multiStopCount = 0;
                         int singleStopCount = 0;
 
@@ -266,8 +266,8 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
                             map.get(key).addItem(data);
 
-                            if (data.getVehicle_lat() != null && data.getVehicle_lon() != null) {
-                                LatLng vehicleLatLng = new LatLng(data.getVehicle_lat(), data.getVehicle_lon());
+                            if (data.getOrigVehicleLat() != null && data.getOrigVehicleLon() != null) {
+                                LatLng vehicleLatLng = new LatLng(data.getOrigVehicleLat(), data.getOrigVehicleLon());
                                 googleMap.addMarker(new MarkerOptions().position(vehicleLatLng).title(data.getOrigLineTripId()).icon(vehicleBitMap));
                             }
 
@@ -316,7 +316,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                             });
 
 
-                            linesListView.setAdapter(new SingleLinesListAdapater(NextToArriveResultsActivity.this, nextToArriveLinesList));
+                            linesListView.setAdapter(new SingleLinesListAdapater(NextToArriveResultsActivity.this, nextToArriveLinesList, NextToArriveResultsActivity.this));
                         }
 
                         if (multiStopCount > 0) {
@@ -438,13 +438,15 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     }
 
     private class SingleLinesListAdapater extends ArrayAdapter<NextToArriveLine> {
+        NextToArriveResultsActivity nextToArriveResultsActivity;
 
-        public SingleLinesListAdapater(@NonNull Context context, List<NextToArriveLine> list) {
+        public SingleLinesListAdapater(@NonNull Context context, List<NextToArriveLine> list, NextToArriveResultsActivity nextToArriveResultsActivity) {
             super(context, 0, list);
+            this.nextToArriveResultsActivity = nextToArriveResultsActivity;
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(int position, View convertView, final ViewGroup parent) {
             List<NextArrivalModelResponse.NextArrivalRecord> tripList = getItem(position).getList();
             Collections.sort(
                     tripList, new Comparator<NextArrivalModelResponse.NextArrivalRecord>() {
@@ -471,8 +473,25 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
             DateFormat dateFormat = DateFormat.getTimeInstance(DateFormat.SHORT);
 
-            for (NextArrivalModelResponse.NextArrivalRecord unit : tripList) {
+            for (final NextArrivalModelResponse.NextArrivalRecord unit : tripList) {
                 View line = LayoutInflater.from(getContext()).inflate(R.layout.next_to_arrive_unit, null, false);
+
+                line.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(getContext(), NextToArriveTripDetailActivity.class);
+
+                        intent.putExtra(Constants.DESTINATAION_STATION, nextToArriveResultsActivity.destination);
+                        intent.putExtra(Constants.STARTING_STATION, nextToArriveResultsActivity.start);
+                        intent.putExtra(Constants.TRANSIT_TYPE, nextToArriveResultsActivity.transitType);
+                        intent.putExtra(Constants.LINE_ID, nextToArriveResultsActivity.routeDirectionModel);
+                        intent.putExtra(Constants.ARRIVAL_RECORD, unit);
+                        intent.putExtra(Constants.TRIP_ID, unit.getOrigLineTripId());
+
+                        startActivity(intent);
+                    }
+                });
+
 
                 TextView origArrivalTimeText = (TextView) line.findViewById(R.id.orig_arrival_time_text);
                 origArrivalTimeText.setText(dateFormat.format(unit.getOrigDepartureTime()) + " - " + dateFormat.format(unit.getOrigArrivalTime()));

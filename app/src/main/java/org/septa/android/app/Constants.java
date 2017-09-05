@@ -10,4 +10,6 @@ public interface Constants {
     public static final String STARTING_STATION = "starting_station";
     public static final String DESTINATAION_STATION = "destination_station";
 
+    public static final String ARRIVAL_RECORD = "arrival_record";
+    public static final String TRIP_ID = "trip_id";
 }

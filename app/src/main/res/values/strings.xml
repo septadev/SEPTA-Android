@@ -53,4 +53,6 @@
 
     <!-- Next To Arrive General -->
     <string name="nta_query_button_text">Next To Arrive</string>
+    <string name="trip_details">Trip Details</string>
+    <string name="about_the_septa_app">About the SEPTA App</string>
 </resources>

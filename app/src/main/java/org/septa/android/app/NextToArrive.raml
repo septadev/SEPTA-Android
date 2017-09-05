@@ -1,0 +1,83 @@
+/realtimearrivals:
+  get:
+    description: Provide the next arriving vehichle to a starting destination that will be able to transport a rider to a requested destionation.
+    queryParameters:
+      start_station_id:
+        type: int
+        description: ID of the stop/station that is the starting location for trip.
+        example: 90004
+        required: true
+      dest_station_id:
+        type: int
+        description: ID of the stop/station that is the destination location for trip.
+        example: 90006
+        required: true
+      trans_type:
+        type: int
+        description: Indicator as to the type of transportations, RAIL, BUS, SUBWAY, TROLLY and NHSL.
+        example: RAIL
+        required: true
+      route_id:
+         type: string
+         description: The id of the bus/trolly route.  Required if the trans_type is BUS or TROLLY.
+         example: "47M"
+         required: false
+      response:
+        200:
+          body:
+            application/json:
+              example: |
+              {
+                "data": [
+                  {
+                    "orig_line_route_id": "pao",
+                    "orig_line_route_name": "Paoli\/Thorndale",
+                    "term_line_route_id": "air",
+                    "term_line_route_name": "Airport",
+                    "connection_station_id": 90004,
+                    "connection_station_name": "30th Street Station",
+                    "orig_line_trip_id": "562",
+                    "term_line_trip_id": "441",
+                    "sched_departure_time": "2017-08-21T18:25:43.511Z",
+                    "sched_arrival_time": "2017-08-21T19:25:43.511Z",
+                    "orig_delay_minutes": 0,
+                    "term_delay_minutes": 0,
+                    "orig_last_stop_id": 90501,
+                    "orig_last_stop_name": "Thorndale",
+                    "term_last_stop_id": 90401,
+                    "term_last_stop_name": "Airport Terminal E F",
+                    "orig_line_direction": "INBOUND",
+                    "term_line_direction": "OUTBOUND",
+                    "vehicle_lat": 39.9947,
+                    "vehicle_lon": -75.2438
+                  },
+                  {
+                    "orig_line_route_id": "pao",
+                    "orig_line_route_name": "Paoli\/Thorndale",
+                    "term_line_route_id": "air",
+                    "term_line_route_name": "Airport",
+                    "connection_station_id": 90004,
+                    "connection_station_name": "30th Street Station",
+                    "orig_line_trip_id": "562",
+                    "term_line_trip_id": "441",
+                    "sched_departure_time": "2017-08-22T18:25:43.511Z",
+                    "sched_arrival_time": "2017-08-22T19:25:43.511Z",
+                    "orig_delay_minutes": 0,
+                    "term_delay_minutes": 0,
+                    "orig_last_stop_id": 90501,
+                    "orig_last_stop_name": "Thorndale",
+                    "term_last_stop_id": 90401,
+                    "term_last_stop_name": "Airport Terminal E F",
+                    "orig_line_direction": "INBOUND",
+                    "term_line_direction": "OUTBOUND",
+                    "vehicle_lat": 39.9947,
+                    "vehicle_lon": -75.2438
+                  }
+                ],
+                "start_station_id": 90522,
+                "dest_station_id": 90404,
+                "trans_type": "RAIL",
+                "route_id": "",
+                "success": true,
+                "status": 200
+              }

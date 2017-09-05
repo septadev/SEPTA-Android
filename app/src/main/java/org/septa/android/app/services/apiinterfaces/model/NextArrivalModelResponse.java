@@ -2,6 +2,7 @@ package org.septa.android.app.services.apiinterfaces.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -9,7 +10,7 @@ import java.util.List;
  * Created by jkampf on 8/20/17.
  */
 
-public class NextArrivalModelResponse {
+public class NextArrivalModelResponse implements Serializable {
     @SerializedName("origin")
     private int startStationId;
     @SerializedName("destination")
@@ -66,7 +67,7 @@ public class NextArrivalModelResponse {
                 '}';
     }
 
-    public class NextArrivalRecord {
+    public class NextArrivalRecord implements Serializable {
         @SerializedName("orig_line_route_id")
         private String origRouteId;
         @SerializedName("orig_line_route_name")
@@ -107,98 +108,225 @@ public class NextArrivalModelResponse {
         private String origLineDirection;
         @SerializedName("term_line_direction")
         private String termLineDirection;
-        @SerializedName("vehicle_lat")
-        private Double vehicle_lat;
-        @SerializedName("vehicle_lon")
-        private Double vehicle_lon;
-
+        @SerializedName("orig_vehicle_lat")
+        private Double origVehicleLat;
+        @SerializedName("orig_vehicle_lon")
+        private Double origVehicleLon;
+        @SerializedName("term_vehicle_lat")
+        private Double termVehicleLat;
+        @SerializedName("term_vehicle_lon")
+        private Double termVehicleLon;
+        @SerializedName("orig_vehicle_line")
+        String origVehicleLine;
+        @SerializedName("term_vehicle_line")
+        String termVehicleLine;
 
         public String getOrigRouteId() {
             return origRouteId;
+        }
+
+        public void setOrigRouteId(String origRouteId) {
+            this.origRouteId = origRouteId;
         }
 
         public String getOrigRouteName() {
             return origRouteName;
         }
 
+        public void setOrigRouteName(String origRouteName) {
+            this.origRouteName = origRouteName;
+        }
+
         public String getTermRouteId() {
             return termRouteId;
+        }
+
+        public void setTermRouteId(String termRouteId) {
+            this.termRouteId = termRouteId;
         }
 
         public String getTermRouteName() {
             return termRouteName;
         }
 
+        public void setTermRouteName(String termRouteName) {
+            this.termRouteName = termRouteName;
+        }
+
         public Integer getConnectionStationId() {
             return connectionStationId;
+        }
+
+        public void setConnectionStationId(Integer connectionStationId) {
+            this.connectionStationId = connectionStationId;
         }
 
         public String getConnectionStationName() {
             return connectionStationName;
         }
 
+        public void setConnectionStationName(String connectionStationName) {
+            this.connectionStationName = connectionStationName;
+        }
+
         public String getOrigLineTripId() {
             return origLineTripId;
+        }
+
+        public void setOrigLineTripId(String origLineTripId) {
+            this.origLineTripId = origLineTripId;
         }
 
         public String getTermLineTripId() {
             return termLineTripId;
         }
 
+        public void setTermLineTripId(String termLineTripId) {
+            this.termLineTripId = termLineTripId;
+        }
+
         public Date getOrigDepartureTime() {
             return origDepartureTime;
+        }
+
+        public void setOrigDepartureTime(Date origDepartureTime) {
+            this.origDepartureTime = origDepartureTime;
         }
 
         public Date getOrigArrivalTime() {
             return origArrivalTime;
         }
 
-        public int getOrigDelayMinutes() {
-            return origDelayMinutes;
+        public void setOrigArrivalTime(Date origArrivalTime) {
+            this.origArrivalTime = origArrivalTime;
         }
 
         public Date getTermDepartureTime() {
             return termDepartureTime;
         }
 
+        public void setTermDepartureTime(Date termDepartureTime) {
+            this.termDepartureTime = termDepartureTime;
+        }
+
         public Date getTermArrivalTime() {
             return termArrivalTime;
+        }
+
+        public void setTermArrivalTime(Date termArrivalTime) {
+            this.termArrivalTime = termArrivalTime;
+        }
+
+        public int getOrigDelayMinutes() {
+            return origDelayMinutes;
+        }
+
+        public void setOrigDelayMinutes(int origDelayMinutes) {
+            this.origDelayMinutes = origDelayMinutes;
         }
 
         public int getTermDelayMinutes() {
             return termDelayMinutes;
         }
 
+        public void setTermDelayMinutes(int termDelayMinutes) {
+            this.termDelayMinutes = termDelayMinutes;
+        }
+
         public int getOrigLastStopId() {
             return origLastStopId;
+        }
+
+        public void setOrigLastStopId(int origLastStopId) {
+            this.origLastStopId = origLastStopId;
         }
 
         public String getOrigLastStopName() {
             return origLastStopName;
         }
 
+        public void setOrigLastStopName(String origLastStopName) {
+            this.origLastStopName = origLastStopName;
+        }
+
         public int getTermLastStopId() {
             return termLastStopId;
+        }
+
+        public void setTermLastStopId(int termLastStopId) {
+            this.termLastStopId = termLastStopId;
         }
 
         public String getTermLastStopName() {
             return termLastStopName;
         }
 
+        public void setTermLastStopName(String termLastStopName) {
+            this.termLastStopName = termLastStopName;
+        }
+
         public String getOrigLineDirection() {
             return origLineDirection;
+        }
+
+        public void setOrigLineDirection(String origLineDirection) {
+            this.origLineDirection = origLineDirection;
         }
 
         public String getTermLineDirection() {
             return termLineDirection;
         }
 
-        public Double getVehicle_lat() {
-            return vehicle_lat;
+        public void setTermLineDirection(String termLineDirection) {
+            this.termLineDirection = termLineDirection;
         }
 
-        public Double getVehicle_lon() {
-            return vehicle_lon;
+        public Double getOrigVehicleLat() {
+            return origVehicleLat;
+        }
+
+        public void setOrigVehicleLat(Double origVehicleLat) {
+            this.origVehicleLat = origVehicleLat;
+        }
+
+        public Double getOrigVehicleLon() {
+            return origVehicleLon;
+        }
+
+        public void setOrigVehicleLon(Double origVehicleLon) {
+            this.origVehicleLon = origVehicleLon;
+        }
+
+        public Double getTermVehicleLat() {
+            return termVehicleLat;
+        }
+
+        public void setTermVehicleLat(Double termVehicleLat) {
+            this.termVehicleLat = termVehicleLat;
+        }
+
+        public Double getTermVehicleLon() {
+            return termVehicleLon;
+        }
+
+        public void setTermVehicleLon(Double termVehicleLon) {
+            this.termVehicleLon = termVehicleLon;
+        }
+
+        public String getOrigVehicleLine() {
+            return origVehicleLine;
+        }
+
+        public void setOrigVehicleLine(String origVehicleLine) {
+            this.origVehicleLine = origVehicleLine;
+        }
+
+        public String getTermVehicleLine() {
+            return termVehicleLine;
+        }
+
+        public void setTermVehicleLine(String termVehicleLine) {
+            this.termVehicleLine = termVehicleLine;
         }
 
         @Override
@@ -224,8 +352,12 @@ public class NextArrivalModelResponse {
                     ", termLastStopName='" + termLastStopName + '\'' +
                     ", origLineDirection='" + origLineDirection + '\'' +
                     ", termLineDirection='" + termLineDirection + '\'' +
-                    ", vehicle_lat=" + vehicle_lat +
-                    ", vehicle_lon=" + vehicle_lon +
+                    ", origVehicleLat=" + origVehicleLat +
+                    ", origVehicleLon=" + origVehicleLon +
+                    ", termVehicleLat=" + termVehicleLat +
+                    ", termVehicleLon=" + termVehicleLon +
+                    ", origVehicleLine='" + origVehicleLine + '\'' +
+                    ", termVehicleLine='" + termVehicleLine + '\'' +
                     '}';
         }
     }

@@ -11,11 +11,11 @@ import java.io.Serializable;
 
 public enum TransitType implements Serializable {
 
-    RAIL(R.drawable.pin_rail, R.drawable.rail_final_icon_white, R.drawable.rail_active_final, new RailColorProvider(), new IdLineIconProvider(R.drawable.ic_line_air)),
-    BUS(R.drawable.pin_bus, R.drawable.bus_final_icon_white, R.drawable.bus_active_final, new BasicColorProvider(R.color.line_color_bus), new BasicLineIconProvider(R.drawable.ic_line_bus)),
-    TROLLY(R.drawable.pin_trolley, R.drawable.trolley_final_icon_white, R.drawable.trolley_active_final, new BasicColorProvider(R.color.line_color_trolly), new BasicLineIconProvider(R.drawable.ic_line_trolly)),
-    SUBWAY(R.drawable.pin_subway, R.drawable.subway_final_icon_white, R.drawable.subway_active_final, new RailColorProvider(), new IdLineIconProvider(R.drawable.ic_line_bus)),
-    NHSL(R.drawable.pin_nhsl, R.drawable.nthsl_final_icon_white, R.drawable.nhsl_active_final, new BasicColorProvider(R.color.line_color_nhsl), new BasicLineIconProvider(R.drawable.ic_line_nhsl));
+    RAIL(R.drawable.pin_rail, R.drawable.ic_rail, R.drawable.rail_active_final, new RailColorProvider(), new IdLineIconProvider(R.drawable.ic_line_air)),
+    BUS(R.drawable.pin_bus, R.drawable.ic_bus, R.drawable.bus_active_final, new BasicColorProvider(R.color.line_color_bus), new BasicLineIconProvider(R.drawable.ic_line_bus)),
+    TROLLY(R.drawable.pin_trolley, R.drawable.ic_trolly, R.drawable.trolley_active_final, new BasicColorProvider(R.color.line_color_trolly), new BasicLineIconProvider(R.drawable.ic_line_trolly)),
+    SUBWAY(R.drawable.pin_subway, R.drawable.ic_subway, R.drawable.subway_active_final, new RailColorProvider(), new IdLineIconProvider(R.drawable.ic_line_bus)),
+    NHSL(R.drawable.pin_nhsl, R.drawable.ic_nhsl, R.drawable.nhsl_active_final, new BasicColorProvider(R.color.line_color_nhsl), new BasicLineIconProvider(R.drawable.ic_line_nhsl));
 
 
     private static final String TAG = "org.septa...TransitType";

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="15dp"
+    android:layout_marginBottom="15dp">
+
+    <TextView android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:paddingTop="12dp"
+        android:text="DEPART"
+        android:id="@+id/departureHeaderTextView"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingBottom="12dp"
+        android:layout_marginLeft="10dp"
+        android:text="Header2"
+        android:id="@+id/departureTextView"
+        android:layout_below="@+id/departureHeaderTextView"
+        android:textStyle="bold"
+        android:textColor="#144b88"
+        android:layout_alignParentLeft="true"
+        />
+
+    <TextView android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="12dp"
+        android:text="DURATION"
+        android:id="@+id/durationHeaderTextView"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingBottom="12dp"
+        android:text="Header4"
+        android:id="@+id/durationTextView"
+        android:layout_below="@+id/durationHeaderTextView"
+        android:textStyle="bold"
+        android:textColor="#144b88"
+        android:layout_centerHorizontal="true"/>
+
+    <TextView android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="12dp"
+        android:layout_marginRight="10dp"
+        android:text="ARRIVE"
+        android:id="@+id/arrivalHeaderTextView"
+        android:layout_alignParentRight="true"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingBottom="12dp"
+        android:layout_marginRight="10dp"
+        android:text="Header6"
+        android:id="@+id/arrivalTextView"
+        android:layout_below="@+id/arrivalHeaderTextView"
+        android:textStyle="bold"
+        android:textColor="#144b88"
+        android:layout_alignParentRight="true"/>
+</RelativeLayout>

@@ -2,7 +2,6 @@ package org.septa.android.app.database;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
@@ -26,7 +25,7 @@ public class DatabaseManager {
     private static SQLiteDatabase database;
 
     private static final int BUS = 3;
-    private static final int TROLLY = 0;
+    private static final int TROLLEY = 0;
 
 
     private DatabaseManager(Context context) {
@@ -74,22 +73,22 @@ public class DatabaseManager {
         return new BusStopAfterCursorAdapterSupplier();
     }
 
-    public CursorAdapterSupplier<StopModel> getTrollyStopCursorAdapterSupplier() {
+    public CursorAdapterSupplier<StopModel> getTrolleyStopCursorAdapterSupplier() {
         return new BusStopCursorAdapterSupplier();
     }
     public CursorAdapterSupplier<StopModel> getSubwayStopCursorAdapterSupplier() {
         return new SubwayStopCursorAdapterSupplier();
     }
 
-    public CursorAdapterSupplier<RouteDirectionModel> getTrollyRouteCursorAdapterSupplier() {
-        return new BusRouteCursorAdapterSupplier(TROLLY);
+    public CursorAdapterSupplier<RouteDirectionModel> getTrolleyRouteCursorAdapterSupplier() {
+        return new BusRouteCursorAdapterSupplier(TROLLEY);
     }
 
     public CursorAdapterSupplier<RouteDirectionModel> getSubwayRouteCursorAdapterSupplier() {
         return new SubwayRouteCursorAdapterSupplier();
     }
 
-    public CursorAdapterSupplier<StopModel> getTrollyStopAfterCursorAdapterSupplier() {
+    public CursorAdapterSupplier<StopModel> getTrolleyStopAfterCursorAdapterSupplier() {
         return new BusStopAfterCursorAdapterSupplier();
     }
 

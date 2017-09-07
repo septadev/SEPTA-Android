@@ -34,7 +34,7 @@
 
     <color name="line_color_bus">#41525c</color>
     <color name="line_color_nhsl">#9d4295</color>
-    <color name="line_color_trolly">#207200</color>
+    <color name="line_color_trolley">#207200</color>
 
     <color name="default_line_color">@android:color/holo_red_dark</color>
 

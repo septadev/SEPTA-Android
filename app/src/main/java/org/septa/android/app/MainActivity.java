@@ -13,8 +13,11 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import org.septa.android.app.favorites.FavoritesFragement;
 import org.septa.android.app.nextarrive.NextToArriveFragement;
 import org.septa.android.app.schedules.SchedulesFragment;
 import org.septa.android.app.temp.ComingSoonFragement;
@@ -37,8 +40,14 @@ public class MainActivity extends AppCompatActivity
     Fragment activeFragement;
     Drawable previousIcon;
     MenuItem currentMenu;
+    NavigationView navigationView;
 
-    Fragment favorites = new ComingSoonFragement();
+    Fragment favorites = FavoritesFragement.newInstance(new Runnable() {
+        @Override
+        public void run() {
+            switchToNTA();
+        }
+    });
     Fragment systemStatus = new ComingSoonFragement();
     Fragment faresTransitInfo = new ComingSoonFragement();
     Fragment subwayMap = new ComingSoonFragement();
@@ -55,7 +64,7 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.setItemIconTintList(null);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -64,9 +73,8 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-
-        // getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, nextToArriveFragment).commit();
     }
+
 
     @Override
     public void onBackPressed() {
@@ -173,6 +181,18 @@ public class MainActivity extends AppCompatActivity
         getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, targetFragment).commit();
 
         setTitle(title);
+    }
+
+    public void switchToNTA() {
+        if (currentMenu.getItemId() != R.id.nav_next_to_arrive) {
+            currentMenu.setIcon(previousIcon);
+            navigationView.setCheckedItem(R.id.nav_next_to_arrive);
+            currentMenu = navigationView.getMenu().findItem(R.id.nav_next_to_arrive);
+            previousIcon = currentMenu.getIcon();
+            currentMenu.setIcon(R.drawable.ic_next_to_arrive_fill);
+            getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, nextToArriveFragment).commit();
+            setTitle(R.string.next_to_arrive);
+        }
     }
 
 }

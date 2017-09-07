@@ -3,6 +3,8 @@ package org.septa.android.app;
 import android.content.Context;
 import android.util.Log;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 
 /**
@@ -11,10 +13,15 @@ import java.io.Serializable;
 
 public enum TransitType implements Serializable {
 
+    @SerializedName("RAIL")
     RAIL(R.drawable.pin_rail, R.drawable.ic_rail, R.drawable.rail_active_final, new RailColorProvider(), new IdLineIconProvider(R.drawable.ic_line_air)),
+    @SerializedName("BUS")
     BUS(R.drawable.pin_bus, R.drawable.ic_bus, R.drawable.bus_active_final, new BasicColorProvider(R.color.line_color_bus), new BasicLineIconProvider(R.drawable.ic_line_bus)),
+    @SerializedName("TROLLY")
     TROLLY(R.drawable.pin_trolley, R.drawable.ic_trolly, R.drawable.trolley_active_final, new BasicColorProvider(R.color.line_color_trolly), new BasicLineIconProvider(R.drawable.ic_line_trolly)),
+    @SerializedName("SUBWAY")
     SUBWAY(R.drawable.pin_subway, R.drawable.ic_subway, R.drawable.subway_active_final, new RailColorProvider(), new IdLineIconProvider(R.drawable.ic_line_bus)),
+    @SerializedName("NHSL")
     NHSL(R.drawable.pin_nhsl, R.drawable.ic_nhsl, R.drawable.nhsl_active_final, new BasicColorProvider(R.color.line_color_nhsl), new BasicLineIconProvider(R.drawable.ic_line_nhsl));
 
 
@@ -129,4 +136,6 @@ public enum TransitType implements Serializable {
             }
         }
     }
+
+
 }

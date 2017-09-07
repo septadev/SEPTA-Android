@@ -13,10 +13,11 @@ import com.crashlytics.android.Crashlytics;
 
 public class MainApplication extends Application {
     public static final String TAG = MainApplication.class.getSimpleName();
+
     @Override
     public void onCreate() {
         super.onCreate();
-        if(!BuildConfig.DEBUG) {
+        if (!BuildConfig.DEBUG) {
             Crashlytics.start(this);
             Log.i(TAG, "Starting Crashlytics");
         } else {
@@ -26,8 +27,12 @@ public class MainApplication extends Application {
         try {
             ApplicationInfo ai = getPackageManager().getApplicationInfo(MainApplication.class.getPackage().getName(), PackageManager.GET_META_DATA);
             Bundle bundle = ai.metaData;
-            String myApiKey = bundle.getString("com.google.android.geo.API_KEY");
-            SeptaServiceFactory.setGoogleKey(myApiKey);
+            String googleApiKey = bundle.getString("com.google.android.geo.API_KEY");
+            SeptaServiceFactory.setGoogleKey(googleApiKey);
+
+            String septaAmazonAwsApiKey = bundle.getString("org.septa.amazonaws.x-api-key");
+            SeptaServiceFactory.setAmazonawsApiKey(septaAmazonAwsApiKey);
+
         } catch (PackageManager.NameNotFoundException e) {
             Log.e(TAG, "Failed to load meta-data, NameNotFound: " + e.getMessage());
         } catch (NullPointerException e) {

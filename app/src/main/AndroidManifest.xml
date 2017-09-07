@@ -16,10 +16,14 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAdk5wahQQgpRT7wsVRl08qyjYyod_UrxY" />
+        <meta-data
+            android:name="org.septa.amazonaws.x-api-key"
+            android:value="7Nx754dd9G5YkpYoRLbi4aoNW9LtWllt1Jcbw9v8" />
 
         <activity
             android:name=".MainActivity"
-            android:label="@string/septa" android:screenOrientation="portrait"
+            android:label="@string/septa"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -29,7 +33,13 @@
         </activity>
         <activity
             android:name=".nextarrive.NextToArriveResultsActivity"
-            android:label="@string/septa" android:screenOrientation="portrait"
+            android:label="@string/septa"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".nextarrive.NextToArriveTripDetailActivity"
+            android:label="@string/septa"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"></activity>
 
     </application>

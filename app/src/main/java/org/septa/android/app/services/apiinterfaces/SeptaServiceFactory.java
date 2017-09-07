@@ -29,6 +29,8 @@ public class SeptaServiceFactory {
 
     private static String googleKey;
 
+    private static String amazonawsApiKey;
+
     private static Retrofit googleSingleton = new Retrofit.Builder().client(new OkHttpClient.Builder().addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)).addInterceptor(new Interceptor() {
         @Override
         public Response intercept(Chain chain) throws IOException {
@@ -49,14 +51,6 @@ public class SeptaServiceFactory {
             .baseUrl("https://maps.googleapis.com/").addConverterFactory(GsonConverterFactory.create())
             .build();
 
-    public static void setGoogleKey(String googleKey) {
-        SeptaServiceFactory.googleKey = googleKey;
-    }
-
-    public static String getGoogleKey() {
-        return googleKey;
-    }
-
     static Retrofit singleton = new Retrofit.Builder().client(new OkHttpClient.Builder().addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)).build())
             .baseUrl("http://www3.septa.org/").addConverterFactory(GsonConverterFactory.create())
             .build();
@@ -66,7 +60,7 @@ public class SeptaServiceFactory {
         public Response intercept(Chain chain) throws IOException {
             Request original = chain.request();
             Request.Builder requestBuilder = original.newBuilder()
-                    .addHeader("x-api-key", "7Nx754dd9G5YkpYoRLbi4aoNW9LtWllt1Jcbw9v8");
+                    .addHeader("x-api-key", amazonawsApiKey);
 
             Request request = requestBuilder.build();
             return chain.proceed(request);
@@ -84,5 +78,27 @@ public class SeptaServiceFactory {
     public static GooglePlaceAutoCompleteService getAutoCompletePlaceService() {
         return googleSingleton.create(GooglePlaceAutoCompleteService.class);
     }
+
+    public static Favorites getFavoritesService(){
+        return new FavoritesImpl();
+    }
+
+
+    public static String getAmazonawsApiKey() {
+        return amazonawsApiKey;
+    }
+
+    public static void setAmazonawsApiKey(String amazonawsApiKey) {
+        SeptaServiceFactory.amazonawsApiKey = amazonawsApiKey;
+    }
+
+    public static void setGoogleKey(String googleKey) {
+        SeptaServiceFactory.googleKey = googleKey;
+    }
+
+    public static String getGoogleKey() {
+        return googleKey;
+    }
+
 
 }

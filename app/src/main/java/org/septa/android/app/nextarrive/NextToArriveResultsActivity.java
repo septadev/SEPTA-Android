@@ -1,7 +1,9 @@
 package org.septa.android.app.nextarrive;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -14,6 +16,8 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -42,7 +46,10 @@ import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
 import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.domain.StopModel;
+import org.septa.android.app.favorites.DeleteFavoritesAsyncTask;
+import org.septa.android.app.favorites.SaveFavoritesAsyncTask;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
+import org.septa.android.app.services.apiinterfaces.model.Favorite;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalModelResponse;
 import org.septa.android.app.support.MapUtils;
 import org.xmlpull.v1.XmlPullParserException;
@@ -79,6 +86,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     View progressView;
     View progressViewBottom;
     View refresh;
+    Favorite currentFavorite = null;
 
     public static NextToArriveResultsActivity newInstance(StopModel start, StopModel end) {
         NextToArriveResultsActivity fragement = new NextToArriveResultsActivity();
@@ -143,9 +151,82 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
             getSupportFragmentManager().beginTransaction().add(R.id.map_container, mapFragment).commit();
 
             linesListView = (ListView) findViewById(R.id.lines_list_view);
+
+            String favKey = Favorite.generateKey(start, destination, transitType, routeDirectionModel);
+            currentFavorite = SeptaServiceFactory.getFavoritesService().getFavoriteByKey(this, favKey);
         }
 
     }
+
+    public void saveAsFavorite(final MenuItem item) {
+        if (!item.isEnabled())
+            return;
+
+        item.setEnabled(false);
+
+        if (start != null && destination != null && transitType != null) {
+            if (currentFavorite == null) {
+                final Favorite favorite = new Favorite(start, destination, transitType, routeDirectionModel);
+                SaveFavoritesAsyncTask task = new SaveFavoritesAsyncTask(this, new Runnable() {
+                    @Override
+                    public void run() {
+                        item.setEnabled(true);
+                    }
+                }, new Runnable() {
+                    @Override
+                    public void run() {
+                        item.setEnabled(true);
+                        item.setIcon(R.drawable.ic_heart_fill);
+                        currentFavorite = favorite;
+                    }
+                });
+
+                task.execute(favorite);
+            } else {
+                new AlertDialog.Builder(this).setCancelable(true).setTitle("Delete Favorite")
+                        .setMessage("Are you sure you want to delete the Favorite '" + currentFavorite.getName() + "'?")
+                        .setPositiveButton("Delete Favorite", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                DeleteFavoritesAsyncTask task = new DeleteFavoritesAsyncTask(NextToArriveResultsActivity.this, new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        item.setEnabled(true);
+                                    }
+                                }, new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        item.setEnabled(true);
+                                        item.setIcon(R.drawable.ic_heart);
+                                        currentFavorite = null;
+                                    }
+                                });
+
+                                task.execute(currentFavorite.getKey());
+                            }
+                        }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        item.setEnabled(true);
+                    }
+                }).create().show();
+            }
+
+        } else item.setEnabled(true);
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        getMenuInflater().inflate(R.menu.favorite_menu, menu);
+
+        if (currentFavorite != null) {
+            menu.findItem(R.id.create_favorite).setIcon(R.drawable.ic_heart_fill);
+        }
+        return super.onCreateOptionsMenu(menu);
+    }
+
 
     @Override
     public void onMapReady(final GoogleMap googleMap) {

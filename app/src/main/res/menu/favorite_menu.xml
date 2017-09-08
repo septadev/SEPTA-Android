@@ -4,7 +4,7 @@
 
     <item
         android:id="@+id/create_favorite"
-        android:icon="@drawable/ic_heart"
+        android:icon="@drawable/ic_favorite_available"
         android:title="@string/favorites"
         app:showAsAction="always"
         android:onClick="saveAsFavorite"/>

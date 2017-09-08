@@ -22,14 +22,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="29dp"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_marginLeft="41dp"
+        android:layout_marginRight="41dp">
 
         <org.septa.android.app.view.TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:drawablePadding="4dp"
-            android:drawableTop="@drawable/bus_active_final"
+            android:drawableTop="@drawable/ic_bus_blue"
             android:text="Bus"
             android:textAlignment="center"
             android:textColor="#144b88"
@@ -41,7 +43,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:drawablePadding="4dp"
-            android:drawableTop="@drawable/rail_active_final"
+            android:drawableTop="@drawable/ic_rail_blue"
             android:text="Rail"
             android:textAlignment="center"
             android:textColor="#144b88"
@@ -53,7 +55,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:drawablePadding="4dp"
-            android:drawableTop="@drawable/subway_active_final"
+            android:drawableTop="@drawable/ic_subway_blue"
             android:text="Subway"
             android:textAlignment="center"
             android:textColor="#144b88"
@@ -65,7 +67,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:drawablePadding="4dp"
-            android:drawableTop="@drawable/trolley_active_final"
+            android:drawableTop="@drawable/ic_trolley_blue"
             android:text="Trolley"
             android:textAlignment="center"
             android:textColor="#144b88"
@@ -77,7 +79,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:drawablePadding="4dp"
-            android:drawableTop="@drawable/nhsl_active_final"
+            android:drawableTop="@drawable/ic_nhsl_blue"
             android:text="NHSL"
             android:textAlignment="center"
             android:textColor="#144b88"
@@ -88,9 +90,9 @@
     <org.septa.android.app.view.TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="46dp"
-        android:layout_marginRight="46dp"
-        android:layout_marginTop="35dp"
+        android:layout_marginLeft="37dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="23dp"
         android:gravity="center"
         android:text="Save your SEPTA trips as a favorite to get &lt;b>immediate access&lt;/b> to the Next to Arrive transit, and route schedule."
         android:textAlignment="center"
@@ -99,11 +101,26 @@
         app:font="@string/font_roboto_medium" />
 
     <org.septa.android.app.view.TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="38dp"
+        android:layout_marginRight="36dp"
+        android:layout_marginTop="23dp"
+        android:drawableLeft="@drawable/ic_favorite_available"
+        android:drawablePadding="13dp"
+        android:drawableTint="#144b88"
+        android:text="Find a trip, then use the favorite icon to add it to your Favorites."
+        android:textColor="#144b88"
+        android:textSize="16sp"
+        app:font="@string/font_roboto_light" />
+
+
+    <org.septa.android.app.view.TextView
         android:id="@+id/add_favorite_button"
         android:layout_width="293dp"
         android:layout_height="40dp"
         android:layout_gravity="center"
-        android:layout_marginTop="45dp"
+        android:layout_marginTop="35dp"
         android:background="@drawable/button_gradient_background"
         android:gravity="center"
         android:text="Add Favorite"

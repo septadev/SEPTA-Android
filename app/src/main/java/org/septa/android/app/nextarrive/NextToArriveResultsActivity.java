@@ -2,7 +2,6 @@ package org.septa.android.app.nextarrive;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -15,15 +14,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.TypedValue;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.android.gms.location.LocationServices;
@@ -55,16 +49,7 @@ import org.septa.android.app.support.MapUtils;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
-import java.text.DateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -154,9 +139,9 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
             nextToArriveDetailsFragment = (NextToArriveDetailsFragment) getSupportFragmentManager().findFragmentById(R.id.results_detail_fragement);
 
             nextToArriveDetailsFragment.setTransitType(transitType);
-            nextToArriveDetailsFragment.setStart(start);
-            nextToArriveDetailsFragment.setDestination(destination);
-            nextToArriveDetailsFragment.setRouteDirectionModel(routeDirectionModel);
+            nextToArriveDetailsFragment.setStartStopId(start.getStopId());
+            nextToArriveDetailsFragment.setDestStopId(destination.getStopId());
+            nextToArriveDetailsFragment.setRouteId(routeDirectionModel.getRouteId());
 
             String favKey = Favorite.generateKey(start, destination, transitType, routeDirectionModel);
             currentFavorite = SeptaServiceFactory.getFavoritesService().getFavoriteByKey(this, favKey);
@@ -182,7 +167,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                     @Override
                     public void run() {
                         item.setEnabled(true);
-                        item.setIcon(R.drawable.ic_heart_fill);
+                        item.setIcon(R.drawable.ic_favorite_made);
                         currentFavorite = favorite;
                     }
                 });
@@ -203,7 +188,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                                     @Override
                                     public void run() {
                                         item.setEnabled(true);
-                                        item.setIcon(R.drawable.ic_heart);
+                                        item.setIcon(R.drawable.ic_favorite_available);
                                         currentFavorite = null;
                                     }
                                 });
@@ -228,7 +213,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         getMenuInflater().inflate(R.menu.favorite_menu, menu);
 
         if (currentFavorite != null) {
-            menu.findItem(R.id.create_favorite).setIcon(R.drawable.ic_heart_fill);
+            menu.findItem(R.id.create_favorite).setIcon(R.drawable.ic_favorite_made);
         }
         return super.onCreateOptionsMenu(menu);
     }
@@ -319,9 +304,6 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                         Log.d(TAG, response.body().toString());
 
 
-                        Map<String, NextToArriveLine> map = new HashMap<String, NextToArriveLine>();
-                        Set<String> kmlSet = new HashSet<String>();
-
                         BitmapDescriptor vehicleBitMap = BitmapDescriptorFactory.fromResource(TransitType.valueOf(response.body().getTransType()).getMapMarkerResource());
 
                         googleMap.clear();
@@ -334,94 +316,28 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-                        int multiStopCount = 0;
-                        int singleStopCount = 0;
+                        NextArrivalModelResponseParser parser = new NextArrivalModelResponseParser(response.body());
 
-                        for (NextArrivalModelResponse.NextArrivalRecord data : response.body().getNextArrivalRecords()) {
-                            String key;
-                            if (data.getOrigRouteId().equals(data.getTermRouteId())) {
-                                key = data.getOrigRouteId();
-                                singleStopCount++;
-                            } else {
-                                key = data.getOrigRouteId() + "." + data.getTermRouteId();
-                                multiStopCount++;
-                            }
+                        for (Map.Entry<LatLng, NextArrivalModelResponse.NextArrivalRecord> entry : parser.getLatLngMap().entrySet()) {
+                            googleMap.addMarker(new MarkerOptions().position(entry.getKey()).title(entry.getValue().getOrigLineTripId()).icon(vehicleBitMap));
+                        }
 
-                            if (!map.containsKey(key)) {
-                                map.put(key, new NextToArriveLine(data.getOrigRouteName(), (data.getOrigRouteId() != data.getTermRouteId())));
-                            }
-
-                            map.get(key).addItem(data);
-
-                            if (data.getOrigVehicleLat() != null && data.getOrigVehicleLon() != null) {
-                                LatLng vehicleLatLng = new LatLng(data.getOrigVehicleLat(), data.getOrigVehicleLon());
-                                googleMap.addMarker(new MarkerOptions().position(vehicleLatLng).title(data.getOrigLineTripId()).icon(vehicleBitMap));
-                            }
-
-                            if (!kmlSet.contains(data.getOrigRouteId())) {
-                                kmlSet.add(data.getOrigRouteId());
-                                KmlLayer layer = MapUtils.getKMLByLineId(NextToArriveResultsActivity.this, googleMap, data.getOrigRouteId(), transitType);
-                                if (layer != null)
-                                    try {
-                                        layer.addLayerToMap();
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    } catch (XmlPullParserException e) {
-                                        e.printStackTrace();
-                                    }
-                            }
-
-                            if (data.getConnectionStationId() != null)
-                                if (!kmlSet.contains(data.getTermRouteId())) {
-                                    kmlSet.add(data.getTermRouteId());
-                                    KmlLayer layer = MapUtils.getKMLByLineId(NextToArriveResultsActivity.this, googleMap, data.getTermRouteId(), transitType);
-                                    if (layer != null)
-                                        try {
-                                            layer.addLayerToMap();
-                                        } catch (IOException e) {
-                                            e.printStackTrace();
-                                        } catch (XmlPullParserException e) {
-                                            e.printStackTrace();
-                                        }
+                        for (String routeId : parser.getRouteIdSet()) {
+                            KmlLayer layer = MapUtils.getKMLByLineId(NextToArriveResultsActivity.this, googleMap, routeId, transitType);
+                            if (layer != null)
+                                try {
+                                    layer.addLayerToMap();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                } catch (XmlPullParserException e) {
+                                    e.printStackTrace();
                                 }
                         }
 
-                        if (singleStopCount > 0 && multiStopCount > 0) {
-                            //TODO Need an error message here.
-                            throw new RuntimeException("We multi-stop and single stop next to arrive in the same response.  This is unexpected.");
-                        }
+                        nextToArriveDetailsFragment.setNextToArriveData(parser);
 
-                        if (singleStopCount > 0) {
-                            List<NextToArriveLine> nextToArriveLinesList = new ArrayList<NextToArriveLine>(map.values());
-                            Collections.sort(nextToArriveLinesList, new Comparator<NextToArriveLine>() {
-                                @Override
-                                public int compare(NextToArriveLine x, NextToArriveLine y) {
-                                    if (x.getSoonestDeparture() != null)
-                                        return x.getSoonestDeparture().compareTo(y.getSoonestDeparture());
-                                    else return Integer.MAX_VALUE;
-                                }
-                            });
-
-
-                            nextToArriveDetailsFragment.setSingleStopDetails(nextToArriveLinesList);
-                        }
-
-                        if (multiStopCount > 0) {
-                            Collections.sort(response.body().getNextArrivalRecords(), new Comparator<NextArrivalModelResponse.NextArrivalRecord>() {
-                                @Override
-                                public int compare(NextArrivalModelResponse.NextArrivalRecord x, NextArrivalModelResponse.NextArrivalRecord y) {
-                                    if (x == y)
-                                        return 0;
-                                    return (int) (x.getOrigDepartureTime().getTime() + (60000 * x.getOrigDelayMinutes())
-                                            - y.getOrigDepartureTime().getTime() + (60000 * y.getOrigDelayMinutes()));
-                                }
-                            });
-                            List<NextArrivalModelResponse.NextArrivalRecord> multiStopList = response.body().getNextArrivalRecords().subList(0, (3 < response.body().getNextArrivalRecords().size()) ? 3 : response.body().getNextArrivalRecords().size());
-
-                            nextToArriveDetailsFragment.setMultipleStopDetails(multiStopList);
-                        }
+                        progressVisibility(View.GONE);
                     }
-                    progressVisibility(View.GONE);
                 }
 
                 @Override
@@ -439,7 +355,6 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         progressView.setVisibility(visibility);
         progressViewBottom.setVisibility(visibility);
     }
-
 
 
     private static class BottomSheetHandler extends BottomSheetBehavior.BottomSheetCallback implements View.OnClickListener {

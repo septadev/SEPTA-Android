@@ -24,10 +24,8 @@ import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalModelResponse;
 
 import java.text.DateFormat;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -36,10 +34,10 @@ import java.util.List;
 
 public class NextToArriveDetailsFragment extends Fragment {
     ListView linesListView;
-    StopModel start;
-    StopModel destination;
+    String startStopId;
+    String destStopId;
     TransitType transitType;
-    RouteDirectionModel routeDirectionModel;
+    String routeId;
 
     @Nullable
     @Override
@@ -57,6 +55,43 @@ public class NextToArriveDetailsFragment extends Fragment {
 
     public void setMultipleStopDetails(List<NextArrivalModelResponse.NextArrivalRecord> multiStopList) {
         linesListView.setAdapter(new MultiLinesListAdapater(getContext(), multiStopList));
+    }
+
+    public void setNextToArriveData(NextArrivalModelResponseParser parser) {
+        if (parser.getTripType() == NextArrivalModelResponseParser.BOTH) {
+            //TODO Need an error message here.
+            throw new RuntimeException("We multi-stop and single stop next to arrive in the same response.  This is unexpected.");
+        }
+
+        if (parser.getTripType() == NextArrivalModelResponseParser.SINGLE_STOP_TRIP) {
+            List<NextToArriveLine> nextToArriveLinesList = parser.getNextToArriveLineList();
+            Collections.sort(nextToArriveLinesList, new Comparator<NextToArriveLine>() {
+                @Override
+                public int compare(NextToArriveLine x, NextToArriveLine y) {
+                    if (x.getSoonestDeparture() != null)
+                        return x.getSoonestDeparture().compareTo(y.getSoonestDeparture());
+                    else return Integer.MAX_VALUE;
+                }
+            });
+
+
+            setSingleStopDetails(nextToArriveLinesList);
+        } else {
+            List<NextArrivalModelResponse.NextArrivalRecord> nextArrivalRecordList = parser.getNextArrivalRecordList();
+            Collections.sort(nextArrivalRecordList, new Comparator<NextArrivalModelResponse.NextArrivalRecord>() {
+                @Override
+                public int compare(NextArrivalModelResponse.NextArrivalRecord x, NextArrivalModelResponse.NextArrivalRecord y) {
+                    if (x == y)
+                        return 0;
+                    return (int) (x.getOrigDepartureTime().getTime() + (60000 * x.getOrigDelayMinutes())
+                            - y.getOrigDepartureTime().getTime() + (60000 * y.getOrigDelayMinutes()));
+                }
+            });
+            List<NextArrivalModelResponse.NextArrivalRecord> multiStopList = nextArrivalRecordList.subList(0, (3 < nextArrivalRecordList.size()) ? 3 : nextArrivalRecordList.size());
+
+            setMultipleStopDetails(multiStopList);
+        }
+
     }
 
     private class MultiLinesListAdapater extends ArrayAdapter<NextArrivalModelResponse.NextArrivalRecord> {
@@ -185,10 +220,10 @@ public class NextToArriveDetailsFragment extends Fragment {
                     public void onClick(View v) {
                         Intent intent = new Intent(getContext(), NextToArriveTripDetailActivity.class);
 
-                        intent.putExtra(Constants.DESTINATAION_STATION, destination);
-                        intent.putExtra(Constants.STARTING_STATION, start);
+                        intent.putExtra(Constants.DESTINATAION_STATION, destStopId);
+                        intent.putExtra(Constants.STARTING_STATION, startStopId);
                         intent.putExtra(Constants.TRANSIT_TYPE, transitType);
-                        intent.putExtra(Constants.LINE_ID, routeDirectionModel);
+                        intent.putExtra(Constants.LINE_ID, routeId);
                         intent.putExtra(Constants.ARRIVAL_RECORD, unit);
                         intent.putExtra(Constants.TRIP_ID, unit.getOrigLineTripId());
 
@@ -227,19 +262,19 @@ public class NextToArriveDetailsFragment extends Fragment {
     }
 
 
-    public void setStart(StopModel start) {
-        this.start = start;
+    public void setStartStopId(String startStopId) {
+        this.startStopId = startStopId;
     }
 
-    public void setDestination(StopModel destination) {
-        this.destination = destination;
+    public void setDestStopId(String destStopId) {
+        this.destStopId = destStopId;
     }
 
     public void setTransitType(TransitType transitType) {
         this.transitType = transitType;
     }
 
-    public void setRouteDirectionModel(RouteDirectionModel routeDirectionModel) {
-        this.routeDirectionModel = routeDirectionModel;
+    public void setRouteId(String routeId) {
+        this.routeId = routeId;
     }
 }

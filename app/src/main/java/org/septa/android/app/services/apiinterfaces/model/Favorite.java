@@ -38,9 +38,11 @@ public class Favorite implements Serializable {
         if (routeDirectionModel != null) {
             this.lineId = routeDirectionModel.getRouteId();
             this.directionCode = routeDirectionModel.getDirectionCode();
+            name = routeDirectionModel.getRouteShortName() + " to " + destination.getStopName();
+        } else {
+            name = "To " + destination.getStopName();
         }
 
-        name = "default value here:" + startId;
     }
 
     public String getName() {

@@ -19,9 +19,9 @@ public class SEPTADatabase extends SQLiteAssetHelper {
         // Causes database to overwrite when version changes
         setForcedUpgrade();
 
-        execSQL(new String[]{"CREATE INDEX tripsBUSIDX on trips_bus(trip_id)"});
-        execSQL(new String[]{"CREATE INDEX stopsBUSSTOPID on stop_times_bus(stop_id)"});
-        execSQL(new String[]{"CREATE INDEX stopsBUSSSEQ on stop_times_bus(stop_sequence)"});
+        execSQL(new String[]{"CREATE INDEX IF NOT EXISTS tripsBUSIDX on trips_bus(trip_id)"});
+        execSQL(new String[]{"CREATE INDEX IF NOT EXISTS stopsBUSSTOPID on stop_times_bus(stop_id)"});
+        execSQL(new String[]{"CREATE INDEX IF NOT EXISTS stopsBUSSSEQ on stop_times_bus(stop_sequence)"});
     }
 
     private void execSQL(String statements[]) {

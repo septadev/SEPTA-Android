@@ -2,6 +2,7 @@ package org.septa.android.app.database;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
@@ -25,7 +26,7 @@ public class DatabaseManager {
     private static SQLiteDatabase database;
 
     private static final int BUS = 3;
-    private static final int TROLLEY = 0;
+    private static final int TROLLY = 0;
 
 
     private DatabaseManager(Context context) {
@@ -81,7 +82,7 @@ public class DatabaseManager {
     }
 
     public CursorAdapterSupplier<RouteDirectionModel> getTrolleyRouteCursorAdapterSupplier() {
-        return new BusRouteCursorAdapterSupplier(TROLLEY);
+        return new BusRouteCursorAdapterSupplier(TROLLY);
     }
 
     public CursorAdapterSupplier<RouteDirectionModel> getSubwayRouteCursorAdapterSupplier() {

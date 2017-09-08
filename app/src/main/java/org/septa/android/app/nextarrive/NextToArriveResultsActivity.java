@@ -82,11 +82,11 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     RouteDirectionModel routeDirectionModel;
     private GoogleMap googleMap;
     ViewGroup bottomSheetLayout;
-    ListView linesListView;
     View progressView;
     View progressViewBottom;
     View refresh;
     Favorite currentFavorite = null;
+    NextToArriveDetailsFragment nextToArriveDetailsFragment;
 
     public static NextToArriveResultsActivity newInstance(StopModel start, StopModel end) {
         NextToArriveResultsActivity fragement = new NextToArriveResultsActivity();
@@ -150,7 +150,13 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
             getSupportFragmentManager().beginTransaction().add(R.id.map_container, mapFragment).commit();
 
-            linesListView = (ListView) findViewById(R.id.lines_list_view);
+
+            nextToArriveDetailsFragment = (NextToArriveDetailsFragment) getSupportFragmentManager().findFragmentById(R.id.results_detail_fragement);
+
+            nextToArriveDetailsFragment.setTransitType(transitType);
+            nextToArriveDetailsFragment.setStart(start);
+            nextToArriveDetailsFragment.setDestination(destination);
+            nextToArriveDetailsFragment.setRouteDirectionModel(routeDirectionModel);
 
             String favKey = Favorite.generateKey(start, destination, transitType, routeDirectionModel);
             currentFavorite = SeptaServiceFactory.getFavoritesService().getFavoriteByKey(this, favKey);
@@ -397,7 +403,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                             });
 
 
-                            linesListView.setAdapter(new SingleLinesListAdapater(NextToArriveResultsActivity.this, nextToArriveLinesList, NextToArriveResultsActivity.this));
+                            nextToArriveDetailsFragment.setSingleStopDetails(nextToArriveLinesList);
                         }
 
                         if (multiStopCount > 0) {
@@ -411,7 +417,8 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                                 }
                             });
                             List<NextArrivalModelResponse.NextArrivalRecord> multiStopList = response.body().getNextArrivalRecords().subList(0, (3 < response.body().getNextArrivalRecords().size()) ? 3 : response.body().getNextArrivalRecords().size());
-                            linesListView.setAdapter(new MultiLinesListAdapater(NextToArriveResultsActivity.this, multiStopList));
+
+                            nextToArriveDetailsFragment.setMultipleStopDetails(multiStopList);
                         }
                     }
                     progressVisibility(View.GONE);
@@ -434,228 +441,6 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     }
 
 
-    private class MultiLinesListAdapater extends ArrayAdapter<NextArrivalModelResponse.NextArrivalRecord> {
-
-        public MultiLinesListAdapater(@NonNull Context context, List<NextArrivalModelResponse.NextArrivalRecord> list) {
-            super(context, 0, list);
-        }
-
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            if (convertView == null) {
-                convertView = LayoutInflater.from(getContext()).inflate(R.layout.next_to_arrive_unit_multistop, parent, false);
-            }
-
-            NextArrivalModelResponse.NextArrivalRecord item = getItem(position);
-            DateFormat dateFormat = DateFormat.getTimeInstance(DateFormat.SHORT);
-
-            TextView origLineNameText = (TextView) convertView.findViewById(R.id.orig_line_name_text);
-            origLineNameText.setText(item.getOrigRouteName());
-
-            ((ImageView) convertView.findViewById(R.id.orig_line_marker_left)).setColorFilter(ContextCompat.getColor(getContext(), transitType.getLineColor(item.getOrigRouteId(), getContext())));
-            ((ImageView) convertView.findViewById(R.id.orig_line_marker_right)).setColorFilter(ContextCompat.getColor(getContext(), transitType.getLineColor(item.getOrigRouteId(), getContext())));
-
-
-            TextView origArrivalTimeText = (TextView) convertView.findViewById(R.id.orig_arrival_time_text);
-            origArrivalTimeText.setText(dateFormat.format(item.getOrigDepartureTime()) + " - " + dateFormat.format(item.getOrigArrivalTime()));
-
-            TextView origTripNumberText = (TextView) convertView.findViewById(R.id.orig_trip_number_text);
-            origTripNumberText.setText(item.getOrigLineTripId() + " to " + item.getOrigLastStopName());
-
-            TextView origDepartureTime = (TextView) convertView.findViewById(R.id.orig_depature_time);
-            int origDepartsInMinutes = ((int) (item.getOrigDepartureTime().getTime() + (item.getOrigDelayMinutes() * 60000) - System.currentTimeMillis()) / 60000);
-            origDepartureTime.setText(String.valueOf(origDepartsInMinutes + " Minutes"));
-
-            TextView origTardyText = (TextView) convertView.findViewById(R.id.orig_tardy_text);
-            if (item.getOrigDelayMinutes() > 0) {
-                origTardyText.setText(item.getOrigDelayMinutes() + " min late.");
-                origTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.delay_minutes));
-                View origDepartingBorder = convertView.findViewById(R.id.orig_departing_border);
-                origDepartingBorder.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.late_boarder));
-                origDepartureTime.setTextColor(ContextCompat.getColor(getContext(), R.color.late_departing));
-            } else {
-                origTardyText.setText("On time");
-                origTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.no_delay_minutes));
-                origDepartureTime.setTextColor(ContextCompat.getColor(getContext(), R.color.late_departing));
-            }
-
-            TextView connectionStationText = (TextView) convertView.findViewById(R.id.connection_station_name);
-            connectionStationText.setText(item.getConnectionStationName());
-
-            TextView termLineNameText = (TextView) convertView.findViewById(R.id.term_line_name_text);
-            termLineNameText.setText(item.getTermRouteName());
-
-            ((ImageView) convertView.findViewById(R.id.term_line_marker_left)).setColorFilter(ContextCompat.getColor(getContext(), transitType.getLineColor(item.getTermRouteId(), getContext())));
-            ((ImageView) convertView.findViewById(R.id.term_line_marker_right)).setColorFilter(ContextCompat.getColor(getContext(), transitType.getLineColor(item.getTermRouteId(), getContext())));
-
-            TextView termArrivalTimeText = (TextView) convertView.findViewById(R.id.term_arrival_time_text);
-            termArrivalTimeText.setText(dateFormat.format(item.getTermDepartureTime()) + " - " + dateFormat.format(item.getTermArrivalTime()));
-
-            TextView termTripNumberText = (TextView) convertView.findViewById(R.id.term_trip_number_text);
-            termTripNumberText.setText(item.getTermLineTripId() + " to " + item.getTermLastStopName());
-
-            TextView termDepartureTime = (TextView) convertView.findViewById(R.id.term_depature_time);
-            int termDepartsInMinutes = ((int) (item.getTermDepartureTime().getTime() + (item.getTermDelayMinutes() * 60000) - System.currentTimeMillis()) / 60000);
-            termDepartureTime.setText(String.valueOf(termDepartsInMinutes + " Minutes"));
-
-            TextView termTardyText = (TextView) convertView.findViewById(R.id.term_tardy_text);
-            if (item.getTermDelayMinutes() > 0) {
-                termTardyText.setText(item.getTermDelayMinutes() + " min late.");
-                termTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.delay_minutes));
-                View termDepartingBorder = convertView.findViewById(R.id.orig_departing_border);
-                termDepartingBorder.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.late_boarder));
-                termDepartureTime.setTextColor(ContextCompat.getColor(getContext(), R.color.late_departing));
-            } else {
-                termTardyText.setText("On time");
-                termTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.no_delay_minutes));
-                termDepartureTime.setTextColor(ContextCompat.getColor(getContext(), R.color.on_time_departing));
-            }
-
-
-            return convertView;
-
-        }
-    }
-
-    private class SingleLinesListAdapater extends ArrayAdapter<NextToArriveLine> {
-        NextToArriveResultsActivity nextToArriveResultsActivity;
-
-        public SingleLinesListAdapater(@NonNull Context context, List<NextToArriveLine> list, NextToArriveResultsActivity nextToArriveResultsActivity) {
-            super(context, 0, list);
-            this.nextToArriveResultsActivity = nextToArriveResultsActivity;
-        }
-
-        @Override
-        public View getView(int position, View convertView, final ViewGroup parent) {
-            List<NextArrivalModelResponse.NextArrivalRecord> tripList = getItem(position).getList();
-            Collections.sort(
-                    tripList, new Comparator<NextArrivalModelResponse.NextArrivalRecord>() {
-                        @Override
-                        public int compare(NextArrivalModelResponse.NextArrivalRecord x, NextArrivalModelResponse.NextArrivalRecord y) {
-                            return x.getOrigDepartureTime().compareTo(y.getOrigDepartureTime());
-                        }
-                    });
-
-            tripList = tripList.subList(0, (3 < tripList.size()) ? 3 : tripList.size());
-
-
-            if (convertView == null) {
-                convertView = LayoutInflater.from(getContext()).inflate(R.layout.next_to_arrive_line, parent, false);
-            }
-
-            TextView lineNameText = (TextView) convertView.findViewById(R.id.orig_line_name_text);
-            lineNameText.setText(getItem(position).lineName);
-            ((ImageView) convertView.findViewById(R.id.orig_line_marker_left)).setColorFilter(ContextCompat.getColor(getContext(), transitType.getLineColor(getItem(position).getList().get(0).getOrigRouteId(), getContext())));
-            ((ImageView) convertView.findViewById(R.id.orig_line_marker_right)).setColorFilter(ContextCompat.getColor(getContext(), transitType.getLineColor(getItem(position).getList().get(0).getOrigRouteId(), getContext())));
-
-            LinearLayout arrivalList = (LinearLayout) convertView.findViewById(R.id.arrival_list);
-            arrivalList.removeAllViews();
-
-            DateFormat dateFormat = DateFormat.getTimeInstance(DateFormat.SHORT);
-
-            for (final NextArrivalModelResponse.NextArrivalRecord unit : tripList) {
-                View line = LayoutInflater.from(getContext()).inflate(R.layout.next_to_arrive_unit, null, false);
-
-                line.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(getContext(), NextToArriveTripDetailActivity.class);
-
-                        intent.putExtra(Constants.DESTINATAION_STATION, nextToArriveResultsActivity.destination);
-                        intent.putExtra(Constants.STARTING_STATION, nextToArriveResultsActivity.start);
-                        intent.putExtra(Constants.TRANSIT_TYPE, nextToArriveResultsActivity.transitType);
-                        intent.putExtra(Constants.LINE_ID, nextToArriveResultsActivity.routeDirectionModel);
-                        intent.putExtra(Constants.ARRIVAL_RECORD, unit);
-                        intent.putExtra(Constants.TRIP_ID, unit.getOrigLineTripId());
-
-                        startActivity(intent);
-                    }
-                });
-
-
-                TextView origArrivalTimeText = (TextView) line.findViewById(R.id.orig_arrival_time_text);
-                origArrivalTimeText.setText(dateFormat.format(unit.getOrigDepartureTime()) + " - " + dateFormat.format(unit.getOrigArrivalTime()));
-                arrivalList.addView(line);
-
-                TextView origTripNumberText = (TextView) line.findViewById(R.id.orig_trip_number_text);
-                origTripNumberText.setText(unit.getOrigLineTripId() + " to " + unit.getOrigLastStopName());
-
-                TextView origDepartureTime = (TextView) line.findViewById(R.id.orig_depature_time);
-                int origDepartsInMinutes = ((int) (unit.getOrigDepartureTime().getTime() + (unit.getOrigDelayMinutes() * 60000) - System.currentTimeMillis()) / 60000);
-                origDepartureTime.setText(String.valueOf(origDepartsInMinutes + " Minutes"));
-
-                TextView origTardyText = (TextView) line.findViewById(R.id.orig_tardy_text);
-                if (unit.getOrigDelayMinutes() > 0) {
-                    origTardyText.setText(unit.getOrigDelayMinutes() + " min late.");
-                    origTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.delay_minutes));
-                    View origDepartingBorder = line.findViewById(R.id.orig_departing_border);
-                    origDepartingBorder.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.late_boarder));
-                    origDepartureTime.setTextColor(ContextCompat.getColor(getContext(), R.color.late_departing));
-                } else {
-                    origTardyText.setText("On time");
-                    origTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.no_delay_minutes));
-                    origDepartureTime.setTextColor(ContextCompat.getColor(getContext(), R.color.on_time_departing));
-                }
-
-            }
-            return convertView;
-        }
-    }
-
-    private class NextToArriveLine {
-        List<NextArrivalModelResponse.NextArrivalRecord> nextToArriveModels = new ArrayList<NextArrivalModelResponse.NextArrivalRecord>();
-        String lineName;
-        Date soonestDeparture;
-        boolean multiStop;
-
-        NextToArriveLine(String lineName, boolean multiStop) {
-            this.lineName = lineName;
-            this.multiStop = multiStop;
-        }
-
-        List<NextArrivalModelResponse.NextArrivalRecord> getList() {
-            return nextToArriveModels;
-        }
-
-        void addItem(NextArrivalModelResponse.NextArrivalRecord item) {
-            nextToArriveModels.add(item);
-            if (soonestDeparture != null) {
-                if (item.getOrigDepartureTime().getTime() + (item.getOrigDelayMinutes() * 60000) > soonestDeparture.getTime())
-                    return;
-            }
-
-            soonestDeparture = new Date(item.getOrigDepartureTime().getTime() + (item.getOrigDelayMinutes() * 60000));
-        }
-
-        public Date getSoonestDeparture() {
-            return soonestDeparture;
-        }
-
-        public boolean isMultiStop() {
-            return multiStop;
-        }
-
-        @Override
-        public int hashCode() {
-            if (lineName == null)
-                return 0;
-
-            return lineName.hashCode();
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (obj == null && lineName == null)
-                return true;
-            if (lineName != null)
-                return lineName.equals(obj);
-
-            return false;
-        }
-
-
-    }
 
     private static class BottomSheetHandler extends BottomSheetBehavior.BottomSheetCallback implements View.OnClickListener {
         BottomSheetBehavior bottomSheetBehavior;

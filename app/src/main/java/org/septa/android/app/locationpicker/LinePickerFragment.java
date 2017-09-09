@@ -265,9 +265,11 @@ public class LinePickerFragment extends DialogFragment {
         @Override
         protected void onPostExecute(List<RouteDirectionModel> routeDirectionModels) {
             Collections.sort(routeDirectionModels, new RouteModelComparator());
-            fragment.lineArrayAdapater = new LineArrayAdapater(fragment.getContext(), routeDirectionModels, fragment.transitType);
-            fragment.linesList.setAdapter(fragment.lineArrayAdapater);
-            fragment.lineArrayAdapater.getFilter().filter(fragment.filterText.getText());
+            if (fragment.getContext() != null) {
+                fragment.lineArrayAdapater = new LineArrayAdapater(fragment.getContext(), routeDirectionModels, fragment.transitType);
+                fragment.linesList.setAdapter(fragment.lineArrayAdapater);
+                fragment.lineArrayAdapater.getFilter().filter(fragment.filterText.getText());
+            }
         }
     }
 }

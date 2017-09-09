@@ -141,7 +141,8 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
             nextToArriveDetailsFragment.setTransitType(transitType);
             nextToArriveDetailsFragment.setStartStopId(start.getStopId());
             nextToArriveDetailsFragment.setDestStopId(destination.getStopId());
-            nextToArriveDetailsFragment.setRouteId(routeDirectionModel.getRouteId());
+            if (routeDirectionModel != null)
+                nextToArriveDetailsFragment.setRouteId(routeDirectionModel.getRouteId());
 
             String favKey = Favorite.generateKey(start, destination, transitType, routeDirectionModel);
             currentFavorite = SeptaServiceFactory.getFavoritesService().getFavoriteByKey(this, favKey);

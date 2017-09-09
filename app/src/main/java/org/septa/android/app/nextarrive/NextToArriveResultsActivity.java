@@ -9,6 +9,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -41,10 +42,12 @@ import org.septa.android.app.TransitType;
 import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.favorites.DeleteFavoritesAsyncTask;
+import org.septa.android.app.favorites.EditFavoriteDialogFragment;
 import org.septa.android.app.favorites.SaveFavoritesAsyncTask;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Favorite;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalModelResponse;
+import org.septa.android.app.support.Consumer;
 import org.septa.android.app.support.MapUtils;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -127,6 +130,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         routeDirectionModel = (RouteDirectionModel) intent.getExtras().get(Constants.LINE_ID);
         editFavoritesFlag = intent.getExtras().getBoolean(Constants.EDIT_FAVORITES_FLAG, false);
 
+
         if (start != null && destination != null && transitType != null) {
             TextView startingStationNameText = (TextView) findViewById(R.id.starting_station_name);
             startingStationNameText.setText(start.getStopName());
@@ -147,6 +151,10 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
             String favKey = Favorite.generateKey(start, destination, transitType, routeDirectionModel);
             currentFavorite = SeptaServiceFactory.getFavoritesService().getFavoriteByKey(this, favKey);
+        }
+
+        if (currentFavorite != null && editFavoritesFlag) {
+            setTitle(currentFavorite.getName());
         }
 
     }
@@ -223,8 +231,20 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         return true;
     }
 
-    public void editFavorite(final MenuItem item){
-        Log.d(TAG,"edit Favorite.");
+    public void editFavorite(final MenuItem item) {
+        Log.d(TAG, "edit Favorite.");
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        EditFavoriteDialogFragment fragment = EditFavoriteDialogFragment.getInstance(currentFavorite,
+                new Consumer<Favorite>() {
+                    @Override
+                    public void accept(Favorite var1) {
+                        currentFavorite = var1;
+                        setTitle(currentFavorite.getName());
+                    }
+                });
+
+        fragment.show(ft, "Dialog");
+
     }
 
 

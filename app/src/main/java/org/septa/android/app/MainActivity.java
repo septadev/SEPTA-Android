@@ -51,13 +51,7 @@ public class MainActivity extends AppCompatActivity
         }
     };
 
-    Fragment favorites = FavoritesFragement.newInstance(new Runnable() {
-        @Override
-        public void run() {
-            switchToNTA();
-        }
-    }, updateMenuConsumer);
-
+    FavoritesFragement favorites;
 
     Fragment systemStatus = new ComingSoonFragement();
     Fragment faresTransitInfo = new ComingSoonFragement();
@@ -71,7 +65,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public final void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        favorites = createFavoriteFragement();
         setContentView(R.layout.main_activity);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -113,7 +107,7 @@ public class MainActivity extends AppCompatActivity
         //    return true;
         // }
 
-        if (id == R.id.add_favorite){
+        if (id == R.id.add_favorite) {
             switchToNTA();
         }
 
@@ -222,5 +216,22 @@ public class MainActivity extends AppCompatActivity
         } else {
             return false;
         }
+    }
+
+    private FavoritesFragement createFavoriteFragement() {
+        FavoritesFragement fragment = FavoritesFragement.newInstance(new Runnable() {
+            @Override
+            public void run() {
+                switchToNTA();
+            }
+        }, updateMenuConsumer, new Runnable() {
+            @Override
+            public void run() {
+                favorites = createFavoriteFragement();
+                getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, favorites).commit();
+            }
+        });
+
+        return fragment;
     }
 }

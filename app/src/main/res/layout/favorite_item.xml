@@ -38,6 +38,7 @@
         android:text="MORE"
         android:textColor="#2f2f2f"
         android:textSize="10sp"
+        android:drawablePadding="6dp"
         app:font="@string/font_roboto_regular"
         android:clickable="true"/>
 

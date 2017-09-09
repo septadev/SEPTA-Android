@@ -8,13 +8,10 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.septa.android.app.Constants;
 import org.septa.android.app.R;
@@ -27,6 +24,7 @@ import org.septa.android.app.nextarrive.NextToArriveTripView;
 import org.septa.android.app.support.Consumer;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -40,17 +38,21 @@ import retrofit2.Response;
 public class FavoritesFragement extends Fragment {
 
     private Runnable buttonExecution;
-    private Map<String, Favorite> favorites;
+    private Runnable refreshRunnable;
+    private Map<String, Favorite> favoritesMap;
+    private Map<String, TextView> favoriteTitlesMap = new HashMap<String, TextView>();
+    private Map<String, NextToArriveTripView> nextToArriveTripViewMap = new HashMap<String, NextToArriveTripView>();
     Consumer<Integer> menuIdConsumer;
+    int initialCount;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
-        favorites = SeptaServiceFactory.getFavoritesService().getFavorites(getContext());
-
-        if (favorites.size() == 0)
+        favoritesMap = SeptaServiceFactory.getFavoritesService().getFavorites(getContext());
+        initialCount = favoritesMap.size();
+        if (favoritesMap.size() == 0)
             return onCreateViewNoFavorites(inflater, container, savedInstanceState);
         else return onCreateViewFavorites(inflater, container, savedInstanceState);
     }
@@ -60,13 +62,12 @@ public class FavoritesFragement extends Fragment {
         LinearLayout favoritesListView = (LinearLayout) fragmentView.findViewById(R.id.favorites_list);
 
         menuIdConsumer.accept(R.menu.my_favorites_menu);
-        List<Favorite> favoritesList = new ArrayList<>(favorites.size());
-        favoritesList.addAll(favorites.values());
 
-        for (int i = 0; i < favoritesList.size(); i++) {
-            final Favorite favorite = favoritesList.get(i);
+        for (Map.Entry<String, Favorite> entry : favoritesMap.entrySet()) {
+            final Favorite favorite = entry.getValue();
             View convertView = inflater.inflate(R.layout.favorite_item, favoritesListView, false);
             TextView favName = (TextView) convertView.findViewById(R.id.favorite_title_text);
+            favoriteTitlesMap.put(entry.getKey(), favName);
             favName.setText(favorite.getName());
             Drawable drawables[] = favName.getCompoundDrawables();
             favName.setCompoundDrawablesWithIntrinsicBounds(ContextCompat.getDrawable(getContext(),
@@ -80,12 +81,13 @@ public class FavoritesFragement extends Fragment {
             tripView.setStart(favorite.getStart());
             tripView.setDestination(favorite.getDestination());
             tripView.setRouteDirectionModel(favorite.getRouteDirectionModel());
+            nextToArriveTripViewMap.put(entry.getKey(), tripView);
 
             containerView.addView(tripView);
             favoritesListView.addView(convertView);
 
             String routeId = null;
-            if (favorite.getRouteDirectionModel()!=null)
+            if (favorite.getRouteDirectionModel() != null)
                 routeId = favorite.getRouteDirectionModel().getRouteId();
 
             Call<NextArrivalModelResponse> results = SeptaServiceFactory.getNextArrivalService()
@@ -125,6 +127,22 @@ public class FavoritesFragement extends Fragment {
         return fragmentView;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        favoritesMap = SeptaServiceFactory.getFavoritesService().getFavorites(getContext());
+
+        if (initialCount != favoritesMap.size()) {
+            refreshRunnable.run();
+            return;
+        }
+
+        for (Map.Entry<String, TextView> entry : favoriteTitlesMap.entrySet()) {
+            entry.getValue().setText(favoritesMap.get(entry.getKey()).getName());
+        }
+
+    }
+
     private View onCreateViewNoFavorites(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         menuIdConsumer.accept(0);
         View fragmentView = inflater.inflate(R.layout.no_favorites, container, false);
@@ -141,10 +159,11 @@ public class FavoritesFragement extends Fragment {
         return fragmentView;
     }
 
-    public static Fragment newInstance(Runnable buttonExecution, Consumer<Integer> menuIdConsumer) {
+    public static FavoritesFragement newInstance(Runnable buttonExecution, Consumer<Integer> menuIdConsumer, Runnable refreshRunnable) {
         FavoritesFragement instance = new FavoritesFragement();
         instance.buttonExecution = buttonExecution;
         instance.menuIdConsumer = menuIdConsumer;
+        instance.refreshRunnable = refreshRunnable;
         return instance;
     }
 

@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import org.septa.android.app.favorites.FavoritesFragement;
 import org.septa.android.app.nextarrive.NextToArriveFragement;
 import org.septa.android.app.schedules.SchedulesFragment;
+import org.septa.android.app.support.Consumer;
 import org.septa.android.app.temp.ComingSoonFragement;
 
 import java.util.HashMap;
@@ -42,18 +43,30 @@ public class MainActivity extends AppCompatActivity
     MenuItem currentMenu;
     NavigationView navigationView;
 
+    Consumer<Integer> updateMenuConsumer = new Consumer<Integer>() {
+        @Override
+        public void accept(Integer var1) {
+            currentMenuId = var1;
+            invalidateOptionsMenu();
+        }
+    };
+
     Fragment favorites = FavoritesFragement.newInstance(new Runnable() {
         @Override
         public void run() {
             switchToNTA();
         }
-    });
+    }, updateMenuConsumer);
+
+
     Fragment systemStatus = new ComingSoonFragement();
     Fragment faresTransitInfo = new ComingSoonFragement();
     Fragment subwayMap = new ComingSoonFragement();
     Fragment events = new ComingSoonFragement();
     Fragment connect = new ComingSoonFragement();
     Fragment about = new ComingSoonFragement();
+
+    int currentMenuId = 0;
 
     @Override
     public final void onCreate(@Nullable Bundle savedInstanceState) {
@@ -100,6 +113,10 @@ public class MainActivity extends AppCompatActivity
         //    return true;
         // }
 
+        if (id == R.id.add_favorite){
+            switchToNTA();
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -128,7 +145,6 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_system_status) {
             switchToBundle(item, systemStatus, R.string.system_status, R.drawable.ic_status_fill);
-
         }
 
         if (id == R.id.nav_fares_transit_info) {
@@ -157,6 +173,9 @@ public class MainActivity extends AppCompatActivity
     private void switchToBundle(MenuItem item, Fragment targetFragment, int title, int highlitghtedIcon) {
         if ((currentMenu != null) && item.getItemId() == currentMenu.getItemId())
             return;
+
+        currentMenuId = 0;
+        invalidateOptionsMenu();
 
         // TODO Need to implement saving the state of the fragements.
         if (activeFragement != null) {
@@ -195,4 +214,13 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (currentMenuId != 0) {
+            getMenuInflater().inflate(currentMenuId, menu);
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

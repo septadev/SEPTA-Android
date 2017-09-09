@@ -18,8 +18,8 @@ import java.util.Set;
 public class NextArrivalModelResponseParser {
 
     public static final int SINGLE_STOP_TRIP = 0;
-    public static final int MULTIPLE_STOP_TRIP = 0;
-    public static final int BOTH = 3;
+    public static final int MULTIPLE_STOP_TRIP = 1;
+    public static final int BOTH = 2;
 
 
     private Map<LatLng, NextArrivalModelResponse.NextArrivalRecord> latLngMap = new HashMap<LatLng, NextArrivalModelResponse.NextArrivalRecord>();

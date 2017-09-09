@@ -71,7 +71,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     View progressViewBottom;
     View refresh;
     Favorite currentFavorite = null;
-    NextToArriveDetailsFragment nextToArriveDetailsFragment;
+    NextToArriveTripView nextToArriveDetailsFragment;
 
     public static NextToArriveResultsActivity newInstance(StopModel start, StopModel end) {
         NextToArriveResultsActivity fragement = new NextToArriveResultsActivity();
@@ -113,6 +113,8 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         View anchor = findViewById(R.id.bottom_sheet_anchor);
         anchor.setOnClickListener(myBottomSheetBehaviorCallBack);
 
+        nextToArriveDetailsFragment = (NextToArriveTripView) findViewById(R.id.next_to_arrive_trip_details);
+
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -134,9 +136,6 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
             mapFragment.getMapAsync(this);
 
             getSupportFragmentManager().beginTransaction().add(R.id.map_container, mapFragment).commit();
-
-
-            nextToArriveDetailsFragment = (NextToArriveDetailsFragment) getSupportFragmentManager().findFragmentById(R.id.results_detail_fragement);
 
             nextToArriveDetailsFragment.setTransitType(transitType);
             nextToArriveDetailsFragment.setStartStopId(start.getStopId());

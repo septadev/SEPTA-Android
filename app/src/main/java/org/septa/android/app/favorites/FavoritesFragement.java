@@ -7,6 +7,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -17,7 +19,8 @@ import org.septa.android.app.nextarrive.NextArrivalModelResponseParser;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Favorite;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalModelResponse;
-import org.septa.android.app.view.NextToArriveTripView;
+import org.septa.android.app.nextarrive.NextToArriveTripView;
+import org.septa.android.app.support.Consumer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +37,7 @@ public class FavoritesFragement extends Fragment {
 
     private Runnable buttonExecution;
     private Map<String, Favorite> favorites;
+    Consumer<Integer> menuIdConsumer;
 
     @Nullable
     @Override
@@ -51,6 +55,7 @@ public class FavoritesFragement extends Fragment {
         View fragmentView = inflater.inflate(R.layout.favorites_view, container, false);
         LinearLayout favoritesListView = (LinearLayout) fragmentView.findViewById(R.id.favorites_list);
 
+        menuIdConsumer.accept(R.menu.my_favorites_menu);
         List<Favorite> favoritesList = new ArrayList<>(favorites.size());
         favoritesList.addAll(favorites.values());
 
@@ -98,6 +103,7 @@ public class FavoritesFragement extends Fragment {
     }
 
     private View onCreateViewNoFavorites(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        menuIdConsumer.accept(0);
         View fragmentView = inflater.inflate(R.layout.no_favorites, container, false);
 
         View button = fragmentView.findViewById(R.id.add_favorite_button);
@@ -112,9 +118,11 @@ public class FavoritesFragement extends Fragment {
         return fragmentView;
     }
 
-    public static Fragment newInstance(Runnable buttonExecution) {
+    public static Fragment newInstance(Runnable buttonExecution, Consumer<Integer> menuIdConsumer) {
         FavoritesFragement instance = new FavoritesFragement();
         instance.buttonExecution = buttonExecution;
+        instance.menuIdConsumer = menuIdConsumer;
         return instance;
     }
+
 }

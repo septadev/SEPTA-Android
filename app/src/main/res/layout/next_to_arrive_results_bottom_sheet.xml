@@ -48,9 +48,8 @@
             android:textSize="12pt"
             app:font="@string/font_roboto_bold" />
 
-        <fragment
-            android:id="@+id/results_detail_fragement"
-            class="org.septa.android.app.nextarrive.NextToArriveDetailsFragment"
+        <org.septa.android.app.nextarrive.NextToArriveTripView
+            android:id="@+id/next_to_arrive_trip_details"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_below="@id/title_txt"
@@ -59,7 +58,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@id/results_detail_fragement"
+            android:layout_alignBottom="@id/next_to_arrive_trip_details"
             android:layout_weight="1"
             android:background="#fff6f4">
 

@@ -24,7 +24,15 @@ public class FavoritesImpl implements Favorites {
     @Override
     public Map<String, Favorite> getFavorites(Context context) {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
-        return getFavorites(sharedPreferences);
+        Map<String, Favorite> favorites = getFavorites(sharedPreferences);
+        for (Map.Entry<String, Favorite> entry : favorites.entrySet()){
+
+            if (entry.getValue().getStart() == null){
+                deleteAllFavorites(context);
+                return new HashMap<String, Favorite>();
+            }
+        }
+        return favorites;
     }
 
     @Override

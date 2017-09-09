@@ -72,6 +72,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     View refresh;
     Favorite currentFavorite = null;
     NextToArriveTripView nextToArriveDetailsFragment;
+    boolean editFavoritesFlag = false;
 
     public static NextToArriveResultsActivity newInstance(StopModel start, StopModel end) {
         NextToArriveResultsActivity fragement = new NextToArriveResultsActivity();
@@ -124,6 +125,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         start = (StopModel) intent.getExtras().get(Constants.STARTING_STATION);
         transitType = (TransitType) intent.getExtras().get(Constants.TRANSIT_TYPE);
         routeDirectionModel = (RouteDirectionModel) intent.getExtras().get(Constants.LINE_ID);
+        editFavoritesFlag = intent.getExtras().getBoolean(Constants.EDIT_FAVORITES_FLAG, false);
 
         if (start != null && destination != null && transitType != null) {
             TextView startingStationNameText = (TextView) findViewById(R.id.starting_station_name);
@@ -138,10 +140,10 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
             getSupportFragmentManager().beginTransaction().add(R.id.map_container, mapFragment).commit();
 
             nextToArriveDetailsFragment.setTransitType(transitType);
-            nextToArriveDetailsFragment.setStartStopId(start.getStopId());
-            nextToArriveDetailsFragment.setDestStopId(destination.getStopId());
-            if (routeDirectionModel != null)
-                nextToArriveDetailsFragment.setRouteId(routeDirectionModel.getRouteId());
+            nextToArriveDetailsFragment.setStart(start);
+            nextToArriveDetailsFragment.setDestination(destination);
+            nextToArriveDetailsFragment.setRouteDirectionModel(routeDirectionModel);
+
 
             String favKey = Favorite.generateKey(start, destination, transitType, routeDirectionModel);
             currentFavorite = SeptaServiceFactory.getFavoritesService().getFavoriteByKey(this, favKey);
@@ -210,12 +212,19 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
-        getMenuInflater().inflate(R.menu.favorite_menu, menu);
-
-        if (currentFavorite != null) {
-            menu.findItem(R.id.create_favorite).setIcon(R.drawable.ic_favorite_made);
+        if (!editFavoritesFlag) {
+            getMenuInflater().inflate(R.menu.favorite_menu, menu);
+            if (currentFavorite != null) {
+                menu.findItem(R.id.create_favorite).setIcon(R.drawable.ic_favorite_made);
+            }
+        } else {
+            getMenuInflater().inflate(R.menu.edit_favorites_menu, menu);
         }
-        return super.onCreateOptionsMenu(menu);
+        return true;
+    }
+
+    public void editFavorite(final MenuItem item){
+        Log.d(TAG,"edit Favorite.");
     }
 
 

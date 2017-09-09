@@ -19,25 +19,24 @@ public class Favorite implements Serializable {
     @SerializedName("name")
     private String name;
 
-    @SerializedName("start_id")
-    private String startId;
-    @SerializedName("destination_id")
-    private String destinationId;
+    @SerializedName("start")
+    private StopModel start;
+    @SerializedName("destination")
+    private StopModel destination;
+    @SerializedName("route")
+    RouteDirectionModel routeDirectionModel;
     @SerializedName("transit_type")
     private TransitType transitType;
-    @SerializedName("line_id")
-    private String lineId;
-    @SerializedName("direction_code")
-    private String directionCode;
 
 
     public Favorite(@NonNull StopModel start, @NonNull StopModel destination, @NonNull TransitType transitType, @Nullable RouteDirectionModel routeDirectionModel) {
-        this.startId = start.getStopId();
-        this.destinationId = destination.getStopId();
+        this.start = start;
+        this.destination = destination;
+        this.transitType = transitType;
+        this.routeDirectionModel = routeDirectionModel;
+
         this.transitType = transitType;
         if (routeDirectionModel != null) {
-            this.lineId = routeDirectionModel.getRouteId();
-            this.directionCode = routeDirectionModel.getDirectionCode();
             name = routeDirectionModel.getRouteShortName() + " to " + destination.getStopName();
         } else {
             name = "To " + destination.getStopName();
@@ -45,32 +44,8 @@ public class Favorite implements Serializable {
 
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getStartId() {
-        return startId;
-    }
-
-    public String getDestinationId() {
-        return destinationId;
-    }
-
-    public TransitType getTransitType() {
-        return transitType;
-    }
-
-    public String getLineId() {
-        return lineId;
-    }
-
     public String getKey() {
-        return generateKey(transitType, startId, destinationId, lineId, directionCode);
+        return generateKey(start, destination, transitType, routeDirectionModel);
     }
 
     public static String generateKey(TransitType transitType, String startId, String destinationId, String lineId, String directionCode) {
@@ -88,6 +63,26 @@ public class Favorite implements Serializable {
         }
 
         return generateKey(transitType, startId, destinationId, lineId, directionCode);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public StopModel getStart() {
+        return start;
+    }
+
+    public StopModel getDestination() {
+        return destination;
+    }
+
+    public TransitType getTransitType() {
+        return transitType;
+    }
+
+    public RouteDirectionModel getRouteDirectionModel() {
+        return routeDirectionModel;
     }
 }
 

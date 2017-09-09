@@ -18,6 +18,8 @@ public interface Favorites {
 
     public void deleteFavorite(Context context, String id);
 
+    public void deleteAllFavorites(Context context);
+
     public Favorite getFavoriteByKey(Context context, String key);
 
 }

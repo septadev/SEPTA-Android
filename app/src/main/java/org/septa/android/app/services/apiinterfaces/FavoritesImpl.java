@@ -45,6 +45,12 @@ public class FavoritesImpl implements Favorites {
     }
 
     @Override
+    public void deleteAllFavorites(Context context) {
+        SharedPreferences sharedPreferences = getSharedPreferences(context);
+        sharedPreferences.edit().remove(KEY).apply();
+    }
+
+    @Override
     public Favorite getFavoriteByKey(Context context, String key) {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
         Map<String, Favorite> favorites = getFavorites(sharedPreferences);

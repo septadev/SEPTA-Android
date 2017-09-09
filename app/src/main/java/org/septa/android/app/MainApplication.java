@@ -33,6 +33,8 @@ public class MainApplication extends Application {
             String septaAmazonAwsApiKey = bundle.getString("org.septa.amazonaws.x-api-key");
             SeptaServiceFactory.setAmazonawsApiKey(septaAmazonAwsApiKey);
 
+
+            //SeptaServiceFactory.getFavoritesService().deleteAllFavorites(this);
         } catch (PackageManager.NameNotFoundException e) {
             Log.e(TAG, "Failed to load meta-data, NameNotFound: " + e.getMessage());
         } catch (NullPointerException e) {

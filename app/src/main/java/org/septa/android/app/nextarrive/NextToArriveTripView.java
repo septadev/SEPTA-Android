@@ -12,9 +12,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 
+import com.google.gson.annotations.SerializedName;
+
 import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
+import org.septa.android.app.domain.RouteDirectionModel;
+import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.nextarrive.NextArrivalModelResponseParser;
 import org.septa.android.app.nextarrive.NextToArriveLine;
 import org.septa.android.app.nextarrive.NextToArriveTripDetailActivity;
@@ -29,10 +33,11 @@ import java.util.List;
 public class NextToArriveTripView extends FrameLayout {
 
     private ListView listView;
-    private String startStopId;
-    private String destStopId;
     private TransitType transitType;
-    private String routeId;
+
+    private StopModel start;
+    private StopModel destination;
+    private RouteDirectionModel routeDirectionModel;
 
     public NextToArriveTripView(@NonNull Context context) {
         super(context);
@@ -55,8 +60,11 @@ public class NextToArriveTripView extends FrameLayout {
     }
 
     public void setSingleStopDetails(List<NextToArriveLine> nextToArriveLinesList) {
+        String routeId = null;
+        if (routeDirectionModel != null)
+            routeId = routeDirectionModel.getRouteId();
         listView.setAdapter(new SingleLinesListAdapter(getContext(),
-                nextToArriveLinesList, transitType, startStopId, destStopId, routeId));
+                nextToArriveLinesList, transitType, start.getStopId(), destination.getStopId(), routeId));
         listView.setEmptyView(findViewById(android.R.id.empty));
     }
 
@@ -102,22 +110,6 @@ public class NextToArriveTripView extends FrameLayout {
 
     }
 
-    public String getStartStopId() {
-        return startStopId;
-    }
-
-    public void setStartStopId(String startStopId) {
-        this.startStopId = startStopId;
-    }
-
-    public String getDestStopId() {
-        return destStopId;
-    }
-
-    public void setDestStopId(String destStopId) {
-        this.destStopId = destStopId;
-    }
-
     public TransitType getTransitType() {
         return transitType;
     }
@@ -126,12 +118,28 @@ public class NextToArriveTripView extends FrameLayout {
         this.transitType = transitType;
     }
 
-    public String getRouteId() {
-        return routeId;
+    public StopModel getStart() {
+        return start;
     }
 
-    public void setRouteId(String routeId) {
-        this.routeId = routeId;
+    public void setStart(StopModel start) {
+        this.start = start;
+    }
+
+    public StopModel getDestination() {
+        return destination;
+    }
+
+    public void setDestination(StopModel destination) {
+        this.destination = destination;
+    }
+
+    public RouteDirectionModel getRouteDirectionModel() {
+        return routeDirectionModel;
+    }
+
+    public void setRouteDirectionModel(RouteDirectionModel routeDirectionModel) {
+        this.routeDirectionModel = routeDirectionModel;
     }
 
     private static class MultiLinesListAdapter extends ArrayAdapter<NextArrivalRecord> {

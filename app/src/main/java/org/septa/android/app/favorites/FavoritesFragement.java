@@ -1,5 +1,6 @@
 package org.septa.android.app.favorites;
 
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,9 +14,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.nextarrive.NextArrivalModelResponseParser;
+import org.septa.android.app.nextarrive.NextToArriveResultsActivity;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Favorite;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalModelResponse;
@@ -60,7 +64,7 @@ public class FavoritesFragement extends Fragment {
         favoritesList.addAll(favorites.values());
 
         for (int i = 0; i < favoritesList.size(); i++) {
-            Favorite favorite = favoritesList.get(i);
+            final Favorite favorite = favoritesList.get(i);
             View convertView = inflater.inflate(R.layout.favorite_item, favoritesListView, false);
             TextView favName = (TextView) convertView.findViewById(R.id.favorite_title_text);
             favName.setText(favorite.getName());
@@ -73,17 +77,21 @@ public class FavoritesFragement extends Fragment {
 
             final NextToArriveTripView tripView = new NextToArriveTripView(getContext());
             tripView.setTransitType(favorite.getTransitType());
-            tripView.setStartStopId(favorite.getStartId());
-            tripView.setDestStopId(favorite.getDestinationId());
-            tripView.setRouteId(favorite.getLineId());
+            tripView.setStart(favorite.getStart());
+            tripView.setDestination(favorite.getDestination());
+            tripView.setRouteDirectionModel(favorite.getRouteDirectionModel());
 
             containerView.addView(tripView);
             favoritesListView.addView(convertView);
 
+            String routeId = null;
+            if (favorite.getRouteDirectionModel()!=null)
+                routeId = favorite.getRouteDirectionModel().getRouteId();
+
             Call<NextArrivalModelResponse> results = SeptaServiceFactory.getNextArrivalService()
-                    .getNextArriaval(Integer.parseInt(favorite.getStartId()),
-                            Integer.parseInt(favorite.getDestinationId()),
-                            favorite.getTransitType().name(), favorite.getLineId());
+                    .getNextArriaval(Integer.parseInt(favorite.getStart().getStopId()),
+                            Integer.parseInt(favorite.getDestination().getStopId()),
+                            favorite.getTransitType().name(), routeId);
 
             results.enqueue(new Callback<NextArrivalModelResponse>() {
                 @Override
@@ -94,6 +102,21 @@ public class FavoritesFragement extends Fragment {
                 @Override
                 public void onFailure(@NonNull Call<NextArrivalModelResponse> call, @NonNull Throwable t) {
 
+                }
+            });
+
+            View moreButton = convertView.findViewById(R.id.more_button);
+            moreButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(getActivity(), NextToArriveResultsActivity.class);
+                    intent.putExtra(Constants.STARTING_STATION, favorite.getStart());
+                    intent.putExtra(Constants.DESTINATAION_STATION, favorite.getDestination());
+                    intent.putExtra(Constants.TRANSIT_TYPE, favorite.getTransitType());
+                    intent.putExtra(Constants.LINE_ID, favorite.getRouteDirectionModel());
+                    intent.putExtra(Constants.EDIT_FAVORITES_FLAG, Boolean.TRUE);
+
+                    startActivity(intent);
                 }
             });
         }

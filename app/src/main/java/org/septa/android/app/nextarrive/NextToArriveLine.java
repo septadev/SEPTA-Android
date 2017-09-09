@@ -12,7 +12,7 @@ import java.util.List;
 
 public class NextToArriveLine {
     List<NextArrivalModelResponse.NextArrivalRecord> nextToArriveModels = new ArrayList<NextArrivalModelResponse.NextArrivalRecord>();
-    String lineName;
+    public String lineName;
     Date soonestDeparture;
     boolean multiStop;
 
@@ -21,7 +21,7 @@ public class NextToArriveLine {
         this.multiStop = multiStop;
     }
 
-    List<NextArrivalModelResponse.NextArrivalRecord> getList() {
+    public List<NextArrivalModelResponse.NextArrivalRecord> getList() {
         return nextToArriveModels;
     }
 

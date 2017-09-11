@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import org.septa.android.app.favorites.FavoritesFragement;
 import org.septa.android.app.nextarrive.NextToArriveFragement;
 import org.septa.android.app.schedules.SchedulesFragment;
+import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.support.Consumer;
 import org.septa.android.app.temp.ComingSoonFragement;
 
@@ -79,6 +80,12 @@ public class MainActivity extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
+
+        if (SeptaServiceFactory.getFavoritesService().getFavorites(this).size() > 0) {
+            switchToFavorites();
+        } else {
+            switchToNTA();
+        }
 
     }
 
@@ -197,14 +204,28 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void switchToNTA() {
-        if (currentMenu.getItemId() != R.id.nav_next_to_arrive) {
-            currentMenu.setIcon(previousIcon);
+        if (currentMenu == null || currentMenu.getItemId() != R.id.nav_next_to_arrive) {
+            if (currentMenu != null)
+                currentMenu.setIcon(previousIcon);
             navigationView.setCheckedItem(R.id.nav_next_to_arrive);
             currentMenu = navigationView.getMenu().findItem(R.id.nav_next_to_arrive);
             previousIcon = currentMenu.getIcon();
             currentMenu.setIcon(R.drawable.ic_next_to_arrive_fill);
             getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, nextToArriveFragment).commit();
             setTitle(R.string.next_to_arrive);
+        }
+    }
+
+    public void switchToFavorites() {
+        if (currentMenu == null || currentMenu.getItemId() != R.id.nav_favorites) {
+            if (currentMenu != null)
+                currentMenu.setIcon(previousIcon);
+            navigationView.setCheckedItem(R.id.nav_favorites);
+            currentMenu = navigationView.getMenu().findItem(R.id.nav_favorites);
+            previousIcon = currentMenu.getIcon();
+            currentMenu.setIcon(R.drawable.ic_heart_fill);
+            getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, favorites).commit();
+            setTitle(R.string.favorites);
         }
     }
 

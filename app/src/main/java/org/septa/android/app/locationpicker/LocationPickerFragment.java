@@ -78,8 +78,12 @@ public class LocationPickerFragment extends DialogFragment {
         }, cursorAdapterSupplier);
 
 
+        searchByStationTab = (TextView) dialogView.findViewById(R.id.search_by_station_tab);
+        searchByAddressTab = (TextView) dialogView.findViewById(R.id.search_by_address_tab);
+
+        setActive(searchByStationTab, searchByAddressTab);
         getChildFragmentManager()
-                .beginTransaction().add(R.id.stop_picker_container, tabActivityHandlers[1].getFragment()).commit();
+                .beginTransaction().replace(R.id.stop_picker_container, tabActivityHandlers[0].getFragment()).commit();
 
         dialogView.findViewById(R.id.exit).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,8 +93,6 @@ public class LocationPickerFragment extends DialogFragment {
         });
 
 
-        searchByStationTab = (TextView) dialogView.findViewById(R.id.search_by_station_tab);
-        searchByAddressTab = (TextView) dialogView.findViewById(R.id.search_by_address_tab);
 
         searchByStationTab.setOnClickListener(new View.OnClickListener() {
             @Override

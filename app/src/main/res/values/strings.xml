@@ -69,4 +69,8 @@
     <string name="delete_fav_pos_button">OK</string>
     <string name="delete_fav_neg_button">Cancel</string>
     <string name="create_fav_snackbar_text">Trip saved to your Favorites</string>
+
+
+    <!-- Schedules -->
+    <string name="schedule_query_button_text">View Schedules</string>
 </resources>

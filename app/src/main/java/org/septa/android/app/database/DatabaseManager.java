@@ -2,8 +2,8 @@ package org.septa.android.app.database;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.v4.widget.CursorAdapter;
 import android.util.Log;
 
 import org.septa.android.app.domain.RouteDirectionModel;
@@ -58,6 +58,14 @@ public class DatabaseManager {
         return new RailStopCursorAdapterSupplier();
     }
 
+    public CursorAdapterSupplier<StopModel> getLineAwareRailStopCursorAdapterSupplier() {
+        return new LineAwareRailStopCursorAdapterSupplier();
+    }
+
+    public CursorAdapterSupplier<StopModel> getLineAwareRailStopAfterCursorAdapterSupplier() {
+        return new LineAwareRailStopAfterCursorAdapterSupplier();
+    }
+
     public CursorAdapterSupplier<StopModel> getNhslStopCursorAdapterSupplier() {
         return new NhslStopCursorAdapterSupplier();
     }
@@ -70,6 +78,14 @@ public class DatabaseManager {
         return new BusRouteCursorAdapterSupplier(BUS);
     }
 
+    public CursorAdapterSupplier<RouteDirectionModel> getRailRouteCursorAdapaterSupplier() {
+        return new RailRouteCursorAdapterSupplier();
+    }
+
+    public CursorAdapterSupplier<RouteDirectionModel> getNHSLRouteCursorAdapterSupplier(){
+        return new NHSLRouteCursorAdapterSupplier();
+    }
+
     public CursorAdapterSupplier<StopModel> getBusStopAfterCursorAdapterSupplier() {
         return new BusStopAfterCursorAdapterSupplier();
     }
@@ -77,6 +93,7 @@ public class DatabaseManager {
     public CursorAdapterSupplier<StopModel> getTrolleyStopCursorAdapterSupplier() {
         return new BusStopCursorAdapterSupplier();
     }
+
     public CursorAdapterSupplier<StopModel> getSubwayStopCursorAdapterSupplier() {
         return new SubwayStopCursorAdapterSupplier();
     }
@@ -200,6 +217,137 @@ public class DatabaseManager {
             Cursor cursor = getCursor(context, criteria);
             StopModel stopModel = null;
 
+            if (cursor != null) {
+                if (cursor.moveToFirst()) {
+                    stopModel = getCurrentItemFromCursor(cursor);
+                }
+                cursor.close();
+            }
+
+            return stopModel;
+        }
+    }
+
+
+    public class LineAwareRailStopCursorAdapterSupplier implements CursorAdapterSupplier<StopModel> {
+
+        private static final String SELECT_CLAUSE = "SELECT DISTINCT a.stop_id, a.stop_name, a.wheelchair_boarding, a.stop_lat, a.stop_lon, a.rowid AS _id FROM stops_rail a, trips_rail b, stop_times_rail c  WHERE b.trip_id=c.trip_id and c.stop_id=a.stop_id";
+
+
+        @Override
+        public Cursor getCursor(Context context, List<Criteria> whereClause) {
+            StringBuilder queryString = new StringBuilder(SELECT_CLAUSE);
+
+            if (whereClause != null) {
+                for (Criteria c : whereClause) {
+                    queryString.append(" AND ");
+
+                    if ("stop_lon".equals(c.getFieldName()) || "stop_lat".equals(c.getFieldName())) {
+                        queryString.append("CAST(a.").append(c.getFieldName()).append(" as decimal)")
+                                .append(c.getOperation()).append(c.getValue().toString());
+
+                    } else if ("route_id".equals(c.getFieldName()) || "direction_id".equals(c.getFieldName())) {
+                        queryString.append("b.");
+                    } else queryString.append("a.");
+
+                    queryString.append(c.getFieldName()).append(c.getOperation()).append("'").append(c.getValue().toString()).append("'");
+
+                }
+
+            }
+            Log.d(TAG, "Creating cursor:" + queryString.toString());
+
+            queryString.append(" ORDER BY a.stop_name");
+
+            Cursor cursor = getDatabase(context).rawQuery(queryString.toString(), null);
+
+            return cursor;
+        }
+
+        @Override
+        public StopModel getCurrentItemFromCursor(Cursor cursor) {
+            return new StopModel(cursor.getString(0), cursor.getString(1),
+                    (cursor.getInt(2) == 1), cursor.getString(3), cursor.getString(4));
+        }
+
+        @Override
+        public StopModel getItemFromId(Context context, Object id) {
+            List<Criteria> criteria = new ArrayList<Criteria>(1);
+            criteria.add(new Criteria("stop_id", Criteria.Operation.EQ, id.toString()));
+            Cursor cursor = getCursor(context, criteria);
+            StopModel stopModel = null;
+
+            if (cursor != null) {
+                if (cursor.moveToFirst()) {
+                    stopModel = getCurrentItemFromCursor(cursor);
+                }
+                cursor.close();
+            }
+
+            return stopModel;
+        }
+    }
+
+    public class LineAwareRailStopAfterCursorAdapterSupplier implements CursorAdapterSupplier<StopModel> {
+
+        private static final String SELECT_CLAUSE = "select distinct y.stop_id, y.stop_name, y.wheelchair_boarding, y.stop_lat, y.stop_lon, y.rowid AS _id from (SELECT a.stop_id, stop_name, wheelchair_boarding, stop_lat, stop_lon, c.stop_sequence, c.trip_id, a.rowid AS _id FROM stops_rail a, trips_rail b, stop_times_rail c WHERE c.trip_id=b.trip_id and c.stop_id=a.stop_id and a.stop_id=''{0}'' and b.route_id=''{1}'' and b.direction_id=''{2}'') x, (SELECT a.stop_id, stop_name, wheelchair_boarding, stop_lat, stop_lon, c.stop_sequence, c.trip_id, a.rowid AS _id FROM stops_rail a, trips_rail b, stop_times_rail c WHERE c.trip_id=b.trip_id and c.stop_id=a.stop_id) y where x.trip_id=y.trip_id and x.stop_sequence < y.stop_sequence";
+
+
+        @Override
+        public Cursor getCursor(Context context, List<Criteria> whereClause) {
+            if (whereClause == null)
+                throw new RuntimeException("Required where clause that includes after_stop_id, route_id and direction_id with Equals Operation");
+
+            StringBuilder queryString = new StringBuilder(SELECT_CLAUSE);
+            String afterStopId = null;
+            String routeId = null;
+            String directionId = null;
+
+            for (Criteria c : whereClause) {
+                if ("after_stop_id".equals(c.getFieldName()) && Criteria.Operation.EQ == c.getOperation()) {
+                    afterStopId = c.getValue().toString();
+                    continue;
+                }
+
+                if ("route_id".equals(c.getFieldName()) && Criteria.Operation.EQ == c.getOperation()) {
+                    routeId = c.getValue().toString();
+                    continue;
+                }
+                if ("direction_id".equals(c.getFieldName()) && Criteria.Operation.EQ == c.getOperation()) {
+                    directionId = c.getValue().toString();
+                    continue;
+                }
+            }
+
+            if (afterStopId == null || routeId == null || directionId == null) {
+                throw new RuntimeException("Requires Criteria that includes after_stop_id, route_id and direction_id with Equals Operation");
+            }
+
+            queryString.append(" ORDER BY y.stop_name");
+
+            MessageFormat form = new MessageFormat(queryString.toString());
+            String query = form.format(new Object[]{afterStopId, routeId, directionId});
+
+            Cursor cursor = getDatabase(context).rawQuery(query, null);
+            Log.d(TAG, "BusStopAfterCursorAdapterSupplier Creating cursor:" + query);
+
+            return cursor;
+        }
+
+        @Override
+        public StopModel getCurrentItemFromCursor(Cursor cursor) {
+            StopModel stopModel = new StopModel(cursor.getString(0), cursor.getString(1),
+                    (cursor.getInt(2) == 1), cursor.getString(3), cursor.getString(4));
+            stopModel.setStopSequence(cursor.getInt(5));
+            return stopModel;
+        }
+
+        @Override
+        public StopModel getItemFromId(Context context, Object id) {
+            String queryString = "SELECT DISTINCT a.stop_id, stop_name, wheelchair_boarding, stop_lat, stop_lon, a.rowid AS _id FROM stops_rail a where a.stop_id='" + id.toString() + "'";
+
+            StopModel stopModel = null;
+            Cursor cursor = getDatabase(context).rawQuery(queryString.toString(), null);
             if (cursor != null) {
                 if (cursor.moveToFirst()) {
                     stopModel = getCurrentItemFromCursor(cursor);
@@ -340,6 +488,29 @@ public class DatabaseManager {
     }
 
 
+    public class RailRouteCursorAdapterSupplier implements CursorAdapterSupplier<RouteDirectionModel> {
+        private static final String SELECT_CLAUSE = "SELECT R.Route_id, R.route_short_name route_short_name, 'to ' || S.stop_name route_long_name, cast (T.direction_id  as TEXT ) dircode FROM routes_rail R JOIN trips_rail T ON R.route_id = T.route_id JOIN stop_times_rail ST ON T.trip_id = ST.trip_id JOIN stops_rail S ON ST.stop_id = S.stop_id JOIN ( SELECT R.route_id, T.direction_id, max(ST.stop_sequence) max_stop_sequence FROM routes_rail R JOIN trips_rail T ON R.route_id = T.route_id JOIN stop_times_rail ST ON T.trip_id = ST.trip_id JOIN stops_rail S ON ST.stop_id = S.stop_id GROUP BY R.route_id, T.direction_id) lastStop ON R.route_id = lastStop.route_id AND T.direction_id = lastStop.direction_id AND ST.stop_sequence = lastStop.max_stop_sequence GROUP BY R.Route_id,R.route_short_name, R.route_long_name,T.direction_id ,S.stop_name";
+
+        @Override
+        public Cursor getCursor(Context context, List<Criteria> whereClause) {
+
+            Cursor cursor = getDatabase(context).rawQuery(SELECT_CLAUSE, null);
+            Log.d(TAG, "Creating cursor:" + SELECT_CLAUSE);
+
+            return cursor;
+        }
+
+        @Override
+        public RouteDirectionModel getCurrentItemFromCursor(Cursor cursor) {
+            return new RouteDirectionModel(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(2), cursor.getString(3), null);
+        }
+
+        @Override
+        public RouteDirectionModel getItemFromId(Context context, Object id) {
+            throw new UnsupportedOperationException("Rail Get Item from ID not supported.");
+        }
+    }
+
     public class BusRouteCursorAdapterSupplier implements CursorAdapterSupplier<RouteDirectionModel> {
         String selectClause;
 
@@ -355,6 +526,48 @@ public class DatabaseManager {
                 queryString.append(whereClause);
             }
             queryString.append(" ORDER BY route_short_name");
+
+            Cursor cursor = getDatabase(context).rawQuery(queryString.toString(), null);
+            Log.d(TAG, "Creating cursor:" + queryString.toString());
+
+            return cursor;
+        }
+
+        @Override
+        public RouteDirectionModel getCurrentItemFromCursor(Cursor cursor) {
+            return new RouteDirectionModel(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getInt(5));
+        }
+
+        @Override
+        public RouteDirectionModel getItemFromId(Context context, Object id) {
+            List<Criteria> criteria = new ArrayList<Criteria>(1);
+            criteria.add(new Criteria("route_id", Criteria.Operation.EQ, id.toString()));
+            Cursor cursor = getCursor(context, criteria);
+            RouteDirectionModel routeDirectionModel = null;
+
+            if (cursor != null) {
+                if (cursor.moveToFirst()) {
+                    routeDirectionModel = getCurrentItemFromCursor(cursor);
+                }
+                cursor.close();
+            }
+            return routeDirectionModel;
+        }
+    }
+
+    public class NHSLRouteCursorAdapterSupplier implements CursorAdapterSupplier<RouteDirectionModel> {
+        String selectClause;
+
+        NHSLRouteCursorAdapterSupplier() {
+            selectClause = "SELECT Route, Route, Route, DirectionDescription, dircode, routeType, rowid AS _id from bus_stop_directions WHERE RouteType='RailTransit' and Route='NHSL'";
+        }
+
+        @Override
+        public Cursor getCursor(Context context, List<Criteria> whereClause) {
+
+
+            StringBuilder queryString = new StringBuilder(selectClause);
+            queryString.append(" ORDER BY Route");
 
             Cursor cursor = getDatabase(context).rawQuery(queryString.toString(), null);
             Log.d(TAG, "Creating cursor:" + queryString.toString());

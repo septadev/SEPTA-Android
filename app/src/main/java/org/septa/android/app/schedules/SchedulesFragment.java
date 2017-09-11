@@ -1,22 +1,30 @@
 package org.septa.android.app.schedules;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.annotation.IdRes;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 
 import org.septa.android.app.R;
+import org.septa.android.app.TransitType;
 import org.septa.android.app.database.DatabaseManager;
-import org.septa.android.app.domain.ScheduleItem;
-import android.widget.TextView;
+import org.septa.android.app.locationpicker.LineAwareLocationPickerTabActivityHandler;
+import org.septa.android.app.locationpicker.LineUnawareLocationPickerTabActivityHandler;
+import org.septa.android.app.nextarrive.NextToArriveResultsActivity;
+import org.septa.android.app.support.TabActivityHandler;
 
-import java.util.ArrayList;
+import android.widget.TextView;
 
 /************************************************************************************************************
  * Class: SchedulesFragment
@@ -26,198 +34,126 @@ import java.util.ArrayList;
 
 public class SchedulesFragment extends Fragment {
 
-    // private data members
-    private ArrayList<ScheduleItem> scheduleItemArrayList = null;
-    private DatabaseManager dbManager = null;
-    private RadioGroup radioGroup = null;
-    View fragmentView = null;
+    public static final String TAG = SchedulesFragment.class.getSimpleName();
 
-    private String routeID = null;
-    private String routeTitle = null;
-    private String startingStop = null;
-    private String destinationStop = null;
-    private String routeDescription = null;
+    private SchedulesFragment.SectionsPagerAdapter mSectionsPagerAdapter;
+    private ViewPager mViewPager;
+    private TabLayout tabLayout;
+    TabActivityHandler tabActivityHandlers[];
 
-    //----------------------------------------------------------------------------------------------
-    //Method:  onCreateView
-    //Purpose: initialize the dynamic views for the schedule fragment
-    //
-    //return void
-    //----------------------------------------------------------------------------------------------
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        ((TextView) tabLayout.getTabAt(tabLayout.getSelectedTabPosition()).getCustomView())
+                .setCompoundDrawablesWithIntrinsicBounds(tabActivityHandlers[tabLayout.getSelectedTabPosition()]
+                        .getActiveDrawableId(), 0, 0, 0);
+    }
+
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater,
-                             @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
 
-        //-----------------------------------------------------------------------------------------
-        // note to self
-        // start the schedules activity
-        // Step 1: pieces of information necessary for the schedules activity
-        //         Transit Type
-        //         Line ID
-        //         Start Location
-        //         Stop Location
-        // Step 2: Query the database for the necessary schedule information
-        // Step 3: Create Array Result set and then
-        // Step 4: Inflate custom View and bind Data with list adapter
-        // * Note: Will have to create a special case with the Rail line due to (M-TH) Fri Sat Sunday option
-        // _________________________________________________________________________________________
+        if (ContextCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
 
 
-        dbManager = DatabaseManager.getInstance(getActivity());
-        fragmentView = inflater.inflate(R.layout.schedules_main, null);
+        DatabaseManager dbManager = DatabaseManager.getInstance(getActivity());
 
-        setDebugLabelDefaults();// for debug only
-        setRouteTitle(routeTitle);
-        setRouteTitleDescrpition(routeDescription);
-        setStartStation(startingStop);
-        setDestinationStation(destinationStop);
-        initRadioButtonGroup();
+        tabActivityHandlers = new TabActivityHandler[5];
+        tabActivityHandlers[1] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.rail_tab), "nta_picker_title", getString(R.string.schedule_query_button_text), TransitType.RAIL, dbManager.getRailRouteCursorAdapaterSupplier(), dbManager.getLineAwareRailStopCursorAdapterSupplier(), dbManager.getLineAwareRailStopAfterCursorAdapterSupplier(), NextToArriveResultsActivity.class);
+        tabActivityHandlers[0] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.bus_tab), "nta_picker_title", getString(R.string.schedule_query_button_text), TransitType.BUS, dbManager.getBusRouteCursorAdapterSupplier(), dbManager.getBusStopCursorAdapterSupplier(), dbManager.getBusStopAfterCursorAdapterSupplier(), NextToArriveResultsActivity.class);
+        tabActivityHandlers[3] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.trolley_tab), "nta_picker_title", getString(R.string.schedule_query_button_text), TransitType.TROLLEY, dbManager.getTrolleyRouteCursorAdapterSupplier(), dbManager.getTrolleyStopCursorAdapterSupplier(), dbManager.getTrolleyStopAfterCursorAdapterSupplier(), NextToArriveResultsActivity.class);
+        tabActivityHandlers[2] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.subway_tab), "nta_picker_title", getString(R.string.schedule_query_button_text), TransitType.SUBWAY, dbManager.getSubwayRouteCursorAdapterSupplier(), dbManager.getSubwayStopCursorAdapterSupplier(), dbManager.getSubwayStopAfterCursorAdapterSupplier(), NextToArriveResultsActivity.class);
+        tabActivityHandlers[4] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.nhsl_tab), "nta_picker_title", getString(R.string.schedule_query_button_text), TransitType.NHSL, dbManager.getNHSLRouteCursorAdapterSupplier(), dbManager.getBusStopCursorAdapterSupplier(), dbManager.getBusStopAfterCursorAdapterSupplier(), NextToArriveResultsActivity.class);
 
-        //- below code is debug hook for db query and result set
-        //-getDebugData will be replaced by actual query
-        ArrayList<ScheduleItem> scheduleItemArrayList = getDebugData(null);
-        bindListView(scheduleItemArrayList);
 
+        View fragmentView = inflater.inflate(R.layout.schedule_fragement_main, null);
+
+        mSectionsPagerAdapter = new SchedulesFragment.SectionsPagerAdapter(getChildFragmentManager());
+
+        // Set up the ViewPager with the sections adapter.
+        mViewPager = (ViewPager) fragmentView.findViewById(R.id.schedule_fragment_container);
+        mViewPager.setAdapter(mSectionsPagerAdapter);
+
+        tabLayout = (TabLayout) fragmentView.findViewById(R.id.schedule_fragment_tabs);
+        tabLayout.setupWithViewPager(mViewPager);
+        setUpTabs(tabLayout, inflater);
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                ((TextView) tab.getCustomView()).setCompoundDrawablesWithIntrinsicBounds(tabActivityHandlers[tab.getPosition()].getActiveDrawableId(), 0, 0, 0);
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+                ((TextView) tab.getCustomView()).setCompoundDrawablesWithIntrinsicBounds(tabActivityHandlers[tab.getPosition()].getInactiveDrawableId(), 0, 0, 0);
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
 
         return fragmentView;
     }
 
-    //----------------------------------------------------------------------------------------------
-    //Method:  setRouteTitle
-    //Purpose: initialize the dynamic text views for the schedule fragment
-    //
-    //return void
-    //----------------------------------------------------------------------------------------------
-    private void setRouteTitle (String routeName){
-        //getView the set data
-        TextView textView  =  (TextView) fragmentView.findViewById(R.id.routeNameTextView);
-        textView.setText(routeName);
-    }
-    private void setStartStation (String stopName){
-        //getView the set data
-        TextView textView = (TextView) fragmentView.findViewById(R.id.startStationTextView);
-        textView.setText(stopName);
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable("org.septa.android.app.nextarrive.NextToArriveFragement.mSectionsPagerAdapter", mSectionsPagerAdapter.saveState());
     }
 
-    private void setDestinationStation (String stopName){
-        //getView the set data
-        TextView textView = (TextView) fragmentView.findViewById(R.id.destinationStationTextView);
-        textView.setText(stopName);
-    }
-
-    private void setRouteTitleDescrpition(String descrpition){
-        TextView textView = (TextView) fragmentView.findViewById(R.id.routeDescriptionTextView);
-        textView.setText(descrpition);
-    }
-
-    private void setTransitLineIndicator(String transitLine){
-
-    }
-
-    //----------------------------------------------------------------------------------------------
-    //Method:  bindListView
-    //Purpose: Method is responsible for binding the result schedule set to the custom
-    //         listview in the SchedulesFragmemt - *important* this is the main view for this page
-    //
-    //return void
-    //----------------------------------------------------------------------------------------------
-    private void bindListView(ArrayList<ScheduleItem> list){
-        if(list != null) {
-            ListView listview = (ListView) fragmentView.findViewById(R.id.scheduleListView);
-            listview.setAdapter(new SchedulesAdapter(fragmentView.getContext(), list));
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if (savedInstanceState != null) {
+            Parcelable parcelable = savedInstanceState.getParcelable("org.septa.android.app.nextarrive.NextToArriveFragement.mSectionsPagerAdapter");
+            if (parcelable != null)
+                mSectionsPagerAdapter.restoreState(parcelable, this.getClass().getClassLoader());
         }
     }
 
-    //----------------------------------------------------------------------------------------------
-    //Method: initRadioButtonGroup
-    //
-    //Purpose: This is the main control for this form, this method is responsible for:
-    //         1. ) setting up the group onchanged click event
-    //              in the radio button group for the user control on the form.
-    //
-    //         2.) responsible for calling the "bindListView" method to rebind the view
-    //         with the corresonding data from the UI Selection.
-    //
-    //         3.) Setting default selection state
-
-    // Note:   It is important to note the "clearCheck" method must be called before the
-    //         listener is invoked or event will not fire.
-    //
-    //         *IMPORTANT* Background and color change
-    //         events and processing are done in the custom xml files listed below
-
-    //         This method is used in conjuntion with five resource files:
-    //         File: radio_btn_background_selector.xmlor.xml - handles selector for background change
-    //               radio_btn_color_normalnormal.xml        - defines unselected button color
-    //               radio_btn_color_selected.xmled.xml      - defines selected button background color
-    //               radio_btn_font_color_selector.xml       - defines font colors for selection
-    //               schedules_main.xml                      - main schedule UI fragment
-    //-----------------------------------------------------------------------------------------------
-    private void initRadioButtonGroup(){
-        radioGroup = (RadioGroup) fragmentView.findViewById(R.id.radioButtonGroup);
-        radioGroup.clearCheck(); //must clear the defaults otherwise event wont fire
-        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup radioGroup, @IdRes int checkedID) {
-                try {
-
-                    RadioButton rb = (RadioButton) radioGroup.findViewById(checkedID);
-                    boolean checked = rb.isChecked();
-                    // Check which radio button was clicked
-
-                    switch (checkedID) {
-                        case R.id.WeekDay_Button:
-                            if (checked) {
-                                //debug only - need to query database
-                                bindListView(getDebugData(rb.getText().toString()));
-                            }
-                            break;
-                        case R.id.Saturday_Button:
-                            if (checked)
-                                //debug only - need to query database
-                                bindListView(getDebugData(rb.getText().toString()));
-                            break;
-                        case R.id.Sunday_Button:
-                            if (checked)
-                                //debug only - need to query database
-                                bindListView(getDebugData(rb.getText().toString()));
-                            break;
-                    }
-                }catch(Exception ex){
-
-                }
-            }
-        });
-
-        //set default settings for radio button
-        RadioButton rb = (RadioButton) radioGroup.findViewById(R.id.WeekDay_Button);
-        rb.setChecked(true);
-
-    }
-
-    //----------------------------------------------------------------------------------------------
-    //Method:  getDebugData
-    //Purpose: debug data creation method for view
-    //
-    //return ArrayList<ScheduleItem>
-    //----------------------------------------------------------------------------------------------
-    //debug data population
-    private ArrayList<ScheduleItem> getDebugData(String value){
-        scheduleItemArrayList = new ArrayList<>();
-        for (int i = 0; i <8; i++) {
-            ScheduleItem newItem = new ScheduleItem("10:0"+i+"am", "10:3"+i+"am", value);
-            scheduleItemArrayList.add(newItem);
+    private void setUpTabs(TabLayout tabLayout, LayoutInflater inflater) {
+        for (int i = 0; i < tabActivityHandlers.length; i++) {
+            TextView tab = (TextView) inflater.inflate(R.layout.custom_tab, null);
+            tab.setText(tabActivityHandlers[i].getTabTitle());
+            tab.setCompoundDrawablesWithIntrinsicBounds(tabActivityHandlers[i].getInactiveDrawableId(), 0, 0, 0);
+            tabLayout.getTabAt(i).setCustomView(tab);
         }
-        return scheduleItemArrayList;
     }
 
-    private void setDebugLabelDefaults(){
-        routeTitle = "Paoli/Thorndale";
-        startingStop = "Jefferson Station";
-        destinationStop = "Paoli Station";
-        routeDescription = "to/from Center City Pennslyvania";
+
+    /**
+     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
+     * one of the sections/tabs/pages.
+     */
+    public class SectionsPagerAdapter extends FragmentPagerAdapter {
+
+        public SectionsPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            // getItem is called to instantiate the fragment for the given page.
+            // Return a PlaceholderFragment (defined as a static inner class below).
+            return tabActivityHandlers[position].getFragment();
+        }
+
+        @Override
+        public int getCount() {
+            return tabActivityHandlers.length;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return tabActivityHandlers[position].getTabTitle();
+        }
     }
+
 }
 

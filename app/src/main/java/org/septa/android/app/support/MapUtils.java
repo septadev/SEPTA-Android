@@ -76,6 +76,13 @@ public class MapUtils {
                 nodes.item(i).setTextContent(colorValue);
             }
 
+            NodeList points = (NodeList) xPath.evaluate("//Placemark/MultiGeometry/Point",
+                    doc.getDocumentElement(), XPathConstants.NODESET);
+
+            for (int i = 0; i < points.getLength(); i++) {
+                points.item(i).getParentNode().removeChild(points.item(i));
+            }
+
             TransformerFactory tf = TransformerFactory.newInstance();
             Transformer transformer = tf.newTransformer();
             StringWriter writer = new StringWriter();

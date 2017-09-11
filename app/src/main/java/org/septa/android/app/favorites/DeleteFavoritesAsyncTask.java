@@ -16,6 +16,10 @@ public class DeleteFavoritesAsyncTask extends AsyncTask<String, Void, Void> {
     Runnable onPostExecute;
     Context context;
 
+    public DeleteFavoritesAsyncTask(Context context) {
+        this.context = context;
+    }
+
     public DeleteFavoritesAsyncTask(Context context, Runnable onCancel, Runnable onPostExecute) {
         this.context = context;
         this.onCancel = onCancel;
@@ -31,12 +35,14 @@ public class DeleteFavoritesAsyncTask extends AsyncTask<String, Void, Void> {
     @Override
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
-        onPostExecute.run();
+        if (onPostExecute != null)
+            onPostExecute.run();
     }
 
     @Override
     protected void onCancelled() {
         super.onCancelled();
-        onCancel.run();
+        if (onCancel != null)
+            onCancel.run();
     }
 }

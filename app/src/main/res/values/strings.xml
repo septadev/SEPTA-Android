@@ -56,4 +56,10 @@
     <string name="trip_details">Trip Details</string>
     <string name="about_the_septa_app">About the SEPTA App</string>
     <string name="text_empty_trips">No recent trips</string>
+
+    <!-- Favorite -->
+    <string name="delete_fav_modal_title">Delete Favorite?</string>
+    <string name="delete_fav_modal_text">Do you want to remove this Trip from your Favorites</string>
+    <string name="delete_fav_pos_button">OK</string>
+    <string name="delete_fav_neg_button">Cancel</string>
 </resources>

@@ -1,5 +1,7 @@
 package org.septa.android.app.favorites;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.support.v4.app.DialogFragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -9,6 +11,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import org.septa.android.app.R;
+import org.septa.android.app.nextarrive.NextToArriveResultsActivity;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Favorite;
 import org.septa.android.app.support.Consumer;
@@ -58,9 +61,23 @@ public class EditFavoriteDialogFragment extends DialogFragment {
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SeptaServiceFactory.getFavoritesService().deleteFavorite(getContext(), favorite.getKey());
-                getDialog().dismiss();
-                getActivity().onBackPressed();
+                if (getContext() != null) {
+                    new AlertDialog.Builder(getContext()).setCancelable(true).setTitle(R.string.delete_fav_modal_title)
+                            .setMessage(R.string.delete_fav_modal_text)
+                            .setPositiveButton(R.string.delete_fav_pos_button, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    DeleteFavoritesAsyncTask task = new DeleteFavoritesAsyncTask(getContext());
+                                    task.execute(favorite.getKey());
+                                    getDialog().dismiss();
+                                    getActivity().onBackPressed();
+                                }
+                            }).setNegativeButton(R.string.delete_fav_neg_button, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    }).create().show();
+                }
             }
         });
 

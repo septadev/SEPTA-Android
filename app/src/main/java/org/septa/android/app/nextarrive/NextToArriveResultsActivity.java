@@ -9,6 +9,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -183,10 +184,14 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                 });
 
                 task.execute(favorite);
+                Snackbar snackbar = Snackbar
+                        .make(findViewById(R.id.rail_next_to_arrive_results_coordinator), "Trip saved to your Favorites" , Snackbar.LENGTH_SHORT);
+
+                snackbar.show();
             } else {
-                new AlertDialog.Builder(this).setCancelable(true).setTitle("Delete Favorite")
-                        .setMessage("Are you sure you want to delete the Favorite '" + currentFavorite.getName() + "'?")
-                        .setPositiveButton("Delete Favorite", new DialogInterface.OnClickListener() {
+                new AlertDialog.Builder(this).setCancelable(true).setTitle(R.string.delete_fav_modal_title)
+                        .setMessage(R.string.delete_fav_modal_text)
+                        .setPositiveButton(R.string.delete_fav_pos_button, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 DeleteFavoritesAsyncTask task = new DeleteFavoritesAsyncTask(NextToArriveResultsActivity.this, new Runnable() {
@@ -205,7 +210,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
                                 task.execute(currentFavorite.getKey());
                             }
-                        }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        }).setNegativeButton(R.string.delete_fav_neg_button, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         item.setEnabled(true);

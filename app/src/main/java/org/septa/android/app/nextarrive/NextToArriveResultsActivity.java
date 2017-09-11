@@ -257,11 +257,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
         updateNextToArriveData();
 
-        View mapContainer = findViewById(R.id.map_container);
-        ViewGroup.LayoutParams layoutParams =
-                bottomSheetLayout.getLayoutParams();
-        layoutParams.height = mapContainer.getHeight();
-        bottomSheetLayout.setLayoutParams(layoutParams);
+        final View mapContainer = findViewById(R.id.map_container);
 
 
         LatLng startingStationLatLng = new LatLng(start.getLatitude(), start.getLongitude());
@@ -279,6 +275,10 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         googleMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
             @Override
             public void onMapLoaded() {
+                ViewGroup.LayoutParams layoutParams =
+                        bottomSheetLayout.getLayoutParams();
+                layoutParams.height = mapContainer.getHeight();
+                bottomSheetLayout.setLayoutParams(layoutParams);
                 googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 80, getResources().getDisplayMetrics())));
             }
         });

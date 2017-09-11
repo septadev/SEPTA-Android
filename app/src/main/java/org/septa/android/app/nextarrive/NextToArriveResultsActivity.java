@@ -108,6 +108,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         refresh = findViewById(R.id.refresh_button);
 
         bottomSheetLayout = (ViewGroup) findViewById(R.id.bottomSheetLayout);
+
         final BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLayout);
         progressViewBottom = findViewById(R.id.progress_view_bottom);
 
@@ -133,6 +134,9 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
 
         if (start != null && destination != null && transitType != null) {
+            TextView titleText = (TextView) bottomSheetLayout.findViewById(R.id.title_txt);
+            titleText.setText(transitType.getString("nta_results_title", this));
+
             TextView startingStationNameText = (TextView) findViewById(R.id.starting_station_name);
             startingStationNameText.setText(start.getStopName());
 
@@ -185,7 +189,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
                 task.execute(favorite);
                 Snackbar snackbar = Snackbar
-                        .make(findViewById(R.id.rail_next_to_arrive_results_coordinator), "Trip saved to your Favorites" , Snackbar.LENGTH_SHORT);
+                        .make(findViewById(R.id.rail_next_to_arrive_results_coordinator), R.string.create_fav_snackbar_text, Snackbar.LENGTH_SHORT);
 
                 snackbar.show();
             } else {

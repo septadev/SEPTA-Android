@@ -51,6 +51,12 @@
     <string name="nta_picker_title_trolley">Trolley</string>
     <string name="nta_picker_title_nhsl">Norristown High Speed Line</string>
 
+    <string name="nta_results_title_rail">Next Trains to Arrive</string>
+    <string name="nta_results_title_bus">Next Bus to Arrive</string>
+    <string name="nta_results_title_subway">Next Subway to Arrive</string>
+    <string name="nta_results_title_Trolley">Next Trolley to Arrive</string>
+    <string name="nta_results_title_nhsl">Next Trains to Arrive</string>
+
     <!-- Next To Arrive General -->
     <string name="nta_query_button_text">Next To Arrive</string>
     <string name="trip_details">Trip Details</string>
@@ -62,4 +68,5 @@
     <string name="delete_fav_modal_text">Do you want to remove this Trip from your Favorites</string>
     <string name="delete_fav_pos_button">OK</string>
     <string name="delete_fav_neg_button">Cancel</string>
+    <string name="create_fav_snackbar_text">Trip saved to your Favorites</string>
 </resources>

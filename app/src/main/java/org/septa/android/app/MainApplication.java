@@ -8,6 +8,7 @@ import android.util.Log;
 
 import org.septa.android.app.database.DatabaseManager;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
+import org.septa.android.app.systemstatus.GlobalSystemStatus;
 
 import com.crashlytics.android.Crashlytics;
 
@@ -42,5 +43,6 @@ public class MainApplication extends Application {
         }
         // Initialize database, can be moved to logo screen
         DatabaseManager.getInstance(this);
+        GlobalSystemStatus.triggerUpdate();
     }
 }

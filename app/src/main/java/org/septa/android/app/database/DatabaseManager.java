@@ -3,7 +3,6 @@ package org.septa.android.app.database;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.v4.widget.CursorAdapter;
 import android.util.Log;
 
 import org.septa.android.app.domain.RouteDirectionModel;
@@ -82,7 +81,7 @@ public class DatabaseManager {
         return new RailRouteCursorAdapterSupplier();
     }
 
-    public CursorAdapterSupplier<RouteDirectionModel> getNHSLRouteCursorAdapterSupplier(){
+    public CursorAdapterSupplier<RouteDirectionModel> getNHSLRouteCursorAdapterSupplier() {
         return new NHSLRouteCursorAdapterSupplier();
     }
 
@@ -112,6 +111,22 @@ public class DatabaseManager {
 
     public CursorAdapterSupplier<StopModel> getSubwayStopAfterCursorAdapterSupplier() {
         return new BusStopAfterCursorAdapterSupplier();
+    }
+
+    public CursorAdapterSupplier<RouteDirectionModel> getRailNoDirectionRouteCursorAdapaterSupplier() {
+        return new RailNoDirectionRouteCursorAdapterSupplier();
+    }
+
+    public CursorAdapterSupplier<RouteDirectionModel> getBusNoDirectionRouteCursorAdapaterSupplier() {
+        return new BusTrolleyNoDirectionRouteCursorAdapterSupplier(BUS);
+    }
+
+    public CursorAdapterSupplier<RouteDirectionModel> getTrolleyNoDirectionRouteCursorAdapaterSupplier() {
+        return new BusTrolleyNoDirectionRouteCursorAdapterSupplier(BUS);
+    }
+
+    public CursorAdapterSupplier<RouteDirectionModel> getSubwayNoDirectionRouteCursorAdapaterSupplier() {
+        return new SubwayNoDirectionRouteCursorAdapterSupplier();
     }
 
     public class NhslStopCursorAdapterSupplier implements CursorAdapterSupplier<StopModel> {
@@ -712,5 +727,82 @@ public class DatabaseManager {
             return stopModel;
         }
     }
+
+    public class RailNoDirectionRouteCursorAdapterSupplier implements CursorAdapterSupplier<RouteDirectionModel> {
+        private static final String SELECT_CLAUSE = "SELECT route_id, route_short_name, route_long_name, route_type FROM routes_rail a";
+
+        @Override
+        public Cursor getCursor(Context context, List<Criteria> whereClause) {
+
+            Cursor cursor = getDatabase(context).rawQuery(SELECT_CLAUSE, null);
+            Log.d(TAG, "Creating cursor:" + SELECT_CLAUSE);
+
+            return cursor;
+        }
+
+        @Override
+        public RouteDirectionModel getCurrentItemFromCursor(Cursor cursor) {
+            return new RouteDirectionModel(cursor.getString(0), cursor.getString(1), cursor.getString(2), null, null, cursor.getInt(3));
+        }
+
+        @Override
+        public RouteDirectionModel getItemFromId(Context context, Object id) {
+            throw new UnsupportedOperationException("Rail Get Item from ID not supported.");
+        }
+    }
+
+    public class BusTrolleyNoDirectionRouteCursorAdapterSupplier implements CursorAdapterSupplier<RouteDirectionModel> {
+        String selectClause;
+
+
+        public BusTrolleyNoDirectionRouteCursorAdapterSupplier(int type) {
+            selectClause = "SELECT route_id, route_short_name, route_long_name, route_type FROM routes_bus a where a.route_type=" + type + " ORDER BY route_short_name";
+        }
+
+        @Override
+        public Cursor getCursor(Context context, List<Criteria> whereClause) {
+
+            Cursor cursor = getDatabase(context).rawQuery(selectClause, null);
+            Log.d(TAG, "Creating cursor:" + selectClause);
+
+            return cursor;
+        }
+
+        @Override
+        public RouteDirectionModel getCurrentItemFromCursor(Cursor cursor) {
+            return new RouteDirectionModel(cursor.getString(0), cursor.getString(1), cursor.getString(2), null, null, cursor.getInt(3));
+        }
+
+        @Override
+        public RouteDirectionModel getItemFromId(Context context, Object id) {
+            throw new UnsupportedOperationException("Rail Get Item from ID not supported.");
+        }
+    }
+
+    public class SubwayNoDirectionRouteCursorAdapterSupplier implements CursorAdapterSupplier<RouteDirectionModel> {
+        public static final String SELECT_CLAUSE =
+                "SELECT route_id, route_short_name, route_long_name, route_type FROM routes_bus a where a.route_type=1 or route_id in ('MFO', 'BSO') ORDER BY route_short_name";
+
+
+        @Override
+        public Cursor getCursor(Context context, List<Criteria> whereClause) {
+
+            Cursor cursor = getDatabase(context).rawQuery(SELECT_CLAUSE, null);
+            Log.d(TAG, "Creating cursor:" + SELECT_CLAUSE);
+
+            return cursor;
+        }
+
+        @Override
+        public RouteDirectionModel getCurrentItemFromCursor(Cursor cursor) {
+            return new RouteDirectionModel(cursor.getString(0), cursor.getString(1), cursor.getString(2), null, null, cursor.getInt(3));
+        }
+
+        @Override
+        public RouteDirectionModel getItemFromId(Context context, Object id) {
+            throw new UnsupportedOperationException("Rail Get Item from ID not supported.");
+        }
+    }
+
 
 }

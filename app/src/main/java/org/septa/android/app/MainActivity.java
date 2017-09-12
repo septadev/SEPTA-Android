@@ -22,6 +22,7 @@ import org.septa.android.app.nextarrive.NextToArriveFragement;
 import org.septa.android.app.schedules.SchedulesFragment;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.support.Consumer;
+import org.septa.android.app.systemstatus.SystemStatusFragment;
 import org.septa.android.app.temp.ComingSoonFragement;
 
 import java.util.HashMap;
@@ -54,7 +55,7 @@ public class MainActivity extends AppCompatActivity
 
     FavoritesFragement favorites;
 
-    Fragment systemStatus = new ComingSoonFragement();
+    SystemStatusFragment systemStatus = new SystemStatusFragment();
     Fragment faresTransitInfo = new ComingSoonFragement();
     Fragment subwayMap = new ComingSoonFragement();
     Fragment events = new ComingSoonFragement();

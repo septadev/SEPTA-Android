@@ -74,12 +74,15 @@ public class SeptaServiceFactory {
         return singleton2.create(NextArrivalService.class);
     }
 
+    public static AlertDetailsService getAlertDetailsService() {
+        return singleton2.create(AlertDetailsService.class);
+    }
 
     public static GooglePlaceAutoCompleteService getAutoCompletePlaceService() {
         return googleSingleton.create(GooglePlaceAutoCompleteService.class);
     }
 
-    public static Favorites getFavoritesService(){
+    public static Favorites getFavoritesService() {
         return new FavoritesImpl();
     }
 

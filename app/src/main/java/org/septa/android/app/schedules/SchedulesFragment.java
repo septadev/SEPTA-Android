@@ -23,6 +23,7 @@ import org.septa.android.app.locationpicker.LineAwareLocationPickerTabActivityHa
 import org.septa.android.app.locationpicker.LineUnawareLocationPickerTabActivityHandler;
 import org.septa.android.app.nextarrive.NextToArriveResultsActivity;
 import org.septa.android.app.support.TabActivityHandler;
+import org.septa.android.app.temp.ComingSoonActivity;
 
 import android.widget.TextView;
 
@@ -63,11 +64,11 @@ public class SchedulesFragment extends Fragment {
         DatabaseManager dbManager = DatabaseManager.getInstance(getActivity());
 
         tabActivityHandlers = new TabActivityHandler[5];
-        tabActivityHandlers[1] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.rail_tab), "nta_picker_title", getString(R.string.schedule_query_button_text), TransitType.RAIL, dbManager.getRailRouteCursorAdapaterSupplier(), dbManager.getLineAwareRailStopCursorAdapterSupplier(), dbManager.getLineAwareRailStopAfterCursorAdapterSupplier(), NextToArriveResultsActivity.class);
-        tabActivityHandlers[0] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.bus_tab), "nta_picker_title", getString(R.string.schedule_query_button_text), TransitType.BUS, dbManager.getBusRouteCursorAdapterSupplier(), dbManager.getBusStopCursorAdapterSupplier(), dbManager.getBusStopAfterCursorAdapterSupplier(), NextToArriveResultsActivity.class);
-        tabActivityHandlers[3] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.trolley_tab), "nta_picker_title", getString(R.string.schedule_query_button_text), TransitType.TROLLEY, dbManager.getTrolleyRouteCursorAdapterSupplier(), dbManager.getTrolleyStopCursorAdapterSupplier(), dbManager.getTrolleyStopAfterCursorAdapterSupplier(), NextToArriveResultsActivity.class);
-        tabActivityHandlers[2] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.subway_tab), "nta_picker_title", getString(R.string.schedule_query_button_text), TransitType.SUBWAY, dbManager.getSubwayRouteCursorAdapterSupplier(), dbManager.getSubwayStopCursorAdapterSupplier(), dbManager.getSubwayStopAfterCursorAdapterSupplier(), NextToArriveResultsActivity.class);
-        tabActivityHandlers[4] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.nhsl_tab), "nta_picker_title", getString(R.string.schedule_query_button_text), TransitType.NHSL, dbManager.getNHSLRouteCursorAdapterSupplier(), dbManager.getBusStopCursorAdapterSupplier(), dbManager.getBusStopAfterCursorAdapterSupplier(), NextToArriveResultsActivity.class);
+        tabActivityHandlers[1] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.rail_tab), "nta_picker_title", getString(R.string.schedule_query_button_text), TransitType.RAIL, dbManager.getRailRouteCursorAdapaterSupplier(), dbManager.getLineAwareRailStopCursorAdapterSupplier(), dbManager.getLineAwareRailStopAfterCursorAdapterSupplier(), ComingSoonActivity.class);
+        tabActivityHandlers[0] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.bus_tab), "nta_picker_title", getString(R.string.schedule_query_button_text), TransitType.BUS, dbManager.getBusRouteCursorAdapterSupplier(), dbManager.getBusStopCursorAdapterSupplier(), dbManager.getBusStopAfterCursorAdapterSupplier(), ComingSoonActivity.class);
+        tabActivityHandlers[3] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.trolley_tab), "nta_picker_title", getString(R.string.schedule_query_button_text), TransitType.TROLLEY, dbManager.getTrolleyRouteCursorAdapterSupplier(), dbManager.getTrolleyStopCursorAdapterSupplier(), dbManager.getTrolleyStopAfterCursorAdapterSupplier(), ComingSoonActivity.class);
+        tabActivityHandlers[2] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.subway_tab), "nta_picker_title", getString(R.string.schedule_query_button_text), TransitType.SUBWAY, dbManager.getSubwayRouteCursorAdapterSupplier(), dbManager.getSubwayStopCursorAdapterSupplier(), dbManager.getSubwayStopAfterCursorAdapterSupplier(), ComingSoonActivity.class);
+        tabActivityHandlers[4] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.nhsl_tab), "nta_picker_title", getString(R.string.schedule_query_button_text), TransitType.NHSL, dbManager.getNHSLRouteCursorAdapterSupplier(), dbManager.getBusStopCursorAdapterSupplier(), dbManager.getBusStopAfterCursorAdapterSupplier(), ComingSoonActivity.class);
 
 
         View fragmentView = inflater.inflate(R.layout.schedule_fragement_main, null);

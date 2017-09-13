@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import org.septa.android.app.domain.RouteDirectionModel;
+import org.septa.android.app.domain.ScheduleItem;
 import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.support.Criteria;
 import org.septa.android.app.support.CursorAdapterSupplier;
@@ -500,4 +501,65 @@ public class DatabaseManager {
         }
     }
 
+
+     public TrollySchedule_CursorAdapterSupplier getTrollySchedule(){
+
+         return new TrollySchedule_CursorAdapterSupplier();
+     }
+    //----------------------------------------------------------------------------------------------
+    //Method:  TrollySchedule_CursorAdapterSupplier
+    //Purpose: Method is responsible for binding the result schedule set to the custom
+    //         listview in the SchedulesFragmemt - *important* this is the main view for this page
+    //
+    //return void
+    //----------------------------------------------------------------------------------------------
+    public class TrollySchedule_CursorAdapterSupplier implements CursorAdapterSupplier<StopModel> {
+
+       // private static final String SELECT_CLAUSE = "SELECT DISTINCT a.stop_id, stop_name, wheelchair_boarding, stop_lat, stop_lon, a.rowid AS _id FROM stops_bus a, {0} b, {1} c WHERE c.trip_id=b.trip_id and c.stop_id=a.stop_id";
+
+        @Override
+        public Cursor getCursor(Context context, List<Criteria> whereClause) {
+
+            String routeID = "914432";
+            //String query = "SELECT * from STOP_TIMES_BUS where TRIP_ID ="+routeID +";";
+            //String query = "SELECT * from STOP_TIMES_BUS where trip_id = 914432";
+            String query = "SELECT * from STOP_TIMES_BUS;";
+            Cursor cursor = getDatabase(context).rawQuery(query, null);
+
+            Log.d(TAG, "TrollySchedule_CursorAdapterSupplier Creating cursor:" + query);
+            return cursor;
+        }
+
+        @Override
+        public StopModel getCurrentItemFromCursor(Cursor cursor) {
+
+            /*
+            StopModel stopModel = new StopModel(cursor.getString(0), cursor.getString(1),
+                    (cursor.getInt(2) == 1), cursor.getString(3), cursor.getString(4));
+            return stopModel;
+            */
+            return null;
+        }
+
+        public ScheduleItem getItemFromCursor (Cursor cursor){
+
+            return null;
+        }
+
+        @Override
+        public StopModel getItemFromId(Context context, Object id) {
+            String queryString = "SELECT DISTINCT a.stop_id, stop_name, wheelchair_boarding, stop_lat, stop_lon, a.rowid AS _id FROM stops_bus a where a.stop_id='" + id.toString() + "'";
+
+            StopModel stopModel = null;
+            Cursor cursor = getDatabase(context).rawQuery(queryString.toString(), null);
+            if (cursor != null) {
+                if (cursor.moveToFirst()) {
+                    stopModel = getCurrentItemFromCursor(cursor);
+                }
+                cursor.close();
+            }
+
+            return stopModel;
+        }
+    }
 }

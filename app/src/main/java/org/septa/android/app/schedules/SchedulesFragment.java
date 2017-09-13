@@ -1,5 +1,6 @@
 package org.septa.android.app.schedules;
 
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
@@ -12,6 +13,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import org.septa.android.app.R;
+import org.septa.android.app.TransitType;
 import org.septa.android.app.database.DatabaseManager;
 import org.septa.android.app.domain.ScheduleItem;
 import android.widget.TextView;
@@ -30,13 +32,14 @@ public class SchedulesFragment extends Fragment {
     private ArrayList<ScheduleItem> scheduleItemArrayList = null;
     private DatabaseManager dbManager = null;
     private RadioGroup radioGroup = null;
-    View fragmentView = null;
+    View layoutView = null;
 
     private String routeID = null;
     private String routeTitle = null;
     private String startingStop = null;
     private String destinationStop = null;
     private String routeDescription = null;
+    private TransitType transitType = TransitType.TROLLEY;// default setting
 
     //----------------------------------------------------------------------------------------------
     //Method:  onCreateView
@@ -66,7 +69,7 @@ public class SchedulesFragment extends Fragment {
 
 
         dbManager = DatabaseManager.getInstance(getActivity());
-        fragmentView = inflater.inflate(R.layout.schedules_main, null);
+        layoutView = inflater.inflate(R.layout.schedules_main, null);
 
         setDebugLabelDefaults();// for debug only
         setRouteTitle(routeTitle);
@@ -77,11 +80,12 @@ public class SchedulesFragment extends Fragment {
 
         //- below code is debug hook for db query and result set
         //-getDebugData will be replaced by actual query
-        ArrayList<ScheduleItem> scheduleItemArrayList = getDebugData(null);
+       // ArrayList<ScheduleItem> scheduleItemArrayList = getDebugData(null);
+        ArrayList<ScheduleItem> scheduleItemArrayList = querySchedules();
         bindListView(scheduleItemArrayList);
 
 
-        return fragmentView;
+        return layoutView;
     }
 
     //----------------------------------------------------------------------------------------------
@@ -92,23 +96,23 @@ public class SchedulesFragment extends Fragment {
     //----------------------------------------------------------------------------------------------
     private void setRouteTitle (String routeName){
         //getView the set data
-        TextView textView  =  (TextView) fragmentView.findViewById(R.id.routeNameTextView);
+        TextView textView  =  (TextView) layoutView.findViewById(R.id.routeNameTextView);
         textView.setText(routeName);
     }
     private void setStartStation (String stopName){
         //getView the set data
-        TextView textView = (TextView) fragmentView.findViewById(R.id.startStationTextView);
+        TextView textView = (TextView) layoutView.findViewById(R.id.startStationTextView);
         textView.setText(stopName);
     }
 
     private void setDestinationStation (String stopName){
         //getView the set data
-        TextView textView = (TextView) fragmentView.findViewById(R.id.destinationStationTextView);
+        TextView textView = (TextView) layoutView.findViewById(R.id.destinationStationTextView);
         textView.setText(stopName);
     }
 
     private void setRouteTitleDescrpition(String descrpition){
-        TextView textView = (TextView) fragmentView.findViewById(R.id.routeDescriptionTextView);
+        TextView textView = (TextView) layoutView.findViewById(R.id.routeDescriptionTextView);
         textView.setText(descrpition);
     }
 
@@ -123,10 +127,15 @@ public class SchedulesFragment extends Fragment {
     //
     //return void
     //----------------------------------------------------------------------------------------------
-    private void bindListView(ArrayList<ScheduleItem> list){
-        if(list != null) {
-            ListView listview = (ListView) fragmentView.findViewById(R.id.scheduleListView);
-            listview.setAdapter(new SchedulesAdapter(fragmentView.getContext(), list));
+    private void bindListView(ArrayList<ScheduleItem> itemslist){
+        ListView ui_ListView = null;
+        if(itemslist != null) {
+
+            //get the schedule listview from the form
+            //then bind the list of objects to the view in the ui
+            //-----------------------------------------------------
+            ui_ListView = (ListView) layoutView.findViewById(R.id.scheduleListView);
+            ui_ListView.setAdapter(new SchedulesAdapter(layoutView.getContext(), itemslist));
         }
     }
 
@@ -156,7 +165,7 @@ public class SchedulesFragment extends Fragment {
     //               schedules_main.xml                      - main schedule UI fragment
     //-----------------------------------------------------------------------------------------------
     private void initRadioButtonGroup(){
-        radioGroup = (RadioGroup) fragmentView.findViewById(R.id.radioButtonGroup);
+        radioGroup = (RadioGroup) layoutView.findViewById(R.id.radioButtonGroup);
         radioGroup.clearCheck(); //must clear the defaults otherwise event wont fire
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -177,7 +186,8 @@ public class SchedulesFragment extends Fragment {
                         case R.id.Saturday_Button:
                             if (checked)
                                 //debug only - need to query database
-                                bindListView(getDebugData(rb.getText().toString()));
+                                bindListView(querySchedules());
+                                //bindListView(getDebugData(rb.getText().toString()));
                             break;
                         case R.id.Sunday_Button:
                             if (checked)
@@ -186,7 +196,7 @@ public class SchedulesFragment extends Fragment {
                             break;
                     }
                 }catch(Exception ex){
-
+                    System.out.print("Error Occured when binding data"+ ex.toString());
                 }
             }
         });
@@ -196,6 +206,93 @@ public class SchedulesFragment extends Fragment {
         rb.setChecked(true);
 
     }
+
+    //----------------------------------------------------------------------------------------------
+    //Method:  getDebugData
+    //Purpose: debug data creation method for view
+    //
+    //return ArrayList<ScheduleItem>
+    //----------------------------------------------------------------------------------------------
+    private ArrayList<ScheduleItem>  querySchedules(){
+
+        //1. transit type
+        //2. start station
+        //3. Destination station
+        //4. direction
+        // will need to return an arraylist of <schedule items>
+        ArrayList<ScheduleItem> scheduleItemArrayList = null;
+        Cursor db_cursor = null;
+
+
+        switch(transitType){
+            case NHSL:
+                //new db manager..
+                break;
+            case BUS:
+                //new db manager..
+                break;
+            case TROLLEY:
+                //new db manager..
+                //this will either be table specific or class specific
+                db_cursor = dbManager.getTrollySchedule()
+                                     .getCursor(layoutView.getContext(), null);
+                break;
+            case SUBWAY:
+                //new db manager..
+                break;
+            case RAIL:
+                //new db manager..
+                break;
+        }
+
+        //bind the db cursor data with the object model
+        scheduleItemArrayList = bind_ScheduleList(db_cursor);
+
+        return scheduleItemArrayList;
+    }
+
+    //----------------------------------------------------------------------------------------------
+    //Method:  bind_ScheduleList
+    //Purpose: method binds the db cursor data with the object model
+    //
+    //return ArrayList<ScheduleItem>
+    //----------------------------------------------------------------------------------
+    private ArrayList<ScheduleItem> bind_ScheduleList(Cursor cursor){
+        ArrayList<ScheduleItem> scheduleItemArrayList = new  ArrayList<ScheduleItem>();
+
+
+        //debug
+        int i = 0;
+        boolean endofCursor = false;
+
+        try {
+             endofCursor = cursor.moveToFirst();
+
+            while (endofCursor != false) {
+
+                ScheduleItem newScheduleItem = new ScheduleItem();
+                newScheduleItem.setStopName("TestStop");
+                newScheduleItem.setTripID(String.valueOf(cursor.getInt(0)));
+                newScheduleItem.set_arrivalTime_24HrClock(String.valueOf(cursor.getInt(1)));
+                newScheduleItem.setStopId(String.valueOf(cursor.getInt(2)));
+                newScheduleItem.setStopSequence(cursor.getInt(3));
+
+                scheduleItemArrayList.add(newScheduleItem);
+                endofCursor = cursor.moveToNext();
+                ++i;
+                if(i>10)
+                    break;
+            }
+            cursor.close();
+
+        }catch(Exception ex){
+            System.out.print("Object Access Exception"+ ex.toString());
+        }
+
+        return scheduleItemArrayList;
+
+    }
+
 
     //----------------------------------------------------------------------------------------------
     //Method:  getDebugData

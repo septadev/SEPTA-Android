@@ -22,6 +22,8 @@ public class StopModel implements Comparable<StopModel>, Serializable {
     private float distance;
     private int directionId;
 
+    public StopModel(){}
+
     public StopModel(String stopId, String stopName, boolean wheelchairBoarding) {
         this.stopId = stopId;
         this.setStopName(stopName);

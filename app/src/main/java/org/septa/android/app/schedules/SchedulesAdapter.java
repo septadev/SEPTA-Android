@@ -77,7 +77,7 @@ public class SchedulesAdapter extends BaseAdapter {
             //----------------------------
             TextView text = (TextView) view.findViewById(R.id.departureTextView);
             //text.setText("9:29 AM");
-            text.setText(transitScheduleList.get(position).getDepartureTime());
+            text.setText(transitScheduleList.get(position).getDepartureTime(false));
 
             //get the duration;
             //bind resource
@@ -91,7 +91,7 @@ public class SchedulesAdapter extends BaseAdapter {
             //----------------------------
             TextView text3 = (TextView) view.findViewById(R.id.arrivalTextView);
             //text3.setText("10:00 AM");
-            text3.setText(transitScheduleList.get(position).getArrivalTime());
+            text3.setText(transitScheduleList.get(position).getArrivalTime(false));
 
             return view;
         }

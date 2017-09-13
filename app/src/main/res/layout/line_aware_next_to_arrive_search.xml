@@ -46,7 +46,7 @@
                     android:layout_marginLeft="15dp"
                     android:layout_marginTop="13dp"
                     android:clickable="true"
-                    android:text="Rail Line"
+                    android:text="Line"
                     android:textColor="#6d6d6d"
                     android:textSize="12sp"
                     app:font="@string/font_roboto_regular" />

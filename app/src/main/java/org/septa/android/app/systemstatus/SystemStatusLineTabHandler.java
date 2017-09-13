@@ -1,5 +1,6 @@
 package org.septa.android.app.systemstatus;
 
+import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
 import org.septa.android.app.domain.RouteDirectionModel;
@@ -30,7 +32,7 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
     public static final String TAG = SystemStatusLineTabHandler.class.getSimpleName();
     TransitType transitType;
     CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier;
-    String selectedRouteId;
+    RouteDirectionModel routeDirectionModel;
 
 
     public SystemStatusLineTabHandler(String title, TransitType transitType, CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier) {
@@ -39,17 +41,17 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
         this.routeCursorAdapterSupplier = routeCursorAdapterSupplier;
     }
 
-    public SystemStatusLineTabHandler(String title, TransitType transitType, String selectedRouteId) {
+    public SystemStatusLineTabHandler(String title, TransitType transitType, RouteDirectionModel routeDirectionModel) {
         super(title, transitType.getTabInactiveImageResource(), transitType.getTabActiveImageResource());
         this.transitType = transitType;
-        this.selectedRouteId = selectedRouteId;
+        this.routeDirectionModel = routeDirectionModel;
     }
 
     @Override
     public Fragment getFragment() {
         if (routeCursorAdapterSupplier != null)
             return SystemStatusPickerFragement.getInstance(transitType, routeCursorAdapterSupplier);
-        else return SystemStatusPickerFragement.getInstance(transitType, selectedRouteId);
+        else return SystemStatusPickerFragement.getInstance(transitType, routeDirectionModel);
     }
 
 
@@ -63,7 +65,8 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
         View queryButton;
         TextView lineText;
         boolean globalAlertsExpanded = false;
-        String selectedRouteId;
+        RouteDirectionModel routeDirectionModel;
+
 
         @Nullable
         @Override
@@ -96,6 +99,17 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
 
             queryButton = fragmentView.findViewById(R.id.view_status_button);
 
+            queryButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getActivity(), SystemStatusResultsActivity.class);
+                    intent.putExtra(Constants.LINE_ID, routeDirectionModel);
+                    intent.putExtra(Constants.TRANSIT_TYPE, transitType);
+
+                    startActivity(intent);
+                }
+            });
+
             lineText = (TextView) fragmentView.findViewById(R.id.line_text);
 
             if (routeCursorAdapterSupplier == null) {
@@ -112,7 +126,7 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
                         LinePickerFragment newFragment = LinePickerFragment.newInstance(routeCursorAdapterSupplier, transitType, new Consumer<RouteDirectionModel>() {
                             @Override
                             public void accept(RouteDirectionModel var1) {
-                                selectedRouteId = transitType.getAlertId(var1.getRouteId());
+                                routeDirectionModel = var1;
                                 lineText.setText(var1.getRouteLongName());
 
                                 int color;
@@ -170,10 +184,10 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
             return fragement;
         }
 
-        public static SystemStatusPickerFragement getInstance(TransitType transitType, String routeId) {
+        public static SystemStatusPickerFragement getInstance(TransitType transitType, RouteDirectionModel routeDirectionModel) {
             SystemStatusPickerFragement fragement = new SystemStatusPickerFragement();
             fragement.transitType = transitType;
-            fragement.selectedRouteId = routeId;
+            fragement.routeDirectionModel = routeDirectionModel;
             return fragement;
         }
     }

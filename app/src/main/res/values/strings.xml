@@ -54,7 +54,7 @@
     <string name="nta_results_title_rail">Next Trains to Arrive</string>
     <string name="nta_results_title_bus">Next Bus to Arrive</string>
     <string name="nta_results_title_subway">Next Subway to Arrive</string>
-    <string name="nta_results_title_Trolley">Next Trolley to Arrive</string>
+    <string name="nta_results_title_trolley">Next Trolley to Arrive</string>
     <string name="nta_results_title_nhsl">Next Trains to Arrive</string>
 
     <!-- Next To Arrive General -->
@@ -69,4 +69,16 @@
     <string name="delete_fav_pos_button">OK</string>
     <string name="delete_fav_neg_button">Cancel</string>
     <string name="create_fav_snackbar_text">Trip saved to your Favorites</string>
+
+
+    <!-- System Status -->
+    <string name="system_status_picker_title_rail">Regional Rail Status</string>
+    <string name="system_status_picker_title_bus">Bus Status</string>
+    <string name="system_status_picker_title_subway">Subway Status</string>
+    <string name="system_status_picker_title_trolley">Trolley Status</string>
+    <string name="system_status_picker_title_nhsl">NHSL Status</string>
+
+
+    <!-- Schedules -->
+    <string name="schedule_query_button_text">View Schedules</string>
 </resources>

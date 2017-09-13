@@ -41,6 +41,11 @@
             android:label="@string/septa"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".temp.ComingSoonActivity"
+            android:label="@string/septa"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
 
     </application>
 

@@ -159,8 +159,12 @@ public class LinePickerFragment extends DialogFragment {
                 ImageView lineIcon = (ImageView) convertView.findViewById(R.id.route_icon);
                 lineIcon.setImageResource(transitType.getIconForLine(route.getRouteId(), getContext()));
 
-                titleText.setText(route.getRouteShortName() + " " + route.getRouteLongName());
-                descText.setText("to " + route.getDirectionDescription());
+                titleText.setText(route.getRouteShortName());
+                if (route.getDirectionDescription() != null)
+                    descText.setText("to " + route.getDirectionDescription());
+                else {
+                    descText.setText(route.getRouteLongName());
+                }
             }
             return convertView;
         }

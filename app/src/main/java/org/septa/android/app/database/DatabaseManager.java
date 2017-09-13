@@ -122,7 +122,7 @@ public class DatabaseManager {
     }
 
     public CursorAdapterSupplier<RouteDirectionModel> getTrolleyNoDirectionRouteCursorAdapaterSupplier() {
-        return new BusTrolleyNoDirectionRouteCursorAdapterSupplier(BUS);
+        return new BusTrolleyNoDirectionRouteCursorAdapterSupplier(TROLLY);
     }
 
     public CursorAdapterSupplier<RouteDirectionModel> getSubwayNoDirectionRouteCursorAdapaterSupplier() {

@@ -78,7 +78,11 @@
     <string name="system_status_picker_title_trolley">Trolley Status</string>
     <string name="system_status_picker_title_nhsl">NHSL Status</string>
 
-
+    <string name="system_status_results_title_rail">System Status: Regional Rail</string>
+    <string name="system_status_results_title_bus">System Status: Bus</string>
+    <string name="system_status_results_title_subway">System Status: Subway</string>
+    <string name="system_status_results_title_trolley">System Status: Trolley</string>
+    <string name="system_status_results_title_nhsl">System Status: NHSL</string>
     <!-- Schedules -->
     <string name="schedule_query_button_text">View Schedules</string>
 </resources>

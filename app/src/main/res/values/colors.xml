@@ -47,4 +47,8 @@
     <color name="find_station_tab_inactive_background">#144b88</color>144b88
 
 
+    <!-- System Status -->
+    <color name="active_toggle">#144b88</color>
+    <color name="inactive_toggle">#bdbdbd</color>
+
 </resources>

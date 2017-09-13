@@ -20,6 +20,7 @@ import android.widget.TextView;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
 import org.septa.android.app.database.DatabaseManager;
+import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.locationpicker.LineAwareLocationPickerTabActivityHandler;
 import org.septa.android.app.locationpicker.LineUnawareLocationPickerTabActivityHandler;
 import org.septa.android.app.nextarrive.NextToArriveResultsActivity;
@@ -61,7 +62,7 @@ public class SystemStatusFragment extends Fragment {
         tabActivityHandlers[0] = new SystemStatusLineTabHandler(getString(R.string.bus_tab), TransitType.BUS, dbManager.getBusNoDirectionRouteCursorAdapaterSupplier());
         tabActivityHandlers[3] = new SystemStatusLineTabHandler(getString(R.string.trolley_tab), TransitType.TROLLEY, dbManager.getTrolleyNoDirectionRouteCursorAdapaterSupplier());
         tabActivityHandlers[2] = new SystemStatusLineTabHandler(getString(R.string.subway_tab), TransitType.SUBWAY, dbManager.getSubwayNoDirectionRouteCursorAdapaterSupplier());
-        tabActivityHandlers[4] = new SystemStatusLineTabHandler(getString(R.string.nhsl_tab), TransitType.NHSL, "rr_route_nhsl");
+        tabActivityHandlers[4] = new SystemStatusLineTabHandler(getString(R.string.nhsl_tab), TransitType.NHSL, new RouteDirectionModel("NHSL", "NHSL", "Norristown TC to 69th St TC", null, null, 0));
 
 
         View fragmentView = inflater.inflate(R.layout.next_to_arrive_main, null);

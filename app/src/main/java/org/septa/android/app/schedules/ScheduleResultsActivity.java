@@ -1,5 +1,6 @@
 package org.septa.android.app.schedules;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
@@ -13,10 +14,13 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
 import org.septa.android.app.database.DatabaseManager;
+import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.domain.ScheduleItem;
+import org.septa.android.app.domain.StopModel;
 
 import java.util.ArrayList;
 
@@ -39,6 +43,11 @@ public class ScheduleResultsActivity extends AppCompatActivity {
     private String routeDescription = null;
     private TransitType transitType = TransitType.TROLLEY;// default setting
 
+    StopModel start = null;
+    StopModel destination = null;
+    RouteDirectionModel routeDirectionModel;
+    boolean editFavoritesFlag = false;
+
     //----------------------------------------------------------------------------------------------
     //Method:  onCreateView
     //Purpose: initialize the dynamic views for the schedule fragment
@@ -47,9 +56,8 @@ public class ScheduleResultsActivity extends AppCompatActivity {
     //----------------------------------------------------------------------------------------------
     @Nullable
 
-    public View onCreateView(LayoutInflater inflater,
-                             @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
         //-----------------------------------------------------------------------------------------
         // note to self
@@ -65,9 +73,20 @@ public class ScheduleResultsActivity extends AppCompatActivity {
         // * Note: Will have to create a special case with the Rail line due to (M-TH) Fri Sat Sunday option
         // _________________________________________________________________________________________
 
+        setContentView(R.layout.schedules_main);
+        //setTitle("Schedules");
 
         dbManager = DatabaseManager.getInstance(this);
-        layoutView = inflater.inflate(R.layout.schedules_main, null);
+        //layoutView = inflater.inflate(R.layout.schedules_main, null);
+
+
+        Intent intent = getIntent();
+        destination = (StopModel) intent.getExtras().get(Constants.DESTINATAION_STATION);
+        start = (StopModel) intent.getExtras().get(Constants.STARTING_STATION);
+        transitType = (TransitType) intent.getExtras().get(Constants.TRANSIT_TYPE);
+        routeDirectionModel = (RouteDirectionModel) intent.getExtras().get(Constants.LINE_ID);
+        editFavoritesFlag = intent.getExtras().getBoolean(Constants.EDIT_FAVORITES_FLAG, false);
+
 
         setDebugLabelDefaults();// for debug only
         setRouteTitle(routeTitle);
@@ -78,12 +97,12 @@ public class ScheduleResultsActivity extends AppCompatActivity {
 
         //- below code is debug hook for db query and result set
         //-getDebugData will be replaced by actual query
-        // ArrayList<ScheduleItem> scheduleItemArrayList = getDebugData(null);
-        ArrayList<ScheduleItem> scheduleItemArrayList = querySchedules();
+         ArrayList<ScheduleItem> scheduleItemArrayList = getDebugData(null);//debug
+        //ArrayList<ScheduleItem> scheduleItemArrayList = querySchedules();//prod
         bindListView(scheduleItemArrayList);
 
 
-        return layoutView;
+        //return layoutView;
     }
 
     //----------------------------------------------------------------------------------------------
@@ -232,8 +251,8 @@ public class ScheduleResultsActivity extends AppCompatActivity {
             case TROLLEY:
                 //new db manager..
                 //this will either be table specific or class specific
-                db_cursor = dbManager.getTrollySchedule()
-                        .getCursor(layoutView.getContext(), null);
+                //db_cursor = dbManager.getTrollySchedule()
+                //         .getCursor(layoutView.getContext(), null);
                 break;
             case SUBWAY:
                 //new db manager..
@@ -278,8 +297,8 @@ public class ScheduleResultsActivity extends AppCompatActivity {
                 scheduleItemArrayList.add(newScheduleItem);
                 endofCursor = cursor.moveToNext();
                 ++i;
-                if(i>10)
-                    break;
+                //if(i>10)  //debug
+                //    break;
             }
             cursor.close();
 

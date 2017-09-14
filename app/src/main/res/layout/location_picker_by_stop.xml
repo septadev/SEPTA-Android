@@ -20,7 +20,7 @@
             android:background="@drawable/line_picker_background"
             android:drawableLeft="@drawable/ic_search"
             android:drawablePadding="4dp"
-            android:hint="Type station name or select"
+            android:hint="Type stop name or select"
             android:inputType="text"
             android:lines="1"
             android:maxLines="1"

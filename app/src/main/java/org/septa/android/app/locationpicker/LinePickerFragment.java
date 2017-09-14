@@ -159,11 +159,16 @@ public class LinePickerFragment extends DialogFragment {
                 ImageView lineIcon = (ImageView) convertView.findViewById(R.id.route_icon);
                 lineIcon.setImageResource(transitType.getIconForLine(route.getRouteId(), getContext()));
 
-                titleText.setText(route.getRouteShortName());
+                if (transitType == TransitType.TROLLEY || transitType == TransitType.BUS) {
+                    titleText.setText(route.getRouteShortName() + " " + route.getRouteLongName());
+                } else {
+                    titleText.setText(route.getRouteLongName());
+                }
+
                 if (route.getDirectionDescription() != null)
                     descText.setText("to " + route.getDirectionDescription());
                 else {
-                    descText.setText(route.getRouteLongName());
+                    descText.setText("");
                 }
             }
             return convertView;

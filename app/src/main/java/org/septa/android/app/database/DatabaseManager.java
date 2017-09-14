@@ -504,7 +504,7 @@ public class DatabaseManager {
 
 
     public class RailRouteCursorAdapterSupplier implements CursorAdapterSupplier<RouteDirectionModel> {
-        private static final String SELECT_CLAUSE = "SELECT R.Route_id, R.route_short_name route_short_name, 'to ' || S.stop_name route_long_name, cast (T.direction_id  as TEXT ) dircode FROM routes_rail R JOIN trips_rail T ON R.route_id = T.route_id JOIN stop_times_rail ST ON T.trip_id = ST.trip_id JOIN stops_rail S ON ST.stop_id = S.stop_id JOIN ( SELECT R.route_id, T.direction_id, max(ST.stop_sequence) max_stop_sequence FROM routes_rail R JOIN trips_rail T ON R.route_id = T.route_id JOIN stop_times_rail ST ON T.trip_id = ST.trip_id JOIN stops_rail S ON ST.stop_id = S.stop_id GROUP BY R.route_id, T.direction_id) lastStop ON R.route_id = lastStop.route_id AND T.direction_id = lastStop.direction_id AND ST.stop_sequence = lastStop.max_stop_sequence GROUP BY R.Route_id,R.route_short_name, R.route_long_name,T.direction_id ,S.stop_name";
+        private static final String SELECT_CLAUSE = "SELECT R.Route_id, R.route_short_name route_short_name, S.stop_name route_long_name, cast (T.direction_id  as TEXT ) dircode FROM routes_rail R JOIN trips_rail T ON R.route_id = T.route_id JOIN stop_times_rail ST ON T.trip_id = ST.trip_id JOIN stops_rail S ON ST.stop_id = S.stop_id JOIN ( SELECT R.route_id, T.direction_id, max(ST.stop_sequence) max_stop_sequence FROM routes_rail R JOIN trips_rail T ON R.route_id = T.route_id JOIN stop_times_rail ST ON T.trip_id = ST.trip_id JOIN stops_rail S ON ST.stop_id = S.stop_id GROUP BY R.route_id, T.direction_id) lastStop ON R.route_id = lastStop.route_id AND T.direction_id = lastStop.direction_id AND ST.stop_sequence = lastStop.max_stop_sequence GROUP BY R.Route_id,R.route_short_name, R.route_long_name,T.direction_id ,S.stop_name";
 
         @Override
         public Cursor getCursor(Context context, List<Criteria> whereClause) {
@@ -517,7 +517,7 @@ public class DatabaseManager {
 
         @Override
         public RouteDirectionModel getCurrentItemFromCursor(Cursor cursor) {
-            return new RouteDirectionModel(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(2), cursor.getString(3), null);
+            return new RouteDirectionModel(cursor.getString(0), cursor.getString(1), cursor.getString(1), cursor.getString(2), cursor.getString(3), null);
         }
 
         @Override
@@ -592,7 +592,7 @@ public class DatabaseManager {
 
         @Override
         public RouteDirectionModel getCurrentItemFromCursor(Cursor cursor) {
-            return new RouteDirectionModel(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getInt(5));
+            return new RouteDirectionModel(cursor.getString(0), cursor.getString(1), "Norristown High Speed Line", cursor.getString(3), cursor.getString(4), cursor.getInt(5));
         }
 
         @Override
@@ -634,7 +634,21 @@ public class DatabaseManager {
 
         @Override
         public RouteDirectionModel getCurrentItemFromCursor(Cursor cursor) {
-            return new RouteDirectionModel(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getInt(5));
+
+            String id = cursor.getString(0);
+
+            String longName = cursor.getString(2);
+
+            if ("BSL".equals(id))
+                longName = "Broad Street Line";
+            else if ("MFL".equals(id))
+                longName = "Market Frankford Line";
+            else if ("BSO".equals(id))
+                longName = "Broad Street Overnight";
+            else if ("MFO".equals(id))
+                longName = "Market Frankford Overnight";
+
+            return new RouteDirectionModel(cursor.getString(0), cursor.getString(1), longName, cursor.getString(3), cursor.getString(4), cursor.getInt(5));
         }
 
         @Override

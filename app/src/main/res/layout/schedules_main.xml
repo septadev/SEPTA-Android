@@ -28,41 +28,38 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <org.septa.android.app.view.TextView
-            android:id="@+id/routeNameTextView"
+            android:id="@+id/route_name_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:layout_marginLeft="10dp"
             android:layout_marginTop="10dp"
             android:letterSpacing="-0.02"
+            android:text="Paoli/Thorndale"
             android:textColor="#144b88"
             android:textSize="20sp"
-            android:textStyle="bold"
             app:font="@string/font_roboto_bold" />
 
         <org.septa.android.app.view.TextView
-            android:id="@+id/routeDescriptionTextView"
+            android:id="@+id/route_description_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/routeNameTextView"
-            android:layout_marginLeft="10dp"
-            android:fontFamily="sans-serif"
+            android:layout_below="@+id/route_name_text"
             android:letterSpacing="-0.02"
+            android:text="to/from Center City Philadelphia"
             android:textColor="#144b88"
             android:textSize="12sp"
-            android:textStyle="normal"
             app:font="@string/font_roboto_medium" />
 
         <ImageView
-            android:id="@+id/transitTypeImageView"
+            android:id="@+id/transit_type_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="20.5dp"
             android:layout_marginTop="15dp"
             android:src="@drawable/ic_line_air" />
 
@@ -70,65 +67,66 @@
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/routeDescriptionTextView"
+            android:layout_below="@+id/route_description_text"
             android:layout_marginBottom="10dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
             android:layout_marginTop="10dp"
             android:background="#ffff"
             android:orientation="vertical">
 
             <RelativeLayout
-                android:id="@+id/lineStationLayout"
+                android:id="@+id/line_station_layout"
                 android:layout_width="match_parent"
-                android:layout_height="70dp">
+                android:layout_height="wrap_content">
 
 
                 <ImageView
+                    android:id="@+id/circle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="5dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="8dp"
                     android:layout_marginTop="18dp"
                     android:src="@drawable/multi_stop_start_circle" />
 
                 <org.septa.android.app.view.TextView
-                    android:id="@+id/startStationTextView"
+                    android:id="@+id/start_station_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="30dp"
-                    android:layout_marginTop="15dp"
-                    android:fontFamily="sans-serif-medium"
+                    android:layout_marginTop="16dp"
+                    android:layout_toRightOf="@id/circle"
                     android:letterSpacing="-0.02"
+                    android:text="Jefferson Station"
                     android:textColor="#000000"
                     android:textSize="12sp"
-                    android:textStyle="normal" />
+                    app:font="@string/font_roboto_medium" />
 
                 <ImageView
+                    android:id="@+id/pin"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="0dp"
-                    android:layout_marginTop="40dp"
+                    android:layout_below="@id/circle"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginTop="17dp"
                     android:src="@drawable/ic_destination_pin" />
 
                 <org.septa.android.app.view.TextView
-                    android:id="@+id/destinationStationTextView"
+                    android:id="@+id/destination_station_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/startStationTextView"
-                    android:layout_marginLeft="30dp"
-                    android:layout_marginTop="10dp"
-                    android:fontFamily="sans-serif-medium"
+                    android:layout_alignTop="@id/pin"
+                    android:layout_below="@+id/start_station_text"
+                    android:layout_toRightOf="@id/pin"
                     android:letterSpacing="-0.02"
+                    android:text="Paoli Station"
                     android:textColor="#000000"
                     android:textSize="12sp"
-                    android:textStyle="normal" />
+                    app:font="@string/font_roboto_medium" />
 
                 <org.septa.android.app.view.TextView
-                    android:id="@+id/reverseTripLabel"
+                    android:id="@+id/reverse_trip_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
@@ -146,7 +144,7 @@
 
 
             <LinearLayout
-                android:id="@+id/lineStatusLayout"
+                android:id="@+id/line_status_layout"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:layout_marginTop="10dp"
@@ -167,7 +165,7 @@
             </LinearLayout>
 
             <RadioGroup
-                android:id="@+id/radioButtonGroup"
+                android:id="@+id/day_of_week_button_group"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
@@ -176,8 +174,8 @@
 
                 android:orientation="horizontal">
 
-                <RadioButton
-                    android:id="@+id/WeekDay_Button"
+                <org.septa.android.app.view.RadioButton
+                    android:id="@+id/weekday_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="0dp"
@@ -186,10 +184,42 @@
                     android:button="@null"
                     android:gravity="center"
                     android:text="Weekday"
-                    android:textColor="@drawable/radio_btn_font_color_selector" />
+                    android:textColor="@drawable/radio_btn_font_color_selector"
+                    android:textSize="13sp"
+                    app:font="@string/font_roboto_regular" />
 
-                <RadioButton
-                    android:id="@+id/Saturday_Button"
+                <org.septa.android.app.view.RadioButton
+                    android:id="@+id/mon_thurs_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="0dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/radio_btn_background_selector"
+                    android:button="@null"
+                    android:gravity="center"
+                    android:text="Mon-Thur"
+                    android:textColor="@drawable/radio_btn_font_color_selector"
+                    android:textSize="13sp"
+                    android:visibility="gone"
+                    app:font="@string/font_roboto_regular" />
+
+                <org.septa.android.app.view.RadioButton
+                    android:id="@+id/friday_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="0dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/radio_btn_background_selector"
+                    android:button="@null"
+                    android:gravity="center"
+                    android:text="Friday"
+                    android:textColor="@drawable/radio_btn_font_color_selector"
+                    android:textSize="13sp"
+                    android:visibility="gone"
+                    app:font="@string/font_roboto_regular" />
+
+                <org.septa.android.app.view.RadioButton
+                    android:id="@+id/saturday_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="0dp"
@@ -198,10 +228,12 @@
                     android:button="@null"
                     android:gravity="center"
                     android:text="Saturday"
-                    android:textColor="@drawable/radio_btn_font_color_selector" />
+                    android:textColor="@drawable/radio_btn_font_color_selector"
+                    android:textSize="13sp"
+                    app:font="@string/font_roboto_regular" />
 
-                <RadioButton
-                    android:id="@+id/Sunday_Button"
+                <org.septa.android.app.view.RadioButton
+                    android:id="@+id/sunday_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="0dp"
@@ -210,7 +242,9 @@
                     android:button="@null"
                     android:gravity="center"
                     android:text="Sunday"
-                    android:textColor="@drawable/radio_btn_font_color_selector" />
+                    android:textColor="@drawable/radio_btn_font_color_selector"
+                    android:textSize="13sp"
+                    app:font="@string/font_roboto_regular" />
             </RadioGroup>
 
             <LinearLayout
@@ -218,7 +252,7 @@
                 android:layout_height="match_parent">
 
                 <ListView
-                    android:id="@+id/scheduleListView"
+                    android:id="@+id/schedule_list_view"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"></ListView>
             </LinearLayout>

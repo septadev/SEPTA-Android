@@ -83,6 +83,14 @@
     <string name="system_status_results_title_subway">System Status: Subway</string>
     <string name="system_status_results_title_trolley">System Status: Trolley</string>
     <string name="system_status_results_title_nhsl">System Status: NHSL</string>
+
     <!-- Schedules -->
     <string name="schedule_query_button_text">View Schedules</string>
+    <string name="schedule_trip_prefix_rail">Train #</string>
+    <string name="schedule_trip_prefix_bus">Bus #</string>
+    <string name="schedule_trip_prefix_subway">Train #</string>
+    <string name="schedule_trip_prefix_trolley">Trolley #</string>
+    <string name="schedule_trip_prefix_nhsl">Train #</string>
+
+
 </resources>

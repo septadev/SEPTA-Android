@@ -1,29 +1,48 @@
 package org.septa.android.app.schedules;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import org.septa.android.app.view.TextView;
+
 import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
 import org.septa.android.app.database.DatabaseManager;
 import org.septa.android.app.domain.RouteDirectionModel;
-import org.septa.android.app.domain.ScheduleItem;
+import org.septa.android.app.domain.ScheduleModel;
 import org.septa.android.app.domain.StopModel;
+import org.septa.android.app.favorites.DeleteFavoritesAsyncTask;
+import org.septa.android.app.favorites.SaveFavoritesAsyncTask;
+import org.septa.android.app.nextarrive.NextToArriveResultsActivity;
+import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
+import org.septa.android.app.services.apiinterfaces.model.Favorite;
+import org.septa.android.app.support.Criteria;
+import org.septa.android.app.support.CursorAdapterSupplier;
+import org.septa.android.app.view.TextView;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by ttuggerson on 9/13/17.
@@ -31,17 +50,28 @@ import java.util.ArrayList;
 
 public class ScheduleResultsActivity extends AppCompatActivity {
 
-    // private data members
-    private ArrayList<ScheduleItem> scheduleItemArrayList = null;
+    private static final int RAIL_MON_THUR = 8;
+    private static final int WEEK_DAY = 1;
+    private static final int RAIL_FRIDAY = 2;
+    private static final int RAIL_SATURDAY = 1;
+    private static final int SATURDAY = 2;
+    private static final int RAIL_SUNDAY = 64;
+    private static final int SUNDAY = 3;
+
     private DatabaseManager dbManager = null;
     private RadioGroup radioGroup = null;
+    CursorAdapterSupplier<ScheduleModel> scheduleCursorAdapterSupplier;
+    CursorAdapterSupplier<StopModel> reverseStopCursorAdapaterSupplier;
 
-    private TransitType transitType = TransitType.TROLLEY;// default setting
+    ListView scheduleResultsListView;
 
     StopModel start = null;
     StopModel destination = null;
     RouteDirectionModel routeDirectionModel;
-    boolean editFavoritesFlag = false;
+    TransitType transitType;
+    CursorAdapterSupplier<RouteDirectionModel> reverseRouteCursorAdapterSupplier;
+    Favorite currentFavorite;
+    Menu menu;
 
     //----------------------------------------------------------------------------------------------
     //Method:  onCreateView
@@ -76,7 +106,6 @@ public class ScheduleResultsActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         dbManager = DatabaseManager.getInstance(this);
-        //layoutView = inflater.inflate(R.layout.schedules_main, null);
 
 
         Intent intent = getIntent();
@@ -84,90 +113,34 @@ public class ScheduleResultsActivity extends AppCompatActivity {
         start = (StopModel) intent.getExtras().get(Constants.STARTING_STATION);
         transitType = (TransitType) intent.getExtras().get(Constants.TRANSIT_TYPE);
         routeDirectionModel = (RouteDirectionModel) intent.getExtras().get(Constants.LINE_ID);
-        editFavoritesFlag = intent.getExtras().getBoolean(Constants.EDIT_FAVORITES_FLAG, false);
 
 
-        TextView routeNameTextView = (TextView) findViewById(R.id.routeNameTextView);
-        routeNameTextView.setText(routeDirectionModel.getRouteLongName());
+        if (transitType == TransitType.RAIL) {
+            scheduleCursorAdapterSupplier = DatabaseManager.getInstance(this).getRailScheduleCursorAdapterSupplier();
+            reverseRouteCursorAdapterSupplier = DatabaseManager.getInstance(this).getRailRouteCursorAdapaterSupplier();
+        } else {
+            scheduleCursorAdapterSupplier = DatabaseManager.getInstance(this).getNonRegionalRailScheduleCursorAdapterSupplier();
+            reverseStopCursorAdapaterSupplier = DatabaseManager.getInstance(this).getNonRailReverseAdapterSupplier();
+            reverseRouteCursorAdapterSupplier = DatabaseManager.getInstance(this).getNonRailReverseRouteCursorAdapterSupplier();
+        }
 
-        TextView routeTitleDescription = (TextView) findViewById(R.id.routeDescriptionTextView);
-        routeTitleDescription.setText("to " + routeDirectionModel.getDirectionDescription());
+        setUpHeaders();
 
-        TextView startStationText = (TextView) findViewById(R.id.startStationTextView);
-        startStationText.setText(start.getStopName());
+        TextView reverseTripLabel = (TextView) findViewById(R.id.reverse_trip_label);
+        reverseTripLabel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ReverseStopAsyncTask reverseStopAsyncTask = new ReverseStopAsyncTask(ScheduleResultsActivity.this);
+                reverseStopAsyncTask.execute();
+            }
+        });
 
-
-        TextView destinationTextView = (TextView) findViewById(R.id.destinationStationTextView);
-        destinationTextView.setText(destination.getStopName());
-
-        ImageView transitTypeImageView = (ImageView) findViewById(R.id.transitTypeImageView);
-        transitTypeImageView.setImageResource(transitType.getIconForLine(routeDirectionModel.getRouteId(), this));
-
-        TextView reverseTripLabel = (TextView)findViewById(R.id.reverseTripLabel);
-        //reverseTripLabel.setHtml("");
         initRadioButtonGroup();
 
-        //- below code is debug hook for db query and result set
-        //-getDebugData will be replaced by actual query
-        ArrayList<ScheduleItem> scheduleItemArrayList = getDebugData(null);//debug
-        //ArrayList<ScheduleItem> scheduleItemArrayList = querySchedules();//prod
-        bindListView(scheduleItemArrayList);
-
-
-        //return layoutView;
-    }
-
-    //----------------------------------------------------------------------------------------------
-    //Method:  setRouteTitle
-    //Purpose: initialize the dynamic text views for the schedule fragment
-    //
-    //return void
-    //----------------------------------------------------------------------------------------------
-    private void setRouteTitle(String routeName) {
-        //getView the set data
-        TextView textView = (TextView) findViewById(R.id.routeNameTextView);
-        textView.setText(routeName);
-    }
-
-    private void setStartStation(String stopName) {
-        //getView the set data
-        TextView textView = (TextView) findViewById(R.id.startStationTextView);
-        textView.setText(stopName);
-    }
-
-    private void setDestinationStation(String stopName) {
-        //getView the set data
-        TextView textView = (TextView) findViewById(R.id.destinationStationTextView);
-        textView.setText(stopName);
-    }
-
-    private void setRouteTitleDescrpition(String descrpition) {
-        TextView textView = (TextView) findViewById(R.id.routeDescriptionTextView);
-        textView.setText(descrpition);
-    }
-
-    private void setTransitLineIndicator(String transitLine) {
+        scheduleResultsListView = (ListView) findViewById(R.id.schedule_list_view);
 
     }
 
-    //----------------------------------------------------------------------------------------------
-    //Method:  bindListView
-    //Purpose: Method is responsible for binding the result schedule set to the custom
-    //         listview in the SchedulesFragmemt - *important* this is the main view for this page
-    //
-    //return void
-    //----------------------------------------------------------------------------------------------
-    private void bindListView(ArrayList<ScheduleItem> itemslist) {
-        ListView ui_ListView = null;
-        if (itemslist != null) {
-
-            //get the schedule listview from the form
-            //then bind the list of objects to the view in the ui
-            //-----------------------------------------------------
-            ui_ListView = (ListView) findViewById(R.id.scheduleListView);
-            ui_ListView.setAdapter(new SchedulesAdapter(this, itemslist));
-        }
-    }
 
     //----------------------------------------------------------------------------------------------
     //Method: initRadioButtonGroup
@@ -195,149 +168,86 @@ public class ScheduleResultsActivity extends AppCompatActivity {
     //               schedules_main.xml                      - main schedule UI fragment
     //-----------------------------------------------------------------------------------------------
     private void initRadioButtonGroup() {
-        radioGroup = (RadioGroup) findViewById(R.id.radioButtonGroup);
+        radioGroup = (RadioGroup) findViewById(R.id.day_of_week_button_group);
         radioGroup.clearCheck(); //must clear the defaults otherwise event wont fire
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, @IdRes int checkedID) {
-                try {
-
-                    RadioButton rb = (RadioButton) radioGroup.findViewById(checkedID);
-                    boolean checked = rb.isChecked();
-                    // Check which radio button was clicked
-
-                    switch (checkedID) {
-                        case R.id.WeekDay_Button:
-                            if (checked) {
-                                //debug only - need to query database
-                                bindListView(getDebugData(rb.getText().toString()));
-                            }
-                            break;
-                        case R.id.Saturday_Button:
-                            if (checked)
-                                //debug only - need to query database
-                                bindListView(querySchedules());
-                            //bindListView(getDebugData(rb.getText().toString()));
-                            break;
-                        case R.id.Sunday_Button:
-                            if (checked)
-                                //debug only - need to query database
-                                bindListView(getDebugData(rb.getText().toString()));
-                            break;
-                    }
-                } catch (Exception ex) {
-                    System.out.print("Error Occured when binding data" + ex.toString());
+                RadioButton rb = (RadioButton) radioGroup.findViewById(checkedID);
+                if (rb.isChecked()) {
+                    ScheduleResultsAsyncTask task = new ScheduleResultsAsyncTask(ScheduleResultsActivity.this);
+                    task.execute(mapRadioButtonIdtoSchedule(checkedID));
                 }
             }
         });
 
-        //set default settings for radio button
-        RadioButton rb = (RadioButton) radioGroup.findViewById(R.id.WeekDay_Button);
-        rb.setChecked(true);
+
+        if (transitType == TransitType.RAIL) {
+            findViewById(R.id.weekday_button).setVisibility(View.GONE);
+            findViewById(R.id.mon_thurs_button).setVisibility(View.VISIBLE);
+            findViewById(R.id.friday_button).setVisibility(View.VISIBLE);
+            RadioButton rb = (RadioButton) radioGroup.findViewById(R.id.mon_thurs_button);
+            rb.setChecked(true);
+        } else
+
+        {
+            RadioButton rb = (RadioButton) radioGroup.findViewById(R.id.weekday_button);
+            rb.setChecked(true);
+        }
 
     }
 
-    //----------------------------------------------------------------------------------------------
-    //Method:  getDebugData
-    //Purpose: debug data creation method for view
-    //
-    //return ArrayList<ScheduleItem>
-    //----------------------------------------------------------------------------------------------
-    private ArrayList<ScheduleItem> querySchedules() {
+    private void setUpHeaders() {
+        TextView routeNameTextView = (TextView) findViewById(R.id.route_name_text);
+        routeNameTextView.setText(routeDirectionModel.getRouteLongName());
 
-        //1. transit type
-        //2. start station
-        //3. Destination station
-        //4. direction
-        // will need to return an arraylist of <schedule items>
-        ArrayList<ScheduleItem> scheduleItemArrayList = null;
-        Cursor db_cursor = null;
+        TextView routeTitleDescription = (TextView) findViewById(R.id.route_description_text);
+        routeTitleDescription.setText("to " + routeDirectionModel.getDirectionDescription());
+
+        TextView startStationText = (TextView) findViewById(R.id.start_station_text);
+        startStationText.setText(start.getStopName());
 
 
-        switch (transitType) {
-            case NHSL:
-                //new db manager..
-                break;
-            case BUS:
-                //new db manager..
-                break;
-            case TROLLEY:
-                //new db manager..
-                //this will either be table specific or class specific
-                //db_cursor = dbManager.getTrollySchedule()
-                //         .getCursor(layoutView.getContext(), null);
-                break;
-            case SUBWAY:
-                //new db manager..
-                break;
-            case RAIL:
-                //new db manager..
-                break;
+        TextView destinationTextView = (TextView) findViewById(R.id.destination_station_text);
+        destinationTextView.setText(destination.getStopName());
+
+        ImageView transitTypeImageView = (ImageView) findViewById(R.id.transit_type_image);
+        transitTypeImageView.setImageResource(transitType.getIconForLine(routeDirectionModel.getRouteId(), this));
+
+        String favKey = Favorite.generateKey(start, destination, transitType, routeDirectionModel);
+        currentFavorite = SeptaServiceFactory.getFavoritesService().getFavoriteByKey(this, favKey);
+
+        if (menu != null) {
+            if (currentFavorite != null) {
+                menu.findItem(R.id.create_favorite).setIcon(R.drawable.ic_favorite_made);
+            } else menu.findItem(R.id.create_favorite).setIcon(R.drawable.ic_favorite_available);
         }
-
-        //bind the db cursor data with the object model
-        scheduleItemArrayList = bind_ScheduleList(db_cursor);
-
-        return scheduleItemArrayList;
     }
 
-    //----------------------------------------------------------------------------------------------
-    //Method:  bind_ScheduleList
-    //Purpose: method binds the db cursor data with the object model
-    //
-    //return ArrayList<ScheduleItem>
-    //----------------------------------------------------------------------------------
-    private ArrayList<ScheduleItem> bind_ScheduleList(Cursor cursor) {
-        ArrayList<ScheduleItem> scheduleItemArrayList = new ArrayList<ScheduleItem>();
+    private int mapRadioButtonIdtoSchedule(int checkedID) {
+        switch (checkedID) {
+            case R.id.weekday_button:
+                return WEEK_DAY;
 
+            case R.id.mon_thurs_button:
+                return RAIL_MON_THUR;
 
-        //debug
-        int i = 0;
-        boolean endofCursor = false;
+            case R.id.friday_button:
+                return RAIL_FRIDAY;
 
-        try {
-            endofCursor = cursor.moveToFirst();
+            case R.id.saturday_button:
+                if (transitType == TransitType.RAIL) {
+                    return RAIL_SATURDAY;
+                } else
+                    return SATURDAY;
 
-            while (endofCursor != false) {
-
-                ScheduleItem newScheduleItem = new ScheduleItem();
-                newScheduleItem.setStopName("TestStop");
-                newScheduleItem.setTripID(String.valueOf(cursor.getInt(0)));
-                newScheduleItem.set_arrivalTime_24HrClock(String.valueOf(cursor.getInt(1)));
-                newScheduleItem.setStopId(String.valueOf(cursor.getInt(2)));
-                newScheduleItem.setStopSequence(cursor.getInt(3));
-
-                scheduleItemArrayList.add(newScheduleItem);
-                endofCursor = cursor.moveToNext();
-                ++i;
-                //if(i>10)  //debug
-                //    break;
-            }
-            cursor.close();
-
-        } catch (Exception ex) {
-            System.out.print("Object Access Exception" + ex.toString());
+            case R.id.sunday_button:
+                if (transitType == TransitType.RAIL) {
+                    return RAIL_SUNDAY;
+                } else
+                    return SUNDAY;
         }
-
-        return scheduleItemArrayList;
-
-    }
-
-
-    //----------------------------------------------------------------------------------------------
-    //Method:  getDebugData
-    //Purpose: debug data creation method for view
-    //
-    //return ArrayList<ScheduleItem>
-    //----------------------------------------------------------------------------------------------
-    //debug data population
-    private ArrayList<ScheduleItem> getDebugData(String value) {
-        scheduleItemArrayList = new ArrayList<>();
-        for (int i = 0; i < 8; i++) {
-            ScheduleItem newItem = new ScheduleItem("10:0" + i + "am", "10:3" + i + "am", value);
-            scheduleItemArrayList.add(newItem);
-        }
-        return scheduleItemArrayList;
+        return 0;
     }
 
     @Override
@@ -345,4 +255,204 @@ public class ScheduleResultsActivity extends AppCompatActivity {
         onBackPressed();
         return true;
     }
+
+
+    class ScheduleResultsAsyncTask extends AsyncTask<Integer, Void, List<ScheduleModel>> {
+        ScheduleResultsActivity scheduleResultsActivity;
+
+        ScheduleResultsAsyncTask(ScheduleResultsActivity scheduleResultsActivity) {
+            this.scheduleResultsActivity = scheduleResultsActivity;
+        }
+
+        @Override
+        protected void onPostExecute(List<ScheduleModel> scheduleModels) {
+            super.onPostExecute(scheduleModels);
+            scheduleResultsActivity.scheduleResultsListView.setAdapter(
+                    new ScheduleResultsArrayAdapater(scheduleResultsActivity, scheduleModels));
+
+        }
+
+        @Override
+        protected List<ScheduleModel> doInBackground(Integer... params) {
+            List<Criteria> criteriaList = new LinkedList<Criteria>();
+            criteriaList.add(new Criteria("start_stop_id", Criteria.Operation.EQ, scheduleResultsActivity.start.getStopId()));
+            criteriaList.add(new Criteria("service_id", Criteria.Operation.EQ, params[0]));
+            criteriaList.add(new Criteria("direction_id", Criteria.Operation.EQ, scheduleResultsActivity.routeDirectionModel.getDirectionCode()));
+            criteriaList.add(new Criteria("end_stop_id", Criteria.Operation.EQ, scheduleResultsActivity.destination.getStopId()));
+
+            List<ScheduleModel> returnList = new ArrayList<ScheduleModel>();
+            Cursor cursor = scheduleResultsActivity.scheduleCursorAdapterSupplier.getCursor(scheduleResultsActivity, criteriaList);
+            if (cursor.moveToFirst()) {
+                do {
+                    returnList.add(scheduleCursorAdapterSupplier.getCurrentItemFromCursor(cursor));
+                }
+                while (cursor.moveToNext());
+            }
+            return returnList;
+        }
+    }
+
+    class ScheduleResultsArrayAdapater extends ArrayAdapter<ScheduleModel> {
+
+        public ScheduleResultsArrayAdapater(@NonNull Context context, @NonNull List<ScheduleModel> objects) {
+            super(context, 0, objects);
+        }
+
+        @NonNull
+        @Override
+        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+            ScheduleModel scheduleModel = getItem(position);
+            if (convertView == null) {
+                convertView = getLayoutInflater().inflate(R.layout.custom_row_for_schedules, parent, false);
+            }
+
+            DateFormat timeFormat = DateFormat.getTimeInstance(DateFormat.SHORT);
+
+            TextView departureTime = (TextView) convertView.findViewById(R.id.departure_text);
+            departureTime.setText(timeFormat.format(scheduleModel.getDepartureDate()));
+
+            TextView arrivalTime = (TextView) convertView.findViewById(R.id.arrival_text);
+            arrivalTime.setText(timeFormat.format(scheduleModel.getArrivalDate()));
+
+            TextView duration = (TextView) convertView.findViewById(R.id.duration_text);
+            duration.setText(scheduleModel.getDurationAsString());
+
+            TextView blockText = (TextView) convertView.findViewById(R.id.block_text);
+            blockText.setHtml(transitType.getString("schedule_trip_prefix", getContext()) + "<b>" + scheduleModel.getBlockId() + "</b>");
+
+            return convertView;
+        }
+    }
+
+    class ReverseStopAsyncTask extends AsyncTask<Void, Void, Void> {
+        ScheduleResultsActivity scheduleResultsActivity;
+
+        ReverseStopAsyncTask(ScheduleResultsActivity scheduleResultsActivity) {
+            this.scheduleResultsActivity = scheduleResultsActivity;
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            StopModel newDest;
+            StopModel newStart;
+            if (scheduleResultsActivity.transitType != TransitType.RAIL) {
+                newDest = getReverse(scheduleResultsActivity.start.getStopId(), scheduleResultsActivity.routeDirectionModel.getRouteShortName());
+                newStart = getReverse(scheduleResultsActivity.destination.getStopId(), scheduleResultsActivity.routeDirectionModel.getRouteShortName());
+
+                scheduleResultsActivity.destination = newDest;
+                scheduleResultsActivity.start = newStart;
+            } else {
+                newDest = scheduleResultsActivity.start;
+                newStart = scheduleResultsActivity.destination;
+            }
+
+            scheduleResultsActivity.destination = newDest;
+            scheduleResultsActivity.start = newStart;
+            List<Criteria> criterias = new ArrayList<Criteria>(2);
+            criterias.add(new Criteria("dircode", Criteria.Operation.EQ, scheduleResultsActivity.routeDirectionModel.getReverseDirectionCode()));
+            criterias.add(new Criteria("route_id", Criteria.Operation.EQ, scheduleResultsActivity.routeDirectionModel.getRouteId()));
+
+            Cursor cursor = scheduleResultsActivity.reverseRouteCursorAdapterSupplier.getCursor(scheduleResultsActivity, criterias);
+            if (cursor.moveToFirst()) {
+                scheduleResultsActivity.routeDirectionModel = scheduleResultsActivity.reverseRouteCursorAdapterSupplier.getCurrentItemFromCursor(cursor);
+            }
+
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            scheduleResultsActivity.setUpHeaders();
+            int schedule = mapRadioButtonIdtoSchedule(scheduleResultsActivity.radioGroup.getCheckedRadioButtonId());
+            ScheduleResultsAsyncTask scheduleResultsAsyncTask = new ScheduleResultsAsyncTask(scheduleResultsActivity);
+            scheduleResultsAsyncTask.execute(schedule);
+        }
+
+        StopModel getReverse(String stopId, String routeShortName) {
+            List<Criteria> criteria = new ArrayList<Criteria>(2);
+            criteria.add(new Criteria("route_short_name", Criteria.Operation.EQ, routeShortName));
+            criteria.add(new Criteria("stop_id", Criteria.Operation.EQ, stopId));
+            Cursor cursor = scheduleResultsActivity.reverseStopCursorAdapaterSupplier.getCursor(scheduleResultsActivity, criteria);
+            if (cursor.moveToFirst()) {
+                return scheduleResultsActivity.reverseStopCursorAdapaterSupplier.getCurrentItemFromCursor(cursor);
+            } else return null;
+        }
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        this.menu = menu;
+        getMenuInflater().inflate(R.menu.favorite_menu, menu);
+        if (currentFavorite != null) {
+            menu.findItem(R.id.create_favorite).setIcon(R.drawable.ic_favorite_made);
+        }
+
+        return true;
+    }
+
+    public void saveAsFavorite(final MenuItem item) {
+        if (!item.isEnabled())
+            return;
+
+        item.setEnabled(false);
+
+        if (start != null && destination != null && transitType != null) {
+            if (currentFavorite == null) {
+                final Favorite favorite = new Favorite(start, destination, transitType, routeDirectionModel);
+                SaveFavoritesAsyncTask task = new SaveFavoritesAsyncTask(this, new Runnable() {
+                    @Override
+                    public void run() {
+                        item.setEnabled(true);
+                    }
+                }, new Runnable() {
+                    @Override
+                    public void run() {
+                        item.setEnabled(true);
+                        item.setIcon(R.drawable.ic_favorite_made);
+                        currentFavorite = favorite;
+                    }
+                });
+
+                task.execute(favorite);
+                Snackbar snackbar = Snackbar
+                        .make(findViewById(R.id.schedule_results_coordinator), R.string.create_fav_snackbar_text, Snackbar.LENGTH_SHORT);
+
+                snackbar.show();
+            } else {
+                new AlertDialog.Builder(this).setCancelable(true).setTitle(R.string.delete_fav_modal_title)
+                        .setMessage(R.string.delete_fav_modal_text)
+                        .setPositiveButton(R.string.delete_fav_pos_button, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                DeleteFavoritesAsyncTask task = new DeleteFavoritesAsyncTask(ScheduleResultsActivity.this, new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        item.setEnabled(true);
+                                    }
+                                }, new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        item.setEnabled(true);
+                                        item.setIcon(R.drawable.ic_favorite_available);
+                                        currentFavorite = null;
+                                    }
+                                });
+
+                                task.execute(currentFavorite.getKey());
+                            }
+                        }).setNegativeButton(R.string.delete_fav_neg_button, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        item.setEnabled(true);
+                    }
+                }).create().show();
+            }
+
+        } else item.setEnabled(true);
+    }
+
+
 }

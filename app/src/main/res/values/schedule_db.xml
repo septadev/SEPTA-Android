@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="bus_trip_schedule_query">
+SELECT
+start.arrival_time DepartureTime,
+Stop.arrival_time  ArrivalTime,
+Start.block_id
+FROM
+
+(SELECT
+T.trip_id,
+ST.arrival_time,
+T.block_id
+FROM
+stop_times_bus ST
+JOIN trips_bus T
+ON ST.trip_id = T.trip_id
+WHERE ST.stop_id = {0} AND T.service_id = {1} and T.direction_id = {2}) Start
+
+JOIN (SELECT
+T.trip_id, T.direction_id, T.service_id,
+ST.arrival_time
+FROM
+stop_times_bus  ST
+JOIN trips_bus T
+ON ST.trip_id = T.trip_id
+WHERE  stop_id = {3} AND T.service_id = {1} and T.direction_id = {2}) Stop
+ON start.trip_id = stop.trip_id
+group by start.arrival_time, Stop.arrival_time
+ORDER BY DepartureTime;
+    </string>
+
+    <string name="rail_trip_schedule_query">
+SELECT
+start.arrival_time DepartureTime,
+Stop.arrival_time  ArrivalTime,
+start.block_id
+FROM
+
+(SELECT
+T.trip_id,T.route_id,
+ST.arrival_time,
+T.block_id
+FROM
+stop_times_rail ST
+JOIN trips_rail T
+ON ST.trip_id = T.trip_id
+WHERE ST.stop_id = {0} and T.direction_id = {2} and T.service_id in (select service_id from calendar_rail C where days &amp; {1})) Start
+
+JOIN (SELECT
+T.trip_id, T.direction_id, T.service_id,
+ST.arrival_time
+FROM
+stop_times_rail ST
+JOIN trips_rail T
+ON ST.trip_id = T.trip_id
+WHERE  stop_id = {3} and T.direction_id = {2}  and T.service_id in (select service_id from calendar_rail  C where days &amp; {1})) Stop
+ON start.trip_id = stop.trip_id
+group by start.arrival_time, stop.arrival_time;
+
+</string>
+
+</resources>

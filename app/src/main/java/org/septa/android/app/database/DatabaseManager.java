@@ -5,7 +5,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import org.septa.android.app.R;
 import org.septa.android.app.domain.RouteDirectionModel;
+import org.septa.android.app.domain.ScheduleModel;
 import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.support.Criteria;
 import org.septa.android.app.support.CursorAdapterSupplier;
@@ -49,6 +51,13 @@ public class DatabaseManager {
     public static synchronized SQLiteDatabase getDatabase(Context context) {
         if (database == null) {
             database = new SEPTADatabase(context.getApplicationContext()).getReadableDatabase();
+        }
+        return database;
+    }
+
+    public static SQLiteDatabase getDatabase() {
+        if (database == null) {
+            throw new RuntimeException("DB was not initialized.");
         }
         return database;
     }
@@ -127,6 +136,22 @@ public class DatabaseManager {
 
     public CursorAdapterSupplier<RouteDirectionModel> getSubwayNoDirectionRouteCursorAdapaterSupplier() {
         return new SubwayNoDirectionRouteCursorAdapterSupplier();
+    }
+
+    public CursorAdapterSupplier<ScheduleModel> getNonRegionalRailScheduleCursorAdapterSupplier() {
+        return new NonRegionalRailScheduleCursorAdapterSupplier();
+    }
+
+    public CursorAdapterSupplier<ScheduleModel> getRailScheduleCursorAdapterSupplier() {
+        return new RegionalRailScheduleCursorAdapterSupplier();
+    }
+
+    public CursorAdapterSupplier<StopModel> getNonRailReverseAdapterSupplier() {
+        return new NonRailReverseAdapterSupplier();
+    }
+
+    public CursorAdapterSupplier<RouteDirectionModel> getNonRailReverseRouteCursorAdapterSupplier() {
+        return new NonRailReverseRouteCursorAdapterSupplier();
     }
 
     public class NhslStopCursorAdapterSupplier implements CursorAdapterSupplier<StopModel> {
@@ -504,13 +529,31 @@ public class DatabaseManager {
 
 
     public class RailRouteCursorAdapterSupplier implements CursorAdapterSupplier<RouteDirectionModel> {
-        private static final String SELECT_CLAUSE = "SELECT R.Route_id, R.route_short_name route_short_name, S.stop_name route_long_name, cast (T.direction_id  as TEXT ) dircode FROM routes_rail R JOIN trips_rail T ON R.route_id = T.route_id JOIN stop_times_rail ST ON T.trip_id = ST.trip_id JOIN stops_rail S ON ST.stop_id = S.stop_id JOIN ( SELECT R.route_id, T.direction_id, max(ST.stop_sequence) max_stop_sequence FROM routes_rail R JOIN trips_rail T ON R.route_id = T.route_id JOIN stop_times_rail ST ON T.trip_id = ST.trip_id JOIN stops_rail S ON ST.stop_id = S.stop_id GROUP BY R.route_id, T.direction_id) lastStop ON R.route_id = lastStop.route_id AND T.direction_id = lastStop.direction_id AND ST.stop_sequence = lastStop.max_stop_sequence GROUP BY R.Route_id,R.route_short_name, R.route_long_name,T.direction_id ,S.stop_name";
+        private static final String SELECT_CLAUSE = "SELECT R.Route_id, R.route_short_name route_short_name, S.stop_name route_long_name, cast (T.direction_id  as TEXT ) dircode FROM routes_rail R JOIN trips_rail T ON R.route_id = T.route_id JOIN stop_times_rail ST ON T.trip_id = ST.trip_id JOIN stops_rail S ON ST.stop_id = S.stop_id JOIN ( SELECT R.route_id, T.direction_id, max(ST.stop_sequence) max_stop_sequence FROM routes_rail R JOIN trips_rail T ON R.route_id = T.route_id JOIN stop_times_rail ST ON T.trip_id = ST.trip_id JOIN stops_rail S ON ST.stop_id = S.stop_id GROUP BY R.route_id, T.direction_id) lastStop ON R.route_id = lastStop.route_id AND T.direction_id = lastStop.direction_id AND ST.stop_sequence = lastStop.max_stop_sequence ";
 
         @Override
         public Cursor getCursor(Context context, List<Criteria> whereClause) {
 
-            Cursor cursor = getDatabase(context).rawQuery(SELECT_CLAUSE, null);
-            Log.d(TAG, "Creating cursor:" + SELECT_CLAUSE);
+            StringBuilder queryString = new StringBuilder(SELECT_CLAUSE);
+            if (whereClause != null) {
+                boolean first = true;
+                queryString.append(" WHERE ");
+                for (Criteria c : whereClause) {
+                    if (!first)
+                        queryString.append(" AND ");
+                    else first = false;
+                    if ("route_id".equals(c.getFieldName())) {
+                        queryString.append("R.");
+                    }
+                    queryString.append(c.getFieldName()).append(c.getOperation()).append("'").append(c.getValue().toString()).append("'").append(" ");
+
+                }
+            }
+
+            queryString.append(" GROUP BY R.Route_id,R.route_short_name, R.route_long_name,T.direction_id ,S.stop_name");
+
+            Cursor cursor = getDatabase(context).rawQuery(queryString.toString(), null);
+            Log.d(TAG, "Creating cursor:" + queryString.toString());
 
             return cursor;
         }
@@ -819,4 +862,255 @@ public class DatabaseManager {
     }
 
 
+    public class NonRegionalRailScheduleCursorAdapterSupplier implements CursorAdapterSupplier<ScheduleModel> {
+
+        @Override
+        public Cursor getCursor(Context context, List<Criteria> whereClause) {
+            String queryString = context.getResources().getString(R.string.bus_trip_schedule_query);
+
+            String start_stop_id = null;
+            String service_id = null;
+            String direction_id = null;
+            String end_stop_id = null;
+
+            if (whereClause != null) {
+                for (Criteria c : whereClause) {
+                    if ("start_stop_id".equals(c.getFieldName())) {
+                        start_stop_id = c.getValue().toString();
+                    }
+                    if ("service_id".equals(c.getFieldName())) {
+                        service_id = c.getValue().toString();
+                    }
+                    if ("direction_id".equals(c.getFieldName())) {
+                        direction_id = c.getValue().toString();
+                    }
+                    if ("end_stop_id".equals(c.getFieldName())) {
+                        end_stop_id = c.getValue().toString();
+                    }
+                }
+
+                MessageFormat form = new MessageFormat(queryString.toString());
+                String query = form.format(new Object[]{start_stop_id, service_id, direction_id, end_stop_id});
+                Log.d(TAG, "Creating cursor:" + query);
+                Cursor cursor = getDatabase(context).rawQuery(query, null);
+
+                return cursor;
+            }
+
+            throw new RuntimeException("Need a where clause.");
+        }
+
+        @Override
+        public ScheduleModel getCurrentItemFromCursor(Cursor cursor) {
+            return new ScheduleModel(cursor.getString(2), cursor.getInt(1), cursor.getInt(0));
+        }
+
+        @Override
+        public ScheduleModel getItemFromId(Context context, Object id) {
+            return null;
+        }
+
+
+    }
+
+    public class RegionalRailScheduleCursorAdapterSupplier implements CursorAdapterSupplier<ScheduleModel> {
+
+        @Override
+        public Cursor getCursor(Context context, List<Criteria> whereClause) {
+            String queryString = context.getResources().getString(R.string.rail_trip_schedule_query);
+
+            String start_stop_id = null;
+            String service_id = null;
+            String direction_id = null;
+            String end_stop_id = null;
+
+            if (whereClause != null) {
+                for (Criteria c : whereClause) {
+                    if ("start_stop_id".equals(c.getFieldName())) {
+                        start_stop_id = c.getValue().toString();
+                    }
+                    if ("service_id".equals(c.getFieldName())) {
+                        service_id = c.getValue().toString();
+                    }
+                    if ("direction_id".equals(c.getFieldName())) {
+                        direction_id = c.getValue().toString();
+                    }
+                    if ("end_stop_id".equals(c.getFieldName())) {
+                        end_stop_id = c.getValue().toString();
+                    }
+                }
+
+                MessageFormat form = new MessageFormat(queryString.toString());
+                String query = form.format(new Object[]{start_stop_id, service_id, direction_id, end_stop_id});
+                Log.d(TAG, "Creating cursor:" + query);
+                Cursor cursor = getDatabase(context).rawQuery(query, null);
+
+                return cursor;
+            }
+
+            throw new RuntimeException("Need a where clause.");
+        }
+
+        @Override
+        public ScheduleModel getCurrentItemFromCursor(Cursor cursor) {
+            return new ScheduleModel(cursor.getString(2), cursor.getInt(1), cursor.getInt(0));
+        }
+
+        @Override
+        public ScheduleModel getItemFromId(Context context, Object id) {
+            return null;
+        }
+
+
+    }
+
+    public class NonRailReverseAdapterSupplier implements CursorAdapterSupplier<StopModel> {
+
+        private static final String SELECT_CLAUSE = "  SELECT s.stop_id, stop_name, wheelchair_boarding, stop_lat, stop_lon, s.rowid AS _id FROM reverseStopSearch RSS JOIN stops_bus S ON RSS.reverse_stop_id = S.stop_id";
+
+
+        @Override
+        public Cursor getCursor(Context context, List<Criteria> whereClause) {
+            StringBuilder queryString = new StringBuilder(SELECT_CLAUSE);
+
+            if (whereClause != null)
+                for (Criteria c : whereClause) {
+                    queryString.append(" AND ");
+
+                    if ("stop_lon".equals(c.getFieldName()) || "stop_lat".equals(c.getFieldName())) {
+                        queryString.append("CAST(s.").append(c.getFieldName()).append(" as decimal)")
+                                .append(c.getOperation()).append(c.getValue().toString());
+                        continue;
+                    } else if ("route_short_name".equals(c.getFieldName()) || "stop_id".equals(c.getFieldName())) {
+                        queryString.append("RSS.");
+                    } else queryString.append("s.");
+
+                    queryString.append(c.getFieldName()).append(c.getOperation()).append("'").append(c.getValue().toString()).append("'");
+                }
+
+            Log.d(TAG, "NonRailReverseAdapterSupplier Creating cursor:" + queryString.toString());
+
+            Cursor cursor = getDatabase(context).rawQuery(queryString.toString(), null);
+
+            return cursor;
+        }
+
+        @Override
+        public StopModel getCurrentItemFromCursor(Cursor cursor) {
+            StopModel stopModel = new StopModel(cursor.getString(0), cursor.getString(1),
+                    (cursor.getInt(2) == 1), cursor.getString(3), cursor.getString(4));
+            return stopModel;
+        }
+
+        @Override
+        public StopModel getItemFromId(Context context, Object id) {
+            String queryString = "SELECT DISTINCT a.stop_id, stop_name, wheelchair_boarding, stop_lat, stop_lon, a.rowid AS _id FROM stops_bus a where a.stop_id='" + id.toString() + "'";
+
+            StopModel stopModel = null;
+            Cursor cursor = getDatabase(context).rawQuery(queryString.toString(), null);
+            if (cursor != null) {
+                if (cursor.moveToFirst()) {
+                    stopModel = getCurrentItemFromCursor(cursor);
+                }
+                cursor.close();
+            }
+
+            return stopModel;
+        }
+    }
+
+    public class NonRailReverseRouteCursorAdapterSupplier implements CursorAdapterSupplier<RouteDirectionModel> {
+        String SELECT_CLAUSE = "SELECT a.route_id, a.route_short_name, a.route_long_name, b.DirectionDescription, b.dircode, a.route_type, a.rowid AS _id from routes_bus a, bus_stop_directions b WHERE  a.route_id=b.route";
+
+        @Override
+        public Cursor getCursor(Context context, List<Criteria> whereClause) {
+            StringBuilder queryString = new StringBuilder(SELECT_CLAUSE);
+
+
+            for (Criteria c : whereClause) {
+                queryString.append(" AND ");
+                if ("dircode".equals(c.getFieldName())) {
+                    queryString.append("b.");
+                } else if ("route_id".equals(c.getFieldName())) {
+                    queryString.append("a.");
+                }
+                queryString.append(c.getFieldName()).append(c.getOperation()).append("'").append(c.getValue().toString()).append("'");
+
+            }
+
+            Cursor cursor = getDatabase(context).rawQuery(queryString.toString(), null);
+            Log.d(TAG, "Creating cursor:" + queryString.toString());
+
+            return cursor;
+        }
+
+        @Override
+        public RouteDirectionModel getCurrentItemFromCursor(Cursor cursor) {
+            return new RouteDirectionModel(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getInt(5));
+        }
+
+        @Override
+        public RouteDirectionModel getItemFromId(Context context, Object id) {
+            List<Criteria> criteria = new ArrayList<Criteria>(1);
+            criteria.add(new Criteria("route_id", Criteria.Operation.EQ, id.toString()));
+            Cursor cursor = getCursor(context, criteria);
+            RouteDirectionModel routeDirectionModel = null;
+
+            if (cursor != null) {
+                if (cursor.moveToFirst()) {
+                    routeDirectionModel = getCurrentItemFromCursor(cursor);
+                }
+                cursor.close();
+            }
+            return routeDirectionModel;
+        }
+    }
+
+
+    public class RailReverseRouteCursorAdapterSupplier implements CursorAdapterSupplier<RouteDirectionModel> {
+        String SELECT_CLAUSE = "SELECT a.route_id, a.route_short_name, a.route_long_name, b.DirectionDescription, b.dircode, a.route_type, a.rowid AS _id from routes_bus a, bus_stop_directions b WHERE  a.route_id=b.route";
+
+        @Override
+        public Cursor getCursor(Context context, List<Criteria> whereClause) {
+            StringBuilder queryString = new StringBuilder(SELECT_CLAUSE);
+
+
+            for (Criteria c : whereClause) {
+                queryString.append(" AND ");
+                if ("dircode".equals(c.getFieldName())) {
+                    queryString.append("b.");
+                } else if ("route_id".equals(c.getFieldName())) {
+                    queryString.append("a.");
+                }
+                queryString.append(c.getFieldName()).append(c.getOperation()).append("'").append(c.getValue().toString()).append("'");
+
+            }
+
+            Cursor cursor = getDatabase(context).rawQuery(queryString.toString(), null);
+            Log.d(TAG, "Creating cursor:" + queryString.toString());
+
+            return cursor;
+        }
+
+        @Override
+        public RouteDirectionModel getCurrentItemFromCursor(Cursor cursor) {
+            return new RouteDirectionModel(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getInt(5));
+        }
+
+        @Override
+        public RouteDirectionModel getItemFromId(Context context, Object id) {
+            List<Criteria> criteria = new ArrayList<Criteria>(1);
+            criteria.add(new Criteria("route_id", Criteria.Operation.EQ, id.toString()));
+            Cursor cursor = getCursor(context, criteria);
+            RouteDirectionModel routeDirectionModel = null;
+
+            if (cursor != null) {
+                if (cursor.moveToFirst()) {
+                    routeDirectionModel = getCurrentItemFromCursor(cursor);
+                }
+                cursor.close();
+            }
+            return routeDirectionModel;
+        }
+    }
 }

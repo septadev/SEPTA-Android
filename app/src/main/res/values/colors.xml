@@ -28,9 +28,9 @@
     <color name="line_color_wil">#96cf64</color>
     <color name="line_color_gc">#9c99d2</color>
 
-    <color name="line_color_bsl">#f58220</color>
+    <color name="line_color_mfl">#f58220</color>
     <color name="line_color_bso">#41525c</color>
-    <color name="line_color_mfl">#4187c7</color>
+    <color name="line_color_bsl">#4187c7</color>
     <color name="line_color_mfo">#41525c</color>
 
     <color name="line_color_bus">#41525c</color>

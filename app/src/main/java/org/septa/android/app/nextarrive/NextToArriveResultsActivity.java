@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Point;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -16,10 +17,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.location.LocationServices;
@@ -70,16 +73,19 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     TransitType transitType;
     RouteDirectionModel routeDirectionModel;
     private GoogleMap googleMap;
-    int mapHeight = 0;
-    View mapContainerView;
+    boolean mapSized = false;
+    FrameLayout mapContainerView;
     ViewGroup bottomSheetLayout;
+    View rootView;
     View progressView;
     View progressViewBottom;
     View refresh;
     Favorite currentFavorite = null;
     NextToArriveTripView nextToArriveDetailsFragment;
     boolean editFavoritesFlag = false;
-    SupportMapFragment mapFragment;
+    private MarkerOptions startMarker;
+    private MarkerOptions destMarker;
+    private NextArrivalModelResponseParser parser;
 
     public static NextToArriveResultsActivity newInstance(StopModel start, StopModel end) {
         NextToArriveResultsActivity fragement = new NextToArriveResultsActivity();
@@ -104,6 +110,8 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         setTitle(R.string.next_to_arrive);
         setContentView(R.layout.next_to_arrive_results);
 
+        rootView = findViewById(R.id.rail_next_to_arrive_results_coordinator);
+
         progressView = findViewById(R.id.progress_view);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -123,7 +131,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         //anchor.setOnClickListener(myBottomSheetBehaviorCallBack);
 
 
-        mapContainerView = findViewById(R.id.map_container);
+        mapContainerView = (FrameLayout) findViewById(R.id.map_container);
 
         final TextView titleText = (TextView) bottomSheetLayout.findViewById(R.id.title_txt);
         nextToArriveDetailsFragment = (NextToArriveTripView) findViewById(R.id.next_to_arrive_trip_details);
@@ -133,6 +141,21 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                 int value = anchor.getHeight() + titleText.getHeight() + var1;
                 if (value != bottomSheetBehavior.getPeekHeight()) {
                     bottomSheetBehavior.setPeekHeight(value);
+
+                    if (!mapSized) {
+                        mapSized = true;
+                        SupportMapFragment mapFragment = SupportMapFragment.newInstance();
+
+                        ViewGroup.LayoutParams mapContainerLayoutParams = mapContainerView.getLayoutParams();
+                        mapContainerLayoutParams.height = rootView.getHeight() - value - mapContainerView.getTop();
+                        mapContainerLayoutParams.width = rootView.getWidth();
+                        mapContainerView.setLayoutParams(mapContainerLayoutParams);
+
+                        mapFragment.getMapAsync(NextToArriveResultsActivity.this);
+                        getSupportFragmentManager().beginTransaction().add(R.id.map_container, mapFragment).commit();
+
+                    }
+
                 }
             }
         });
@@ -166,10 +189,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
             String favKey = Favorite.generateKey(start, destination, transitType, routeDirectionModel);
             currentFavorite = SeptaServiceFactory.getFavoritesService().getFavoriteByKey(this, favKey);
 
-            SupportMapFragment mapFragment = SupportMapFragment.newInstance();
-            mapFragment.getMapAsync(this);
-
-            getSupportFragmentManager().beginTransaction().add(R.id.map_container, mapFragment).commit();
+            updateNextToArriveData();
 
         }
 
@@ -279,10 +299,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
         googleMap.setMapStyle(mapStyle);
 
-        updateNextToArriveData();
-
         final View mapContainer = findViewById(R.id.map_container);
-
 
         LatLng startingStationLatLng = new LatLng(start.getLatitude(), start.getLongitude());
         LatLng destinationStationLatLng = new LatLng(destination.getLatitude(), destination.getLongitude());
@@ -299,11 +316,16 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         googleMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
             @Override
             public void onMapLoaded() {
+                SupportMapFragment mapFragment = SupportMapFragment.newInstance();
+                Display mdisp = getWindowManager().getDefaultDisplay();
+                Point mdispSize = new Point();
+                mdisp.getSize(mdispSize);
+
                 ViewGroup.LayoutParams layoutParams =
                         bottomSheetLayout.getLayoutParams();
-                layoutParams.height = mapContainer.getHeight();
+                layoutParams.height = rootView.getHeight() - mapContainerView.getTop();
                 bottomSheetLayout.setLayoutParams(layoutParams);
-                googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 80, getResources().getDisplayMetrics())));
+                googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, getResources().getDisplayMetrics())));
             }
         });
 
@@ -334,6 +356,8 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                 updateNextToArriveData();
             }
         });
+
+        updateMap();
     }
 
     @Override
@@ -362,39 +386,17 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                         Log.d(TAG, response.toString());
                         Log.d(TAG, response.body().toString());
 
-
-                        BitmapDescriptor vehicleBitMap = BitmapDescriptorFactory.fromResource(TransitType.valueOf(response.body().getTransType()).getMapMarkerResource());
-
-                        googleMap.clear();
-
                         LatLng startingStationLatLng = new LatLng(start.getLatitude(), start.getLongitude());
                         LatLng destinationStationLatLng = new LatLng(destination.getLatitude(), destination.getLongitude());
-                        googleMap.addMarker(new MarkerOptions().position(startingStationLatLng).title(start.getStopName()));
-                        googleMap.addMarker(new MarkerOptions().position(destinationStationLatLng).title(destination.getStopName()));
+                        startMarker = new MarkerOptions().position(startingStationLatLng).title(start.getStopName());
+                        destMarker = new MarkerOptions().position(destinationStationLatLng).title(destination.getStopName());
 
                         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-                        NextArrivalModelResponseParser parser = new NextArrivalModelResponseParser(response.body());
-
-                        for (Map.Entry<LatLng, NextArrivalModelResponse.NextArrivalRecord> entry : parser.getLatLngMap().entrySet()) {
-                            googleMap.addMarker(new MarkerOptions().position(entry.getKey()).title(entry.getValue().getOrigLineTripId()).icon(vehicleBitMap));
-                        }
-
-                        for (String routeId : parser.getRouteIdSet()) {
-                            KmlLayer layer = MapUtils.getKMLByLineId(NextToArriveResultsActivity.this, googleMap, routeId, transitType);
-                            if (layer != null)
-                                try {
-                                    layer.addLayerToMap();
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                } catch (XmlPullParserException e) {
-                                    e.printStackTrace();
-                                }
-                        }
+                        parser = new NextArrivalModelResponseParser(response.body());
 
                         nextToArriveDetailsFragment.setNextToArriveData(parser);
-
                         progressVisibility(View.GONE);
                     }
                 }
@@ -408,6 +410,28 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
         }
 
+    }
+
+    private void updateMap() {
+        googleMap.clear();
+        googleMap.addMarker(startMarker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+        googleMap.addMarker(destMarker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+        BitmapDescriptor vehicleBitMap = BitmapDescriptorFactory.fromResource(transitType.getMapMarkerResource());
+        for (Map.Entry<LatLng, NextArrivalModelResponse.NextArrivalRecord> entry : parser.getLatLngMap().entrySet()) {
+            googleMap.addMarker(new MarkerOptions().position(entry.getKey()).title(entry.getValue().getOrigLineTripId()).icon(vehicleBitMap));
+        }
+
+        for (String routeId : parser.getRouteIdSet()) {
+            KmlLayer layer = MapUtils.getKMLByLineId(NextToArriveResultsActivity.this, googleMap, routeId, transitType);
+            if (layer != null)
+                try {
+                    layer.addLayerToMap();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (XmlPullParserException e) {
+                    e.printStackTrace();
+                }
+        }
     }
 
     private void progressVisibility(int visibility) {

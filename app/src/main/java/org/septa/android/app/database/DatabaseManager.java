@@ -103,7 +103,8 @@ public class DatabaseManager {
     }
 
     public CursorAdapterSupplier<StopModel> getSubwayStopCursorAdapterSupplier() {
-        return new SubwayStopCursorAdapterSupplier();
+        //return new SubwayStopCursorAdapterSupplier();
+        return new BusStopCursorAdapterSupplier();
     }
 
     public CursorAdapterSupplier<RouteDirectionModel> getTrolleyRouteCursorAdapterSupplier() {
@@ -401,7 +402,10 @@ public class DatabaseManager {
 
     public class BusStopCursorAdapterSupplier implements CursorAdapterSupplier<StopModel> {
 
-        private static final String SELECT_CLAUSE = "SELECT DISTINCT a.stop_id, stop_name, wheelchair_boarding, stop_lat, stop_lon, a.rowid AS _id FROM stops_bus a, trips_bus b, stop_times_bus c WHERE c.trip_id=b.trip_id and c.stop_id=a.stop_id";
+       // private static final String SELECT_CLAUSE = "SELECT DISTINCT a.stop_id, stop_name, wheelchair_boarding, stop_lat, stop_lon, a.rowid AS _id FROM stops_bus a, trips_bus b, stop_times_bus c WHERE c.trip_id=b.trip_id and c.stop_id=a.stop_id";
+       private static final String SELECT_CLAUSE = "SELECT DISTINCT a.stop_id, stop_name, wheelchair_boarding, stop_lat, stop_lon, a.rowid AS _id FROM stops_bus a, stop_route_direction b WHERE a.stop_id=b.stop_id";
+
+
 
 
         @Override

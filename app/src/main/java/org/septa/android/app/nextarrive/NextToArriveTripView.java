@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,7 @@ import org.septa.android.app.nextarrive.NextToArriveLine;
 import org.septa.android.app.nextarrive.NextToArriveTripDetailActivity;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalModelResponse;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalModelResponse.NextArrivalRecord;
+import org.septa.android.app.support.Consumer;
 
 import java.text.DateFormat;
 import java.util.Collections;
@@ -38,6 +40,8 @@ public class NextToArriveTripView extends FrameLayout {
     private StopModel start;
     private StopModel destination;
     private RouteDirectionModel routeDirectionModel;
+
+    private Consumer<Integer> onFirstElementHeight;
 
     public NextToArriveTripView(@NonNull Context context) {
         super(context);
@@ -64,12 +68,12 @@ public class NextToArriveTripView extends FrameLayout {
         if (routeDirectionModel != null)
             routeId = routeDirectionModel.getRouteId();
         listView.setAdapter(new SingleLinesListAdapter(getContext(),
-                nextToArriveLinesList, transitType, start.getStopId(), destination.getStopId(), routeId));
+                nextToArriveLinesList, transitType, start.getStopId(), destination.getStopId(), routeId, onFirstElementHeight));
         listView.setEmptyView(findViewById(android.R.id.empty));
     }
 
     public void setMultipleStopDetails(List<NextArrivalModelResponse.NextArrivalRecord> multiStopList) {
-        listView.setAdapter(new MultiLinesListAdapter(getContext(), multiStopList, transitType));
+        listView.setAdapter(new MultiLinesListAdapter(getContext(), multiStopList, transitType, onFirstElementHeight));
         listView.setEmptyView(findViewById(android.R.id.empty));
     }
 
@@ -110,6 +114,10 @@ public class NextToArriveTripView extends FrameLayout {
 
     }
 
+    public void setOnFirstElementHeight(Consumer<Integer> onFirstElementHeight) {
+        this.onFirstElementHeight = onFirstElementHeight;
+    }
+
     public TransitType getTransitType() {
         return transitType;
     }
@@ -145,10 +153,19 @@ public class NextToArriveTripView extends FrameLayout {
     private static class MultiLinesListAdapter extends ArrayAdapter<NextArrivalRecord> {
 
         private final TransitType transitType;
+        Consumer<Integer> onFirstElementHeight;
+        OnLayoutChangeListener onLayoutChangeListener;
 
-        public MultiLinesListAdapter(@NonNull Context context, List<NextArrivalRecord> list, TransitType transitType) {
+        public MultiLinesListAdapter(@NonNull Context context, List<NextArrivalRecord> list, TransitType transitType, final Consumer<Integer> onFirstElementHeight) {
             super(context, 0, list);
             this.transitType = transitType;
+            this.onFirstElementHeight = onFirstElementHeight;
+            onLayoutChangeListener = new OnLayoutChangeListener() {
+                @Override
+                public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                    onFirstElementHeight.accept(bottom - top);
+                }
+            };
         }
 
 
@@ -223,6 +240,13 @@ public class NextToArriveTripView extends FrameLayout {
                 termDepartureTime.setTextColor(ContextCompat.getColor(getContext(), R.color.on_time_departing));
             }
 
+            if (onFirstElementHeight != null) {
+                if (position == 0) {
+                    convertView.addOnLayoutChangeListener(onLayoutChangeListener);
+                } else {
+                    convertView.removeOnLayoutChangeListener(onLayoutChangeListener);
+                }
+            }
 
             return convertView;
 
@@ -235,13 +259,24 @@ public class NextToArriveTripView extends FrameLayout {
         private final String startStopId;
         private final String destStopId;
         private final String routeId;
+        Consumer<Integer> onFirstElementHeight;
+        OnLayoutChangeListener onLayoutChangeListener;
+        private int firstHeaderHeight = 0;
 
-        public SingleLinesListAdapter(@NonNull Context context, List<NextToArriveLine> list, TransitType transitType, String startStopId, String destStopId, String routeId) {
+        public SingleLinesListAdapter(@NonNull Context context, List<NextToArriveLine> list, TransitType transitType, String startStopId, String destStopId, String routeId, final Consumer<Integer> onFirstElementHeight) {
             super(context, 0, list);
             this.transitType = transitType;
             this.startStopId = startStopId;
             this.destStopId = destStopId;
             this.routeId = routeId;
+            this.onFirstElementHeight = onFirstElementHeight;
+
+            onLayoutChangeListener = new OnLayoutChangeListener() {
+                @Override
+                public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                    onFirstElementHeight.accept(bottom - top + firstHeaderHeight);
+                }
+            };
         }
 
         @Override
@@ -272,8 +307,12 @@ public class NextToArriveTripView extends FrameLayout {
 
             DateFormat dateFormat = DateFormat.getTimeInstance(DateFormat.SHORT);
 
+            View firstLine = null;
+
             for (final NextArrivalModelResponse.NextArrivalRecord unit : tripList) {
                 View line = LayoutInflater.from(getContext()).inflate(R.layout.next_to_arrive_unit, null, false);
+                if (firstLine == null)
+                    firstLine = line;
 
                 line.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -315,8 +354,18 @@ public class NextToArriveTripView extends FrameLayout {
                     origTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.no_delay_minutes));
                     origDepartureTime.setTextColor(ContextCompat.getColor(getContext(), R.color.on_time_departing));
                 }
-
             }
+
+            if (onFirstElementHeight != null && firstLine!=null) {
+                if (position == 0) {
+                    firstHeaderHeight = convertView.findViewById(R.id.linearLayout1).getHeight();
+                    firstLine.addOnLayoutChangeListener(onLayoutChangeListener);
+                } else {
+                    firstLine.removeOnLayoutChangeListener(onLayoutChangeListener);
+                }
+            }
+
+
             return convertView;
         }
     }

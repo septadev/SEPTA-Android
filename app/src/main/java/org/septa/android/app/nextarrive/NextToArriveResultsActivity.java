@@ -70,6 +70,8 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     TransitType transitType;
     RouteDirectionModel routeDirectionModel;
     private GoogleMap googleMap;
+    int mapHeight = 0;
+    View mapContainerView;
     ViewGroup bottomSheetLayout;
     View progressView;
     View progressViewBottom;
@@ -77,6 +79,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     Favorite currentFavorite = null;
     NextToArriveTripView nextToArriveDetailsFragment;
     boolean editFavoritesFlag = false;
+    SupportMapFragment mapFragment;
 
     public static NextToArriveResultsActivity newInstance(StopModel start, StopModel end) {
         NextToArriveResultsActivity fragement = new NextToArriveResultsActivity();
@@ -114,13 +117,25 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
 
         // Prevent the bottom sheet from being dragged to be opened.  Force it to use the anchor image.
-        BottomSheetHandler myBottomSheetBehaviorCallBack = new BottomSheetHandler(bottomSheetBehavior);
-        bottomSheetBehavior.setBottomSheetCallback(myBottomSheetBehaviorCallBack);
-        View anchor = findViewById(R.id.bottom_sheet_anchor);
-        anchor.setOnClickListener(myBottomSheetBehaviorCallBack);
+        //BottomSheetHandler myBottomSheetBehaviorCallBack = new BottomSheetHandler(bottomSheetBehavior);
+        //bottomSheetBehavior.setBottomSheetCallback(myBottomSheetBehaviorCallBack);
+        final View anchor = findViewById(R.id.bottom_sheet_anchor);
+        //anchor.setOnClickListener(myBottomSheetBehaviorCallBack);
 
+
+        mapContainerView = findViewById(R.id.map_container);
+
+        final TextView titleText = (TextView) bottomSheetLayout.findViewById(R.id.title_txt);
         nextToArriveDetailsFragment = (NextToArriveTripView) findViewById(R.id.next_to_arrive_trip_details);
-
+        nextToArriveDetailsFragment.setOnFirstElementHeight(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer var1) {
+                int value = anchor.getHeight() + titleText.getHeight() + var1;
+                if (value != bottomSheetBehavior.getPeekHeight()) {
+                    bottomSheetBehavior.setPeekHeight(value);
+                }
+            }
+        });
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -134,7 +149,6 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
 
         if (start != null && destination != null && transitType != null) {
-            TextView titleText = (TextView) bottomSheetLayout.findViewById(R.id.title_txt);
             titleText.setText(transitType.getString("nta_results_title", this));
 
             TextView startingStationNameText = (TextView) findViewById(R.id.starting_station_name);
@@ -142,11 +156,6 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
             TextView destinationStationNameText = (TextView) findViewById(R.id.destination_station_name);
             destinationStationNameText.setText(destination.getStopName());
-
-            SupportMapFragment mapFragment = SupportMapFragment.newInstance();
-            mapFragment.getMapAsync(this);
-
-            getSupportFragmentManager().beginTransaction().add(R.id.map_container, mapFragment).commit();
 
             nextToArriveDetailsFragment.setTransitType(transitType);
             nextToArriveDetailsFragment.setStart(start);
@@ -156,6 +165,12 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
             String favKey = Favorite.generateKey(start, destination, transitType, routeDirectionModel);
             currentFavorite = SeptaServiceFactory.getFavoritesService().getFavoriteByKey(this, favKey);
+
+            SupportMapFragment mapFragment = SupportMapFragment.newInstance();
+            mapFragment.getMapAsync(this);
+
+            getSupportFragmentManager().beginTransaction().add(R.id.map_container, mapFragment).commit();
+
         }
 
         if (currentFavorite != null && editFavoritesFlag) {

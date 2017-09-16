@@ -7,7 +7,7 @@
     android:layout_height="300dp"
     android:background="#ffffff"
     app:behavior_hideable="false"
-    app:behavior_peekHeight="60dp"
+    app:behavior_peekHeight="360dp"
     app:layout_behavior="@string/bottom_sheet_behavior">
 
     <LinearLayout
@@ -18,7 +18,7 @@
         <LinearLayout
             android:id="@+id/bottom_sheet_anchor"
             android:layout_width="match_parent"
-            android:layout_height="34dp"
+            android:layout_height="22dp"
             android:layout_weight="1"
             android:clickable="true"
             android:orientation="vertical"

@@ -187,13 +187,13 @@ public class ScheduleResultsActivity extends AppCompatActivity {
                 RadioButton rb = (RadioButton) radioGroup.findViewById(checkedID);
                 if (rb.isChecked()) {
                     ScheduleResultsAsyncTask task = new ScheduleResultsAsyncTask(ScheduleResultsActivity.this);
-                    task.execute(mapRadioButtonIdtoSchedule(checkedID));
+                    task.execute(mapRadioButtonIdtoSchedule(checkedID, routeDirectionModel.getRouteId()));
                 }
             }
         });
 
 
-        if (transitType == TransitType.RAIL || transitType == TransitType.NHSL || transitType == TransitType.SUBWAY) {
+        if (transitType == TransitType.RAIL) {
             findViewById(R.id.weekday_button).setVisibility(View.GONE);
             findViewById(R.id.mon_thurs_button).setVisibility(View.VISIBLE);
             findViewById(R.id.friday_button).setVisibility(View.VISIBLE);
@@ -235,16 +235,27 @@ public class ScheduleResultsActivity extends AppCompatActivity {
         }
     }
 
-    private int mapRadioButtonIdtoSchedule(int checkedID) {
+    private int mapRadioButtonIdtoSchedule(int checkedID, String routeId) {
         switch (checkedID) {
             case R.id.weekday_button:
+                if (transitType == TransitType.SUBWAY) {
+                    if ("bso".equalsIgnoreCase(routeId) || "mfo".equalsIgnoreCase(routeId)) {
+                        return WEEK_DAY;
+                    } else
+                        return SUBWAY_MON_THUR;
+                } else if (transitType == TransitType.NHSL) {
+                    return NHSL_MON_THUR;
+                }
                 return WEEK_DAY;
 
             case R.id.mon_thurs_button:
                 if (transitType == TransitType.RAIL) {
                     return RAIL_MON_THUR;
                 } else if (transitType == TransitType.SUBWAY) {
-                    return SUBWAY_MON_THUR;
+                    if ("bso".equalsIgnoreCase(routeId) || "mfo".equalsIgnoreCase(routeId)) {
+                        return WEEK_DAY;
+                    } else
+                        return SUBWAY_MON_THUR;
                 } else if (transitType == TransitType.NHSL) {
                     return NHSL_MON_THUR;
                 }
@@ -253,7 +264,10 @@ public class ScheduleResultsActivity extends AppCompatActivity {
                 if (transitType == TransitType.RAIL) {
                     return RAIL_FRIDAY;
                 } else if (transitType == TransitType.SUBWAY) {
-                    return SUBWAY_FRIDAY;
+                    if ("bso".equalsIgnoreCase(routeId) || "mfo".equalsIgnoreCase(routeId)) {
+                        return WEEK_DAY;
+                    } else
+                        return SUBWAY_FRIDAY;
                 } else if (transitType == TransitType.NHSL) {
                     return NHSL_FRIDAY;
                 }
@@ -263,7 +277,10 @@ public class ScheduleResultsActivity extends AppCompatActivity {
                 if (transitType == TransitType.RAIL) {
                     return RAIL_SATURDAY;
                 } else if (transitType == TransitType.SUBWAY) {
-                    return SUBWAY_SATURDAY;
+                    if ("bso".equalsIgnoreCase(routeId) || "mfo".equalsIgnoreCase(routeId)) {
+                        return SATURDAY;
+                    } else
+                        return SUBWAY_SATURDAY;
                 } else if (transitType == TransitType.NHSL) {
                     return NHSL_SATURDAY;
                 } else
@@ -273,7 +290,10 @@ public class ScheduleResultsActivity extends AppCompatActivity {
                 if (transitType == TransitType.RAIL) {
                     return RAIL_SUNDAY;
                 } else if (transitType == TransitType.SUBWAY) {
-                    return SUBWAY_SUNDAY;
+                    if ("bso".equalsIgnoreCase(routeId) || "mfo".equalsIgnoreCase(routeId)) {
+                        return SUNDAY;
+                    } else
+                        return SUBWAY_SUNDAY;
                 } else if (transitType == TransitType.NHSL) {
                     return NHSL_SUNDAY;
                 }
@@ -398,7 +418,7 @@ public class ScheduleResultsActivity extends AppCompatActivity {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             scheduleResultsActivity.setUpHeaders();
-            int schedule = mapRadioButtonIdtoSchedule(scheduleResultsActivity.radioGroup.getCheckedRadioButtonId());
+            int schedule = mapRadioButtonIdtoSchedule(scheduleResultsActivity.radioGroup.getCheckedRadioButtonId(), scheduleResultsActivity.routeDirectionModel.getRouteId());
             ScheduleResultsAsyncTask scheduleResultsAsyncTask = new ScheduleResultsAsyncTask(scheduleResultsActivity);
             scheduleResultsAsyncTask.execute(schedule);
         }

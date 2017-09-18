@@ -402,10 +402,8 @@ public class DatabaseManager {
 
     public class BusStopCursorAdapterSupplier implements CursorAdapterSupplier<StopModel> {
 
-       // private static final String SELECT_CLAUSE = "SELECT DISTINCT a.stop_id, stop_name, wheelchair_boarding, stop_lat, stop_lon, a.rowid AS _id FROM stops_bus a, trips_bus b, stop_times_bus c WHERE c.trip_id=b.trip_id and c.stop_id=a.stop_id";
-       private static final String SELECT_CLAUSE = "SELECT DISTINCT a.stop_id, stop_name, wheelchair_boarding, stop_lat, stop_lon, a.rowid AS _id FROM stops_bus a, stop_route_direction b WHERE a.stop_id=b.stop_id";
-
-
+        // private static final String SELECT_CLAUSE = "SELECT DISTINCT a.stop_id, stop_name, wheelchair_boarding, stop_lat, stop_lon, a.rowid AS _id FROM stops_bus a, trips_bus b, stop_times_bus c WHERE c.trip_id=b.trip_id and c.stop_id=a.stop_id";
+        private static final String SELECT_CLAUSE = "SELECT DISTINCT a.stop_id, stop_name, wheelchair_boarding, stop_lat, stop_lon, a.rowid AS _id FROM stops_bus a, stop_route_direction b WHERE a.stop_id=b.stop_id";
 
 
         @Override
@@ -876,25 +874,35 @@ public class DatabaseManager {
             String service_id = null;
             String direction_id = null;
             String end_stop_id = null;
+            String route_id = null;
 
             if (whereClause != null) {
                 for (Criteria c : whereClause) {
                     if ("start_stop_id".equals(c.getFieldName())) {
                         start_stop_id = c.getValue().toString();
-                    }
-                    if ("service_id".equals(c.getFieldName())) {
+                    } else if ("service_id".equals(c.getFieldName())) {
                         service_id = c.getValue().toString();
-                    }
-                    if ("direction_id".equals(c.getFieldName())) {
+                    } else if ("direction_id".equals(c.getFieldName())) {
                         direction_id = c.getValue().toString();
-                    }
-                    if ("end_stop_id".equals(c.getFieldName())) {
+                    } else if ("end_stop_id".equals(c.getFieldName())) {
                         end_stop_id = c.getValue().toString();
+                    } else if ("route_id".equals(c.getFieldName())) {
+                        route_id = c.getValue().toString();
                     }
                 }
 
+                String tableSuffix = "bus";
+
+                if ("MFL".equals(route_id)) {
+                    tableSuffix = "mfl";
+                } else if ("BSL".equals(route_id))
+                    tableSuffix = "bsl";
+                else if ("NHSL".equals(route_id)) {
+                    tableSuffix = "nhsl";
+                }
+
                 MessageFormat form = new MessageFormat(queryString.toString());
-                String query = form.format(new Object[]{start_stop_id, service_id, direction_id, end_stop_id});
+                String query = form.format(new Object[]{start_stop_id, service_id, direction_id, end_stop_id, tableSuffix});
                 Log.d(TAG, "Creating cursor:" + query);
                 Cursor cursor = getDatabase(context).rawQuery(query, null);
 

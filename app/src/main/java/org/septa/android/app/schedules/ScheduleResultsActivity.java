@@ -58,6 +58,17 @@ public class ScheduleResultsActivity extends AppCompatActivity {
     private static final int RAIL_SUNDAY = 64;
     private static final int SUNDAY = 3;
 
+    private static final int NHSL_MON_THUR = 17;
+    private static final int NHSL_FRIDAY = 18;
+    private static final int NHSL_SATURDAY = 19;
+    private static final int NHSL_SUNDAY = 20;
+
+    private static final int SUBWAY_MON_THUR = 5;
+    private static final int SUBWAY_FRIDAY = 6;
+    private static final int SUBWAY_SATURDAY = 7;
+    private static final int SUBWAY_SUNDAY = 8;
+
+
     private DatabaseManager dbManager = null;
     private RadioGroup radioGroup = null;
     CursorAdapterSupplier<ScheduleModel> scheduleCursorAdapterSupplier;
@@ -182,7 +193,7 @@ public class ScheduleResultsActivity extends AppCompatActivity {
         });
 
 
-        if (transitType == TransitType.RAIL) {
+        if (transitType == TransitType.RAIL || transitType == TransitType.NHSL || transitType == TransitType.SUBWAY) {
             findViewById(R.id.weekday_button).setVisibility(View.GONE);
             findViewById(R.id.mon_thurs_button).setVisibility(View.VISIBLE);
             findViewById(R.id.friday_button).setVisibility(View.VISIBLE);
@@ -230,22 +241,43 @@ public class ScheduleResultsActivity extends AppCompatActivity {
                 return WEEK_DAY;
 
             case R.id.mon_thurs_button:
-                return RAIL_MON_THUR;
+                if (transitType == TransitType.RAIL) {
+                    return RAIL_MON_THUR;
+                } else if (transitType == TransitType.SUBWAY) {
+                    return SUBWAY_MON_THUR;
+                } else if (transitType == TransitType.NHSL) {
+                    return NHSL_MON_THUR;
+                }
 
             case R.id.friday_button:
-                return RAIL_FRIDAY;
+                if (transitType == TransitType.RAIL) {
+                    return RAIL_FRIDAY;
+                } else if (transitType == TransitType.SUBWAY) {
+                    return SUBWAY_FRIDAY;
+                } else if (transitType == TransitType.NHSL) {
+                    return NHSL_FRIDAY;
+                }
+
 
             case R.id.saturday_button:
                 if (transitType == TransitType.RAIL) {
                     return RAIL_SATURDAY;
+                } else if (transitType == TransitType.SUBWAY) {
+                    return SUBWAY_SATURDAY;
+                } else if (transitType == TransitType.NHSL) {
+                    return NHSL_SATURDAY;
                 } else
                     return SATURDAY;
 
             case R.id.sunday_button:
                 if (transitType == TransitType.RAIL) {
                     return RAIL_SUNDAY;
-                } else
-                    return SUNDAY;
+                } else if (transitType == TransitType.SUBWAY) {
+                    return SUBWAY_SUNDAY;
+                } else if (transitType == TransitType.NHSL) {
+                    return NHSL_SUNDAY;
+                }
+                return SUNDAY;
         }
         return 0;
     }
@@ -279,6 +311,7 @@ public class ScheduleResultsActivity extends AppCompatActivity {
             criteriaList.add(new Criteria("service_id", Criteria.Operation.EQ, params[0]));
             criteriaList.add(new Criteria("direction_id", Criteria.Operation.EQ, scheduleResultsActivity.routeDirectionModel.getDirectionCode()));
             criteriaList.add(new Criteria("end_stop_id", Criteria.Operation.EQ, scheduleResultsActivity.destination.getStopId()));
+            criteriaList.add(new Criteria("route_id", Criteria.Operation.EQ, scheduleResultsActivity.routeDirectionModel.getRouteId()));
 
             List<ScheduleModel> returnList = new ArrayList<ScheduleModel>();
             Cursor cursor = scheduleResultsActivity.scheduleCursorAdapterSupplier.getCursor(scheduleResultsActivity, criteriaList);
@@ -379,6 +412,7 @@ public class ScheduleResultsActivity extends AppCompatActivity {
                 return scheduleResultsActivity.reverseStopCursorAdapaterSupplier.getCurrentItemFromCursor(cursor);
             } else return null;
         }
+
     }
 
 

@@ -12,8 +12,8 @@ T.trip_id,
 ST.arrival_time,
 T.block_id
 FROM
-stop_times_bus ST
-JOIN trips_bus T
+stop_times_{4} ST
+JOIN trips_{4} T
 ON ST.trip_id = T.trip_id
 WHERE ST.stop_id = {0} AND T.service_id = {1} and T.direction_id = {2}) Start
 
@@ -21,8 +21,8 @@ JOIN (SELECT
 T.trip_id, T.direction_id, T.service_id,
 ST.arrival_time
 FROM
-stop_times_bus  ST
-JOIN trips_bus T
+stop_times_{4}  ST
+JOIN trips_{4} T
 ON ST.trip_id = T.trip_id
 WHERE  stop_id = {3} AND T.service_id = {1} and T.direction_id = {2}) Stop
 ON start.trip_id = stop.trip_id

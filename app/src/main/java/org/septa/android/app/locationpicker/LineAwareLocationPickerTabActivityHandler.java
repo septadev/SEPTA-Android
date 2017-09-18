@@ -118,6 +118,10 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.line_aware_next_to_arrive_search, container, false);
 
+            if (getContext() == null){
+                return rootView;
+            }
+
             TextView pickerHeaderText = (TextView) rootView.findViewById(R.id.picker_header_text);
             pickerHeaderText.setText(transitType.getString(headerStringName, getContext()));
 

@@ -1058,7 +1058,21 @@ public class DatabaseManager {
 
         @Override
         public RouteDirectionModel getCurrentItemFromCursor(Cursor cursor) {
-            return new RouteDirectionModel(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getInt(5));
+            String id = cursor.getString(0);
+
+            String longName = cursor.getString(2);
+
+            if ("BSL".equals(id))
+                longName = "Broad Street Line";
+            else if ("MFL".equals(id))
+                longName = "Market Frankfor d Line";
+            else if ("BSO".equals(id))
+                longName = "Broad Street Overnight";
+            else if ("MFO".equals(id))
+                longName = "Market Frankford Overnight";
+
+            return new RouteDirectionModel(cursor.getString(0), cursor.getString(1), longName, cursor.getString(3), cursor.getString(4), cursor.getInt(5));
+
         }
 
         @Override

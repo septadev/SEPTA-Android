@@ -4,6 +4,8 @@ import android.support.annotation.NonNull;
 import android.support.v4.util.TimeUtils;
 import android.text.style.TtsSpan;
 
+import org.septa.android.app.support.GeneralUtils;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -49,21 +51,7 @@ public class ScheduleModel implements Comparable<ScheduleModel> {
     }
 
     public String getDurationAsString() {
-        long totalMinutes = TimeUnit.MINUTES.convert(
-                arrivalDate.getTime() - departureDate.getTime(), TimeUnit.MILLISECONDS);
-
-        long hours = totalMinutes / 60;
-        long minutes = totalMinutes - hours * 60;
-        StringBuilder builder = new StringBuilder();
-        if (hours > 0) {
-            builder.append(hours).append(" h");
-            if (minutes > 0) {
-                builder.append(" ").append(minutes).append(" m");
-            }
-        } else
-            builder.append(minutes).append(" m");
-
-        return builder.toString();
+        return GeneralUtils.getDurationAsString(arrivalDate.getTime() - departureDate.getTime(), TimeUnit.MILLISECONDS);
     }
 
     public Date getArrivalDate() {

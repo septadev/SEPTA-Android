@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -118,7 +120,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.line_aware_next_to_arrive_search, container, false);
 
-            if (getContext() == null){
+            if (getContext() == null) {
                 return rootView;
             }
 
@@ -135,7 +137,22 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                         @Override
                         public void accept(RouteDirectionModel var1) {
                             selectedRoute = var1;
-                            lineText.setText(selectedRoute.getRouteLongName());
+                            //lineText.setText(selectedRoute.getRouteLongName());
+                            int color;
+                            try {
+                                color = ContextCompat.getColor(getContext(), transitType.getLineColor(var1.getRouteId(), getContext()));
+                            } catch (Exception e) {
+                                color = ContextCompat.getColor(getContext(), R.color.default_line_color);
+                            }
+
+                            Drawable[] drawables = lineText.getCompoundDrawables();
+                            Drawable bullet = ContextCompat.getDrawable(getContext(), R.drawable.shape_line_marker);
+                            bullet.setColorFilter(color, PorterDuff.Mode.SRC);
+
+                            lineText.setCompoundDrawablesWithIntrinsicBounds(bullet, drawables[1],
+                                    drawables[2], drawables[3]);
+
+                            lineText.setText(selectedRoute.getRouteShortName() + ": to " + selectedRoute.getDirectionDescription());
                             startingStation = null;
                             activateView(startingStopEditText);
                             startingStopEditText.setText("");
@@ -264,8 +281,6 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
             this.buttonText = buttonText;
         }
     }
-
-
 
 
     public static class StopPickerOnTouchListener implements View.OnTouchListener {

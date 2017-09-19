@@ -58,10 +58,10 @@
                     android:layout_alignParentRight="true"
                     android:layout_marginRight="15dp"
                     android:layout_marginTop="13dp"
+                    android:clickable="true"
                     android:text="Reset"
                     android:textColor="#6d6d6d"
                     android:textSize="12sp"
-                    android:clickable="true"
                     app:font="@string/font_roboto_regular" />
             </RelativeLayout>
 
@@ -73,7 +73,9 @@
                 android:layout_marginRight="15dp"
                 android:layout_marginTop="7dp"
                 android:background="@drawable/line_picker_background"
+                android:drawablePadding="10dp"
                 android:drawableRight="@drawable/ic_line_picker"
+                android:ellipsize="end"
                 android:paddingBottom="14dp"
                 android:paddingLeft="10dp"
                 android:paddingRight="13dp"

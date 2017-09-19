@@ -2,31 +2,15 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/rail_next_to_arrive_results_coordinator"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="org.septa.android.app.nextarrive.NextToArriveResultsActivity">
 
 
-    <android.support.design.widget.AppBarLayout
-        android:id="@+id/app_bar_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
-
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
-
-    </android.support.design.widget.AppBarLayout>
-
     <FrameLayout
+        android:id="@+id/rail_next_to_arrive_results_coordinator"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:id="@+id/main_content"
@@ -128,11 +112,11 @@
 
         <FrameLayout
             android:id="@+id/progress_view"
-            tools:visibility="visible"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#44000000"
-            android:visibility="gone">
+            android:visibility="gone"
+            tools:visibility="visible">
 
             <ProgressBar
                 android:layout_width="wrap_content"

@@ -113,8 +113,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         rootView = findViewById(R.id.rail_next_to_arrive_results_coordinator);
 
         progressView = findViewById(R.id.progress_view);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+
 
         refresh = findViewById(R.id.refresh_button);
 

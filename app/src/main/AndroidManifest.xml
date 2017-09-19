@@ -35,7 +35,7 @@
             android:name=".nextarrive.NextToArriveResultsActivity"
             android:label="@string/septa"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme"></activity>
         <activity
             android:name=".nextarrive.NextToArriveTripDetailActivity"
             android:label="@string/septa"
@@ -45,7 +45,7 @@
             android:name=".temp.ComingSoonActivity"
             android:label="@string/septa"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme"></activity>
         <activity
             android:name=".systemstatus.SystemStatusResultsActivity"
             android:label="@string/septa"

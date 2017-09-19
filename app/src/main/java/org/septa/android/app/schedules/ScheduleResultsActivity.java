@@ -150,6 +150,20 @@ public class ScheduleResultsActivity extends AppCompatActivity {
 
         scheduleResultsListView = (ListView) findViewById(R.id.schedule_list_view);
 
+        View ntaLink = findViewById(R.id.nta_link);
+        ntaLink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ScheduleResultsActivity.this, NextToArriveResultsActivity.class);
+                intent.putExtra(Constants.STARTING_STATION, start);
+                intent.putExtra(Constants.DESTINATAION_STATION, destination);
+                intent.putExtra(Constants.TRANSIT_TYPE, transitType);
+                intent.putExtra(Constants.LINE_ID, routeDirectionModel);
+
+                startActivity(intent);
+            }
+        });
+
     }
 
 

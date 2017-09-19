@@ -23,7 +23,7 @@
                 android:id="@+id/header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#215291"
+                android:background="@color/colorPrimary"
                 android:orientation="vertical">
 
                 <org.septa.android.app.view.TextView

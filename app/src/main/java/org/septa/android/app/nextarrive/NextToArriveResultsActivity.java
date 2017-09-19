@@ -57,6 +57,7 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -134,6 +135,9 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
         final TextView titleText = (TextView) bottomSheetLayout.findViewById(R.id.title_txt);
         nextToArriveDetailsFragment = (NextToArriveTripView) findViewById(R.id.next_to_arrive_trip_details);
+        nextToArriveDetailsFragment.setMaxResults(null);
+        nextToArriveDetailsFragment.setResults(5, TimeUnit.HOURS);
+
         nextToArriveDetailsFragment.setOnFirstElementHeight(new Consumer<Integer>() {
             @Override
             public void accept(Integer var1) {
@@ -392,7 +396,6 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
                         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                         getSupportActionBar().setDisplayShowHomeEnabled(true);
-
                         parser = new NextArrivalModelResponseParser(response.body());
 
                         nextToArriveDetailsFragment.setNextToArriveData(parser);

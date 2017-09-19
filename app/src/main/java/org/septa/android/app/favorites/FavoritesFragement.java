@@ -77,6 +77,7 @@ public class FavoritesFragement extends Fragment {
             ViewGroup containerView = (ViewGroup) convertView.findViewById(R.id.next_to_arrive_trip_details);
 
             final NextToArriveTripView tripView = new NextToArriveTripView(getContext());
+            tripView.setMaxResults(3);
             tripView.setTransitType(favorite.getTransitType());
             tripView.setStart(favorite.getStart());
             tripView.setDestination(favorite.getDestination());

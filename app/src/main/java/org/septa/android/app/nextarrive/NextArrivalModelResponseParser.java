@@ -5,6 +5,8 @@ import com.google.android.gms.maps.model.LatLng;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalModelResponse;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -24,31 +26,22 @@ public class NextArrivalModelResponseParser {
 
     private Map<LatLng, NextArrivalModelResponse.NextArrivalRecord> latLngMap = new HashMap<LatLng, NextArrivalModelResponse.NextArrivalRecord>();
     private Set<String> routeIdSet = new HashSet<String>();
-    private int tripType;
-    Map<String, NextToArriveLine> map = new HashMap<String, NextToArriveLine>();
-    NextArrivalModelResponse response;
+    List<NextArrivalModelResponse.NextArrivalRecord> results;
 
     public NextArrivalModelResponseParser(NextArrivalModelResponse response) {
-        this.response = response;
-        int multiStopCount = 0;
-        int singleStopCount = 0;
+        results = response.getNextArrivalRecords();
 
-        for (NextArrivalModelResponse.NextArrivalRecord data : response.getNextArrivalRecords()) {
-            String key;
-            if (data.getOrigRouteId().equals(data.getTermRouteId())) {
-                key = data.getOrigRouteId();
-                singleStopCount++;
-            } else {
-                key = data.getOrigRouteId() + "." + data.getTermRouteId();
-                multiStopCount++;
+        Collections.sort(results, new Comparator<NextArrivalModelResponse.NextArrivalRecord>() {
+            @Override
+            public int compare(NextArrivalModelResponse.NextArrivalRecord o1, NextArrivalModelResponse.NextArrivalRecord o2) {
+                int result = o1.getOrigDepartureTime().compareTo(o2.getOrigDepartureTime());
+                if (result != 0) return result;
+                result = o1.getOrigArrivalTime().compareTo(o2.getOrigArrivalTime());
+                return result;
             }
+        });
 
-            if (!map.containsKey(key)) {
-                map.put(key, new NextToArriveLine(data.getOrigRouteName(), (data.getOrigRouteId() != data.getTermRouteId())));
-            }
-
-            map.get(key).addItem(data);
-
+        for (NextArrivalModelResponse.NextArrivalRecord data : results) {
             if (data.getOrigVehicleLat() != null && data.getOrigVehicleLon() != null) {
                 LatLng vehicleLatLng = new LatLng(data.getOrigVehicleLat(), data.getOrigVehicleLon());
                 latLngMap.put(vehicleLatLng, data);
@@ -58,17 +51,13 @@ public class NextArrivalModelResponseParser {
                 routeIdSet.add(data.getOrigRouteId());
             }
 
-            if (data.getConnectionStationId() != null)
+            if (data.getConnectionStationId() != null) {
                 if (!routeIdSet.contains(data.getTermRouteId())) {
                     routeIdSet.add(data.getTermRouteId());
                 }
+            }
         }
 
-        if (multiStopCount > 0 && singleStopCount > 0)
-            tripType = BOTH;
-        else if (multiStopCount == 0)
-            tripType = SINGLE_STOP_TRIP;
-        else tripType = MULTIPLE_STOP_TRIP;
 
     }
 
@@ -80,19 +69,8 @@ public class NextArrivalModelResponseParser {
         return routeIdSet;
     }
 
-    public int getTripType() {
-        return tripType;
+
+    public List<NextArrivalModelResponse.NextArrivalRecord> getResults() {
+        return results;
     }
-
-    public List<NextToArriveLine> getNextToArriveLineList() {
-        ArrayList<NextToArriveLine> list = new ArrayList<NextToArriveLine>(map.size());
-        list.addAll(map.values());
-
-        return list;
-    }
-
-    public List<NextArrivalModelResponse.NextArrivalRecord> getNextArrivalRecordList() {
-        return response.getNextArrivalRecords();
-    }
-
 }

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="300dp"
     android:background="#ffffff"
-    app:behavior_hideable="false"
+    app:behavior_hideable="true"
     app:behavior_peekHeight="360dp"
     app:layout_behavior="@string/bottom_sheet_behavior">
 
@@ -48,12 +48,16 @@
             android:textSize="12pt"
             app:font="@string/font_roboto_bold" />
 
-        <org.septa.android.app.nextarrive.NextToArriveTripView
-            android:id="@+id/next_to_arrive_trip_details"
+        <ScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_below="@id/title_txt"
-            android:layout_weight="20" />
+            android:layout_weight="20">
+
+            <org.septa.android.app.nextarrive.NextToArriveTripView
+                android:id="@+id/next_to_arrive_trip_details"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </ScrollView>
 
         <RelativeLayout
             android:layout_width="match_parent"

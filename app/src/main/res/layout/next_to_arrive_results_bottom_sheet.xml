@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="300dp"
     android:background="#ffffff"
-    app:behavior_hideable="true"
+    app:behavior_hideable="false"
     app:behavior_peekHeight="360dp"
     app:layout_behavior="@string/bottom_sheet_behavior">
 
@@ -48,7 +48,7 @@
             android:textSize="12pt"
             app:font="@string/font_roboto_bold" />
 
-        <ScrollView
+        <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="20">
@@ -57,7 +57,7 @@
                 android:id="@+id/next_to_arrive_trip_details"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
-        </ScrollView>
+        </android.support.v4.widget.NestedScrollView>
 
         <RelativeLayout
             android:layout_width="match_parent"

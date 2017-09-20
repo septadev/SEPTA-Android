@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.*;
 
 import com.google.gson.annotations.SerializedName;
@@ -32,6 +33,7 @@ import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -50,8 +52,6 @@ public class NextToArriveTripView extends FrameLayout {
 
     private Integer maxResults = 10;
 
-    OnLayoutChangeListener onLayoutChangeListener;
-
     public NextToArriveTripView(@NonNull Context context) {
         super(context);
         init();
@@ -67,23 +67,10 @@ public class NextToArriveTripView extends FrameLayout {
         init();
     }
 
+
     private void init() {
         inflate(getContext(), R.layout.view_next_to_arrive_trip, this);
     }
-
-//    public void setSingleStopDetails(List<NextToArriveLine> nextToArriveLinesList) {
-//        String routeId = null;
-//        if (routeDirectionModel != null)
-//            routeId = routeDirectionModel.getRouteId();
-//        listView.setAdapter(new SingleLinesListAdapter(getContext(),
-//                nextToArriveLinesList, transitType, start.getStopId(), destination.getStopId(), routeId, onFirstElementHeight));
-//        listView.setEmptyView(findViewById(android.R.id.empty));
-//    }
-//
-//    public void setMultipleStopDetails(List<NextArrivalModelResponse.NextArrivalRecord> multiStopList) {
-//        listView.setAdapter(new MultiLinesListAdapter(getContext(), multiStopList, transitType, onFirstElementHeight));
-//        listView.setEmptyView(findViewById(android.R.id.empty));
-//    }
 
     public void setNextToArriveData(NextArrivalModelResponseParser parser) {
 
@@ -121,17 +108,58 @@ public class NextToArriveTripView extends FrameLayout {
 
         String currentLine = null;
         boolean firstPos = true;
+        final List<View> peakViews = new LinkedList<View>();
         for (NextArrivalModelResponse.NextArrivalRecord item : data) {
             if (item.getConnectionStationId() != null) {
                 currentLine = null;
-                listView.addView(getMultistopTripView(item, firstPos));
+                final View multiView = getMultistopTripView(item);
+                if (firstPos && onFirstElementHeight != null) {
+                    peakViews.add(multiView);
+                    multiView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+                        @Override
+                        public boolean onPreDraw() {
+                            int peak = 0;
+                            for (View view : peakViews) {
+                                view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+                                peak += view.getMeasuredHeight();
+                                peak += view.getPaddingTop();
+                                peak += view.getPaddingBottom();
+                            }
+                            onFirstElementHeight.accept(peak);
+                            multiView.getViewTreeObserver().removeOnPreDrawListener(this);
+                            return false;
+                        }
+                    });
+                }
+                listView.addView(multiView);
             } else {
                 if (currentLine == null || !currentLine.equals(item.getOrigRouteId())) {
                     currentLine = item.getOrigRouteId();
-                    listView.addView(getLineHeader(currentLine, item.getOrigRouteName()));
+                    View headerView = getLineHeader(currentLine, item.getOrigRouteName());
+                    if (firstPos)
+                        peakViews.add(headerView);
+                    listView.addView(headerView);
                 }
+                final View singleView = getSingleStopTripView(item);
+                if (firstPos && onFirstElementHeight != null) {
+                    peakViews.add(singleView);
+                    singleView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+                        @Override
+                        public boolean onPreDraw() {
+                            int peak = 0;
+                            for (View view : peakViews) {
+                                peak += view.getMeasuredHeight();
+                                peak += view.getPaddingTop();
+                                peak += view.getPaddingBottom();
+                            }
+                            onFirstElementHeight.accept(peak);
 
-                listView.addView(getSingleStopTripView(item, firstPos));
+                            singleView.getViewTreeObserver().removeOnPreDrawListener(this);
+                            return false;
+                        }
+                    });
+                }
+                listView.addView(singleView);
             }
 
             firstPos = false;
@@ -150,7 +178,7 @@ public class NextToArriveTripView extends FrameLayout {
         return convertView;
     }
 
-    private View getSingleStopTripView(NextArrivalRecord unit, boolean firstPos) {
+    private View getSingleStopTripView(NextArrivalRecord unit) {
 
         View line = LayoutInflater.from(getContext()).inflate(R.layout.next_to_arrive_unit, this, false);
 
@@ -200,18 +228,11 @@ public class NextToArriveTripView extends FrameLayout {
             origDepartureTime.setTextColor(ContextCompat.getColor(getContext(), R.color.on_time_departing));
         }
 
-
-        if (onLayoutChangeListener != null) {
-            if (firstPos) {
-                line.addOnLayoutChangeListener(onLayoutChangeListener);
-            }
-        }
-
         return line;
     }
 
 
-    public View getMultistopTripView(NextArrivalModelResponse.NextArrivalRecord item, boolean firstPos) {
+    public View getMultistopTripView(NextArrivalModelResponse.NextArrivalRecord item) {
 
         View convertView = LayoutInflater.from(getContext()).inflate(R.layout.next_to_arrive_unit_multistop, this, false);
 
@@ -286,23 +307,7 @@ public class NextToArriveTripView extends FrameLayout {
             termDepartureTime.setTextColor(ContextCompat.getColor(getContext(), R.color.on_time_departing));
         }
 
-        if (onLayoutChangeListener != null) {
-            if (firstPos) {
-                convertView.addOnLayoutChangeListener(onLayoutChangeListener);
-            }
-        }
-
         return convertView;
-    }
-
-    public void setOnFirstElementHeight(Consumer<Integer> onFirstElementHeightIn) {
-        this.onFirstElementHeight = onFirstElementHeightIn;
-        onLayoutChangeListener = new OnLayoutChangeListener() {
-            @Override
-            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                onFirstElementHeight.accept(bottom - top);
-            }
-        };
     }
 
     public void setResults(int value, TimeUnit timeUnit) {
@@ -345,6 +350,11 @@ public class NextToArriveTripView extends FrameLayout {
     public void setRouteDirectionModel(RouteDirectionModel routeDirectionModel) {
         this.routeDirectionModel = routeDirectionModel;
     }
+
+    public void setOnFirstElementHeight(Consumer<Integer> onFirstElementHeight) {
+        this.onFirstElementHeight = onFirstElementHeight;
+    }
+
 
 //    private static class MultiLinesListAdapter extends ArrayAdapter<NextArrivalRecord> {
 //

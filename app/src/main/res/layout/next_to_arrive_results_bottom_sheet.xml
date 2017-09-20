@@ -4,10 +4,10 @@
     xmlns:tool="http://schemas.android.com/tools"
     android:id="@+id/bottomSheetLayout"
     android:layout_width="match_parent"
-    android:layout_height="300dp"
+    android:layout_height="10dp"
     android:background="#ffffff"
     app:behavior_hideable="false"
-    app:behavior_peekHeight="360dp"
+    app:behavior_peekHeight="10dp"
     app:layout_behavior="@string/bottom_sheet_behavior">
 
     <LinearLayout

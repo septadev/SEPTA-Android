@@ -87,6 +87,8 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     private MarkerOptions startMarker;
     private MarkerOptions destMarker;
     private NextArrivalModelResponseParser parser;
+    private int peekHeight = 0;
+    private BottomSheetBehavior bottomSheetBehavior;
 
     public static NextToArriveResultsActivity newInstance(StopModel start, StopModel end) {
         NextToArriveResultsActivity fragement = new NextToArriveResultsActivity();
@@ -120,14 +122,14 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
         bottomSheetLayout = (ViewGroup) findViewById(R.id.bottomSheetLayout);
 
-        final BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLayout);
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLayout);
         progressViewBottom = findViewById(R.id.progress_view_bottom);
 
 
         // Prevent the bottom sheet from being dragged to be opened.  Force it to use the anchor image.
         //BottomSheetHandler myBottomSheetBehaviorCallBack = new BottomSheetHandler(bottomSheetBehavior);
         //bottomSheetBehavior.setBottomSheetCallback(myBottomSheetBehaviorCallBack);
-        final View anchor = findViewById(R.id.bottom_sheet_anchor);
+        final View anchor = bottomSheetLayout.findViewById(R.id.bottom_sheet_anchor);
         //anchor.setOnClickListener(myBottomSheetBehaviorCallBack);
 
 
@@ -141,9 +143,13 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         nextToArriveDetailsFragment.setOnFirstElementHeight(new Consumer<Integer>() {
             @Override
             public void accept(Integer var1) {
-                int value = anchor.getHeight() + titleText.getHeight() + var1;
-                if (value != bottomSheetBehavior.getPeekHeight()) {
-                    bottomSheetBehavior.setPeekHeight(value);
+                titleText.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+                anchor.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+                int value = anchor.getMeasuredHeight() + anchor.getPaddingTop() + anchor.getPaddingBottom() +
+                        titleText.getMeasuredHeight() + titleText.getPaddingTop() +
+                        titleText.getPaddingBottom() + var1 + 50;
+                if (value != peekHeight) {
+                    peekHeight = value;
 
                     if (!mapSized) {
                         mapSized = true;
@@ -328,6 +334,8 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                         bottomSheetLayout.getLayoutParams();
                 layoutParams.height = rootView.getHeight() - mapContainerView.getTop();
                 bottomSheetLayout.setLayoutParams(layoutParams);
+                bottomSheetBehavior.setPeekHeight(peekHeight);
+                updateMap();
                 googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, getResources().getDisplayMetrics())));
             }
         });
@@ -344,7 +352,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                             // Got last known location. In some rare situations this can be null.
                             if (location != null) {
                                 int permissionCheck = ContextCompat.checkSelfPermission(NextToArriveResultsActivity.this,
-                                        Manifest.permission.ACCESS_FINE_LOCATION);
+                                          Manifest.permission.ACCESS_FINE_LOCATION);
                                 googleMap.setMyLocationEnabled(true);
                             } else {
                                 Log.d(TAG, "location was null");
@@ -360,7 +368,6 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
             }
         });
 
-        updateMap();
     }
 
     @Override
@@ -399,6 +406,10 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                         parser = new NextArrivalModelResponseParser(response.body());
 
                         nextToArriveDetailsFragment.setNextToArriveData(parser);
+
+                        if (googleMap!=null){
+                            updateMap();
+                        }
                         progressVisibility(View.GONE);
                     }
                 }

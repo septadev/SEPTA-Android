@@ -26,12 +26,16 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
 import org.septa.android.app.domain.RouteDirectionModel;
+import org.septa.android.app.services.apiinterfaces.model.Alert;
 import org.septa.android.app.support.Consumer;
 import org.septa.android.app.support.CursorAdapterSupplier;
 import org.septa.android.app.support.RouteModelComparator;
+import org.septa.android.app.systemstatus.GoToSystemStatusResultsOnClickListener;
+import org.septa.android.app.systemstatus.SystemStatusState;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -169,6 +173,28 @@ public class LinePickerFragment extends DialogFragment {
                     descText.setText("to " + route.getDirectionDescription());
                 else {
                     descText.setText("");
+                }
+
+                Alert alert = SystemStatusState.getAlertForLine(transitType, route.getRouteId());
+                if (alert.isAlert()) {
+                    convertView.findViewById(R.id.alert_icon).setVisibility(View.VISIBLE);
+                } else {
+                    convertView.findViewById(R.id.alert_icon).setVisibility(View.GONE);
+                }
+                if (alert.isAdvisory()) {
+                    convertView.findViewById(R.id.advisory_icon).setVisibility(View.VISIBLE);
+                } else {
+                    convertView.findViewById(R.id.advisory_icon).setVisibility(View.GONE);
+                }
+                if (alert.isDetour()) {
+                    convertView.findViewById(R.id.detour_icon).setVisibility(View.VISIBLE);
+                } else {
+                    convertView.findViewById(R.id.detour_icon).setVisibility(View.GONE);
+                }
+                if (alert.isSnow()) {
+                    convertView.findViewById(R.id.weather_icon).setVisibility(View.VISIBLE);
+                } else {
+                    convertView.findViewById(R.id.weather_icon).setVisibility(View.GONE);
                 }
             }
             return convertView;

@@ -23,9 +23,7 @@ import org.septa.android.app.services.apiinterfaces.model.NextArrivalModelRespon
 import org.septa.android.app.nextarrive.NextToArriveTripView;
 import org.septa.android.app.support.Consumer;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import retrofit2.Call;
@@ -116,7 +114,7 @@ public class FavoritesFragement extends Fragment {
                     intent.putExtra(Constants.STARTING_STATION, favorite.getStart());
                     intent.putExtra(Constants.DESTINATAION_STATION, favorite.getDestination());
                     intent.putExtra(Constants.TRANSIT_TYPE, favorite.getTransitType());
-                    intent.putExtra(Constants.LINE_ID, favorite.getRouteDirectionModel());
+                    intent.putExtra(Constants.ROUTE_DIRECTION_MODEL, favorite.getRouteDirectionModel());
                     intent.putExtra(Constants.EDIT_FAVORITES_FLAG, Boolean.TRUE);
 
                     getActivity().startActivityForResult(intent, Constants.NTA_REQUEST);

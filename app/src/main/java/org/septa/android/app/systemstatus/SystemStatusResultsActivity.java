@@ -30,7 +30,6 @@ import retrofit2.Response;
 
 public class SystemStatusResultsActivity extends AppCompatActivity {
 
-    private RouteDirectionModel routeDirectionModel;
     private TransitType transitType;
 
     TextView serviceAdvisory;
@@ -49,6 +48,10 @@ public class SystemStatusResultsActivity extends AppCompatActivity {
     TextView weatherAlertsDetails;
     boolean weatherAlertsExpanded = false;
 
+    String routeId;
+    String routeName;
+
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,21 +63,42 @@ public class SystemStatusResultsActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         Intent intent = getIntent();
-        routeDirectionModel = (RouteDirectionModel) intent.getExtras().get(Constants.LINE_ID);
+
+        if (intent.getExtras().containsKey(Constants.ROUTE_DIRECTION_MODEL)) {
+            RouteDirectionModel routeDirectionModel = (RouteDirectionModel) intent.getExtras().get(Constants.ROUTE_DIRECTION_MODEL);
+            routeId = routeDirectionModel.getRouteId();
+            routeName = routeDirectionModel.getRouteShortName();
+        } else {
+            routeId = intent.getExtras().getString(Constants.ROUTE_ID);
+            routeName = intent.getExtras().getString(Constants.ROUTE_NAME);
+        }
         transitType = (TransitType) intent.getExtras().get(Constants.TRANSIT_TYPE);
 
-        if (routeDirectionModel == null || transitType == null)
+        if (intent.getExtras().containsKey(Constants.SERVICE_ADVISORY_EXPANDED)) {
+            serviceAdvisoryExpanded = intent.getExtras().getBoolean(Constants.SERVICE_ADVISORY_EXPANDED);
+        }
+        if (intent.getExtras().containsKey(Constants.SERVICE_ALERT_EXPANDED)) {
+            serviceAlertExpanded = intent.getExtras().getBoolean(Constants.SERVICE_ALERT_EXPANDED);
+        }
+        if (intent.getExtras().containsKey(Constants.ACTIVE_DETOURT_EXPANDED)) {
+            activeDetourtExpanded = intent.getExtras().getBoolean(Constants.ACTIVE_DETOURT_EXPANDED);
+        }
+        if (intent.getExtras().containsKey(Constants.WEATHER_ALERTS_EXPANDED)) {
+            weatherAlertsExpanded = intent.getExtras().getBoolean(Constants.WEATHER_ALERTS_EXPANDED);
+        }
+
+        if (transitType == null || routeId == null)
             return;
 
         setTitle(transitType.getString("system_status_results_title", this));
 
 
         TextView title = (TextView) findViewById(R.id.line_title);
-        title.setText(routeDirectionModel.getRouteShortName() + " Status");
+        title.setText(routeName + " Status");
 
         int color;
         try {
-            color = ContextCompat.getColor(this, transitType.getLineColor(routeDirectionModel.getRouteId(), this));
+            color = ContextCompat.getColor(this, transitType.getLineColor(routeId, this));
         } catch (Exception e) {
             color = ContextCompat.getColor(this, R.color.default_line_color);
         }
@@ -109,7 +133,7 @@ public class SystemStatusResultsActivity extends AppCompatActivity {
         weatherAlerts.setCompoundDrawablesWithIntrinsicBounds(weatherDrawables[0], weatherDrawables[1], inactiveToggle, weatherDrawables[3]);
 
 
-        SeptaServiceFactory.getAlertDetailsService().getAlertDetails(transitType.getAlertId(routeDirectionModel.getRouteId())).enqueue(new Callback<AlertDetail>() {
+        SeptaServiceFactory.getAlertDetailsService().getAlertDetails(transitType.getAlertId(routeId)).enqueue(new Callback<AlertDetail>() {
             @Override
             public void onResponse(Call<AlertDetail> call, Response<AlertDetail> response) {
                 if (response.body() != null)
@@ -139,7 +163,7 @@ public class SystemStatusResultsActivity extends AppCompatActivity {
     }
 
     private void applyAlerts(AlertDetail alertDetail) {
-        List<AlertDetail.Alerts> alertsList = alertDetail.getAlerts();
+        List<AlertDetail.Detail> detailList = alertDetail.getAlerts();
         int advisoryCount = 0;
         StringBuilder advisoryBuilder = new StringBuilder();
         int alertCount = 0;
@@ -149,7 +173,7 @@ public class SystemStatusResultsActivity extends AppCompatActivity {
         int weatherCount = 0;
         StringBuilder weatherBuilder = new StringBuilder();
 
-        for (AlertDetail.Alerts alertItem : alertsList) {
+        for (AlertDetail.Detail alertItem : detailList) {
             if (!"".equals(alertItem.getAdvisoryMessage())) {
                 advisoryCount++;
                 advisoryBuilder.append("<b>Advisory</b><p>").append(alertItem.getAdvisoryMessage()).append("<p>");
@@ -179,6 +203,7 @@ public class SystemStatusResultsActivity extends AppCompatActivity {
             serviceAdvisory.setHtml("Service Advisories: <b>" + advisoryCount + "</b>");
             Drawable[] drawables = serviceAdvisory.getCompoundDrawables();
             serviceAdvisory.setCompoundDrawablesWithIntrinsicBounds(drawables[0], drawables[1], active_toggle, drawables[3]);
+            handleExpand(!serviceAdvisoryExpanded, serviceAdvisory, serviceAdvisoryDetails);
 
             serviceAdvisory
                     .setOnClickListener(new View.OnClickListener() {
@@ -194,10 +219,10 @@ public class SystemStatusResultsActivity extends AppCompatActivity {
 
         if (alertCount > 0) {
             serviceAlert.setClickable(true);
-            serviceAlert.setHtml("Service Alerts: <b>" + alertCount + "</b>");
+            serviceAlert.setHtml("Service Detail: <b>" + alertCount + "</b>");
             Drawable[] drawables = serviceAlert.getCompoundDrawables();
             serviceAlert.setCompoundDrawablesWithIntrinsicBounds(drawables[0], drawables[1], active_toggle, drawables[3]);
-
+            handleExpand(!serviceAlertExpanded, serviceAlert, serviceAlertDetails);
 
             serviceAlert
                     .setOnClickListener(new View.OnClickListener() {
@@ -215,7 +240,7 @@ public class SystemStatusResultsActivity extends AppCompatActivity {
             activeDetour.setHtml("Active Detours: <b>" + detourCount + "</b>");
             Drawable[] drawables = activeDetour.getCompoundDrawables();
             activeDetour.setCompoundDrawablesWithIntrinsicBounds(drawables[0], drawables[1], active_toggle, drawables[3]);
-
+            handleExpand(!activeDetourtExpanded, activeDetour, activeDetourDetails);
             activeDetour
                     .setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -230,9 +255,10 @@ public class SystemStatusResultsActivity extends AppCompatActivity {
 
         if (weatherCount > 0) {
             weatherAlerts.setClickable(true);
-            weatherAlerts.setHtml("Active Weather Alerts: <b>" + detourCount + "</b>");
+            weatherAlerts.setHtml("Active Weather Detail: <b>" + detourCount + "</b>");
             Drawable[] drawables = weatherAlerts.getCompoundDrawables();
             weatherAlerts.setCompoundDrawablesWithIntrinsicBounds(drawables[0], drawables[1], active_toggle, drawables[3]);
+            handleExpand(!weatherAlertsExpanded, weatherAlerts, weatherAlertsDetails);
 
             weatherAlerts
                     .setOnClickListener(new View.OnClickListener() {

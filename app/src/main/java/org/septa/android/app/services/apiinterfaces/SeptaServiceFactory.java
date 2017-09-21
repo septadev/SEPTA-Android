@@ -78,6 +78,11 @@ public class SeptaServiceFactory {
         return singleton2.create(AlertDetailsService.class);
     }
 
+    public static AlertsService getAlertsService() {
+        return singleton2.create(AlertsService.class);
+    }
+
+
     public static GooglePlaceAutoCompleteService getAutoCompletePlaceService() {
         return googleSingleton.create(GooglePlaceAutoCompleteService.class);
     }

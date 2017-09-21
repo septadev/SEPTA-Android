@@ -18,11 +18,15 @@ import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
 import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.locationpicker.LinePickerFragment;
+import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.AlertDetail;
 import org.septa.android.app.support.BaseTabActivityHandler;
 import org.septa.android.app.support.Consumer;
 import org.septa.android.app.support.CursorAdapterSupplier;
-import org.w3c.dom.Text;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by jkampf on 9/11/17.
@@ -66,7 +70,7 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
         TextView lineText;
         boolean globalAlertsExpanded = false;
         RouteDirectionModel routeDirectionModel;
-
+        org.septa.android.app.view.TextView globalAlertText;
 
         @Nullable
         @Override
@@ -78,24 +82,12 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
             TextView pickerHeaderText = (TextView) fragmentView.findViewById(R.id.picker_header_text);
             pickerHeaderText.setText(transitType.getString("system_status_picker_title", getContext()));
 
-            AlertDetail globalAlertDetail = GlobalSystemStatus.getGlobalAlertDetails();
+            globalAlertScrollview = fragmentView.findViewById(R.id.global_alert_scrollview);
+            globalAlertView = fragmentView.findViewById(R.id.global_alert_view);
+            globalAlertText = (org.septa.android.app.view.TextView) fragmentView.findViewById(R.id.global_alert_text);
 
-            if (globalAlertDetail != null &&
-                    globalAlertDetail.getAlerts().get(0).getMessage() != null &&
-                    !globalAlertDetail.getAlerts().get(0).getMessage().equals("")) {
-                globalAlertScrollview = fragmentView.findViewById(R.id.global_alert_scrollview);
-                globalAlertView = fragmentView.findViewById(R.id.global_alert_view);
-                globalAlertView.setVisibility(View.VISIBLE);
 
-                StringBuilder alertText = new StringBuilder();
-
-                for (AlertDetail.Alerts alert : globalAlertDetail.getAlerts()) {
-                    alertText.append("<b>ADVISORIES<b><p>").append(alert.getAdvisoryMessage());
-                }
-
-                org.septa.android.app.view.TextView globalAlertText = (org.septa.android.app.view.TextView) fragmentView.findViewById(R.id.global_alert_text);
-                globalAlertText.setHtml(alertText.toString());
-            }
+            SeptaServiceFactory.getAlertDetailsService().getAlertDetails("generic").enqueue(new GlobalStatusCallBack());
 
             queryButton = fragmentView.findViewById(R.id.view_status_button);
 
@@ -103,7 +95,7 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(getActivity(), SystemStatusResultsActivity.class);
-                    intent.putExtra(Constants.LINE_ID, routeDirectionModel);
+                    intent.putExtra(Constants.ROUTE_DIRECTION_MODEL, routeDirectionModel);
                     intent.putExtra(Constants.TRANSIT_TYPE, transitType);
 
                     startActivity(intent);
@@ -176,6 +168,34 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
 
         }
 
+        private class GlobalStatusCallBack implements Callback<AlertDetail> {
+            @Override
+            public void onResponse(Call<AlertDetail> call, Response<AlertDetail> response) {
+                AlertDetail globalAlertDetail = response.body();
+
+                if (globalAlertDetail != null &&
+                        globalAlertDetail.getAlerts().get(0).getMessage() != null &&
+                        !globalAlertDetail.getAlerts().get(0).getMessage().equals("")) {
+                    globalAlertView.setVisibility(View.VISIBLE);
+
+                    StringBuilder alertText = new StringBuilder();
+
+                    for (AlertDetail.Detail alert : globalAlertDetail.getAlerts()) {
+                        alertText.append("<b>ADVISORIES<b><p>").append(alert.getAdvisoryMessage());
+                    }
+
+                    globalAlertText.setHtml(alertText.toString());
+                } else {
+                    globalAlertView.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<AlertDetail> call, Throwable t) {
+
+            }
+        }
+
         public static SystemStatusPickerFragement getInstance(TransitType transitType, CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier) {
             SystemStatusPickerFragement fragement = new SystemStatusPickerFragement();
             fragement.transitType = transitType;
@@ -191,4 +211,5 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
             return fragement;
         }
     }
+
 }

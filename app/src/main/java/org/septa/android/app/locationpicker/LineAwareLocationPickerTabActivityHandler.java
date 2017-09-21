@@ -1,17 +1,12 @@
 package org.septa.android.app.locationpicker;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
@@ -19,18 +14,9 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 
 import org.septa.android.app.Constants;
 import org.septa.android.app.R;
@@ -41,10 +27,8 @@ import org.septa.android.app.support.BaseTabActivityHandler;
 import org.septa.android.app.support.Consumer;
 import org.septa.android.app.support.Criteria;
 import org.septa.android.app.support.CursorAdapterSupplier;
-import org.septa.android.app.support.RouteModelComparator;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 
@@ -185,7 +169,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                     intent.putExtra(Constants.STARTING_STATION, startingStation);
                     intent.putExtra(Constants.DESTINATAION_STATION, endingStation);
                     intent.putExtra(Constants.TRANSIT_TYPE, transitType);
-                    intent.putExtra(Constants.LINE_ID, selectedRoute);
+                    intent.putExtra(Constants.ROUTE_DIRECTION_MODEL, selectedRoute);
 
                     getActivity().startActivityForResult(intent, Constants.NTA_REQUEST);
                 }
@@ -401,7 +385,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
 
             StopModel inDest = (StopModel) params[0].get(Constants.DESTINATAION_STATION);
             StopModel inStart = (StopModel) params[0].get(Constants.STARTING_STATION);
-            RouteDirectionModel inputRoute = (RouteDirectionModel) params[0].get(Constants.LINE_ID);
+            RouteDirectionModel inputRoute = (RouteDirectionModel) params[0].get(Constants.ROUTE_DIRECTION_MODEL);
 
             RouteDirectionModel foundRoute = null;
             StopModel foundStart = null;
@@ -422,7 +406,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
             }
 
             Bundle returnBundle = new Bundle();
-            returnBundle.putSerializable(Constants.LINE_ID, foundRoute);
+            returnBundle.putSerializable(Constants.ROUTE_DIRECTION_MODEL, foundRoute);
 
             fragment.selectedRoute = foundRoute;
             RouteSpecificCursorAdapterSupplier cursorAdapterStopSupplier = new RouteSpecificCursorAdapterSupplier(fragment.stopCursorAdapterSupplier, fragment, false);
@@ -463,8 +447,8 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
 
         @Override
         protected void onPostExecute(Bundle bundle) {
-            if (bundle.containsKey(Constants.LINE_ID)) {
-                fragment.selectRoute((RouteDirectionModel) bundle.get(Constants.LINE_ID));
+            if (bundle.containsKey(Constants.ROUTE_DIRECTION_MODEL)) {
+                fragment.selectRoute((RouteDirectionModel) bundle.get(Constants.ROUTE_DIRECTION_MODEL));
             } else {
                 return;
             }

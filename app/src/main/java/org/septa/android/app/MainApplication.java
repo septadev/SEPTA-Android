@@ -8,7 +8,7 @@ import android.util.Log;
 
 import org.septa.android.app.database.DatabaseManager;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
-import org.septa.android.app.systemstatus.GlobalSystemStatus;
+import org.septa.android.app.systemstatus.SystemStatusState;
 
 import com.crashlytics.android.Crashlytics;
 
@@ -41,8 +41,17 @@ public class MainApplication extends Application {
         } catch (NullPointerException e) {
             Log.e(TAG, "Failed to load meta-data, NullPointer: " + e.getMessage());
         }
+        SystemStatusState.triggerUpdate();
         // Initialize database, can be moved to logo screen
         DatabaseManager.getInstance(this);
-        GlobalSystemStatus.triggerUpdate();
+        long start = System.currentTimeMillis();
+        long delay = 10000;
+        do {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        } while (SystemStatusState.isInitialized() || System.currentTimeMillis() < start + delay);
     }
 }

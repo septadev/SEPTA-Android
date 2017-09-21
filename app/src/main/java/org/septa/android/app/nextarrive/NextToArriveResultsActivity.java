@@ -8,15 +8,12 @@ import android.content.pm.PackageManager;
 import android.graphics.Point;
 import android.location.Location;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
@@ -50,13 +47,11 @@ import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.favorites.DeleteFavoritesAsyncTask;
 import org.septa.android.app.favorites.EditFavoriteDialogFragment;
 import org.septa.android.app.favorites.SaveFavoritesAsyncTask;
-import org.septa.android.app.schedules.ScheduleResultsActivity;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Favorite;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalModelResponse;
 import org.septa.android.app.support.Consumer;
 import org.septa.android.app.support.MapUtils;
-import org.w3c.dom.Text;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
@@ -172,7 +167,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         destination = (StopModel) intent.getExtras().get(Constants.DESTINATAION_STATION);
         start = (StopModel) intent.getExtras().get(Constants.STARTING_STATION);
         transitType = (TransitType) intent.getExtras().get(Constants.TRANSIT_TYPE);
-        routeDirectionModel = (RouteDirectionModel) intent.getExtras().get(Constants.LINE_ID);
+        routeDirectionModel = (RouteDirectionModel) intent.getExtras().get(Constants.ROUTE_DIRECTION_MODEL);
         editFavoritesFlag = intent.getExtras().getBoolean(Constants.EDIT_FAVORITES_FLAG, false);
 
 
@@ -203,7 +198,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                     intent.putExtra(Constants.DESTINATAION_STATION, destination);
                     intent.putExtra(Constants.TRANSIT_TYPE, transitType);
                     if (routeDirectionModel != null)
-                        intent.putExtra(Constants.LINE_ID, routeDirectionModel);
+                        intent.putExtra(Constants.ROUTE_DIRECTION_MODEL, routeDirectionModel);
                     else {
                         String directionCode = "1";
                         String directionDescription = "From Center City Philadelphia";
@@ -212,7 +207,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                             directionDescription = "To Center City Philadelphia";
                         }
                         RouteDirectionModel rdm = new RouteDirectionModel(parser.getResults().get(0).getOrigRouteId(), parser.getResults().get(0).getOrigRouteName(), parser.getResults().get(0).getOrigRouteName(), directionDescription, directionCode, null);
-                        intent.putExtra(Constants.LINE_ID, rdm);
+                        intent.putExtra(Constants.ROUTE_DIRECTION_MODEL, rdm);
 
                     }
                     setResult(Constants.VIEW_SCHEDULE, intent);

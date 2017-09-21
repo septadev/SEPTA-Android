@@ -123,7 +123,7 @@ public class ScheduleResultsActivity extends AppCompatActivity {
         destination = (StopModel) intent.getExtras().get(Constants.DESTINATAION_STATION);
         start = (StopModel) intent.getExtras().get(Constants.STARTING_STATION);
         transitType = (TransitType) intent.getExtras().get(Constants.TRANSIT_TYPE);
-        routeDirectionModel = (RouteDirectionModel) intent.getExtras().get(Constants.LINE_ID);
+        routeDirectionModel = (RouteDirectionModel) intent.getExtras().get(Constants.ROUTE_DIRECTION_MODEL);
 
 
         if (transitType == TransitType.RAIL) {
@@ -158,7 +158,7 @@ public class ScheduleResultsActivity extends AppCompatActivity {
                 intent.putExtra(Constants.STARTING_STATION, start);
                 intent.putExtra(Constants.DESTINATAION_STATION, destination);
                 intent.putExtra(Constants.TRANSIT_TYPE, transitType);
-                intent.putExtra(Constants.LINE_ID, routeDirectionModel);
+                intent.putExtra(Constants.ROUTE_DIRECTION_MODEL, routeDirectionModel);
 
                 startActivityForResult(intent, Constants.NTA_REQUEST);
             }

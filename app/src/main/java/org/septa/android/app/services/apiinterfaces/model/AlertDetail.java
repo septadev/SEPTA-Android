@@ -17,10 +17,10 @@ public class AlertDetail implements Serializable {
     @SerializedName("results")
     int results;
     @SerializedName("alerts")
-    List<Alerts> alerts;
+    List<Detail> alerts;
 
 
-    public class Alerts implements Serializable {
+    public class Detail implements Serializable {
         @SerializedName("message")
         String message;
         @SerializedName("advisory_message")
@@ -151,11 +151,11 @@ public class AlertDetail implements Serializable {
         this.results = results;
     }
 
-    public List<Alerts> getAlerts() {
+    public List<Detail> getAlerts() {
         return alerts;
     }
 
-    public void setAlerts(List<Alerts> alerts) {
+    public void setAlerts(List<Detail> alerts) {
         this.alerts = alerts;
     }
 }

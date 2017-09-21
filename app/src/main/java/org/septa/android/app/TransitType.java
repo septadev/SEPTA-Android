@@ -75,6 +75,10 @@ public enum TransitType implements Serializable {
         return alertIdGenerator.getAlertId(id);
     }
 
+    public String getLineIdFromAlertId(String id){
+        return alertIdGenerator.getLineId(id);
+    }
+
     private interface ColorProvider {
         int getColorForLine(String lineId, Context context);
     }
@@ -148,6 +152,8 @@ public enum TransitType implements Serializable {
 
     private interface AlertIdGenerator {
         String getAlertId(String id);
+
+        String getLineId(String alertId);
     }
 
     protected static class SimpleAlertIdGenerator implements AlertIdGenerator {
@@ -167,11 +173,17 @@ public enum TransitType implements Serializable {
 
             return base + "_" + id;
         }
+
+        @Override
+        public String getLineId(String alertId) {
+            return alertId.substring(alertId.lastIndexOf("_") + 1);
+        }
     }
 
     protected static class RailAlertIdGenerator implements AlertIdGenerator {
 
         Map<String, String> idMap = new HashMap<String, String>();
+        Map<String, String> revIdMap = new HashMap<String, String>();
 
         protected RailAlertIdGenerator() {
             idMap.put("air", "rr_route_apt");
@@ -188,6 +200,10 @@ public enum TransitType implements Serializable {
             idMap.put("lan", "rr_route_landdoy");
             idMap.put("wil", "rr_route_wilm");
             idMap.put("gc", "rr_route_gc");
+
+            for (Map.Entry<String, String> entry : idMap.entrySet()) {
+                revIdMap.put(entry.getValue(), entry.getKey());
+            }
         }
 
 
@@ -195,6 +211,28 @@ public enum TransitType implements Serializable {
         public String getAlertId(String id) {
             return idMap.get(id.toLowerCase());
         }
+
+        @Override
+        public String getLineId(String alertId) {
+            return revIdMap.get(alertId.toLowerCase());
+        }
+    }
+
+    public TransitType getTransitTypeByAlertMode(String mode) {
+        if ("Regional Rail".equals(mode))
+            return RAIL;
+        if ("Trolley".equals(mode))
+            return TROLLEY;
+        if ("Bus".equals(mode))
+            return BUS;
+        if ("Broad Street Line".equals(mode))
+            return SUBWAY;
+        if ("Market/ Frankford".equals(mode))
+            return SUBWAY;
+        if ("Norristown High Speed Line".equals(mode))
+            return NHSL;
+
+        return null;
     }
 
 

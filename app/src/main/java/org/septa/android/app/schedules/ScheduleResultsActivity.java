@@ -160,7 +160,7 @@ public class ScheduleResultsActivity extends AppCompatActivity {
                 intent.putExtra(Constants.TRANSIT_TYPE, transitType);
                 intent.putExtra(Constants.LINE_ID, routeDirectionModel);
 
-                startActivity(intent);
+                startActivityForResult(intent, Constants.NTA_REQUEST);
             }
         });
 

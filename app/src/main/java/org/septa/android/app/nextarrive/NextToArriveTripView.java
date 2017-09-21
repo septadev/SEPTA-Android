@@ -114,13 +114,13 @@ public class NextToArriveTripView extends FrameLayout {
                 currentLine = null;
                 final View multiView = getMultistopTripView(item);
                 if (firstPos && onFirstElementHeight != null) {
-                    peakViews.add(multiView);
+                    View peakView = multiView.findViewById(R.id.orig_layout);
+                    peakViews.add(peakView);
                     multiView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
                         @Override
                         public boolean onPreDraw() {
                             int peak = 0;
                             for (View view : peakViews) {
-                                view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
                                 peak += view.getMeasuredHeight();
                                 peak += view.getPaddingTop();
                                 peak += view.getPaddingBottom();

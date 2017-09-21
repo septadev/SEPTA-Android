@@ -187,7 +187,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                     intent.putExtra(Constants.TRANSIT_TYPE, transitType);
                     intent.putExtra(Constants.LINE_ID, selectedRoute);
 
-                    startActivity(intent);
+                    getActivity().startActivityForResult(intent, Constants.NTA_REQUEST);
                 }
             });
 

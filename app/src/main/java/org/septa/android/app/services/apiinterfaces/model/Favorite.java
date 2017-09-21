@@ -57,7 +57,7 @@ public class Favorite implements Serializable {
         String destinationId = destination.getStopId();
         String lineId = null;
         String directionCode = null;
-        if (routeDirectionModel != null) {
+        if (transitType != TransitType.RAIL && routeDirectionModel != null) {
             lineId = routeDirectionModel.getRouteId();
             directionCode = routeDirectionModel.getDirectionCode();
         }

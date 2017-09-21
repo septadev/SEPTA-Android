@@ -1,7 +1,10 @@
 package org.septa.android.app;
 
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.IntDef;
 import android.support.annotation.IntegerRes;
 import android.support.annotation.Nullable;
@@ -214,6 +217,9 @@ public class MainActivity extends AppCompatActivity
             currentMenu.setIcon(R.drawable.ic_next_to_arrive_fill);
             getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, nextToArriveFragment).commit();
             setTitle(R.string.next_to_arrive);
+
+            currentMenuId=0;
+            invalidateOptionsMenu();
         }
     }
 
@@ -255,5 +261,41 @@ public class MainActivity extends AppCompatActivity
         });
 
         return fragment;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        int unmaskedRequestCode = requestCode & 0x0000ffff;
+        if (unmaskedRequestCode == Constants.NTA_REQUEST) {
+            if (resultCode == Constants.VIEW_SCHEDULE) {
+                Message message = jumpToScheduelsHandler.obtainMessage();
+                message.setData(data.getExtras());
+                jumpToScheduelsHandler.sendMessage(message);
+            }
+        }
+
+    }
+
+    private Handler jumpToScheduelsHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switchToSchedules(msg.getData());
+        }
+    };
+
+
+    public void switchToSchedules(Bundle data) {
+        if (currentMenu == null || currentMenu.getItemId() != R.id.nav_schedule) {
+            if (currentMenu != null)
+                currentMenu.setIcon(previousIcon);
+            navigationView.setCheckedItem(R.id.nav_schedule);
+            currentMenu = navigationView.getMenu().findItem(R.id.nav_schedule);
+            previousIcon = currentMenu.getIcon();
+            currentMenu.setIcon(R.drawable.ic_schedule_fill);
+            schedules = new SchedulesFragment();
+            schedules.prePopulate(data);
+            getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, schedules).commit();
+            setTitle(R.string.schedule);
+        }
     }
 }

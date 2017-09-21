@@ -16,9 +16,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
 import org.septa.android.app.database.DatabaseManager;
+import org.septa.android.app.domain.RouteDirectionModel;
+import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.locationpicker.LineAwareLocationPickerTabActivityHandler;
 import org.septa.android.app.locationpicker.LineUnawareLocationPickerTabActivityHandler;
 import org.septa.android.app.nextarrive.NextToArriveResultsActivity;
@@ -40,7 +43,10 @@ public class SchedulesFragment extends Fragment {
     private SchedulesFragment.SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
     private TabLayout tabLayout;
-    TabActivityHandler tabActivityHandlers[];
+    LineAwareLocationPickerTabActivityHandler tabActivityHandlers[];
+    int startingIndex = 0;
+
+    Bundle prePopulated = null;
 
     @Override
     public void onResume() {
@@ -55,20 +61,22 @@ public class SchedulesFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-
-        if (ContextCompat.checkSelfPermission(getActivity(),
-                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
-
-
         DatabaseManager dbManager = DatabaseManager.getInstance(getActivity());
 
-        tabActivityHandlers = new TabActivityHandler[5];
+        tabActivityHandlers = new LineAwareLocationPickerTabActivityHandler[5];
         tabActivityHandlers[1] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.rail_tab), "nta_picker_title", getString(R.string.schedule_query_button_text), TransitType.RAIL, dbManager.getRailRouteCursorAdapaterSupplier(), dbManager.getLineAwareRailStopCursorAdapterSupplier(), dbManager.getLineAwareRailStopAfterCursorAdapterSupplier(), ScheduleResultsActivity.class);
         tabActivityHandlers[0] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.bus_tab), "nta_picker_title", getString(R.string.schedule_query_button_text), TransitType.BUS, dbManager.getBusRouteCursorAdapterSupplier(), dbManager.getBusStopCursorAdapterSupplier(), dbManager.getBusStopAfterCursorAdapterSupplier(), ScheduleResultsActivity.class);
         tabActivityHandlers[3] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.trolley_tab), "nta_picker_title", getString(R.string.schedule_query_button_text), TransitType.TROLLEY, dbManager.getTrolleyRouteCursorAdapterSupplier(), dbManager.getTrolleyStopCursorAdapterSupplier(), dbManager.getTrolleyStopAfterCursorAdapterSupplier(), ScheduleResultsActivity.class);
         tabActivityHandlers[2] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.subway_tab), "nta_picker_title", getString(R.string.schedule_query_button_text), TransitType.SUBWAY, dbManager.getSubwayRouteCursorAdapterSupplier(), dbManager.getSubwayStopCursorAdapterSupplier(), dbManager.getSubwayStopAfterCursorAdapterSupplier(), ScheduleResultsActivity.class);
         tabActivityHandlers[4] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.nhsl_tab), "nta_picker_title", getString(R.string.schedule_query_button_text), TransitType.NHSL, dbManager.getNHSLRouteCursorAdapterSupplier(), dbManager.getBusStopCursorAdapterSupplier(), dbManager.getBusStopAfterCursorAdapterSupplier(), ScheduleResultsActivity.class);
+
+        if (prePopulated != null) {
+            tabActivityHandlers[startingIndex].setPrepopulate(prePopulated);
+        }
+
+        if (ContextCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
 
 
         View fragmentView = inflater.inflate(R.layout.schedule_fragement_main, null);
@@ -99,6 +107,8 @@ public class SchedulesFragment extends Fragment {
             }
         });
 
+        tabLayout.getTabAt(startingIndex).select();
+
         return fragmentView;
     }
 
@@ -125,6 +135,24 @@ public class SchedulesFragment extends Fragment {
             tab.setCompoundDrawablesWithIntrinsicBounds(tabActivityHandlers[i].getInactiveDrawableId(), 0, 0, 0);
             tabLayout.getTabAt(i).setCustomView(tab);
         }
+    }
+
+    public void prePopulate(Bundle data) {
+        TransitType transitType = (TransitType) data.get(Constants.TRANSIT_TYPE);
+        if (transitType == TransitType.BUS) {
+            startingIndex = 0;
+        } else if (transitType == TransitType.RAIL) {
+            startingIndex = 1;
+        } else if (transitType == TransitType.TROLLEY) {
+            startingIndex = 2;
+        } else if (transitType == TransitType.SUBWAY) {
+            startingIndex = 3;
+        } else {
+            startingIndex = 4;
+        }
+
+        prePopulated = data;
+
     }
 
 

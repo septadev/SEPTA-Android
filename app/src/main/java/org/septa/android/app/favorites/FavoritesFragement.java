@@ -119,7 +119,7 @@ public class FavoritesFragement extends Fragment {
                     intent.putExtra(Constants.LINE_ID, favorite.getRouteDirectionModel());
                     intent.putExtra(Constants.EDIT_FAVORITES_FLAG, Boolean.TRUE);
 
-                    startActivity(intent);
+                    getActivity().startActivityForResult(intent, Constants.NTA_REQUEST);
                 }
             });
         }

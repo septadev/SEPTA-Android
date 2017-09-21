@@ -60,7 +60,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
     TransitType transitType;
     Class targetClass;
     String buttonText;
-
+    Bundle prepopulate;
 
     public LineAwareLocationPickerTabActivityHandler(String title, String headerStringName, String buttonText, TransitType transitType, CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier, CursorAdapterSupplier<StopModel> busStopCursorAdapterSupplier, CursorAdapterSupplier<StopModel> busStopAfterCursorAdapterSupplier, Class targetClass) {
         super(title, transitType.getTabInactiveImageResource(), transitType.getTabActiveImageResource());
@@ -84,8 +84,12 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
         fragment.setTargetClass(targetClass);
         fragment.setHeaderStringName(headerStringName);
         fragment.setButtonText(buttonText);
-
+        fragment.setPrepopulate(prepopulate);
         return fragment;
+    }
+
+    public void setPrepopulate(Bundle prepopulate) {
+        this.prepopulate = prepopulate;
     }
 
     public static class PlaceholderFragment extends Fragment {
@@ -109,6 +113,8 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
         private TextView destinationStopEditText;
         private TextView lineText;
         private Button queryButton;
+
+        private Bundle prepopulate;
 
         public static PlaceholderFragment newInstance() {
             PlaceholderFragment fragment = new PlaceholderFragment();
@@ -136,30 +142,8 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                     LinePickerFragment newFragment = LinePickerFragment.newInstance(routeCursorAdapterSupplier, transitType, new Consumer<RouteDirectionModel>() {
                         @Override
                         public void accept(RouteDirectionModel var1) {
-                            selectedRoute = var1;
-                            //lineText.setText(selectedRoute.getRouteLongName());
-                            int color;
-                            try {
-                                color = ContextCompat.getColor(getContext(), transitType.getLineColor(var1.getRouteId(), getContext()));
-                            } catch (Exception e) {
-                                color = ContextCompat.getColor(getContext(), R.color.default_line_color);
-                            }
+                            selectRoute(var1);
 
-                            Drawable[] drawables = lineText.getCompoundDrawables();
-                            Drawable bullet = ContextCompat.getDrawable(getContext(), R.drawable.shape_line_marker);
-                            bullet.setColorFilter(color, PorterDuff.Mode.SRC);
-
-                            lineText.setCompoundDrawablesWithIntrinsicBounds(bullet, drawables[1],
-                                    drawables[2], drawables[3]);
-
-                            lineText.setText(selectedRoute.getRouteShortName() + ": to " + selectedRoute.getDirectionDescription());
-                            startingStation = null;
-                            activateView(startingStopEditText);
-                            startingStopEditText.setText("");
-                            endingStation = null;
-                            disableView(destinationStopEditText);
-                            destinationStopEditText.setText("");
-                            disableView(queryButton);
                         }
                     });
 
@@ -175,10 +159,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
             startingStopEditText.setOnTouchListener(new StopPickerOnTouchListener(this, new Consumer<StopModel>() {
                         @Override
                         public void accept(StopModel var1) {
-                            setStartingStation(var1, View.INVISIBLE);
-                            activateView(destinationStopEditText);
-                            destinationStopEditText.setText("");
-                            disableView(queryButton);
+                            setStartStop(var1);
                         }
                     }, stopCursorAdapterSupplier, false)
             );
@@ -186,9 +167,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
             destinationStopEditText.setOnTouchListener(new StopPickerOnTouchListener(this, new Consumer<StopModel>() {
                         @Override
                         public void accept(StopModel var1) {
-                            endingStation = var1;
-                            destinationStopEditText.setText(endingStation.getStopName());
-                            activateView(queryButton);
+                            setDestinationStop(var1);
                         }
                     }, stopAfterCursorAdapterSupplier, true)
             );
@@ -228,7 +207,51 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                 }
             });
 
+            if (prepopulate != null) {
+                new PrePopulateAsyncTask(this).execute(prepopulate);
+            }
+
             return rootView;
+        }
+
+        void setDestinationStop(StopModel var1) {
+            endingStation = var1;
+            destinationStopEditText.setText(endingStation.getStopName());
+            activateView(queryButton);
+        }
+
+        void setStartStop(StopModel var1) {
+            setStartingStation(var1, View.INVISIBLE);
+            activateView(destinationStopEditText);
+            destinationStopEditText.setText("");
+            disableView(queryButton);
+        }
+
+        void selectRoute(RouteDirectionModel var1) {
+            selectedRoute = var1;
+            //lineText.setText(selectedRoute.getRouteLongName());
+            int color;
+            try {
+                color = ContextCompat.getColor(getContext(), transitType.getLineColor(var1.getRouteId(), getContext()));
+            } catch (Exception e) {
+                color = ContextCompat.getColor(getContext(), R.color.default_line_color);
+            }
+
+            Drawable[] drawables = lineText.getCompoundDrawables();
+            Drawable bullet = ContextCompat.getDrawable(getContext(), R.drawable.shape_line_marker);
+            bullet.setColorFilter(color, PorterDuff.Mode.SRC);
+
+            lineText.setCompoundDrawablesWithIntrinsicBounds(bullet, drawables[1],
+                    drawables[2], drawables[3]);
+
+            lineText.setText(selectedRoute.getRouteShortName() + ": to " + selectedRoute.getDirectionDescription());
+            startingStation = null;
+            activateView(startingStopEditText);
+            startingStopEditText.setText("");
+            endingStation = null;
+            disableView(destinationStopEditText);
+            destinationStopEditText.setText("");
+            disableView(queryButton);
         }
 
         private void disableView(View view) {
@@ -253,7 +276,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
             this.tabName = tabName;
         }
 
-        private void setStartingStation(StopModel start, int invisible) {
+        void setStartingStation(StopModel start, int invisible) {
             startingStation = start;
             startingStopEditText.setText(startingStation.getStopName());
             closestStopText.setVisibility(invisible);
@@ -279,6 +302,10 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
 
         public void setButtonText(String buttonText) {
             this.buttonText = buttonText;
+        }
+
+        public void setPrepopulate(Bundle prepopulate) {
+            this.prepopulate = prepopulate;
         }
     }
 
@@ -357,6 +384,100 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
         @Override
         public StopModel getItemFromId(Context context, Object id) {
             return cursorAdapterSupplier.getItemFromId(context, id);
+        }
+    }
+
+    static class PrePopulateAsyncTask extends AsyncTask<Bundle, Void, Bundle> {
+        PlaceholderFragment fragment;
+
+        PrePopulateAsyncTask(PlaceholderFragment fragment) {
+            this.fragment = fragment;
+        }
+
+        @Override
+        protected Bundle doInBackground(Bundle... params) {
+
+            Context context = fragment.getContext();
+
+            StopModel inDest = (StopModel) params[0].get(Constants.DESTINATAION_STATION);
+            StopModel inStart = (StopModel) params[0].get(Constants.STARTING_STATION);
+            RouteDirectionModel inputRoute = (RouteDirectionModel) params[0].get(Constants.LINE_ID);
+
+            RouteDirectionModel foundRoute = null;
+            StopModel foundStart = null;
+            StopModel foundDest = null;
+            Cursor routeCursor = fragment.routeCursorAdapterSupplier.getCursor(context, null);
+            if (routeCursor.moveToFirst()) {
+                do {
+                    RouteDirectionModel model = fragment.routeCursorAdapterSupplier.getCurrentItemFromCursor(routeCursor);
+                    if (inputRoute.getRouteId().equals(model.getRouteId()) && inputRoute.getDirectionCode().equals(model.getDirectionCode())) {
+                        foundRoute = model;
+                        break;
+                    }
+
+                } while (routeCursor.moveToNext());
+
+                if (foundRoute == null)
+                    return new Bundle();
+            }
+
+            Bundle returnBundle = new Bundle();
+            returnBundle.putSerializable(Constants.LINE_ID, foundRoute);
+
+            fragment.selectedRoute = foundRoute;
+            RouteSpecificCursorAdapterSupplier cursorAdapterStopSupplier = new RouteSpecificCursorAdapterSupplier(fragment.stopCursorAdapterSupplier, fragment, false);
+            Cursor startCursor = cursorAdapterStopSupplier.getCursor(context, null);
+            if (startCursor.moveToFirst()) {
+                do {
+                    StopModel model = cursorAdapterStopSupplier.getCurrentItemFromCursor(startCursor);
+                    if (inStart.getStopId().equals(model.getStopId())) {
+                        foundStart = model;
+                        break;
+                    }
+                } while (startCursor.moveToNext());
+            }
+
+            if (foundStart == null)
+                return returnBundle;
+
+            returnBundle.putSerializable(Constants.STARTING_STATION, foundStart);
+            fragment.startingStation = foundStart;
+            RouteSpecificCursorAdapterSupplier cursorAdapterStopAfterSupplier = new RouteSpecificCursorAdapterSupplier(fragment.stopAfterCursorAdapterSupplier, fragment, true);
+            Cursor destCursor = cursorAdapterStopAfterSupplier.getCursor(context, null);
+            if (destCursor.moveToFirst()) {
+                do {
+                    StopModel model = cursorAdapterStopAfterSupplier.getCurrentItemFromCursor(destCursor);
+                    if (inDest.getStopId().equals(model.getStopId())) {
+                        foundDest = model;
+                        break;
+                    }
+                } while (destCursor.moveToNext());
+            }
+
+            if (foundDest != null) {
+                returnBundle.putSerializable(Constants.DESTINATAION_STATION, foundDest);
+            }
+
+            return returnBundle;
+        }
+
+        @Override
+        protected void onPostExecute(Bundle bundle) {
+            if (bundle.containsKey(Constants.LINE_ID)) {
+                fragment.selectRoute((RouteDirectionModel) bundle.get(Constants.LINE_ID));
+            } else {
+                return;
+            }
+
+            if (bundle.containsKey(Constants.STARTING_STATION)) {
+                fragment.setStartStop((StopModel) bundle.get(Constants.STARTING_STATION));
+            } else {
+                return;
+            }
+
+            if (bundle.containsKey(Constants.DESTINATAION_STATION)) {
+                fragment.setDestinationStop((StopModel) bundle.get(Constants.DESTINATAION_STATION));
+            }
         }
     }
 

@@ -13,4 +13,7 @@ public interface Constants {
     public static final String ARRIVAL_RECORD = "arrival_record";
     public static final String TRIP_ID = "trip_id";
     public static final String EDIT_FAVORITES_FLAG = "edit_favorites_flag";
+
+    public static final int NTA_REQUEST = 1;
+    public static final int VIEW_SCHEDULE = 1;
 }

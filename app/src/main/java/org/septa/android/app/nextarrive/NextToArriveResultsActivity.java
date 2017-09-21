@@ -8,6 +8,8 @@ import android.content.pm.PackageManager;
 import android.graphics.Point;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.Snackbar;
@@ -48,11 +50,13 @@ import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.favorites.DeleteFavoritesAsyncTask;
 import org.septa.android.app.favorites.EditFavoriteDialogFragment;
 import org.septa.android.app.favorites.SaveFavoritesAsyncTask;
+import org.septa.android.app.schedules.ScheduleResultsActivity;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Favorite;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalModelResponse;
 import org.septa.android.app.support.Consumer;
 import org.septa.android.app.support.MapUtils;
+import org.w3c.dom.Text;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
@@ -89,14 +93,6 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     private NextArrivalModelResponseParser parser;
     private int peekHeight = 0;
     private BottomSheetBehavior bottomSheetBehavior;
-
-    public static NextToArriveResultsActivity newInstance(StopModel start, StopModel end) {
-        NextToArriveResultsActivity fragement = new NextToArriveResultsActivity();
-        fragement.setStart(start);
-        fragement.setDestination(end);
-
-        return fragement;
-    }
 
     public void setDestination(StopModel destination) {
         this.destination = destination;
@@ -182,6 +178,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
         if (start != null && destination != null && transitType != null) {
             titleText.setText(transitType.getString("nta_results_title", this));
+            ((TextView) findViewById(R.id.see_later_text)).setText(transitType.getString("need_to_see", this));
 
             TextView startingStationNameText = (TextView) findViewById(R.id.starting_station_name);
             startingStationNameText.setText(start.getStopName());
@@ -197,6 +194,31 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
             String favKey = Favorite.generateKey(start, destination, transitType, routeDirectionModel);
             currentFavorite = SeptaServiceFactory.getFavoritesService().getFavoriteByKey(this, favKey);
+
+            findViewById(R.id.view_sched_view).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent();
+                    intent.putExtra(Constants.STARTING_STATION, start);
+                    intent.putExtra(Constants.DESTINATAION_STATION, destination);
+                    intent.putExtra(Constants.TRANSIT_TYPE, transitType);
+                    if (routeDirectionModel != null)
+                        intent.putExtra(Constants.LINE_ID, routeDirectionModel);
+                    else {
+                        String directionCode = "1";
+                        String directionDescription = "From Center City Philadelphia";
+                        if ("Inbound".equalsIgnoreCase(parser.getResults().get(0).getOrigLineDirection())) {
+                            directionCode = "0";
+                            directionDescription = "To Center City Philadelphia";
+                        }
+                        RouteDirectionModel rdm = new RouteDirectionModel(parser.getResults().get(0).getOrigRouteId(), parser.getResults().get(0).getOrigRouteName(), parser.getResults().get(0).getOrigRouteName(), directionDescription, directionCode, null);
+                        intent.putExtra(Constants.LINE_ID, rdm);
+
+                    }
+                    setResult(Constants.VIEW_SCHEDULE, intent);
+                    finish();
+                }
+            });
 
             updateNextToArriveData();
 
@@ -352,7 +374,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                             // Got last known location. In some rare situations this can be null.
                             if (location != null) {
                                 int permissionCheck = ContextCompat.checkSelfPermission(NextToArriveResultsActivity.this,
-                                          Manifest.permission.ACCESS_FINE_LOCATION);
+                                        Manifest.permission.ACCESS_FINE_LOCATION);
                                 googleMap.setMyLocationEnabled(true);
                             } else {
                                 Log.d(TAG, "location was null");
@@ -407,7 +429,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
                         nextToArriveDetailsFragment.setNextToArriveData(parser);
 
-                        if (googleMap!=null){
+                        if (googleMap != null) {
                             updateMap();
                         }
                         progressVisibility(View.GONE);

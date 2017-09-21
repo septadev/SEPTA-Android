@@ -60,6 +60,7 @@
         </android.support.v4.widget.NestedScrollView>
 
         <RelativeLayout
+            android:id="@+id/view_sched_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@id/next_to_arrive_trip_details"
@@ -67,12 +68,13 @@
             android:background="#fff6f4">
 
             <org.septa.android.app.view.TextView
+                android:id="@+id/see_later_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="13dp"
                 android:layout_marginLeft="15dp"
                 android:layout_marginTop="13dp"
-                android:text="Need to see later trains?"
+                android:text="@string/need_to_see_rail"
                 android:textColor="#d73a11"
                 android:textSize="14sp"
                 app:font="@string/font_roboto_bold" />

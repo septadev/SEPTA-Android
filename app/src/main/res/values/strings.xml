@@ -57,6 +57,13 @@
     <string name="nta_results_title_trolley">Next Trolley to Arrive</string>
     <string name="nta_results_title_nhsl">Next Trains to Arrive</string>
 
+    <string name="need_to_see_rail">Need to see later trains?</string>
+    <string name="need_to_see_bus">Need to see later bus?</string>
+    <string name="need_to_see_subway">Need to see later subway?</string>
+    <string name="need_to_see_trolley">Need to see later trolley?</string>
+    <string name="need_to_see_nhsl">Need to see later trains?</string>
+
+
     <!-- Next To Arrive General -->
     <string name="nta_query_button_text">Next To Arrive</string>
     <string name="trip_details">Trip Details</string>
@@ -91,6 +98,7 @@
     <string name="schedule_trip_prefix_subway">Train #</string>
     <string name="schedule_trip_prefix_trolley">Trolley #</string>
     <string name="schedule_trip_prefix_nhsl">Train #</string>
+
 
 
 </resources>

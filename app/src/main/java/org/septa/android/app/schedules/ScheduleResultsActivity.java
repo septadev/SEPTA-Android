@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -34,9 +35,12 @@ import org.septa.android.app.favorites.DeleteFavoritesAsyncTask;
 import org.septa.android.app.favorites.SaveFavoritesAsyncTask;
 import org.septa.android.app.nextarrive.NextToArriveResultsActivity;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
+import org.septa.android.app.services.apiinterfaces.model.Alert;
 import org.septa.android.app.services.apiinterfaces.model.Favorite;
 import org.septa.android.app.support.Criteria;
 import org.septa.android.app.support.CursorAdapterSupplier;
+import org.septa.android.app.systemstatus.GoToSystemStatusResultsOnClickListener;
+import org.septa.android.app.systemstatus.SystemStatusState;
 import org.septa.android.app.view.TextView;
 
 import java.text.DateFormat;
@@ -163,6 +167,64 @@ public class ScheduleResultsActivity extends AppCompatActivity {
                 startActivityForResult(intent, Constants.NTA_REQUEST);
             }
         });
+
+        Alert alert = SystemStatusState.getAlertForLine(transitType, routeDirectionModel.getRouteId());
+
+        boolean displayAlerts = false;
+
+
+        View alertView = findViewById(R.id.service_alert);
+        if (alert.isAlert()) {
+            alertView.setVisibility(View.VISIBLE);
+            alertView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ALERT_EXPANDED, this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName()));
+            displayAlerts = true;
+        } else {
+            LinearLayout.LayoutParams loparams = (LinearLayout.LayoutParams) alertView.getLayoutParams();
+            loparams.height = 0;
+            loparams.weight = 1;
+            alertView.setLayoutParams(loparams);
+        }
+
+        View advistoryView = findViewById(R.id.service_advisory);
+        if (alert.isAdvisory()) {
+            advistoryView.setVisibility(View.VISIBLE);
+            advistoryView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ADVISORY_EXPANDED, this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName()));
+            displayAlerts = true;
+        } else {
+            LinearLayout.LayoutParams loparams = (LinearLayout.LayoutParams) advistoryView.getLayoutParams();
+            loparams.height = 0;
+            loparams.weight = 1;
+            advistoryView.setLayoutParams(loparams);
+        }
+
+        View detourView = findViewById(R.id.active_detour);
+        if (alert.isDetour()) {
+            advistoryView.setVisibility(View.VISIBLE);
+            detourView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.ACTIVE_DETOURT_EXPANDED, this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName()));
+            displayAlerts = true;
+        } else {
+            LinearLayout.LayoutParams loparams = (LinearLayout.LayoutParams) detourView.getLayoutParams();
+            loparams.height = 0;
+            loparams.weight = 1;
+            detourView.setLayoutParams(loparams);
+        }
+
+        View weatherView = findViewById(R.id.weather_alerts);
+        if (alert.isSnow()) {
+            weatherView.setVisibility(View.VISIBLE);
+            weatherView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.WEATHER_ALERTS_EXPANDED, this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName()));
+            displayAlerts = true;
+        } else {
+            LinearLayout.LayoutParams loparams = (LinearLayout.LayoutParams) weatherView.getLayoutParams();
+            loparams.height = 0;
+            loparams.weight = 1;
+            weatherView.setLayoutParams(loparams);
+        }
+
+        if (displayAlerts) {
+            findViewById(R.id.alert_view).setVisibility(View.VISIBLE);
+        }
+
 
     }
 

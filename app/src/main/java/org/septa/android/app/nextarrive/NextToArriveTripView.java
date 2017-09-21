@@ -22,6 +22,7 @@ import org.septa.android.app.services.apiinterfaces.model.NextArrivalModelRespon
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalModelResponse.NextArrivalRecord;
 import org.septa.android.app.support.Consumer;
 import org.septa.android.app.support.GeneralUtils;
+import org.septa.android.app.systemstatus.GoToSystemStatusResultsOnClickListener;
 import org.septa.android.app.systemstatus.SystemStatusResultsActivity;
 import org.septa.android.app.systemstatus.SystemStatusState;
 
@@ -166,9 +167,11 @@ public class NextToArriveTripView extends FrameLayout {
     private View getLineHeader(String lineId, String lineName) {
         View convertView = LayoutInflater.from(getContext()).inflate(R.layout.next_to_arrive_line, this, false);
 
-        String routeNameForSystemStatus = routeDirectionModel.getRouteShortName();
-        if (transitType == TransitType.RAIL){
+        String routeNameForSystemStatus;
+        if (transitType == TransitType.RAIL || transitType == TransitType.NHSL) {
             routeNameForSystemStatus = lineName;
+        } else {
+            routeNameForSystemStatus = routeDirectionModel.getRouteShortName();
         }
 
         android.widget.TextView lineNameText = (android.widget.TextView) convertView.findViewById(R.id.orig_line_name_text);
@@ -181,7 +184,6 @@ public class NextToArriveTripView extends FrameLayout {
             convertView.findViewById(R.id.orig_line_alert_icon).setVisibility(VISIBLE);
             convertView.findViewById(R.id.orig_line_alert_icon)
                     .setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ALERT_EXPANDED, getContext(), transitType, lineId, routeNameForSystemStatus));
-
         }
         if (alert.isAdvisory()) {
             convertView.findViewById(R.id.orig_line_advisory_icon).setVisibility(VISIBLE);
@@ -421,34 +423,6 @@ public class NextToArriveTripView extends FrameLayout {
         this.onFirstElementHeight = onFirstElementHeight;
     }
 
-    private class GoToSystemStatusResultsOnClickListener implements OnClickListener {
-        String statusType;
-        Context context;
-        TransitType transitType;
-        String routeId;
-        String routeName;
-
-        GoToSystemStatusResultsOnClickListener(String statusType, Context activity,
-                                               TransitType transitType, String routeId, String routeName) {
-            this.statusType = statusType;
-            this.context = activity;
-            this.transitType = transitType;
-            this.routeId = routeId;
-            this.routeName = routeName;
-        }
-
-        @Override
-        public void onClick(View v) {
-            if (context != null) {
-                Intent intent = new Intent(context, SystemStatusResultsActivity.class);
-                intent.putExtra(Constants.ROUTE_NAME, routeName);
-                intent.putExtra(Constants.ROUTE_ID, routeId);
-                intent.putExtra(Constants.TRANSIT_TYPE, transitType);
-                intent.putExtra(statusType, Boolean.TRUE);
-                context.startActivity(intent);
-            }
-        }
-    }
 
 //    private static class MultiLinesListAdapter extends ArrayAdapter<NextArrivalRecord> {
 //

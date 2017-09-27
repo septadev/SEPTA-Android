@@ -250,7 +250,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
                 task.execute(favorite);
                 Snackbar snackbar = Snackbar
-                        .make(findViewById(R.id.rail_next_to_arrive_results_coordinator), R.string.create_fav_snackbar_text, Snackbar.LENGTH_SHORT);
+                        .make(findViewById(R.id.rail_next_to_arrive_results_coordinator), R.string.create_fav_snackbar_text, Snackbar.LENGTH_LONG);
 
                 snackbar.show();
             } else {

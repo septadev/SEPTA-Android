@@ -548,7 +548,7 @@ public class ScheduleResultsActivity extends AppCompatActivity {
 
                 task.execute(favorite);
                 Snackbar snackbar = Snackbar
-                        .make(findViewById(R.id.schedule_results_coordinator), R.string.create_fav_snackbar_text, Snackbar.LENGTH_SHORT);
+                        .make(findViewById(R.id.schedule_results_coordinator), R.string.create_fav_snackbar_text, Snackbar.LENGTH_LONG);
 
                 snackbar.show();
             } else {

@@ -86,11 +86,16 @@ public class LineUnawareLocationPickerTabActivityHandler extends BaseTabActivity
                                  Bundle savedInstanceState) {
             final View rootView = inflater.inflate(R.layout.line_unaware_next_to_arrive_search, container, false);
 
-            if (getContext() == null){
+            if (getContext() == null) {
                 return rootView;
             }
             startingStationEditText = (TextView) rootView.findViewById(R.id.starting_stop);
+            startingStationEditText.setText(transitType.getString("start_stop_text", getContext()));
+
             final TextView endingStationEditText = (TextView) rootView.findViewById(R.id.destination_stop);
+            endingStationEditText.setText(transitType.getString("dest_stop_text", getContext()));
+
+
             closestStationText = (TextView) rootView.findViewById(R.id.closest_stop);
             final Button queryButton = (Button) rootView.findViewById(R.id.view_buses_button);
 

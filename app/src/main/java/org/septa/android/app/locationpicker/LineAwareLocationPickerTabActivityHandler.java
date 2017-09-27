@@ -117,6 +117,10 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
             TextView pickerHeaderText = (TextView) rootView.findViewById(R.id.picker_header_text);
             pickerHeaderText.setText(transitType.getString(headerStringName, getContext()));
 
+            ((TextView) rootView.findViewById(R.id.line_label)).setText(transitType.getString("line_label", getContext()));
+            ((TextView) rootView.findViewById(R.id.line_text)).setText(transitType.getString("line_text", getContext()));
+
+
             lineText = (TextView) rootView.findViewById(R.id.line_text);
             lineText.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -137,7 +141,11 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
             progressView = rootView.findViewById(R.id.progress_view);
 
             startingStopEditText = (TextView) rootView.findViewById(R.id.starting_stop);
+            startingStopEditText.setText(transitType.getString("start_stop_text",getContext()));
+
             destinationStopEditText = (TextView) rootView.findViewById(R.id.destination_stop);
+            destinationStopEditText.setText(transitType.getString("dest_stop_text",getContext()));
+
             closestStopText = (TextView) rootView.findViewById(R.id.closest_stop);
 
             startingStopEditText.setOnTouchListener(new StopPickerOnTouchListener(this, new Consumer<StopModel>() {

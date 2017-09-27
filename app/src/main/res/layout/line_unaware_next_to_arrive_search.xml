@@ -42,7 +42,7 @@
                 android:layout_marginLeft="15dp"
                 android:layout_marginTop="13dp"
                 android:clickable="true"
-                android:text="Select a start and destination to view the next trains to arrive for that route."
+                android:text="Select your stations to see Next To Arrive Trains."
                 android:textColor="#6d6d6d"
                 android:textSize="12sp"
                 app:font="@string/font_roboto_regular" />

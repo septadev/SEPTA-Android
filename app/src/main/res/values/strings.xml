@@ -44,6 +44,31 @@
     <string name="events">Events</string>
 
 
+    <!-- Line Picker -->
+    <string name="line_label_rail">Line</string>
+    <string name="line_label_bus">Route</string>
+    <string name="line_label_subway">Line</string>
+    <string name="line_label_trolley">Line</string>
+    <string name="line_label_nhsl">Line</string>
+
+    <string name="line_text_rail">Select Line</string>
+    <string name="line_text_bus">Select Route</string>
+    <string name="line_text_subway">Select Line</string>
+    <string name="line_text_trolley">Select Line</string>
+    <string name="line_text_nhsl">Select Line</string>
+
+    <string name="start_stop_text_rail">Starting Station</string>
+    <string name="start_stop_text_bus">Starting Stop</string>
+    <string name="start_stop_text_subway">Starting Stop</string>
+    <string name="start_stop_text_trolley">Starting Stop</string>
+    <string name="start_stop_text_nhsl">Starting Station</string>
+
+    <string name="dest_stop_text_rail">Destination Station</string>
+    <string name="dest_stop_text_bus">Destination Stop</string>
+    <string name="dest_stop_text_subway">Destination Stop</string>
+    <string name="dest_stop_text_trolley">Destination Stop</string>
+    <string name="dest_stop_text_nhsl">Destination Station</string>
+
     <!-- Next to Arrive String by Transit Type -->
     <string name="nta_picker_title_rail">Regional Rail</string>
     <string name="nta_picker_title_bus">Bus</string>
@@ -98,7 +123,6 @@
     <string name="schedule_trip_prefix_subway">Train #</string>
     <string name="schedule_trip_prefix_trolley">Trolley #</string>
     <string name="schedule_trip_prefix_nhsl">Train #</string>
-
 
 
 </resources>

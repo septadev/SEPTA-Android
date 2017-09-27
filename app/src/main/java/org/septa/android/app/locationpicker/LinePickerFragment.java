@@ -170,7 +170,11 @@ public class LinePickerFragment extends DialogFragment {
                 }
 
                 if (route.getDirectionDescription() != null)
-                    descText.setText("to " + route.getDirectionDescription());
+                    if (transitType == TransitType.RAIL) {
+                        descText.setText(route.getDirectionDescription());
+                    } else {
+                        descText.setText("to " + route.getDirectionDescription());
+                    }
                 else {
                     descText.setText("");
                 }

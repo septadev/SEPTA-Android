@@ -272,7 +272,7 @@ public class DatabaseManager {
 
     public class LineAwareRailStopCursorAdapterSupplier implements CursorAdapterSupplier<StopModel> {
 
-        private static final String SELECT_CLAUSE = "SELECT DISTINCT a.stop_id, a.stop_name, a.wheelchair_boarding, a.stop_lat, a.stop_lon, a.rowid AS _id FROM stops_rail a, trips_rail b, stop_times_rail c  WHERE b.trip_id=c.trip_id and c.stop_id=a.stop_id";
+        private static final String SELECT_CLAUSE = "SELECT DISTINCT a.stop_id, a.stop_name, a.wheelchair_boarding, a.stop_lat, a.stop_lon, a.rowid AS _id FROM stops_rail a, trips_rail b, stop_times_rail c, routes_rail_boundaries r  WHERE b.trip_id=c.trip_id and c.stop_id=a.stop_id and r.route_id=b.route_id and r.direction_id=b.direction_id";
 
 
         @Override
@@ -531,7 +531,8 @@ public class DatabaseManager {
 
 
     public class RailRouteCursorAdapterSupplier implements CursorAdapterSupplier<RouteDirectionModel> {
-        private static final String SELECT_CLAUSE = "SELECT R.Route_id, R.route_short_name route_short_name, S.stop_name route_long_name, cast (T.direction_id  as TEXT ) dircode FROM routes_rail R JOIN trips_rail T ON R.route_id = T.route_id JOIN stop_times_rail ST ON T.trip_id = ST.trip_id JOIN stops_rail S ON ST.stop_id = S.stop_id JOIN ( SELECT R.route_id, T.direction_id, max(ST.stop_sequence) max_stop_sequence FROM routes_rail R JOIN trips_rail T ON R.route_id = T.route_id JOIN stop_times_rail ST ON T.trip_id = ST.trip_id JOIN stops_rail S ON ST.stop_id = S.stop_id GROUP BY R.route_id, T.direction_id) lastStop ON R.route_id = lastStop.route_id AND T.direction_id = lastStop.direction_id AND ST.stop_sequence = lastStop.max_stop_sequence ";
+        //private static final String SELECT_CLAUSE = "SELECT R.Route_id, R.route_short_name route_short_name, S.stop_name route_long_name, cast (T.direction_id  as TEXT ) dircode FROM routes_rail R JOIN trips_rail T ON R.route_id = T.route_id JOIN stop_times_rail ST ON T.trip_id = ST.trip_id JOIN stops_rail S ON ST.stop_id = S.stop_id JOIN ( SELECT R.route_id, T.direction_id, max(ST.stop_sequence) max_stop_sequence FROM routes_rail R JOIN trips_rail T ON R.route_id = T.route_id JOIN stop_times_rail ST ON T.trip_id = ST.trip_id JOIN stops_rail S ON ST.stop_id = S.stop_id GROUP BY R.route_id, T.direction_id) lastStop ON R.route_id = lastStop.route_id AND T.direction_id = lastStop.direction_id AND ST.stop_sequence = lastStop.max_stop_sequence ";
+        private static final String SELECT_CLAUSE = "SELECT R.Route_id, R.route_short_name route_short_name, B.terminus_name route_long_name, cast (B.direction_id  as TEXT ) dircode FROM routes_rail R join routes_rail_boundaries B on R.route_id = b.route_id";
 
         @Override
         public Cursor getCursor(Context context, List<Criteria> whereClause) {
@@ -552,7 +553,7 @@ public class DatabaseManager {
                 }
             }
 
-            queryString.append(" GROUP BY R.Route_id,R.route_short_name, R.route_long_name,T.direction_id ,S.stop_name");
+            //queryString.append(" GROUP BY R.Route_id,R.route_short_name, R.route_long_name,T.direction_id ,S.stop_name");
 
             Cursor cursor = getDatabase(context).rawQuery(queryString.toString(), null);
             Log.d(TAG, "Creating cursor:" + queryString.toString());

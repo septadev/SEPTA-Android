@@ -141,10 +141,10 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
             progressView = rootView.findViewById(R.id.progress_view);
 
             startingStopEditText = (TextView) rootView.findViewById(R.id.starting_stop);
-            startingStopEditText.setText(transitType.getString("start_stop_text",getContext()));
+            startingStopEditText.setText(transitType.getString("start_stop_text", getContext()));
 
             destinationStopEditText = (TextView) rootView.findViewById(R.id.destination_stop);
-            destinationStopEditText.setText(transitType.getString("dest_stop_text",getContext()));
+            destinationStopEditText.setText(transitType.getString("dest_stop_text", getContext()));
 
             closestStopText = (TextView) rootView.findViewById(R.id.closest_stop);
 
@@ -236,7 +236,11 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
             lineText.setCompoundDrawablesWithIntrinsicBounds(bullet, drawables[1],
                     drawables[2], drawables[3]);
 
-            lineText.setText(selectedRoute.getRouteShortName() + ": to " + selectedRoute.getDirectionDescription());
+            if (transitType == TransitType.RAIL) {
+                lineText.setText(selectedRoute.getRouteShortName() + " " + selectedRoute.getDirectionDescription());
+            } else {
+                lineText.setText(selectedRoute.getRouteShortName() + ": to " + selectedRoute.getDirectionDescription());
+            }
             startingStation = null;
             activateView(startingStopEditText);
             startingStopEditText.setText("");

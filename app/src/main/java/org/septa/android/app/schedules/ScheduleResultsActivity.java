@@ -289,7 +289,10 @@ public class ScheduleResultsActivity extends AppCompatActivity {
         routeNameTextView.setText(routeDirectionModel.getRouteLongName());
 
         TextView routeTitleDescription = (TextView) findViewById(R.id.route_description_text);
-        routeTitleDescription.setText("to " + routeDirectionModel.getDirectionDescription());
+        if (transitType == TransitType.RAIL) {
+            routeTitleDescription.setText(routeDirectionModel.getDirectionDescription());
+        } else routeTitleDescription.setText("to " + routeDirectionModel.getDirectionDescription());
+
 
         TextView startStationText = (TextView) findViewById(R.id.start_station_text);
         startStationText.setText(start.getStopName());

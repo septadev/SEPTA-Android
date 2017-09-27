@@ -41,17 +41,5 @@ public class MainApplication extends Application {
         } catch (NullPointerException e) {
             Log.e(TAG, "Failed to load meta-data, NullPointer: " + e.getMessage());
         }
-        SystemStatusState.triggerUpdate();
-        // Initialize database, can be moved to logo screen
-        DatabaseManager.getInstance(this);
-        long start = System.currentTimeMillis();
-        long delay = 10000;
-        do {
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        } while (SystemStatusState.isInitialized() || System.currentTimeMillis() < start + delay);
     }
 }

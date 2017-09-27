@@ -26,28 +26,15 @@ public class SystemStatusState {
 
     private static boolean initialized = false;
 
-    public static void triggerUpdate() {
-        SeptaServiceFactory.getAlertsService().getAlerts().enqueue(new Callback<Alerts>() {
-            @Override
-            public void onResponse(Call<Alerts> call, Response<Alerts> response) {
-                if (response == null || response.body() == null)
-                    return;
 
-                for (Alert alert : response.body().getAlerts()) {
-                    map.put(alert.getRouteId(), alert);
-                }
+    public static void update(Alerts alerts){
+        for (Alert alert : alerts.getAlerts()) {
+            map.put(alert.getRouteId(), alert);
+        }
 
-                initialized = true;
-
-            }
-
-            @Override
-            public void onFailure(Call<Alerts> call, Throwable t) {
-
-                t.printStackTrace();
-            }
-        });
+        initialized = true;
     }
+
 
     public static boolean isInitialized() {
         return initialized;

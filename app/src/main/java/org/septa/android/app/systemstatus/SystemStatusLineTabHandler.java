@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,7 @@ import org.septa.android.app.services.apiinterfaces.model.AlertDetail;
 import org.septa.android.app.support.BaseTabActivityHandler;
 import org.septa.android.app.support.Consumer;
 import org.septa.android.app.support.CursorAdapterSupplier;
+import org.septa.android.app.support.GeneralUtils;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -85,6 +87,7 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
             globalAlertScrollview = fragmentView.findViewById(R.id.global_alert_scrollview);
             globalAlertView = fragmentView.findViewById(R.id.global_alert_view);
             globalAlertText = (org.septa.android.app.view.TextView) fragmentView.findViewById(R.id.global_alert_text);
+            globalAlertText.setMovementMethod(LinkMovementMethod.getInstance());
 
 
             SeptaServiceFactory.getAlertDetailsService().getAlertDetails("generic").enqueue(new GlobalStatusCallBack());
@@ -184,7 +187,7 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
                         alertText.append("<b>ADVISORIES<b><p>").append(alert.getAdvisoryMessage());
                     }
 
-                    globalAlertText.setHtml(alertText.toString());
+                    globalAlertText.setHtml(GeneralUtils.updateUrls(alertText.toString()));
                 } else {
                     globalAlertView.setVisibility(View.GONE);
                 }

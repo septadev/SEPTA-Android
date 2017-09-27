@@ -1,5 +1,7 @@
 package org.septa.android.app.support;
 
+import android.util.Log;
+
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
@@ -26,4 +28,10 @@ public class GeneralUtils {
 
         return builder.toString();
     }
+
+    public static String updateUrls(String inString){
+        String outString = inString.replace("href=\"/", "href=\"http://www.septa.org/");
+        return outString;
+    }
+
 }

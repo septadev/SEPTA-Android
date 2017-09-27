@@ -152,19 +152,16 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/top"
-        android:background="#44000000"
+        android:background="@color/progress_background"
         android:clickable="true"
         android:visibility="gone"
-        tools:alpha="128"
-        tools:background="0x00000000"
         tools:visibility="visible">
 
         <ProgressBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:indeterminate="true"
-            tools:alpha="128" />
+            android:indeterminate="true" />
 
     </FrameLayout>
 </FrameLayout>

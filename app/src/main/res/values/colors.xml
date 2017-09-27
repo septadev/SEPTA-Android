@@ -50,5 +50,6 @@
     <!-- System Status -->
     <color name="active_toggle">#144b88</color>
     <color name="inactive_toggle">#bdbdbd</color>
+    <color name="progress_background">@android:color/white</color>
 
 </resources>

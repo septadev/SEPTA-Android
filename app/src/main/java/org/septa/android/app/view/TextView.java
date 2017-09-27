@@ -21,7 +21,7 @@ public class TextView extends AppCompatTextView {
 
         FontManager.getInstance().setFont(this, attrs);
 
-        if(this.getText() != null) {
+        if (this.getText() != null) {
             this.setText(Html.fromHtml(this.getText().toString()));
         }
     }

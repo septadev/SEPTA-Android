@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Point;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
@@ -395,6 +396,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
 
     private void updateNextToArriveData() {
+        final long timestamp = System.currentTimeMillis();
         if (start != null && destination != null) {
 
             String routeId = null;
@@ -405,29 +407,55 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
             results.enqueue(new Callback<NextArrivalModelResponse>() {
                 @Override
-                public void onResponse(Call<NextArrivalModelResponse> call, Response<NextArrivalModelResponse> response) {
+                public void onResponse(Call<NextArrivalModelResponse> call, final Response<NextArrivalModelResponse> response) {
                     if (response == null || response.body() == null) {
                         Log.w(TAG, "invalid response from service.");
                     } else {
 
-                        Log.d(TAG, response.toString());
-                        Log.d(TAG, response.body().toString());
+                        if (System.currentTimeMillis() - timestamp < 1000) {
+                            AsyncTask<Long, Void, Void> delayTask = new AsyncTask<Long, Void, Void>() {
+                                @Override
+                                protected void onPostExecute(Void aVoid) {
+                                    updateView(response);
+                                    progressVisibility(View.GONE);
+                                }
 
-                        LatLng startingStationLatLng = new LatLng(start.getLatitude(), start.getLongitude());
-                        LatLng destinationStationLatLng = new LatLng(destination.getLatitude(), destination.getLongitude());
-                        startMarker = new MarkerOptions().position(startingStationLatLng).title(start.getStopName());
-                        destMarker = new MarkerOptions().position(destinationStationLatLng).title(destination.getStopName());
+                                @Override
+                                protected Void doInBackground(Long... params) {
+                                    try {
+                                        Thread.sleep(params[0]);
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
 
-                        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-                        getSupportActionBar().setDisplayShowHomeEnabled(true);
-                        parser = new NextArrivalModelResponseParser(response.body());
+                                    return null;
+                                }
+                            }.execute(System.currentTimeMillis() - timestamp);
 
-                        nextToArriveDetailsFragment.setNextToArriveData(parser);
-
-                        if (googleMap != null) {
-                            updateMap();
+                        } else {
+                            updateView(response);
+                            progressVisibility(View.GONE);
                         }
-                        progressVisibility(View.GONE);
+                    }
+                }
+
+                private void updateView(Response<NextArrivalModelResponse> response) {
+                    Log.d(TAG, response.toString());
+                    Log.d(TAG, response.body().toString());
+
+                    LatLng startingStationLatLng = new LatLng(start.getLatitude(), start.getLongitude());
+                    LatLng destinationStationLatLng = new LatLng(destination.getLatitude(), destination.getLongitude());
+                    startMarker = new MarkerOptions().position(startingStationLatLng).title(start.getStopName());
+                    destMarker = new MarkerOptions().position(destinationStationLatLng).title(destination.getStopName());
+
+                    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                    getSupportActionBar().setDisplayShowHomeEnabled(true);
+                    parser = new NextArrivalModelResponseParser(response.body());
+
+                    nextToArriveDetailsFragment.setNextToArriveData(parser);
+
+                    if (googleMap != null) {
+                        updateMap();
                     }
                 }
 

@@ -92,11 +92,13 @@
 
                 <org.septa.android.app.view.TextView
                     android:id="@+id/start_station_text"
-                    android:layout_width="wrap_content"
+                    android:layout_width="50dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:layout_toRightOf="@id/circle"
+                    android:ellipsize="end"
                     android:letterSpacing="-0.02"
+                    android:maxLines="1"
                     android:text="Jefferson Station"
                     android:textColor="#000000"
                     android:textSize="12sp"
@@ -115,12 +117,14 @@
 
                 <org.septa.android.app.view.TextView
                     android:id="@+id/destination_station_text"
-                    android:layout_width="wrap_content"
+                    android:layout_width="50dp"
                     android:layout_height="wrap_content"
                     android:layout_alignTop="@id/pin"
                     android:layout_below="@+id/start_station_text"
                     android:layout_toRightOf="@id/pin"
+                    android:ellipsize="end"
                     android:letterSpacing="-0.02"
+                    android:maxLines="1"
                     android:text="Paoli Station"
                     android:textColor="#000000"
                     android:textSize="12sp"
@@ -137,6 +141,7 @@
                     android:drawablePadding="8dp"
                     android:drawableRight="@drawable/reverse_icon"
                     android:letterSpacing="-0.02"
+                    android:paddingLeft="5dp"
                     android:text="Reverse&lt;br&gt;Trip"
                     android:textColor="#144b88"
                     android:textSize="10sp"

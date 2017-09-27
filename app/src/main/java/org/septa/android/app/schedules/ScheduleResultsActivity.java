@@ -17,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -88,13 +89,9 @@ public class ScheduleResultsActivity extends AppCompatActivity {
     Favorite currentFavorite;
     Menu menu;
 
-    //----------------------------------------------------------------------------------------------
-    //Method:  onCreateView
-    //Purpose: initialize the dynamic views for the schedule fragment
-    //
-    //return void
-    //----------------------------------------------------------------------------------------------
-    @Nullable
+    TextView startStationText;
+    TextView destinationTextView;
+    TextView reverseTripLabel;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -139,14 +136,27 @@ public class ScheduleResultsActivity extends AppCompatActivity {
             reverseRouteCursorAdapterSupplier = DatabaseManager.getInstance(this).getNonRailReverseRouteCursorAdapterSupplier();
         }
 
-        setUpHeaders();
+        startStationText = (TextView) findViewById(R.id.start_station_text);
+        destinationTextView = (TextView) findViewById(R.id.destination_station_text);
 
-        TextView reverseTripLabel = (TextView) findViewById(R.id.reverse_trip_label);
+        reverseTripLabel = (TextView) findViewById(R.id.reverse_trip_label);
         reverseTripLabel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ReverseStopAsyncTask reverseStopAsyncTask = new ReverseStopAsyncTask(ScheduleResultsActivity.this);
                 reverseStopAsyncTask.execute();
+            }
+        });
+
+        setUpHeaders();
+
+        findViewById(R.id.line_station_layout).getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                startStationText.setRight(reverseTripLabel.getLeft());
+                startStationText.setText(startStationText.getText());
+                destinationTextView.setRight(reverseTripLabel.getLeft());
+                destinationTextView.setText(destinationTextView.getText());
             }
         });
 
@@ -294,11 +304,7 @@ public class ScheduleResultsActivity extends AppCompatActivity {
         } else routeTitleDescription.setText("to " + routeDirectionModel.getDirectionDescription());
 
 
-        TextView startStationText = (TextView) findViewById(R.id.start_station_text);
         startStationText.setText(start.getStopName());
-
-
-        TextView destinationTextView = (TextView) findViewById(R.id.destination_station_text);
         destinationTextView.setText(destination.getStopName());
 
         ImageView transitTypeImageView = (ImageView) findViewById(R.id.transit_type_image);

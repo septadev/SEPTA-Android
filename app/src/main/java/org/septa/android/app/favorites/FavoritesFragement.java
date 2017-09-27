@@ -73,6 +73,8 @@ public class FavoritesFragement extends Fragment {
                     drawables[1], drawables[2], drawables[3]);
 
             ViewGroup containerView = (ViewGroup) convertView.findViewById(R.id.next_to_arrive_trip_details);
+            final View progressView = containerView.findViewById(R.id.progress_view);
+            progressView.setVisibility(View.VISIBLE);
 
             final NextToArriveTripView tripView = new NextToArriveTripView(getContext());
             tripView.setMaxResults(3);
@@ -98,6 +100,7 @@ public class FavoritesFragement extends Fragment {
                 @Override
                 public void onResponse(@NonNull Call<NextArrivalModelResponse> call, @NonNull Response<NextArrivalModelResponse> response) {
                     tripView.setNextToArriveData(new NextArrivalModelResponseParser(response.body()));
+                    progressView.setVisibility(View.GONE);
                 }
 
                 @Override

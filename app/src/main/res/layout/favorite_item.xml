@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_marginBottom="10dp"
     android:background="#ffffff"
     android:orientation="vertical">
@@ -54,7 +55,27 @@
         android:id="@+id/next_to_arrive_trip_details"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/favorite_title_text" />
+        android:layout_below="@id/favorite_title_text">
+
+        <FrameLayout
+            android:id="@+id/progress_view"
+            tools:alpha=".3"
+            tools:visibility="visible"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/top"
+            android:background="@color/progress_background"
+            android:clickable="true"
+            android:visibility="gone">
+
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:indeterminate="true" />
+
+        </FrameLayout>
+    </FrameLayout>
 
 
 </LinearLayout>

@@ -39,12 +39,14 @@
 
                 <org.septa.android.app.view.TextView
                     android:id="@+id/starting_station_name"
-                    android:layout_width="wrap_content"
+                    android:layout_width="50dp"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="2dp"
                     android:layout_marginLeft="5dp"
                     android:layout_marginTop="9dp"
                     android:layout_toRightOf="@id/starting_station_label"
+                    android:ellipsize="end"
+                    android:maxLines="1"
                     android:text="placeholder Starting"
                     android:textColor="#ffffff"
                     android:textSize="14sp"
@@ -66,13 +68,15 @@
 
                 <org.septa.android.app.view.TextView
                     android:id="@+id/destination_station_name"
-                    android:layout_width="wrap_content"
+                    android:layout_width="50dp"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/starting_station_label"
                     android:layout_marginBottom="11dp"
                     android:layout_marginLeft="5dp"
                     android:layout_marginTop="4dp"
                     android:layout_toRightOf="@id/destination_station_label"
+                    android:ellipsize="end"
+                    android:maxLines="1"
                     android:text="placeholder Destination"
                     android:textColor="#ffffff"
                     android:textSize="14sp"
@@ -90,6 +94,7 @@
                     android:tint="@android:color/white" />
 
                 <org.septa.android.app.view.TextView
+                    android:id="@+id/refresh_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
@@ -116,6 +121,7 @@
             android:layout_height="match_parent"
             android:background="@color/progress_background"
             android:visibility="gone"
+            tools:alpha=".1"
             tools:visibility="visible">
 
             <ProgressBar

@@ -22,6 +22,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -176,10 +177,10 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
             titleText.setText(transitType.getString("nta_results_title", this));
             ((TextView) findViewById(R.id.see_later_text)).setText(transitType.getString("need_to_see", this));
 
-            TextView startingStationNameText = (TextView) findViewById(R.id.starting_station_name);
+            final TextView startingStationNameText = (TextView) findViewById(R.id.starting_station_name);
             startingStationNameText.setText(start.getStopName());
 
-            TextView destinationStationNameText = (TextView) findViewById(R.id.destination_station_name);
+            final TextView destinationStationNameText = (TextView) findViewById(R.id.destination_station_name);
             destinationStationNameText.setText(destination.getStopName());
 
             nextToArriveDetailsFragment.setTransitType(transitType);
@@ -217,12 +218,22 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
             });
 
             updateNextToArriveData();
-
+            findViewById(R.id.header).getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    View refreshLabel = findViewById(R.id.refresh_label);
+                    startingStationNameText.setRight(refreshLabel.getLeft());
+                    startingStationNameText.setText(startingStationNameText.getText());
+                    destinationStationNameText.setRight(refreshLabel.getLeft());
+                    destinationStationNameText.setText(destinationStationNameText.getText());
+                }
+            });
         }
 
         if (currentFavorite != null && editFavoritesFlag) {
             setTitle(currentFavorite.getName());
         }
+
 
     }
 

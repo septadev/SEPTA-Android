@@ -134,31 +134,31 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
 
         if (id == R.id.nav_next_to_arrive) {
-            switchToBundle(item, nextToArriveFragment, R.string.next_to_arrive, R.drawable.ic_next_to_arrive_fill);
+            switchToBundle(item, nextToArriveFragment, R.string.next_to_arrive, R.drawable.nta_active);
         }
 
         if (id == R.id.nav_schedule) {
-            switchToBundle(item, schedules, R.string.schedule, R.drawable.ic_schedule_fill);
+            switchToBundle(item, schedules, R.string.schedule, R.drawable.schedule_active);
         }
 
         if (id == R.id.nav_favorites) {
-            switchToBundle(item, favorites, R.string.favorites, R.drawable.ic_heart_fill);
+            switchToBundle(item, favorites, R.string.favorites, R.drawable.favorites_active);
         }
 
         if (id == R.id.nav_system_status) {
-            switchToBundle(item, systemStatus, R.string.system_status, R.drawable.ic_status_fill);
+            switchToBundle(item, systemStatus, R.string.system_status, R.drawable.status_active);
         }
 
         if (id == R.id.nav_fares_transit_info) {
-            switchToBundle(item, faresTransitInfo, R.string.fares_and_transit_info, R.drawable.ic_fairs_fill);
+            switchToBundle(item, faresTransitInfo, R.string.fares_and_transit_info, R.drawable.fares_active);
         }
 
         if (id == R.id.nav_subway_map) {
-            switchToBundle(item, subwayMap, R.string.subway_map, R.drawable.ic_subway_map_fill);
+            switchToBundle(item, subwayMap, R.string.subway_map, R.drawable.map_active);
         }
 
         if (id == R.id.nav_events) {
-            switchToBundle(item, events, R.string.events, R.drawable.ic_events_fill);
+            switchToBundle(item, events, R.string.events, R.drawable.events_active);
         }
 
         if (id == R.id.nav_connect) {
@@ -211,7 +211,7 @@ public class MainActivity extends AppCompatActivity
             navigationView.setCheckedItem(R.id.nav_next_to_arrive);
             currentMenu = navigationView.getMenu().findItem(R.id.nav_next_to_arrive);
             previousIcon = currentMenu.getIcon();
-            currentMenu.setIcon(R.drawable.ic_next_to_arrive_fill);
+            currentMenu.setIcon(R.drawable.nta_active);
             getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, nextToArriveFragment).commit();
             setTitle(R.string.next_to_arrive);
 
@@ -227,7 +227,7 @@ public class MainActivity extends AppCompatActivity
             navigationView.setCheckedItem(R.id.nav_favorites);
             currentMenu = navigationView.getMenu().findItem(R.id.nav_favorites);
             previousIcon = currentMenu.getIcon();
-            currentMenu.setIcon(R.drawable.ic_heart_fill);
+            currentMenu.setIcon(R.drawable.favorites_active);
             getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, favorites).commit();
             setTitle(R.string.favorites);
         }
@@ -288,7 +288,7 @@ public class MainActivity extends AppCompatActivity
             navigationView.setCheckedItem(R.id.nav_schedule);
             currentMenu = navigationView.getMenu().findItem(R.id.nav_schedule);
             previousIcon = currentMenu.getIcon();
-            currentMenu.setIcon(R.drawable.ic_schedule_fill);
+            currentMenu.setIcon(R.drawable.schedule_active);
             schedules = new SchedulesFragment();
             schedules.prePopulate(data);
             getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, schedules).commit();

@@ -61,7 +61,19 @@ public class MapUtils {
 
     public static KmlLayer getKMLByLineId(Context context, GoogleMap googleMap, String lineId, TransitType transitType) {
         int resourceId = context.getResources().getIdentifier("kml_" + lineId.toLowerCase(), "raw", R.class.getPackage().getName());
-        String colorValue = Integer.toHexString(ContextCompat.getColor(context, transitType.getLineColor(lineId, context)));
+
+
+        // For some reason google maps is showing the colors of mfl and bsl reversed.  So this is a
+        // is a hack around that.
+        String modifiedLineId;
+        if (lineId.equalsIgnoreCase("mfl")){
+            modifiedLineId = "bsl";
+        } else if (lineId.equalsIgnoreCase("bsl")){
+            modifiedLineId = "mfl";
+        } else
+            modifiedLineId = lineId;
+
+        String colorValue = Integer.toHexString(ContextCompat.getColor(context, transitType.getLineColor(modifiedLineId, context)));
         InputStream raw = null;
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();

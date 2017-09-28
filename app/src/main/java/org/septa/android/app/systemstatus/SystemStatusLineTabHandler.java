@@ -176,17 +176,28 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
             public void onResponse(Call<AlertDetail> call, Response<AlertDetail> response) {
                 AlertDetail globalAlertDetail = response.body();
 
+                boolean found = false;
+                StringBuilder alertText = new StringBuilder();
+
                 if (globalAlertDetail != null &&
                         globalAlertDetail.getAlerts().get(0).getMessage() != null &&
                         !globalAlertDetail.getAlerts().get(0).getMessage().equals("")) {
                     globalAlertView.setVisibility(View.VISIBLE);
 
-                    StringBuilder alertText = new StringBuilder();
-
                     for (AlertDetail.Detail alert : globalAlertDetail.getAlerts()) {
-                        alertText.append("<b>ADVISORIES<b><p>").append(alert.getAdvisoryMessage());
-                    }
+                        if (!"".equals(alert.getAdvisoryMessage())) {
+                            alertText.append("<b>ADVISORIES<b><p>").append(alert.getAdvisoryMessage());
+                            found = true;
+                        }
 
+                        if (!"".equals(alert.getMessage())) {
+                            alertText.append("<b>Alert<b><p>").append(alert.getMessage());
+                            found = true;
+                        }
+                    }
+                }
+
+                if (found) {
                     globalAlertText.setHtml(GeneralUtils.updateUrls(alertText.toString()));
                 } else {
                     globalAlertView.setVisibility(View.GONE);

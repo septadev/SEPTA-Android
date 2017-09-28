@@ -64,7 +64,7 @@ public class MapUtils {
 
 
         // For some reason google maps is showing the colors of mfl and bsl reversed.  So this is a
-        // is a hack around that.
+        // hack around that.
         String modifiedLineId;
         if (lineId.equalsIgnoreCase("mfl")){
             modifiedLineId = "bsl";

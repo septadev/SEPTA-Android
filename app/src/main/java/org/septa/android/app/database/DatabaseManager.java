@@ -272,35 +272,44 @@ public class DatabaseManager {
 
     public class LineAwareRailStopCursorAdapterSupplier implements CursorAdapterSupplier<StopModel> {
 
-        private static final String SELECT_CLAUSE = "SELECT DISTINCT a.stop_id, a.stop_name, a.wheelchair_boarding, a.stop_lat, a.stop_lon, a.rowid AS _id FROM stops_rail a, trips_rail b, stop_times_rail c, routes_rail_boundaries r  WHERE b.trip_id=c.trip_id and c.stop_id=a.stop_id and r.route_id=b.route_id and r.direction_id=b.direction_id";
+        //private static final String SELECT_CLAUSE = "SELECT DISTINCT a.stop_id, a.stop_name, a.wheelchair_boarding, a.stop_lat, a.stop_lon, a.rowid AS _id FROM stops_rail a, trips_rail b, stop_times_rail c, routes_rail_boundaries r  WHERE b.trip_id=c.trip_id and c.stop_id=a.stop_id and r.route_id=b.route_id and r.direction_id=b.direction_id";
 
 
         @Override
         public Cursor getCursor(Context context, List<Criteria> whereClause) {
-            StringBuilder queryString = new StringBuilder(SELECT_CLAUSE);
+            StringBuilder queryString = new StringBuilder(context.getResources().getString(R.string.rail_trip_start));
+
+
+            String routeId = null;
+            String directionId = null;
 
             if (whereClause != null) {
                 for (Criteria c : whereClause) {
-                    queryString.append(" AND ");
+                    if ("route_id".equals(c.getFieldName())) {
+                        routeId = c.getValue().toString();
+                    } else if ("direction_id".equals(c.getFieldName())) {
+                        directionId = c.getValue().toString();
+                    } else {
+                        queryString.append(" AND ");
 
-                    if ("stop_lon".equals(c.getFieldName()) || "stop_lat".equals(c.getFieldName())) {
-                        queryString.append("CAST(a.").append(c.getFieldName()).append(" as decimal)")
-                                .append(c.getOperation()).append(c.getValue().toString());
-
-                    } else if ("route_id".equals(c.getFieldName()) || "direction_id".equals(c.getFieldName())) {
-                        queryString.append("b.");
-                    } else queryString.append("a.");
-
-                    queryString.append(c.getFieldName()).append(c.getOperation()).append("'").append(c.getValue().toString()).append("'");
-
+                        if ("stop_lat".equals(c.getFieldName())) {
+                            queryString.append("stopLatitude").append(c.getOperation()).append(c.getValue().toString());
+                        } else if ("stop_lon".equals(c.getFieldName())) {
+                            queryString.append("stopLongitude").append(c.getOperation()).append(c.getValue().toString());
+                        }
+                        queryString.append(" ");
+                    }
                 }
-
             }
-            Log.d(TAG, "Creating cursor:" + queryString.toString());
 
-            queryString.append(" ORDER BY a.stop_name");
+            queryString.append(" GROUP BY S.stop_id, S.stop_name, S.stop_lat, S.stop_lon ORDER BY S.stop_name");
 
-            Cursor cursor = getDatabase(context).rawQuery(queryString.toString(), null);
+            MessageFormat form = new MessageFormat(queryString.toString());
+            String query = form.format(new Object[]{routeId, directionId});
+            Log.d(TAG, "Creating cursor:" + query);
+
+
+            Cursor cursor = getDatabase(context).rawQuery(query, null);
 
             return cursor;
         }
@@ -308,14 +317,16 @@ public class DatabaseManager {
         @Override
         public StopModel getCurrentItemFromCursor(Cursor cursor) {
             return new StopModel(cursor.getString(0), cursor.getString(1),
-                    (cursor.getInt(2) == 1), cursor.getString(3), cursor.getString(4));
+                    (cursor.getInt(3) == 1), cursor.getString(2), cursor.getString(3));
         }
 
         @Override
         public StopModel getItemFromId(Context context, Object id) {
-            List<Criteria> criteria = new ArrayList<Criteria>(1);
-            criteria.add(new Criteria("stop_id", Criteria.Operation.EQ, id.toString()));
-            Cursor cursor = getCursor(context, criteria);
+            String queryString = "SELECT DISTINCT a.stop_id, a.stop_name, a.wheelchair_boarding, a.stop_lat, a.stop_lon, a.rowid AS _id FROM stops_rail a";
+
+            queryString += " where a.stop_id=" + id.toString();
+
+            Cursor cursor = getDatabase(context).rawQuery(queryString, null);
             StopModel stopModel = null;
 
             if (cursor != null) {
@@ -331,7 +342,7 @@ public class DatabaseManager {
 
     public class LineAwareRailStopAfterCursorAdapterSupplier implements CursorAdapterSupplier<StopModel> {
 
-        private static final String SELECT_CLAUSE = "select distinct y.stop_id, y.stop_name, y.wheelchair_boarding, y.stop_lat, y.stop_lon, y.rowid AS _id from (SELECT a.stop_id, stop_name, wheelchair_boarding, stop_lat, stop_lon, c.stop_sequence, c.trip_id, a.rowid AS _id FROM stops_rail a, trips_rail b, stop_times_rail c WHERE c.trip_id=b.trip_id and c.stop_id=a.stop_id and a.stop_id=''{0}'' and b.route_id=''{1}'' and b.direction_id=''{2}'') x, (SELECT a.stop_id, stop_name, wheelchair_boarding, stop_lat, stop_lon, c.stop_sequence, c.trip_id, a.rowid AS _id FROM stops_rail a, trips_rail b, stop_times_rail c WHERE c.trip_id=b.trip_id and c.stop_id=a.stop_id) y where x.trip_id=y.trip_id and x.stop_sequence < y.stop_sequence";
+        // private static final String SELECT_CLAUSE = "select distinct y.stop_id, y.stop_name, y.wheelchair_boarding, y.stop_lat, y.stop_lon, y.rowid AS _id from (SELECT a.stop_id, stop_name, wheelchair_boarding, stop_lat, stop_lon, c.stop_sequence, c.trip_id, a.rowid AS _id FROM stops_rail a, trips_rail b, stop_times_rail c WHERE c.trip_id=b.trip_id and c.stop_id=a.stop_id and a.stop_id=''{0}'' and b.route_id=''{1}'' and b.direction_id=''{2}'') x, (SELECT a.stop_id, stop_name, wheelchair_boarding, stop_lat, stop_lon, c.stop_sequence, c.trip_id, a.rowid AS _id FROM stops_rail a, trips_rail b, stop_times_rail c WHERE c.trip_id=b.trip_id and c.stop_id=a.stop_id) y where x.trip_id=y.trip_id and x.stop_sequence < y.stop_sequence";
 
 
         @Override
@@ -339,7 +350,7 @@ public class DatabaseManager {
             if (whereClause == null)
                 throw new RuntimeException("Required where clause that includes after_stop_id, route_id and direction_id with Equals Operation");
 
-            StringBuilder queryString = new StringBuilder(SELECT_CLAUSE);
+            StringBuilder queryString = new StringBuilder(context.getResources().getString(R.string.rail_trip_end));
             String afterStopId = null;
             String routeId = null;
             String directionId = null;
@@ -364,10 +375,10 @@ public class DatabaseManager {
                 throw new RuntimeException("Requires Criteria that includes after_stop_id, route_id and direction_id with Equals Operation");
             }
 
-            queryString.append(" ORDER BY y.stop_name");
+            queryString.append(" GROUP BY S.stop_id, S.stop_name, S.stop_lat, S.stop_lon ORDER BY S.stop_name");
 
             MessageFormat form = new MessageFormat(queryString.toString());
-            String query = form.format(new Object[]{afterStopId, routeId, directionId});
+            String query = form.format(new Object[]{routeId, directionId, afterStopId});
 
             Cursor cursor = getDatabase(context).rawQuery(query, null);
             Log.d(TAG, "BusStopAfterCursorAdapterSupplier Creating cursor:" + query);

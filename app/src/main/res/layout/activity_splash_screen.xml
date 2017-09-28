@@ -6,7 +6,7 @@
     tools:context="org.septa.android.app.SplashScreenActivity">
 
 
-    <ImageView
+    <ImageView android:id="@+id/splash_image"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"

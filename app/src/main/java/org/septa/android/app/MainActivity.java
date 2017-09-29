@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import org.septa.android.app.fares.FaresFragement;
 import org.septa.android.app.favorites.FavoritesFragement;
 import org.septa.android.app.nextarrive.NextToArriveFragement;
 import org.septa.android.app.schedules.SchedulesFragment;
@@ -56,8 +57,8 @@ public class MainActivity extends AppCompatActivity
     FavoritesFragement favorites;
 
     SystemStatusFragment systemStatus = new SystemStatusFragment();
-    Fragment faresTransitInfo = new ComingSoonFragement();
-    Fragment subwayMap = new ComingSoonFragement();
+    Fragment faresTransitInfo = new FaresFragement();
+    Fragment systemMap = new ComingSoonFragement();
     Fragment events = new ComingSoonFragement();
     Fragment connect = new ComingSoonFragement();
     Fragment about = new ComingSoonFragement();
@@ -153,12 +154,12 @@ public class MainActivity extends AppCompatActivity
             switchToBundle(item, faresTransitInfo, R.string.fares_and_transit_info, R.drawable.fares_active);
         }
 
-        if (id == R.id.nav_subway_map) {
-            switchToBundle(item, subwayMap, R.string.subway_map, R.drawable.map_active);
+        if (id == R.id.nav_system_map) {
+            switchToBundle(item, systemMap, R.string.system_map, R.drawable.map_active);
         }
 
         if (id == R.id.nav_events) {
-            switchToBundle(item, events, R.string.events, R.drawable.events_active);
+            switchToBundle(item, events, R.string.events, R.drawable.calendar_active);
         }
 
         if (id == R.id.nav_connect) {

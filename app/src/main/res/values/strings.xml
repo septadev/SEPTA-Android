@@ -37,10 +37,11 @@
     <string name="font_roboto_bold">fonts/Roboto-Bold.ttf</string>
     <string name="font_roboto_light">fonts/Roboto-Light.ttf</string>
     <string name="font_roboto_medium_italic">fonts/Roboto-MediumItalic.ttf</string>
+    <string name="font_roboto_light_italic">fonts/Roboto-LightItalic.ttf</string>
     <string name="font_roboto_medium">fonts/Roboto-Medium.ttf</string>
 
 
-    <string name="subway_map">Subway Map</string>
+    <string name="system_map">System Map</string>
     <string name="events">Events</string>
 
 

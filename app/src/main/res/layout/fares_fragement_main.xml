@@ -1,0 +1,426 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/full_page_gradient_background"
+    android:orientation="vertical"
+    android:paddingLeft="12dp"
+    android:paddingRight="12dp">
+
+    <org.septa.android.app.view.TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="11dp"
+        android:layout_marginTop="12dp"
+        android:letterSpacing="-0.02"
+        android:text="SEPTA Fares"
+        android:textColor="#144b88"
+        android:textSize="20sp"
+        app:font="@string/font_roboto_bold" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#ffffff"
+                android:orientation="vertical"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="14dp"
+                    android:layout_marginRight="14dp"
+                    android:layout_marginTop="27dp">
+
+                    <ImageView
+                        android:id="@+id/key_image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="21dp"
+                        android:src="@drawable/septa_key_icon" />
+
+                    <org.septa.android.app.view.TextView
+                        android:id="@+id/septa_key_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toRightOf="@id/key_image"
+                        android:letterSpacing="-0.02"
+                        android:text="SEPTA Key"
+                        android:textColor="#144b88"
+                        android:textSize="14sp"
+                        app:font="@string/font_roboto_light" />
+
+                    <org.septa.android.app.view.TextView
+                        android:id="@+id/key_card_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/septa_key_label"
+                        android:layout_toRightOf="@id/key_image"
+                        android:lineSpacingExtra="3sp"
+                        android:text="The Key Card is a contactless chip card and can be loaded and reloaded."
+                        android:textColor="#000000"
+                        android:textSize="12sp"
+                        app:font="@string/font_roboto_regular" />
+
+                    <org.septa.android.app.view.TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/key_card_text"
+                        android:layout_toRightOf="@id/key_image"
+                        android:lineSpacingExtra="3sp"
+                        android:text="Learn More about SEPTA Key »"
+                        android:textColor="#144b88"
+                        android:textSize="12sp"
+                        app:font="@string/font_roboto_medium" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="14dp"
+                    android:layout_marginRight="14dp"
+                    android:layout_marginTop="27dp">
+
+
+                    <ImageView
+                        android:id="@+id/cash_image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="21dp"
+                        android:src="@drawable/cash_icon" />
+
+                    <org.septa.android.app.view.TextView
+                        android:id="@+id/cash_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toRightOf="@id/cash_image"
+                        android:letterSpacing="-0.02"
+                        android:text="Cash"
+                        android:textColor="#144b88"
+                        android:textSize="14sp"
+                        app:font="@string/font_roboto_light" />
+
+                    <org.septa.android.app.view.TextView
+                        android:id="@+id/cash_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/cash_label"
+                        android:layout_toRightOf="@id/cash_image"
+                        android:text="Cash: &lt;b&gt;$2.50&lt;/b&gt;&lt;br&gt;SEPTA Key Card Quick Trip: &lt;b&gt;$2.50&lt;/b&gt;"
+                        android:textColor="#000000"
+                        android:textSize="12sp"
+                        app:font="@string/font_roboto_regular" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="14dp"
+                    android:layout_marginRight="14dp"
+                    android:layout_marginTop="27dp">
+
+                    <ImageView
+                        android:id="@+id/token_image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="21dp"
+                        android:src="@drawable/token_icon" />
+
+                    <org.septa.android.app.view.TextView
+                        android:id="@+id/token_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toRightOf="@id/token_image"
+                        android:letterSpacing="-0.02"
+                        android:text="Token"
+                        android:textColor="#144b88"
+                        android:textSize="14sp"
+                        app:font="@string/font_roboto_light" />
+
+                    <org.septa.android.app.view.TextView
+                        android:id="@+id/token_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/token_label"
+                        android:layout_toRightOf="@id/token_image"
+                        android:text="Tokens: &lt;b&gt;$2.00 each&lt;/b&gt;&lt;br&gt;Transfer: &lt;b&gt;$1.00&lt;/b&gt;&lt;br&gt;SEPTA Key Card Travel Wallet"
+                        android:textColor="#000000"
+                        android:textSize="12sp"
+                        app:font="@string/font_roboto_regular" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="14dp"
+                    android:layout_marginRight="14dp"
+                    android:layout_marginTop="27dp">
+
+                    <ImageView
+                        android:id="@+id/weekly_image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="21dp"
+                        android:src="@drawable/weekly_icon" />
+
+                    <org.septa.android.app.view.TextView
+                        android:id="@+id/weekly_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toRightOf="@id/weekly_image"
+                        android:letterSpacing="-0.02"
+                        android:text="TransPass"
+                        android:textColor="#144b88"
+                        android:textSize="14sp"
+                        app:font="@string/font_roboto_light" />
+
+                    <org.septa.android.app.view.TextView
+                        android:id="@+id/weekly_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/weekly_label"
+                        android:layout_toRightOf="@id/weekly_image"
+                        android:text="Weekly: &lt;b&gt;$25.50&lt;/b&gt;&lt;br&gt;Monthly: &lt;b&gt;$96.50&lt;/b&gt;&lt;br&gt;Load Pass on SEPTA Key Card"
+                        android:textColor="#000000"
+                        android:textSize="12sp"
+                        app:font="@string/font_roboto_regular" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="14dp"
+                    android:layout_marginRight="14dp"
+                    android:layout_marginTop="27dp">
+
+                    <ImageView
+                        android:id="@+id/trail_image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="21dp"
+                        android:src="@drawable/trail_pass_icon" />
+
+                    <org.septa.android.app.view.TextView
+                        android:id="@+id/trail_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toRightOf="@id/trail_image"
+                        android:letterSpacing="-0.02"
+                        android:text="TrailPass"
+                        android:textColor="#144b88"
+                        android:textSize="14sp"
+                        app:font="@string/font_roboto_light" />
+
+                    <org.septa.android.app.view.TextView
+                        android:id="@+id/trail_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/trail_label"
+                        android:layout_toRightOf="@id/trail_image"
+                        android:text="Weekly and Monthly TrailPasses&lt;br&gt;&lt;b&gt;Price varies&lt;/b&gt; by Zone."
+                        android:textColor="#000000"
+                        android:textSize="12sp"
+                        app:font="@string/font_roboto_regular" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="14dp"
+                    android:layout_marginRight="14dp"
+                    android:layout_marginTop="27dp">
+
+                    <ImageView
+                        android:id="@+id/cross_image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="21dp"
+                        android:src="@drawable/cross_country_icon" />
+
+                    <org.septa.android.app.view.TextView
+                        android:id="@+id/cross_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toRightOf="@id/cross_image"
+                        android:letterSpacing="-0.02"
+                        android:text="Cross County Pass"
+                        android:textColor="#144b88"
+                        android:textSize="14sp"
+                        app:font="@string/font_roboto_light" />
+
+                    <org.septa.android.app.view.TextView
+                        android:id="@+id/cross_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/cross_label"
+                        android:layout_toRightOf="@id/cross_image"
+                        android:text="Weekly Cross County Pass: &lt;b&gt;$30.75&lt;/b&gt;&lt;br&gt;Monthly Cross County Pass: &lt;b&gt;$115.00&lt;/b&gt;"
+                        android:textColor="#000000"
+                        android:textSize="12sp"
+                        app:font="@string/font_roboto_regular" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="14dp"
+                    android:layout_marginRight="14dp"
+                    android:layout_marginTop="27dp">
+
+                    <ImageView
+                        android:id="@+id/one_day_con_image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="21dp"
+                        android:src="@drawable/one_day_icon" />
+
+                    <org.septa.android.app.view.TextView
+                        android:id="@+id/one_day_con_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toRightOf="@id/one_day_con_image"
+                        android:letterSpacing="-0.02"
+                        android:text="One Day Convenience Pass"
+                        android:textColor="#144b88"
+                        android:textSize="14sp"
+                        app:font="@string/font_roboto_light" />
+
+                    <org.septa.android.app.view.TextView
+                        android:id="@+id/one_day_con_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/one_day_con_label"
+                        android:layout_toRightOf="@id/one_day_con_image"
+                        android:text="Pass: &lt;b&gt;$8.00&lt;/b&gt; - good for &lt;b&gt;8 rides&lt;/b&gt; on any&lt;br&gt;Transit route (not valid on Regional Rail)"
+                        android:textColor="#000000"
+                        android:textSize="12sp"
+                        app:font="@string/font_roboto_regular" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="14dp"
+                    android:layout_marginRight="14dp"
+                    android:layout_marginTop="27dp">
+
+                    <ImageView
+                        android:id="@+id/one_day_ind_image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="21dp"
+                        android:src="@drawable/independence_icon" />
+
+                    <org.septa.android.app.view.TextView
+                        android:id="@+id/one_day_ind_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toRightOf="@id/one_day_ind_image"
+                        android:letterSpacing="-0.02"
+                        android:text="TransPass"
+                        android:textColor="#144b88"
+                        android:textSize="14sp"
+                        app:font="@string/font_roboto_light" />
+
+                    <org.septa.android.app.view.TextView
+                        android:id="@+id/one_day_ind_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/one_day_ind_label"
+                        android:layout_toRightOf="@id/one_day_ind_image"
+                        android:text="One Day Individual: &lt;b&gt;$13.00&lt;/b&gt;&lt;br&gt;One Day Family: &lt;b&gt;$30.00&lt;/b&gt;"
+                        android:textColor="#000000"
+                        android:textSize="12sp"
+                        app:font="@string/font_roboto_regular" />
+                </RelativeLayout>
+
+                <org.septa.android.app.view.TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginTop="32dp"
+                    android:background="@drawable/button_gradient_background"
+                    android:gravity="center_horizontal"
+                    android:letterSpacing="-0.02"
+                    android:paddingBottom="12dp"
+                    android:paddingTop="12dp"
+                    android:text="More About SEPTA Fares"
+                    android:textAlignment="center"
+                    android:textColor="#ffffff"
+                    android:textSize="14sp"
+                    app:font="@string/font_roboto_bold" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:background="#ffffff"
+                android:orientation="vertical"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="90dp"
+                    android:background="@drawable/perks_background" />
+
+
+                <org.septa.android.app.view.TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:letterSpacing="-0.02"
+                    android:text="Pass Perks"
+                    android:textColor="#144b88"
+                    android:textSize="20sp"
+                    app:font="@string/font_roboto_bold" />
+
+                <org.septa.android.app.view.TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Perks for all!"
+                    android:textColor="#6d6d6d"
+                    android:textSize="12sp"
+                    app:font="@string/font_roboto_light_italic" />
+
+                <org.septa.android.app.view.TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:text="Did you know your SEPTA Pass, and now your SEPTA Key, gets you discounts on food, drink, museums, sports, shops and more? Use your valid SEPTA Key, TrailPass, TransPass, or One Day Independence Pass and receive discounts to any of our Perks Partners."
+                    android:textColor="#6d6d6d"
+                    android:textSize="12sp"
+                    app:font="@string/font_roboto_regular" />
+
+                <org.septa.android.app.view.TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginTop="15dp"
+                    android:background="@drawable/button_gradient_background"
+                    android:gravity="center_horizontal"
+                    android:letterSpacing="-0.02"
+                    android:paddingBottom="12dp"
+                    android:paddingTop="12dp"
+                    android:text="Learn More"
+                    android:textAlignment="center"
+                    android:textColor="#ffffff"
+                    android:textSize="14sp"
+                    app:font="@string/font_roboto_bold" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

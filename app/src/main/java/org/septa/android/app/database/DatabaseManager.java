@@ -322,7 +322,7 @@ public class DatabaseManager {
 
         @Override
         public StopModel getItemFromId(Context context, Object id) {
-            String queryString = "SELECT DISTINCT a.stop_id, a.stop_name, a.wheelchair_boarding, a.stop_lat, a.stop_lon, a.rowid AS _id FROM stops_rail a";
+            String queryString = "SELECT DISTINCT a.stop_id, a.stop_name, a.stop_lat, a.stop_lon, a.wheelchair_boarding, a.rowid AS _id FROM stops_rail a";
 
             queryString += " where a.stop_id=" + id.toString();
 
@@ -389,14 +389,13 @@ public class DatabaseManager {
         @Override
         public StopModel getCurrentItemFromCursor(Cursor cursor) {
             StopModel stopModel = new StopModel(cursor.getString(0), cursor.getString(1),
-                    (cursor.getInt(2) == 1), cursor.getString(3), cursor.getString(4));
-            stopModel.setStopSequence(cursor.getInt(5));
+                    (cursor.getInt(4) == 1), cursor.getString(2), cursor.getString(3));
             return stopModel;
         }
 
         @Override
         public StopModel getItemFromId(Context context, Object id) {
-            String queryString = "SELECT DISTINCT a.stop_id, stop_name, wheelchair_boarding, stop_lat, stop_lon, a.rowid AS _id FROM stops_rail a where a.stop_id='" + id.toString() + "'";
+            String queryString = "SELECT DISTINCT a.stop_id, stop_name,  stop_lat, stop_lon, wheelchair_boarding, a.rowid AS _id FROM stops_rail a where a.stop_id='" + id.toString() + "'";
 
             StopModel stopModel = null;
             Cursor cursor = getDatabase(context).rawQuery(queryString.toString(), null);

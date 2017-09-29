@@ -249,8 +249,13 @@ public class NextToArriveTripView extends FrameLayout {
             origDepartingBorder.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.late_boarder));
             origDepartureTime.setTextColor(ContextCompat.getColor(getContext(), R.color.late_departing));
         } else {
-            origTardyText.setText("On time");
-            origTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.no_delay_minutes));
+            if (unit.isOrigRealtime()) {
+                origTardyText.setText("On time");
+                origTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.no_delay_minutes));
+            } else {
+                origTardyText.setText("Scheduled");
+                origTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.scheduled));
+            }
             origDepartureTime.setTextColor(ContextCompat.getColor(getContext(), R.color.on_time_departing));
         }
 
@@ -314,8 +319,13 @@ public class NextToArriveTripView extends FrameLayout {
             origDepartingBorder.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.late_boarder));
             origDepartureTime.setTextColor(ContextCompat.getColor(getContext(), R.color.late_departing));
         } else {
-            origTardyText.setText("On time");
-            origTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.no_delay_minutes));
+            if (item.isOrigRealtime()) {
+                origTardyText.setText("On time");
+                origTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.no_delay_minutes));
+            } else {
+                origTardyText.setText("Scheduled");
+                origTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.scheduled));
+            }
             origDepartureTime.setTextColor(ContextCompat.getColor(getContext(), R.color.on_time_departing));
         }
 
@@ -370,8 +380,13 @@ public class NextToArriveTripView extends FrameLayout {
             termDepartingBorder.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.late_boarder));
             termDepartureTime.setTextColor(ContextCompat.getColor(getContext(), R.color.late_departing));
         } else {
-            termTardyText.setText("On time");
-            termTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.no_delay_minutes));
+            if (item.isTermRealtime()) {
+                termTardyText.setText("On time");
+                termTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.no_delay_minutes));
+            } else {
+                termTardyText.setText("Scheduled");
+                termTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.scheduled));
+            }
             termDepartureTime.setTextColor(ContextCompat.getColor(getContext(), R.color.on_time_departing));
         }
 

@@ -120,6 +120,11 @@ public class NextArrivalModelResponse implements Serializable {
         String origVehicleLine;
         @SerializedName("term_vehicle_line")
         String termVehicleLine;
+        @SerializedName("orig_realtime")
+        boolean origRealtime = false;
+        @SerializedName("term_realtime")
+        boolean termRealtime = false;
+
 
         public String getOrigRouteId() {
             return origRouteId;
@@ -327,6 +332,22 @@ public class NextArrivalModelResponse implements Serializable {
 
         public void setTermVehicleLine(String termVehicleLine) {
             this.termVehicleLine = termVehicleLine;
+        }
+
+        public boolean isOrigRealtime() {
+            return origRealtime;
+        }
+
+        public void setOrigRealtime(boolean origRealtime) {
+            this.origRealtime = origRealtime;
+        }
+
+        public boolean isTermRealtime() {
+            return termRealtime;
+        }
+
+        public void setTermRealtime(boolean termRealtime) {
+            this.termRealtime = termRealtime;
         }
 
         @Override

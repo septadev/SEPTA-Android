@@ -51,5 +51,6 @@
     <color name="active_toggle">#144b88</color>
     <color name="inactive_toggle">#bdbdbd</color>
     <color name="progress_background">@android:color/white</color>
+    <color name="scheduled">#6d6d6d</color>
 
 </resources>

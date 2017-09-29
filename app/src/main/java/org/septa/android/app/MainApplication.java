@@ -6,8 +6,6 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.crashlytics.android.ndk.CrashlyticsNdk;
-import io.fabric.sdk.android.Fabric;
 import org.septa.android.app.database.DatabaseManager;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.systemstatus.SystemStatusState;
@@ -21,7 +19,7 @@ public class MainApplication extends Application {
     public void onCreate() {
         super.onCreate();
         if (!BuildConfig.DEBUG) {
-            Fabric.with(this, new Crashlytics(), new CrashlyticsNdk());
+            Crashlytics.start(this);
             Log.i(TAG, "Starting Crashlytics");
         } else {
             Log.i(TAG, "Crashlytics disabled for DEBUG builds");

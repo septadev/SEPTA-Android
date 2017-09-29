@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_marginBottom="10dp"
     android:background="#ffffff"
     android:orientation="vertical">
@@ -59,20 +59,21 @@
 
         <FrameLayout
             android:id="@+id/progress_view"
-            tools:alpha=".3"
-            tools:visibility="visible"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@id/top"
             android:background="@color/progress_background"
             android:clickable="true"
-            android:visibility="gone">
+            android:visibility="gone"
+            tools:alpha=".3"
+            tools:visibility="visible">
 
             <ProgressBar
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:indeterminate="true" />
+                android:indeterminate="true"
+                android:indeterminateDrawable="@drawable/basic_progress" />
 
         </FrameLayout>
     </FrameLayout>

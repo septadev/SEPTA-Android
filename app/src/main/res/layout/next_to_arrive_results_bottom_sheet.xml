@@ -12,7 +12,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <LinearLayout
@@ -38,25 +38,33 @@
                 android:background="#dadada" />
         </LinearLayout>
 
-        <org.septa.android.app.view.TextView
-            android:id="@+id/title_txt"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Next Trains To Arrive"
-            android:textAlignment="center"
-            android:textSize="12pt"
-            app:font="@string/font_roboto_bold" />
-
         <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="20">
+            android:layout_weight="20"
+            android:paddingTop="18dp">
 
-            <org.septa.android.app.nextarrive.NextToArriveTripView
-                android:id="@+id/next_to_arrive_trip_details"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <org.septa.android.app.view.TextView
+                    android:id="@+id/title_txt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Next Trains To Arrive"
+                    android:textAlignment="center"
+                    android:textSize="12pt"
+                    app:font="@string/font_roboto_bold" />
+
+                <org.septa.android.app.nextarrive.NextToArriveTripView
+                    android:id="@+id/next_to_arrive_trip_details"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="23dp" />
+            </LinearLayout>
         </android.support.v4.widget.NestedScrollView>
 
         <RelativeLayout
@@ -79,26 +87,36 @@
                 android:textSize="14sp"
                 app:font="@string/font_roboto_bold" />
 
+            <ImageView
+                android:id="@+id/chevron_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignTop="@id/see_later_text"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="15dp"
+                android:src="@drawable/ic_keyboard_arrow_right_black_24dp" />
+
             <org.septa.android.app.view.TextView
                 android:id="@+id/view_sched_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
                 android:layout_marginBottom="14dp"
                 android:layout_marginLeft="4dp"
-                android:layout_marginRight="26dp"
                 android:layout_marginTop="14dp"
+                android:layout_toLeftOf="@id/chevron_image"
                 android:text="View Schedules"
                 android:textSize="12sp"
                 app:font="@string/font_roboto_regular" />
 
             <ImageView
+                android:id="@+id/schedules_logo_image"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="4dp"
                 android:layout_marginTop="11dp"
                 android:layout_toLeftOf="@id/view_sched_label"
-                android:src="@drawable/schedule_active" />
+                android:src="@drawable/schedules_orange" />
+
         </RelativeLayout>
     </LinearLayout>
 
@@ -107,6 +125,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/progress_background"
+        android:indeterminateDrawable="@drawable/basic_progress"
         android:visibility="gone"
         tool:visibility="visible">
 
@@ -114,6 +133,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:indeterminate="true" />
+            android:indeterminate="true"
+            android:indeterminateDrawable="@drawable/basic_progress" />
     </FrameLayout>
 </FrameLayout>

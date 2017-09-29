@@ -17,10 +17,10 @@
     <string name="connect_with_septa">Connect With SEPTA</string>
 
     <!-- Transit Type Tab Names -->
-    <string name="rail_tab">RAIL</string>
-    <string name="bus_tab">BUS</string>
-    <string name="trolley_tab">TROLLEY</string>
-    <string name="subway_tab">SUBWAY</string>
+    <string name="rail_tab">Rail</string>
+    <string name="bus_tab">Bus</string>
+    <string name="trolley_tab">Trolley</string>
+    <string name="subway_tab">Subway</string>
     <string name="nhsl_tab">NHSL</string>
 
 

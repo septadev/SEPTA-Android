@@ -133,7 +133,8 @@
                 android:alpha=".3"
                 android:background="@drawable/button_gradient_background"
                 android:clickable="false"
-                android:text="View Schedules" />
+                android:text="View Schedules"
+                android:textColor="#ffffff" />
 
             <Spinner
                 android:id="@+id/route_spinner"
@@ -155,13 +156,15 @@
         android:background="@color/progress_background"
         android:clickable="true"
         android:visibility="gone"
+        tools:alpha=".3"
         tools:visibility="visible">
 
         <ProgressBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:indeterminate="true" />
+            android:indeterminate="true"
+            android:indeterminateDrawable="@drawable/basic_progress" />
 
     </FrameLayout>
 </FrameLayout>

@@ -320,7 +320,7 @@ public class NextToArriveTripView extends FrameLayout {
         }
 
         android.widget.TextView connectionStationText = (android.widget.TextView) convertView.findViewById(R.id.connection_station_name);
-        connectionStationText.setText(item.getConnectionStationName());
+        connectionStationText.setText("Connect @ " + item.getConnectionStationName());
 
         android.widget.TextView termLineNameText = (android.widget.TextView) convertView.findViewById(R.id.term_line_name_text);
         termLineNameText.setText(item.getTermRouteName());

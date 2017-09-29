@@ -102,7 +102,7 @@
                     android:layout_toLeftOf="@id/refresh_button"
                     android:text="Refresh"
                     android:textColor="#ffffff"
-                    android:textSize="10sp"
+                    android:textSize="12sp"
                     app:font="@string/font_roboto_light" />
             </RelativeLayout>
 
@@ -121,14 +121,15 @@
             android:layout_height="match_parent"
             android:background="@color/progress_background"
             android:visibility="gone"
-            tools:alpha=".1"
+            tools:alpha="1"
             tools:visibility="visible">
 
             <ProgressBar
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:indeterminate="true" />
+                android:indeterminate="true"
+                android:indeterminateDrawable="@drawable/basic_progress"/>
         </FrameLayout>
     </FrameLayout>
 

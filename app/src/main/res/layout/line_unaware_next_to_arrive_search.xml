@@ -120,6 +120,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:indeterminate="true"
+            android:indeterminateDrawable="@drawable/basic_progress"
             tools:alpha="128" />
 
     </FrameLayout>

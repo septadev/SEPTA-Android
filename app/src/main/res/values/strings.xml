@@ -126,4 +126,44 @@
     <string name="schedule_trip_prefix_nhsl">Train #</string>
 
 
+    <!-- Connect With SEPTA -->
+    <string name="facebook_url">https://www.facebook.com/septaphilly/</string>
+    <string name="twitter_url">https://twitter.com/SEPTA_SOCIAL</string>
+    <string name="chat_url">https://customerservice.septa.org/chat/phplive.php</string>
+    <string name="comment_url">http://www3.septa.org/customerservice/VeritasFormMobile</string>
+    <string name="tdd_phone_content">TDD/TTY (215)-580-7853</string>
+    <string name="voice_line_content">Call (215)-580-7800</string>
+
+    <!-- Fares -->
+    <string name="septa_key_url">http://www.septa.org/key/index.html</string>
+    <string name="about_fares_url">http://www.septa.org/fares/</string>
+    <string name="about_pass_perks_url">http://www.iseptaphilly.com/passperks</string>
+
+    <string name="cash_price">$2.50</string>
+    <string name="quick_trip_price">$2.50</string>
+    <string name="cash_text"><![CDATA[Cash: <b>{0}</b><br>SEPTA Key Card Quick Trip: <b>{1}</b>]]></string>
+
+    <string name="token_each_price">$2.00</string>
+    <string name="token_transfer_price">$1.00</string>
+    <string name="token_text"><![CDATA[Tokens: <b>{0} each</b><br>Transfer: <b>{1}</b><br>SEPTA Key Card Travel Wallet]]></string>
+
+    <string name="transpass_weekly_price">$25.50</string>
+    <string name="transpass_monthly_price">$96.50</string>
+    <string name="weekly_text"><![CDATA[Weekly: <b>{0}</b><br>Monthly: <b>{1}</b><br>Load Pass on SEPTA Key Card]]></string>
+
+    <string name="trail_text"><![CDATA[Weekly and Monthly TrailPasses<br><b>Price varies</b> by Zone.]]></string>
+
+    <string name="cross_county_weekly_price">$30.75</string>
+    <string name="cross_county_mothly_price">$115.00</string>
+    <string name="cross_text"><![CDATA[Weekly Cross County Pass: <b>{0}</b><br>Monthly Cross County Pass: <b>{1}</b>]]></string>
+
+    <string name="one_day_pass_price">$8.00</string>
+    <string name="one_day_quantity">8</string>
+    <string name="one_day_con_text"><![CDATA[Pass: <b>{0}</b> - good for <b>{1} rides</b> on any Transit route (not valid on Regional Rail)]]></string>
+
+    <string name="one_day_ind_individual_price">$13.00</string>
+    <string name="one_day_ind_family_price">$30.00</string>
+    <string name="one_day_ind_text"><![CDATA[One Day Individual: <b>{0}</b><br>One Day Family: <b>{1}</b>]]></string>
+
+
 </resources>

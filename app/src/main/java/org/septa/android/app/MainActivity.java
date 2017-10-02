@@ -17,12 +17,14 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import org.septa.android.app.connect.ConnectFragement;
 import org.septa.android.app.fares.FaresFragement;
 import org.septa.android.app.favorites.FavoritesFragement;
 import org.septa.android.app.nextarrive.NextToArriveFragement;
 import org.septa.android.app.schedules.SchedulesFragment;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.support.Consumer;
+import org.septa.android.app.systemmap.SystemMapFragement;
 import org.septa.android.app.systemstatus.SystemStatusFragment;
 import org.septa.android.app.temp.ComingSoonFragement;
 
@@ -58,9 +60,9 @@ public class MainActivity extends AppCompatActivity
 
     SystemStatusFragment systemStatus = new SystemStatusFragment();
     Fragment faresTransitInfo = new FaresFragement();
-    Fragment systemMap = new ComingSoonFragement();
+    Fragment systemMap = new SystemMapFragement();
     Fragment events = new ComingSoonFragement();
-    Fragment connect = new ComingSoonFragement();
+    Fragment connect = new ConnectFragement();
     Fragment about = new ComingSoonFragement();
 
     int currentMenuId = 0;

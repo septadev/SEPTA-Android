@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/full_page_gradient_background"
@@ -74,6 +75,7 @@
                         app:font="@string/font_roboto_regular" />
 
                     <org.septa.android.app.view.TextView
+                        android:id="@+id/septa_key_link"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/key_card_text"
@@ -117,7 +119,7 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@id/cash_label"
                         android:layout_toRightOf="@id/cash_image"
-                        android:text="Cash: &lt;b&gt;$2.50&lt;/b&gt;&lt;br&gt;SEPTA Key Card Quick Trip: &lt;b&gt;$2.50&lt;/b&gt;"
+                        android:text="@string/cash_text"
                         android:textColor="#000000"
                         android:textSize="12sp"
                         app:font="@string/font_roboto_regular" />
@@ -154,7 +156,7 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@id/token_label"
                         android:layout_toRightOf="@id/token_image"
-                        android:text="Tokens: &lt;b&gt;$2.00 each&lt;/b&gt;&lt;br&gt;Transfer: &lt;b&gt;$1.00&lt;/b&gt;&lt;br&gt;SEPTA Key Card Travel Wallet"
+                        android:text="@string/token_text"
                         android:textColor="#000000"
                         android:textSize="12sp"
                         app:font="@string/font_roboto_regular" />
@@ -191,7 +193,7 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@id/weekly_label"
                         android:layout_toRightOf="@id/weekly_image"
-                        android:text="Weekly: &lt;b&gt;$25.50&lt;/b&gt;&lt;br&gt;Monthly: &lt;b&gt;$96.50&lt;/b&gt;&lt;br&gt;Load Pass on SEPTA Key Card"
+                        android:text="@string/weekly_text"
                         android:textColor="#000000"
                         android:textSize="12sp"
                         app:font="@string/font_roboto_regular" />
@@ -228,7 +230,7 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@id/trail_label"
                         android:layout_toRightOf="@id/trail_image"
-                        android:text="Weekly and Monthly TrailPasses&lt;br&gt;&lt;b&gt;Price varies&lt;/b&gt; by Zone."
+                        android:text="@string/trail_text"
                         android:textColor="#000000"
                         android:textSize="12sp"
                         app:font="@string/font_roboto_regular" />
@@ -265,7 +267,7 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@id/cross_label"
                         android:layout_toRightOf="@id/cross_image"
-                        android:text="Weekly Cross County Pass: &lt;b&gt;$30.75&lt;/b&gt;&lt;br&gt;Monthly Cross County Pass: &lt;b&gt;$115.00&lt;/b&gt;"
+                        android:text="@string/cross_text"
                         android:textColor="#000000"
                         android:textSize="12sp"
                         app:font="@string/font_roboto_regular" />
@@ -302,7 +304,7 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@id/one_day_con_label"
                         android:layout_toRightOf="@id/one_day_con_image"
-                        android:text="Pass: &lt;b&gt;$8.00&lt;/b&gt; - good for &lt;b&gt;8 rides&lt;/b&gt; on any&lt;br&gt;Transit route (not valid on Regional Rail)"
+                        android:text="@string/one_day_con_text"
                         android:textColor="#000000"
                         android:textSize="12sp"
                         app:font="@string/font_roboto_regular" />
@@ -328,7 +330,7 @@
                         android:layout_height="wrap_content"
                         android:layout_toRightOf="@id/one_day_ind_image"
                         android:letterSpacing="-0.02"
-                        android:text="TransPass"
+                        android:text="One Day Independence Pass"
                         android:textColor="#144b88"
                         android:textSize="14sp"
                         app:font="@string/font_roboto_light" />
@@ -339,13 +341,14 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@id/one_day_ind_label"
                         android:layout_toRightOf="@id/one_day_ind_image"
-                        android:text="One Day Individual: &lt;b&gt;$13.00&lt;/b&gt;&lt;br&gt;One Day Family: &lt;b&gt;$30.00&lt;/b&gt;"
+                        android:text="@string/one_day_ind_text"
                         android:textColor="#000000"
                         android:textSize="12sp"
                         app:font="@string/font_roboto_regular" />
                 </RelativeLayout>
 
                 <org.septa.android.app.view.TextView
+                    android:id="@+id/more_about_fares_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
@@ -370,10 +373,23 @@
                 android:background="#ffffff"
                 android:orientation="vertical">
 
-                <FrameLayout
+                <LinearLayout android:id="@+id/pass_perks_logo_layout"
                     android:layout_width="match_parent"
-                    android:layout_height="90dp"
-                    android:background="@drawable/perks_background" />
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/pass_perks_logo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/u_7856" />
+
+                    <FrameLayout android:id="@+id/pass_perks_logo_fill"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/perks_background" />
+
+                </LinearLayout>
 
 
                 <org.septa.android.app.view.TextView
@@ -409,17 +425,18 @@
                     app:font="@string/font_roboto_regular" />
 
                 <org.septa.android.app.view.TextView
+                    android:id="@+id/pass_perks_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
                     android:layout_marginTop="15dp"
                     android:background="@drawable/button_gradient_background"
                     android:gravity="center_horizontal"
                     android:letterSpacing="-0.02"
                     android:paddingBottom="12dp"
                     android:paddingLeft="15dp"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
                     android:paddingRight="15dp"
                     android:paddingTop="12dp"
                     android:text="Learn More"

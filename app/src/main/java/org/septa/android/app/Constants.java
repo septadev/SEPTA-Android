@@ -23,4 +23,6 @@ public interface Constants {
     public static final String WEATHER_ALERTS_EXPANDED = "weather_alerts_expanded";
     public static final String ROUTE_ID = "route_id";
     public static final String ROUTE_NAME = "route_name";
+    public static final String TARGET_URL = "target_url";
+    public static final String TITLE = "activity_title";
 }

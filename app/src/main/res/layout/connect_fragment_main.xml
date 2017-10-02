@@ -102,7 +102,8 @@
             android:layout_below="@id/tdd_line"
             android:layout_marginRight="16dp"
             android:layout_marginTop="21dp"
-            android:src="@drawable/ic_arrow_forward_black_24dp" />
+            android:src="@drawable/ic_arrow_forward_black_24dp"
+            android:tint="#144b88" />
 
         <org.septa.android.app.view.TextView
             android:id="@+id/live_chat"
@@ -128,7 +129,8 @@
             android:layout_below="@id/comment"
             android:layout_marginRight="16dp"
             android:layout_marginTop="21dp"
-            android:src="@drawable/ic_arrow_forward_black_24dp" />
+            android:src="@drawable/ic_arrow_forward_black_24dp"
+            android:tint="#144b88" />
 
     </RelativeLayout>
 
@@ -172,7 +174,8 @@
             android:layout_alignParentRight="true"
             android:layout_below="@id/social_media_header"
             android:layout_marginTop="16dp"
-            android:src="@drawable/ic_arrow_forward_black_24dp" />
+            android:src="@drawable/ic_arrow_forward_black_24dp"
+            android:tint="#144b88" />
 
         <org.septa.android.app.view.TextView
             android:id="@+id/facebook_label"
@@ -194,7 +197,8 @@
             android:layout_alignParentRight="true"
             android:layout_below="@id/twitter_label"
             android:layout_marginTop="16dp"
-            android:src="@drawable/ic_arrow_forward_black_24dp" />
+            android:src="@drawable/ic_arrow_forward_black_24dp"
+            android:tint="#144b88" />
 
     </RelativeLayout>
 

@@ -51,6 +51,11 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:name=".webview.WebViewActivity"
+            android:label="@string/septa"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
             android:name=".SplashScreenActivity"
             android:label="@string/septa"
             android:screenOrientation="portrait"

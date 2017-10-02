@@ -10,7 +10,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.septa.android.app.Constants;
 import org.septa.android.app.R;
+import org.septa.android.app.webview.WebViewActivity;
 
 /**
  * Created by jkampf on 9/29/17.
@@ -25,8 +27,8 @@ public class ConnectFragement extends Fragment {
 
         setHttpIntent(rootView, R.id.facebook_arrow, getResources().getString(R.string.facebook_url));
         setHttpIntent(rootView, R.id.twitter_arrow, getResources().getString(R.string.twitter_url));
-        setHttpIntent(rootView, R.id.chat_arrow, getResources().getString(R.string.chat_url));
-        setHttpIntent(rootView, R.id.comment_arrow, getResources().getString(R.string.comment_url));
+        setHttpIntent(rootView, R.id.chat_arrow, getResources().getString(R.string.chat_url), getResources().getString(R.string.chat_title));
+        setHttpIntent(rootView, R.id.comment_arrow, getResources().getString(R.string.comment_url), getResources().getString(R.string.comment_title));
 
         return rootView;
     }
@@ -43,6 +45,22 @@ public class ConnectFragement extends Fragment {
                     if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
                         startActivity(intent);
                     }
+                }
+            }
+        });
+    }
+
+    private void setHttpIntent(View rootView, int viewId, final String url, final String title) {
+        View twitterLink = rootView.findViewById(viewId);
+        twitterLink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Activity activity = getActivity();
+                if (activity != null) {
+                    Intent intent = new Intent(activity, WebViewActivity.class);
+                    intent.putExtra(Constants.TARGET_URL, url);
+                    intent.putExtra(Constants.TITLE, title);
+                    startActivity(intent);
                 }
             }
         });

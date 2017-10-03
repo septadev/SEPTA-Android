@@ -127,8 +127,10 @@
 
 
     <!-- Connect With SEPTA -->
-    <string name="facebook_url">https://www.facebook.com/septaphilly/</string>
+    <string name="facebook_url">http://www.facebook.com/septaphilly/</string>
+    <string name="facebook_app_url">fb://page/174505962565714</string>
     <string name="twitter_url">https://twitter.com/SEPTA_SOCIAL</string>
+    <string name="twitter_app_url">twitter://user?user_id=430186590</string>
     <string name="chat_url">https://customerservice.septa.org/chat/phplive.php</string>
     <string name="comment_url">http://www3.septa.org/customerservice/VeritasFormMobile</string>
     <string name="tdd_phone_content">TDD/TTY (215)-580-7853</string>

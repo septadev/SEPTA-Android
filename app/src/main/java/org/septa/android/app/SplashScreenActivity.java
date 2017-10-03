@@ -48,6 +48,7 @@ public class SplashScreenActivity extends AppCompatActivity {
             }
         }
 
+        final long timestamp = System.currentTimeMillis();
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
@@ -57,6 +58,14 @@ public class SplashScreenActivity extends AppCompatActivity {
                     SystemStatusState.update(response.body());
                     Intent intent = new Intent(SplashScreenActivity.this, MainActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_TASK_ON_HOME);
+
+                    while (System.currentTimeMillis() - timestamp < 2000) {
+                        try {
+                            Thread.sleep(System.currentTimeMillis() - timestamp);
+                        } catch (InterruptedException e) {
+                        }
+                    }
+
                     startActivity(intent);
                     SplashScreenActivity.this.finish();
                 } catch (IOException e) {

@@ -33,6 +33,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="#ffffff"
+                android:elevation="3dp"
                 android:orientation="vertical"
                 android:paddingLeft="15dp"
                 android:paddingRight="15dp">
@@ -371,9 +372,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
                 android:background="#ffffff"
+                android:elevation="3dp"
                 android:orientation="vertical">
 
-                <LinearLayout android:id="@+id/pass_perks_logo_layout"
+                <LinearLayout
+                    android:id="@+id/pass_perks_logo_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
@@ -384,7 +387,8 @@
                         android:layout_height="wrap_content"
                         android:src="@drawable/u_7856" />
 
-                    <FrameLayout android:id="@+id/pass_perks_logo_fill"
+                    <FrameLayout
+                        android:id="@+id/pass_perks_logo_fill"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/perks_background" />

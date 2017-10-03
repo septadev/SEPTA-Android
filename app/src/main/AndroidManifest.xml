@@ -20,6 +20,10 @@
             android:name="org.septa.amazonaws.x-api-key"
             android:value="7Nx754dd9G5YkpYoRLbi4aoNW9LtWllt1Jcbw9v8" />
 
+        <meta-data
+            android:name="com.crashlytics.ApiKey"
+            android:value="bc2dd85ee4bc4580ad7a7e2819d8402ff8595c61" />
+
         <activity
             android:name=".MainActivity"
             android:label="@string/septa"

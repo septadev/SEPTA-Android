@@ -27,6 +27,7 @@ import org.septa.android.app.support.Consumer;
 import org.septa.android.app.systemmap.SystemMapFragement;
 import org.septa.android.app.systemstatus.SystemStatusFragment;
 import org.septa.android.app.temp.ComingSoonFragement;
+import org.septa.android.app.webview.WebViewFragment;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -61,7 +62,7 @@ public class MainActivity extends AppCompatActivity
     SystemStatusFragment systemStatus = new SystemStatusFragment();
     Fragment faresTransitInfo = new FaresFragement();
     Fragment systemMap = new SystemMapFragement();
-    Fragment events = new ComingSoonFragement();
+    Fragment events = null;
     Fragment connect = new ConnectFragement();
     Fragment about = new ComingSoonFragement();
 
@@ -71,6 +72,8 @@ public class MainActivity extends AppCompatActivity
     public final void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         favorites = createFavoriteFragement();
+        events = WebViewFragment.getInstance(getResources().getString(R.string.events_url));
+
         setContentView(R.layout.main_activity);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

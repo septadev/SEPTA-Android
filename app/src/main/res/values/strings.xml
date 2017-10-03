@@ -173,6 +173,7 @@
     <string name="one_day_ind_text"><![CDATA[One Day Individual: <b>{0}</b><br>One Day Family: <b>{1}</b>]]></string>
     <string name="chat_title">Live Chat</string>
     <string name="comment_title">Send Us A Comment</string>
+    <string name="events_url">http://www.septa.org/service/special-events-mobile.html</string>
 
 
 </resources>

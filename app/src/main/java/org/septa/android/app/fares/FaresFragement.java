@@ -41,22 +41,6 @@ public class FaresFragement extends Fragment {
         formatAndSetText(rootView, R.id.one_day_con_text, R.string.one_day_con_text, new Object[]{getResources().getString(R.string.one_day_pass_price), getResources().getString(R.string.one_day_quantity)});
         formatAndSetText(rootView, R.id.one_day_ind_text, R.string.one_day_ind_text, new Object[]{getResources().getString(R.string.one_day_ind_individual_price), getResources().getString(R.string.one_day_ind_family_price)});
 
-        final View field = rootView.findViewById(R.id.pass_perks_logo_fill);
-        final View logo = rootView.findViewById(R.id.pass_perks_logo);
-        final View logoLayout = rootView.findViewById(R.id.pass_perks_logo_layout);
-
-        logoLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                if (logoLayout.getWidth() != 0) {
-                    ViewGroup.LayoutParams param = field.getLayoutParams();
-                    param.width = logoLayout.getWidth() - logo.getWidth();
-                    param.height = logoLayout.getHeight();
-                    field.setLayoutParams(param);
-                }
-            }
-        });
-
         return rootView;
     }
 

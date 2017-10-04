@@ -375,54 +375,53 @@
                 android:elevation="3dp"
                 android:orientation="vertical">
 
-                <LinearLayout
+                <RelativeLayout
                     android:id="@+id/pass_perks_logo_layout"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="93dp"
+                    android:background="@drawable/perks_background"
                     android:orientation="horizontal">
+
+                    <org.septa.android.app.view.TextView
+                        android:id="@+id/pass_perks_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginTop="25dp"
+                        android:letterSpacing="-0.02"
+                        android:text="Pass Perks"
+                        android:textColor="#ffffff"
+                        android:textSize="24sp"
+                        app:font="@string/font_roboto_bold" />
+
+                    <org.septa.android.app.view.TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/pass_perks_title"
+                        android:layout_marginLeft="15dp"
+                        android:text="Perks for all!"
+                        android:textColor="#ffffff"
+                        android:textSize="14sp"
+                        app:font="@string/font_roboto_light_italic" />
 
                     <ImageView
                         android:id="@+id/pass_perks_logo"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/u_7856" />
+                        android:layout_alignParentRight="true"
+                        android:layout_marginRight="10dp"
+                        android:layout_marginTop="14dp"
+                        android:src="@drawable/psst_perks" />
 
-                    <FrameLayout
-                        android:id="@+id/pass_perks_logo_fill"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/perks_background" />
 
-                </LinearLayout>
-
+                </RelativeLayout>
 
                 <org.septa.android.app.view.TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:letterSpacing="-0.02"
+                    android:layout_marginTop="14dp"
                     android:paddingLeft="15dp"
-                    android:paddingRight="15dp"
-                    android:text="Pass Perks"
-                    android:textColor="#144b88"
-                    android:textSize="20sp"
-                    app:font="@string/font_roboto_bold" />
-
-                <org.septa.android.app.view.TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingLeft="15dp"
-                    android:paddingRight="15dp"
-                    android:text="Perks for all!"
-                    android:textColor="#6d6d6d"
-                    android:textSize="12sp"
-                    app:font="@string/font_roboto_light_italic" />
-
-                <org.septa.android.app.view.TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    android:paddingLeft="15dp"
-                    android:paddingRight="15dp"
+                    android:paddingRight="11dp"
                     android:text="Did you know your SEPTA Pass, and now your SEPTA Key, gets you discounts on food, drink, museums, sports, shops and more? Use your valid SEPTA Key, TrailPass, TransPass, or One Day Independence Pass and receive discounts to any of our Perks Partners."
                     android:textColor="#6d6d6d"
                     android:textSize="12sp"
@@ -435,7 +434,7 @@
                     android:layout_marginBottom="16dp"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
-                    android:layout_marginTop="15dp"
+                    android:layout_marginTop="18dp"
                     android:background="@drawable/button_gradient_background"
                     android:gravity="center_horizontal"
                     android:letterSpacing="-0.02"

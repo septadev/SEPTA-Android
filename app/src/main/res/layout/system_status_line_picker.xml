@@ -25,7 +25,7 @@
         android:layout_marginRight="10dp"
         android:layout_marginTop="11dp"
         android:background="#ffffff"
-        android:elevation="3dp"
+        android:elevation="4dp"
         android:orientation="vertical">
 
         <org.septa.android.app.view.TextView
@@ -82,7 +82,7 @@
         android:layout_marginRight="10dp"
         android:layout_marginTop="30dp"
         android:background="#ffffff"
-        android:elevation="3dp"
+        android:elevation="4dp"
         android:orientation="vertical"
         android:visibility="gone"
         tool:visibility="visible">

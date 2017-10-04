@@ -33,7 +33,7 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:background="#ffffff"
-            android:elevation="3dp"
+            android:elevation="4dp"
             android:orientation="vertical">
 
             <RelativeLayout

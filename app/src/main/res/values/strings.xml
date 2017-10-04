@@ -131,7 +131,7 @@
     <string name="facebook_app_url">fb://page/174505962565714</string>
     <string name="twitter_url">https://twitter.com/SEPTA_SOCIAL</string>
     <string name="twitter_app_url">twitter://user?user_id=430186590</string>
-    <string name="chat_url">https://customerservice.septa.org/chat/phplive.php</string>
+    <string name="chat_url">https://customerservice.septa.org/chat/phplive.php?d=0&amp;onpage=livechatimagelink&amp;title=Live+Chat+Direct+Link</string>
     <string name="comment_url">http://www3.septa.org/customerservice/VeritasFormMobile</string>
     <string name="tdd_phone_content">TDD/TTY (215)-580-7853</string>
     <string name="voice_line_content">Call (215)-580-7800</string>

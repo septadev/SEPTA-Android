@@ -23,7 +23,6 @@ public class WebViewFragment extends Fragment {
 
     String url;
     View progressView;
-    ProgressBar progressBar;
 
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -39,17 +38,8 @@ public class WebViewFragment extends Fragment {
         webView.getSettings().setBuiltInZoomControls(true);
 
         progressView = rootView.findViewById(R.id.progress_view);
-        progressView.setVisibility(View.VISIBLE);
-        progressBar = (ProgressBar) progressView.findViewById(R.id.progress_bar);
-
 
         webView.setWebViewClient(new WebViewClient() {
-
-            //If you will not use this method url links are opeen in new brower not in webview
-            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                webView.loadUrl(url);
-                return true;
-            }
 
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 progressView.setVisibility(View.VISIBLE);

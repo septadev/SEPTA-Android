@@ -1,8 +1,5 @@
 package org.septa.android.app.managers;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Typeface;
@@ -10,6 +7,9 @@ import android.util.AttributeSet;
 import android.widget.TextView;
 
 import org.septa.android.app.R;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class FontManager {
     private static FontManager instance;

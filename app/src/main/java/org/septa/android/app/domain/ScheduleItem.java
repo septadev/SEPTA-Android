@@ -1,8 +1,5 @@
 package org.septa.android.app.domain;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 /***********************************************************
  * Class: Schedule Item
  * Purpose: Plan java pojo used to bind schedule data

@@ -1,16 +1,7 @@
 package org.septa.android.app.services.apiinterfaces;
 
-import android.content.Context;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.os.Bundle;
-import android.util.Log;
-
-import org.septa.android.app.R;
-
 import java.io.IOException;
 
-import okhttp3.Call;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;

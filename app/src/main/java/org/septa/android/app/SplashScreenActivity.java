@@ -1,14 +1,9 @@
 package org.septa.android.app;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.os.Handler;
-import android.view.MotionEvent;
-import android.view.View;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Window;
 import android.widget.ImageView;
 
@@ -19,7 +14,6 @@ import org.septa.android.app.systemstatus.SystemStatusState;
 
 import java.io.IOException;
 import java.util.Calendar;
-import java.util.Date;
 
 import retrofit2.Response;
 

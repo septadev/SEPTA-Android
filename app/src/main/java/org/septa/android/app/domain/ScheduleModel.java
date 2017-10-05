@@ -1,8 +1,6 @@
 package org.septa.android.app.domain;
 
 import android.support.annotation.NonNull;
-import android.support.v4.util.TimeUtils;
-import android.text.style.TtsSpan;
 
 import org.septa.android.app.support.GeneralUtils;
 

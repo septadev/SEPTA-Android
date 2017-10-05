@@ -11,7 +11,6 @@ import org.septa.android.app.services.apiinterfaces.model.Favorite;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * Created by jkampf on 9/6/17.

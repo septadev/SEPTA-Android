@@ -1,21 +1,11 @@
 package org.septa.android.app.systemstatus;
 
-import android.os.AsyncTask;
-
 import org.septa.android.app.TransitType;
-import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Alert;
-import org.septa.android.app.services.apiinterfaces.model.AlertDetail;
 import org.septa.android.app.services.apiinterfaces.model.Alerts;
 
-import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * Created by jkampf on 9/12/17.

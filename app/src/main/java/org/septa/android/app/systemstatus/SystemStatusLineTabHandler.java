@@ -23,7 +23,6 @@ import org.septa.android.app.locationpicker.LinePickerFragment;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.AlertDetail;
 import org.septa.android.app.support.BaseTabActivityHandler;
-import org.septa.android.app.support.Consumer;
 import org.septa.android.app.support.CursorAdapterSupplier;
 import org.septa.android.app.support.GeneralUtils;
 

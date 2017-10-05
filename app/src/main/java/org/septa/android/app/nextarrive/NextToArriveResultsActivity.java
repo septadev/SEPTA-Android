@@ -84,7 +84,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     View progressViewBottom;
     View refresh;
     Favorite currentFavorite = null;
-    NextToArriveTripView nextToArriveDetailsFragment;
+    NextToArriveTripView nextToArriveDetailsView;
     boolean editFavoritesFlag = false;
     private MarkerOptions startMarker;
     private MarkerOptions destMarker;
@@ -130,11 +130,11 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         mapContainerView = (FrameLayout) findViewById(R.id.map_container);
 
         final TextView titleText = (TextView) bottomSheetLayout.findViewById(R.id.title_txt);
-        nextToArriveDetailsFragment = (NextToArriveTripView) findViewById(R.id.next_to_arrive_trip_details);
-        nextToArriveDetailsFragment.setMaxResults(null);
-        nextToArriveDetailsFragment.setResults(5, TimeUnit.HOURS);
+        nextToArriveDetailsView = (NextToArriveTripView) findViewById(R.id.next_to_arrive_trip_details);
+        nextToArriveDetailsView.setMaxResults(null);
+        nextToArriveDetailsView.setResults(5, TimeUnit.HOURS);
 
-        nextToArriveDetailsFragment.setOnFirstElementHeight(new Consumer<Integer>() {
+        nextToArriveDetailsView.setOnFirstElementHeight(new Consumer<Integer>() {
             @Override
             public void accept(Integer var1) {
                 titleText.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
@@ -184,10 +184,10 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
             final TextView destinationStationNameText = (TextView) findViewById(R.id.destination_station_name);
             destinationStationNameText.setText(destination.getStopName());
 
-            nextToArriveDetailsFragment.setTransitType(transitType);
-            nextToArriveDetailsFragment.setStart(start);
-            nextToArriveDetailsFragment.setDestination(destination);
-            nextToArriveDetailsFragment.setRouteDirectionModel(routeDirectionModel);
+            nextToArriveDetailsView.setTransitType(transitType);
+            nextToArriveDetailsView.setStart(start);
+            nextToArriveDetailsView.setDestination(destination);
+            nextToArriveDetailsView.setRouteDirectionModel(routeDirectionModel);
 
 
             String favKey = Favorite.generateKey(start, destination, transitType, routeDirectionModel);
@@ -457,7 +457,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                     getSupportActionBar().setDisplayShowHomeEnabled(true);
                     parser = new NextArrivalModelResponseParser(response.body());
 
-                    nextToArriveDetailsFragment.setNextToArriveData(parser);
+                    nextToArriveDetailsView.setNextToArriveData(parser);
 
                     if (googleMap != null) {
                         updateMap();

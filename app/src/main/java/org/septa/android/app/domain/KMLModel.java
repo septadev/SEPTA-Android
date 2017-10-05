@@ -7,7 +7,6 @@
 
 package org.septa.android.app.domain;
 
-import android.content.Context;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;

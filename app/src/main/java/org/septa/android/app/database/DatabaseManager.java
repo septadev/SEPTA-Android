@@ -1,20 +1,12 @@
 package org.septa.android.app.database;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
-import org.septa.android.app.R;
 import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.domain.ScheduleModel;
 import org.septa.android.app.domain.StopModel;
-import org.septa.android.app.support.Criteria;
 import org.septa.android.app.support.CursorAdapterSupplier;
-
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Database manager

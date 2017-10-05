@@ -1,7 +1,6 @@
 package org.septa.android.app.nextarrive;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.annotation.AttrRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -10,7 +9,9 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.widget.*;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import org.septa.android.app.Constants;
 import org.septa.android.app.R;
@@ -23,7 +24,6 @@ import org.septa.android.app.services.apiinterfaces.model.NextArrivalModelRespon
 import org.septa.android.app.support.Consumer;
 import org.septa.android.app.support.GeneralUtils;
 import org.septa.android.app.systemstatus.GoToSystemStatusResultsOnClickListener;
-import org.septa.android.app.systemstatus.SystemStatusResultsActivity;
 import org.septa.android.app.systemstatus.SystemStatusState;
 
 import java.text.DateFormat;

@@ -15,20 +15,13 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
 import org.septa.android.app.database.DatabaseManager;
-import org.septa.android.app.domain.RouteDirectionModel;
-import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.locationpicker.LineAwareLocationPickerTabActivityHandler;
-import org.septa.android.app.locationpicker.LineUnawareLocationPickerTabActivityHandler;
-import org.septa.android.app.nextarrive.NextToArriveResultsActivity;
-import org.septa.android.app.support.TabActivityHandler;
-import org.septa.android.app.temp.ComingSoonActivity;
-
-import android.widget.TextView;
 
 /************************************************************************************************************
  * Class: SchedulesFragment

@@ -2,9 +2,7 @@ package org.septa.android.app.favorites;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.view.MenuItem;
 
-import org.septa.android.app.R;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Favorite;
 

@@ -9,6 +9,9 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -18,11 +21,10 @@ import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.nextarrive.NextArrivalModelResponseParser;
 import org.septa.android.app.nextarrive.NextToArriveResultsActivity;
+import org.septa.android.app.nextarrive.NextToArriveTripView;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Favorite;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalModelResponse;
-import org.septa.android.app.nextarrive.NextToArriveTripView;
-import org.septa.android.app.support.Consumer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,7 +44,6 @@ public class FavoritesFragment extends Fragment {
     private Map<String, NextToArriveTripView> nextToArriveTripViewMap = new HashMap<String, NextToArriveTripView>();
     int initialCount;
     private FavoritesFragmentCallBacks favoritesFragmentCallBacks;
-    private Consumer<Integer> menuIdConsumer;
 
     @Nullable
     @Override
@@ -57,10 +58,9 @@ public class FavoritesFragment extends Fragment {
     }
 
     private View onCreateViewFavorites(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
         View fragmentView = inflater.inflate(R.layout.favorites_view, container, false);
         LinearLayout favoritesListView = (LinearLayout) fragmentView.findViewById(R.id.favorites_list);
-
-        menuIdConsumer.accept(R.menu.my_favorites_menu);
 
         for (Map.Entry<String, Favorite> entry : favoritesMap.entrySet()) {
             final Favorite favorite = entry.getValue();
@@ -147,7 +147,7 @@ public class FavoritesFragment extends Fragment {
     }
 
     private View onCreateViewNoFavorites(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        menuIdConsumer.accept(0);
+        setHasOptionsMenu(false);
         View fragmentView = inflater.inflate(R.layout.no_favorites, container, false);
 
         View button = fragmentView.findViewById(R.id.add_favorite_button);
@@ -162,33 +162,20 @@ public class FavoritesFragment extends Fragment {
         return fragmentView;
     }
 
-    public static FavoritesFragment newInstance(Consumer<Integer> menuIdConsumer) {
+    public static FavoritesFragment newInstance() {
         FavoritesFragment instance = new FavoritesFragment();
-        instance.menuIdConsumer = menuIdConsumer;
-
         return instance;
     }
 
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        // Handle action bar item clicks here. The action bar will
-//        // automatically handle clicks on the Home/Up button, so long
-//        // as you specify a parent activity in AndroidManifest.xml.
-//        int id = item.getItemId();
-//
-//        Log.d(TAG, "onOptionsItemSelected Selected:" + item.getTitle());
-//
-//        //noinspection SimplifiableIfStatement
-//        //if (id == R.id.action_settings) {
-//        //    return true;
-//        // }
-//
-//        if (id == R.id.add_favorite) {
-//            favoritesFragmentCallBacks.addNewFavorite();
-//        }
-//
-//        return super.onOptionsItemSelected(item);
-//    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.add_favorite) {
+            favoritesFragmentCallBacks.addNewFavorite();
+        }
+
+        return true;
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -200,6 +187,13 @@ public class FavoritesFragment extends Fragment {
             favoritesFragmentCallBacks = (FavoritesFragmentCallBacks) context;
         }
 
+    }
+
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.my_favorites_menu, menu);
     }
 }
 

@@ -21,9 +21,6 @@ import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
 import org.septa.android.app.database.DatabaseManager;
 import org.septa.android.app.domain.RouteDirectionModel;
-import org.septa.android.app.locationpicker.LineAwareLocationPickerTabActivityHandler;
-import org.septa.android.app.locationpicker.LineUnawareLocationPickerTabActivityHandler;
-import org.septa.android.app.nextarrive.NextToArriveResultsActivity;
 import org.septa.android.app.support.TabActivityHandler;
 
 

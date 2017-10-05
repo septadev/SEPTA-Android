@@ -3,8 +3,8 @@ package org.septa.android.app.favorites;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.support.v4.app.DialogFragment;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,12 +12,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import org.septa.android.app.R;
-import org.septa.android.app.locationpicker.LocationPickerCallBack;
-import org.septa.android.app.nextarrive.NextToArriveResultsActivity;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Favorite;
-import org.septa.android.app.support.Consumer;
-import org.w3c.dom.Text;
 
 /**
  * Created by jkampf on 9/9/17.

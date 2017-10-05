@@ -14,7 +14,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 
 import org.septa.android.app.connect.ConnectFragement;
@@ -24,7 +23,6 @@ import org.septa.android.app.favorites.FavoritesFragmentCallBacks;
 import org.septa.android.app.nextarrive.NextToArriveFragment;
 import org.septa.android.app.schedules.SchedulesFragment;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
-import org.septa.android.app.support.Consumer;
 import org.septa.android.app.systemmap.SystemMapFragment;
 import org.septa.android.app.systemstatus.SystemStatusFragment;
 import org.septa.android.app.temp.ComingSoonFragement;
@@ -50,14 +48,6 @@ public class MainActivity extends AppCompatActivity
     MenuItem currentMenu;
     NavigationView navigationView;
 
-    Consumer<Integer> updateMenuConsumer = new Consumer<Integer>() {
-        @Override
-        public void accept(Integer var1) {
-            currentMenuId = var1;
-            invalidateOptionsMenu();
-        }
-    };
-
     FavoritesFragment favorites;
 
     SystemStatusFragment systemStatus = new SystemStatusFragment();
@@ -67,12 +57,10 @@ public class MainActivity extends AppCompatActivity
     Fragment connect = new ConnectFragement();
     Fragment about = new ComingSoonFragement();
 
-    int currentMenuId = 0;
-
     @Override
     public final void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        favorites = FavoritesFragment.newInstance(updateMenuConsumer);
+        favorites = FavoritesFragment.newInstance();
         events = WebViewFragment.getInstance(getResources().getString(R.string.events_url));
 
         setContentView(R.layout.main_activity);
@@ -107,28 +95,6 @@ public class MainActivity extends AppCompatActivity
             super.onBackPressed();
         }
     }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        Log.d(TAG, "onOptionsItemSelected Selected:" + item.getTitle());
-
-        //noinspection SimplifiableIfStatement
-        //if (id == R.id.action_settings) {
-        //    return true;
-        // }
-
-        if (id == R.id.add_favorite) {
-            addNewFavorite();
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -183,16 +149,6 @@ public class MainActivity extends AppCompatActivity
         if ((currentMenu != null) && item.getItemId() == currentMenu.getItemId())
             return;
 
-        currentMenuId = 0;
-        invalidateOptionsMenu();
-
-        // TODO Need to implement saving the state of the fragements.
-        if (activeFragement != null) {
-            Bundle bundle = new Bundle();
-            activeFragement.onSaveInstanceState(bundle);
-            fragmentStateMap.put(item.getItemId(), bundle);
-        }
-
         if (previousIcon != null) {
             currentMenu.setIcon(previousIcon);
         }
@@ -222,9 +178,6 @@ public class MainActivity extends AppCompatActivity
             currentMenu.setIcon(R.drawable.nta_active);
             getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, nextToArriveFragment).commit();
             setTitle(R.string.next_to_arrive);
-
-            currentMenuId = 0;
-            invalidateOptionsMenu();
         }
     }
 
@@ -238,16 +191,6 @@ public class MainActivity extends AppCompatActivity
             currentMenu.setIcon(R.drawable.favorites_active);
             getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, favorites).commit();
             setTitle(R.string.favorites);
-        }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        if (currentMenuId != 0) {
-            getMenuInflater().inflate(currentMenuId, menu);
-            return true;
-        } else {
-            return false;
         }
     }
 
@@ -289,7 +232,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void refresh() {
-        favorites = FavoritesFragment.newInstance(updateMenuConsumer);
+        favorites = FavoritesFragment.newInstance();
         getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, favorites).commit();
 
     }

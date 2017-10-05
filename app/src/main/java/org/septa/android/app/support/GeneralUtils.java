@@ -1,8 +1,5 @@
 package org.septa.android.app.support;
 
-import android.util.Log;
-
-import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 /**

@@ -2,7 +2,6 @@ package org.septa.android.app.view;
 
 import android.content.Context;
 import android.support.v7.widget.AppCompatAutoCompleteTextView;
-import android.support.v7.widget.AppCompatEditText;
 import android.text.Html;
 import android.util.AttributeSet;
 

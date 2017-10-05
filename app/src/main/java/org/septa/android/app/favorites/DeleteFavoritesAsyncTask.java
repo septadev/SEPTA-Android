@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.AsyncTask;
 
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
-import org.septa.android.app.services.apiinterfaces.model.Favorite;
 
 /**
  * Created by jkampf on 9/7/17.

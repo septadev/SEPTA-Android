@@ -1,6 +1,7 @@
 package org.septa.android.app.locationpicker;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -40,18 +41,16 @@ import java.util.List;
 public class ByStopTabActivityHandler extends BaseTabActivityHandler {
 
     public static final String TAG = "ByStationTabActivity";
-    final private Consumer<StopModel> consumer;
     final private CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
 
-    public ByStopTabActivityHandler(String s, Consumer<StopModel> consumer, CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
+    public ByStopTabActivityHandler(String s, CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
         super(s);
-        this.consumer = consumer;
         this.cursorAdapterSupplier = cursorAdapterSupplier;
     }
 
     @Override
     public Fragment getFragment() {
-        ByStopTabActivityHandler.PlaceholderFragment fragment = ByStopTabActivityHandler.PlaceholderFragment.newInstance(consumer, cursorAdapterSupplier);
+        ByStopTabActivityHandler.PlaceholderFragment fragment = ByStopTabActivityHandler.PlaceholderFragment.newInstance(cursorAdapterSupplier);
 
         return fragment;
     }
@@ -60,18 +59,23 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
     public static class PlaceholderFragment extends Fragment {
         private ListView list = null;
         private StopModel currentStop;
-        private Consumer<StopModel> consumer;
         private CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
         View progressView;
         StationNameAdapter2 itemAdapater2;
 
         private static final int URL_LOADER = 0;
 
-        public static ByStopTabActivityHandler.PlaceholderFragment newInstance(Consumer<StopModel> consumer, CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
+        public static ByStopTabActivityHandler.PlaceholderFragment newInstance(CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
             ByStopTabActivityHandler.PlaceholderFragment fragment = new ByStopTabActivityHandler.PlaceholderFragment();
-            fragment.setConsumer(consumer);
-            fragment.setCursorAdapterSupplier(cursorAdapterSupplier);
+            Bundle args = new Bundle();
+            args.putSerializable("cursorAdapterSupplier", cursorAdapterSupplier);
+            fragment.setArguments(args);
+
             return fragment;
+        }
+
+        private void restoreArgs() {
+            cursorAdapterSupplier = (CursorAdapterSupplier<StopModel>) getArguments().getSerializable("cursorAdapterSupplier");
         }
 
         @Override
@@ -81,7 +85,6 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
                 Log.d(TAG, this.hashCode() + ":Current Stop is:" + currentStop.getStopName());
             else Log.d(TAG, this.hashCode() + ":Current Stop is null");
             outState.putSerializable("Station", currentStop);
-
         }
 
         @Override
@@ -94,6 +97,7 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             Log.d(TAG, "onCreateView()");
+            restoreArgs();
             View rootView = inflater.inflate(R.layout.location_picker_by_stop, container, false);
             list = (ListView) rootView.findViewById(R.id.rail_station_list);
             progressView = rootView.findViewById(R.id.progress_view);
@@ -112,7 +116,12 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
                             @Override
                             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                                 Log.d(TAG, this.hashCode() + "onItemSelected " + i);
-                                consumer.accept(cursorAdapterSupplier.getItemFromId(getContext(), view.getTag()));
+
+                                if (getTargetFragment() != null) {
+                                    Intent intent = new Intent();
+                                    intent.putExtra(LocationPickerFragment.STOP_MODEL, cursorAdapterSupplier.getItemFromId(getContext(), view.getTag()));
+                                    getTargetFragment().onActivityResult(getTargetRequestCode(), LocationPickerFragment.SUCCESS, intent);
+                                }
                             }
                         });
                         progressView.setVisibility(View.GONE);
@@ -169,13 +178,6 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
             return rootView;
         }
 
-        public void setConsumer(Consumer<StopModel> target) {
-            this.consumer = target;
-        }
-
-        public void setCursorAdapterSupplier(CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
-            this.cursorAdapterSupplier = cursorAdapterSupplier;
-        }
     }
 
 

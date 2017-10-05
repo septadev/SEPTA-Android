@@ -1,6 +1,7 @@
 package org.septa.android.app.favorites;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.support.v4.app.DialogFragment;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import org.septa.android.app.R;
+import org.septa.android.app.locationpicker.LocationPickerCallBack;
 import org.septa.android.app.nextarrive.NextToArriveResultsActivity;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Favorite;
@@ -24,7 +26,7 @@ import org.w3c.dom.Text;
 public class EditFavoriteDialogFragment extends DialogFragment {
 
     private Favorite favorite;
-    private Consumer<Favorite> favoriteConsumer;
+    private EditFavoriteCallBack editFavoriteCallBack;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -52,7 +54,8 @@ public class EditFavoriteDialogFragment extends DialogFragment {
             public void onClick(View v) {
                 favorite.setName(nameEditText.getText().toString());
                 SeptaServiceFactory.getFavoritesService().addFavorites(getContext(), favorite);
-                favoriteConsumer.accept(favorite);
+                if (editFavoriteCallBack != null)
+                    editFavoriteCallBack.updateFavorite(favorite);
                 getDialog().dismiss();
             }
         });
@@ -84,10 +87,19 @@ public class EditFavoriteDialogFragment extends DialogFragment {
         return rootView;
     }
 
-    public static EditFavoriteDialogFragment getInstance(Favorite favorite, Consumer<Favorite> consumer) {
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        if ((context instanceof EditFavoriteCallBack)) {
+            editFavoriteCallBack = (EditFavoriteCallBack) context;
+        }
+
+    }
+
+    public static EditFavoriteDialogFragment getInstance(Favorite favorite) {
         EditFavoriteDialogFragment fragment = new EditFavoriteDialogFragment();
         fragment.setFavorite(favorite);
-        fragment.setFavoriteConsumer(consumer);
         return fragment;
     }
 
@@ -95,7 +107,4 @@ public class EditFavoriteDialogFragment extends DialogFragment {
         this.favorite = favorite;
     }
 
-    public void setFavoriteConsumer(Consumer<Favorite> favoriteConsumer) {
-        this.favoriteConsumer = favoriteConsumer;
-    }
 }

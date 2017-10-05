@@ -47,6 +47,7 @@ import org.septa.android.app.TransitType;
 import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.favorites.DeleteFavoritesAsyncTask;
+import org.septa.android.app.favorites.EditFavoriteCallBack;
 import org.septa.android.app.favorites.EditFavoriteDialogFragment;
 import org.septa.android.app.favorites.SaveFavoritesAsyncTask;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
@@ -68,7 +69,7 @@ import retrofit2.Response;
  * Created by jkampf on 8/3/17.
  */
 
-public class NextToArriveResultsActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class NextToArriveResultsActivity extends AppCompatActivity implements OnMapReadyCallback, EditFavoriteCallBack {
     public static final String TAG = NextToArriveResultsActivity.class.getSimpleName();
     StopModel start;
     StopModel destination;
@@ -316,14 +317,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     public void editFavorite(final MenuItem item) {
         Log.d(TAG, "edit Favorite.");
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        EditFavoriteDialogFragment fragment = EditFavoriteDialogFragment.getInstance(currentFavorite,
-                new Consumer<Favorite>() {
-                    @Override
-                    public void accept(Favorite var1) {
-                        currentFavorite = var1;
-                        setTitle(currentFavorite.getName());
-                    }
-                });
+        EditFavoriteDialogFragment fragment = EditFavoriteDialogFragment.getInstance(currentFavorite);
 
         fragment.show(ft, "Dialog");
 
@@ -506,6 +500,12 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     private void progressVisibility(int visibility) {
         progressView.setVisibility(visibility);
         progressViewBottom.setVisibility(visibility);
+    }
+
+    @Override
+    public void updateFavorite(Favorite var1) {
+        currentFavorite = var1;
+        setTitle(currentFavorite.getName());
     }
 
 

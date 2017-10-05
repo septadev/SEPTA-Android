@@ -1,22 +1,19 @@
 package org.septa.android.app.locationpicker;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
-import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.widget.CursorAdapter;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -26,15 +23,12 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
 import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.services.apiinterfaces.model.Alert;
-import org.septa.android.app.support.Consumer;
 import org.septa.android.app.support.CursorAdapterSupplier;
 import org.septa.android.app.support.RouteModelComparator;
-import org.septa.android.app.systemstatus.GoToSystemStatusResultsOnClickListener;
 import org.septa.android.app.systemstatus.SystemStatusState;
 
 import java.util.ArrayList;
@@ -46,12 +40,14 @@ import java.util.List;
  */
 
 public class LinePickerFragment extends DialogFragment {
+    public static final int SUCCESS = 0;
+    public static final String ROUTE_DIRECTION_MODEL = "routeDirectionModel";
     CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier;
     ListView linesList;
     LineArrayAdapater lineArrayAdapater;
     EditText filterText;
-    Consumer<RouteDirectionModel> consumer;
     TransitType transitType;
+    private LinePickerCallBack linePickerCallBack;
 
     @Override
     public void onResume() {
@@ -66,6 +62,8 @@ public class LinePickerFragment extends DialogFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+        restoreArgs();
+
         View rootView = inflater.inflate(R.layout.line_picker_modal, container);
 
         View exitView = rootView.findViewById(R.id.exit);
@@ -82,7 +80,13 @@ public class LinePickerFragment extends DialogFragment {
         linesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                consumer.accept(lineArrayAdapater.getItem(i));
+                if (linePickerCallBack != null) {
+                    linePickerCallBack.setRoute(lineArrayAdapater.getItem(i));
+                } else if (getTargetFragment() != null) {
+                    Intent intent = new Intent();
+                    intent.putExtra(ROUTE_DIRECTION_MODEL, lineArrayAdapater.getItem(i));
+                    getTargetFragment().onActivityResult(getTargetRequestCode(), SUCCESS, intent);
+                }
                 dismiss();
             }
 
@@ -112,22 +116,32 @@ public class LinePickerFragment extends DialogFragment {
 
     }
 
-    public static LinePickerFragment newInstance(CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier, TransitType transitType, Consumer<RouteDirectionModel> consumer) {
+    public static LinePickerFragment newInstance(CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier, TransitType transitType) {
         LinePickerFragment fragment;
         fragment = new LinePickerFragment();
-        fragment.setRouteCursorAdapterSupplier(routeCursorAdapterSupplier);
-        fragment.setConsumer(consumer);
-        fragment.setTransitType(transitType);
+
+        Bundle args = new Bundle();
+        args.putSerializable("transitType", transitType);
+        args.putSerializable("routeCursorAdapterSupplier", routeCursorAdapterSupplier);
+
+        fragment.setArguments(args);
 
         return fragment;
     }
 
-    public void setRouteCursorAdapterSupplier(CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapaterSupplier) {
-        this.routeCursorAdapterSupplier = routeCursorAdapaterSupplier;
+    private void restoreArgs() {
+        transitType = (TransitType) getArguments().getSerializable("transitType");
+        routeCursorAdapterSupplier = (CursorAdapterSupplier<RouteDirectionModel>) getArguments().getSerializable("routeCursorAdapterSupplier");
     }
 
-    public void setConsumer(Consumer<RouteDirectionModel> consumer) {
-        this.consumer = consumer;
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        if ((context instanceof LinePickerCallBack)) {
+            linePickerCallBack = (LinePickerCallBack) context;
+        }
+
     }
 
     public void setTransitType(TransitType transitType) {

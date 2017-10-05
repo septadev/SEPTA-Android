@@ -1,5 +1,6 @@
 package org.septa.android.app.favorites;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -33,15 +34,15 @@ import retrofit2.Response;
 /**
  * Created by jkampf on 9/5/17.
  */
-public class FavoritesFragement extends Fragment {
+public class FavoritesFragment extends Fragment {
 
-    private Runnable buttonExecution;
-    private Runnable refreshRunnable;
+
     private Map<String, Favorite> favoritesMap;
     private Map<String, TextView> favoriteTitlesMap = new HashMap<String, TextView>();
     private Map<String, NextToArriveTripView> nextToArriveTripViewMap = new HashMap<String, NextToArriveTripView>();
-    Consumer<Integer> menuIdConsumer;
     int initialCount;
+    private FavoritesFragmentCallBacks favoritesFragmentCallBacks;
+    private Consumer<Integer> menuIdConsumer;
 
     @Nullable
     @Override
@@ -135,7 +136,7 @@ public class FavoritesFragement extends Fragment {
         favoritesMap = SeptaServiceFactory.getFavoritesService().getFavorites(getContext());
 
         if (initialCount != favoritesMap.size()) {
-            refreshRunnable.run();
+            favoritesFragmentCallBacks.refresh();
             return;
         }
 
@@ -154,19 +155,52 @@ public class FavoritesFragement extends Fragment {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                buttonExecution.run();
+                favoritesFragmentCallBacks.addNewFavorite();
             }
         });
 
         return fragmentView;
     }
 
-    public static FavoritesFragement newInstance(Runnable buttonExecution, Consumer<Integer> menuIdConsumer, Runnable refreshRunnable) {
-        FavoritesFragement instance = new FavoritesFragement();
-        instance.buttonExecution = buttonExecution;
+    public static FavoritesFragment newInstance(Consumer<Integer> menuIdConsumer) {
+        FavoritesFragment instance = new FavoritesFragment();
         instance.menuIdConsumer = menuIdConsumer;
-        instance.refreshRunnable = refreshRunnable;
+
         return instance;
     }
 
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        // Handle action bar item clicks here. The action bar will
+//        // automatically handle clicks on the Home/Up button, so long
+//        // as you specify a parent activity in AndroidManifest.xml.
+//        int id = item.getItemId();
+//
+//        Log.d(TAG, "onOptionsItemSelected Selected:" + item.getTitle());
+//
+//        //noinspection SimplifiableIfStatement
+//        //if (id == R.id.action_settings) {
+//        //    return true;
+//        // }
+//
+//        if (id == R.id.add_favorite) {
+//            favoritesFragmentCallBacks.addNewFavorite();
+//        }
+//
+//        return super.onOptionsItemSelected(item);
+//    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        if (!(context instanceof FavoritesFragmentCallBacks)) {
+            throw new RuntimeException("Context must implement FavoritesFragmentCallBacks");
+        } else {
+            favoritesFragmentCallBacks = (FavoritesFragmentCallBacks) context;
+        }
+
+    }
 }
+
+

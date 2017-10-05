@@ -27,6 +27,7 @@ public class WebViewFragment extends Fragment {
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
+        restoreArgs();
 
         View rootView = inflater.inflate(R.layout.webview_fragment_main, container, false);
 
@@ -58,10 +59,17 @@ public class WebViewFragment extends Fragment {
         return rootView;
     }
 
-    public static Fragment getInstance(String url){
+    public static Fragment getInstance(String url) {
         WebViewFragment fragement = new WebViewFragment();
-        fragement.url = url;
+        Bundle args = new Bundle();
+
+        args.putString("url", url);
+        fragement.setArguments(args);
         return fragement;
+    }
+
+    private void restoreArgs() {
+        url = getArguments().getString("url");
     }
 
 }

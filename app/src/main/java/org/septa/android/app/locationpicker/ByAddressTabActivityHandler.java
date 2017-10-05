@@ -2,6 +2,7 @@ package org.septa.android.app.locationpicker;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
@@ -43,6 +44,7 @@ import org.septa.android.app.support.CursorAdapterSupplier;
 import org.septa.android.app.support.LocationMathHelper;
 import org.septa.android.app.support.MapUtils;
 
+import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -54,33 +56,32 @@ import java.util.List;
  */
 
 class ByAddressTabActivityHandler extends BaseTabActivityHandler {
-    final private Consumer<StopModel> consumer;
     final private CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
     public static final String TAG = ByAddressTabActivityHandler.class.getSimpleName();
 
-    public ByAddressTabActivityHandler(String s, Consumer<StopModel> consumer, CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
+    public ByAddressTabActivityHandler(String s, CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
         super(s);
-        this.consumer = consumer;
         this.cursorAdapterSupplier = cursorAdapterSupplier;
     }
 
     @Override
     public Fragment getFragment() {
-        return ByAddressFragement.newInstance(consumer, cursorAdapterSupplier);
+        return ByAddressFragement.newInstance(cursorAdapterSupplier);
     }
 
     public static class ByAddressFragement extends Fragment {
-        Consumer<StopModel> consumer;
         CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
         MyLocationClickListener myLocationClickListener;
         ListView stopsListView;
         AutoCompleteTextView addressEntry;
         View progressView;
 
-        public static ByAddressFragement newInstance(Consumer<StopModel> consumer, CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
+        public static ByAddressFragement newInstance(CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
             ByAddressFragement fragment = new ByAddressFragement();
-            fragment.setCursorAdapterSupplier(cursorAdapterSupplier);
-            fragment.setConsumer(consumer);
+            Bundle args = new Bundle();
+            args.putSerializable("cursorAdapterSupplier", cursorAdapterSupplier);
+            fragment.setArguments(args);
+
             return fragment;
         }
 
@@ -177,10 +178,6 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
             return rootView;
         }
 
-        public void setConsumer(Consumer<StopModel> target) {
-            this.consumer = target;
-        }
-
         public void setCursorAdapterSupplier(CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
             this.cursorAdapterSupplier = cursorAdapterSupplier;
         }
@@ -241,7 +238,11 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                     Log.d(TAG, this.hashCode() + "onItemSelected " + i);
-                    fragment.consumer.accept(stopModels.get(i).getStopModel());
+                    if (fragment.getTargetFragment() != null) {
+                        Intent intent = new Intent();
+                        intent.putExtra(LocationPickerFragment.STOP_MODEL, stopModels.get(i).getStopModel());
+                        fragment.getTargetFragment().onActivityResult(fragment.getTargetRequestCode(), LocationPickerFragment.SUCCESS, intent);
+                    }
                 }
             });
             fragment.myLocationClickListener.setActive(true);

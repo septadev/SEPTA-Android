@@ -14,7 +14,7 @@ import org.septa.android.app.view.SubsamplingScaleImageView;
  * Created by jkampf on 9/29/17.
  */
 
-public class SystemMapFragement extends Fragment {
+public class SystemMapFragment extends Fragment {
     private SubsamplingScaleImageView imageView;
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

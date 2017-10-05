@@ -115,14 +115,14 @@ public class SchedulesFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable("org.septa.android.app.nextarrive.NextToArriveFragement.mSectionsPagerAdapter", mSectionsPagerAdapter.saveState());
+        outState.putParcelable("org.septa.android.app.nextarrive.NextToArriveFragment.mSectionsPagerAdapter", mSectionsPagerAdapter.saveState());
     }
 
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
         if (savedInstanceState != null) {
-            Parcelable parcelable = savedInstanceState.getParcelable("org.septa.android.app.nextarrive.NextToArriveFragement.mSectionsPagerAdapter");
+            Parcelable parcelable = savedInstanceState.getParcelable("org.septa.android.app.nextarrive.NextToArriveFragment.mSectionsPagerAdapter");
             if (parcelable != null)
                 mSectionsPagerAdapter.restoreState(parcelable, this.getClass().getClassLoader());
         }

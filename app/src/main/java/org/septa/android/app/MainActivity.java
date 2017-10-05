@@ -18,13 +18,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import org.septa.android.app.connect.ConnectFragement;
-import org.septa.android.app.fares.FaresFragement;
-import org.septa.android.app.favorites.FavoritesFragement;
-import org.septa.android.app.nextarrive.NextToArriveFragement;
+import org.septa.android.app.fares.FaresFragment;
+import org.septa.android.app.favorites.FavoritesFragment;
+import org.septa.android.app.favorites.FavoritesFragmentCallBacks;
+import org.septa.android.app.nextarrive.NextToArriveFragment;
 import org.septa.android.app.schedules.SchedulesFragment;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.support.Consumer;
-import org.septa.android.app.systemmap.SystemMapFragement;
+import org.septa.android.app.systemmap.SystemMapFragment;
 import org.septa.android.app.systemstatus.SystemStatusFragment;
 import org.septa.android.app.temp.ComingSoonFragement;
 import org.septa.android.app.webview.WebViewFragment;
@@ -37,10 +38,10 @@ import java.util.Map;
  */
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, FavoritesFragmentCallBacks {
 
     public static final String TAG = MainActivity.class.getSimpleName();
-    NextToArriveFragement nextToArriveFragment = new NextToArriveFragement();
+    NextToArriveFragment nextToArriveFragment = new NextToArriveFragment();
     SchedulesFragment schedules = new SchedulesFragment();
 
     Map<Integer, Bundle> fragmentStateMap = new HashMap<Integer, Bundle>();
@@ -57,11 +58,11 @@ public class MainActivity extends AppCompatActivity
         }
     };
 
-    FavoritesFragement favorites;
+    FavoritesFragment favorites;
 
     SystemStatusFragment systemStatus = new SystemStatusFragment();
-    Fragment faresTransitInfo = new FaresFragement();
-    Fragment systemMap = new SystemMapFragement();
+    Fragment faresTransitInfo = new FaresFragment();
+    Fragment systemMap = new SystemMapFragment();
     Fragment events = null;
     Fragment connect = new ConnectFragement();
     Fragment about = new ComingSoonFragement();
@@ -71,7 +72,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public final void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        favorites = createFavoriteFragement();
+        favorites = FavoritesFragment.newInstance(updateMenuConsumer);
         events = WebViewFragment.getInstance(getResources().getString(R.string.events_url));
 
         setContentView(R.layout.main_activity);
@@ -91,7 +92,7 @@ public class MainActivity extends AppCompatActivity
         if (SeptaServiceFactory.getFavoritesService().getFavorites(this).size() > 0) {
             switchToFavorites();
         } else {
-            switchToNTA();
+            addNewFavorite();
         }
 
     }
@@ -122,7 +123,7 @@ public class MainActivity extends AppCompatActivity
         // }
 
         if (id == R.id.add_favorite) {
-            switchToNTA();
+            addNewFavorite();
         }
 
         return super.onOptionsItemSelected(item);
@@ -210,7 +211,8 @@ public class MainActivity extends AppCompatActivity
         setTitle(title);
     }
 
-    public void switchToNTA() {
+    @Override
+    public void addNewFavorite() {
         if (currentMenu == null || currentMenu.getItemId() != R.id.nav_next_to_arrive) {
             if (currentMenu != null)
                 currentMenu.setIcon(previousIcon);
@@ -249,23 +251,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private FavoritesFragement createFavoriteFragement() {
-        FavoritesFragement fragment = FavoritesFragement.newInstance(new Runnable() {
-            @Override
-            public void run() {
-                switchToNTA();
-            }
-        }, updateMenuConsumer, new Runnable() {
-            @Override
-            public void run() {
-                favorites = createFavoriteFragement();
-                getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, favorites).commit();
-            }
-        });
-
-        return fragment;
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         int unmaskedRequestCode = requestCode & 0x0000ffff;
@@ -301,4 +286,13 @@ public class MainActivity extends AppCompatActivity
             setTitle(R.string.schedule);
         }
     }
+
+    @Override
+    public void refresh() {
+        favorites = FavoritesFragment.newInstance(updateMenuConsumer);
+        getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, favorites).commit();
+
+    }
+
+
 }

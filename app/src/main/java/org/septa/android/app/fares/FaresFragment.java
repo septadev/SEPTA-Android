@@ -23,7 +23,7 @@ import java.text.MessageFormat;
  * Created by jkampf on 9/29/17.
  */
 
-public class FaresFragement extends Fragment {
+public class FaresFragment extends Fragment {
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);

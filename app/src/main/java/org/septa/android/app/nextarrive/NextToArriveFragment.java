@@ -25,9 +25,9 @@ import org.septa.android.app.locationpicker.LineUnawareLocationPickerTabActivity
 import org.septa.android.app.support.TabActivityHandler;
 
 
-public class NextToArriveFragement extends Fragment {
+public class NextToArriveFragment extends Fragment {
 
-    public static final String TAG = NextToArriveFragement.class.getSimpleName();
+    public static final String TAG = NextToArriveFragment.class.getSimpleName();
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
@@ -97,14 +97,14 @@ public class NextToArriveFragement extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable("org.septa.android.app.nextarrive.NextToArriveFragement.mSectionsPagerAdapter", mSectionsPagerAdapter.saveState());
+        outState.putParcelable("org.septa.android.app.nextarrive.NextToArriveFragment.mSectionsPagerAdapter", mSectionsPagerAdapter.saveState());
     }
 
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
         if (savedInstanceState != null) {
-            Parcelable parcelable = savedInstanceState.getParcelable("org.septa.android.app.nextarrive.NextToArriveFragement.mSectionsPagerAdapter");
+            Parcelable parcelable = savedInstanceState.getParcelable("org.septa.android.app.nextarrive.NextToArriveFragment.mSectionsPagerAdapter");
             if (parcelable != null)
                 mSectionsPagerAdapter.restoreState(parcelable, this.getClass().getClassLoader());
         }

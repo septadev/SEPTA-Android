@@ -33,7 +33,7 @@ android {
         applicationId "org.septa.android.app"
         minSdkVersion 16
         targetSdkVersion 25
-        versionCode 218
+        versionCode 221
         versionName "2.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }

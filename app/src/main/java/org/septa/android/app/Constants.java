@@ -25,4 +25,5 @@ public interface Constants {
     public static final String ROUTE_NAME = "route_name";
     public static final String TARGET_URL = "target_url";
     public static final String TITLE = "activity_title";
+    public static final String TERM_TRIP = "termTrip";
 }

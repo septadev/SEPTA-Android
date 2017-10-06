@@ -1,6 +1,7 @@
 package org.septa.android.app.nextarrive;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.AttrRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -111,7 +112,7 @@ public class NextToArriveTripView extends FrameLayout {
                 currentLine = null;
                 final View multiView = getMultistopTripView(item);
                 if (firstPos && onFirstElementHeight != null) {
-                    View peakView = multiView.findViewById(R.id.orig_layout);
+                    View peakView = multiView.findViewById(R.id.orig_trip_layout);
                     peakViews.add(peakView);
                     multiView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
                         @Override
@@ -204,26 +205,10 @@ public class NextToArriveTripView extends FrameLayout {
         return convertView;
     }
 
-    private View getSingleStopTripView(NextArrivalRecord unit) {
+    private View getSingleStopTripView(final NextArrivalRecord unit) {
 
         View line = LayoutInflater.from(getContext()).inflate(R.layout.next_to_arrive_unit, this, false);
 
-
-//        line.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                        Intent intent = new Intent(getContext(), NextToArriveTripDetailActivity.class);
-//
-//                        intent.putExtra(Constants.DESTINATAION_STATION, destStopId);
-//                        intent.putExtra(Constants.STARTING_STATION, startStopId);
-//                        intent.putExtra(Constants.TRANSIT_TYPE, transitType);
-//                        intent.putExtra(Constants.ROUTE_DIRECTION_MODEL, routeId);
-//                        intent.putExtra(Constants.ARRIVAL_RECORD, unit);
-//                        intent.putExtra(Constants.TRIP_ID, unit.getOrigLineTripId());
-//
-//                        getContext().startActivity(intent);
-//            }
-//        });
 
         DateFormat dateFormat = DateFormat.getTimeInstance(DateFormat.SHORT);
 
@@ -239,7 +224,11 @@ public class NextToArriveTripView extends FrameLayout {
         departureCal.setTime(unit.getOrigDepartureTime());
         departureCal.add(Calendar.MINUTE, unit.getOrigDelayMinutes());
 
-        origDepartureTime.setText(GeneralUtils.getDurationAsString(departureCal.getTimeInMillis() - System.currentTimeMillis(), TimeUnit.MILLISECONDS));
+        long origDepatureMillis = departureCal.getTimeInMillis() - System.currentTimeMillis();
+        if (origDepatureMillis >= 1000 * 60)
+            origDepartureTime.setText(GeneralUtils.getDurationAsString(origDepatureMillis, TimeUnit.MILLISECONDS));
+        else
+            origDepartureTime.setText("departing now");
 
         android.widget.TextView origTardyText = (android.widget.TextView) line.findViewById(R.id.orig_tardy_text);
         if (unit.getOrigDelayMinutes() > 0) {
@@ -259,11 +248,38 @@ public class NextToArriveTripView extends FrameLayout {
             origDepartureTime.setTextColor(ContextCompat.getColor(getContext(), R.color.on_time_departing));
         }
 
+
+        if (transitType == TransitType.SUBWAY || transitType == TransitType.NHSL) {
+            line.setClickable(false);
+            line.findViewById(R.id.trip_details_button).setVisibility(GONE);
+        } else {
+            line.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getContext(), NextToArriveTripDetailActivity.class);
+
+                    intent.putExtra(Constants.DESTINATAION_STATION, destination);
+                    intent.putExtra(Constants.STARTING_STATION, start);
+                    intent.putExtra(Constants.TRANSIT_TYPE, transitType);
+                    intent.putExtra(Constants.ROUTE_NAME, unit.getOrigRouteName());
+                    intent.putExtra(Constants.ROUTE_ID, unit.getOrigRouteId());
+                    intent.putExtra(Constants.ARRIVAL_RECORD, unit);
+                    intent.putExtra(Constants.TRIP_ID, unit.getOrigLineTripId());
+                    if (routeDirectionModel != null) {
+                        intent.putExtra(Constants.ROUTE_DIRECTION_MODEL, routeDirectionModel);
+
+                    }
+
+                    getContext().startActivity(intent);
+                }
+            });
+        }
+
         return line;
     }
 
 
-    public View getMultistopTripView(NextArrivalModelResponse.NextArrivalRecord item) {
+    public View getMultistopTripView(final NextArrivalRecord item) {
 
         View convertView = LayoutInflater.from(getContext()).inflate(R.layout.next_to_arrive_unit_multistop, this, false);
 
@@ -329,6 +345,28 @@ public class NextToArriveTripView extends FrameLayout {
             origDepartureTime.setTextColor(ContextCompat.getColor(getContext(), R.color.on_time_departing));
         }
 
+        View origTripView = convertView.findViewById(R.id.orig_trip_layout);
+
+        if (transitType == TransitType.SUBWAY || transitType == TransitType.NHSL) {
+            origTripView.setClickable(false);
+            origTripView.findViewById(R.id.orig_trip_details_button).setVisibility(GONE);
+        } else {
+            origTripView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+//                    Intent intent = new Intent(getContext(), NextToArriveTripDetailActivity.class);
+//
+//                    intent.putExtra(Constants.DESTINATAION_STATION, destination);
+//                    intent.putExtra(Constants.STARTING_STATION, start);
+//                    intent.putExtra(Constants.TRANSIT_TYPE, transitType);
+//                    intent.putExtra(Constants.ROUTE_DIRECTION_MODEL, routeDirectionModel);
+//                    intent.putExtra(Constants.ARRIVAL_RECORD, item);
+//                    intent.putExtra(Constants.TRIP_ID, item.getOrigLineTripId());
+//
+//                    getContext().startActivity(intent);
+                }
+            });
+        }
         android.widget.TextView connectionStationText = (android.widget.TextView) convertView.findViewById(R.id.connection_station_name);
         connectionStationText.setText("Connect @ " + item.getConnectionStationName());
 
@@ -390,6 +428,30 @@ public class NextToArriveTripView extends FrameLayout {
             termDepartureTime.setTextColor(ContextCompat.getColor(getContext(), R.color.on_time_departing));
         }
 
+        View termTripView = convertView.findViewById(R.id.term_trip_layout);
+
+        if (transitType == TransitType.SUBWAY || transitType == TransitType.NHSL) {
+            termTripView.setClickable(false);
+            termTripView.findViewById(R.id.term_trip_details_button).setVisibility(GONE);
+        } else {
+            termTripView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+//                    Intent intent = new Intent(getContext(), NextToArriveTripDetailActivity.class);
+//
+//                    intent.putExtra(Constants.DESTINATAION_STATION, destination);
+//                    intent.putExtra(Constants.STARTING_STATION, start);
+//                    intent.putExtra(Constants.TRANSIT_TYPE, transitType);
+//                    intent.putExtra(Constants.ROUTE_DIRECTION_MODEL, routeDirectionModel);
+//                    intent.putExtra(Constants.ARRIVAL_RECORD, item);
+//                    intent.putExtra(Constants.TRIP_ID, item.getOrigLineTripId());
+//                    intent.putExtra(Constants.TERM_TRIP, Boolean.TRUE);
+//
+//                    getContext().startActivity(intent);
+                }
+            });
+        }
+
         return convertView;
     }
 
@@ -438,224 +500,4 @@ public class NextToArriveTripView extends FrameLayout {
         this.onFirstElementHeight = onFirstElementHeight;
     }
 
-
-//    private static class MultiLinesListAdapter extends ArrayAdapter<NextArrivalRecord> {
-//
-//        private final TransitType transitType;
-//        Consumer<Integer> onFirstElementHeight;
-//        OnLayoutChangeListener onLayoutChangeListener;
-//
-//        public MultiLinesListAdapter(@NonNull Context context, List<NextArrivalRecord> list, TransitType transitType, final Consumer<Integer> onFirstElementHeight) {
-//            super(context, 0, list);
-//            this.transitType = transitType;
-//            this.onFirstElementHeight = onFirstElementHeight;
-//            onLayoutChangeListener = new OnLayoutChangeListener() {
-//                @Override
-//                public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-//                    onFirstElementHeight.accept(bottom - top);
-//                }
-//            };
-//        }
-//
-//
-//        @Override
-//        public View getView(int position, View convertView, ViewGroup parent) {
-//            if (convertView == null) {
-//                convertView = LayoutInflater.from(getContext()).inflate(R.layout.next_to_arrive_unit_multistop, parent, false);
-//            }
-//
-//            NextArrivalModelResponse.NextArrivalRecord item = getItem(position);
-//            DateFormat dateFormat = DateFormat.getTimeInstance(DateFormat.SHORT);
-//
-//            android.widget.TextView origLineNameText = (android.widget.TextView) convertView.findViewById(R.id.orig_line_name_text);
-//            origLineNameText.setText(item.getOrigRouteName());
-//
-//            ((ImageView) convertView.findViewById(R.id.orig_line_marker_left)).setColorFilter(ContextCompat.getColor(getContext(), transitType.getLineColor(item.getOrigRouteId(), getContext())));
-//            ((ImageView) convertView.findViewById(R.id.orig_line_marker_right)).setColorFilter(ContextCompat.getColor(getContext(), transitType.getLineColor(item.getOrigRouteId(), getContext())));
-//
-//
-//            android.widget.TextView origArrivalTimeText = (android.widget.TextView) convertView.findViewById(R.id.orig_arrival_time_text);
-//            origArrivalTimeText.setText(dateFormat.format(item.getOrigDepartureTime()) + " - " + dateFormat.format(item.getOrigArrivalTime()));
-//
-//            android.widget.TextView origTripNumberText = (android.widget.TextView) convertView.findViewById(R.id.orig_trip_number_text);
-//            origTripNumberText.setText(item.getOrigLineTripId() + " to " + item.getOrigLastStopName());
-//
-//            android.widget.TextView origDepartureTime = (android.widget.TextView) convertView.findViewById(R.id.orig_depature_time);
-//            int origDepartsInMinutes = ((int) (item.getOrigDepartureTime().getTime() + (item.getOrigDelayMinutes() * 60000) - System.currentTimeMillis()) / 60000);
-//            origDepartureTime.setText(String.valueOf(origDepartsInMinutes + " Minutes"));
-//
-//            android.widget.TextView origTardyText = (android.widget.TextView) convertView.findViewById(R.id.orig_tardy_text);
-//            if (item.getOrigDelayMinutes() > 0) {
-//                origTardyText.setText(item.getOrigDelayMinutes() + " min late.");
-//                origTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.delay_minutes));
-//                View origDepartingBorder = convertView.findViewById(R.id.orig_departing_border);
-//                origDepartingBorder.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.late_boarder));
-//                origDepartureTime.setTextColor(ContextCompat.getColor(getContext(), R.color.late_departing));
-//            } else {
-//                origTardyText.setText("On time");
-//                origTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.no_delay_minutes));
-//                origDepartureTime.setTextColor(ContextCompat.getColor(getContext(), R.color.late_departing));
-//            }
-//
-//            android.widget.TextView connectionStationText = (android.widget.TextView) convertView.findViewById(R.id.connection_station_name);
-//            connectionStationText.setText(item.getConnectionStationName());
-//
-//            android.widget.TextView termLineNameText = (android.widget.TextView) convertView.findViewById(R.id.term_line_name_text);
-//            termLineNameText.setText(item.getTermRouteName());
-//
-//            ((ImageView) convertView.findViewById(R.id.term_line_marker_left)).setColorFilter(ContextCompat.getColor(getContext(), transitType.getLineColor(item.getTermRouteId(), getContext())));
-//            ((ImageView) convertView.findViewById(R.id.term_line_marker_right)).setColorFilter(ContextCompat.getColor(getContext(), transitType.getLineColor(item.getTermRouteId(), getContext())));
-//
-//            android.widget.TextView termArrivalTimeText = (android.widget.TextView) convertView.findViewById(R.id.term_arrival_time_text);
-//            termArrivalTimeText.setText(dateFormat.format(item.getTermDepartureTime()) + " - " + dateFormat.format(item.getTermArrivalTime()));
-//
-//            android.widget.TextView termTripNumberText = (android.widget.TextView) convertView.findViewById(R.id.term_trip_number_text);
-//            termTripNumberText.setText(item.getTermLineTripId() + " to " + item.getTermLastStopName());
-//
-//            android.widget.TextView termDepartureTime = (android.widget.TextView) convertView.findViewById(R.id.term_depature_time);
-//            int termDepartsInMinutes = ((int) (item.getTermDepartureTime().getTime() + (item.getTermDelayMinutes() * 60000) - System.currentTimeMillis()) / 60000);
-//            termDepartureTime.setText(String.valueOf(termDepartsInMinutes + " Minutes"));
-//
-//            android.widget.TextView termTardyText = (android.widget.TextView) convertView.findViewById(R.id.term_tardy_text);
-//            if (item.getTermDelayMinutes() > 0) {
-//                termTardyText.setText(item.getTermDelayMinutes() + " min late.");
-//                termTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.delay_minutes));
-//                View termDepartingBorder = convertView.findViewById(R.id.orig_departing_border);
-//                termDepartingBorder.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.late_boarder));
-//                termDepartureTime.setTextColor(ContextCompat.getColor(getContext(), R.color.late_departing));
-//            } else {
-//                termTardyText.setText("On time");
-//                termTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.no_delay_minutes));
-//                termDepartureTime.setTextColor(ContextCompat.getColor(getContext(), R.color.on_time_departing));
-//            }
-//
-//            if (onFirstElementHeight != null) {
-//                if (position == 0) {
-//                    convertView.addOnLayoutChangeListener(onLayoutChangeListener);
-//                } else {
-//                    convertView.removeOnLayoutChangeListener(onLayoutChangeListener);
-//                }
-//            }
-//
-//            return convertView;
-//
-//        }
-//    }
-//
-//    private static class SingleLinesListAdapter extends ArrayAdapter<NextToArriveLine> {
-//
-//        private final TransitType transitType;
-//        private final String startStopId;
-//        private final String destStopId;
-//        private final String routeId;
-//        Consumer<Integer> onFirstElementHeight;
-//        OnLayoutChangeListener onLayoutChangeListener;
-//        private int firstHeaderHeight = 0;
-//
-//        public SingleLinesListAdapter(@NonNull Context context, List<NextToArriveLine> list, TransitType transitType, String startStopId, String destStopId, String routeId, final Consumer<Integer> onFirstElementHeight) {
-//            super(context, 0, list);
-//            this.transitType = transitType;
-//            this.startStopId = startStopId;
-//            this.destStopId = destStopId;
-//            this.routeId = routeId;
-//            this.onFirstElementHeight = onFirstElementHeight;
-//
-//            onLayoutChangeListener = new OnLayoutChangeListener() {
-//                @Override
-//                public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-//                    onFirstElementHeight.accept(bottom - top + firstHeaderHeight);
-//                }
-//            };
-//        }
-//
-//        @Override
-//        public View getView(int position, View convertView, final ViewGroup parent) {
-//            List<NextArrivalModelResponse.NextArrivalRecord> tripList = getItem(position).getList();
-//            Collections.sort(
-//                    tripList, new Comparator<NextArrivalRecord>() {
-//                        @Override
-//                        public int compare(NextArrivalModelResponse.NextArrivalRecord x, NextArrivalModelResponse.NextArrivalRecord y) {
-//                            return x.getOrigDepartureTime().compareTo(y.getOrigDepartureTime());
-//                        }
-//                    });
-//
-//            tripList = tripList.subList(0, (3 < tripList.size()) ? 3 : tripList.size());
-//
-//
-//            if (convertView == null) {
-//                convertView = LayoutInflater.from(getContext()).inflate(R.layout.next_to_arrive_line, parent, false);
-//            }
-//
-//            android.widget.TextView lineNameText = (android.widget.TextView) convertView.findViewById(R.id.orig_line_name_text);
-//            lineNameText.setText(getItem(position).lineName);
-//            ((ImageView) convertView.findViewById(R.id.orig_line_marker_left)).setColorFilter(ContextCompat.getColor(getContext(), transitType.getLineColor(getItem(position).getList().get(0).getOrigRouteId(), getContext())));
-//            ((ImageView) convertView.findViewById(R.id.orig_line_marker_right)).setColorFilter(ContextCompat.getColor(getContext(), transitType.getLineColor(getItem(position).getList().get(0).getOrigRouteId(), getContext())));
-//
-//            LinearLayout arrivalList = (LinearLayout) convertView.findViewById(R.id.arrival_list);
-//            arrivalList.removeAllViews();
-//
-//            DateFormat dateFormat = DateFormat.getTimeInstance(DateFormat.SHORT);
-//
-//            View firstLine = null;
-//
-//            for (final NextArrivalModelResponse.NextArrivalRecord unit : tripList) {
-//                View line = LayoutInflater.from(getContext()).inflate(R.layout.next_to_arrive_unit, null, false);
-//                if (firstLine == null)
-//                    firstLine = line;
-//
-//                line.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-////                        Intent intent = new Intent(getContext(), NextToArriveTripDetailActivity.class);
-////
-////                        intent.putExtra(Constants.DESTINATAION_STATION, destStopId);
-////                        intent.putExtra(Constants.STARTING_STATION, startStopId);
-////                        intent.putExtra(Constants.TRANSIT_TYPE, transitType);
-////                        intent.putExtra(Constants.ROUTE_DIRECTION_MODEL, routeId);
-////                        intent.putExtra(Constants.ARRIVAL_RECORD, unit);
-////                        intent.putExtra(Constants.TRIP_ID, unit.getOrigLineTripId());
-////
-////                        getContext().startActivity(intent);
-//                    }
-//                });
-//
-//
-//                android.widget.TextView origArrivalTimeText = (android.widget.TextView) line.findViewById(R.id.orig_arrival_time_text);
-//                origArrivalTimeText.setText(dateFormat.format(unit.getOrigDepartureTime()) + " - " + dateFormat.format(unit.getOrigArrivalTime()));
-//                arrivalList.addView(line);
-//
-//                android.widget.TextView origTripNumberText = (android.widget.TextView) line.findViewById(R.id.orig_trip_number_text);
-//                origTripNumberText.setText(unit.getOrigLineTripId() + " to " + unit.getOrigLastStopName());
-//
-//                android.widget.TextView origDepartureTime = (android.widget.TextView) line.findViewById(R.id.orig_depature_time);
-//                int origDepartsInMinutes = ((int) (unit.getOrigDepartureTime().getTime() + (unit.getOrigDelayMinutes() * 60000) - System.currentTimeMillis()) / 60000);
-//                origDepartureTime.setText(String.valueOf(origDepartsInMinutes + " Minutes"));
-//
-//                android.widget.TextView origTardyText = (android.widget.TextView) line.findViewById(R.id.orig_tardy_text);
-//                if (unit.getOrigDelayMinutes() > 0) {
-//                    origTardyText.setText(unit.getOrigDelayMinutes() + " min late.");
-//                    origTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.delay_minutes));
-//                    View origDepartingBorder = line.findViewById(R.id.orig_departing_border);
-//                    origDepartingBorder.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.late_boarder));
-//                    origDepartureTime.setTextColor(ContextCompat.getColor(getContext(), R.color.late_departing));
-//                } else {
-//                    origTardyText.setText("On time");
-//                    origTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.no_delay_minutes));
-//                    origDepartureTime.setTextColor(ContextCompat.getColor(getContext(), R.color.on_time_departing));
-//                }
-//            }
-//
-//            if (onFirstElementHeight != null && firstLine != null) {
-//                if (position == 0) {
-//                    firstHeaderHeight = convertView.findViewById(R.id.linearLayout1).getHeight();
-//                    firstLine.addOnLayoutChangeListener(onLayoutChangeListener);
-//                } else {
-//                    firstLine.removeOnLayoutChangeListener(onLayoutChangeListener);
-//                }
-//            }
-//
-//
-//            return convertView;
-//        }
-//    }
 }

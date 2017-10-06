@@ -3,6 +3,7 @@ package org.septa.android.app.services.apiinterfaces.model;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -116,6 +117,10 @@ public class NextArrivalModelResponse implements Serializable {
         private Double termVehicleLat;
         @SerializedName("term_vehicle_lon")
         private Double termVehicleLon;
+        @SerializedName("orig_vehicle_id")
+        private String origVehicleId;
+        @SerializedName("term_vehicle_id")
+        private String termVehicleId;
         @SerializedName("orig_vehicle_line")
         String origVehicleLine;
         @SerializedName("term_vehicle_line")
@@ -124,6 +129,8 @@ public class NextArrivalModelResponse implements Serializable {
         boolean origRealtime = false;
         @SerializedName("term_realtime")
         boolean termRealtime = false;
+        @SerializedName("consist")
+        List<String> consist = new ArrayList<String>();
 
 
         public String getOrigRouteId() {
@@ -348,6 +355,30 @@ public class NextArrivalModelResponse implements Serializable {
 
         public void setTermRealtime(boolean termRealtime) {
             this.termRealtime = termRealtime;
+        }
+
+        public String getOrigVehicleId() {
+            return origVehicleId;
+        }
+
+        public void setOrigVehicleId(String origVehicleId) {
+            this.origVehicleId = origVehicleId;
+        }
+
+        public String getTermVehicleId() {
+            return termVehicleId;
+        }
+
+        public void setTermVehicleId(String termVehicleId) {
+            this.termVehicleId = termVehicleId;
+        }
+
+        public List<String> getConsist() {
+            return consist;
+        }
+
+        public void setConsist(List<String> consist) {
+            this.consist = consist;
         }
 
         @Override

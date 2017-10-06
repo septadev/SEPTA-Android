@@ -4,6 +4,8 @@
     <color name="colorPrimaryDark">#063468</color>
     <color name="colorAccent">#FF4081</color>
 
+    <color name="options_menu_tint">#ffffff</color>
+
 
     <!-- Next To Arrive Colors -->
     <color name="delay_minutes">#d72e11</color>

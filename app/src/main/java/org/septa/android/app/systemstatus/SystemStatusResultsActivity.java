@@ -72,7 +72,7 @@ public class SystemStatusResultsActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
 
-        if (intent.getExtras().containsKey(Constants.ROUTE_DIRECTION_MODEL)) {
+        if (intent.getExtras().containsKey(Constants.ROUTE_DIRECTION_MODEL) && intent.getExtras().get(Constants.ROUTE_DIRECTION_MODEL) != null) {
             RouteDirectionModel routeDirectionModel = (RouteDirectionModel) intent.getExtras().get(Constants.ROUTE_DIRECTION_MODEL);
             routeId = routeDirectionModel.getRouteId();
             routeName = routeDirectionModel.getRouteShortName();
@@ -81,6 +81,14 @@ public class SystemStatusResultsActivity extends AppCompatActivity {
             routeName = intent.getExtras().getString(Constants.ROUTE_NAME);
         }
         transitType = (TransitType) intent.getExtras().get(Constants.TRANSIT_TYPE);
+
+        if (routeId == null) {
+            StringBuilder builder = new StringBuilder();
+            for (String key : intent.getExtras().keySet()){
+
+            }
+            throw new RuntimeException("routeId is Null: Intent[" + intent.getExtras().toString() + "]");
+        }
 
         if (intent.getExtras().containsKey(Constants.SERVICE_ADVISORY_EXPANDED)) {
             serviceAdvisoryExpanded = intent.getExtras().getBoolean(Constants.SERVICE_ADVISORY_EXPANDED);

@@ -1,5 +1,6 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tool="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?android:attr/selectableItemBackground"
@@ -82,6 +83,7 @@
     </LinearLayout>
 
     <ImageView
+        android:id="@+id/trip_details_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="0dp"
@@ -93,5 +95,6 @@
         app:layout_constraintBottom_toBottomOf="@+id/orig_departing_border"
         app:layout_constraintLeft_toRightOf="@+id/orig_departing_border"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/orig_departing_border" />
+        app:layout_constraintTop_toTopOf="@+id/orig_departing_border"
+        tool:visibility="gone" />
 </android.support.constraint.ConstraintLayout>

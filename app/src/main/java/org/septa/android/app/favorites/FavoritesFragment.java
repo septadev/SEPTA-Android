@@ -92,10 +92,9 @@ public class FavoritesFragment extends Fragment {
             if (favorite.getRouteDirectionModel() != null)
                 routeId = favorite.getRouteDirectionModel().getRouteId();
 
-            Call<NextArrivalModelResponse> results = SeptaServiceFactory.getNextArrivalService()
-                    .getNextArriaval(Integer.parseInt(favorite.getStart().getStopId()),
-                            Integer.parseInt(favorite.getDestination().getStopId()),
-                            favorite.getTransitType().name(), routeId);
+            Call<NextArrivalModelResponse> results = SeptaServiceFactory.getNextArrivalService().getNextArrival(Integer.parseInt(favorite.getStart().getStopId()),
+                    Integer.parseInt(favorite.getDestination().getStopId()),
+                    favorite.getTransitType().name(), routeId);
 
             results.enqueue(new Callback<NextArrivalModelResponse>() {
                 @Override

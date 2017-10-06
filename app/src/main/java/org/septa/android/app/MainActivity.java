@@ -77,11 +77,12 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        if (SeptaServiceFactory.getFavoritesService().getFavorites(this).size() > 0) {
-            switchToFavorites();
-        } else {
-            addNewFavorite();
-        }
+        if (savedInstanceState == null)
+            if (SeptaServiceFactory.getFavoritesService().getFavorites(this).size() > 0) {
+                switchToFavorites();
+            } else {
+                addNewFavorite();
+            }
 
     }
 

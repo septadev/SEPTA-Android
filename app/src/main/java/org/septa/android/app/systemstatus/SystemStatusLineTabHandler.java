@@ -75,6 +75,13 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
         RouteDirectionModel routeDirectionModel;
         org.septa.android.app.view.TextView globalAlertText;
 
+
+        @Override
+        public void onCreate(@Nullable Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            setRetainInstance(true);
+        }
+
         @Nullable
         @Override
         public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -146,6 +153,9 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
                     }
                 }
             });
+
+            if (routeDirectionModel != null)
+                setRoute(routeDirectionModel);
 
             return fragmentView;
 
@@ -240,8 +250,9 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
             SystemStatusPickerFragment fragment = new SystemStatusPickerFragment();
             Bundle args = new Bundle();
             args.putSerializable("transitType", transitType);
-            args.putSerializable("routeDirectionModel", routeDirectionModel);
-
+            if (routeDirectionModel != null) {
+                args.putSerializable("routeDirectionModel", routeDirectionModel);
+            }
             fragment.setArguments(args);
 
             return fragment;
@@ -249,7 +260,9 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
 
         private void restoreArgs() {
             transitType = (TransitType) getArguments().getSerializable("transitType");
-            routeDirectionModel = (RouteDirectionModel) getArguments().getSerializable("routeDirectionModel");
+            if (getArguments().containsKey("routeDirectionModel"))
+                routeDirectionModel = (RouteDirectionModel) getArguments().getSerializable("routeDirectionModel");
+
             routeCursorAdapterSupplier = (CursorAdapterSupplier<RouteDirectionModel>) getArguments().getSerializable("routeCursorAdapterSupplier");
 
         }

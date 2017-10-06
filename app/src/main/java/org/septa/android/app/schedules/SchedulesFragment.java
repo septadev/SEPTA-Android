@@ -137,9 +137,9 @@ public class SchedulesFragment extends Fragment {
         } else if (transitType == TransitType.RAIL) {
             startingIndex = 1;
         } else if (transitType == TransitType.TROLLEY) {
-            startingIndex = 2;
-        } else if (transitType == TransitType.SUBWAY) {
             startingIndex = 3;
+        } else if (transitType == TransitType.SUBWAY) {
+            startingIndex = 2;
         } else {
             startingIndex = 4;
         }

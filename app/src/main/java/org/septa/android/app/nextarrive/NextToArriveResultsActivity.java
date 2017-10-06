@@ -36,6 +36,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -360,6 +361,25 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                 bottomSheetBehavior.setPeekHeight(peekHeight);
                 updateMap();
                 googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, getResources().getDisplayMetrics())));
+
+                googleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+
+                    @Override
+                    public View getInfoWindow(Marker arg0) {
+                        return null;
+                    }
+
+                    @Override
+                    public View getInfoContents(Marker marker) {
+                        TextView title = new TextView(NextToArriveResultsActivity.this);
+                        if (!startMarker.getTitle().equals(marker.getTitle()) && !destMarker.getTitle().equals(marker.getTitle()))
+                            title.setText("This will have the Trip Details Here.");
+                        else
+                            title.setText(marker.getTitle());
+
+                        return title;
+                    }
+                });
             }
         });
 
@@ -407,7 +427,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
             String routeId = null;
             if (routeDirectionModel != null)
                 routeId = routeDirectionModel.getRouteId();
-            Call<NextArrivalModelResponse> results = SeptaServiceFactory.getNextArrivalService().getNextArriaval(Integer.parseInt(start.getStopId()), Integer.parseInt(destination.getStopId()), transitType.name(), routeId);
+            Call<NextArrivalModelResponse> results = SeptaServiceFactory.getNextArrivalService().getNextArrival(Integer.parseInt(start.getStopId()), Integer.parseInt(destination.getStopId()), transitType.name(), routeId);
             progressVisibility(View.VISIBLE);
 
             results.enqueue(new Callback<NextArrivalModelResponse>() {

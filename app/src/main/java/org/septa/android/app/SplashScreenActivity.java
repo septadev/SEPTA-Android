@@ -53,10 +53,12 @@ public class SplashScreenActivity extends AppCompatActivity {
                     Intent intent = new Intent(SplashScreenActivity.this, MainActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_TASK_ON_HOME);
 
-                    while (System.currentTimeMillis() - timestamp < 2000) {
-                        try {
-                            Thread.sleep(System.currentTimeMillis() - timestamp);
-                        } catch (InterruptedException e) {
+                    if (!BuildConfig.DEBUG) {
+                        while (System.currentTimeMillis() - timestamp < 2000) {
+                            try {
+                                Thread.sleep(System.currentTimeMillis() - timestamp);
+                            } catch (InterruptedException e) {
+                            }
                         }
                     }
 

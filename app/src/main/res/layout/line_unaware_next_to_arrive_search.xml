@@ -33,6 +33,7 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:background="#ffffff"
+            android:elevation="4dp"
             android:orientation="vertical">
 
 
@@ -97,7 +98,9 @@
                 android:layout_marginTop="30dp"
                 android:background="@drawable/button_gradient_background"
                 android:clickable="true"
-                android:text="View Schedules" />
+                android:elevation="4dp"
+                android:text="View Schedules"
+                android:textColor="#ffffff" />
         </LinearLayout>
 
     </LinearLayout>

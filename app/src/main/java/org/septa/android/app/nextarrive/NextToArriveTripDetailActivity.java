@@ -1,15 +1,14 @@
 package org.septa.android.app.nextarrive;
 
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
@@ -33,7 +32,6 @@ import com.google.maps.android.data.kml.KmlLayer;
 import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
-import org.septa.android.app.domain.KMLModel;
 import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
@@ -41,7 +39,6 @@ import org.septa.android.app.services.apiinterfaces.model.NextArrivalDetails;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalModelResponse;
 import org.septa.android.app.support.GeneralUtils;
 import org.septa.android.app.support.MapUtils;
-import org.w3c.dom.Text;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
@@ -222,8 +219,8 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
                     AsyncTask<Long, Void, Void> delayTask = new AsyncTask<Long, Void, Void>() {
                         @Override
                         protected void onPostExecute(Void aVoid) {
-                            updateView(response);
-                            progressView.setVisibility(View.GONE);
+                            if (updateView(response))
+                                progressView.setVisibility(View.GONE);
                         }
 
                         @Override
@@ -239,51 +236,80 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
                     }.execute(System.currentTimeMillis() - timestamp);
 
                 } else {
-                    updateView(response);
-                    progressView.setVisibility(View.GONE);
+                    if (updateView(response))
+                        progressView.setVisibility(View.GONE);
                 }
             }
 
-            private void updateView(Response<NextArrivalDetails> response) {
-                vehicleLat = response.body().getLatitiude();
-                vehicleLon = response.body().getLongitude();
+            private boolean updateView(Response<NextArrivalDetails> response) {
+                NextArrivalDetails.Details details = response.body().getDetails();
+                if (details != null) {
+                    vehicleLat = details.getLatitiude();
+                    vehicleLon = details.getLongitude();
 
 
-                destStationValue.setText(response.body().getDestination().getStation());
-                originStationValue.setText("Still need from API");
-                nextStopValue.setText("Still need from API");
+                    destStationValue.setText(details.getDestination().getStation());
+                    originStationValue.setText(details.getSource());
+                    nextStopValue.setText(details.getNextStop().getStation());
 
-                if (response.body().getDestination() == null) {
-                    arrivingBorderView.setBackgroundResource(R.drawable.no_rt_data_boarder);
-                    arrivingValue.setText("Real time data unavailable");
-                    arrivingValue.setTextColor(ContextCompat.getColor(NextToArriveTripDetailActivity.this, R.color.scheduled));
-                } else if (response.body().getDestination().getLate() > 0) {
-                    arrivingBorderView.setBackgroundResource(R.drawable.late_boarder);
-                    arrivingValue.setText(GeneralUtils.getDurationAsLongString(response.body().getDestination().getLate(), TimeUnit.MINUTES) + " late.");
-                    arrivingValue.setTextColor(ContextCompat.getColor(NextToArriveTripDetailActivity.this, R.color.late_departing));
+                    if (details.getDestination() == null) {
+                        arrivingBorderView.setBackgroundResource(R.drawable.no_rt_data_boarder);
+                        arrivingValue.setText("Real time data unavailable");
+                        arrivingValue.setTextColor(ContextCompat.getColor(NextToArriveTripDetailActivity.this, R.color.scheduled));
+                    } else if (details.getDestination().getLate() > 0) {
+                        arrivingBorderView.setBackgroundResource(R.drawable.late_boarder);
+                        arrivingValue.setText(GeneralUtils.getDurationAsLongString(details.getDestination().getLate(), TimeUnit.MINUTES) + " late.");
+                        arrivingValue.setTextColor(ContextCompat.getColor(NextToArriveTripDetailActivity.this, R.color.late_departing));
+                    } else {
+                        arrivingBorderView.setBackgroundResource(R.drawable.ontime_tripdetails_boarder);
+                        arrivingValue.setTextColor(ContextCompat.getColor(NextToArriveTripDetailActivity.this, R.color.on_time_departing));
+                        arrivingValue.setText("On Time");
+                    }
+
+                    if (transitType == TransitType.RAIL) {
+                        DateFormat dateFormat = DateFormat.getTimeInstance(DateFormat.SHORT);
+                        Calendar cal = Calendar.getInstance();
+                        cal.setTime(arrivalRecord.getOrigArrivalTime());
+                        if (details.getDestination() != null)
+                            cal.add(Calendar.MINUTE, details.getDestination().getLate());
+                        arrivingTime.setText(dateFormat.format(cal.getTime()));
+
+                        typeValue.setText(details.getService());
+                    }
+
+                    updateMap();
+                    return true;
                 } else {
-                    arrivingBorderView.setBackgroundResource(R.drawable.ontime_tripdetails_boarder);
-                    arrivingValue.setTextColor(ContextCompat.getColor(NextToArriveTripDetailActivity.this, R.color.on_time_departing));
-                    arrivingValue.setText("On Time");
+                    Snackbar snackbar = Snackbar.make(findViewById(R.id.trip_detail_coordinator), "Sorry, we had some issue retrieving your data.  Please try again.", Snackbar.LENGTH_LONG);
+                    snackbar.addCallback(new Snackbar.Callback() {
+                        @Override
+                        public void onDismissed(Snackbar snackbar, int event) {
+                            try {
+                                onBackPressed();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                    snackbar.show();
+                    return false;
                 }
-
-                if (transitType == TransitType.RAIL) {
-                    DateFormat dateFormat = DateFormat.getTimeInstance(DateFormat.SHORT);
-                    Calendar cal = Calendar.getInstance();
-                    cal.setTime(arrivalRecord.getOrigArrivalTime());
-                    if (response.body().getDestination() != null)
-                        cal.add(Calendar.MINUTE, response.body().getDestination().getLate());
-                    arrivingTime.setText(dateFormat.format(cal.getTime()));
-
-                    typeValue.setText("Still need from API");
-                }
-
-                updateMap();
             }
 
             @Override
             public void onFailure(Call<NextArrivalDetails> call, Throwable t) {
-
+                Snackbar snackbar = Snackbar.make(findViewById(R.id.trip_detail_coordinator), "Sorry, we had some issue retrieving your data.  Please try again.", Snackbar.LENGTH_LONG);
+                snackbar.addCallback(new Snackbar.Callback() {
+                    @Override
+                    public void onDismissed(Snackbar snackbar, int event) {
+                        try {
+                            onBackPressed();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+                snackbar.show();
             }
         });
     }

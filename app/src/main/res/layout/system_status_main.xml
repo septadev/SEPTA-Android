@@ -5,6 +5,7 @@
     android:id="@+id/system_status_results_coordinator"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="org.septa.android.app.systemstatus.SystemStatusResultsActivity">
 
 

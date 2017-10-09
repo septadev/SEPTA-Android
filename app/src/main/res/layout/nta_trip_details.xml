@@ -2,9 +2,10 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/trip_detail_coordinator"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/trip_detail_coordinator"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="org.septa.android.app.nextarrive.NextToArriveTripDetailActivity">
 
     <FrameLayout
@@ -88,55 +89,20 @@
 
                     </LinearLayout>
 
-                    <LinearLayout
-                        android:id="@+id/arriving_border"
+                    <org.septa.android.app.view.TextView
+                        android:id="@+id/arriving_value"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="15dp"
                         android:layout_marginTop="10dp"
                         android:background="@drawable/late_boarder"
-                        android:orientation="vertical">
-
-                        <LinearLayout
-                            android:id="@+id/arriving_time_layout"
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:layout_gravity="center_horizontal"
-                            android:layout_marginTop="10dp"
-                            android:orientation="horizontal">
-
-                            <org.septa.android.app.view.TextView
-                                android:id="@+id/arriving_label"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Arriving:"
-                                android:textColor="#000000"
-                                android:textSize="14sp"
-                                app:font="@string/font_roboto_regular" />
-
-                            <org.septa.android.app.view.TextView
-                                android:id="@+id/arriving_time"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="9:29 AM"
-                                android:textColor="#000000"
-                                android:textSize="14sp"
-                                app:font="@string/font_roboto_bold" />
-                        </LinearLayout>
-
-                        <org.septa.android.app.view.TextView
-                            android:id="@+id/arriving_value"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="9dp"
-                            android:layout_marginTop="4dp"
-                            android:text="3 min late"
-                            android:textAlignment="center"
-                            android:textColor="@color/late_departing"
-                            android:textSize="14sp"
-                            app:font="@string/font_roboto_bold" />
-                    </LinearLayout>
-
+                        android:paddingBottom="12dp"
+                        android:paddingTop="12dp"
+                        android:text="3 min late"
+                        android:textAlignment="center"
+                        android:textColor="@color/late_departing"
+                        android:textSize="14sp"
+                        app:font="@string/font_roboto_bold" />
 
                     <LinearLayout
                         android:layout_width="match_parent"

@@ -14,6 +14,8 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
@@ -31,8 +33,10 @@ import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class NextToArriveTripView extends FrameLayout {
@@ -49,6 +53,23 @@ public class NextToArriveTripView extends FrameLayout {
     private Integer resultsTime;
 
     private Integer maxResults = 10;
+
+    private static Map<Integer, StopModel> connectionStations = new HashMap<Integer, StopModel>();
+
+    static {
+        // 90004,'30th Street Station','39.9566667','-75.1816667'
+        connectionStations.put(90004, new StopModel("90004", "30th Street Station", 0, true, "39.9566667", "-75.1816667"));
+
+        // 90005,'Suburban Station','39.9538889','-75.1677778'
+        connectionStations.put(90005, new StopModel("90005", "Suburban Station", 0, true, "39.9538889", "-75.1677778"));
+
+        //90006,'Jefferson Station','39.9525','-75.1580556'
+        connectionStations.put(90006, new StopModel("90006", "Jefferson Station", 0, true, "39.9525", "-75.1580556"));
+
+        //90007,'Temple University','39.9813889','-75.1494444'
+        connectionStations.put(90007, new StopModel("90007", "Temple University", 0, true, "39.9813889", "-75.1494444"));
+    }
+
 
     public NextToArriveTripView(@NonNull Context context) {
         super(context);
@@ -228,7 +249,7 @@ public class NextToArriveTripView extends FrameLayout {
         if (origDepatureMillis >= 1000 * 60)
             origDepartureTime.setText(GeneralUtils.getDurationAsString(origDepatureMillis, TimeUnit.MILLISECONDS));
         else
-            origDepartureTime.setText("departing now");
+            origDepartureTime.setText("now");
 
         android.widget.TextView origTardyText = (android.widget.TextView) line.findViewById(R.id.orig_tardy_text);
         if (unit.getOrigDelayMinutes() > 0) {
@@ -244,6 +265,8 @@ public class NextToArriveTripView extends FrameLayout {
             } else {
                 origTardyText.setText("Scheduled");
                 origTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.scheduled));
+                line.setClickable(false);
+                line.findViewById(R.id.trip_details_button).setVisibility(GONE);
             }
             origDepartureTime.setTextColor(ContextCompat.getColor(getContext(), R.color.on_time_departing));
         }
@@ -263,12 +286,10 @@ public class NextToArriveTripView extends FrameLayout {
                     intent.putExtra(Constants.TRANSIT_TYPE, transitType);
                     intent.putExtra(Constants.ROUTE_NAME, unit.getOrigRouteName());
                     intent.putExtra(Constants.ROUTE_ID, unit.getOrigRouteId());
-                    intent.putExtra(Constants.ARRIVAL_RECORD, unit);
                     intent.putExtra(Constants.TRIP_ID, unit.getOrigLineTripId());
-                    if (routeDirectionModel != null) {
-                        intent.putExtra(Constants.ROUTE_DIRECTION_MODEL, routeDirectionModel);
-
-                    }
+                    intent.putExtra(Constants.VEHICLE_ID, unit.getOrigVehicleId());
+                    if (routeDirectionModel != null)
+                        intent.putExtra(Constants.ROUTE_DESCRIPTION, routeDirectionModel.getDirectionDescription());
 
                     getContext().startActivity(intent);
                 }
@@ -325,8 +346,13 @@ public class NextToArriveTripView extends FrameLayout {
         departureCal.setTime(item.getOrigDepartureTime());
         departureCal.add(Calendar.MINUTE, item.getOrigDelayMinutes());
 
-        origDepartureTime.setText(GeneralUtils.getDurationAsString(departureCal.getTimeInMillis() - System.currentTimeMillis(), TimeUnit.MILLISECONDS));
+        long origDepatureMillis = departureCal.getTimeInMillis() - System.currentTimeMillis();
+        if (origDepatureMillis >= 1000 * 60)
+            origDepartureTime.setText(GeneralUtils.getDurationAsString(origDepatureMillis, TimeUnit.MILLISECONDS));
+        else
+            origDepartureTime.setText("now");
 
+        View origTripView = convertView.findViewById(R.id.orig_trip_layout);
         android.widget.TextView origTardyText = (android.widget.TextView) convertView.findViewById(R.id.orig_tardy_text);
         if (item.getOrigDelayMinutes() > 0) {
             origTardyText.setText(GeneralUtils.getDurationAsString(item.getOrigDelayMinutes(), TimeUnit.MINUTES) + " late.");
@@ -341,11 +367,11 @@ public class NextToArriveTripView extends FrameLayout {
             } else {
                 origTardyText.setText("Scheduled");
                 origTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.scheduled));
+                origTripView.setClickable(false);
+                origTripView.findViewById(R.id.orig_trip_details_button).setVisibility(GONE);
             }
             origDepartureTime.setTextColor(ContextCompat.getColor(getContext(), R.color.on_time_departing));
         }
-
-        View origTripView = convertView.findViewById(R.id.orig_trip_layout);
 
         if (transitType == TransitType.SUBWAY || transitType == TransitType.NHSL) {
             origTripView.setClickable(false);
@@ -354,16 +380,17 @@ public class NextToArriveTripView extends FrameLayout {
             origTripView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-//                    Intent intent = new Intent(getContext(), NextToArriveTripDetailActivity.class);
-//
-//                    intent.putExtra(Constants.DESTINATAION_STATION, destination);
-//                    intent.putExtra(Constants.STARTING_STATION, start);
-//                    intent.putExtra(Constants.TRANSIT_TYPE, transitType);
-//                    intent.putExtra(Constants.ROUTE_DIRECTION_MODEL, routeDirectionModel);
-//                    intent.putExtra(Constants.ARRIVAL_RECORD, item);
-//                    intent.putExtra(Constants.TRIP_ID, item.getOrigLineTripId());
-//
-//                    getContext().startActivity(intent);
+                    Intent intent = new Intent(getContext(), NextToArriveTripDetailActivity.class);
+
+                    intent.putExtra(Constants.DESTINATAION_STATION, connectionStations.get(item.getConnectionStationId()));
+                    intent.putExtra(Constants.STARTING_STATION, start);
+                    intent.putExtra(Constants.TRANSIT_TYPE, transitType);
+                    intent.putExtra(Constants.ROUTE_NAME, item.getOrigRouteName());
+                    intent.putExtra(Constants.ROUTE_ID, item.getOrigRouteId());
+                    intent.putExtra(Constants.TRIP_ID, item.getOrigLineTripId());
+                    intent.putExtra(Constants.VEHICLE_ID, item.getOrigVehicleId());
+
+                    getContext().startActivity(intent);
                 }
             });
         }
@@ -405,11 +432,17 @@ public class NextToArriveTripView extends FrameLayout {
 
         android.widget.TextView termDepartureTime = (android.widget.TextView) convertView.findViewById(R.id.term_depature_time);
 
-        Calendar arrivalCal = Calendar.getInstance();
-        arrivalCal.setTime(item.getTermDepartureTime());
-        arrivalCal.add(Calendar.MINUTE, item.getTermDelayMinutes());
-        termDepartureTime.setText(GeneralUtils.getDurationAsString(arrivalCal.getTimeInMillis() - System.currentTimeMillis(), TimeUnit.MILLISECONDS));
+        Calendar termDepartureCal = Calendar.getInstance();
+        termDepartureCal.setTime(item.getTermDepartureTime());
+        termDepartureCal.add(Calendar.MINUTE, item.getTermDelayMinutes());
 
+        long termDepatureMillis = termDepartureCal.getTimeInMillis() - System.currentTimeMillis();
+        if (termDepatureMillis >= 1000 * 60)
+            origDepartureTime.setText(GeneralUtils.getDurationAsString(termDepatureMillis, TimeUnit.MILLISECONDS));
+        else
+            origDepartureTime.setText("now");
+
+        View termTripView = convertView.findViewById(R.id.term_trip_layout);
         android.widget.TextView termTardyText = (android.widget.TextView) convertView.findViewById(R.id.term_tardy_text);
         if (item.getTermDelayMinutes() > 0) {
             termTardyText.setText(GeneralUtils.getDurationAsString(item.getTermDelayMinutes(), TimeUnit.MINUTES) + " late.");
@@ -424,11 +457,11 @@ public class NextToArriveTripView extends FrameLayout {
             } else {
                 termTardyText.setText("Scheduled");
                 termTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.scheduled));
+                termTripView.setClickable(false);
+                termTripView.findViewById(R.id.term_trip_details_button).setVisibility(GONE);
             }
             termDepartureTime.setTextColor(ContextCompat.getColor(getContext(), R.color.on_time_departing));
         }
-
-        View termTripView = convertView.findViewById(R.id.term_trip_layout);
 
         if (transitType == TransitType.SUBWAY || transitType == TransitType.NHSL) {
             termTripView.setClickable(false);
@@ -437,17 +470,17 @@ public class NextToArriveTripView extends FrameLayout {
             termTripView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-//                    Intent intent = new Intent(getContext(), NextToArriveTripDetailActivity.class);
-//
-//                    intent.putExtra(Constants.DESTINATAION_STATION, destination);
-//                    intent.putExtra(Constants.STARTING_STATION, start);
-//                    intent.putExtra(Constants.TRANSIT_TYPE, transitType);
-//                    intent.putExtra(Constants.ROUTE_DIRECTION_MODEL, routeDirectionModel);
-//                    intent.putExtra(Constants.ARRIVAL_RECORD, item);
-//                    intent.putExtra(Constants.TRIP_ID, item.getOrigLineTripId());
-//                    intent.putExtra(Constants.TERM_TRIP, Boolean.TRUE);
-//
-//                    getContext().startActivity(intent);
+                    Intent intent = new Intent(getContext(), NextToArriveTripDetailActivity.class);
+
+                    intent.putExtra(Constants.DESTINATAION_STATION, destination);
+                    intent.putExtra(Constants.STARTING_STATION, connectionStations.get(item.getConnectionStationId()));
+                    intent.putExtra(Constants.TRANSIT_TYPE, transitType);
+                    intent.putExtra(Constants.ROUTE_NAME, item.getTermRouteName());
+                    intent.putExtra(Constants.ROUTE_ID, item.getTermRouteId());
+                    intent.putExtra(Constants.TRIP_ID, item.getTermLineTripId());
+                    intent.putExtra(Constants.VEHICLE_ID, item.getTermVehicleId());
+
+                    getContext().startActivity(intent);
                 }
             });
         }

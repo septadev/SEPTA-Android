@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
 
         if (id == R.id.nav_next_to_arrive) {
-            switchToBundle(item, nextToArriveFragment, R.string.next_to_arrive, R.drawable.nta_active);
+            switchToBundle(item, nextToArriveFragment, R.string.next_to_arrive, R.drawable.ic_nta_active);
         }
 
         if (id == R.id.nav_schedule) {
@@ -176,7 +176,7 @@ public class MainActivity extends AppCompatActivity
             navigationView.setCheckedItem(R.id.nav_next_to_arrive);
             currentMenu = navigationView.getMenu().findItem(R.id.nav_next_to_arrive);
             previousIcon = currentMenu.getIcon();
-            currentMenu.setIcon(R.drawable.nta_active);
+            currentMenu.setIcon(R.drawable.ic_nta_active);
             getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, nextToArriveFragment).commit();
             setTitle(R.string.next_to_arrive);
         }

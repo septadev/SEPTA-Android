@@ -92,9 +92,15 @@
 
     <!-- Next To Arrive General -->
     <string name="nta_query_button_text">Next To Arrive</string>
-    <string name="trip_details">Trip Details</string>
     <string name="about_the_septa_app">About the SEPTA App</string>
     <string name="text_empty_trips">No recent trips</string>
+
+    <string name="trip_details_title_rail">Train Details</string>
+    <string name="trip_details_title_bus">Bus Details</string>
+    <string name="trip_details_title_trolley">Trolley Details</string>
+    <string name="trip_details_title_subway">Subway Details</string>
+    <string name="trip_details_title_nhsl">Train Details</string>
+
 
     <!-- Favorite -->
     <string name="delete_fav_modal_title">Delete Favorite?</string>

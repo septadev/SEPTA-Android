@@ -60,8 +60,11 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
     StopModel start;
     StopModel destination;
     TransitType transitType;
-    RouteDirectionModel routeDirectionModel;
-    NextArrivalModelResponse.NextArrivalRecord arrivalRecord;
+    //RouteDirectionModel routeDirectionModel;
+    //NextArrivalModelResponse.NextArrivalRecord arrivalRecord;
+    String routeShortName;
+    String routeDescription;
+
     String tripId;
     GoogleMap googleMap;
     Double vehicleLat;
@@ -71,8 +74,6 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
 
 
     TextView nextStopValue;
-    private View arrivingBorderView;
-    private TextView arrivingTime;
     private TextView arrivingValue;
     private TextView lineValue;
     private TextView lineLabel;
@@ -94,27 +95,27 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setTitle(R.string.trip_details);
-        setContentView(R.layout.nta_trip_details);
-
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+        setContentView(R.layout.nta_trip_details);
 
         Intent intent = getIntent();
         destination = (StopModel) intent.getExtras().get(Constants.DESTINATAION_STATION);
         start = (StopModel) intent.getExtras().get(Constants.STARTING_STATION);
         transitType = (TransitType) intent.getExtras().get(Constants.TRANSIT_TYPE);
-        routeDirectionModel = (RouteDirectionModel) intent.getExtras().get(Constants.ROUTE_DIRECTION_MODEL);
-        arrivalRecord = (NextArrivalModelResponse.NextArrivalRecord) intent.getExtras().get(Constants.ARRIVAL_RECORD);
+        vehicleId =intent.getExtras().getString(Constants.VEHICLE_ID);
         tripId = intent.getExtras().getString(Constants.TRIP_ID);
         String routeName = intent.getExtras().getString(Constants.ROUTE_NAME);
         routeId = intent.getExtras().getString(Constants.ROUTE_ID);
+        routeDescription = intent.getExtras().getString(Constants.ROUTE_DESCRIPTION);
 
         if (start != null && destination != null && transitType != null) {
 
 
             ((TextView) findViewById(R.id.trip_to_location_text)).setText(tripId + " to " + destination.getStopName());
+
+
+            setTitle(transitType.getString("trip_details_title", this));
 
 
             SupportMapFragment mapFragment = SupportMapFragment.newInstance();
@@ -125,7 +126,6 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
         }
 
         nextStopValue = (TextView) findViewById(R.id.next_stop_value);
-        arrivingTime = (TextView) findViewById(R.id.arriving_time);
         arrivingValue = (TextView) findViewById(R.id.arriving_value);
         lineValue = (TextView) findViewById(R.id.line_value);
         lineLabel = (TextView) findViewById(R.id.line_label);
@@ -135,37 +135,21 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
         trainsIdValue = (TextView) findViewById(R.id.trains_id_value);
         typeValue = (TextView) findViewById(R.id.type_value);
         vehicleValue = (TextView) findViewById(R.id.vehicle_value);
-        arrivingBorderView = findViewById(R.id.arriving_border);
 
         progressView = findViewById(R.id.progress_view);
 
         if (transitType != TransitType.RAIL) {
             lineLabel.setText("Route:");
-            lineValue.setText(routeDirectionModel.getRouteShortName() + " to " + routeDirectionModel.getDirectionDescription());
+            lineValue.setText(routeShortName + " to " + routeDescription);
             findViewById(R.id.num_train_layout).setVisibility(View.GONE);
             findViewById(R.id.type_layout).setVisibility(View.GONE);
             findViewById(R.id.next_stop_layout).setVisibility(View.GONE);
-            findViewById(R.id.arriving_time_layout).setVisibility(View.GONE);
             findViewById(R.id.vehicle_layout).setVisibility(View.VISIBLE);
         } else {
             lineValue.setText(routeName);
-            if (arrivalRecord.getConsist() != null && arrivalRecord.getConsist().size() > 0) {
-                numTrainsValue.setText(arrivalRecord.getConsist().size() + " - ");
-                StringBuilder trainsId = new StringBuilder();
-                boolean first = true;
-                for (String trainId : arrivalRecord.getConsist()) {
-                    if (!first) trainsId.append(", ");
-                    first = false;
-                    trainsId.append(trainId);
-                }
-                trainsIdValue.setText(trainsId.toString());
-            } else {
-                findViewById(R.id.num_train_layout).setVisibility(View.GONE);
-            }
         }
 
         if (transitType == TransitType.BUS || transitType == TransitType.TROLLEY) {
-            vehicleId = arrivalRecord.getOrigVehicleId();
             serviceRouteId = routeId;
         } else {
             vehicleId = tripId;
@@ -248,35 +232,47 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
                     vehicleLon = details.getLongitude();
 
 
-                    destStationValue.setText(details.getDestination().getStation());
+                    if (details.getDestination() != null)
+                        destStationValue.setText(details.getDestination().getStation());
+                    else
+                        destStationValue.setText("");
                     originStationValue.setText(details.getSource());
-                    nextStopValue.setText(details.getNextStop().getStation());
 
                     if (details.getDestination() == null) {
-                        arrivingBorderView.setBackgroundResource(R.drawable.no_rt_data_boarder);
+                        arrivingValue.setBackgroundResource(R.drawable.no_rt_data_boarder);
                         arrivingValue.setText("Real time data unavailable");
                         arrivingValue.setTextColor(ContextCompat.getColor(NextToArriveTripDetailActivity.this, R.color.scheduled));
                     } else if (details.getDestination().getLate() > 0) {
-                        arrivingBorderView.setBackgroundResource(R.drawable.late_boarder);
+                        arrivingValue.setBackgroundResource(R.drawable.late_boarder);
                         arrivingValue.setText(GeneralUtils.getDurationAsLongString(details.getDestination().getLate(), TimeUnit.MINUTES) + " late.");
                         arrivingValue.setTextColor(ContextCompat.getColor(NextToArriveTripDetailActivity.this, R.color.late_departing));
                     } else {
-                        arrivingBorderView.setBackgroundResource(R.drawable.ontime_tripdetails_boarder);
+                        arrivingValue.setBackgroundResource(R.drawable.ontime_tripdetails_boarder);
                         arrivingValue.setTextColor(ContextCompat.getColor(NextToArriveTripDetailActivity.this, R.color.on_time_departing));
                         arrivingValue.setText("On Time");
                     }
 
                     if (transitType == TransitType.RAIL) {
-                        DateFormat dateFormat = DateFormat.getTimeInstance(DateFormat.SHORT);
-                        Calendar cal = Calendar.getInstance();
-                        cal.setTime(arrivalRecord.getOrigArrivalTime());
-                        if (details.getDestination() != null)
-                            cal.add(Calendar.MINUTE, details.getDestination().getLate());
-                        arrivingTime.setText(dateFormat.format(cal.getTime()));
-
                         typeValue.setText(details.getService());
+                        if (details.getNextStop() != null)
+                            nextStopValue.setText(details.getNextStop().getStation());
+                        else
+                            nextStopValue.setText("");
                     }
 
+                    if (details.getConsist() != null && details.getConsist().size() > 0) {
+                        numTrainsValue.setText(details.getConsist().size() + " - ");
+                        StringBuilder trainsId = new StringBuilder();
+                        boolean first = true;
+                        for (String trainId : details.getConsist()) {
+                            if (!first) trainsId.append(", ");
+                            first = false;
+                            trainsId.append(trainId);
+                        }
+                        trainsIdValue.setText(trainsId.toString());
+                    } else {
+                        findViewById(R.id.num_train_layout).setVisibility(View.GONE);
+                    }
                     updateMap();
                     return true;
                 } else {
@@ -370,7 +366,7 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
         builder.include(startingStationLatLng);
         builder.include(destinationStationLatLng);
         LatLngBounds bounds = builder.build();
-        googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 80, getResources().getDisplayMetrics())));
+        googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 30, getResources().getDisplayMetrics())));
 
     }
 

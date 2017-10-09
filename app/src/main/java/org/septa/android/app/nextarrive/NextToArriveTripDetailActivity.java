@@ -103,7 +103,7 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
         destination = (StopModel) intent.getExtras().get(Constants.DESTINATAION_STATION);
         start = (StopModel) intent.getExtras().get(Constants.STARTING_STATION);
         transitType = (TransitType) intent.getExtras().get(Constants.TRANSIT_TYPE);
-        vehicleId =intent.getExtras().getString(Constants.VEHICLE_ID);
+        vehicleId = intent.getExtras().getString(Constants.VEHICLE_ID);
         tripId = intent.getExtras().getString(Constants.TRIP_ID);
         String routeName = intent.getExtras().getString(Constants.ROUTE_NAME);
         routeId = intent.getExtras().getString(Constants.ROUTE_ID);
@@ -161,7 +161,10 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
             twitterId.setText("@SEPTA_SOCIAL");
             webUrl = getString(R.string.twitter_url);
         } else {
-            twitterId.setText("@SEPTA_" + routeId.toUpperCase());
+            if ("med".equalsIgnoreCase(routeId)) {
+                twitterId.setText("@SEPTA_ELW");
+            } else
+                twitterId.setText("@SEPTA_" + routeId.toUpperCase());
             webUrl = "https://twitter.com/SEPTA_" + routeId.toUpperCase();
             appUrl = getString(getResources().getIdentifier("twitter_app_url_" + routeId.toLowerCase(), "string", R.class.getPackage().getName()));
         }

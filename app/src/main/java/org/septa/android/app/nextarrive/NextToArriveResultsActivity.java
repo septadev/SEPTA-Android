@@ -24,7 +24,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
-import android.widget.TextView;
 
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -53,12 +52,16 @@ import org.septa.android.app.favorites.EditFavoriteDialogFragment;
 import org.septa.android.app.favorites.SaveFavoritesAsyncTask;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Favorite;
+import org.septa.android.app.services.apiinterfaces.model.NextArrivalDetails;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalModelResponse;
 import org.septa.android.app.support.Consumer;
+import org.septa.android.app.support.GeneralUtils;
 import org.septa.android.app.support.MapUtils;
+import org.septa.android.app.view.TextView;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -92,6 +95,8 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     private NextArrivalModelResponseParser parser;
     private int peekHeight = 0;
     private BottomSheetBehavior bottomSheetBehavior;
+
+    Map<String, NextArrivalDetails> details = new HashMap<String, NextArrivalDetails>();
 
     public void setDestination(StopModel destination) {
         this.destination = destination;
@@ -335,7 +340,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         final View mapContainer = findViewById(R.id.map_container);
 
         LatLng startingStationLatLng = new LatLng(start.getLatitude(), start.getLongitude());
-        LatLng destinationStationLatLng = new LatLng(destination.getLatitude(), destination.getLongitude());
+        final LatLng destinationStationLatLng = new LatLng(destination.getLatitude(), destination.getLongitude());
         googleMap.addMarker(new MarkerOptions().position(startingStationLatLng).title(start.getStopName()));
         googleMap.addMarker(new MarkerOptions().position(destinationStationLatLng).title(destination.getStopName()));
 
@@ -376,9 +381,44 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                             return null;
 
                         TextView title = (TextView) getLayoutInflater().inflate(R.layout.vehicle_map_details, null);
-                        //title.setText("This will have the Trip Details Here.");
+                        NextArrivalDetails detail = details.get(marker.getTitle());
 
+                        if (transitType == TransitType.RAIL) {
+                            StringBuilder builder = new StringBuilder("Train: " + marker.getTitle());
+                            if (detail != null && detail.getDetails() != null) {
+                                builder.append("<br>");
+                                builder.append("Status: ");
+                                if (detail.getDetails().getNextStop().getLate() > 0) {
+                                    builder.append(GeneralUtils.getDurationAsString(detail.getDetails().getNextStop().getLate(), TimeUnit.MINUTES) + " late.");
+                                } else {
+                                    builder.append("On time");
+                                }
+                                if (detail.getDetails().getConsist().size() > 0) {
+                                    if (!(detail.getDetails().getConsist().size() == 1 && "".equals(detail.getDetails().getConsist().get(0)))) {
+                                        builder.append("<br>");
+                                        builder.append("# of Train Cars: ");
+                                        builder.append(detail.getDetails().getConsist().size());
+                                    }
+                                }
+                            }
+                            title.setHtml(builder.toString());
+                        } else {
+                            StringBuilder builder = new StringBuilder("Block ID: " + marker.getTitle());
+                            if (detail != null && detail.getDetails() != null) {
+                                builder.append("<br>");
+                                builder.append("Vehicle Number: ");
+                                builder.append(detail.getDetails().getVehicleId());
+                                builder.append("<br>");
+                                builder.append("Status: ");
+                                if (detail.getDetails().getNextStop().getLate() > 0) {
+                                    builder.append(GeneralUtils.getDurationAsString(detail.getDetails().getNextStop().getLate(), TimeUnit.MINUTES) + " late.");
+                                } else {
+                                    builder.append("On time");
+                                }
 
+                            }
+                            title.setHtml(builder.toString());
+                        }
                         return title;
                     }
                 });
@@ -388,7 +428,9 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         int permissionCheck = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION);
 
-        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+        if (permissionCheck == PackageManager.PERMISSION_GRANTED)
+
+        {
             Log.d(TAG, "Location Permission Granted.");
             Task<Location> locationTask = LocationServices.getFusedLocationProviderClient(this).getLastLocation()
                     .addOnSuccessListener(this, new OnSuccessListener<Location>() {
@@ -406,7 +448,9 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                     });
         }
 
-        refresh.setOnClickListener(new View.OnClickListener() {
+        refresh.setOnClickListener(new View.OnClickListener()
+
+        {
             @Override
             public void onClick(View view) {
                 updateNextToArriveData();
@@ -438,6 +482,63 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                     if (response == null || response.body() == null) {
                         Log.w(TAG, "invalid response from service.");
                     } else {
+
+                        // Go through all of the results and kick off a call for Details for each vehichle that has RT data.
+                        for (final NextArrivalModelResponse.NextArrivalRecord nextArrivalRecord : response.body().getNextArrivalRecords()) {
+                            if (nextArrivalRecord.isOrigRealtime()) {
+
+                                String routeId = null;
+                                String dest = destination.getStopId();
+                                final String vehicleId;
+                                if (transitType != TransitType.RAIL) {
+                                    routeId = nextArrivalRecord.getOrigRouteId();
+                                    vehicleId = nextArrivalRecord.getOrigVehicleId();
+                                } else {
+                                    vehicleId = nextArrivalRecord.getOrigLineTripId();
+                                }
+
+                                if (nextArrivalRecord.getConnectionStationId() != null) {
+                                    dest = nextArrivalRecord.getConnectionStationId().toString();
+                                }
+
+                                SeptaServiceFactory.getNextArrivalService().getNextArrivalDetails(dest, routeId, vehicleId).enqueue(new Callback<NextArrivalDetails>() {
+                                    @Override
+                                    public void onResponse(Call<NextArrivalDetails> call, Response<NextArrivalDetails> response) {
+                                        addDetail(response, nextArrivalRecord.getOrigLineTripId());
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<NextArrivalDetails> call, Throwable t) {
+
+                                    }
+                                });
+                            }
+
+                            if (nextArrivalRecord.getConnectionStationId() != null) {
+                                if (nextArrivalRecord.isTermRealtime()) {
+                                    String routeId = null;
+                                    String dest = destination.getStopId();
+                                    final String vehicleId;
+                                    if (transitType != TransitType.RAIL) {
+                                        routeId = nextArrivalRecord.getOrigRouteId();
+                                        vehicleId = nextArrivalRecord.getTermVehicleId();
+                                    } else {
+                                        vehicleId = nextArrivalRecord.getTermLineTripId();
+                                    }
+                                    SeptaServiceFactory.getNextArrivalService().getNextArrivalDetails(dest, routeId, vehicleId).enqueue(new Callback<NextArrivalDetails>() {
+                                        @Override
+                                        public void onResponse(Call<NextArrivalDetails> call, Response<NextArrivalDetails> response) {
+                                            addDetail(response, nextArrivalRecord.getOrigLineTripId());
+                                        }
+
+                                        @Override
+                                        public void onFailure(Call<NextArrivalDetails> call, Throwable t) {
+
+                                        }
+                                    });
+                                }
+                            }
+                        }
 
                         if (System.currentTimeMillis() - timestamp < 1000) {
                             AsyncTask<Long, Void, Void> delayTask = new AsyncTask<Long, Void, Void>() {
@@ -495,6 +596,10 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
         }
 
+    }
+
+    private void addDetail(Response<NextArrivalDetails> response, String origVehicleId) {
+        details.put(origVehicleId, response.body());
     }
 
     private void updateMap() {

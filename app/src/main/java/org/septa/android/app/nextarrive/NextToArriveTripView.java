@@ -254,7 +254,7 @@ public class NextToArriveTripView extends FrameLayout {
         boolean enableClick = true;
         android.widget.TextView origTardyText = (android.widget.TextView) line.findViewById(R.id.orig_tardy_text);
         if (unit.getOrigDelayMinutes() > 0) {
-            origTardyText.setText(unit.getOrigDelayMinutes() + " min late.");
+            origTardyText.setText(GeneralUtils.getDurationAsString(unit.getOrigDelayMinutes(), TimeUnit.MINUTES) + " late.");
             origTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.delay_minutes));
             View origDepartingBorder = line.findViewById(R.id.orig_departing_border);
             origDepartingBorder.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.late_boarder));

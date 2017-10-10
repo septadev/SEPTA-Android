@@ -6,8 +6,5 @@
     android:layout_height="wrap_content"
     android:letterSpacing="-0.02"
     android:textColor="#000000"
-    android:textSize="12sp"
-    app:font="@string/font_roboto_bold"
-    android:text="Train: #545 to Thorndale
-Status: 3 mins late
-# of Train Cars: 4" />
+    android:textSize="14sp"
+    app:font="@string/font_roboto_bold" />

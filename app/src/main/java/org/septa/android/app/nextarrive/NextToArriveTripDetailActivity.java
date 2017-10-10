@@ -32,18 +32,14 @@ import com.google.maps.android.data.kml.KmlLayer;
 import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
-import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalDetails;
-import org.septa.android.app.services.apiinterfaces.model.NextArrivalModelResponse;
 import org.septa.android.app.support.GeneralUtils;
 import org.septa.android.app.support.MapUtils;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
-import java.text.DateFormat;
-import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
 import retrofit2.Call;
@@ -243,9 +239,9 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
                         arrivingValue.setBackgroundResource(R.drawable.no_rt_data_boarder);
                         arrivingValue.setText("Real time data unavailable");
                         arrivingValue.setTextColor(ContextCompat.getColor(NextToArriveTripDetailActivity.this, R.color.scheduled));
-                    } else if (details.getDestination().getLate() > 0) {
+                    } else if (details.getDestination().getDelay() > 0) {
                         arrivingValue.setBackgroundResource(R.drawable.late_boarder);
-                        arrivingValue.setText(GeneralUtils.getDurationAsLongString(details.getDestination().getLate(), TimeUnit.MINUTES) + " late.");
+                        arrivingValue.setText(GeneralUtils.getDurationAsLongString(details.getDestination().getDelay(), TimeUnit.MINUTES) + " late.");
                         arrivingValue.setTextColor(ContextCompat.getColor(NextToArriveTripDetailActivity.this, R.color.late_departing));
                     } else {
                         arrivingValue.setBackgroundResource(R.drawable.ontime_tripdetails_boarder);

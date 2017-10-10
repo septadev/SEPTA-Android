@@ -23,7 +23,9 @@ public class NextArrivalModelResponseParser {
     public static final int BOTH = 2;
 
 
-    private Map<LatLng, NextArrivalModelResponse.NextArrivalRecord> latLngMap = new HashMap<LatLng, NextArrivalModelResponse.NextArrivalRecord>();
+    private Map<LatLng, NextArrivalModelResponse.NextArrivalRecord> origLatLngMap = new HashMap<LatLng, NextArrivalModelResponse.NextArrivalRecord>();
+    private Map<LatLng, NextArrivalModelResponse.NextArrivalRecord> termLatLngMap = new HashMap<LatLng, NextArrivalModelResponse.NextArrivalRecord>();
+
     private Set<String> routeIdSet = new HashSet<String>();
     List<NextArrivalModelResponse.NextArrivalRecord> results;
 
@@ -43,7 +45,12 @@ public class NextArrivalModelResponseParser {
         for (NextArrivalModelResponse.NextArrivalRecord data : results) {
             if (data.getOrigVehicleLat() != null && data.getOrigVehicleLon() != null) {
                 LatLng vehicleLatLng = new LatLng(data.getOrigVehicleLat(), data.getOrigVehicleLon());
-                latLngMap.put(vehicleLatLng, data);
+                origLatLngMap.put(vehicleLatLng, data);
+            }
+
+            if (data.getTermVehicleLat() != null && data.getTermVehicleLon() != null) {
+                LatLng vehicleLatLng = new LatLng(data.getTermVehicleLat(), data.getTermVehicleLon());
+                termLatLngMap.put(vehicleLatLng, data);
             }
 
             if (!routeIdSet.contains(data.getOrigRouteId())) {
@@ -60,8 +67,12 @@ public class NextArrivalModelResponseParser {
 
     }
 
-    public Map<LatLng, NextArrivalModelResponse.NextArrivalRecord> getLatLngMap() {
-        return latLngMap;
+    public Map<LatLng, NextArrivalModelResponse.NextArrivalRecord> getOrigLatLngMap() {
+        return origLatLngMap;
+    }
+
+    public Map<LatLng, NextArrivalModelResponse.NextArrivalRecord> getTermLatLngMap() {
+        return termLatLngMap;
     }
 
     public Set<String> getRouteIdSet() {

@@ -26,7 +26,7 @@ public class NextArrivalDetails {
         String station;
         @SerializedName("arrival_time")
         String arrivalTime;
-        @SerializedName("late")
+        @SerializedName("delay")
         int late;
 
         public String getStation() {
@@ -59,8 +59,8 @@ public class NextArrivalDetails {
         String station;
         @SerializedName("arrival_time")
         String arrival_time;
-        @SerializedName("late")
-        int late;
+        @SerializedName("delay")
+        int delay;
 
         public String getStation() {
             return station;
@@ -78,12 +78,12 @@ public class NextArrivalDetails {
             this.arrival_time = arrival_time;
         }
 
-        public int getLate() {
-            return late;
+        public int getDelay() {
+            return delay;
         }
 
-        public void setLate(int late) {
-            this.late = late;
+        public void setDelay(int delay) {
+            this.delay = delay;
         }
     }
 

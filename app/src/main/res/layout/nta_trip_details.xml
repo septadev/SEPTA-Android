@@ -98,7 +98,7 @@
                         android:background="@drawable/late_boarder"
                         android:paddingBottom="12dp"
                         android:paddingTop="12dp"
-                        android:text="3 min late"
+                        android:text="3 min delay"
                         android:textAlignment="center"
                         android:textColor="@color/late_departing"
                         android:textSize="14sp"

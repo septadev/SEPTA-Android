@@ -27,7 +27,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="0dp"
         android:layout_marginTop="0dp"
-        android:text="3 min late"
+        android:text="3 min delay"
         android:textColor="@color/no_delay_minutes"
         app:font="@string/font_roboto_bold"
         app:layout_constraintLeft_toLeftOf="@+id/orig_arrival_time_text"

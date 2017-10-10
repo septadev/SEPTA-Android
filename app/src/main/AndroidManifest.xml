@@ -39,11 +39,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".temp.ComingSoonActivity"
-            android:label="@string/septa"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
-        <activity
             android:name=".systemstatus.SystemStatusResultsActivity"
             android:label="@string/septa"
             android:screenOrientation="portrait"

@@ -389,7 +389,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                                 builder.append("<br>");
                                 builder.append("Status: ");
                                 if (detail.getDetails().getNextStop().getLate() > 0) {
-                                    builder.append(GeneralUtils.getDurationAsString(detail.getDetails().getNextStop().getLate(), TimeUnit.MINUTES) + " late.");
+                                    builder.append(GeneralUtils.getDurationAsLongString(detail.getDetails().getNextStop().getLate(), TimeUnit.MINUTES) + " late.");
                                 } else {
                                     builder.append("On time");
                                 }
@@ -410,8 +410,8 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                                 builder.append(detail.getDetails().getVehicleId());
                                 builder.append("<br>");
                                 builder.append("Status: ");
-                                if (detail.getDetails().getNextStop().getLate() > 0) {
-                                    builder.append(GeneralUtils.getDurationAsString(detail.getDetails().getNextStop().getLate(), TimeUnit.MINUTES) + " late.");
+                                if (detail.getDetails().getDestination().getDelay() > 0) {
+                                    builder.append(GeneralUtils.getDurationAsLongString(detail.getDetails().getDestination().getDelay(), TimeUnit.MINUTES) + " late.");
                                 } else {
                                     builder.append("On time");
                                 }
@@ -509,7 +509,8 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
                                     @Override
                                     public void onFailure(Call<NextArrivalDetails> call, Throwable t) {
-
+                                        Log.d(TAG, t.getMessage());
+                                        Log.d(TAG, t.getStackTrace().toString());
                                     }
                                 });
                             }
@@ -533,7 +534,8 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
                                         @Override
                                         public void onFailure(Call<NextArrivalDetails> call, Throwable t) {
-
+                                            Log.d(TAG, t.getMessage());
+                                            Log.d(TAG, t.getStackTrace().toString());
                                         }
                                     });
                                 }
@@ -607,8 +609,12 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         googleMap.addMarker(startMarker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
         googleMap.addMarker(destMarker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
         BitmapDescriptor vehicleBitMap = BitmapDescriptorFactory.fromResource(transitType.getMapMarkerResource());
-        for (Map.Entry<LatLng, NextArrivalModelResponse.NextArrivalRecord> entry : parser.getLatLngMap().entrySet()) {
+        for (Map.Entry<LatLng, NextArrivalModelResponse.NextArrivalRecord> entry : parser.getOrigLatLngMap().entrySet()) {
             googleMap.addMarker(new MarkerOptions().position(entry.getKey()).title(entry.getValue().getOrigLineTripId()).icon(vehicleBitMap));
+        }
+
+        for (Map.Entry<LatLng, NextArrivalModelResponse.NextArrivalRecord> entry : parser.getTermLatLngMap().entrySet()) {
+            googleMap.addMarker(new MarkerOptions().position(entry.getKey()).title(entry.getValue().getTermLineTripId()).icon(vehicleBitMap));
         }
 
         for (String routeId : parser.getRouteIdSet()) {

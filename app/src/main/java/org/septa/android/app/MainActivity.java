@@ -25,7 +25,7 @@ import org.septa.android.app.schedules.SchedulesFragment;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.systemmap.SystemMapFragment;
 import org.septa.android.app.systemstatus.SystemStatusFragment;
-import org.septa.android.app.temp.ComingSoonFragement;
+import org.septa.android.app.about.AboutFragement;
 import org.septa.android.app.webview.WebViewFragment;
 
 import java.util.HashMap;
@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity
     Fragment systemMap = new SystemMapFragment();
     Fragment events = null;
     Fragment connect = new ConnectFragement();
-    Fragment about = new ComingSoonFragement();
+    Fragment about = new AboutFragement();
 
     @Override
     public final void onCreate(@Nullable Bundle savedInstanceState) {

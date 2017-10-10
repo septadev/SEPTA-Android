@@ -126,7 +126,7 @@ Late Night Changes to Service
 
 Beginning Monday, June 19, 2017
 
-Due to an ongoing track improvement project, the following adjustments to late night service will take effect starting Monday, June 19th. This construction is expected to last 18 weeks.
+Due to an ongoing track improvement project, the following adjustments to delay night service will take effect starting Monday, June 19th. This construction is expected to last 18 weeks.
 
 Weekday service will terminate at Temple University Station for trains #466 (departing terminals at 9:07 p.m. - Alternate Option: Lansdale/Doylestown #594, departing Suburban at 9:50 p.m., with stops at Melrose, Elkins Park Stations), #470 (departing terminals at 10:07 p.m. - Alternate Option, Warminster #472, departing Suburban at 11:05 p.m.), and #474 (departing terminals at 11:07 p.m. - Alternate Option: Lansdale/Doylestown #596, departing Suburban at 11:35 p.m., with stops at Elkins, Melrose Park Stations)
 
@@ -137,7 +137,7 @@ Opposite Side Boarding at Melrose &amp; Elkins Park Stations: 9:30 p.m. - End of
 
 While this work takes place, ALL trains will board from the INBOUND (toward Center City) platform at Melrose and Elkins Park Stations. Please listen for station announcements for any additional changes to service or boarding locations.
 
-For a complete list of the adjustments to service, please visit the late night service page."
+For a complete list of the adjustments to service, please visit the delay night service page."
                 android:textColor="#000000"
                 android:textSize="12sp"
                 app:font="@string/font_roboto_light" />

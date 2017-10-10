@@ -34,12 +34,12 @@ public class GeneralUtils {
         long minutes = totalMinutes - hours * 60;
         StringBuilder builder = new StringBuilder();
         if (hours > 0) {
-            builder.append(hours).append(" hour");
+            builder.append(hours).append(" hours");
             if (minutes > 0) {
-                builder.append(" ").append(minutes).append(" min");
+                builder.append(" ").append(minutes).append(" mins");
             }
         } else
-            builder.append(minutes).append(" min");
+            builder.append(minutes).append(" mins");
 
         return builder.toString();
     }

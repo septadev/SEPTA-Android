@@ -102,6 +102,10 @@ public class NextArrivalDetails {
         String trackChange;
         @SerializedName("speed")
         String speed;
+        @SerializedName("vehicleid")
+        String vehicleId;
+        @SerializedName("blockid")
+        String blockId;
 
         @SerializedName("direction")
         String direction;
@@ -222,6 +226,22 @@ public class NextArrivalDetails {
 
         public void setDestination(Destination destination) {
             this.destination = destination;
+        }
+
+        public String getVehicleId() {
+            return vehicleId;
+        }
+
+        public void setVehicleId(String vehicleId) {
+            this.vehicleId = vehicleId;
+        }
+
+        public String getBlockId() {
+            return blockId;
+        }
+
+        public void setBlockId(String blockId) {
+            this.blockId = blockId;
         }
     }
 

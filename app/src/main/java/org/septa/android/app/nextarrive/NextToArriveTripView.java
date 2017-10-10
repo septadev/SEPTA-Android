@@ -251,6 +251,7 @@ public class NextToArriveTripView extends FrameLayout {
         else
             origDepartureTime.setText("now");
 
+        boolean enableClick = true;
         android.widget.TextView origTardyText = (android.widget.TextView) line.findViewById(R.id.orig_tardy_text);
         if (unit.getOrigDelayMinutes() > 0) {
             origTardyText.setText(unit.getOrigDelayMinutes() + " min late.");
@@ -265,14 +266,15 @@ public class NextToArriveTripView extends FrameLayout {
             } else {
                 origTardyText.setText("Scheduled");
                 origTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.scheduled));
-                line.setClickable(false);
-                line.findViewById(R.id.trip_details_button).setVisibility(GONE);
+                enableClick = false;
             }
             origDepartureTime.setTextColor(ContextCompat.getColor(getContext(), R.color.on_time_departing));
         }
 
+        if (transitType == TransitType.SUBWAY || transitType == TransitType.NHSL)
+            enableClick = false;
 
-        if (transitType == TransitType.SUBWAY || transitType == TransitType.NHSL) {
+        if (!enableClick) {
             line.setClickable(false);
             line.findViewById(R.id.trip_details_button).setVisibility(GONE);
         } else {
@@ -352,6 +354,7 @@ public class NextToArriveTripView extends FrameLayout {
         else
             origDepartureTime.setText("now");
 
+        boolean enableOrigClick = true;
         View origTripView = convertView.findViewById(R.id.orig_trip_layout);
         android.widget.TextView origTardyText = (android.widget.TextView) convertView.findViewById(R.id.orig_tardy_text);
         if (item.getOrigDelayMinutes() > 0) {
@@ -367,13 +370,17 @@ public class NextToArriveTripView extends FrameLayout {
             } else {
                 origTardyText.setText("Scheduled");
                 origTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.scheduled));
-                origTripView.setClickable(false);
-                origTripView.findViewById(R.id.orig_trip_details_button).setVisibility(GONE);
+                enableOrigClick = false;
             }
             origDepartureTime.setTextColor(ContextCompat.getColor(getContext(), R.color.on_time_departing));
         }
 
+
         if (transitType == TransitType.SUBWAY || transitType == TransitType.NHSL) {
+            enableOrigClick = false;
+        }
+
+        if (!enableOrigClick) {
             origTripView.setClickable(false);
             origTripView.findViewById(R.id.orig_trip_details_button).setVisibility(GONE);
         } else {
@@ -386,7 +393,10 @@ public class NextToArriveTripView extends FrameLayout {
                     intent.putExtra(Constants.STARTING_STATION, start);
                     intent.putExtra(Constants.TRANSIT_TYPE, transitType);
                     intent.putExtra(Constants.ROUTE_NAME, item.getOrigRouteName());
-                    intent.putExtra(Constants.ROUTE_ID, item.getOrigRouteId());
+                    if (routeDirectionModel != null)
+                        intent.putExtra(Constants.ROUTE_ID, routeDirectionModel.getRouteShortName());
+                    else
+                        intent.putExtra(Constants.ROUTE_ID, item.getOrigRouteId());
                     intent.putExtra(Constants.TRIP_ID, item.getOrigLineTripId());
                     intent.putExtra(Constants.VEHICLE_ID, item.getOrigVehicleId());
 
@@ -394,6 +404,7 @@ public class NextToArriveTripView extends FrameLayout {
                 }
             });
         }
+
         android.widget.TextView connectionStationText = (android.widget.TextView) convertView.findViewById(R.id.connection_station_name);
         connectionStationText.setText("Connect @ " + item.getConnectionStationName());
 
@@ -442,6 +453,7 @@ public class NextToArriveTripView extends FrameLayout {
         else
             origDepartureTime.setText("now");
 
+        boolean termEnableClick = true;
         View termTripView = convertView.findViewById(R.id.term_trip_layout);
         android.widget.TextView termTardyText = (android.widget.TextView) convertView.findViewById(R.id.term_tardy_text);
         if (item.getTermDelayMinutes() > 0) {
@@ -457,13 +469,16 @@ public class NextToArriveTripView extends FrameLayout {
             } else {
                 termTardyText.setText("Scheduled");
                 termTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.scheduled));
-                termTripView.setClickable(false);
-                termTripView.findViewById(R.id.term_trip_details_button).setVisibility(GONE);
+                termEnableClick = false;
             }
             termDepartureTime.setTextColor(ContextCompat.getColor(getContext(), R.color.on_time_departing));
         }
 
         if (transitType == TransitType.SUBWAY || transitType == TransitType.NHSL) {
+            termEnableClick = false;
+        }
+
+        if (!termEnableClick) {
             termTripView.setClickable(false);
             termTripView.findViewById(R.id.term_trip_details_button).setVisibility(GONE);
         } else {

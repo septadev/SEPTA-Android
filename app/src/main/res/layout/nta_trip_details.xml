@@ -166,6 +166,36 @@
                         </RelativeLayout>
 
                         <RelativeLayout
+                            android:id="@+id/blockid_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:visibility="gone"
+                            tools:visibility="visible">
+
+                            <org.septa.android.app.view.TextView
+                                android:id="@+id/blockid_label"
+                                android:layout_width="240dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="5dp"
+                                android:text="Block ID"
+                                android:textColor="#000000"
+                                android:textSize="14sp"
+                                app:font="@string/font_roboto_light" />
+
+                            <org.septa.android.app.view.TextView
+                                android:id="@+id/blockid_value"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignBottom="@id/vehicle_label"
+                                android:layout_alignParentRight="true"
+                                android:text="3154"
+                                android:textColor="#000000"
+                                android:textSize="14sp"
+                                app:font="@string/font_roboto_bold" />
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:id="@+id/origin_layout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content">
 
@@ -191,7 +221,7 @@
                                 app:font="@string/font_roboto_bold" />
                         </RelativeLayout>
 
-                        <RelativeLayout
+                        <RelativeLayout android:id="@+id/dest_layout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content">
 

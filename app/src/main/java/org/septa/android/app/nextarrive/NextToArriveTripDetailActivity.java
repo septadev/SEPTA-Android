@@ -62,7 +62,6 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
     TransitType transitType;
     //RouteDirectionModel routeDirectionModel;
     //NextArrivalModelResponse.NextArrivalRecord arrivalRecord;
-    String routeShortName;
     String routeDescription;
 
     String tripId;
@@ -89,6 +88,7 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
     private String vehicleId;
 
     View progressView;
+    private TextView blockidValue;
 
 
     @Override
@@ -110,10 +110,9 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
         routeDescription = intent.getExtras().getString(Constants.ROUTE_DESCRIPTION);
 
         if (start != null && destination != null && transitType != null) {
-
-
-            ((TextView) findViewById(R.id.trip_to_location_text)).setText(tripId + " to " + destination.getStopName());
-
+            TextView tripToLocationText = ((TextView) findViewById(R.id.trip_to_location_text));
+            tripToLocationText.setText(tripId + " to " + destination.getStopName());
+            tripToLocationText.setCompoundDrawablesWithIntrinsicBounds(ContextCompat.getDrawable(this, transitType.getTabInactiveImageResource()), null, null, null);
 
             setTitle(transitType.getString("trip_details_title", this));
 
@@ -135,16 +134,21 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
         trainsIdValue = (TextView) findViewById(R.id.trains_id_value);
         typeValue = (TextView) findViewById(R.id.type_value);
         vehicleValue = (TextView) findViewById(R.id.vehicle_value);
+        blockidValue = (TextView) findViewById(R.id.blockid_value);
 
         progressView = findViewById(R.id.progress_view);
 
         if (transitType != TransitType.RAIL) {
             lineLabel.setText("Route:");
-            lineValue.setText(routeShortName + " to " + routeDescription);
+            lineValue.setText(routeId + " to " + routeDescription);
             findViewById(R.id.num_train_layout).setVisibility(View.GONE);
             findViewById(R.id.type_layout).setVisibility(View.GONE);
             findViewById(R.id.next_stop_layout).setVisibility(View.GONE);
+            findViewById(R.id.dest_layout).setVisibility(View.GONE);
+            findViewById(R.id.origin_layout).setVisibility(View.GONE);
             findViewById(R.id.vehicle_layout).setVisibility(View.VISIBLE);
+            findViewById(R.id.blockid_layout).setVisibility(View.VISIBLE);
+
         } else {
             lineValue.setText(routeName);
         }
@@ -235,12 +239,6 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
                     vehicleLon = details.getLongitude();
 
 
-                    if (details.getDestination() != null)
-                        destStationValue.setText(details.getDestination().getStation());
-                    else
-                        destStationValue.setText("");
-                    originStationValue.setText(details.getSource());
-
                     if (details.getDestination() == null) {
                         arrivingValue.setBackgroundResource(R.drawable.no_rt_data_boarder);
                         arrivingValue.setText("Real time data unavailable");
@@ -255,26 +253,40 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
                         arrivingValue.setText("On Time");
                     }
 
-                    if (transitType == TransitType.RAIL) {
+
+                    if (transitType != TransitType.RAIL) {
+                        findViewById(R.id.num_train_layout).setVisibility(View.GONE);
+                        blockidValue.setText(details.getBlockId());
+                    } else {
+                        if (details.getDestination() != null)
+                            destStationValue.setText(details.getDestination().getStation());
+                        else
+                            destStationValue.setText("");
+                        originStationValue.setText(details.getSource());
+
                         typeValue.setText(details.getService());
                         if (details.getNextStop() != null)
                             nextStopValue.setText(details.getNextStop().getStation());
                         else
                             nextStopValue.setText("");
-                    }
 
-                    if (details.getConsist() != null && details.getConsist().size() > 0) {
-                        numTrainsValue.setText(details.getConsist().size() + " - ");
-                        StringBuilder trainsId = new StringBuilder();
-                        boolean first = true;
-                        for (String trainId : details.getConsist()) {
-                            if (!first) trainsId.append(", ");
-                            first = false;
-                            trainsId.append(trainId);
+                        if (details.getConsist() != null && details.getConsist().size() > 0) {
+                            if (details.getConsist().size() == 1 && "".equals(details.getConsist().get(0).trim())) {
+                                numTrainsValue.setText("");
+                            } else {
+                                numTrainsValue.setText(details.getConsist().size() + " - ");
+                                StringBuilder trainsId = new StringBuilder();
+                                boolean first = true;
+                                for (String trainId : details.getConsist()) {
+                                    if (!first) trainsId.append(", ");
+                                    first = false;
+                                    trainsId.append(trainId);
+                                }
+                                trainsIdValue.setText(trainsId.toString());
+                            }
+                        } else {
+                            numTrainsValue.setText("");
                         }
-                        trainsIdValue.setText(trainsId.toString());
-                    } else {
-                        findViewById(R.id.num_train_layout).setVisibility(View.GONE);
                     }
                     updateMap();
                     return true;

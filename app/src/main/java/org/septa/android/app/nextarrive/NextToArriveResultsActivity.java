@@ -362,6 +362,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                 updateMap();
                 googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, getResources().getDisplayMetrics())));
 
+
                 googleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
 
                     @Override
@@ -371,11 +372,12 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
                     @Override
                     public View getInfoContents(Marker marker) {
-                        TextView title = new TextView(NextToArriveResultsActivity.this);
-                        if (!startMarker.getTitle().equals(marker.getTitle()) && !destMarker.getTitle().equals(marker.getTitle()))
-                            title.setText("This will have the Trip Details Here.");
-                        else
-                            title.setText(marker.getTitle());
+                        if (startMarker.getTitle().equals(marker.getTitle()) || destMarker.getTitle().equals(marker.getTitle()))
+                            return null;
+
+                        TextView title = (TextView) getLayoutInflater().inflate(R.layout.vehicle_map_details, null);
+                        //title.setText("This will have the Trip Details Here.");
+
 
                         return title;
                     }

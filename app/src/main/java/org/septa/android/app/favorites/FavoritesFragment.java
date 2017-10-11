@@ -29,6 +29,10 @@ import org.septa.android.app.services.apiinterfaces.model.NextArrivalModelRespon
 import java.util.HashMap;
 import java.util.Map;
 
+import android.os.Handler;
+
+import java.util.logging.LogRecord;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -36,14 +40,18 @@ import retrofit2.Response;
 /**
  * Created by jkampf on 9/5/17.
  */
-public class FavoritesFragment extends Fragment {
+public class FavoritesFragment extends Fragment implements Runnable {
 
 
+    private static final int REFRESH_DELAY_SECONDS = 30;
     private Map<String, Favorite> favoritesMap;
     private Map<String, TextView> favoriteTitlesMap = new HashMap<String, TextView>();
     private Map<String, NextToArriveTripView> nextToArriveTripViewMap = new HashMap<String, NextToArriveTripView>();
+    private Map<String, View> progressViewMap = new HashMap<String, View>();
     int initialCount;
     private FavoritesFragmentCallBacks favoritesFragmentCallBacks;
+    Handler refreshHandler = null;
+
 
     @Nullable
     @Override
@@ -75,6 +83,7 @@ public class FavoritesFragment extends Fragment {
 
             ViewGroup containerView = (ViewGroup) convertView.findViewById(R.id.next_to_arrive_trip_details);
             final View progressView = containerView.findViewById(R.id.progress_view);
+            progressViewMap.put(entry.getKey(), progressView);
             progressView.setVisibility(View.VISIBLE);
 
             final NextToArriveTripView tripView = new NextToArriveTripView(getContext());
@@ -88,26 +97,7 @@ public class FavoritesFragment extends Fragment {
             containerView.addView(tripView);
             favoritesListView.addView(convertView);
 
-            String routeId = null;
-            if (favorite.getRouteDirectionModel() != null)
-                routeId = favorite.getRouteDirectionModel().getRouteId();
-
-            Call<NextArrivalModelResponse> results = SeptaServiceFactory.getNextArrivalService().getNextArrival(Integer.parseInt(favorite.getStart().getStopId()),
-                    Integer.parseInt(favorite.getDestination().getStopId()),
-                    favorite.getTransitType().name(), routeId);
-
-            results.enqueue(new Callback<NextArrivalModelResponse>() {
-                @Override
-                public void onResponse(@NonNull Call<NextArrivalModelResponse> call, @NonNull Response<NextArrivalModelResponse> response) {
-                    tripView.setNextToArriveData(new NextArrivalModelResponseParser(response.body()));
-                    progressView.setVisibility(View.GONE);
-                }
-
-                @Override
-                public void onFailure(@NonNull Call<NextArrivalModelResponse> call, @NonNull Throwable t) {
-
-                }
-            });
+            refreshFavorite(favorite, tripView, progressView);
 
             View moreButton = convertView.findViewById(R.id.more_button);
             moreButton.setOnClickListener(new View.OnClickListener() {
@@ -130,6 +120,40 @@ public class FavoritesFragment extends Fragment {
     }
 
     @Override
+    public void run() {
+        for (Map.Entry<String, Favorite> entry : favoritesMap.entrySet()) {
+            refreshFavorite(entry.getValue(), nextToArriveTripViewMap.get(entry.getKey()), progressViewMap.get(entry.getKey()));
+        }
+
+        refreshHandler.postDelayed(this, REFRESH_DELAY_SECONDS * 1000);
+    }
+
+    private void refreshFavorite(final Favorite favorite, final NextToArriveTripView tripView, final View progressView) {
+        progressView.setVisibility(View.VISIBLE);
+
+        String routeId = null;
+        if (favorite.getRouteDirectionModel() != null)
+            routeId = favorite.getRouteDirectionModel().getRouteId();
+
+        Call<NextArrivalModelResponse> results = SeptaServiceFactory.getNextArrivalService().getNextArrival(Integer.parseInt(favorite.getStart().getStopId()),
+                Integer.parseInt(favorite.getDestination().getStopId()),
+                favorite.getTransitType().name(), routeId);
+
+        results.enqueue(new Callback<NextArrivalModelResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<NextArrivalModelResponse> call, @NonNull Response<NextArrivalModelResponse> response) {
+                tripView.setNextToArriveData(new NextArrivalModelResponseParser(response.body()));
+                progressView.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<NextArrivalModelResponse> call, @NonNull Throwable t) {
+
+            }
+        });
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         favoritesMap = SeptaServiceFactory.getFavoritesService().getFavorites(getContext());
@@ -143,6 +167,15 @@ public class FavoritesFragment extends Fragment {
             entry.getValue().setText(favoritesMap.get(entry.getKey()).getName());
         }
 
+        refreshHandler = new Handler();
+        run();
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        refreshHandler.removeCallbacks(this);
     }
 
     private View onCreateViewNoFavorites(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -194,6 +227,8 @@ public class FavoritesFragment extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.my_favorites_menu, menu);
     }
+
+
 }
 
 

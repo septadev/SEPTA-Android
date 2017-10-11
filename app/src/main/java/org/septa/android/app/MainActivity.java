@@ -112,27 +112,27 @@ public class MainActivity extends AppCompatActivity
         }
 
         if (id == R.id.nav_schedule) {
-            switchToBundle(item, schedules, R.string.schedule, R.drawable.schedule_active);
+            switchToBundle(item, schedules, R.string.schedule, R.drawable.ic_schedule_active);
         }
 
         if (id == R.id.nav_favorites) {
-            switchToBundle(item, favorites, R.string.favorites, R.drawable.favorites_active);
+            switchToBundle(item, favorites, R.string.favorites, R.drawable.ic_favorites_active);
         }
 
         if (id == R.id.nav_system_status) {
-            switchToBundle(item, systemStatus, R.string.system_status, R.drawable.status_active);
+            switchToBundle(item, systemStatus, R.string.system_status, R.drawable.ic_status_active);
         }
 
         if (id == R.id.nav_fares_transit_info) {
-            switchToBundle(item, faresTransitInfo, R.string.fares_and_transit_info, R.drawable.fares_active);
+            switchToBundle(item, faresTransitInfo, R.string.fares_and_transit_info, R.drawable.ic_fares_active);
         }
 
         if (id == R.id.nav_system_map) {
-            switchToBundle(item, systemMap, R.string.system_map, R.drawable.map_active);
+            switchToBundle(item, systemMap, R.string.system_map, R.drawable.ic_map_active);
         }
 
         if (id == R.id.nav_events) {
-            switchToBundle(item, events, R.string.events, R.drawable.calendar_active);
+            switchToBundle(item, events, R.string.events, R.drawable.ic_calendar_active);
         }
 
         if (id == R.id.nav_connect) {
@@ -189,7 +189,7 @@ public class MainActivity extends AppCompatActivity
             navigationView.setCheckedItem(R.id.nav_favorites);
             currentMenu = navigationView.getMenu().findItem(R.id.nav_favorites);
             previousIcon = currentMenu.getIcon();
-            currentMenu.setIcon(R.drawable.favorites_active);
+            currentMenu.setIcon(R.drawable.ic_favorites_active);
             getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, favorites).commit();
             setTitle(R.string.favorites);
         }
@@ -223,7 +223,7 @@ public class MainActivity extends AppCompatActivity
             navigationView.setCheckedItem(R.id.nav_schedule);
             currentMenu = navigationView.getMenu().findItem(R.id.nav_schedule);
             previousIcon = currentMenu.getIcon();
-            currentMenu.setIcon(R.drawable.schedule_active);
+            currentMenu.setIcon(R.drawable.ic_schedule_active);
             schedules = new SchedulesFragment();
             schedules.prePopulate(data);
             getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, schedules).commit();

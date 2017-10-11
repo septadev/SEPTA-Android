@@ -65,6 +65,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import android.os.Handler;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -73,7 +75,7 @@ import retrofit2.Response;
  * Created by jkampf on 8/3/17.
  */
 
-public class NextToArriveResultsActivity extends AppCompatActivity implements OnMapReadyCallback, EditFavoriteCallBack {
+public class NextToArriveResultsActivity extends AppCompatActivity implements OnMapReadyCallback, EditFavoriteCallBack, Runnable {
     public static final String TAG = NextToArriveResultsActivity.class.getSimpleName();
     StopModel start;
     StopModel destination;
@@ -95,6 +97,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     private NextArrivalModelResponseParser parser;
     private int peekHeight = 0;
     private BottomSheetBehavior bottomSheetBehavior;
+    private Handler refreshHandler;
 
     Map<String, NextArrivalDetails> details = new HashMap<String, NextArrivalDetails>();
 
@@ -224,7 +227,9 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                 }
             });
 
-            updateNextToArriveData();
+            refreshHandler = new Handler();
+
+            run();
             findViewById(R.id.header).getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
                 public void onGlobalLayout() {
@@ -241,7 +246,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
             setTitle(currentFavorite.getName());
         }
 
-
+        refreshHandler.postDelayed(this, 30 * 1000);
     }
 
     public void saveAsFavorite(final MenuItem item) {
@@ -453,7 +458,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         {
             @Override
             public void onClick(View view) {
-                updateNextToArriveData();
+                refreshData();
             }
         });
 
@@ -465,8 +470,25 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         return true;
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        refreshHandler.removeCallbacks(this);
+    }
 
-    private void updateNextToArriveData() {
+    @Override
+    protected void onResume() {
+        super.onResume();
+        run();
+    }
+
+    @Override
+    public void run() {
+        refreshData();
+        refreshHandler.postDelayed(NextToArriveResultsActivity.this, 30 * 1000);
+    }
+
+    private void refreshData() {
         final long timestamp = System.currentTimeMillis();
         if (start != null && destination != null) {
 
@@ -640,7 +662,6 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         currentFavorite = var1;
         setTitle(currentFavorite.getName());
     }
-
 
     private static class BottomSheetHandler extends BottomSheetBehavior.BottomSheetCallback implements View.OnClickListener {
         BottomSheetBehavior bottomSheetBehavior;

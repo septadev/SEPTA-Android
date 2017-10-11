@@ -70,41 +70,17 @@ public class SystemStatusResultsActivity extends AppCompatActivity {
         progressView = findViewById(R.id.progress_view);
         progressView.setVisibility(View.VISIBLE);
 
-        Intent intent = getIntent();
-
-        if (intent.getExtras().containsKey(Constants.ROUTE_DIRECTION_MODEL) && intent.getExtras().get(Constants.ROUTE_DIRECTION_MODEL) != null) {
-            RouteDirectionModel routeDirectionModel = (RouteDirectionModel) intent.getExtras().get(Constants.ROUTE_DIRECTION_MODEL);
-            routeId = routeDirectionModel.getRouteId();
-            routeName = routeDirectionModel.getRouteShortName();
+        if (savedInstanceState != null) {
+            restoreSaveInstanceState(savedInstanceState);
         } else {
-            routeId = intent.getExtras().getString(Constants.ROUTE_ID);
-            routeName = intent.getExtras().getString(Constants.ROUTE_NAME);
-        }
-        transitType = (TransitType) intent.getExtras().get(Constants.TRANSIT_TYPE);
-
-        if (routeId == null) {
-            StringBuilder builder = new StringBuilder();
-            for (String key : intent.getExtras().keySet()){
-
-            }
-            throw new RuntimeException("routeId is Null: Intent[" + intent.getExtras().toString() + "]");
+            Intent intent = getIntent();
+            if (intent != null)
+                restoreSaveInstanceState(getIntent().getExtras());
         }
 
-        if (intent.getExtras().containsKey(Constants.SERVICE_ADVISORY_EXPANDED)) {
-            serviceAdvisoryExpanded = intent.getExtras().getBoolean(Constants.SERVICE_ADVISORY_EXPANDED);
+        if (transitType == null || routeId == null) {
+            onBackPressed();
         }
-        if (intent.getExtras().containsKey(Constants.SERVICE_ALERT_EXPANDED)) {
-            serviceAlertExpanded = intent.getExtras().getBoolean(Constants.SERVICE_ALERT_EXPANDED);
-        }
-        if (intent.getExtras().containsKey(Constants.ACTIVE_DETOURT_EXPANDED)) {
-            activeDetourtExpanded = intent.getExtras().getBoolean(Constants.ACTIVE_DETOURT_EXPANDED);
-        }
-        if (intent.getExtras().containsKey(Constants.WEATHER_ALERTS_EXPANDED)) {
-            weatherAlertsExpanded = intent.getExtras().getBoolean(Constants.WEATHER_ALERTS_EXPANDED);
-        }
-
-        if (transitType == null || routeId == null)
-            return;
 
         setTitle(transitType.getString("system_status_results_title", this));
 
@@ -166,6 +142,52 @@ public class SystemStatusResultsActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putSerializable(Constants.ROUTE_ID, routeId);
+        outState.putSerializable(Constants.ROUTE_NAME, routeName);
+        outState.putSerializable(Constants.TRANSIT_TYPE, transitType);
+        outState.putSerializable(Constants.SERVICE_ADVISORY_EXPANDED, serviceAdvisoryExpanded);
+        outState.putSerializable(Constants.SERVICE_ALERT_EXPANDED, serviceAlertExpanded);
+        outState.putSerializable(Constants.ACTIVE_DETOURT_EXPANDED, activeDetourtExpanded);
+        outState.putSerializable(Constants.WEATHER_ALERTS_EXPANDED, weatherAlertsExpanded);
+    }
+
+    private void restoreSaveInstanceState(Bundle inState) {
+        if (inState.containsKey(Constants.ROUTE_DIRECTION_MODEL) && inState.get(Constants.ROUTE_DIRECTION_MODEL) != null) {
+            RouteDirectionModel routeDirectionModel = (RouteDirectionModel) inState.get(Constants.ROUTE_DIRECTION_MODEL);
+            routeId = routeDirectionModel.getRouteId();
+            routeName = routeDirectionModel.getRouteShortName();
+        } else {
+            routeId = inState.getString(Constants.ROUTE_ID);
+            routeName = inState.getString(Constants.ROUTE_NAME);
+        }
+        transitType = (TransitType) inState.get(Constants.TRANSIT_TYPE);
+
+        if (routeId == null) {
+            StringBuilder builder = new StringBuilder();
+            for (String key : inState.keySet()) {
+
+            }
+            throw new RuntimeException("routeId is Null: Intent[" + inState.toString() + "]");
+        }
+
+        if (inState.containsKey(Constants.SERVICE_ADVISORY_EXPANDED)) {
+            serviceAdvisoryExpanded = inState.getBoolean(Constants.SERVICE_ADVISORY_EXPANDED);
+        }
+        if (inState.containsKey(Constants.SERVICE_ALERT_EXPANDED)) {
+            serviceAlertExpanded = inState.getBoolean(Constants.SERVICE_ALERT_EXPANDED);
+        }
+        if (inState.containsKey(Constants.ACTIVE_DETOURT_EXPANDED)) {
+            activeDetourtExpanded = inState.getBoolean(Constants.ACTIVE_DETOURT_EXPANDED);
+        }
+        if (inState.containsKey(Constants.WEATHER_ALERTS_EXPANDED)) {
+            weatherAlertsExpanded = inState.getBoolean(Constants.WEATHER_ALERTS_EXPANDED);
+        }
     }
 
     private void handleExpand(boolean expanded, TextView header, TextView details) {

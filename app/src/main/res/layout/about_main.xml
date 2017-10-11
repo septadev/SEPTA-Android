@@ -42,9 +42,7 @@
             android:layout_marginTop="24dp"
             android:background="#ffffff"
             android:elevation="4dp"
-            android:orientation="vertical"
-            android:paddingLeft="15dp"
-            android:paddingRight="15dp">
+            android:orientation="vertical">
 
             <org.septa.android.app.view.TextView
                 android:layout_width="match_parent"
@@ -68,6 +66,8 @@
                 android:fontFamily="sans-serif-light"
                 android:letterSpacing="-0.03"
                 android:lineSpacingExtra="10sp"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
                 android:text="App Version: 2.0.0
 Last App Update: 9/15/2017 04:07 PM
 Last Schedule Update: 9/15/207 04:07 PM"
@@ -85,6 +85,8 @@ Last Schedule Update: 9/15/207 04:07 PM"
                 android:gravity="center_horizontal"
                 android:letterSpacing="-0.02"
                 android:paddingBottom="12dp"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
                 android:paddingTop="12dp"
                 android:text="Provide App Feedback"
                 android:textColor="#ffffff"
@@ -115,17 +117,18 @@ Last Schedule Update: 9/15/207 04:07 PM"
                     android:layout_marginTop="20dp"
                     android:drawableRight="@drawable/alert_toggle_closed"
                     android:paddingBottom="21dp"
-                    android:paddingLeft="15dp"
-                    android:paddingRight="15dp"
                     android:text="View Attributions"
                     android:textColor="#000000"
                     android:textSize="16sp"
                     app:font="@string/font_roboto_medium" />
 
-                <ListView
+                <LinearLayout
                     android:id="@+id/attrib_list"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:orientation="vertical"
                     android:visibility="gone" />
             </LinearLayout>
 

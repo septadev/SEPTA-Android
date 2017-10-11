@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import org.septa.android.app.BuildConfig;
@@ -17,6 +18,7 @@ import org.septa.android.app.R;
 import org.septa.android.app.database.DatabaseManager;
 import org.septa.android.app.database.SEPTADatabase;
 import org.septa.android.app.view.TextView;
+import org.w3c.dom.Text;
 
 import java.io.File;
 import java.text.DateFormat;
@@ -32,7 +34,7 @@ import java.util.zip.ZipFile;
 public class AboutFragement extends Fragment {
     boolean attribExpanded = false;
     TextView attribTitle;
-    ListView attribListView;
+    LinearLayout attribListView;
 
     @Nullable
     @Override
@@ -41,9 +43,13 @@ public class AboutFragement extends Fragment {
 
         View fragmentView = inflater.inflate(R.layout.about_main, null);
 
-        attribListView = (ListView) fragmentView.findViewById(R.id.attrib_list);
-        attribListView.setAdapter(new ArrayAdapter<>(getContext(), R.layout.about_attrib_list_item,
-                getResources().getStringArray(R.array.about_attributions_listview_items_texts)));
+        attribListView = (LinearLayout) fragmentView.findViewById(R.id.attrib_list);
+        for (String s : getResources().getStringArray(R.array.about_attributions_listview_items_texts)) {
+            TextView attribLine = (TextView) inflater.inflate(R.layout.about_attrib_list_item, null);
+            attribLine.setHtml(s);
+            attribListView.addView(attribLine);
+
+        }
 
         attribTitle = (TextView) fragmentView.findViewById(R.id.attrib_title);
         attribTitle.setOnClickListener(new View.OnClickListener() {
@@ -55,11 +61,13 @@ public class AboutFragement extends Fragment {
                             ContextCompat.getDrawable(getContext(), R.drawable.alert_toggle_open), drawables[3]);
                     attribListView.setVisibility(View.VISIBLE);
                     attribExpanded = true;
+                    attribTitle.setText("Hide Attributions");
                 } else {
                     Drawable[] drawables = attribTitle.getCompoundDrawables();
                     attribTitle.setCompoundDrawablesWithIntrinsicBounds(drawables[0], drawables[1],
                             ContextCompat.getDrawable(getContext(), R.drawable.alert_toggle_closed), drawables[3]);
                     attribListView.setVisibility(View.GONE);
+                    attribTitle.setText("View Attributions");
                     attribExpanded = false;
                 }
             }

@@ -77,6 +77,7 @@ import retrofit2.Response;
 
 public class NextToArriveResultsActivity extends AppCompatActivity implements OnMapReadyCallback, EditFavoriteCallBack, Runnable {
     public static final String TAG = NextToArriveResultsActivity.class.getSimpleName();
+    public static final int REFRESH_DELAY_SECONDS = 30;
     StopModel start;
     StopModel destination;
     TransitType transitType;
@@ -485,7 +486,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     @Override
     public void run() {
         refreshData();
-        refreshHandler.postDelayed(NextToArriveResultsActivity.this, 30 * 1000);
+        refreshHandler.postDelayed(NextToArriveResultsActivity.this, REFRESH_DELAY_SECONDS * 1000);
     }
 
     private void refreshData() {

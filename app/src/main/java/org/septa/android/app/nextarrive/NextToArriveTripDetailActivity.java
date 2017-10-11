@@ -42,6 +42,8 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+import android.os.Handler;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -50,8 +52,9 @@ import retrofit2.Response;
  * Created by jkampf on 8/3/17.
  */
 
-public class NextToArriveTripDetailActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class NextToArriveTripDetailActivity extends AppCompatActivity implements OnMapReadyCallback, Runnable {
     public static final String TAG = NextToArriveTripDetailActivity.class.getSimpleName();
+    public static final int REFRESH_DELAY_SECONDS = 30;
 
     StopModel start;
     StopModel destination;
@@ -85,6 +88,8 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
 
     View progressView;
     private TextView blockidValue;
+
+    private Handler refreshHandler;
 
 
     @Override
@@ -191,9 +196,16 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
 
 
         vehicleValue.setText(vehicleId);
-        refresh(null);
+        refreshHandler = new Handler();
+        run();
     }
 
+
+    @Override
+    public void run() {
+        refresh(null);
+        refreshHandler.postDelayed(this, REFRESH_DELAY_SECONDS * 1000);
+    }
 
     public void refresh(final MenuItem item) {
         progressView.setVisibility(View.VISIBLE);
@@ -381,6 +393,17 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
 
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        refreshHandler.removeCallbacks(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        run();
+    }
 
     @Override
     public boolean onSupportNavigateUp() {

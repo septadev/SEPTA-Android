@@ -99,6 +99,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     private int peekHeight = 0;
     private BottomSheetBehavior bottomSheetBehavior;
     private Handler refreshHandler;
+    SupportMapFragment mapFragment;
 
     Map<String, NextArrivalDetails> details = new HashMap<String, NextArrivalDetails>();
 
@@ -157,15 +158,19 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
                     if (!mapSized) {
                         mapSized = true;
-                        SupportMapFragment mapFragment = SupportMapFragment.newInstance();
+                        mapFragment = SupportMapFragment.newInstance();
 
                         ViewGroup.LayoutParams mapContainerLayoutParams = mapContainerView.getLayoutParams();
                         mapContainerLayoutParams.height = rootView.getHeight() - value - mapContainerView.getTop();
                         mapContainerLayoutParams.width = rootView.getWidth();
                         mapContainerView.setLayoutParams(mapContainerLayoutParams);
 
+                        try {
+                            getSupportFragmentManager().beginTransaction().add(R.id.map_container, mapFragment).commit();
+                        } catch (IllegalStateException e) {
+                            e.printStackTrace();
+                        }
                         mapFragment.getMapAsync(NextToArriveResultsActivity.this);
-                        getSupportFragmentManager().beginTransaction().add(R.id.map_container, mapFragment).commit();
 
                     }
 
@@ -360,19 +365,37 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         googleMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
             @Override
             public void onMapLoaded() {
-                SupportMapFragment mapFragment = SupportMapFragment.newInstance();
                 Display mdisp = getWindowManager().getDefaultDisplay();
                 Point mdispSize = new Point();
                 mdisp.getSize(mdispSize);
 
-                ViewGroup.LayoutParams layoutParams =
-                        bottomSheetLayout.getLayoutParams();
-                layoutParams.height = rootView.getHeight() - mapContainerView.getTop();
-                bottomSheetLayout.setLayoutParams(layoutParams);
-                bottomSheetBehavior.setPeekHeight(peekHeight);
-                updateMap();
-                googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, getResources().getDisplayMetrics())));
 
+                updateMap();
+
+                try {
+                    googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, getResources().getDisplayMetrics())));
+                    ViewGroup.LayoutParams layoutParams =
+                            bottomSheetLayout.getLayoutParams();
+                    layoutParams.height = rootView.getHeight() - mapContainerView.getTop();
+                    bottomSheetLayout.setLayoutParams(layoutParams);
+                    bottomSheetBehavior.setPeekHeight(peekHeight);
+                } catch (IllegalStateException e) {
+                    if (mapContainer.getViewTreeObserver().isAlive()) {
+                        mapContainer.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                            @Override
+                            public void onGlobalLayout() {
+                                mapContainer.getViewTreeObserver()
+                                        .removeOnGlobalLayoutListener(this);
+                                googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, getResources().getDisplayMetrics())));
+                                ViewGroup.LayoutParams layoutParams =
+                                        bottomSheetLayout.getLayoutParams();
+                                layoutParams.height = rootView.getHeight() - mapContainerView.getTop();
+                                bottomSheetLayout.setLayoutParams(layoutParams);
+                                bottomSheetBehavior.setPeekHeight(peekHeight);
+                            }
+                        });
+                    }
+                }
 
                 googleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
 

@@ -169,10 +169,6 @@ public class SystemStatusResultsActivity extends AppCompatActivity {
         transitType = (TransitType) inState.get(Constants.TRANSIT_TYPE);
 
         if (routeId == null) {
-            StringBuilder builder = new StringBuilder();
-            for (String key : inState.keySet()) {
-
-            }
             throw new RuntimeException("routeId is Null: Intent[" + inState.toString() + "]");
         }
 

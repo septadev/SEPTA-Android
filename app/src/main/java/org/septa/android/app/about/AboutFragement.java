@@ -1,5 +1,7 @@
 package org.septa.android.app.about;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -14,10 +16,12 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import org.septa.android.app.BuildConfig;
+import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.database.DatabaseManager;
 import org.septa.android.app.database.SEPTADatabase;
 import org.septa.android.app.view.TextView;
+import org.septa.android.app.webview.WebViewActivity;
 import org.w3c.dom.Text;
 
 import java.io.File;
@@ -100,8 +104,25 @@ public class AboutFragement extends Fragment {
 
 
         ((TextView) fragmentView.findViewById(R.id.build_info)).setHtml(versionInfoBuilder.toString());
+
+        setHttpIntent(fragmentView, R.id.feedback_button, getResources().getString(R.string.comment_url), getResources().getString(R.string.comment_title));
         return fragmentView;
 
     }
 
+    private void setHttpIntent(View rootView, int viewId, final String url, final String title) {
+        View twitterLink = rootView.findViewById(viewId);
+        twitterLink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Activity activity = getActivity();
+                if (activity != null) {
+                    Intent intent = new Intent(activity, WebViewActivity.class);
+                    intent.putExtra(Constants.TARGET_URL, url);
+                    intent.putExtra(Constants.TITLE, title);
+                    startActivity(intent);
+                }
+            }
+        });
+    }
 }

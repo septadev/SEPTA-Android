@@ -101,13 +101,6 @@
                 android:text="Starting Stop" />
 
             <org.septa.android.app.view.TextView
-                android:id="@+id/closest_stop"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Showing closest stop"
-                android:visibility="gone" />
-
-            <org.septa.android.app.view.TextView
                 android:id="@+id/destination_stop"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -137,13 +130,6 @@
                 android:text="View Schedules"
                 android:textColor="#ffffff" />
 
-            <Spinner
-                android:id="@+id/route_spinner"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:hint="Route"
-                android:visibility="gone" />
         </LinearLayout>
 
     </LinearLayout>

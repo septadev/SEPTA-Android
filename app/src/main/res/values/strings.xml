@@ -25,7 +25,6 @@
 
 
     <string name="starting_station">Starting Station</string>
-    <string name="showing_closest_station">Showing closest station</string>
     <string name="destionation_station_hint">Destination Station</string>
     <string name="starting_station_hint">Starting Station</string>
     <string name="view_trains_button">VIEW TRAINS</string>

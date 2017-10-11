@@ -64,12 +64,11 @@ public class LineUnawareLocationPickerTabActivityHandler extends BaseTabActivity
         private StopModel endingStation;
         private TextView startingStationEditText;
         private TextView endingStationEditText;
-        private TextView closestStationText;
-        private boolean startingStationAutoChoice = false;
         private TransitType transitType;
         private Class targetClass;
         private String headerStringName;
         private String buttonText;
+        private Button queryButton;
 
         private CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
 
@@ -110,22 +109,15 @@ public class LineUnawareLocationPickerTabActivityHandler extends BaseTabActivity
             endingStationEditText = (TextView) rootView.findViewById(R.id.destination_stop);
             endingStationEditText.setText(transitType.getString("dest_stop_text", getContext()));
 
-
-            closestStationText = (TextView) rootView.findViewById(R.id.closest_stop);
-            final Button queryButton = (Button) rootView.findViewById(R.id.view_buses_button);
+            queryButton = (Button) rootView.findViewById(R.id.view_buses_button);
 
             TextView pickerHeaderText = (TextView) rootView.findViewById(R.id.picker_header_text);
             pickerHeaderText.setText(transitType.getString(headerStringName, getContext()));
-
-            if (startingStationAutoChoice)
-                closestStationText.setVisibility(View.VISIBLE);
-            else closestStationText.setVisibility(View.INVISIBLE);
 
             final AsyncTask<Location, Void, StopModel> task = new FinderClosestStopTask(getActivity(), cursorAdapterSupplier, new Consumer<StopModel>() {
                 @Override
                 public void accept(StopModel stopModel) {
                     if (stopModel != null && startingStation == null) {
-                        startingStationAutoChoice = true;
                         setStartingStation(stopModel, View.VISIBLE);
                     }
                 }
@@ -205,7 +197,11 @@ public class LineUnawareLocationPickerTabActivityHandler extends BaseTabActivity
         private void setStartingStation(StopModel start, int invisible) {
             startingStation = start;
             startingStationEditText.setText(startingStation.getStopName());
-            closestStationText.setVisibility(invisible);
+
+            if (endingStation != null) {
+                queryButton.setAlpha(1);
+            }
+
         }
 
         @Override
@@ -215,7 +211,6 @@ public class LineUnawareLocationPickerTabActivityHandler extends BaseTabActivity
             if (requestCode == START_MODEL_ID && resultCode == LocationPickerFragment.SUCCESS) {
                 StopModel var1 = (StopModel) data.getSerializableExtra(LocationPickerFragment.STOP_MODEL);
                 if (var1 != null) {
-                    startingStationAutoChoice = false;
                     setStartingStation(var1, View.INVISIBLE);
                 }
                 return;
@@ -226,6 +221,10 @@ public class LineUnawareLocationPickerTabActivityHandler extends BaseTabActivity
                 if (var1 != null) {
                     endingStation = var1;
                     endingStationEditText.setText(var1.getStopName());
+
+                    if (startingStation != null) {
+                        queryButton.setAlpha(1);
+                    }
                 }
                 return;
             }

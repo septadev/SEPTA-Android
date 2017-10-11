@@ -85,7 +85,6 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
 
         RouteDirectionModel selectedRoute;
         private TextView startingStopEditText;
-        private TextView closestStopText;
         private TextView destinationStopEditText;
         private TextView lineText;
         private Button queryButton;
@@ -165,7 +164,6 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
             destinationStopEditText = (TextView) rootView.findViewById(R.id.destination_stop);
             destinationStopEditText.setText(transitType.getString("dest_stop_text", getContext()));
 
-            closestStopText = (TextView) rootView.findViewById(R.id.closest_stop);
 
             startingStopEditText.setOnTouchListener(new StopPickerOnTouchListener(this, START_MODEL_ID, stopCursorAdapterSupplier, false));
             destinationStopEditText.setOnTouchListener(new StopPickerOnTouchListener(this, DEST_MODEL_ID, stopAfterCursorAdapterSupplier, true));
@@ -299,7 +297,6 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
         void setStartingStation(StopModel start, int invisible) {
             startingStation = start;
             startingStopEditText.setText(startingStation.getStopName());
-            closestStopText.setVisibility(invisible);
             destinationStopEditText.setText(null);
             endingStation = null;
         }

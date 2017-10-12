@@ -42,17 +42,17 @@
             android:name=".systemstatus.SystemStatusResultsActivity"
             android:label="@string/septa"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".schedules.ScheduleResultsActivity"
             android:label="@string/septa"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".webview.WebViewActivity"
             android:label="@string/septa"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".SplashScreenActivity"
             android:label="@string/septa"

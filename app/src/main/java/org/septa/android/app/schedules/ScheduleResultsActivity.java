@@ -112,8 +112,6 @@ public class ScheduleResultsActivity extends AppCompatActivity {
         // _________________________________________________________________________________________
 
         setContentView(R.layout.schedules_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 

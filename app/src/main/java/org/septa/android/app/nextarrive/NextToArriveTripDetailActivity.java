@@ -14,6 +14,7 @@ import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -359,6 +360,7 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
         if (googleMap == null)
             return;
 
+        final View mapContainer = findViewById(R.id.map_container);
         googleMap.clear();
 
         KmlLayer layer = MapUtils.getKMLByLineId(this, googleMap, routeId, transitType);
@@ -388,8 +390,22 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
 
         builder.include(startingStationLatLng);
         builder.include(destinationStationLatLng);
-        LatLngBounds bounds = builder.build();
-        googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 30, getResources().getDisplayMetrics())));
+        final LatLngBounds bounds = builder.build();
+        try {
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 30, getResources().getDisplayMetrics())));
+        } catch (IllegalStateException e) {
+            if (mapContainer.getViewTreeObserver().isAlive()) {
+                mapContainer.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        mapContainer.getViewTreeObserver()
+                                .removeOnGlobalLayoutListener(this);
+                        googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 30, getResources().getDisplayMetrics())));
+
+                    }
+                });
+            }
+        }
 
     }
 

@@ -168,10 +168,6 @@ public class SystemStatusResultsActivity extends AppCompatActivity {
         }
         transitType = (TransitType) inState.get(Constants.TRANSIT_TYPE);
 
-        if (routeId == null) {
-            throw new RuntimeException("routeId is Null: Intent[" + inState.toString() + "]");
-        }
-
         if (inState.containsKey(Constants.SERVICE_ADVISORY_EXPANDED)) {
             serviceAdvisoryExpanded = inState.getBoolean(Constants.SERVICE_ADVISORY_EXPANDED);
         }

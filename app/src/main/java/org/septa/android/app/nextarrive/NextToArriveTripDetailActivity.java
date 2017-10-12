@@ -166,6 +166,7 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
         if (transitType != TransitType.RAIL) {
             twitterId.setText("@SEPTA_SOCIAL");
             webUrl = getString(R.string.twitter_url);
+            appUrl = getString(R.string.twitter_app_url);
         } else {
             if ("med".equalsIgnoreCase(routeId)) {
                 twitterId.setText("@SEPTA_ELW");

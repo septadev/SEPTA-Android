@@ -114,6 +114,8 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
                 }
             });
 
+            queryButton.setClickable(false);
+
             lineText = (TextView) fragmentView.findViewById(R.id.line_text);
 
             if (routeCursorAdapterSupplier == null) {

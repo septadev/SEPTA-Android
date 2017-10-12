@@ -113,6 +113,7 @@ public class FavoritesFragment extends Fragment implements Runnable {
                     getActivity().startActivityForResult(intent, Constants.NTA_REQUEST);
                 }
             });
+            moreButton.setContentDescription("Tap for more Next to Arrive details for your favorite, " + favName.getText());
         }
 
 

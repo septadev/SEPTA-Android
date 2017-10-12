@@ -86,6 +86,7 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
     private String routeId;
     private String serviceRouteId = null;
     private String vehicleId;
+    private String routeName;
 
     View progressView;
     private TextView blockidValue;
@@ -101,15 +102,11 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         setContentView(R.layout.nta_trip_details);
 
-        Intent intent = getIntent();
-        destination = (StopModel) intent.getExtras().get(Constants.DESTINATAION_STATION);
-        start = (StopModel) intent.getExtras().get(Constants.STARTING_STATION);
-        transitType = (TransitType) intent.getExtras().get(Constants.TRANSIT_TYPE);
-        vehicleId = intent.getExtras().getString(Constants.VEHICLE_ID);
-        tripId = intent.getExtras().getString(Constants.TRIP_ID);
-        String routeName = intent.getExtras().getString(Constants.ROUTE_NAME);
-        routeId = intent.getExtras().getString(Constants.ROUTE_ID);
-        routeDescription = intent.getExtras().getString(Constants.ROUTE_DESCRIPTION);
+        if (savedInstanceState != null) {
+            restoreInstanceState(savedInstanceState);
+        } else {
+            restoreInstanceState(getIntent().getExtras());
+        }
 
         if (start != null && destination != null && transitType != null) {
             TextView tripToLocationText = ((TextView) findViewById(R.id.trip_to_location_text));
@@ -200,6 +197,30 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
         vehicleValue.setText(vehicleId);
         refreshHandler = new Handler();
         run();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable(Constants.DESTINATAION_STATION, destination);
+        outState.putSerializable(Constants.STARTING_STATION, start);
+        outState.putSerializable(Constants.TRANSIT_TYPE, transitType);
+        outState.putSerializable(Constants.VEHICLE_ID, vehicleId);
+        outState.putSerializable(Constants.TRIP_ID, tripId);
+        outState.putSerializable(Constants.ROUTE_NAME, routeName);
+        outState.putSerializable(Constants.ROUTE_ID, routeId);
+        outState.putSerializable(Constants.ROUTE_DESCRIPTION, routeDescription);
+    }
+
+    private void restoreInstanceState(Bundle bundle) {
+        destination = (StopModel) bundle.get(Constants.DESTINATAION_STATION);
+        start = (StopModel) bundle.get(Constants.STARTING_STATION);
+        transitType = (TransitType) bundle.get(Constants.TRANSIT_TYPE);
+        vehicleId = bundle.getString(Constants.VEHICLE_ID);
+        tripId = bundle.getString(Constants.TRIP_ID);
+        String routeName = bundle.getString(Constants.ROUTE_NAME);
+        routeId = bundle.getString(Constants.ROUTE_ID);
+        routeDescription = bundle.getString(Constants.ROUTE_DESCRIPTION);
     }
 
 

@@ -192,13 +192,14 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                 @Override
                 public void onClick(View view) {
                     selectedRoute = null;
-                    lineText.setText("");
+                    lineText.setText(transitType.getString("line_text", getContext()));
+                    lineText.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
                     startingStation = null;
                     disableView(startingStopEditText);
-                    startingStopEditText.setText("");
+                    startingStopEditText.setText(transitType.getString("start_stop_text", getContext()));
+                    destinationStopEditText.setText(transitType.getString("dest_stop_text", getContext()));
                     endingStation = null;
                     disableView(destinationStopEditText);
-                    destinationStopEditText.setText("");
                     disableView(queryButton);
                 }
             });
@@ -219,7 +220,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
         void setStartStop(StopModel var1) {
             setStartingStation(var1, View.INVISIBLE);
             activateView(destinationStopEditText);
-            destinationStopEditText.setText("");
+            destinationStopEditText.setText(transitType.getString("dest_stop_text", getContext()));
             disableView(queryButton);
         }
 
@@ -277,10 +278,10 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
             }
             startingStation = null;
             activateView(startingStopEditText);
-            startingStopEditText.setText("");
+            startingStopEditText.setText(transitType.getString("start_stop_text", getContext()));
+            destinationStopEditText.setText(transitType.getString("dest_stop_text", getContext()));
             endingStation = null;
             disableView(destinationStopEditText);
-            destinationStopEditText.setText("");
             disableView(queryButton);
         }
 
@@ -297,7 +298,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
         void setStartingStation(StopModel start, int invisible) {
             startingStation = start;
             startingStopEditText.setText(startingStation.getStopName());
-            destinationStopEditText.setText(null);
+            destinationStopEditText.setText(transitType.getString("dest_stop_text", getContext()));
             endingStation = null;
         }
 

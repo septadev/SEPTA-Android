@@ -30,8 +30,9 @@
             android:layout_gravity="center_vertical"
             android:layout_marginRight="17dp"
             android:layout_marginTop="15dp"
-            android:src="@drawable/ic_exit"
             android:clickable="true"
+            android:contentDescription="Close"
+            android:src="@drawable/ic_exit"
             android:tint="#ffffff" />
     </RelativeLayout>
 

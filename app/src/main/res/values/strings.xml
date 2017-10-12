@@ -94,6 +94,11 @@
     <string name="about_the_septa_app">About the SEPTA App</string>
     <string name="text_empty_trips">No recent trips</string>
 
+    <string name="alert_icon_content_description_prefix">Service Alert on route:</string>
+    <string name="advisory_icon_content_description_prefix">Advisory alert on route:</string>
+    <string name="detour_icon_content_description_prefix">Detour on route:</string>
+    <string name="weather_icon_content_description_prefix">Weather alert on route:</string>
+
     <string name="trip_details_title_rail">Train Details</string>
     <string name="trip_details_title_bus">Bus Details</string>
     <string name="trip_details_title_trolley">Trolley Details</string>
@@ -194,6 +199,5 @@
     <string name="chat_title">Live Chat</string>
     <string name="comment_title">Send Us A Comment</string>
     <string name="events_url">http://www.septa.org/service/special-events-mobile.html</string>
-
 
 </resources>

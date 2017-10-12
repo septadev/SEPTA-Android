@@ -124,6 +124,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
 
         refresh = findViewById(R.id.refresh_button);
+        refresh.setContentDescription("Refresh");
 
         bottomSheetLayout = (ViewGroup) findViewById(R.id.bottomSheetLayout);
 

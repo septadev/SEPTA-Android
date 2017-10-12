@@ -22,7 +22,8 @@
             android:layout_weight="1"
             android:clickable="true"
             android:orientation="vertical"
-            android:paddingTop="12dp">
+            android:paddingTop="12dp"
+            android:contentDescription="Drag up and down for more Next to Arrive results">
 
             <FrameLayout
                 android:layout_width="35dp"

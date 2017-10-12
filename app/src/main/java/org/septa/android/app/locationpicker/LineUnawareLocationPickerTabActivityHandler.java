@@ -225,6 +225,7 @@ public class LineUnawareLocationPickerTabActivityHandler extends BaseTabActivity
 
                     if (startingStation != null) {
                         queryButton.setAlpha(1);
+                        queryButton.setClickable(true);
                     }
                 }
                 return;

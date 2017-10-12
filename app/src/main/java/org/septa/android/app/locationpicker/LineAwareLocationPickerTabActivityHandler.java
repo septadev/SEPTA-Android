@@ -271,7 +271,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                     drawables[2], drawables[3]);
 
             if (transitType == TransitType.RAIL) {
-                lineText.setText(selectedRoute.getRouteShortName() + " " + selectedRoute.getDirectionDescription());
+                lineText.setText(selectedRoute.getRouteId() + " " + selectedRoute.getDirectionDescription());
             } else {
                 lineText.setText(selectedRoute.getRouteShortName() + ": to " + selectedRoute.getDirectionDescription());
             }

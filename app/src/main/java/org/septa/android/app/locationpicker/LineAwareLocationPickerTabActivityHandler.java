@@ -174,7 +174,6 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                 @Override
                 public void onClick(View view) {
                     if (startingStation == null || endingStation == null) {
-                        Toast.makeText(getActivity(), "Need to choose a start and end station.", Toast.LENGTH_SHORT).show();
                         return;
                     }
                     Intent intent = new Intent(getActivity(), targetClass);
@@ -186,6 +185,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                     getActivity().startActivityForResult(intent, Constants.NTA_REQUEST);
                 }
             });
+            queryButton.setClickable(false);
 
             View resetView = rootView.findViewById(R.id.reset_button);
             resetView.setOnClickListener(new View.OnClickListener() {

@@ -167,15 +167,22 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
         } else {
             if ("med".equalsIgnoreCase(routeId)) {
                 twitterId.setText("@SEPTA_ELW");
-            } else
+                webUrl = "https://twitter.com/SEPTA_ELW";
+            } else if ("lan".equalsIgnoreCase(routeId)) {
+                twitterId.setText("@SEPTA_DOY");
+                webUrl = "https://twitter.com/SEPTA_DOY";
+            } else {
                 twitterId.setText("@SEPTA_" + routeId.toUpperCase());
-            webUrl = "https://twitter.com/SEPTA_" + routeId.toUpperCase();
+                webUrl = "https://twitter.com/SEPTA_" + routeId.toUpperCase();
+            }
             appUrl = getString(getResources().getIdentifier("twitter_app_url_" + routeId.toLowerCase(), "string", R.class.getPackage().getName()));
         }
 
         View twitterView = findViewById(R.id.twitter_view);
         twitterView.setClickable(true);
-        twitterView.setOnClickListener(new View.OnClickListener() {
+        twitterView.setOnClickListener(new View.OnClickListener()
+
+        {
             @Override
             public void onClick(View v) {
                 Uri app = Uri.parse(appUrl);
@@ -195,8 +202,12 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
 
 
         vehicleValue.setText(vehicleId);
-        refreshHandler = new Handler();
+        refreshHandler = new
+
+                Handler();
+
         run();
+
     }
 
     @Override

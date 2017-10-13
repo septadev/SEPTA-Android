@@ -182,12 +182,12 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        Intent intent = getIntent();
-        destination = (StopModel) intent.getExtras().get(Constants.DESTINATAION_STATION);
-        start = (StopModel) intent.getExtras().get(Constants.STARTING_STATION);
-        transitType = (TransitType) intent.getExtras().get(Constants.TRANSIT_TYPE);
-        routeDirectionModel = (RouteDirectionModel) intent.getExtras().get(Constants.ROUTE_DIRECTION_MODEL);
-        editFavoritesFlag = intent.getExtras().getBoolean(Constants.EDIT_FAVORITES_FLAG, false);
+        Bundle bundle = getIntent().getExtras();
+
+        if (savedInstanceState != null) {
+            restoreState(savedInstanceState);
+        } else
+            restoreState(bundle);
 
 
         if (start != null && destination != null && transitType != null) {
@@ -254,6 +254,25 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         }
 
         refreshHandler.postDelayed(this, 30 * 1000);
+    }
+
+    private void restoreState(Bundle bundle) {
+        destination = (StopModel) bundle.get(Constants.DESTINATAION_STATION);
+        start = (StopModel) bundle.get(Constants.STARTING_STATION);
+        transitType = (TransitType) bundle.get(Constants.TRANSIT_TYPE);
+        routeDirectionModel = (RouteDirectionModel) bundle.get(Constants.ROUTE_DIRECTION_MODEL);
+        editFavoritesFlag = bundle.getBoolean(Constants.EDIT_FAVORITES_FLAG, false);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putSerializable(Constants.DESTINATAION_STATION, destination);
+        outState.putSerializable(Constants.STARTING_STATION, start);
+        outState.putSerializable(Constants.TRANSIT_TYPE, transitType);
+        outState.putSerializable(Constants.ROUTE_DIRECTION_MODEL, routeDirectionModel);
+        outState.putSerializable(Constants.EDIT_FAVORITES_FLAG, editFavoritesFlag);
     }
 
     public void saveAsFavorite(final MenuItem item) {

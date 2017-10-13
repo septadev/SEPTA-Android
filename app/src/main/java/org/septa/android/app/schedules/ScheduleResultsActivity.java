@@ -118,12 +118,11 @@ public class ScheduleResultsActivity extends AppCompatActivity {
         dbManager = DatabaseManager.getInstance(this);
 
 
-        Intent intent = getIntent();
-        destination = (StopModel) intent.getExtras().get(Constants.DESTINATAION_STATION);
-        start = (StopModel) intent.getExtras().get(Constants.STARTING_STATION);
-        transitType = (TransitType) intent.getExtras().get(Constants.TRANSIT_TYPE);
-        routeDirectionModel = (RouteDirectionModel) intent.getExtras().get(Constants.ROUTE_DIRECTION_MODEL);
-
+        if (savedInstanceState != null) {
+            restoreState(savedInstanceState);
+        } else {
+            restoreState(getIntent().getExtras());
+        }
 
         if (transitType == TransitType.RAIL) {
             scheduleCursorAdapterSupplier = DatabaseManager.getInstance(this).getRailScheduleCursorAdapterSupplier();
@@ -236,6 +235,23 @@ public class ScheduleResultsActivity extends AppCompatActivity {
 
     }
 
+    private void restoreState(Bundle bundle) {
+        destination = (StopModel) bundle.get(Constants.DESTINATAION_STATION);
+        start = (StopModel) bundle.get(Constants.STARTING_STATION);
+        transitType = (TransitType) bundle.get(Constants.TRANSIT_TYPE);
+        routeDirectionModel = (RouteDirectionModel) bundle.get(Constants.ROUTE_DIRECTION_MODEL);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putSerializable(Constants.DESTINATAION_STATION, destination);
+        outState.putSerializable(Constants.STARTING_STATION, start);
+        outState.putSerializable(Constants.TRANSIT_TYPE, transitType);
+        outState.putSerializable(Constants.ROUTE_DIRECTION_MODEL, routeDirectionModel);
+
+    }
 
     //----------------------------------------------------------------------------------------------
     //Method: initRadioButtonGroup

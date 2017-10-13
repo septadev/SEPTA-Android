@@ -115,6 +115,7 @@ public class NextToArriveFragment extends Fragment {
             TextView tab = (TextView) inflater.inflate(R.layout.custom_tab, null);
             tab.setText(tabActivityHandlers[i].getTabTitle());
             tab.setCompoundDrawablesWithIntrinsicBounds(tabActivityHandlers[i].getInactiveDrawableId(), 0, 0, 0);
+            tab.setContentDescription("Tap to switch to " + tabActivityHandlers[i].getTabTitle());
             tabLayout.getTabAt(i).setCustomView(tab);
         }
     }

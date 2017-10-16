@@ -93,7 +93,7 @@ public class AboutFragement extends Fragment {
         } catch (Exception e) {
         }
 
-        versionInfoBuilder.append("Database Version: ").append(DatabaseManager.getDatabase().getVersion()).append("<br>");
+        versionInfoBuilder.append("Database Version: ").append(DatabaseManager.getDatabase(getContext()).getVersion()).append("<br>");
 
         try {
             File dbFile = new File(DatabaseManager.getDatabase().getPath());

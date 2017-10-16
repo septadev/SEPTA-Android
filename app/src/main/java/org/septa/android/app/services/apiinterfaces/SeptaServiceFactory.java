@@ -1,5 +1,9 @@
 package org.septa.android.app.services.apiinterfaces;
 
+import android.app.Activity;
+import android.support.design.widget.Snackbar;
+import android.view.View;
+
 import java.io.IOException;
 
 import okhttp3.HttpUrl;
@@ -99,5 +103,19 @@ public class SeptaServiceFactory {
         return googleKey;
     }
 
+    public static void displayWebServiceError(View rootView, final Activity activity) {
+        Snackbar snackbar = Snackbar.make(rootView, "An error has occurred. Please try your request again. If this error continues, please contact SEPTA to let us know.", Snackbar.LENGTH_LONG);
+        snackbar.addCallback(new Snackbar.Callback() {
+            @Override
+            public void onDismissed(Snackbar snackbar, int event) {
+                try {
+                    activity.onBackPressed();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        snackbar.show();
+    }
 
 }

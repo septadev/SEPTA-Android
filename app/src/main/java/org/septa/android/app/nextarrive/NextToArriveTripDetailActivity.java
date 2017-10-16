@@ -1,5 +1,6 @@
 package org.septa.android.app.nextarrive;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -351,18 +352,7 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
 
             @Override
             public void onFailure(Call<NextArrivalDetails> call, Throwable t) {
-                Snackbar snackbar = Snackbar.make(findViewById(R.id.trip_detail_coordinator), "Sorry, we had some issue retrieving your data.  Please try again.", Snackbar.LENGTH_LONG);
-                snackbar.addCallback(new Snackbar.Callback() {
-                    @Override
-                    public void onDismissed(Snackbar snackbar, int event) {
-                        try {
-                            onBackPressed();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-                snackbar.show();
+                SeptaServiceFactory.displayWebServiceError(findViewById(R.id.trip_detail_coordinator), NextToArriveTripDetailActivity.this);
             }
         });
     }

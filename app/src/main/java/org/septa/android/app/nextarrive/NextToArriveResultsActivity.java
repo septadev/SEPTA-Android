@@ -57,6 +57,7 @@ import org.septa.android.app.services.apiinterfaces.model.NextArrivalModelRespon
 import org.septa.android.app.support.Consumer;
 import org.septa.android.app.support.GeneralUtils;
 import org.septa.android.app.support.MapUtils;
+import org.septa.android.app.systemstatus.SystemStatusResultsActivity;
 import org.septa.android.app.view.TextView;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -575,8 +576,6 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
                                     @Override
                                     public void onFailure(Call<NextArrivalDetails> call, Throwable t) {
-                                        Log.d(TAG, t.getMessage());
-                                        Log.d(TAG, t.getStackTrace().toString());
                                     }
                                 });
                             }
@@ -600,8 +599,6 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
                                         @Override
                                         public void onFailure(Call<NextArrivalDetails> call, Throwable t) {
-                                            Log.d(TAG, t.getMessage());
-                                            Log.d(TAG, t.getStackTrace().toString());
                                         }
                                     });
                                 }
@@ -657,8 +654,8 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
                 @Override
                 public void onFailure(Call<NextArrivalModelResponse> call, Throwable t) {
-                    progressVisibility(View.GONE);
                     t.printStackTrace();
+                    SeptaServiceFactory.displayWebServiceError(findViewById(R.id.rail_next_to_arrive_results_coordinator), NextToArriveResultsActivity.this);
                 }
             });
 

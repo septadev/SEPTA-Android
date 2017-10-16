@@ -15,6 +15,7 @@ import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
 import org.septa.android.app.domain.RouteDirectionModel;
+import org.septa.android.app.nextarrive.NextToArriveTripDetailActivity;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.AlertDetail;
 import org.septa.android.app.support.GeneralUtils;
@@ -136,7 +137,7 @@ public class SystemStatusResultsActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<AlertDetail> call, Throwable t) {
-
+                SeptaServiceFactory.displayWebServiceError(findViewById(R.id.system_status_results_coordinator), SystemStatusResultsActivity.this);
             }
         });
 

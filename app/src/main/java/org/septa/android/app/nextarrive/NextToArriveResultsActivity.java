@@ -530,7 +530,6 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     @Override
     public void run() {
         refreshData();
-        refreshHandler.postDelayed(NextToArriveResultsActivity.this, REFRESH_DELAY_SECONDS * 1000);
     }
 
     private void refreshData() {
@@ -548,6 +547,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                 public void onResponse(Call<NextArrivalModelResponse> call, final Response<NextArrivalModelResponse> response) {
                     if (response == null || response.body() == null) {
                         Log.w(TAG, "invalid response from service.");
+                        SeptaServiceFactory.displayWebServiceError(findViewById(R.id.rail_next_to_arrive_results_coordinator), NextToArriveResultsActivity.this);
                     } else {
 
                         // Go through all of the results and kick off a call for Details for each vehichle that has RT data.
@@ -628,6 +628,8 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                         } else {
                             updateView(response);
                             progressVisibility(View.GONE);
+                            refreshHandler.removeCallbacks(NextToArriveResultsActivity.this);
+                            refreshHandler.postDelayed(NextToArriveResultsActivity.this, REFRESH_DELAY_SECONDS * 1000);
                         }
                     }
                 }

@@ -14,6 +14,7 @@ import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.TypedValue;
@@ -345,6 +346,9 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
             getMenuInflater().inflate(R.menu.favorite_menu, menu);
             if (currentFavorite != null) {
                 menu.findItem(R.id.create_favorite).setIcon(R.drawable.ic_favorite_made);
+                menu.findItem(R.id.create_favorite).setTitle("Tap to remove this next to arrive result as a favorite.");
+            } else {
+                menu.findItem(R.id.create_favorite).setTitle("Tap to create a favorite from this next to arrive result.");
             }
         } else {
             getMenuInflater().inflate(R.menu.edit_favorites_menu, menu);
@@ -382,6 +386,8 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         builder.include(startingStationLatLng);
         builder.include(destinationStationLatLng);
         final LatLngBounds bounds = builder.build();
+
+        googleMap.setContentDescription("Map displaying selected route between " + start.getStopName() + " and " + destination.getStopName() + ".  Next to arrive details below.");
 
         googleMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
             @Override

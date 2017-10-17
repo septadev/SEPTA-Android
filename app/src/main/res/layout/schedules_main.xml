@@ -127,6 +127,7 @@
                     android:letterSpacing="-0.02"
                     android:paddingLeft="5dp"
                     android:text="Reverse&lt;br&gt;Trip"
+                    android:contentDescription="Reverse Trip"
                     android:textColor="#144b88"
                     android:textSize="10sp"
                     app:font="@string/font_roboto_medium" />

@@ -36,7 +36,7 @@ public class GeneralUtils {
         if (hours > 0) {
             builder.append(hours).append(" hours");
             if (minutes > 0) {
-                builder.append(" ").append(minutes).append(" mins");
+                builder.append(" ").append(minutes).append(" minutes");
             }
         } else
             builder.append(minutes).append(" mins");

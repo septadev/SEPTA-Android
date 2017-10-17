@@ -52,6 +52,10 @@ public class ScheduleModel implements Comparable<ScheduleModel> {
         return GeneralUtils.getDurationAsString(arrivalDate.getTime() - departureDate.getTime(), TimeUnit.MILLISECONDS);
     }
 
+    public String getDurationAsLongString() {
+        return GeneralUtils.getDurationAsLongString(arrivalDate.getTime() - departureDate.getTime(), TimeUnit.MILLISECONDS);
+    }
+
     public Date getArrivalDate() {
         return arrivalDate;
     }

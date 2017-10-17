@@ -87,12 +87,14 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
     private String routeId;
     private String serviceRouteId = null;
     private String vehicleId;
-    private String routeName;
 
     View progressView;
     private TextView blockidValue;
 
     private Handler refreshHandler;
+
+    private boolean mapZoomed = false;
+    private String routeName;
 
 
     @Override
@@ -230,7 +232,7 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
         transitType = (TransitType) bundle.get(Constants.TRANSIT_TYPE);
         vehicleId = bundle.getString(Constants.VEHICLE_ID);
         tripId = bundle.getString(Constants.TRIP_ID);
-        String routeName = bundle.getString(Constants.ROUTE_NAME);
+        routeName = bundle.getString(Constants.ROUTE_NAME);
         routeId = bundle.getString(Constants.ROUTE_ID);
         routeDescription = bundle.getString(Constants.ROUTE_DESCRIPTION);
     }
@@ -373,6 +375,7 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
                 });
 
         MapStyleOptions mapStyle = MapStyleOptions.loadRawResourceStyle(this, R.raw.maps_json_styling);
+        googleMap.setContentDescription("Map displaying selected route between " + start.getStopName() + " and " + destination.getStopName() + " with your vehicle location.");
 
         googleMap.setMapStyle(mapStyle);
 
@@ -409,13 +412,17 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
         googleMap.addMarker(new MarkerOptions().position(startingStationLatLng).title(start.getStopName()).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
         googleMap.addMarker(new MarkerOptions().position(destinationStationLatLng).title(destination.getStopName()).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
 
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(startingStationLatLng));
+        if (!mapZoomed)
+            googleMap.moveCamera(CameraUpdateFactory.newLatLng(startingStationLatLng));
 
         builder.include(startingStationLatLng);
         builder.include(destinationStationLatLng);
         final LatLngBounds bounds = builder.build();
         try {
-            googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 30, getResources().getDisplayMetrics())));
+            if (!mapZoomed && vehicleLat != null && vehicleLon != null) {
+                googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 30, getResources().getDisplayMetrics())));
+                mapZoomed = true;
+            }
         } catch (IllegalStateException e) {
             if (mapContainer.getViewTreeObserver().isAlive()) {
                 mapContainer.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -423,8 +430,10 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
                     public void onGlobalLayout() {
                         mapContainer.getViewTreeObserver()
                                 .removeOnGlobalLayoutListener(this);
-                        googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 30, getResources().getDisplayMetrics())));
-
+                        if (!mapZoomed && vehicleLat != null && vehicleLon != null) {
+                            googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 30, getResources().getDisplayMetrics())));
+                            mapZoomed = true;
+                        }
                     }
                 });
             }

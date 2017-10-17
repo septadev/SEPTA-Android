@@ -468,6 +468,7 @@ public class ScheduleResultsActivity extends AppCompatActivity {
 
             TextView duration = (TextView) convertView.findViewById(R.id.duration_text);
             duration.setText(scheduleModel.getDurationAsString());
+            duration.setContentDescription(scheduleModel.getDurationAsLongString());
 
             TextView blockText = (TextView) convertView.findViewById(R.id.block_text);
             blockText.setHtml(transitType.getString("schedule_trip_prefix", getContext()) + "<b>" + scheduleModel.getBlockId() + "</b>");
@@ -539,8 +540,12 @@ public class ScheduleResultsActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         this.menu = menu;
         getMenuInflater().inflate(R.menu.favorite_menu, menu);
+
         if (currentFavorite != null) {
             menu.findItem(R.id.create_favorite).setIcon(R.drawable.ic_favorite_made);
+            menu.findItem(R.id.create_favorite).setTitle("Tap to remove this schedule result as a favorite.");
+        } else {
+            menu.findItem(R.id.create_favorite).setTitle("Tap to create a favorite from this schedule result.");
         }
 
         return true;

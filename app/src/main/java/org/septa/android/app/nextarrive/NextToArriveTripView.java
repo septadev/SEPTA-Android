@@ -239,7 +239,7 @@ public class NextToArriveTripView extends FrameLayout {
 
         android.widget.TextView origArrivalTimeText = (android.widget.TextView) line.findViewById(R.id.orig_arrival_time_text);
         origArrivalTimeText.setText(dateFormat.format(unit.getOrigDepartureTime()) + " - " + dateFormat.format(unit.getOrigArrivalTime()));
-
+        origArrivalTimeText.setContentDescription("departs " + dateFormat.format(unit.getOrigDepartureTime()) + "  arrives " + dateFormat.format(unit.getOrigArrivalTime()));
         android.widget.TextView origTripNumberText = (android.widget.TextView) line.findViewById(R.id.orig_trip_number_text);
         origTripNumberText.setText(unit.getOrigLineTripId() + " to " + unit.getOrigLastStopName());
 
@@ -259,6 +259,7 @@ public class NextToArriveTripView extends FrameLayout {
         android.widget.TextView origTardyText = (android.widget.TextView) line.findViewById(R.id.orig_tardy_text);
         if (unit.getOrigDelayMinutes() > 0) {
             origTardyText.setText(GeneralUtils.getDurationAsString(unit.getOrigDelayMinutes(), TimeUnit.MINUTES) + " late.");
+            origTardyText.setContentDescription(GeneralUtils.getDurationAsLongString(unit.getOrigDelayMinutes(), TimeUnit.MINUTES) + " late.");
             origTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.delay_minutes));
             View origDepartingBorder = line.findViewById(R.id.orig_departing_border);
             origDepartingBorder.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.late_boarder));
@@ -346,6 +347,7 @@ public class NextToArriveTripView extends FrameLayout {
 
         android.widget.TextView origArrivalTimeText = (android.widget.TextView) convertView.findViewById(R.id.orig_arrival_time_text);
         origArrivalTimeText.setText(dateFormat.format(item.getOrigDepartureTime()) + " - " + dateFormat.format(item.getOrigArrivalTime()));
+        origArrivalTimeText.setContentDescription("departs " + dateFormat.format(item.getOrigDepartureTime()) + "  arrives " + dateFormat.format(item.getOrigArrivalTime()));
 
         android.widget.TextView origTripNumberText = (android.widget.TextView) convertView.findViewById(R.id.orig_trip_number_text);
         origTripNumberText.setText(item.getOrigLineTripId() + " to " + item.getOrigLastStopName());
@@ -367,6 +369,7 @@ public class NextToArriveTripView extends FrameLayout {
         android.widget.TextView origTardyText = (android.widget.TextView) convertView.findViewById(R.id.orig_tardy_text);
         if (item.getOrigDelayMinutes() > 0) {
             origTardyText.setText(GeneralUtils.getDurationAsString(item.getOrigDelayMinutes(), TimeUnit.MINUTES) + " late.");
+            origTardyText.setContentDescription(GeneralUtils.getDurationAsLongString(item.getOrigDelayMinutes(), TimeUnit.MINUTES) + " late.");
             origTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.delay_minutes));
             View origDepartingBorder = convertView.findViewById(R.id.orig_departing_border);
             origDepartingBorder.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.late_boarder));
@@ -449,6 +452,7 @@ public class NextToArriveTripView extends FrameLayout {
 
         android.widget.TextView termArrivalTimeText = (android.widget.TextView) convertView.findViewById(R.id.term_arrival_time_text);
         termArrivalTimeText.setText(dateFormat.format(item.getTermDepartureTime()) + " - " + dateFormat.format(item.getTermArrivalTime()));
+        termArrivalTimeText.setContentDescription("departs " + dateFormat.format(item.getTermDepartureTime()) + "  arrives " + dateFormat.format(item.getTermArrivalTime()));
 
         android.widget.TextView termTripNumberText = (android.widget.TextView) convertView.findViewById(R.id.term_trip_number_text);
         termTripNumberText.setText(item.getTermLineTripId() + " to " + item.getTermLastStopName());
@@ -470,6 +474,7 @@ public class NextToArriveTripView extends FrameLayout {
         android.widget.TextView termTardyText = (android.widget.TextView) convertView.findViewById(R.id.term_tardy_text);
         if (item.getTermDelayMinutes() > 0) {
             termTardyText.setText(GeneralUtils.getDurationAsString(item.getTermDelayMinutes(), TimeUnit.MINUTES) + " late.");
+            termTardyText.setContentDescription(GeneralUtils.getDurationAsLongString(item.getTermDelayMinutes(), TimeUnit.MINUTES) + " late.");
             termTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.delay_minutes));
             View termDepartingBorder = convertView.findViewById(R.id.orig_departing_border);
             termDepartingBorder.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.late_boarder));

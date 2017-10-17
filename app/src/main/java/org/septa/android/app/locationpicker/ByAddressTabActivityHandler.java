@@ -86,7 +86,7 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
                                  Bundle savedInstanceState) {
             final View rootView = inflater.inflate(R.layout.location_picker_by_address, container, false);
 
-
+            restoreArgs();
             stopsListView = (ListView) rootView.findViewById(R.id.stop_list);
             progressView = rootView.findViewById(R.id.progress_view);
 
@@ -174,8 +174,8 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
             return rootView;
         }
 
-        public void setCursorAdapterSupplier(CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
-            this.cursorAdapterSupplier = cursorAdapterSupplier;
+        private void restoreArgs() {
+            cursorAdapterSupplier = (CursorAdapterSupplier<StopModel>) getArguments().getSerializable("cursorAdapterSupplier");
         }
     }
 

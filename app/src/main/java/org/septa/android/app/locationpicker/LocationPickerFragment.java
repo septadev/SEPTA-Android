@@ -38,6 +38,9 @@ public class LocationPickerFragment extends DialogFragment {
     private CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
     private LocationPickerCallBack locationPickerCallBack;
 
+    private int selected_index = 0;
+    private Fragment currentFragment;
+
     @Override
     public void onResume() {
         ViewGroup.LayoutParams params = getDialog().getWindow().getAttributes();
@@ -52,6 +55,12 @@ public class LocationPickerFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.d(TAG, "onCreateDialog");
+        if (savedInstanceState != null) {
+            Integer newIndex = (Integer) savedInstanceState.getSerializable("selected_index");
+            if (newIndex != null)
+                selected_index = newIndex;
+        }
+
         restoreArgs();
 
         View dialogView = getActivity().getLayoutInflater().inflate(R.layout.by_station, null);
@@ -65,11 +74,13 @@ public class LocationPickerFragment extends DialogFragment {
         searchByStationTab = (TextView) dialogView.findViewById(R.id.search_by_station_tab);
         searchByAddressTab = (TextView) dialogView.findViewById(R.id.search_by_address_tab);
 
-        setActive(searchByStationTab, searchByAddressTab);
-        Fragment searchByStationTabFragment = tabActivityHandlers[0].getFragment();
-        searchByStationTabFragment.setTargetFragment(this, STOP_MODEL_REQUEST);
+        if (selected_index == 0)
+            setActive(searchByStationTab, searchByAddressTab);
+        else setActive(searchByAddressTab, searchByStationTab);
+        currentFragment = tabActivityHandlers[selected_index].getFragment();
+        currentFragment.setTargetFragment(this, STOP_MODEL_REQUEST);
         getChildFragmentManager()
-                .beginTransaction().replace(R.id.stop_picker_container, searchByStationTabFragment).commit();
+                .beginTransaction().replace(R.id.stop_picker_container, currentFragment).commit();
 
         dialogView.findViewById(R.id.exit).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -83,10 +94,11 @@ public class LocationPickerFragment extends DialogFragment {
             @Override
             public void onClick(View view) {
                 setActive(searchByStationTab, searchByAddressTab);
-                Fragment tabFragment = tabActivityHandlers[0].getFragment();
-                tabFragment.setTargetFragment(LocationPickerFragment.this, STOP_MODEL_REQUEST);
+                currentFragment = tabActivityHandlers[0].getFragment();
+                selected_index = 0;
+                currentFragment.setTargetFragment(LocationPickerFragment.this, STOP_MODEL_REQUEST);
                 getChildFragmentManager()
-                        .beginTransaction().replace(R.id.stop_picker_container, tabFragment).commit();
+                        .beginTransaction().replace(R.id.stop_picker_container, currentFragment).commit();
             }
         });
 
@@ -94,10 +106,11 @@ public class LocationPickerFragment extends DialogFragment {
             @Override
             public void onClick(View view) {
                 setActive(searchByAddressTab, searchByStationTab);
-                Fragment tabFragment = tabActivityHandlers[1].getFragment();
-                tabFragment.setTargetFragment(LocationPickerFragment.this, STOP_MODEL_REQUEST);
+                currentFragment = tabActivityHandlers[1].getFragment();
+                selected_index = 1;
+                currentFragment.setTargetFragment(LocationPickerFragment.this, STOP_MODEL_REQUEST);
                 getChildFragmentManager()
-                        .beginTransaction().replace(R.id.stop_picker_container, tabFragment).commit();
+                        .beginTransaction().replace(R.id.stop_picker_container, currentFragment).commit();
 
             }
         });
@@ -161,6 +174,17 @@ public class LocationPickerFragment extends DialogFragment {
 
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        if (currentFragment != null) {
+            currentFragment.setTargetFragment(null, STOP_MODEL_REQUEST);
+            getChildFragmentManager().beginTransaction().remove(currentFragment);
+        }
+
+        outState.putSerializable("selected_index", selected_index);
+    }
 
     public static LocationPickerFragment newInstance(CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
         LocationPickerFragment fragment = new LocationPickerFragment();

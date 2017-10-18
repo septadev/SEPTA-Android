@@ -104,6 +104,8 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
                     @Override
                     public void onSuccess(Location location) {
                         if (location != null) {
+                            if (getActivity() == null)
+                                return;
                             PlacesAutoCompleteAdapter placesAutoCompleteAdapter = new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item, new LatLng(location.getLatitude(), location.getLongitude()));
                             addressEntry.setAdapter(placesAutoCompleteAdapter);
                             addressEntry.addTextChangedListener(placesAutoCompleteAdapter);

@@ -15,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -61,7 +60,7 @@ public class LineUnawareLocationPickerTabActivityHandler extends BaseTabActivity
         private static final int START_MODEL_ID = 1;
         private static final int DEST_MODEL_ID = 2;
         private StopModel startingStation;
-        private StopModel endingStation;
+        private StopModel destinationStation;
         private TextView startingStationEditText;
         private TextView endingStationEditText;
         private TransitType transitType;
@@ -118,7 +117,7 @@ public class LineUnawareLocationPickerTabActivityHandler extends BaseTabActivity
                 @Override
                 public void accept(StopModel stopModel) {
                     if (stopModel != null && startingStation == null) {
-                        setStartingStation(stopModel, View.VISIBLE);
+                        setStartingStation(stopModel);
                     }
                 }
             });
@@ -144,12 +143,12 @@ public class LineUnawareLocationPickerTabActivityHandler extends BaseTabActivity
             queryButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (startingStation == null || endingStation == null) {
+                    if (startingStation == null || destinationStation == null) {
                         return;
                     }
                     Intent intent = new Intent(getActivity(), targetClass);
                     intent.putExtra(Constants.STARTING_STATION, startingStation);
-                    intent.putExtra(Constants.DESTINATAION_STATION, endingStation);
+                    intent.putExtra(Constants.DESTINATAION_STATION, destinationStation);
                     intent.putExtra(Constants.TRANSIT_TYPE, transitType);
 
                     getActivity().startActivityForResult(intent, Constants.NTA_REQUEST);
@@ -157,6 +156,9 @@ public class LineUnawareLocationPickerTabActivityHandler extends BaseTabActivity
             });
 
             queryButton.setClickable(false);
+
+
+            restoreState(savedInstanceState);
             return rootView;
         }
 
@@ -194,11 +196,21 @@ public class LineUnawareLocationPickerTabActivityHandler extends BaseTabActivity
             }
         }
 
-        private void setStartingStation(StopModel start, int invisible) {
+        private void setDestinationStation(StopModel var1) {
+            destinationStation = var1;
+            endingStationEditText.setText(var1.getStopName());
+
+            if (startingStation != null) {
+                queryButton.setAlpha(1);
+                queryButton.setClickable(true);
+            }
+        }
+
+        private void setStartingStation(StopModel start) {
             startingStation = start;
             startingStationEditText.setText(startingStation.getStopName());
 
-            if (endingStation != null) {
+            if (destinationStation != null) {
                 queryButton.setAlpha(1);
                 queryButton.setClickable(true);
             }
@@ -212,7 +224,7 @@ public class LineUnawareLocationPickerTabActivityHandler extends BaseTabActivity
             if (requestCode == START_MODEL_ID && resultCode == LocationPickerFragment.SUCCESS) {
                 StopModel var1 = (StopModel) data.getSerializableExtra(LocationPickerFragment.STOP_MODEL);
                 if (var1 != null) {
-                    setStartingStation(var1, View.INVISIBLE);
+                    setStartingStation(var1);
                 }
                 return;
             }
@@ -220,18 +232,33 @@ public class LineUnawareLocationPickerTabActivityHandler extends BaseTabActivity
             if (requestCode == DEST_MODEL_ID && resultCode == LocationPickerFragment.SUCCESS) {
                 StopModel var1 = (StopModel) data.getSerializableExtra(LocationPickerFragment.STOP_MODEL);
                 if (var1 != null) {
-                    endingStation = var1;
-                    endingStationEditText.setText(var1.getStopName());
-
-                    if (startingStation != null) {
-                        queryButton.setAlpha(1);
-                        queryButton.setClickable(true);
-                    }
+                    setDestinationStation(var1);
                 }
                 return;
             }
         }
 
 
+        @Override
+        public void onSaveInstanceState(Bundle outState) {
+            super.onSaveInstanceState(outState);
+            outState.putSerializable("startingStation", startingStation);
+            outState.putSerializable("destinationStation", destinationStation);
+        }
+
+        private void restoreState(Bundle outState) {
+            if (outState == null)
+                return;
+
+            StopModel starting = (StopModel) outState.getSerializable("startingStation");
+            if (starting != null) {
+                setStartingStation(starting);
+            } else return;
+
+            StopModel dest = (StopModel) outState.getSerializable("destinationStation");
+            if (dest != null) {
+                setDestinationStation(dest);
+            }
+        }
     }
 }

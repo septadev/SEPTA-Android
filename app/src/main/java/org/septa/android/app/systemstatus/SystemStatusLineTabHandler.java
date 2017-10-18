@@ -156,8 +156,7 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
                 }
             });
 
-            if (routeDirectionModel != null)
-                setRoute(routeDirectionModel);
+            restoreState(savedInstanceState);
 
             return fragmentView;
 
@@ -258,6 +257,29 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
             fragment.setArguments(args);
 
             return fragment;
+        }
+
+        @Override
+        public void onSaveInstanceState(Bundle outState) {
+            super.onSaveInstanceState(outState);
+            outState.putSerializable("routeDirectionModel", routeDirectionModel);
+        }
+
+        @Override
+        public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+            super.onViewStateRestored(savedInstanceState);
+            restoreState(savedInstanceState);
+        }
+
+        private void restoreState(Bundle outState) {
+            if (outState == null)
+                return;
+
+            RouteDirectionModel rdm = (RouteDirectionModel) outState.getSerializable("routeDirectionModel");
+            if (rdm != null) {
+                setRoute(rdm);
+            }
+
         }
 
         private void restoreArgs() {

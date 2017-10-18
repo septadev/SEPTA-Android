@@ -50,8 +50,10 @@
             android:layout_alignParentRight="true"
             android:layout_alignTop="@id/search_by_address_tab"
             android:layout_centerHorizontal="true"
-            android:layout_marginRight="18dp"
-            android:layout_marginTop="6dp"
+            android:paddingRight="18dp"
+            android:paddingLeft="18dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
             android:contentDescription="Close"
             android:src="@drawable/ic_exit" />
     </RelativeLayout>

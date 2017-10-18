@@ -16,7 +16,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.septa.android.app.Constants;
 import org.septa.android.app.R;
@@ -81,7 +80,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
 
         View progressView;
         private StopModel startingStation;
-        private StopModel endingStation;
+        private StopModel destinationStation;
 
         RouteDirectionModel selectedRoute;
         private TextView startingStopEditText;
@@ -179,12 +178,12 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
             queryButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (startingStation == null || endingStation == null) {
+                    if (startingStation == null || destinationStation == null) {
                         return;
                     }
                     Intent intent = new Intent(getActivity(), targetClass);
                     intent.putExtra(Constants.STARTING_STATION, startingStation);
-                    intent.putExtra(Constants.DESTINATAION_STATION, endingStation);
+                    intent.putExtra(Constants.DESTINATAION_STATION, destinationStation);
                     intent.putExtra(Constants.TRANSIT_TYPE, transitType);
                     intent.putExtra(Constants.ROUTE_DIRECTION_MODEL, selectedRoute);
 
@@ -204,13 +203,15 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                     disableView(startingStopEditText);
                     startingStopEditText.setText(transitType.getString("start_stop_text", getContext()));
                     destinationStopEditText.setText(transitType.getString("dest_stop_text", getContext()));
-                    endingStation = null;
+                    destinationStation = null;
                     disableView(destinationStopEditText);
                     disableView(queryButton);
                 }
             });
 
-            if (prePopulated) {
+            if (savedInstanceState != null) {
+                restoreSavedState(savedInstanceState);
+            } else if (prePopulated) {
                 new PrePopulateAsyncTask(this).execute(getArguments());
             }
 
@@ -218,14 +219,13 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
         }
 
         void setDestinationStop(StopModel var1) {
-            endingStation = var1;
-            destinationStopEditText.setText(endingStation.getStopName());
+            destinationStation = var1;
+            destinationStopEditText.setText(destinationStation.getStopName());
             activateView(queryButton);
         }
 
         void setStartStop(StopModel var1) {
-            setStartingStation(var1, View.INVISIBLE);
-            activateView(destinationStopEditText);
+            setStartingStation(var1);
             destinationStopEditText.setText(transitType.getString("dest_stop_text", getContext()));
             disableView(queryButton);
         }
@@ -288,7 +288,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
             activateView(startingStopEditText);
             startingStopEditText.setText(transitType.getString("start_stop_text", getContext()));
             destinationStopEditText.setText(transitType.getString("dest_stop_text", getContext()));
-            endingStation = null;
+            destinationStation = null;
             disableView(destinationStopEditText);
             disableView(queryButton);
         }
@@ -303,13 +303,40 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
             view.setClickable(true);
         }
 
-        void setStartingStation(StopModel start, int invisible) {
+        void setStartingStation(StopModel start) {
             startingStation = start;
             startingStopEditText.setText(startingStation.getStopName());
             destinationStopEditText.setText(transitType.getString("dest_stop_text", getContext()));
-            endingStation = null;
+            destinationStation = null;
+            activateView(destinationStopEditText);
         }
 
+        @Override
+        public void onSaveInstanceState(Bundle outState) {
+            super.onSaveInstanceState(outState);
+            outState.putSerializable("selectedRoute", selectedRoute);
+            outState.putSerializable("startingStation", startingStation);
+            outState.putSerializable("destinationStation", destinationStation);
+        }
+
+        private void restoreSavedState(Bundle outState) {
+            if (outState == null)
+                return;
+
+            selectedRoute = (RouteDirectionModel) outState.getSerializable("selectedRoute");
+            if (selectedRoute != null)
+                setRoute(selectedRoute);
+            else return;
+
+            startingStation = (StopModel) outState.getSerializable("startingStation");
+            if (startingStation != null)
+                setStartingStation(startingStation);
+            else return;
+
+            destinationStation = (StopModel) outState.getSerializable("destinationStation");
+            if (destinationStation != null)
+                setDestinationStop(destinationStation);
+        }
     }
 
 

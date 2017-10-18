@@ -89,15 +89,17 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
         private TextView lineText;
         private Button queryButton;
 
-        private Bundle prepopulate;
+        boolean prePopulated = false;
 
         public static PlaceholderFragment newInstance(String headerStringName, String buttonText, TransitType transitType, CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier, CursorAdapterSupplier<StopModel> busStopCursorAdapterSupplier, CursorAdapterSupplier<StopModel> busStopAfterCursorAdapterSupplier, Class targetClass, Bundle prepopulate) {
             PlaceholderFragment fragment = new PlaceholderFragment();
             Bundle args;
             if (prepopulate == null) {
                 args = new Bundle();
+                args.putSerializable("prepopulated", Boolean.FALSE);
             } else {
-                args = new Bundle();
+                args = prepopulate;
+                args.putSerializable("prepopulated", Boolean.TRUE);
             }
 
             args.putSerializable("transitType", transitType);
@@ -125,6 +127,10 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
             stopCursorAdapterSupplier = (CursorAdapterSupplier<StopModel>) getArguments().getSerializable("stopCursorAdapterSupplier");
             stopAfterCursorAdapterSupplier = (CursorAdapterSupplier<StopModel>) getArguments().getSerializable("stopAfterCursorAdapterSupplier");
             routeCursorAdapterSupplier = (CursorAdapterSupplier<RouteDirectionModel>) getArguments().getSerializable("routeCursorAdapterSupplier");
+
+            if (getArguments().getSerializable("prepopulated") != null) {
+                prePopulated = (boolean) getArguments().getSerializable("prepopulated");
+            }
         }
 
         @Override
@@ -204,7 +210,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                 }
             });
 
-            if (prepopulate != null) {
+            if (prePopulated) {
                 new PrePopulateAsyncTask(this).execute(getArguments());
             }
 
@@ -256,6 +262,8 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
         @Override
         public void setRoute(RouteDirectionModel var1) {
             selectedRoute = var1;
+            if (getContext() == null)
+                return;
             //lineText.setText(selectedRoute.getRouteLongName());
             int color;
             try {
@@ -332,9 +340,12 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                 }
                 ft.addToBackStack(null);
 
+                String stopId = null;
+                if (parent.startingStation != null)
+                    stopId = parent.startingStation.getStopId();
                 CursorAdapterSupplier<StopModel> routeSpecificCursorAdapterSupplier =
                         new RouteSpecificCursorAdapterSupplier(cursorAdapterSupplier, parent.selectedRoute.getRouteId(),
-                                parent.selectedRoute.getDirectionCode(), parent.startingStation.getStopId(), userAfter);
+                                parent.selectedRoute.getDirectionCode(), stopId, userAfter);
 
                 // Create and show the dialog.
                 LocationPickerFragment newFragment = LocationPickerFragment.newInstance(routeSpecificCursorAdapterSupplier);
@@ -397,8 +408,13 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
         }
 
         @Override
-        protected Bundle doInBackground(Bundle... params) {
+        protected void onPreExecute() {
+            super.onPreExecute();
+            fragment.progressView.setVisibility(View.VISIBLE);
+        }
 
+        @Override
+        protected Bundle doInBackground(Bundle... params) {
             Context context = fragment.getContext();
 
             StopModel inDest = (StopModel) params[0].get(Constants.DESTINATAION_STATION);
@@ -426,9 +442,8 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
             Bundle returnBundle = new Bundle();
             returnBundle.putSerializable(Constants.ROUTE_DIRECTION_MODEL, foundRoute);
 
-            fragment.selectedRoute = foundRoute;
-            RouteSpecificCursorAdapterSupplier cursorAdapterStopSupplier = new RouteSpecificCursorAdapterSupplier(fragment.stopCursorAdapterSupplier, fragment.selectedRoute.getRouteId(),
-                    fragment.selectedRoute.getDirectionCode(), fragment.startingStation.getStopId(), false);
+            RouteSpecificCursorAdapterSupplier cursorAdapterStopSupplier = new RouteSpecificCursorAdapterSupplier(fragment.stopCursorAdapterSupplier, foundRoute.getRouteId(),
+                    foundRoute.getDirectionCode(), null, false);
             Cursor startCursor = cursorAdapterStopSupplier.getCursor(context, null);
             if (startCursor.moveToFirst()) {
                 do {
@@ -444,9 +459,8 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                 return returnBundle;
 
             returnBundle.putSerializable(Constants.STARTING_STATION, foundStart);
-            fragment.startingStation = foundStart;
-            RouteSpecificCursorAdapterSupplier cursorAdapterStopAfterSupplier = new RouteSpecificCursorAdapterSupplier(fragment.stopAfterCursorAdapterSupplier, fragment.selectedRoute.getRouteId(),
-                    fragment.selectedRoute.getDirectionCode(), fragment.startingStation.getStopId(), true);
+            RouteSpecificCursorAdapterSupplier cursorAdapterStopAfterSupplier = new RouteSpecificCursorAdapterSupplier(fragment.stopAfterCursorAdapterSupplier, foundRoute.getRouteId(),
+                    foundRoute.getDirectionCode(), foundStart.getStopId(), true);
             Cursor destCursor = cursorAdapterStopAfterSupplier.getCursor(context, null);
             if (destCursor.moveToFirst()) {
                 do {
@@ -482,6 +496,8 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
             if (bundle.containsKey(Constants.DESTINATAION_STATION)) {
                 fragment.setDestinationStop((StopModel) bundle.get(Constants.DESTINATAION_STATION));
             }
+
+            fragment.progressView.setVisibility(View.GONE);
         }
     }
 

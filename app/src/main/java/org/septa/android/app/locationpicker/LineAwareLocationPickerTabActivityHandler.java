@@ -332,7 +332,9 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                 }
                 ft.addToBackStack(null);
 
-                CursorAdapterSupplier<StopModel> routeSpecificCursorAdapterSupplier = new RouteSpecificCursorAdapterSupplier(cursorAdapterSupplier, parent, userAfter);
+                CursorAdapterSupplier<StopModel> routeSpecificCursorAdapterSupplier =
+                        new RouteSpecificCursorAdapterSupplier(cursorAdapterSupplier, parent.selectedRoute.getRouteId(),
+                                parent.selectedRoute.getDirectionCode(), parent.startingStation.getStopId(), userAfter);
 
                 // Create and show the dialog.
                 LocationPickerFragment newFragment = LocationPickerFragment.newInstance(routeSpecificCursorAdapterSupplier);
@@ -347,14 +349,18 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
 
     static class RouteSpecificCursorAdapterSupplier implements CursorAdapterSupplier<StopModel> {
         CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
-        PlaceholderFragment parent;
         private boolean userAfter;
+        String routeId;
+        String routeDesc;
+        String stopId;
 
 
-        public RouteSpecificCursorAdapterSupplier(CursorAdapterSupplier<StopModel> cursorAdapterSupplier, PlaceholderFragment parent, boolean userAfter) {
+        public RouteSpecificCursorAdapterSupplier(CursorAdapterSupplier<StopModel> cursorAdapterSupplier, String routeId, String routeDesc, String stopId, boolean userAfter) {
             this.cursorAdapterSupplier = cursorAdapterSupplier;
-            this.parent = parent;
             this.userAfter = userAfter;
+            this.routeId = routeId;
+            this.routeDesc = routeDesc;
+            this.stopId = stopId;
         }
 
         @Override
@@ -363,10 +369,10 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
             if (whereClause == null) {
                 whereClause = new ArrayList<Criteria>();
             }
-            whereClause.add(new Criteria("route_id", Criteria.Operation.EQ, parent.selectedRoute.getRouteId()));
-            whereClause.add(new Criteria("direction_id", Criteria.Operation.EQ, parent.selectedRoute.getDirectionCode()));
+            whereClause.add(new Criteria("route_id", Criteria.Operation.EQ, routeId));
+            whereClause.add(new Criteria("direction_id", Criteria.Operation.EQ, routeDesc));
             if (userAfter) {
-                whereClause.add(new Criteria("after_stop_id", Criteria.Operation.EQ, parent.startingStation.getStopId()));
+                whereClause.add(new Criteria("after_stop_id", Criteria.Operation.EQ, stopId));
             }
 
             return cursorAdapterSupplier.getCursor(context, whereClause);
@@ -421,7 +427,8 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
             returnBundle.putSerializable(Constants.ROUTE_DIRECTION_MODEL, foundRoute);
 
             fragment.selectedRoute = foundRoute;
-            RouteSpecificCursorAdapterSupplier cursorAdapterStopSupplier = new RouteSpecificCursorAdapterSupplier(fragment.stopCursorAdapterSupplier, fragment, false);
+            RouteSpecificCursorAdapterSupplier cursorAdapterStopSupplier = new RouteSpecificCursorAdapterSupplier(fragment.stopCursorAdapterSupplier, fragment.selectedRoute.getRouteId(),
+                    fragment.selectedRoute.getDirectionCode(), fragment.startingStation.getStopId(), false);
             Cursor startCursor = cursorAdapterStopSupplier.getCursor(context, null);
             if (startCursor.moveToFirst()) {
                 do {
@@ -438,7 +445,8 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
 
             returnBundle.putSerializable(Constants.STARTING_STATION, foundStart);
             fragment.startingStation = foundStart;
-            RouteSpecificCursorAdapterSupplier cursorAdapterStopAfterSupplier = new RouteSpecificCursorAdapterSupplier(fragment.stopAfterCursorAdapterSupplier, fragment, true);
+            RouteSpecificCursorAdapterSupplier cursorAdapterStopAfterSupplier = new RouteSpecificCursorAdapterSupplier(fragment.stopAfterCursorAdapterSupplier, fragment.selectedRoute.getRouteId(),
+                    fragment.selectedRoute.getDirectionCode(), fragment.startingStation.getStopId(), true);
             Cursor destCursor = cursorAdapterStopAfterSupplier.getCursor(context, null);
             if (destCursor.moveToFirst()) {
                 do {

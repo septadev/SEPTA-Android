@@ -103,6 +103,7 @@ public class SystemStatusFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable("org.septa.android.app.nextarrive.NextToArriveFragment.mSectionsPagerAdapter", mSectionsPagerAdapter.saveState());
+        outState.putString("title", getActivity().getTitle().toString());
     }
 
     @Override
@@ -112,6 +113,9 @@ public class SystemStatusFragment extends Fragment {
             Parcelable parcelable = savedInstanceState.getParcelable("org.septa.android.app.nextarrive.NextToArriveFragment.mSectionsPagerAdapter");
             if (parcelable != null)
                 mSectionsPagerAdapter.restoreState(parcelable, this.getClass().getClassLoader());
+            String title = savedInstanceState.getString("title");
+            if (title != null && getActivity() != null)
+                getActivity().setTitle(title);
         }
     }
 

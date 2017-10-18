@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -229,7 +230,21 @@ public class FavoritesFragment extends Fragment implements Runnable {
         inflater.inflate(R.menu.my_favorites_menu, menu);
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("title", getActivity().getTitle().toString());
+    }
 
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if (savedInstanceState != null) {
+            String title = savedInstanceState.getString("title");
+            if (title != null && getActivity() != null)
+                getActivity().setTitle(title);
+        }
+    }
 }
 
 

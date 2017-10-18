@@ -77,4 +77,20 @@ public class ConnectFragement extends Fragment {
             }
         });
     }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("title", getActivity().getTitle().toString());
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if (savedInstanceState != null) {
+            String title = savedInstanceState.getString("title");
+            if (title != null && getActivity() != null)
+                getActivity().setTitle(title);
+        }
+    }
 }

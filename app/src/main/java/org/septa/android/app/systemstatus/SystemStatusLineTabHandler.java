@@ -106,6 +106,8 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
             queryButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    if (getActivity() == null)
+                        return;
                     Intent intent = new Intent(getActivity(), SystemStatusResultsActivity.class);
                     intent.putExtra(Constants.ROUTE_DIRECTION_MODEL, routeDirectionModel);
                     intent.putExtra(Constants.TRANSIT_TYPE, transitType);

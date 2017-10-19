@@ -104,6 +104,8 @@ public class FavoritesFragment extends Fragment implements Runnable {
             moreButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    if (getActivity() == null)
+                        return;
                     Intent intent = new Intent(getActivity(), NextToArriveResultsActivity.class);
                     intent.putExtra(Constants.STARTING_STATION, favorite.getStart());
                     intent.putExtra(Constants.DESTINATAION_STATION, favorite.getDestination());

@@ -63,6 +63,9 @@ public class LocationPickerFragment extends DialogFragment {
 
         restoreArgs();
 
+        if (getActivity() == null)
+            return null;
+
         View dialogView = getActivity().getLayoutInflater().inflate(R.layout.by_station, null);
 
         tabActivityHandlers = new TabActivityHandler[2];

@@ -84,6 +84,9 @@ public class AboutFragement extends Fragment {
         formatter.setTimeZone(TimeZone.getTimeZone("gmt"));
 
 
+        if (getActivity() == null)
+            return fragmentView;
+
         try {
             ApplicationInfo ai = getActivity().getPackageManager().getApplicationInfo(getActivity().getPackageName(), 0);
 

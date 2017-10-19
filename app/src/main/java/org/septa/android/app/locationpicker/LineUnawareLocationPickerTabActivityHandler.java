@@ -113,7 +113,7 @@ public class LineUnawareLocationPickerTabActivityHandler extends BaseTabActivity
             TextView pickerHeaderText = (TextView) rootView.findViewById(R.id.picker_header_text);
             pickerHeaderText.setText(transitType.getString(headerStringName, getContext()));
 
-            final AsyncTask<Location, Void, StopModel> task = new FinderClosestStopTask(getActivity(), cursorAdapterSupplier, new Consumer<StopModel>() {
+            final AsyncTask<Location, Void, StopModel> task = new FinderClosestStopTask(getContext(), cursorAdapterSupplier, new Consumer<StopModel>() {
                 @Override
                 public void accept(StopModel stopModel) {
                     if (stopModel != null && startingStation == null) {
@@ -146,6 +146,8 @@ public class LineUnawareLocationPickerTabActivityHandler extends BaseTabActivity
                     if (startingStation == null || destinationStation == null) {
                         return;
                     }
+                    if (getActivity() == null)
+                        return;
                     Intent intent = new Intent(getActivity(), targetClass);
                     intent.putExtra(Constants.STARTING_STATION, startingStation);
                     intent.putExtra(Constants.DESTINATAION_STATION, destinationStation);

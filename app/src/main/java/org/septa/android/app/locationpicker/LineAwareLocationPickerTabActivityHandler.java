@@ -181,6 +181,10 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                     if (startingStation == null || destinationStation == null) {
                         return;
                     }
+
+                    if (getActivity() == null)
+                        return;
+
                     Intent intent = new Intent(getActivity(), targetClass);
                     intent.putExtra(Constants.STARTING_STATION, startingStation);
                     intent.putExtra(Constants.DESTINATAION_STATION, destinationStation);

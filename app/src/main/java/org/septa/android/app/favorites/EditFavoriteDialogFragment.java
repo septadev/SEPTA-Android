@@ -69,6 +69,8 @@ public class EditFavoriteDialogFragment extends DialogFragment {
                                     DeleteFavoritesAsyncTask task = new DeleteFavoritesAsyncTask(getContext());
                                     task.execute(favorite.getKey());
                                     getDialog().dismiss();
+                                    if (getActivity() == null)
+                                        return;
                                     getActivity().onBackPressed();
                                 }
                             }).setNegativeButton(R.string.delete_fav_neg_button, new DialogInterface.OnClickListener() {

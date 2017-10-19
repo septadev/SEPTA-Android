@@ -86,6 +86,9 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
                                  Bundle savedInstanceState) {
             final View rootView = inflater.inflate(R.layout.location_picker_by_address, container, false);
 
+            if (getActivity() == null)
+                return rootView;
+
             restoreArgs();
             stopsListView = (ListView) rootView.findViewById(R.id.stop_list);
             progressView = rootView.findViewById(R.id.progress_view);
@@ -139,6 +142,8 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
             addressEntry.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    if (getActivity() == null)
+                        return;
                     getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
                     InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(rootView.getWindowToken(), 0);
@@ -153,6 +158,8 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
 
             addressEntry.setOnKeyListener(new View.OnKeyListener() {
                 public boolean onKey(View v, int keyCode, KeyEvent event) {
+                    if (getActivity() == null)
+                        return false;
                     // If the event is a key-down event on the "enter" button
                     if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
                             (keyCode == KeyEvent.KEYCODE_ENTER)) {
@@ -193,6 +200,8 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
 
         @Override
         protected List<StopModelWithDistance> doInBackground(LatLng... locations) {
+            if (fragment.getActivity() == null)
+                return new ArrayList<StopModelWithDistance>(0);
             LatLng location = locations[0];
             List<StopModelWithDistance> returnList = new ArrayList<StopModelWithDistance>();
             if (location != null) {
@@ -231,6 +240,8 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
 
         @Override
         protected void onPostExecute(final List<StopModelWithDistance> stopModels) {
+            if (fragment.getActivity() == null)
+                return;
             fragment.stopsListView.setAdapter(new StopListAdapater(fragment.getActivity(), stopModels));
             fragment.stopsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
@@ -265,6 +276,9 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
         @Override
         public void onClick(View view) {
             if (!active)
+                return;
+
+            if (fragment.getActivity() == null)
                 return;
 
             active = false;
@@ -337,6 +351,8 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
 
         @Override
         protected Location doInBackground(String... strings) {
+            if (fragment.getActivity() == null)
+                return null;
             return MapUtils.getLocationFromAddress(fragment.getActivity(), strings[0]);
         }
 

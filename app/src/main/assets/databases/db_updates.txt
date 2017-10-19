@@ -1,7 +1,7 @@
-CREATE TABLE stop_route_direction (id INTEGER PRIMARY KEY ASC, stop_id INT, route_id TEXT, direction_id INT);
-insert into stop_route_direction(stop_id, route_id, direction_id) SELECT DISTINCT S.stop_id, T.route_id, direction_id   FROM trips_bus T join stop_times_bus ST ON T.trip_id = ST.trip_id join stops_bus S on ST.stop_id = S.stop_id;
-insert into stop_route_direction(stop_id, route_id, direction_id) SELECT DISTINCT S.stop_id, T.route_id, direction_id   FROM trips_MFL T join stop_times_MFL ST ON T.trip_id = ST.trip_id join stops_bus S on ST.stop_id = S.stop_id;
-insert into stop_route_direction(stop_id, route_id, direction_id) SELECT DISTINCT S.stop_id, T.route_id, direction_id   FROM trips_BSL T join stop_times_BSL ST ON T.trip_id = ST.trip_id join stops_bus S on ST.stop_id = S.stop_id ;
+CREATE TABLE stop_route_direction (id INTEGER PRIMARY KEY ASC, stop_id INT, route_id TEXT, direction_id INT, route_sequence INT);
+insert into stop_route_direction(stop_id, route_id, direction_id, route_sequence) select distinct stop_id, route_id, direction_id, stop_sequence from trips_bus c, stop_times_bus d where c.trip_id=d.trip_id;
+insert into stop_route_direction(stop_id, route_id, direction_id, route_sequence) select distinct stop_id, route_id, direction_id, stop_sequence from trips_MFL c, stop_times_MFL d where c.trip_id=d.trip_id;
+insert into stop_route_direction(stop_id, route_id, direction_id, route_sequence) select distinct stop_id, route_id, direction_id, stop_sequence from trips_BSL c, stop_times_BSL d where c.trip_id=d.trip_id;
 CREATE INDEX stop_srd_index ON stop_route_direction (stop_id);
 CREATE INDEX route_srd_index ON stop_route_direction (route_id);
 CREATE INDEX direction_srd_index ON stop_route_direction (direction_id);

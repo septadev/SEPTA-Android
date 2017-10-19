@@ -284,9 +284,7 @@ class CursorSuppliers implements Serializable {
 
     static class BusStopCursorAdapterSupplier implements CursorAdapterSupplier<StopModel> {
 
-        // private static final String SELECT_CLAUSE = "SELECT DISTINCT a.stop_id, stop_name, wheelchair_boarding, stop_lat, stop_lon, a.rowid AS _id FROM stops_bus a, trips_bus b, stop_times_bus c WHERE c.trip_id=b.trip_id and c.stop_id=a.stop_id";
         private static final String SELECT_CLAUSE = "SELECT DISTINCT a.stop_id, stop_name, wheelchair_boarding, stop_lat, stop_lon, a.rowid AS _id FROM stops_bus a, stop_route_direction b WHERE a.stop_id=b.stop_id";
-
 
         @Override
         public Cursor getCursor(Context context, List<Criteria> whereClause) {
@@ -342,7 +340,10 @@ class CursorSuppliers implements Serializable {
 
     static class BusStopAfterCursorAdapterSupplier implements CursorAdapterSupplier<StopModel> {
 
-        private static final String SELECT_CLAUSE = "select distinct y.stop_id, y.stop_name, y.wheelchair_boarding, y.stop_lat, y.stop_lon, y.rowid AS _id from (SELECT a.stop_id, stop_name, wheelchair_boarding, stop_lat, stop_lon, c.stop_sequence, c.trip_id, a.rowid AS _id FROM stops_bus a, trips_bus b, stop_times_bus c WHERE c.trip_id=b.trip_id and c.stop_id=a.stop_id and a.stop_id=''{0}'' and b.route_id=''{1}'' and b.direction_id=''{2}'') x, (SELECT a.stop_id, stop_name, wheelchair_boarding, stop_lat, stop_lon, c.stop_sequence, c.trip_id, a.rowid AS _id FROM stops_bus a, trips_bus b, stop_times_bus c WHERE c.trip_id=b.trip_id and c.stop_id=a.stop_id) y where x.trip_id=y.trip_id and x.stop_sequence < y.stop_sequence";
+        private static final String SELECT_CLAUSE = "select distinct y.stop_id, y.stop_name, y.wheelchair_boarding, y.stop_lat, y.stop_lon, y.rowid AS _id from\n" +
+                "(select distinct stop_id, route_sequence from stop_route_direction where stop_id=''{0}'' and route_id=''{1}'' and direction_id=''{2}'' ) a,\n" +
+                "(select distinct stop_id, route_sequence from stop_route_direction where stop_id<>''{0}'' and route_id=''{1}'' and direction_id=''{2}'' ) b,\n" +
+                "stops_bus y where a.route_sequence < b.route_sequence and y.stop_id=b.stop_id";
 
 
         @Override
@@ -396,7 +397,7 @@ class CursorSuppliers implements Serializable {
 
         @Override
         public StopModel getItemFromId(Context context, Object id) {
-            String queryString = "SELECT DISTINCT a.stop_id, stop_name, wheelchair_boarding, stop_lat, stop_lon, a.rowid AS _id FROM stops_bus a where a.stop_id='" + id.toString() + "'";
+            String queryString = "SELECT a.stop_id, stop_name, wheelchair_boarding, stop_lat, stop_lon, a.rowid AS _id FROM stops_bus a where a.stop_id='" + id.toString() + "'";
 
             StopModel stopModel = null;
             Cursor cursor = getDatabase(context).rawQuery(queryString.toString(), null);

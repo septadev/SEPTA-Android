@@ -146,7 +146,8 @@ public class FavoritesFragment extends Fragment implements Runnable {
         results.enqueue(new Callback<NextArrivalModelResponse>() {
             @Override
             public void onResponse(@NonNull Call<NextArrivalModelResponse> call, @NonNull Response<NextArrivalModelResponse> response) {
-                tripView.setNextToArriveData(new NextArrivalModelResponseParser(response.body()));
+                if (response != null && response.body() != null)
+                    tripView.setNextToArriveData(new NextArrivalModelResponseParser(response.body()));
                 progressView.setVisibility(View.GONE);
             }
 

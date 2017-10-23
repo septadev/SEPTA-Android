@@ -280,6 +280,10 @@ public class SchedulesRouteSelection_ListViewItem_ArrayAdapter extends BaseAdapt
                 }
 
                 switch (route.getRouteId().length()) {
+                    case 7: {
+                        routeIdTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+                        break;
+                    }
                     case 6: {
                         routeIdTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
                         break;
@@ -295,8 +299,16 @@ public class SchedulesRouteSelection_ListViewItem_ArrayAdapter extends BaseAdapt
                     default: {
                     }
                 }
+                //routeIdTextView.setText("test");
+                if (routeIdTextView.getText().equals("BLVDDIR")) {
+                    String str = "BLVD%nDIRECT";
+                    str = String.format(str);
+                    routeIdTextView.setText(str);
+                    routeIdTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+                }
 
                 routeLongNameTextView.setText(route.getRouteLongName());
+
             }
         }
 

@@ -133,6 +133,17 @@ public class TransitView_ListViewItem_ArrayAdapter extends ArrayAdapter<RouteMod
                        viewHolder.transitViewBusRouteRouteIdTextView.setText("");
 
                        return rowView;
+                   } else {
+                       if (busRouteModel.getRouteShortName().equals("BLVDDIR")) {
+                           String str = "BLVD%nDIRECT";
+                           str = String.format(str);
+                           viewHolder.transitViewBusRouteRouteTypeImageView.setImageResource(R.drawable.transitview_listitem_direct_bus);
+                           viewHolder.transitViewBusRouteRouteIdTextView.setText(str);
+                           viewHolder.transitViewBusRouteRouteIdTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+
+
+                           return rowView;
+                       }
                    }
                }
            }

@@ -18,6 +18,9 @@ public class SystemStatusState {
 
 
     public static void update(Alerts alerts){
+        if (alerts == null)
+            return;
+
         for (Alert alert : alerts.getAlerts()) {
             map.put(alert.getRouteId(), alert);
         }

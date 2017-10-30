@@ -205,12 +205,7 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
 
 
         vehicleValue.setText(vehicleId);
-        refreshHandler = new
-
-                Handler();
-
-        run();
-
+        refreshHandler = new Handler();
     }
 
     @Override
@@ -336,18 +331,7 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
                     updateMap();
                     return true;
                 } else {
-                    Snackbar snackbar = Snackbar.make(findViewById(R.id.trip_detail_coordinator), "Sorry, we had some issue retrieving your data.  Please try again.", Snackbar.LENGTH_LONG);
-                    snackbar.addCallback(new Snackbar.Callback() {
-                        @Override
-                        public void onDismissed(Snackbar snackbar, int event) {
-                            try {
-                                onBackPressed();
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
-                    snackbar.show();
+                    SeptaServiceFactory.displayWebServiceError(findViewById(R.id.trip_detail_coordinator), NextToArriveTripDetailActivity.this);
                     return false;
                 }
             }

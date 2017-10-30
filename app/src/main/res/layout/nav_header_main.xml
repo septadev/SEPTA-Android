@@ -9,6 +9,14 @@
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/android_menu_header" />
+        android:src="@drawable/philly_image" />
+
+    <ImageView
+        android:layout_width="72dp"
+        android:layout_height="71dp"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="15dp"
+        android:src="@drawable/ic_septa_logo" />
 
 </FrameLayout>

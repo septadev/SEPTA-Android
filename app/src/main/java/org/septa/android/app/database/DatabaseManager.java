@@ -1,12 +1,17 @@
 package org.septa.android.app.database;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.domain.ScheduleModel;
 import org.septa.android.app.domain.StopModel;
+import org.septa.android.app.support.Criteria;
 import org.septa.android.app.support.CursorAdapterSupplier;
+
+import java.util.List;
 
 /**
  * Database manager
@@ -145,6 +150,46 @@ public class DatabaseManager {
 
     public CursorAdapterSupplier<RouteDirectionModel> getNonRailReverseRouteCursorAdapterSupplier() {
         return new CursorSuppliers.NonRailReverseRouteCursorAdapterSupplier();
+    }
+
+    public CursorAdapterSupplier<String> getDirectionCodeForTrainOnRoute() {
+        return new CursorAdapterSupplier<String>() {
+            String SELECT_CLAUSE = "select distinct direction_id from trips_rail T where ";
+
+            @Override
+            public Cursor getCursor(Context context, List<Criteria> whereClause) {
+                StringBuilder queryString = new StringBuilder(SELECT_CLAUSE);
+
+                boolean first = true;
+                for (Criteria c : whereClause) {
+                    if (!first)
+                        queryString.append(" AND ");
+                    first = false;
+
+                    if ("trainId".equals(c.getFieldName())) {
+                        queryString.append("T.block_id=").append(c.getValue());
+                    } else if ("routeId".equals(c.getFieldName())) {
+                        queryString.append("T.route_id='").append(c.getValue()).append("'");
+                    }
+
+                }
+                String query = queryString.toString();
+                Log.d(TAG, "Creating cursor:" + query);
+
+                return DatabaseManager.getDatabase().rawQuery(query, null);
+            }
+
+            @Override
+            public String getCurrentItemFromCursor(Cursor cursor) {
+                String directionCode = cursor.getString(0);
+                return directionCode;
+            }
+
+            @Override
+            public String getItemFromId(Context context, Object id) {
+                throw new RuntimeException("Not supported by getDirectionCodeForTrainOnRoute");
+            }
+        };
     }
 
 

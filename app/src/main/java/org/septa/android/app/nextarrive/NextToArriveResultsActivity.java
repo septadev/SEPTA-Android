@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Point;
 import android.location.Location;
 import android.os.AsyncTask;
@@ -45,6 +46,7 @@ import com.google.maps.android.data.kml.KmlLayer;
 import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
+import org.septa.android.app.database.DatabaseManager;
 import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.favorites.DeleteFavoritesAsyncTask;
@@ -56,6 +58,8 @@ import org.septa.android.app.services.apiinterfaces.model.Favorite;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalDetails;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalModelResponse;
 import org.septa.android.app.support.Consumer;
+import org.septa.android.app.support.Criteria;
+import org.septa.android.app.support.CursorAdapterSupplier;
 import org.septa.android.app.support.GeneralUtils;
 import org.septa.android.app.support.MapUtils;
 import org.septa.android.app.systemstatus.SystemStatusResultsActivity;
@@ -63,7 +67,9 @@ import org.septa.android.app.view.TextView;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -220,17 +226,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                     intent.putExtra(Constants.TRANSIT_TYPE, transitType);
                     if (routeDirectionModel != null)
                         intent.putExtra(Constants.ROUTE_DIRECTION_MODEL, routeDirectionModel);
-                    else {
-                        String directionCode = "1";
-                        String directionDescription = "From Center City Philadelphia";
-                        if ("Inbound".equalsIgnoreCase(parser.getResults().get(0).getOrigLineDirection())) {
-                            directionCode = "0";
-                            directionDescription = "To Center City Philadelphia";
-                        }
-                        RouteDirectionModel rdm = new RouteDirectionModel(parser.getResults().get(0).getOrigRouteId(), parser.getResults().get(0).getOrigRouteName(), parser.getResults().get(0).getOrigRouteName(), directionDescription, directionCode, null);
-                        intent.putExtra(Constants.ROUTE_DIRECTION_MODEL, rdm);
 
-                    }
                     setResult(Constants.VIEW_SCHEDULE, intent);
                     finish();
                 }
@@ -555,6 +551,32 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                         Log.w(TAG, "invalid response from service.");
                         SeptaServiceFactory.displayWebServiceError(findViewById(R.id.rail_next_to_arrive_results_coordinator), NextToArriveResultsActivity.this);
                     } else {
+                        if (transitType == TransitType.RAIL && response.body().getNextArrivalRecords().size() > 0) {
+                            try {
+                                //Because RAIL does not need a Route to look up NTA if we want to link back to Schedules we need to figure out the Line and Direction.
+                                //So grab the first Line from the results and the first train.  Then look up in the schedule DB the direction code for that train on that line.
+
+                                String routeId = response.body().getNextArrivalRecords().get(0).getOrigRouteId();
+                                String trainId = response.body().getNextArrivalRecords().get(0).getOrigLineTripId();
+
+                                List<Criteria> criteriaList = new ArrayList<Criteria>(2);
+                                criteriaList.add(new Criteria("routeId", Criteria.Operation.EQ, routeId));
+                                criteriaList.add(new Criteria("trainId", Criteria.Operation.EQ, trainId));
+
+                                CursorAdapterSupplier<String> directionIdCursorAdapterSupplier = DatabaseManager.getInstance(NextToArriveResultsActivity.this).getDirectionCodeForTrainOnRoute();
+                                Cursor cursor = directionIdCursorAdapterSupplier.getCursor(NextToArriveResultsActivity.this, criteriaList);
+
+                                // Yes we are making a DB query on the UI thread.  But it is a local DB and it is a really fast single table look up.
+                                if (cursor.moveToFirst()) {
+                                    String directionCode = cursor.getString(0);
+                                    routeDirectionModel = new RouteDirectionModel(routeId, response.body().getNextArrivalRecords().get(0).getOrigRouteName(), response.body().getNextArrivalRecords().get(0).getOrigRouteName(), "", directionCode, null);
+                                }
+                            } catch (Exception e) {
+                                // Swallow the error.  The worst that happens is the route is not selected.
+                                Log.e(TAG, "problem determining the direction ID for a rail route.", e);
+                            }
+                        }
+
 
                         // Go through all of the results and kick off a call for Details for each vehichle that has RT data.
                         for (final NextArrivalModelResponse.NextArrivalRecord nextArrivalRecord : response.body().getNextArrivalRecords()) {

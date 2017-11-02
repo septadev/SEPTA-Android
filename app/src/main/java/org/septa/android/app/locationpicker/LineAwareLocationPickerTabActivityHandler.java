@@ -447,10 +447,13 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
         @Override
         protected Bundle doInBackground(Bundle... params) {
             Context context = fragment.getContext();
+            Bundle returnBundle = new Bundle();
 
             StopModel inDest = (StopModel) params[0].get(Constants.DESTINATAION_STATION);
             StopModel inStart = (StopModel) params[0].get(Constants.STARTING_STATION);
             RouteDirectionModel inputRoute = (RouteDirectionModel) params[0].get(Constants.ROUTE_DIRECTION_MODEL);
+            if (inputRoute == null)
+                return returnBundle;
 
             RouteDirectionModel foundRoute = null;
             StopModel foundStart = null;
@@ -470,7 +473,6 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                     return new Bundle();
             }
 
-            Bundle returnBundle = new Bundle();
             returnBundle.putSerializable(Constants.ROUTE_DIRECTION_MODEL, foundRoute);
 
             RouteSpecificCursorAdapterSupplier cursorAdapterStopSupplier = new RouteSpecificCursorAdapterSupplier(fragment.stopCursorAdapterSupplier, foundRoute.getRouteId(),

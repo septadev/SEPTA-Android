@@ -15,7 +15,7 @@ FROM
 stop_times_{4} ST
 JOIN trips_{4} T
 ON ST.trip_id = T.trip_id
-WHERE ST.stop_id = {0} AND T.service_id = {1} and T.direction_id = {2}) Start
+WHERE ST.stop_id = {0} and T.direction_id = {2} and T.service_id in (select service_id from calendar_bus C where days &amp; {1})) Start
 
 JOIN (SELECT
 T.trip_id, T.direction_id, T.service_id,
@@ -24,7 +24,7 @@ FROM
 stop_times_{4}  ST
 JOIN trips_{4} T
 ON ST.trip_id = T.trip_id
-WHERE  stop_id = {3} AND T.service_id = {1} and T.direction_id = {2}) Stop
+WHERE  stop_id = {3} and T.direction_id = {2} and T.service_id in (select service_id from calendar_bus C where days &amp; {1})) Stop
 ON start.trip_id = stop.trip_id
 group by start.arrival_time, Stop.arrival_time
 ORDER BY DepartureTime;

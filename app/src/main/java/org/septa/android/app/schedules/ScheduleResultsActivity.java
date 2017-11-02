@@ -63,16 +63,6 @@ public class ScheduleResultsActivity extends AppCompatActivity {
     private static final int RAIL_SUNDAY = 64;
     private static final int SUNDAY = 3;
 
-    private static final int NHSL_MON_THUR = 17;
-    private static final int NHSL_FRIDAY = 18;
-    private static final int NHSL_SATURDAY = 19;
-    private static final int NHSL_SUNDAY = 20;
-
-    private static final int SUBWAY_MON_THUR = 5;
-    private static final int SUBWAY_FRIDAY = 6;
-    private static final int SUBWAY_SATURDAY = 7;
-    private static final int SUBWAY_SUNDAY = 8;
-
 
     private DatabaseManager dbManager = null;
     private RadioGroup radioGroup = null;
@@ -337,66 +327,25 @@ public class ScheduleResultsActivity extends AppCompatActivity {
     private int mapRadioButtonIdtoSchedule(int checkedID, String routeId) {
         switch (checkedID) {
             case R.id.weekday_button:
-                if (transitType == TransitType.SUBWAY) {
-                    if ("bso".equalsIgnoreCase(routeId) || "mfo".equalsIgnoreCase(routeId)) {
-                        return WEEK_DAY;
-                    } else
-                        return SUBWAY_MON_THUR;
-                } else if (transitType == TransitType.NHSL) {
-                    return NHSL_MON_THUR;
-                }
                 return WEEK_DAY;
 
             case R.id.mon_thurs_button:
-                if (transitType == TransitType.RAIL) {
-                    return RAIL_MON_THUR;
-                } else if (transitType == TransitType.SUBWAY) {
-                    if ("bso".equalsIgnoreCase(routeId) || "mfo".equalsIgnoreCase(routeId)) {
-                        return WEEK_DAY;
-                    } else
-                        return SUBWAY_MON_THUR;
-                } else if (transitType == TransitType.NHSL) {
-                    return NHSL_MON_THUR;
-                }
+                return RAIL_MON_THUR;
 
             case R.id.friday_button:
-                if (transitType == TransitType.RAIL) {
-                    return RAIL_FRIDAY;
-                } else if (transitType == TransitType.SUBWAY) {
-                    if ("bso".equalsIgnoreCase(routeId) || "mfo".equalsIgnoreCase(routeId)) {
-                        return WEEK_DAY;
-                    } else
-                        return SUBWAY_FRIDAY;
-                } else if (transitType == TransitType.NHSL) {
-                    return NHSL_FRIDAY;
-                }
-
+                return RAIL_FRIDAY;
 
             case R.id.saturday_button:
                 if (transitType == TransitType.RAIL) {
                     return RAIL_SATURDAY;
-                } else if (transitType == TransitType.SUBWAY) {
-                    if ("bso".equalsIgnoreCase(routeId) || "mfo".equalsIgnoreCase(routeId)) {
-                        return SATURDAY;
-                    } else
-                        return SUBWAY_SATURDAY;
-                } else if (transitType == TransitType.NHSL) {
-                    return NHSL_SATURDAY;
                 } else
                     return SATURDAY;
 
             case R.id.sunday_button:
                 if (transitType == TransitType.RAIL) {
                     return RAIL_SUNDAY;
-                } else if (transitType == TransitType.SUBWAY) {
-                    if ("bso".equalsIgnoreCase(routeId) || "mfo".equalsIgnoreCase(routeId)) {
-                        return SUNDAY;
-                    } else
-                        return SUBWAY_SUNDAY;
-                } else if (transitType == TransitType.NHSL) {
-                    return NHSL_SUNDAY;
-                }
-                return SUNDAY;
+                } else
+                    return SUNDAY;
         }
         return 0;
     }

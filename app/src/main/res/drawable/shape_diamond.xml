@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rotate xmlns:android="http://schemas.android.com/apk/res/android"
+        android:fromDegrees="45">
+    <inset
+        android:insetLeft="3dp"
+        android:insetRight="3dp">
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/black"/>
+            <size
+                android:width="10dp"
+                android:height="10dp"/>
+        </shape>
+    </inset>
+</rotate>

@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/full_page_gradient_background"
+        android:orientation="vertical">
+
+
+        <org.septa.android.app.view.TextView
+            android:id="@+id/picker_header_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="13dp"
+            android:layout_marginLeft="12dp"
+            android:layout_marginTop="12dp"
+            android:text="Regional Rail Schedules"
+            android:textColor="#144b88"
+            android:textSize="20sp"
+            app:font="@string/font_roboto_bold" />
+
+        <LinearLayout
+            android:id="@+id/top"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="#ffffff"
+            android:elevation="4dp"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <org.septa.android.app.view.TextView
+                    android:id="@+id/line_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="13dp"
+                    android:clickable="true"
+                    android:text="Line"
+                    android:textColor="#6d6d6d"
+                    android:textSize="12sp"
+                    app:font="@string/font_roboto_regular" />
+
+                <org.septa.android.app.view.TextView
+                    android:id="@+id/reset_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="15dp"
+                    android:layout_marginTop="13dp"
+                    android:clickable="true"
+                    android:text="Reset"
+                    android:textColor="#6d6d6d"
+                    android:textSize="12sp"
+                    app:font="@string/font_roboto_regular" />
+            </RelativeLayout>
+
+            <org.septa.android.app.view.TextView
+                android:id="@+id/line_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginTop="7dp"
+                android:background="@drawable/line_picker_background"
+                android:drawablePadding="10dp"
+                android:drawableRight="@drawable/ic_line_picker"
+                android:ellipsize="end"
+                android:paddingBottom="14dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="13dp"
+                android:paddingTop="15dp"
+                android:text="Select Line" />
+
+            <org.septa.android.app.view.TextView
+                android:id="@+id/starting_stop"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginTop="20dp"
+                android:alpha=".3"
+                android:background="@drawable/stop_picker_background"
+                android:drawableRight="@drawable/ic_search"
+                android:paddingBottom="14dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="13dp"
+                android:paddingTop="15dp"
+                android:text="Starting Stop" />
+
+            <org.septa.android.app.view.TextView
+                android:id="@+id/destination_stop"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginTop="10dp"
+                android:alpha=".3"
+                android:background="@drawable/stop_picker_background"
+                android:drawableRight="@drawable/ic_search"
+                android:paddingBottom="14dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="13dp"
+                android:paddingTop="15dp"
+                android:text="Destination Stop" />
+
+            <Button
+                android:id="@+id/view_buses_button"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginBottom="15dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginTop="30dp"
+                android:alpha=".3"
+                android:background="@drawable/button_gradient_background"
+                android:clickable="false"
+                android:text="View Schedules"
+                android:textColor="#ffffff" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+    <FrameLayout
+        android:id="@+id/progress_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/top"
+        android:background="@color/progress_background"
+        android:clickable="true"
+        android:visibility="gone"
+        tools:alpha=".3"
+        tools:visibility="visible">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminate="true"
+            android:indeterminateDrawable="@drawable/basic_progress" />
+
+    </FrameLayout>
+</FrameLayout>

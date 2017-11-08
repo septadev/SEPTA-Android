@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<org.septa.android.app.view.TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:letterSpacing="-0.02"
+    android:textColor="#000000"
+    android:textSize="14sp"
+    app:font="@string/font_roboto_bold" />

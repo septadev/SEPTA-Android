@@ -1,4 +1,3 @@
-
 // ------------------
 //defiinition entries
 // ------------------
@@ -8,7 +7,7 @@ def getGitHash = { ->
         commandLine 'git', 'rev-parse', '--short', 'HEAD'
         standardOutput = stdout
     }
-    return '-'+stdout.toString().trim()
+    return '-' + stdout.toString().trim()
 }
 
 def getSprintRound = { ->
@@ -19,34 +18,7 @@ def getSprintRound = { ->
     }
 }
 
-// buildscript
-buildscript {
-    repositories {
-        mavenCentral()
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
-        maven { url 'http://download.crashlytics.com/maven' }
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:1.0.0'
-        classpath 'com.crashlytics.tools.gradle:crashlytics-gradle:1.+'
-    }
-}
-
-allprojects {
-    repositories {
-        mavenCentral()
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
-    }
-}
-
 apply plugin: 'com.android.application'
-apply plugin: 'crashlytics'
-
-repositories {
-    mavenCentral()
-    maven { url 'http://mvnrepository.com/artifact/' }
-    maven { url 'http://download.crashlytics.com/maven' }
-}
 
 // check that the SEPTA.signing gradle property exists and that its value is the filename to a file
 //  that has the extension of gradle
@@ -55,18 +27,18 @@ if (project.hasProperty("SEPTA.signing") && file(project.property("SEPTA.signing
 }
 
 android {
-    compileSdkVersion 19
-    buildToolsVersion '20.0.0'
+    compileSdkVersion 25
+    buildToolsVersion '26.0.2'
     defaultConfig {
-        minSdkVersion 10
-        targetSdkVersion 23
-        versionCode 250
-        versionName '1.3.250'
-        project.ext.set("archivesBaseName", project.parent.name + "-v" + versionName + "-b" + versionCode)
+        applicationId "org.septa.android.app"
+        minSdkVersion 16
+        targetSdkVersion 25
+        versionCode 257
+        versionName "2.0.257"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        manifestPlaceholders = [amazonawsApiKey:"${AMAZONAWS_API_KEY}",googleGeoApiKey:"${GOOGLE_GEO_API_KEY}",crashlyticsApiKey:"${CRASHLYTICS_API_KEY}"]
     }
-    sourceSets {
-//        androidTest.setRoot('src/test') //note that this is androidTest instead of instrumentTest
-    }
+
     signingConfigs {
         prerelease {
             storeFile file("${SEPTA_DEVELOPMENT_KEYSTORE_FILE}")
@@ -130,27 +102,50 @@ android {
     }
     productFlavors {
     }
+
 }
 
+repositories {
+    mavenCentral()
+    maven { url 'http://mvnrepository.com/artifact/' }
+    maven { url 'http://download.crashlytics.com/maven' }
+}
+
+// buildscript
+buildscript {
+    repositories {
+        mavenCentral()
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+        maven { url 'http://download.crashlytics.com/maven' }
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:1.0.0'
+        classpath 'com.crashlytics.tools.gradle:crashlytics-gradle:1.+'
+    }
+}
+
+
+apply plugin: 'com.android.application'
+apply plugin: 'crashlytics'
+
 dependencies {
-    compile 'com.android.support:gridlayout-v7:19.0.1'
-    compile 'com.android.support:support-v4:19.1.0'
-    compile 'com.android.support:appcompat-v7:19.1.0'
-    compile 'com.google.android.gms:play-services:4.4.52'
-    compile 'com.crashlytics.android:crashlytics:1.+'
-    compile group: 'com.squareup.okhttp', name: 'okhttp', version: '1.3.0'
-    compile group: 'com.squareup.okhttp', name: 'okhttp-apache', version: '1.3.0'
-    compile group: 'com.squareup.retrofit', name: 'retrofit', version: '1.5.0'
-    compile ([group: 'org.simpleframework', name: 'simple-xml', version: '2.6.3']){
-        exclude module: 'stax'
-        exclude module: 'stax-api'
-        exclude module: 'xpp3'
-    }
-    compile group: 'com.readystatesoftware.sqliteasset', name: 'sqliteassethelper', version: '2.0.1'
-    compile group: 'com.andraskindler.quickscroll', name: 'quickscroll', version: '0.9.8'
-    compile('de.keyboardsurfer.android.widget:crouton:1.8.4') {
-        exclude group: 'com.google.android', module: 'support-v4'
-    }
-    compile 'com.jakewharton:butterknife:5.1.1'
-    compile group: 'se.emilsjolander', name: 'stickylistheaders', version: '2.4.1'
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    compile 'com.crashlytics.android:crashlytics:1+'
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.android.support:design:25.3.1'
+    compile 'com.android.support.constraint:constraint-layout:1.0.0'
+    compile 'com.readystatesoftware.sqliteasset:sqliteassethelper:2.0.1'
+    compile 'com.google.android.gms:play-services-maps:11.0.4'
+    compile 'com.google.android.gms:play-services-location:11.0.4'
+    compile 'com.google.android.gms:play-services-places:11.0.4'
+    compile 'com.android.support:support-core-utils:25.3.1'
+    compile 'com.squareup.retrofit2:retrofit:2.3.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.3.0'
+    compile 'com.squareup.okhttp3:logging-interceptor:3.8.1'
+    compile 'com.google.maps.android:android-maps-utils:0.5'
+    compile 'com.android.support:support-v4:25.3.1'
+    testCompile 'junit:junit:4.12'
 }

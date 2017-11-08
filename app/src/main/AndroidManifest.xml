@@ -1,314 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.septa.android.app" >
+    package="org.septa.android.app">
 
-    <supports-screens
-        android:anyDensity="true"
-        android:largeScreens="true"
-        android:normalScreens="true"
-        android:smallScreens="true"
-        android:xlargeScreens="true" />
-
-    <!--
-         the Google Play Services Map API v2 requires OpenGL ES v2, thus
-        instruct the Google Play store not to show or install app on a device
-        that does not support OpenGL ES v2
-    -->
-    <uses-feature
-        android:glEsVersion="0x00020000"
-        android:required="true" />
-
-    <!-- needed for the Connect tab to call customer service -->
-    <uses-permission android:name="android.permission.CALL_PHONE" />
-
-    <uses-feature
-        android:name="android.hardware.telephony"
-        android:required="false" />
-
-    <!-- needed for the Realtime tab tips WebView -->
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
-    <!-- needed to obtain the user's location to display on the map and find nearest location -->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-
-    <uses-feature
-        android:name="android.hardware.location.gps"
-        android:required="false" />
-
-    <permission
-        android:name="org.septa.android.app.permission.MAPS_RECEIVE"
-        android:protectionLevel="signature" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:name=".MainApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
         <meta-data
-            android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
+            android:name="com.google.android.geo.API_KEY"
+            android:value="${googleGeoApiKey}" />
         <meta-data
-            android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyA3wNnR0R29Db7QOoDc8TqXPTvYEc0heiA" />
+            android:name="org.septa.amazonaws.x-api-key"
+            android:value="${amazonawsApiKey}" />
+
+        <meta-data
+            android:name="com.crashlytics.ApiKey"
+            android:value="${crashlyticsApiKey}" />
 
         <activity
-            android:name=".activities.SplashScreenActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait" >
+            android:name=".MainActivity"
+            android:label="@string/septa"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".nextarrive.NextToArriveResultsActivity"
+            android:label="@string/septa"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".nextarrive.NextToArriveTripDetailActivity"
+            android:label="@string/septa"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".systemstatus.SystemStatusResultsActivity"
+            android:label="@string/septa"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".schedules.ScheduleResultsActivity"
+            android:label="@string/septa"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".webview.WebViewActivity"
+            android:label="@string/septa"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".SplashScreenActivity"
+            android:label="@string/septa"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".activities.MainTabbarActivity"
-            android:configChanges="keyboard|orientation|screenSize"
-            android:label="SEPTA" >
-        </activity>
-        <activity
-            android:name=".activities.MainNavigationDrawerActivity"
-            android:configChanges="keyboard|orientation|screenSize"
-            android:label="@string/app_name" >
-        </activity>
-        <activity
-            android:name=".activities.SettingsActionBarActivity"
-            android:configChanges="keyboard|orientation|screenSize"
-            android:parentActivityName=".activities.MainTabbarActivity" >
-
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.MainTabbarActivity" />
-        </activity>
-        <activity
-            android:name=".activities.TipsActionBarActivity"
-            android:configChanges="keyboard|orientation|screenSize"
-            android:parentActivityName=".activities.MainTabbarActivity" >
-
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.MainTabbarActivity" />
-        </activity>
-        <activity
-            android:name=".activities.AppFeedbackFormActivity"
-            android:configChanges="keyboard|orientation|screenSize"
-            android:parentActivityName=".activities.MainTabbarActivity" >
-
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.MainTabbarActivity" />
-        </activity>
-        <activity
-            android:name=".activities.FareInformationActionBarActivity"
-            android:configChanges="keyboard|orientation|screenSize"
-            android:parentActivityName=".activities.MainTabbarActivity" >
-
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.MainTabbarActivity" />
-        </activity>
-        <activity
-            android:name=".activities.FareInformationGetMoreDetailsActionBarActivity"
-            android:configChanges="keyboard|orientation|screenSize"
-            android:parentActivityName=".activities.MainTabbarActivity" >
-
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.MainTabbarActivity" />
-        </activity>
-        <activity
-            android:name=".activities.AboutActionBarActivity"
-            android:configChanges="keyboard|orientation|screenSize"
-            android:parentActivityName=".activities.MainTabbarActivity" >
-
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.MainTabbarActivity" />
-        </activity>
-        <activity
-            android:name=".activities.CommentsFormActionBarActivity"
-            android:configChanges="keyboard|orientation|screenSize"
-            android:parentActivityName=".activities.MainTabbarActivity" >
-
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.MainTabbarActivity" />
-        </activity>
-        <activity
-            android:name=".activities.FindNearestLocationActionBarActivity"
-            android:configChanges="keyboard|orientation|screenSize"
-            android:parentActivityName=".activities.MainTabbarActivity" >
-
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.MainTabbarActivity" />
-        </activity>
-        <activity
-            android:name=".activities.TrainViewActionBarActivity"
-            android:configChanges="keyboard|orientation|screenSize"
-            android:parentActivityName=".activities.MainTabbarActivity" >
-
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.MainTabbarActivity" />
-        </activity>
-        <activity
-            android:name=".activities.TransitViewActionBarActivity"
-            android:configChanges="keyboard|orientation|screenSize"
-            android:parentActivityName=".activities.MainTabbarActivity" >
-
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.MainTabbarActivity" />
-        </activity>
-        <activity
-            android:name=".activities.TransitViewMapAndRouteListActionBarActivity"
-            android:configChanges="keyboard|orientation|screenSize"
-            android:parentActivityName=".activities.MainTabbarActivity" >
-
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.MainTabbarActivity" />
-        </activity>
-        <activity
-            android:name=".activities.schedules.SchedulesRouteSelectionActionBarActivity"
-            android:configChanges="keyboard|orientation|screenSize"
-            android:launchMode="singleTop"
-            android:parentActivityName=".activities.MainTabbarActivity" >
-
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.MainTabbarActivity" />
-        </activity>
-        <activity
-            android:name=".activities.schedules.SchedulesItineraryActionBarActivity"
-            android:configChanges="keyboard|orientation|screenSize"
-            android:launchMode="singleTop"
-            android:parentActivityName=".activities.schedules.SchedulesRouteSelectionActionBarActivity" >
-
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.schedules.SchedulesRouteSelectionActionBarActivity" />
-        </activity>
-        <activity
-            android:name=".activities.schedules.SchedulesStopsSelectionActionBarActivity"
-            android:configChanges="keyboard|orientation|screenSize"
-            android:parentActivityName=".activities.schedules.SchedulesItineraryActionBarActivity" >
-
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.schedules.SchedulesItineraryActionBarActivity" />
-        </activity>
-        <activity
-            android:name=".activities.SystemStatusActionBarActivity"
-            android:configChanges="keyboard|orientation|screenSize"
-            android:parentActivityName=".activities.MainTabbarActivity" >
-
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.MainTabbarActivity" />
-        </activity>
-        <activity
-            android:name=".activities.SystemStatusDetailsActionBarActivity"
-            android:configChanges="keyboard|orientation|screenSize"
-            android:parentActivityName=".activities.SystemStatusActionBarActivity" >
-
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.SystemStatusActionBarActivity" />
-        </activity>
-        <activity
-            android:name=".activities.NextToArriveActionBarActivity"
-            android:configChanges="keyboard|orientation|screenSize"
-            android:parentActivityName=".activities.MainTabbarActivity" >
-
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.MainTabbarActivity" />
-        </activity>
-        <activity
-            android:name=".activities.NextToArriveStopSelectionActionBarActivity"
-            android:configChanges="keyboard|orientation|screenSize"
-            android:parentActivityName=".activities.NextToArriveActionBarActivity" >
-
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.NextToArriveActionBarActivity" />
-        </activity>
-        <activity
-            android:name=".activities.NextToArriveRealTimeWebViewActionBarActivity"
-            android:configChanges="keyboard|orientation|screenSize"
-            android:parentActivityName=".activities.NextToArriveActionBarActivity" >
-
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.NextToArriveActionBarActivity" />
-        </activity>
-        <activity
-            android:name=".activities.schedules.SchedulesRRStopSelectionActionBarActivity"
-            android:configChanges="keyboard|orientation|screenSize"
-            android:parentActivityName=".activities.schedules.SchedulesItineraryActionBarActivity" >
-
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.septa.android.app.activities.schedules.SchedulesItineraryActionBarActivity" />
-        </activity>
-        <activity
-            android:name=".activities.FindNearestLocationRouteDetailsActionBarActivity"
-            android:configChanges="keyboard|orientation|screenSize"
-            android:parentActivityName=".activities.FindNearestLocationActionBarActivity" >
-
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.FindNearestLocationActionBarActivity" />
-        </activity>
-        <activity
-            android:name=".activities.schedules.ServiceAdvisoryActivity"
-            android:configChanges="keyboard|orientation|screenSize"
-            android:parentActivityName=".activities.schedules.SchedulesItineraryActionBarActivity" >
-
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.schedules.SchedulesItineraryActionBarActivity" />
-        </activity>
-        <service
-            android:name=".events.network.EventsNetworkService"
-            android:exported="false">
-        </service>
-
-        <activity android:name=".activities.GeocoderActivity"></activity>
-
-        <meta-data
-            android:name="com.crashlytics.ApiKey"
-            android:value="bc2dd85ee4bc4580ad7a7e2819d8402ff8595c61" />
-
-
     </application>
 
 </manifest>

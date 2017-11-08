@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/full_page_gradient_background"
+        android:orientation="vertical">
+
+
+        <org.septa.android.app.view.TextView
+            android:id="@+id/picker_header_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="13dp"
+            android:layout_marginLeft="12dp"
+            android:layout_marginTop="12dp"
+            android:text="Regional Rail"
+            android:textColor="#144b88"
+            android:textSize="20sp"
+            app:font="@string/font_roboto_bold" />
+
+        <LinearLayout
+            android:id="@+id/top"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="#ffffff"
+            android:elevation="4dp"
+            android:orientation="vertical">
+
+
+            <org.septa.android.app.view.TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="13dp"
+                android:clickable="true"
+                android:text="Select your stations to see Next To Arrive Trains."
+                android:textColor="#6d6d6d"
+                android:textSize="12sp"
+                app:font="@string/font_roboto_regular" />
+
+
+            <org.septa.android.app.view.TextView
+                android:id="@+id/starting_stop"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/stop_picker_background"
+                android:clickable="true"
+                android:drawableRight="@drawable/ic_search"
+                android:paddingBottom="14dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="13dp"
+                android:paddingTop="15dp"
+                android:text="Starting Station" />
+
+            <org.septa.android.app.view.TextView
+                android:id="@+id/destination_stop"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/stop_picker_background"
+                android:clickable="true"
+                android:drawableRight="@drawable/ic_search"
+                android:paddingBottom="14dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="13dp"
+                android:paddingTop="15dp"
+                android:text="Destination Station" />
+
+            <Button
+                android:id="@+id/view_buses_button"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginBottom="15dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginTop="30dp"
+                android:alpha=".3"
+                android:background="@drawable/button_gradient_background"
+                android:clickable="true"
+                android:elevation="4dp"
+                android:text="View Schedules"
+                android:textColor="#ffffff" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+    <FrameLayout
+        android:id="@+id/progress_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/top"
+        android:background="@color/progress_background"
+        android:clickable="true"
+        android:elevation="4dp"
+        android:visibility="gone"
+        tools:alpha="128"
+        tools:background="0x00000000"
+        tools:visibility="visible">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminate="true"
+            android:indeterminateDrawable="@drawable/basic_progress"
+            tools:alpha="128" />
+
+    </FrameLayout>
+</FrameLayout>

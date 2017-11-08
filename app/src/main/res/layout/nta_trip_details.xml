@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/trip_detail_coordinator"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="org.septa.android.app.nextarrive.NextToArriveTripDetailActivity">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp">
+
+                    <FrameLayout
+                        android:id="@+id/map_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="209dp" />
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:background="#09bbff" />
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="14dp"
+                        android:paddingTop="15dp">
+
+                        <org.septa.android.app.view.TextView
+                            android:id="@+id/trip_to_location_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:drawableLeft="@drawable/ic_rail"
+                            android:drawablePadding="11dp"
+                            android:drawableTint="#144b88"
+                            android:text="#564 to 30th Street Station"
+                            android:textColor="#144b88"
+                            android:textSize="16sp"
+                            app:font="@string/font_roboto_bold" />
+
+                    </RelativeLayout>
+
+                    <LinearLayout
+                        android:id="@+id/next_stop_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="#16144b88"
+                        android:gravity="center_horizontal">
+
+                        <org.septa.android.app.view.TextView
+                            android:id="@+id/next_stop_label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="13dp"
+                            android:layout_marginRight="4dp"
+                            android:layout_marginTop="13dp"
+                            android:text="Next Stop:"
+                            android:textColor="#000000"
+                            android:textSize="14dp"
+                            app:font="@string/font_roboto_light" />
+
+                        <org.septa.android.app.view.TextView
+                            android:id="@+id/next_stop_value"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="13dp"
+                            android:layout_marginTop="13dp"
+                            android:text="Jefferson Station"
+                            android:textColor="#000000"
+                            android:textSize="14dp"
+                            app:font="@string/font_roboto_bold" />
+
+                    </LinearLayout>
+
+                    <org.septa.android.app.view.TextView
+                        android:id="@+id/arriving_value"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="15dp"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/late_boarder"
+                        android:paddingBottom="12dp"
+                        android:paddingTop="12dp"
+                        android:text="3 min delay"
+                        android:textAlignment="center"
+                        android:textColor="@color/late_departing"
+                        android:textSize="14sp"
+                        app:font="@string/font_roboto_bold" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <org.septa.android.app.view.TextView
+                                android:id="@+id/line_label"
+                                android:layout_width="240dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="5dp"
+                                android:text="Line"
+                                android:textColor="#000000"
+                                android:textSize="14sp"
+                                app:font="@string/font_roboto_light" />
+
+                            <org.septa.android.app.view.TextView
+                                android:id="@+id/line_value"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignBottom="@id/line_label"
+                                android:layout_alignParentRight="true"
+                                android:text="Paoli / Thorndale"
+                                android:textColor="#000000"
+                                android:textSize="14sp"
+                                app:font="@string/font_roboto_bold" />
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:id="@+id/vehicle_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:visibility="gone"
+                            tools:visibility="visible">
+
+                            <org.septa.android.app.view.TextView
+                                android:id="@+id/vehicle_label"
+                                android:layout_width="240dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="5dp"
+                                android:text="Vehicle Number"
+                                android:textColor="#000000"
+                                android:textSize="14sp"
+                                app:font="@string/font_roboto_light" />
+
+                            <org.septa.android.app.view.TextView
+                                android:id="@+id/vehicle_value"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignBottom="@id/vehicle_label"
+                                android:layout_alignParentRight="true"
+                                android:text="3154"
+                                android:textColor="#000000"
+                                android:textSize="14sp"
+                                app:font="@string/font_roboto_bold" />
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:id="@+id/blockid_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:visibility="gone"
+                            tools:visibility="visible">
+
+                            <org.septa.android.app.view.TextView
+                                android:id="@+id/blockid_label"
+                                android:layout_width="240dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="5dp"
+                                android:text="Block ID"
+                                android:textColor="#000000"
+                                android:textSize="14sp"
+                                app:font="@string/font_roboto_light" />
+
+                            <org.septa.android.app.view.TextView
+                                android:id="@+id/blockid_value"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignBottom="@id/blockid_label"
+                                android:layout_alignParentRight="true"
+                                android:text="3154"
+                                android:textColor="#000000"
+                                android:textSize="14sp"
+                                app:font="@string/font_roboto_bold" />
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:id="@+id/origin_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <org.septa.android.app.view.TextView
+                                android:id="@+id/origin_station_label"
+                                android:layout_width="240dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="5dp"
+                                android:text="Origination:"
+                                android:textColor="#000000"
+                                android:textSize="14sp"
+                                app:font="@string/font_roboto_light" />
+
+                            <org.septa.android.app.view.TextView
+                                android:id="@+id/origin_station_value"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignBottom="@id/origin_station_label"
+                                android:layout_alignParentRight="true"
+                                android:text="Temple University"
+                                android:textColor="#000000"
+                                android:textSize="14sp"
+                                app:font="@string/font_roboto_bold" />
+                        </RelativeLayout>
+
+                        <RelativeLayout android:id="@+id/dest_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <org.septa.android.app.view.TextView
+                                android:id="@+id/dest_station_label"
+                                android:layout_width="240dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="5dp"
+                                android:text="Destination:"
+                                android:textColor="#000000"
+                                android:textSize="14sp"
+                                app:font="@string/font_roboto_light" />
+
+                            <org.septa.android.app.view.TextView
+                                android:id="@+id/dest_station_value"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignBottom="@id/dest_station_label"
+                                android:layout_alignParentRight="true"
+                                android:text="Thorndale"
+                                android:textColor="#000000"
+                                android:textSize="14sp"
+                                app:font="@string/font_roboto_bold" />
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:id="@+id/num_train_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <org.septa.android.app.view.TextView
+                                android:id="@+id/num_trains_label"
+                                android:layout_width="240dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="5dp"
+                                android:text="# of Train Cars:"
+                                android:textColor="#000000"
+                                android:textSize="14sp"
+                                app:font="@string/font_roboto_light" />
+
+
+                            <org.septa.android.app.view.TextView
+                                android:id="@+id/trains_id_value"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignBottom="@id/num_trains_label"
+                                android:layout_alignParentRight="true"
+                                android:gravity="right"
+                                android:text="162, 161, 136, 135"
+                                android:textColor="#000000"
+                                android:textSize="14sp"
+                                app:font="@string/font_roboto_light" />
+
+                            <org.septa.android.app.view.TextView
+                                android:id="@+id/num_trains_value"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignBottom="@id/num_trains_label"
+                                android:layout_toLeftOf="@id/trains_id_value"
+                                android:text="4 - "
+                                android:textColor="#000000"
+                                android:textSize="14sp"
+                                app:font="@string/font_roboto_bold" />
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:id="@+id/type_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <org.septa.android.app.view.TextView
+                                android:id="@+id/type_label"
+                                android:layout_width="240dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="5dp"
+                                android:text="Type:"
+                                android:textColor="#000000"
+                                android:textSize="14sp"
+                                app:font="@string/font_roboto_light" />
+
+
+                            <org.septa.android.app.view.TextView
+                                android:id="@+id/type_value"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentRight="true"
+                                android:text="Local"
+                                android:textColor="#000000"
+                                android:textSize="14sp"
+                                app:font="@string/font_roboto_bold" />
+                        </RelativeLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/twitter_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/type_label"
+                        android:layout_marginTop="30dp"
+                        android:background="#ebf0f5"
+                        android:orientation="horizontal"
+                        android:paddingBottom="14dp"
+                        android:paddingTop="14dp">
+
+                        <org.septa.android.app.view.TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="12dp"
+                            android:text="Follow Us!"
+                            android:textColor="#144b88"
+                            android:textSize="14sp"
+                            app:font="@string/font_roboto_light" />
+
+                        <org.septa.android.app.view.TextView
+                            android:id="@+id/twitter_id"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="5dp"
+                            android:drawablePadding="4dp"
+                            android:drawableRight="@drawable/twitter_logo_blue"
+                            android:gravity="right"
+                            android:text="\@SEPTA_PAO"
+                            android:textColor="#144b88"
+                            android:textSize="14sp"
+                            app:font="@string/font_roboto_bold" />
+                    </LinearLayout>
+                </LinearLayout>
+            </ScrollView>
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/progress_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/progress_background"
+            android:visibility="gone">
+
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:indeterminate="true"
+                android:indeterminateDrawable="@drawable/basic_progress" />
+        </FrameLayout>
+    </FrameLayout>
+</android.support.design.widget.CoordinatorLayout>

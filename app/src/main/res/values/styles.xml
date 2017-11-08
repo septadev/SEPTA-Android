@@ -1,131 +1,38 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-
-    <!-- adjust the actionbar tab style  -->
-    <style name="ActionBarTabStyle" parent="Widget.AppCompat.ActionBar.TabView">
-        <item name="android:paddingLeft">2dp</item>
-        <item name="android:paddingRight">2dp</item>
-        <item name="android:minWidth">0dp</item>
-    </style>
+<resources>
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
-        <item name="android:actionBarTabStyle" tools:ignore="NewApi">@style/ActionBarTabStyle</item>
-        <item name="actionBarTabStyle">@style/ActionBarTabStyle</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:actionMenuTextAppearance">@style/MyMenuTextAppearance</item>
     </style>
 
-    <style name="btnStyleBeige" parent="@android:style/Widget.Button">
-        <item name="android:textSize">20sp</item>
-        <item name="android:textStyle">bold</item>
-        <!--<item name="android:textColor">#FFFFFF</item>-->
-        <item name="android:gravity">center</item>
-        <item name="android:shadowColor">#000000</item>
-        <!--<item name="android:shadowDx">1</item>-->
-        <!--<item name="android:shadowDy">1</item>-->
-        <!--<item name="android:shadowRadius">0.6</item>-->
-        <item name="android:background">@drawable/custom_btn_beige</item>
-        <item name="android:padding">10dip</item>
+    <style name="MyMenuTextAppearance" parent="android:TextAppearance.Holo.Widget.ActionBar.Menu">
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">15sp</item>
     </style>
 
-    <!-- connect customer service dialog animation -->
-    <style name="DialogAnimation">
-        <item name="android:windowEnterAnimation">@anim/slide_up_dialog</item>
-        <item name="android:windowExitAnimation">@anim/slide_down_out</item>
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
     </style>
 
-    <!-- Animation for dialog box -->
-    <style name="DialogSlideAnim" parent="@android:style/Theme.Dialog">
-        <item name="android:windowAnimationStyle">@style/DialogAnimation</item>
-    </style>
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-    <!-- ActionBar App Name title text -->
-    <style name="ActionBar.CustomTitle.AppName" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
-        <item name="android:textStyle">bold</item>
-        <item name="android:color">#FFFFFF</item>
-    </style>
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
-    <style name="ActionBar.CustomTitle.Separator" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
-        <item name="android:color">#FFFFFF</item>
-    </style>
-
-    <style name="ActionBar.CustomTitle.SectionName" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
-        <item name="android:color">#FFFFFF</item>
-    </style>
-
-    <style name="AppFeedbackFormTextViewFont">
-        <item name="android:paddingLeft">4px</item>
-        <item name="android:paddingBottom">4px</item>
-        <item name="android:textColor">#414146</item>
-        <item name="android:textSize">14sp</item>
-        <item name="android:shadowColor">#000000</item>
-        <item name="android:shadowDx">1</item>
-        <item name="android:shadowDy">1</item>
-    </style>
-
-    <style name="commentsForm_rows">
-        <item name="android:paddingTop">10dp</item>
-        <item name="android:paddingBottom">10dp</item>
-        <item name="android:layout_marginLeft">16dp</item>
-        <item name="android:textStyle">bold</item>
-    </style>
-
-    <style name="commentsForm_row_editText">
-        <item name="android:paddingTop">10dp</item>
-        <item name="android:paddingBottom">10dp</item>
-        <item name="android:background">@null</item>
-        <item name="android:hint">required</item>
-        <item name="android:layout_marginRight">5dp</item>
-    </style>
-
-    <style name="commentsForm_dividerLine">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">1dp</item>
-        <item name="android:background">@android:color/darker_gray</item>
-    </style>
-
-    <style name="commentsForm_dividerLine_innerForm">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">1dp</item>
-        <item name="android:layout_marginLeft">16dp</item>
-        <item name="android:background">@android:color/darker_gray</item>
-    </style>
-
-    <style name="commentsForm_dividerBox">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">40dp</item>
-        <item name="android:background">#EFEFF4</item>
-        <item name="android:paddingLeft">10dp</item>
-        <item name="android:paddingRight">10dp</item>
-    </style>
-
-
-    <style name="editradius_diaglog" parent="@android:style/Theme.Dialog">
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:windowIsFloating">true</item>
-    </style>
-
-    <style name="listView_section_headers">
-        <item name="android:background">@color/listviewSections</item>
-
-    </style>
-
-    <style name="listView_section_headers_textView">
-        <item name="android:textSize">16sp</item>
+    <style name="TransitTypeText">
         <item name="android:textColor">@android:color/white</item>
+        <!-- item name="android:textSize">@dimen/transit_type_text_size</item -->
     </style>
 
-    <style name="detour_row_dark" >
-        <item name="android:background">@color/detour_row_dark</item>
-        <item name="android:layout_margin">2dp</item>
-        <item name="android:padding">2dp</item>
-        <item name="android:gravity">center_vertical</item>
-    </style>
-
-    <style name="detour_row_light" >
-        <item name="android:background">@android:color/transparent</item>
-        <item name="android:layout_margin">2dp</item>
-        <item name="android:padding">2dp</item>
-        <item name="android:gravity">center_vertical</item>
+    <style name="Theme.AppCompat.Light.NoActionBar.FullScreen" parent="@style/Theme.AppCompat.Light">
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
     </style>
 
 </resources>

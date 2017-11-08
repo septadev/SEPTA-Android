@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<org.septa.android.app.view.TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/tab"
+    android:layout_width="wrap_content"
+    android:layout_height="65dp"
+    android:layout_marginBottom="16dp"
+    android:layout_marginTop="18dp"
+    android:drawablePadding="6dp"
+    android:gravity="center"
+    android:textColor="#ffffff"
+    android:textSize="14dp"
+    app:font="@string/font_roboto_bold"
+    android:text="Rail"
+    android:drawableLeft="@drawable/rail_active_final"/>

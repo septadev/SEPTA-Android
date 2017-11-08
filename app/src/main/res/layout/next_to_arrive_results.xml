@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="org.septa.android.app.nextarrive.NextToArriveResultsActivity">
+
+
+    <FrameLayout
+        android:id="@+id/rail_next_to_arrive_results_coordinator"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/main_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+
+            <RelativeLayout
+                android:id="@+id/header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimary"
+                android:orientation="vertical">
+
+                <org.septa.android.app.view.TextView
+                    android:id="@+id/starting_station_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="13dp"
+                    android:layout_marginTop="9dp"
+                    android:text="Start:"
+                    android:textColor="#ffffff"
+                    android:textSize="14sp"
+                    app:font="@string/font_roboto_bold" />
+
+                <org.septa.android.app.view.TextView
+                    android:id="@+id/starting_station_name"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="2dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginTop="9dp"
+                    android:layout_toRightOf="@id/starting_station_label"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="placeholder Starting"
+                    android:textColor="#ffffff"
+                    android:textSize="14sp"
+                    app:font="@string/font_roboto_light" />
+
+                <org.septa.android.app.view.TextView
+                    android:id="@+id/destination_station_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/starting_station_label"
+                    android:layout_marginBottom="11dp"
+                    android:layout_marginLeft="13dp"
+                    android:layout_marginTop="4dp"
+                    android:text="Destination:"
+                    android:textColor="#ffffff"
+
+                    android:textSize="14sp"
+                    app:font="@string/font_roboto_bold" />
+
+                <org.septa.android.app.view.TextView
+                    android:id="@+id/destination_station_name"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/starting_station_label"
+                    android:layout_marginBottom="11dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_toRightOf="@id/destination_station_label"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="placeholder Destination"
+                    android:textColor="#ffffff"
+                    android:textSize="14sp"
+                    app:font="@string/font_roboto_light" />
+
+                <ImageView
+                    android:id="@+id/refresh_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="14dp"
+                    android:clickable="true"
+                    android:src="@drawable/ic_refresh_black_24dp"
+                    android:tint="@android:color/white" />
+
+                <org.septa.android.app.view.TextView
+                    android:id="@+id/refresh_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="9dp"
+                    android:layout_toLeftOf="@id/refresh_button"
+                    android:text="Refresh"
+                    android:textColor="#ffffff"
+                    android:textSize="12sp"
+                    app:font="@string/font_roboto_light" />
+            </RelativeLayout>
+
+            <FrameLayout
+                android:id="@+id/map_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/header"
+                android:background="@android:color/darker_gray" />
+
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/progress_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/progress_background"
+            android:visibility="gone"
+            tools:alpha="1"
+            tools:visibility="visible">
+
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:indeterminate="true"
+                android:indeterminateDrawable="@drawable/basic_progress" />
+        </FrameLayout>
+    </FrameLayout>
+
+    <include layout="@layout/next_to_arrive_results_bottom_sheet" />
+
+</android.support.design.widget.CoordinatorLayout>

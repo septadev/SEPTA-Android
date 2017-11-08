@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginBottom="15dp"
+    android:layout_marginTop="15dp"
+    android:orientation="vertical"
+    android:padding="1dp">
+
+    <org.septa.android.app.view.TextView
+        android:id="@+id/departure_header_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="13dp"
+        android:layout_marginTop="12dp"
+        android:nextFocusRight="@+id/departure_text"
+        android:text="DEPART"
+        android:textColor="#6d6d6d"
+        android:textSize="10sp"
+        app:font="@string/font_roboto_regular" />
+
+    <org.septa.android.app.view.TextView
+        android:id="@+id/departure_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/departure_header_text"
+        android:layout_marginLeft="13dp"
+        android:layout_marginTop="1dp"
+        android:nextFocusLeft="@+id/departure_header_text"
+        android:nextFocusRight="@+id/duration_header_text"
+        android:text="Header2"
+        android:textColor="#144b88"
+        android:textSize="12sp"
+        app:font="@string/font_roboto_bold" />
+
+    <org.septa.android.app.view.TextView
+        android:id="@+id/duration_header_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="12dp"
+        android:nextFocusLeft="@+id/departure_text"
+        android:nextFocusRight="@+id/duration_text"
+        android:text="DURATION"
+        android:textColor="#6d6d6d"
+        android:textSize="10sp"
+        app:font="@string/font_roboto_regular" />
+
+    <org.septa.android.app.view.TextView
+        android:id="@+id/duration_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/duration_header_text"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="1dp"
+        android:nextFocusLeft="@+id/duration_header_text"
+        android:nextFocusRight="@+id/arrival_header_text"
+        android:text="Header4"
+        android:textColor="#144b88"
+        android:textSize="12sp"
+        app:font="@string/font_roboto_bold" />
+
+    <org.septa.android.app.view.TextView
+        android:id="@+id/arrival_header_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="13dp"
+        android:layout_marginTop="12dp"
+        android:nextFocusLeft="@+id/duration_text"
+        android:nextFocusRight="@+id/arrival_text"
+        android:text="ARRIVE"
+        android:textColor="#6d6d6d"
+        android:textSize="10sp"
+        app:font="@string/font_roboto_regular" />
+
+    <org.septa.android.app.view.TextView
+        android:id="@+id/arrival_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/arrival_header_text"
+        android:layout_marginRight="13dp"
+        android:layout_marginTop="1dp"
+        android:nextFocusLeft="@+id/arrival_header_text"
+        android:nextFocusRight="@+id/block_text"
+        android:text="Header6"
+        android:textColor="#144b88"
+        android:textSize="12sp"
+        app:font="@string/font_roboto_bold" />
+
+    <org.septa.android.app.view.TextView
+        android:id="@+id/block_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/departure_text"
+        android:layout_marginBottom="13dp"
+        android:layout_marginLeft="13dp"
+        android:layout_marginTop="10dp"
+        android:nextFocusLeft="@+id/arrival_text"
+        android:text="TRAIN #&lt;b&gt;546&lt;/b&gt;"
+        android:textColor="#6d6d6d"
+        android:textSize="10sp"
+        app:font="@string/font_roboto_regular"
+
+        />
+</RelativeLayout>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/line_item_background"
+    android:orientation="vertical">
+
+    <org.septa.android.app.view.TextView
+        android:id="@+id/station_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="39dp"
+        android:layout_marginLeft="17dp"
+        android:layout_marginTop="17dp"
+        android:text="Thorndale"
+        android:textColor="#000000"
+        android:textSize="20sp"
+        app:font="@string/font_roboto_medium" />
+
+</LinearLayout>

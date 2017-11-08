@@ -1,129 +1,203 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="app_name">SEPTA</string>
-    <string name="title_section1">Section 1</string>
-    <string name="title_section2">Section 2</string>
-    <string name="title_section3">Section 3</string>
+
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="action_example">Example action</string>
+
     <string name="action_settings">Settings</string>
-    <string name="mailto_protocol_string">mailto:</string>
-    <string name="mailto_subject_uriString">"?subject="</string>
-    <string name="mailto_body_uriString">"&amp;body="</string>
-    <string name="mailto_chooser_text">Send feedback mail...</string>
-    <string name="actionbar_titletext_key">actionBarTitleText</string>
-    <string name="actionbar_iconimage_imagename_base">ic_actionbar_</string>
-    <string name="actionbar_iconimage_imagenamesuffix_key">actionBarImageNameSuffix</string>
 
-    <!-- title bar prefix and text separator -->
-    <string name="titlebar_prefix_text">SEPTA</string>
-    <string name="titlebar_text_separator">|</string>
+    <string name="find_next_train">FIND NEXT TRAIN</string>
+    <string name="septa">SEPTA</string>
+    <string name="app_tag_line">The Official App of SEPTA</string>
+    <string name="favorites">Favorites</string>
+    <string name="next_to_arrive">Next To Arrive</string>
+    <string name="system_status">System Status</string>
+    <string name="schedule">Schedule</string>
+    <string name="fares_and_transit_info">Fares and Transit Info</string>
+    <string name="connect_with_septa">Connect With SEPTA</string>
 
-    <!-- menu options for the action menus -->
-    <string name="menuoption_about_text">About</string>
-    <string name="menuoption_settings_text">Settings</string>
-    <string name="menuoption_appfeedback_text">Leave Feedback</string>
-    <string name="no_data_available">No data is available.</string>
-    <string name="loading">Loading</string>
+    <!-- Transit Type Tab Names -->
+    <string name="rail_tab">Rail</string>
+    <string name="bus_tab">Bus</string>
+    <string name="trolley_tab">Trolley</string>
+    <string name="subway_tab">Subway</string>
+    <string name="nhsl_tab">NHSL</string>
 
-    <!--
-             nav-main-options is an ordered array list of main navigation items
-             order matters, so take care with the order you list the items in.
-    -->
-    <string-array name="nav_main_items">
-        <item>Realtime</item>
-        <item>Schedules</item>
-        <item>Map</item>
-        <!-- <item>Settings</item> -->
-        <!-- leaving this option commented out as we entertain the settings in the overflow menu -->
-        <item>Connect</item>
-    </string-array>
 
-    <!-- this array will contain the names of the nav_main_items that are not swiping in ViewPager -->
-    <string-array name="nonswipeable_viewpager_main_items">
-        <item>Map</item>
-    </string-array>
+    <string name="starting_station">Starting Station</string>
+    <string name="destionation_station_hint">Destination Station</string>
+    <string name="starting_station_hint">Starting Station</string>
+    <string name="view_trains_button">VIEW TRAINS</string>
+    <string name="title_activity_next_to_arrive_results">NextToArriveResultsActivity</string>
+    <string name="RailStationNextToArriveResults">Next To Arrive Rail</string>
 
-    <string name="ic_menu_distance_title">Distance</string>
-    <string name="ic_menu_done_title">Done</string>
-    <string name="ic_menu_filter_none">No Filter</string>
-    <string name="ic_menu_filter_removemeptyrows">Filter Empty Rows</string>
+    <!-- FONTS -->
+    <string name="font_roboto_regular">fonts/Roboto-Regular.ttf</string>
+    <string name="font_roboto_bold">fonts/Roboto-Bold.ttf</string>
+    <string name="font_roboto_light">fonts/Roboto-Light.ttf</string>
+    <string name="font_roboto_medium_italic">fonts/Roboto-MediumItalic.ttf</string>
+    <string name="font_roboto_light_italic">fonts/Roboto-LightItalic.ttf</string>
+    <string name="font_roboto_medium">fonts/Roboto-Medium.ttf</string>
 
-    <!-- FONT FAIIMLY FOR Project -->
-    <declare-styleable name="customfont">
-        <attr name="android:fontFamily" />
-        <attr name="android:textStyle" />
-    </declare-styleable>
 
-    <!-- Location Strings -->
-    <string name="error_location_unavailable">Your location is unavailable</string>
-    <string name="error_location_disabled">Your GPS is disabled</string>
+    <string name="system_map">System Map</string>
+    <string name="events">Special Events</string>
 
-    <!-- Stop sort options -->
-    <string name="text_sort_by_name">Sort name</string>
-    <string name="text_sort_by_stop">Sort by stop</string>
 
-    <!-- Geocoder fragment strings -->
-    <string name="text_search">Search</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!-- Line Picker -->
+    <string name="line_label_rail">Line</string>
+    <string name="line_label_bus">Route</string>
+    <string name="line_label_subway">Line</string>
+    <string name="line_label_trolley">Line</string>
+    <string name="line_label_nhsl">Line</string>
 
-    <!-- Next to Arrive Alerts -->
-    <string name="nexttoarrive_alerts_header">ALERTS</string>
-    <string name="nexttoarrive_alerts_general_message_prefix">Regional Rail Line:</string>
+    <string name="line_text_rail">Select Line</string>
+    <string name="line_text_bus">Select Route</string>
+    <string name="line_text_subway">Select Line</string>
+    <string name="line_text_trolley">Select Line</string>
+    <string name="line_text_nhsl">Select Line</string>
 
-    <!-- Find nearest location -->
-    <string name="find_nearest_location_gps_unavailable">GPS is unavailable on your device.</string>
-    <string name="find_nearest_location_gps_not_enabled">GPS is currently disabled.\nPlease enabled Location Access\nin your device Settings,\nthen tap to retry.</string>
+    <string name="start_stop_text_rail">Starting Station</string>
+    <string name="start_stop_text_bus">Starting Stop</string>
+    <string name="start_stop_text_subway">Starting Stop</string>
+    <string name="start_stop_text_trolley">Starting Stop</string>
+    <string name="start_stop_text_nhsl">Starting Station</string>
 
-    <!-- Schedule Alerts -->
-    <string name="schedules_alerts_header">ALERTS</string>
-    <string name="schedules_alerts_general_message_prefix">Regional Rail Line:</string>
+    <string name="dest_stop_text_rail">Destination Station</string>
+    <string name="dest_stop_text_bus">Destination Stop</string>
+    <string name="dest_stop_text_subway">Destination Stop</string>
+    <string name="dest_stop_text_trolley">Destination Stop</string>
+    <string name="dest_stop_text_nhsl">Destination Station</string>
 
-    <!-- In Service Train -->
-    <string name="destination">Dest: %s</string>
-    <string name="in_service_header">IN SERVICE TRAINS</string>
-    <string name="late">%s min late</string>
-    <string name="next_stop">Next: %s</string>
-    <string name="on_time">On time</string>
-    <string name="track">Track</string>
+    <!-- Next to Arrive String by Transit Type -->
+    <string name="nta_picker_title_rail">Regional Rail</string>
+    <string name="nta_picker_title_bus">Bus</string>
+    <string name="nta_picker_title_subway">Subway</string>
+    <string name="nta_picker_title_trolley">Trolley</string>
+    <string name="nta_picker_title_nhsl">Norristown High Speed Line</string>
 
-    <!-- Real-time Menu Items -->
-    <string name="realtime_menu_item_next_to_arrive">Next to Arrive</string>
-    <string name="realtime_menu_item_train_view">TrainView</string>
-    <string name="realtime_menu_item_transit_view">TransitView</string>
-    <string name="realtime_menu_item_system_status">System Status</string>
-    <string name="realtime_menu_item_find_nearest_location">Find Nearest Location</string>
-    <string name="realtime_menu_item_tips">Tips</string>
+    <string name="nta_results_title_rail">Next Trains to Arrive</string>
+    <string name="nta_results_title_bus">Next Bus to Arrive</string>
+    <string name="nta_results_title_subway">Next Subway to Arrive</string>
+    <string name="nta_results_title_trolley">Next Trolley to Arrive</string>
+    <string name="nta_results_title_nhsl">Next Trains to Arrive</string>
 
-    <!-- Page Titles -->
-    <string name="page_title_find_nearest_location">| Find Nearest Location</string>
-    <string name="page_title_next_to_arrive">| Next To Arrive</string>
-    <string name="page_title_system_status">| System Status</string>
-    <string name="page_title_tips">| Tips</string>
-    <string name="page_title_train_view">| TrainView</string>
-    <string name="page_title_transit_view">| TransitView</string>
+    <string name="need_to_see_rail">Need to see later trains?</string>
+    <string name="need_to_see_bus">Need to see later bus?</string>
+    <string name="need_to_see_subway">Need to see later subway?</string>
+    <string name="need_to_see_trolley">Need to see later trolley?</string>
+    <string name="need_to_see_nhsl">Need to see later trains?</string>
 
-    <!-- Page Icon Identifiers -->
-    <string name="page_icon_id_find_nearest_location">findnearestlocation</string>
-    <string name="page_icon_id_next_to_arrive">nexttoarrive</string>
-    <string name="page_icon_id_system_status">systemstatus</string>
-    <string name="page_icon_id_tips">tips</string>
-    <string name="page_icon_id_trainview">trainview</string>
-    <string name="page_icon_id_transitview">transitview</string>
 
-    <!-- Special Events (Papal Visit) -->
-    <string name="realtime_menu_default_special_event_message">Real-time data and Regional Rail schedule is not available this weekend. Please visit www.septa.org/papalvisitphilly for real-time system alerts and other service information</string>
-    <string name="schedules_itinerary_default_papal_message">Real-time data is not available this weekend. Visit www.septa.org/papalvisitphilly for service information</string>
+    <!-- Next To Arrive General -->
+    <string name="nta_query_button_text">Next To Arrive</string>
+    <string name="about_the_septa_app">About the SEPTA App</string>
+    <string name="text_empty_trips">No recent trips</string>
 
-    <string name="page_title_special_events">| Special Events</string>
-    <string name="realtime_menu_item_special_events">Special Events</string>
-    <string name="special_events_webview_url">http://www.septa.org/service/special-events-mobile.html</string>
+    <string name="alert_icon_content_description_prefix">Service Alert on route:</string>
+    <string name="advisory_icon_content_description_prefix">Advisory alert on route:</string>
+    <string name="detour_icon_content_description_prefix">Detour on route:</string>
+    <string name="weather_icon_content_description_prefix">Weather alert on route:</string>
 
-    <!-- Transit View Map -->
-    <string name="transit_view_map_info_window_title">Vehicle: %1$d (updated: %2$d min)</string>
-    <string name="transit_view_map_info_window_block">Block ID: %1$d</string>
-    <string name="transit_view_map_info_window_destination">Destination: %1$s</string>
+    <string name="trip_details_title_rail">Train Details</string>
+    <string name="trip_details_title_bus">Bus Details</string>
+    <string name="trip_details_title_trolley">Trolley Details</string>
+    <string name="trip_details_title_subway">Subway Details</string>
+    <string name="trip_details_title_nhsl">Train Details</string>
+
+
+    <!-- Favorite -->
+    <string name="delete_fav_modal_title">Delete Favorite?</string>
+    <string name="delete_fav_modal_text">Do you want to remove this Trip from your Favorites</string>
+    <string name="delete_fav_pos_button">OK</string>
+    <string name="delete_fav_neg_button">Cancel</string>
+    <string name="create_fav_snackbar_text">Trip saved to your Favorites</string>
+
+
+    <!-- System Status -->
+    <string name="system_status_picker_title_rail">Regional Rail Status</string>
+    <string name="system_status_picker_title_bus">Bus Status</string>
+    <string name="system_status_picker_title_subway">Subway Status</string>
+    <string name="system_status_picker_title_trolley">Trolley Status</string>
+    <string name="system_status_picker_title_nhsl">NHSL Status</string>
+
+    <string name="system_status_results_title_rail">System Status: Regional Rail</string>
+    <string name="system_status_results_title_bus">System Status: Bus</string>
+    <string name="system_status_results_title_subway">System Status: Subway</string>
+    <string name="system_status_results_title_trolley">System Status: Trolley</string>
+    <string name="system_status_results_title_nhsl">System Status: NHSL</string>
+
+    <!-- Schedules -->
+    <string name="schedule_query_button_text">View Schedules</string>
+    <string name="schedule_trip_prefix_rail">Train #</string>
+    <string name="schedule_trip_prefix_bus">Bus #</string>
+    <string name="schedule_trip_prefix_subway">Train #</string>
+    <string name="schedule_trip_prefix_trolley">Trolley #</string>
+    <string name="schedule_trip_prefix_nhsl">Train #</string>
+
+
+    <!-- Connect With SEPTA -->
+    <string name="facebook_url">http://www.facebook.com/septaphilly/</string>
+    <string name="facebook_app_url">fb://page/174505962565714</string>
+    <string name="twitter_url">https://twitter.com/SEPTA_SOCIAL</string>
+    <string name="twitter_app_url">twitter://user?user_id=430186590</string>
+    <string name="chat_url">https://customerservice.septa.org/chat/phplive.php?d=0&amp;onpage=livechatimagelink&amp;title=Live+Chat+Direct+Link</string>
+    <string name="comment_url">http://www3.septa.org/customerservice/VeritasFormMobile</string>
+    <string name="tdd_phone_content">TDD/TTY (215)-580-7853</string>
+    <string name="voice_line_content">Call (215)-580-7800</string>
+
+    <string name="twitter_app_url_air">twitter://user?user_id=381660241</string>
+    <string name="twitter_app_url_che">twitter://user?user_id=381664276</string>
+    <string name="twitter_app_url_chw">twitter://user?user_id=382065845</string>
+    <string name="twitter_app_url_cyn">twitter://user?user_id=382068355</string>
+    <string name="twitter_app_url_fox">twitter://user?user_id=382070257</string>
+    <string name="twitter_app_url_lan">twitter://user?user_id=382072005</string>
+    <string name="twitter_app_url_nor">twitter://user?user_id=382073626</string>
+    <string name="twitter_app_url_med">twitter://user?user_id=382075092</string>
+    <string name="twitter_app_url_pao">twitter://user?user_id=382077339</string>
+    <string name="twitter_app_url_tre">twitter://user?user_id=382079153</string>
+    <string name="twitter_app_url_war">twitter://user?user_id=382081475</string>
+    <string name="twitter_app_url_wtr">twitter://user?user_id=382146617</string>
+    <string name="twitter_app_url_wil">twitter://user?user_id=382148737</string>
+
+
+    <!-- Fares -->
+    <string name="septa_key_url">http://www.septa.org/key/index.html</string>
+    <string name="septa_key_title">Learn More About SEPTA Key</string>
+
+    <string name="about_fares_url">http://www.septa.org/fares/</string>
+    <string name="about_fares_title">More About SEPTA Fares</string>
+
+    <string name="about_pass_perks_url">http://www.iseptaphilly.com/passperks</string>
+    <string name="about_pass_perks_title">More About Pass Perks</string>
+
+    <string name="cash_price">$2.50</string>
+    <string name="quick_trip_price">$2.50</string>
+    <string name="cash_text"><![CDATA[Cash: <b>{0}</b><br>SEPTA Key Card Quick Trip: <b>{1}</b>]]></string>
+
+    <string name="token_each_price">$2.00</string>
+    <string name="token_transfer_price">$1.00</string>
+    <string name="token_text"><![CDATA[Tokens: <b>{0} each</b><br>Transfer: <b>{1}</b><br>SEPTA Key Card Travel Wallet]]></string>
+
+    <string name="transpass_weekly_price">$25.50</string>
+    <string name="transpass_monthly_price">$96.50</string>
+    <string name="weekly_text"><![CDATA[Weekly: <b>{0}</b><br>Monthly: <b>{1}</b><br>Load Pass on SEPTA Key Card]]></string>
+
+    <string name="trail_text"><![CDATA[Weekly and Monthly TrailPasses<br><b>Price varies</b> by Zone.]]></string>
+
+    <string name="cross_county_weekly_price">$30.75</string>
+    <string name="cross_county_mothly_price">$115.00</string>
+    <string name="cross_text"><![CDATA[Weekly Cross County Pass: <b>{0}</b><br>Monthly Cross County Pass: <b>{1}</b>]]></string>
+
+    <string name="one_day_pass_price">$8.00</string>
+    <string name="one_day_quantity">8</string>
+    <string name="one_day_con_text"><![CDATA[Pass: <b>{0}</b> - good for <b>{1} rides</b> on any Transit route (not valid on Regional Rail)]]></string>
+
+    <string name="one_day_ind_individual_price">$13.00</string>
+    <string name="one_day_ind_family_price">$30.00</string>
+    <string name="one_day_ind_text"><![CDATA[One Day Individual: <b>{0}</b><br>One Day Family: <b>{1}</b>]]></string>
+    <string name="chat_title">Live Chat</string>
+    <string name="comment_title">Send Us A Comment</string>
+    <string name="events_url">http://www.septa.org/service/special-events-mobile.html</string>
 
 </resources>

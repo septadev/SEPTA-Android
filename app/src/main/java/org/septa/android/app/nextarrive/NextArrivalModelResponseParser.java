@@ -4,6 +4,7 @@ import com.google.android.gms.maps.model.LatLng;
 
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalModelResponse;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -18,16 +19,15 @@ import java.util.Set;
 
 public class NextArrivalModelResponseParser {
 
-    public static final int SINGLE_STOP_TRIP = 0;
-    public static final int MULTIPLE_STOP_TRIP = 1;
-    public static final int BOTH = 2;
-
-
     private Map<LatLng, NextArrivalModelResponse.NextArrivalRecord> origLatLngMap = new HashMap<LatLng, NextArrivalModelResponse.NextArrivalRecord>();
     private Map<LatLng, NextArrivalModelResponse.NextArrivalRecord> termLatLngMap = new HashMap<LatLng, NextArrivalModelResponse.NextArrivalRecord>();
 
     private Set<String> routeIdSet = new HashSet<String>();
     List<NextArrivalModelResponse.NextArrivalRecord> results;
+
+    public NextArrivalModelResponseParser() {
+        results = new ArrayList<NextArrivalModelResponse.NextArrivalRecord>(0);
+    }
 
     public NextArrivalModelResponseParser(NextArrivalModelResponse response) {
         results = response.getNextArrivalRecords();

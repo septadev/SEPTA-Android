@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
@@ -52,7 +53,7 @@ public class FavoritesFragment extends Fragment implements Runnable {
     int initialCount;
     private FavoritesFragmentCallBacks favoritesFragmentCallBacks;
     Handler refreshHandler = null;
-
+    View fragmentView;
 
     @Nullable
     @Override
@@ -68,7 +69,7 @@ public class FavoritesFragment extends Fragment implements Runnable {
 
     private View onCreateViewFavorites(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setHasOptionsMenu(true);
-        View fragmentView = inflater.inflate(R.layout.favorites_view, container, false);
+        fragmentView = inflater.inflate(R.layout.favorites_view, container, false);
         LinearLayout favoritesListView = (LinearLayout) fragmentView.findViewById(R.id.favorites_list);
 
         for (Map.Entry<String, Favorite> entry : favoritesMap.entrySet()) {
@@ -153,7 +154,16 @@ public class FavoritesFragment extends Fragment implements Runnable {
 
             @Override
             public void onFailure(@NonNull Call<NextArrivalModelResponse> call, @NonNull Throwable t) {
-
+                tripView.setNextToArriveData(new NextArrivalModelResponseParser());
+                Snackbar snackbar = Snackbar.make(fragmentView, R.string.realtime_failure_message, Snackbar.LENGTH_INDEFINITE);
+                snackbar.setAction("Scehedules", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        favoritesFragmentCallBacks.gotoSchedules();
+                    }
+                });
+                snackbar.show();
+                progressView.setVisibility(View.GONE);
             }
         });
     }

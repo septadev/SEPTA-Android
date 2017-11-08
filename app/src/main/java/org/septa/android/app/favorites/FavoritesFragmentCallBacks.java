@@ -10,4 +10,6 @@ public interface FavoritesFragmentCallBacks {
 
     public void addNewFavorite();
 
+    public void gotoSchedules();
+
 }

@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.support.design.widget.Snackbar;
 import android.view.View;
 
+import org.septa.android.app.R;
+
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
@@ -105,7 +107,7 @@ public class SeptaServiceFactory {
     }
 
     public static void displayWebServiceError(View rootView, final Activity activity) {
-        Snackbar snackbar = Snackbar.make(rootView, "An error has occurred. Please try your request again. If this error continues, please contact SEPTA to let us know.", Snackbar.LENGTH_LONG);
+        Snackbar snackbar = Snackbar.make(rootView, R.string.realtime_failure_message, Snackbar.LENGTH_LONG);
         snackbar.addCallback(new Snackbar.Callback() {
             @Override
             public void onDismissed(Snackbar snackbar, int event) {

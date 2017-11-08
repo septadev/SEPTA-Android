@@ -92,7 +92,11 @@ public class NextToArriveTripView extends FrameLayout {
     }
 
     public void setNextToArriveData(NextArrivalModelResponseParser parser) {
+        LinearLayout listView = (LinearLayout) findViewById(R.id.lines_list_view);
+        listView.removeAllViews();
 
+        if (parser == null)
+            return;
 
         List<NextArrivalModelResponse.NextArrivalRecord> data = parser.getResults();
         if (data.size() <= 0)
@@ -121,9 +125,6 @@ public class NextToArriveTripView extends FrameLayout {
         if (maxResults != null) {
             data = data.subList(0, (maxResults <= data.size()) ? maxResults : data.size() - 1);
         }
-
-        LinearLayout listView = (LinearLayout) findViewById(R.id.lines_list_view);
-        listView.removeAllViews();
 
         String currentLine = null;
         boolean firstPos = true;

@@ -6,6 +6,8 @@
 
     <string name="action_settings">Settings</string>
 
+    <string name="realtime_failure_message">"An error has occurred. Please try your request again. If this error continues, please contact SEPTA to let us know."</string>
+
     <string name="find_next_train">FIND NEXT TRAIN</string>
     <string name="septa">SEPTA</string>
     <string name="app_tag_line">The Official App of SEPTA</string>

@@ -182,6 +182,12 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    @Override
+    public void gotoSchedules() {
+        switchToSchedules(null);
+        //switchToBundle(navigationView.getMenu().findItem(R.id.nav_schedule), schedules, R.string.schedule, R.drawable.ic_schedule_active);
+    }
+
     public void switchToFavorites() {
         if (currentMenu == null || currentMenu.getItemId() != R.id.nav_favorites) {
             if (currentMenu != null)
@@ -225,7 +231,8 @@ public class MainActivity extends AppCompatActivity
             previousIcon = currentMenu.getIcon();
             currentMenu.setIcon(R.drawable.ic_schedule_active);
             schedules = new SchedulesFragment();
-            schedules.prePopulate(data);
+            if (data != null)
+                schedules.prePopulate(data);
             getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, schedules).commit();
             setTitle(R.string.schedule);
         }

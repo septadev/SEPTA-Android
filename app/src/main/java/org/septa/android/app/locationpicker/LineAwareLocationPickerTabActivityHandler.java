@@ -514,23 +514,26 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
 
         @Override
         protected void onPostExecute(Bundle bundle) {
-            if (bundle.containsKey(Constants.ROUTE_DIRECTION_MODEL)) {
-                fragment.setRoute((RouteDirectionModel) bundle.get(Constants.ROUTE_DIRECTION_MODEL));
-            } else {
-                return;
-            }
 
-            if (bundle.containsKey(Constants.STARTING_STATION)) {
-                fragment.setStartStop((StopModel) bundle.get(Constants.STARTING_STATION));
-            } else {
-                return;
-            }
+            try {
+                if (bundle.containsKey(Constants.ROUTE_DIRECTION_MODEL)) {
+                    fragment.setRoute((RouteDirectionModel) bundle.get(Constants.ROUTE_DIRECTION_MODEL));
+                } else {
+                    return;
+                }
 
-            if (bundle.containsKey(Constants.DESTINATAION_STATION)) {
-                fragment.setDestinationStop((StopModel) bundle.get(Constants.DESTINATAION_STATION));
-            }
+                if (bundle.containsKey(Constants.STARTING_STATION)) {
+                    fragment.setStartStop((StopModel) bundle.get(Constants.STARTING_STATION));
+                } else {
+                    return;
+                }
 
-            fragment.progressView.setVisibility(View.GONE);
+                if (bundle.containsKey(Constants.DESTINATAION_STATION)) {
+                    fragment.setDestinationStop((StopModel) bundle.get(Constants.DESTINATAION_STATION));
+                }
+            } finally {
+                fragment.progressView.setVisibility(View.GONE);
+            }
         }
     }
 

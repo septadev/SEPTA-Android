@@ -294,6 +294,10 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
                 Task<Location> locationTask = LocationServices.getFusedLocationProviderClient(fragment.getActivity()).getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
                     @Override
                     public void onSuccess(Location location) {
+                        if (location == null) {
+                            fragment.progressView.setVisibility(View.GONE);
+                            return;
+                        }
                         String currentAddress = MapUtils.getCurrentAddress(fragment.getActivity());
                         if (currentAddress != null) {
                             fragment.addressEntry.setText(currentAddress);

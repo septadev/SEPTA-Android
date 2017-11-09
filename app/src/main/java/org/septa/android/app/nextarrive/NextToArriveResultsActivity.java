@@ -74,6 +74,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import android.os.Handler;
+import android.widget.RelativeLayout;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -220,22 +221,13 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
             findViewById(R.id.view_sched_view).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent();
-                    intent.putExtra(Constants.STARTING_STATION, start);
-                    intent.putExtra(Constants.DESTINATAION_STATION, destination);
-                    intent.putExtra(Constants.TRANSIT_TYPE, transitType);
-                    if (routeDirectionModel != null)
-                        intent.putExtra(Constants.ROUTE_DIRECTION_MODEL, routeDirectionModel);
-
-                    setResult(Constants.VIEW_SCHEDULE, intent);
-                    finish();
+                    gotoSchedulesForTarget();
                 }
             });
 
             refreshHandler = new Handler();
 
-            run();
-            findViewById(R.id.header).getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            ((RelativeLayout) findViewById(R.id.header)).getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
                 public void onGlobalLayout() {
                     View refreshLabel = findViewById(R.id.refresh_label);
@@ -252,6 +244,28 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         }
 
         refreshHandler.postDelayed(this, 30 * 1000);
+
+        refresh.setOnClickListener(new View.OnClickListener()
+
+        {
+            @Override
+            public void onClick(View view) {
+                refreshData();
+            }
+        });
+
+    }
+
+    private void gotoSchedulesForTarget() {
+        Intent intent = new Intent();
+        intent.putExtra(Constants.STARTING_STATION, start);
+        intent.putExtra(Constants.DESTINATAION_STATION, destination);
+        intent.putExtra(Constants.TRANSIT_TYPE, transitType);
+        if (routeDirectionModel != null)
+            intent.putExtra(Constants.ROUTE_DIRECTION_MODEL, routeDirectionModel);
+
+        setResult(Constants.VIEW_SCHEDULE, intent);
+        finish();
     }
 
     private void restoreState(Bundle bundle) {
@@ -462,7 +476,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                                 builder.append(detail.getDetails().getVehicleId());
                                 builder.append("<br>");
                                 builder.append("Status: ");
-                                if (detail.getDetails().getDestination()!=null && detail.getDetails().getDestination().getDelay() > 0) {
+                                if (detail.getDetails().getDestination() != null && detail.getDetails().getDestination().getDelay() > 0) {
                                     builder.append(GeneralUtils.getDurationAsLongString(detail.getDetails().getDestination().getDelay(), TimeUnit.MINUTES) + " late.");
                                 } else {
                                     builder.append("On time");
@@ -500,15 +514,6 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                     });
         }
 
-        refresh.setOnClickListener(new View.OnClickListener()
-
-        {
-            @Override
-            public void onClick(View view) {
-                refreshData();
-            }
-        });
-
     }
 
     @Override
@@ -526,7 +531,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     @Override
     protected void onResume() {
         super.onResume();
-        run();
+        refreshData();
     }
 
     @Override
@@ -548,8 +553,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                 @Override
                 public void onResponse(Call<NextArrivalModelResponse> call, final Response<NextArrivalModelResponse> response) {
                     if (response == null || response.body() == null) {
-                        Log.w(TAG, "invalid response from service.");
-                        SeptaServiceFactory.displayWebServiceError(findViewById(R.id.rail_next_to_arrive_results_coordinator), NextToArriveResultsActivity.this);
+                        onFailure();
                     } else {
                         if (transitType == TransitType.RAIL && response.body().getNextArrivalRecords().size() > 0) {
                             try {
@@ -633,12 +637,15 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                             }
                         }
 
+                        parser = new NextArrivalModelResponseParser(response.body());
                         if (System.currentTimeMillis() - timestamp < 1000) {
                             AsyncTask<Long, Void, Void> delayTask = new AsyncTask<Long, Void, Void>() {
                                 @Override
                                 protected void onPostExecute(Void aVoid) {
-                                    updateView(response);
+                                    updateView();
                                     progressVisibility(View.GONE);
+                                    refreshHandler.removeCallbacks(NextToArriveResultsActivity.this);
+                                    refreshHandler.postDelayed(NextToArriveResultsActivity.this, REFRESH_DELAY_SECONDS * 1000);
                                 }
 
                                 @Override
@@ -654,7 +661,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                             }.execute(System.currentTimeMillis() - timestamp);
 
                         } else {
-                            updateView(response);
+                            updateView();
                             progressVisibility(View.GONE);
                             refreshHandler.removeCallbacks(NextToArriveResultsActivity.this);
                             refreshHandler.postDelayed(NextToArriveResultsActivity.this, REFRESH_DELAY_SECONDS * 1000);
@@ -662,10 +669,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                     }
                 }
 
-                private void updateView(Response<NextArrivalModelResponse> response) {
-                    Log.d(TAG, response.toString());
-                    Log.d(TAG, response.body().toString());
-
+                private void updateView() {
                     LatLng startingStationLatLng = new LatLng(start.getLatitude(), start.getLongitude());
                     LatLng destinationStationLatLng = new LatLng(destination.getLatitude(), destination.getLongitude());
                     startMarker = new MarkerOptions().position(startingStationLatLng).title(start.getStopName());
@@ -673,7 +677,6 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
                     getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                     getSupportActionBar().setDisplayShowHomeEnabled(true);
-                    parser = new NextArrivalModelResponseParser(response.body());
 
                     nextToArriveDetailsView.setNextToArriveData(parser);
 
@@ -685,7 +688,28 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                 @Override
                 public void onFailure(Call<NextArrivalModelResponse> call, Throwable t) {
                     t.printStackTrace();
-                    SeptaServiceFactory.displayWebServiceError(findViewById(R.id.rail_next_to_arrive_results_coordinator), NextToArriveResultsActivity.this);
+                    onFailure();
+                }
+
+                private void onFailure() {
+                    parser = new NextArrivalModelResponseParser();
+                    //updateView();
+                    final Snackbar snackbar = Snackbar.make(rootView, R.string.realtime_failure_message, Snackbar.LENGTH_INDEFINITE);
+                    snackbar.setAction("Scehedules", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            snackbar.dismiss();
+                            gotoSchedulesForTarget();
+                        }
+                    });
+                    View snackbarView = snackbar.getView();
+                    android.widget.TextView tv = (android.widget.TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+                    tv.setMaxLines(10);
+                    snackbar.show();
+                    progressVisibility(View.GONE);
+                    refreshHandler.removeCallbacks(NextToArriveResultsActivity.this);
+                    refreshHandler.postDelayed(NextToArriveResultsActivity.this, REFRESH_DELAY_SECONDS * 1000);
+                    //SeptaServiceFactory.displayWebServiceError(findViewById(R.id.rail_next_to_arrive_results_coordinator), NextToArriveResultsActivity.this);
                 }
             });
 

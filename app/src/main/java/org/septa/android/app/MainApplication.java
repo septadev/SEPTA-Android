@@ -40,9 +40,18 @@ public class MainApplication extends Application implements Runnable {
             String googleApiKey = bundle.getString("com.google.android.geo.API_KEY");
             SeptaServiceFactory.setGoogleKey(googleApiKey);
 
+            String googleBaseUrl = bundle.getString("com.google.android.geo.URL");
+            SeptaServiceFactory.setGoogleApiBaseUrl(googleBaseUrl);
+
+
             String septaAmazonAwsApiKey = bundle.getString("org.septa.amazonaws.x-api-key");
             SeptaServiceFactory.setAmazonawsApiKey(septaAmazonAwsApiKey);
 
+            String septaWebServicesBaseUrl = bundle.getString("org.septa.amazonaws.baseurl");
+            SeptaServiceFactory.setSeptaWebServicesBaseUrl(septaWebServicesBaseUrl);
+
+
+            SeptaServiceFactory.init();
 
             //SeptaServiceFactory.getFavoritesService().deleteAllFavorites(this);
         } catch (PackageManager.NameNotFoundException e) {

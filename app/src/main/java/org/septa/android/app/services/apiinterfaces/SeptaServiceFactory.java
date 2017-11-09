@@ -29,55 +29,60 @@ public class SeptaServiceFactory {
 
     private static String amazonawsApiKey;
 
-    private static Retrofit googleSingleton = new Retrofit.Builder().client(new OkHttpClient.Builder().addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)).addInterceptor(new Interceptor() {
-        @Override
-        public Response intercept(Chain chain) throws IOException {
-            Request original = chain.request();
-            HttpUrl originalHttpUrl = original.url();
+    private static String septaWebServicesBaseUrl;
 
-            HttpUrl url = originalHttpUrl.newBuilder()
-                    .addQueryParameter("key", googleKey)
-                    .build();
+    private static Retrofit googleSingleton;
 
-            Request.Builder requestBuilder = original.newBuilder()
-                    .url(url);
+    private static String googleApiBaseUrl;
 
-            Request request = requestBuilder.build();
-            return chain.proceed(request);
-        }
-    }).build())
-            .baseUrl("https://maps.googleapis.com/").addConverterFactory(GsonConverterFactory.create())
-            .build();
+    static Retrofit septaAmazonServicesSingleton;
 
-    static Retrofit singleton = new Retrofit.Builder().client(new OkHttpClient.Builder().addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)).build())
-            .baseUrl("http://www3.septa.org/").addConverterFactory(GsonConverterFactory.create())
-            .build();
+    public static void init() {
+        septaAmazonServicesSingleton = new Retrofit.Builder().client(new OkHttpClient.Builder().connectTimeout(5, TimeUnit.SECONDS).readTimeout(20, TimeUnit.SECONDS).addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)).addInterceptor(new Interceptor() {
+            @Override
+            public Response intercept(Chain chain) throws IOException {
+                Request original = chain.request();
+                Request.Builder requestBuilder = original.newBuilder()
+                        .addHeader("x-api-key", amazonawsApiKey);
 
-    static Retrofit singleton2 = new Retrofit.Builder().client(new OkHttpClient.Builder().connectTimeout(5, TimeUnit.SECONDS).readTimeout(20, TimeUnit.SECONDS).addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)).addInterceptor(new Interceptor() {
-        @Override
-        public Response intercept(Chain chain) throws IOException {
-            Request original = chain.request();
-            Request.Builder requestBuilder = original.newBuilder()
-                    .addHeader("x-api-key", amazonawsApiKey);
+                Request request = requestBuilder.build();
+                return chain.proceed(request);
+            }
+        }).build())
+                .baseUrl(septaWebServicesBaseUrl).addConverterFactory(GsonConverterFactory.create())
+                .build();
 
-            Request request = requestBuilder.build();
-            return chain.proceed(request);
-        }
-    }).build())
-            .baseUrl("https://vnjb5kvq2b.execute-api.us-east-1.amazonaws.com").addConverterFactory(GsonConverterFactory.create())
-            .build();
+        googleSingleton = new Retrofit.Builder().client(new OkHttpClient.Builder().addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)).addInterceptor(new Interceptor() {
+            @Override
+            public Response intercept(Chain chain) throws IOException {
+                Request original = chain.request();
+                HttpUrl originalHttpUrl = original.url();
 
+                HttpUrl url = originalHttpUrl.newBuilder()
+                        .addQueryParameter("key", googleKey)
+                        .build();
+
+                Request.Builder requestBuilder = original.newBuilder()
+                        .url(url);
+
+                Request request = requestBuilder.build();
+                return chain.proceed(request);
+            }
+        }).build())
+                .baseUrl(googleApiBaseUrl).addConverterFactory(GsonConverterFactory.create())
+                .build();
+    }
 
     public static NextArrivalService getNextArrivalService() {
-        return singleton2.create(NextArrivalService.class);
+        return septaAmazonServicesSingleton.create(NextArrivalService.class);
     }
 
     public static AlertDetailsService getAlertDetailsService() {
-        return singleton2.create(AlertDetailsService.class);
+        return septaAmazonServicesSingleton.create(AlertDetailsService.class);
     }
 
     public static AlertsService getAlertsService() {
-        return singleton2.create(AlertsService.class);
+        return septaAmazonServicesSingleton.create(AlertsService.class);
     }
 
 
@@ -98,12 +103,28 @@ public class SeptaServiceFactory {
         SeptaServiceFactory.amazonawsApiKey = amazonawsApiKey;
     }
 
+    public static String getGoogleApiBaseUrl() {
+        return googleApiBaseUrl;
+    }
+
+    public static void setGoogleApiBaseUrl(String googleApiBaseUrl) {
+        SeptaServiceFactory.googleApiBaseUrl = googleApiBaseUrl;
+    }
+
     public static void setGoogleKey(String googleKey) {
         SeptaServiceFactory.googleKey = googleKey;
     }
 
     public static String getGoogleKey() {
         return googleKey;
+    }
+
+    public static String getSeptaWebServicesBaseUrl() {
+        return septaWebServicesBaseUrl;
+    }
+
+    public static void setSeptaWebServicesBaseUrl(String septaWebServicesBaseUrl) {
+        SeptaServiceFactory.septaWebServicesBaseUrl = septaWebServicesBaseUrl;
     }
 
     public static void displayWebServiceError(View rootView, final Activity activity) {
@@ -118,6 +139,10 @@ public class SeptaServiceFactory {
                 }
             }
         });
+        View snackbarView = snackbar.getView();
+        android.widget.TextView tv = (android.widget.TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+        tv.setMaxLines(10);
+
         snackbar.show();
     }
 

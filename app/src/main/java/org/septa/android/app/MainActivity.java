@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity
     Fragment faresTransitInfo = new FaresFragment();
     Fragment systemMap = new SystemMapFragment();
     Fragment events = null;
+    Fragment trainview = null;
     Fragment connect = new ConnectFragement();
     Fragment about = new AboutFragement();
 
@@ -62,6 +63,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         favorites = FavoritesFragment.newInstance();
         events = WebViewFragment.getInstance(getResources().getString(R.string.events_url));
+        trainview = WebViewFragment.getInstance(getResources().getString(R.string.trainview_url));
 
         setContentView(R.layout.main_activity);
 
@@ -141,6 +143,10 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_about_app) {
             switchToBundle(item, about, R.string.about_the_septa_app, 0);
+        }
+
+        if (id == R.id.nav_trainview) {
+            switchToBundle(item, trainview, R.string.train_view, 0);
         }
 
         return true;

@@ -43,6 +43,9 @@
             android:id="@+id/nav_connect"
             android:title="@string/connect_with_septa" />
         <item
+            android:id="@+id/nav_trainview"
+            android:title="Trainview" />
+        <item
             android:id="@+id/nav_about_app"
             android:title="@string/about_the_septa_app" />
     </group>

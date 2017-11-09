@@ -43,6 +43,13 @@ This file is read by Android Studio upon startup
 	        PRERELEASE_KEYALIAS_PASSWORD = 'na'
 	        BETA_KEYALIAS_PASSWORD = 'na'
 	        RELEASE_KEYALIAS_PASSWORD = 'na'
+	        
+            SPRINT_ROUND = '8'
+
+	    	GOOGLE_GEO_API_KEY = 'na'
+            AMAZONAWS_API_KEY = 'na'
+    		CRASHLYTICS_API_KEY = 'na'
+
 		}
 
 6. Create a directory titled <code>SEPTA-Keystores</code>, which will be located in the parent directory of this project.
@@ -81,4 +88,10 @@ Once you have created the keystore files, add the password to the <code>SEPTASig
 			PRERELEASE_KEYALIAS_PASSWORD = 'na'
 			BETA_KEYALIAS_PASSWORD = 'na'
 			RELEASE_KEYALIAS_PASSWORD = 'na'
+
+            SPRINT_ROUND = '8'
+
+	    	GOOGLE_GEO_API_KEY = 'na'
+            AMAZONAWS_API_KEY = 'na'
+    		CRASHLYTICS_API_KEY = 'na'
 		}

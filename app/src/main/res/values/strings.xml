@@ -203,6 +203,6 @@
     <string name="chat_title">Live Chat</string>
     <string name="comment_title">Send Us A Comment</string>
     <string name="events_url">http://www.septa.org/service/special-events-mobile.html</string>
-    <string name="trainview_url">http://54.84.17.20:8081/regionalRail</string>
+    <string name="trainview_url">http://realtime.septa.org/regionalrail</string>
 
 </resources>

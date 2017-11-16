@@ -524,7 +524,11 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
     @Override
     public boolean onSupportNavigateUp() {
-        onBackPressed();
+        try {
+            onBackPressed();
+        } catch (Exception e) {
+            Log.w(TAG, "Exception on Backpress", e);
+        }
         return true;
     }
 

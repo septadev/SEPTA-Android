@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity
     Fragment systemMap = new SystemMapFragment();
     Fragment events = null;
     Fragment trainview = null;
+    Fragment transitview = null;
     Fragment connect = new ConnectFragement();
     Fragment about = new AboutFragement();
 
@@ -64,6 +65,7 @@ public class MainActivity extends AppCompatActivity
         favorites = FavoritesFragment.newInstance();
         events = WebViewFragment.getInstance(getResources().getString(R.string.events_url));
         trainview = WebViewFragment.getInstance(getResources().getString(R.string.trainview_url));
+        transitview = WebViewFragment.getInstance(getResources().getString(R.string.transitview_url));
 
         setContentView(R.layout.main_activity);
 
@@ -149,6 +151,9 @@ public class MainActivity extends AppCompatActivity
             switchToBundle(item, trainview, R.string.train_view, 0);
         }
 
+        if (id == R.id.nav_transitview) {
+            switchToBundle(item, transitview, R.string.transit_view, 0);
+        }
         return true;
     }
 

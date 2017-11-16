@@ -17,7 +17,8 @@
     <string name="schedule">Schedule</string>
     <string name="fares_and_transit_info">Fares and Transit Info</string>
     <string name="connect_with_septa">Connect With SEPTA</string>
-    <string name="train_view">Trainview</string>
+    <string name="train_view">TrainView</string>
+    <string name="transit_view">TransitView</string>
 
 
     <!-- Transit Type Tab Names -->
@@ -206,5 +207,6 @@
     <string name="comment_title">Send Us A Comment</string>
     <string name="events_url">http://www.septa.org/service/special-events-mobile.html</string>
     <string name="trainview_url">http://realtime.septa.org/regionalrail</string>
+    <string name="transitview_url">http://realtime.septa.org/bus_trolley</string>
 
 </resources>

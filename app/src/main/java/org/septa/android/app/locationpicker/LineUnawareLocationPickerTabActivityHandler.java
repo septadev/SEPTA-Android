@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -34,7 +35,7 @@ import org.septa.android.app.support.CursorAdapterSupplier;
  */
 
 public class LineUnawareLocationPickerTabActivityHandler extends BaseTabActivityHandler {
-    private static final String TAG = "LineUnawareLocationPickerTabActivityHandler";
+    private static final String TAG = "LineUnawareLocationPick";
     private CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
     private TransitType transitType;
     private Class targetClass;
@@ -190,7 +191,11 @@ public class LineUnawareLocationPickerTabActivityHandler extends BaseTabActivity
                     // Create and show the dialog.
                     LocationPickerFragment newFragment = LocationPickerFragment.newInstance(cursorAdapterSupplier);
                     newFragment.setTargetFragment(parent, requestCode);
-                    newFragment.show(ft, "dialog");
+                    try {
+                        newFragment.show(ft, "dialog");
+                    } catch (Exception e) {
+                        Log.w(TAG, "Problem showing dialog for location picker.", e);
+                    }
 
                     return true;
                 }

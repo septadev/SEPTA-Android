@@ -174,6 +174,9 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
             } else if ("lan".equalsIgnoreCase(routeId)) {
                 twitterId.setText("@SEPTA_DOY");
                 webUrl = "https://twitter.com/SEPTA_DOY";
+            } else if ("gc".equalsIgnoreCase(routeId)) {
+                twitterId.setText("@SEPTA_SOCIAL");
+                webUrl = getString(R.string.twitter_url);
             } else {
                 twitterId.setText("@SEPTA_" + routeId.toUpperCase());
                 webUrl = "https://twitter.com/SEPTA_" + routeId.toUpperCase();
@@ -240,6 +243,9 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
     }
 
     public void refresh(final MenuItem item) {
+        if (start != null && destination != null && transitType != null) {
+            return;
+        }
         progressView.setVisibility(View.VISIBLE);
         final long timestamp = System.currentTimeMillis();
         SeptaServiceFactory.getNextArrivalService().getNextArrivalDetails(destination.getStopId(), serviceRouteId, vehicleId).enqueue(new Callback<NextArrivalDetails>() {

@@ -163,6 +163,8 @@
     <string name="twitter_app_url_war">twitter://user?user_id=382081475</string>
     <string name="twitter_app_url_wtr">twitter://user?user_id=382146617</string>
     <string name="twitter_app_url_wil">twitter://user?user_id=382148737</string>
+    <string name="twitter_app_url_gc">twitter://user?user_id=430186590</string>
+
 
 
     <!-- Fares -->

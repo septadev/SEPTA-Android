@@ -186,7 +186,7 @@
     <string name="token_text"><![CDATA[Tokens: <b>{0} each</b><br>Transfer: <b>{1}</b><br>SEPTA Key Card Travel Wallet]]></string>
 
     <string name="transpass_weekly_price">$25.50</string>
-    <string name="transpass_monthly_price">$96.50</string>
+    <string name="transpass_monthly_price">$96.00</string>
     <string name="weekly_text"><![CDATA[Weekly: <b>{0}</b><br>Monthly: <b>{1}</b><br>Load Pass on SEPTA Key Card]]></string>
 
     <string name="trail_text"><![CDATA[Weekly and Monthly TrailPasses<br><b>Price varies</b> by Zone.]]></string>
@@ -195,7 +195,7 @@
     <string name="cross_county_mothly_price">$115.00</string>
     <string name="cross_text"><![CDATA[Weekly Cross County Pass: <b>{0}</b><br>Monthly Cross County Pass: <b>{1}</b>]]></string>
 
-    <string name="one_day_pass_price">$8.00</string>
+    <string name="one_day_pass_price">$9.00</string>
     <string name="one_day_quantity">8</string>
     <string name="one_day_con_text"><![CDATA[Pass: <b>{0}</b> - good for <b>{1} rides</b> on any Transit route (not valid on Regional Rail)]]></string>
 

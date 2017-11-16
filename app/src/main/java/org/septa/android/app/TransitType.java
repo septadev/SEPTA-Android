@@ -66,6 +66,10 @@ public enum TransitType implements Serializable {
     }
 
     public String getString(String name, Context context) {
+        if (context == null) {
+            Log.w(TAG, "getString method, context is null", new Exception("getString method, context is null"));
+            return "";
+        }
         int resId = context.getResources().getIdentifier(name + "_" + name().toLowerCase(), "string", R.class.getPackage().getName());
         return context.getString(resId);
     }
@@ -75,7 +79,7 @@ public enum TransitType implements Serializable {
         return alertIdGenerator.getAlertId(id);
     }
 
-    public String getLineIdFromAlertId(String id){
+    public String getLineIdFromAlertId(String id) {
         return alertIdGenerator.getLineId(id);
     }
 

@@ -385,7 +385,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
         final View mapContainer = findViewById(R.id.map_container);
 
-        LatLng startingStationLatLng = new LatLng(start.getLatitude(), start.getLongitude());
+        final LatLng startingStationLatLng = new LatLng(start.getLatitude(), start.getLongitude());
         final LatLng destinationStationLatLng = new LatLng(destination.getLatitude(), destination.getLongitude());
         googleMap.addMarker(new MarkerOptions().position(startingStationLatLng).title(start.getStopName()));
         googleMap.addMarker(new MarkerOptions().position(destinationStationLatLng).title(destination.getStopName()));
@@ -423,7 +423,13 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                             public void onGlobalLayout() {
                                 mapContainer.getViewTreeObserver()
                                         .removeOnGlobalLayoutListener(this);
-                                googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, getResources().getDisplayMetrics())));
+                                try {
+                                    googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, getResources().getDisplayMetrics())));
+                                } catch (Exception e1) {
+                                    // Enough is enough.  Zoom the map to the starting station.
+                                    googleMap.moveCamera(CameraUpdateFactory.zoomTo(13));
+                                    googleMap.moveCamera(CameraUpdateFactory.newLatLng(startingStationLatLng));
+                                }
                                 ViewGroup.LayoutParams layoutParams =
                                         bottomSheetLayout.getLayoutParams();
                                 layoutParams.height = rootView.getHeight() - mapContainerView.getTop();

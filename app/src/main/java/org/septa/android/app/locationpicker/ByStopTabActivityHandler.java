@@ -92,7 +92,7 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
         }
 
         @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+        public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                                  Bundle savedInstanceState) {
             Log.d(TAG, "onCreateView()");
             restoreArgs();
@@ -135,6 +135,9 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
                 protected Void doInBackground(Void... voids) {
                     Log.d(TAG, "creating cursor Adapater");
                     List<StopModel> stops = new ArrayList<StopModel>();
+                    Context context = getContext();
+                    if (context == null)
+                        return null;
                     Cursor c = cursorAdapterSupplier.getCursor(getContext(), null);
                     if (c.moveToFirst()) {
                         do {
@@ -142,12 +145,9 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
                             stops.add(stop);
                         } while (c.moveToNext());
                     }
-                    Context context = getContext();
-                    if (context != null) {
-                        itemAdapater2 =
-                                new StationNameAdapter2(getContext(), stops);
-                        Log.d(TAG, "creating cursor Adapater - Done");
-                    }
+                    itemAdapater2 =
+                            new StationNameAdapter2(context, stops);
+                    Log.d(TAG, "creating cursor Adapater - Done");
                     h.sendEmptyMessage(0);
                     return null;
                 }

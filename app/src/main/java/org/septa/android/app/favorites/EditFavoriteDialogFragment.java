@@ -28,6 +28,8 @@ public class EditFavoriteDialogFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        restoreArgs();
+
         View rootView = inflater.inflate(R.layout.edit_favorite_dialog, container);
 
         View exit = rootView.findViewById(R.id.exit);
@@ -97,12 +99,17 @@ public class EditFavoriteDialogFragment extends DialogFragment {
 
     public static EditFavoriteDialogFragment getInstance(Favorite favorite) {
         EditFavoriteDialogFragment fragment = new EditFavoriteDialogFragment();
-        fragment.setFavorite(favorite);
+
+        Bundle args = new Bundle();
+        args.putSerializable("favorite", favorite);
+        fragment.setArguments(args);
+
         return fragment;
     }
 
-    public void setFavorite(Favorite favorite) {
-        this.favorite = favorite;
+    private void restoreArgs() {
+        favorite = (Favorite) getArguments().getSerializable("favorite");
     }
+
 
 }

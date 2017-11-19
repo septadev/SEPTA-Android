@@ -181,7 +181,11 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
                 twitterId.setText("@SEPTA_" + routeId.toUpperCase());
                 webUrl = "https://twitter.com/SEPTA_" + routeId.toUpperCase();
             }
-            appUrl = getString(getResources().getIdentifier("twitter_app_url_" + routeId.toLowerCase(), "string", R.class.getPackage().getName()));
+            int appUrlId = getResources().getIdentifier("twitter_app_url_" + routeId.toLowerCase(), "string", R.class.getPackage().getName());
+            if (appUrlId != 0)
+                appUrl = getString(appUrlId);
+            else
+                appUrl = getString(R.string.twitter_app_url);
         }
 
         View twitterView = findViewById(R.id.twitter_view);
@@ -243,9 +247,10 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
     }
 
     public void refresh(final MenuItem item) {
-        if (start != null && destination != null && transitType != null) {
+        if (start == null || destination == null || transitType == null) {
             return;
         }
+
         progressView.setVisibility(View.VISIBLE);
         final long timestamp = System.currentTimeMillis();
         SeptaServiceFactory.getNextArrivalService().getNextArrivalDetails(destination.getStopId(), serviceRouteId, vehicleId).enqueue(new Callback<NextArrivalDetails>() {

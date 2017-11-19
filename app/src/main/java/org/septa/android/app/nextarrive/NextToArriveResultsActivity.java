@@ -648,7 +648,8 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                         }
 
                         parser = new NextArrivalModelResponseParser(response.body());
-                        if (System.currentTimeMillis() - timestamp < 1000) {
+                        long diff = System.currentTimeMillis() - timestamp;
+                        if (diff < 1000 && diff > 0) {
                             AsyncTask<Long, Void, Void> delayTask = new AsyncTask<Long, Void, Void>() {
                                 @Override
                                 protected void onPostExecute(Void aVoid) {
@@ -668,7 +669,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
                                     return null;
                                 }
-                            }.execute(System.currentTimeMillis() - timestamp);
+                            }.execute(diff);
 
                         } else {
                             updateView();

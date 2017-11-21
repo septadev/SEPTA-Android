@@ -206,7 +206,7 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
                 boolean found = false;
                 StringBuilder alertText = new StringBuilder();
 
-                if (globalAlertDetail != null &&
+                if (globalAlertDetail != null && globalAlertDetail.getAlerts().size() > 0 &&
                         globalAlertDetail.getAlerts().get(0).getMessage() != null &&
                         !globalAlertDetail.getAlerts().get(0).getMessage().equals("")) {
                     globalAlertView.setVisibility(View.VISIBLE);

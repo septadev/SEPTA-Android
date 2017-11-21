@@ -214,8 +214,11 @@ public class SystemStatusResultsActivity extends AppCompatActivity {
 
             if (alertItem.getDetour() != null && !"".equals(alertItem.getDetour().getMessage())) {
                 detourCount++;
-                detourBuilder.append("<b>Detour</b><p>").append(alertItem.getDetour().getMessage()).append("<p>");
-
+                detourBuilder.append("<b>Start Location:</b> ").append(alertItem.getDetour().getStartLocation()).append("<br>");
+                detourBuilder.append("<b>Start Date:</b> ").append(alertItem.getDetour().getStartDateTime()).append("<br>");
+                detourBuilder.append("<b>End Date:</b> ").append(alertItem.getDetour().getEndDateTime()).append("<br>");
+                detourBuilder.append("<b>Reason For Detour:</b> ").append(alertItem.getDetour().getReason()).append("<br>");
+                detourBuilder.append("<b>Details:</b> ").append(alertItem.getDetour().getMessage()).append("<p>");
             }
 
             if (alertItem.isSnow()) {

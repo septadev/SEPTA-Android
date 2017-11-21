@@ -42,6 +42,7 @@ public class WebViewActivity extends AppCompatActivity {
         webView.getSettings().setLoadWithOverviewMode(true);
         webView.getSettings().setUseWideViewPort(true);
         webView.getSettings().setBuiltInZoomControls(true);
+        webView.getSettings().setGeolocationEnabled(true);
 
         progressView = findViewById(R.id.progress_view);
 

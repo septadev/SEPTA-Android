@@ -27,6 +27,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -58,6 +59,7 @@ import org.septa.android.app.services.apiinterfaces.model.Favorite;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalDetails;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalModelResponse;
 import org.septa.android.app.support.Consumer;
+import org.septa.android.app.support.CrashlyticsManager;
 import org.septa.android.app.support.Criteria;
 import org.septa.android.app.support.CursorAdapterSupplier;
 import org.septa.android.app.support.GeneralUtils;
@@ -369,6 +371,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     public void editFavorite(final MenuItem item) {
         Log.d(TAG, "edit Favorite.");
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        CrashlyticsManager.log(Log.INFO, TAG, "Creating EditFavoriteDialogFragment for:" + currentFavorite.toString());
         EditFavoriteDialogFragment fragment = EditFavoriteDialogFragment.getInstance(currentFavorite);
 
         fragment.show(ft, "Dialog");

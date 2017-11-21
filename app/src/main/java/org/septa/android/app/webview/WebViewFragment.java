@@ -35,6 +35,7 @@ public class WebViewFragment extends Fragment {
         webView.getSettings().setLoadWithOverviewMode(true);
         webView.getSettings().setUseWideViewPort(true);
         webView.getSettings().setBuiltInZoomControls(true);
+        webView.getSettings().setGeolocationEnabled(true);
 
         progressView = rootView.findViewById(R.id.progress_view);
 

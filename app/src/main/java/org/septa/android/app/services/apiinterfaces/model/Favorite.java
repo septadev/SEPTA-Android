@@ -88,5 +88,16 @@ public class Favorite implements Serializable {
     public RouteDirectionModel getRouteDirectionModel() {
         return routeDirectionModel;
     }
+
+    @Override
+    public String toString() {
+        return "Favorite{" +
+                "name='" + name + '\'' +
+                ", start=" + start.toString() +
+                ", destination=" + destination.toString() +
+                ", routeDirectionModel=" + routeDirectionModel.toString() +
+                ", transitType=" + transitType.toString() +
+                '}';
+    }
 }
 

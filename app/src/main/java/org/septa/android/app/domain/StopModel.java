@@ -179,6 +179,20 @@ public class StopModel implements Comparable<StopModel>, Serializable {
         result = 31 * result + directionId;
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "StopModel{" +
+                "stopId='" + stopId + '\'' +
+                ", stopName='" + stopName + '\'' +
+                ", stopSequence=" + stopSequence +
+                ", wheelchairBoarding=" + wheelchairBoarding +
+                ", latitude=" + latitude +
+                ", longitude=" + longitude +
+                ", distance=" + distance +
+                ", directionId=" + directionId +
+                '}';
+    }
 }
 
 

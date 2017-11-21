@@ -2,10 +2,14 @@ package org.septa.android.app.database;
 
 import android.content.Context;
 import android.database.SQLException;
+import android.util.Log;
 
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 
+import org.septa.android.app.support.CrashlyticsManager;
+
 public class SEPTADatabase extends SQLiteAssetHelper {
+    private static String TAG = SQLiteAssetHelper.class.getSimpleName();
 
     /**
      * Current packaged DB version, update number when packaged DB changes
@@ -14,8 +18,8 @@ public class SEPTADatabase extends SQLiteAssetHelper {
     private static final String DATABASE_FILE_NAME = "SEPTA.sqlite";
 
     public SEPTADatabase(Context context) {
-
         super(context, DATABASE_FILE_NAME, null, DATABASE_VERSION);
+        CrashlyticsManager.log(Log.INFO, TAG, "Initializing DB:" + DATABASE_FILE_NAME);
         // Causes database to overwrite when version changes
         setForcedUpgrade();
 

@@ -55,4 +55,15 @@ public class RouteDirectionModel implements Serializable {
         else return "0";
     }
 
+    @Override
+    public String toString() {
+        return "RouteDirectionModel{" +
+                "routeId='" + routeId + '\'' +
+                ", routeShortName='" + routeShortName + '\'' +
+                ", routeLongName='" + routeLongName + '\'' +
+                ", directionDescription='" + directionDescription + '\'' +
+                ", directionCode='" + directionCode + '\'' +
+                ", routeType=" + routeType +
+                '}';
+    }
 }

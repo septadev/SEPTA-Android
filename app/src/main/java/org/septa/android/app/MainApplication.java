@@ -11,6 +11,7 @@ import com.crashlytics.android.Crashlytics;
 
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Alerts;
+import org.septa.android.app.support.CrashlyticsManager;
 import org.septa.android.app.systemstatus.SystemStatusState;
 
 import retrofit2.Call;
@@ -28,7 +29,7 @@ public class MainApplication extends Application implements Runnable {
     public void onCreate() {
         super.onCreate();
         if (!BuildConfig.DEBUG) {
-            Crashlytics.start(this);
+            CrashlyticsManager.init(this);
             Log.i(TAG, "Starting Crashlytics");
         } else {
             Log.i(TAG, "Crashlytics disabled for DEBUG builds");

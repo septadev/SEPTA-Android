@@ -1,6 +1,7 @@
 package org.septa.android.app.nextarrive;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -48,14 +49,16 @@ public class NextToArriveFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
-        if (getActivity() == null)
+        Context context = getActivity();
+
+        if (context == null)
             return null;
-        if (ContextCompat.checkSelfPermission(getActivity(),
+        if (ContextCompat.checkSelfPermission(context,
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
+            ActivityCompat.requestPermissions(context, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
 
 
-        DatabaseManager dbManager = DatabaseManager.getInstance(getActivity());
+        DatabaseManager dbManager = DatabaseManager.getInstance(context);
 
         tabActivityHandlers = new TabActivityHandler[5];
         tabActivityHandlers[1] = new LineUnawareLocationPickerTabActivityHandler(getString(R.string.rail_tab), "nta_picker_title", getString(R.string.nta_query_button_text), TransitType.RAIL, dbManager.getRailStopCursorAdapterSupplier(), NextToArriveResultsActivity.class);

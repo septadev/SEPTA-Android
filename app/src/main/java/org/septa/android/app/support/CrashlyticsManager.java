@@ -1,6 +1,7 @@
 package org.septa.android.app.support;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 
@@ -23,6 +24,14 @@ public class CrashlyticsManager {
             Crashlytics.log(priority, tag, msg);
         else
             android.util.Log.println(priority, tag, msg);
+
     }
+
+    public static void logException(String tag, Throwable e) {
+        if (initalized)
+            Crashlytics.logException(e);
+        else Log.e(tag, "", e);
+    }
+
 
 }

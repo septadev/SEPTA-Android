@@ -183,7 +183,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void addNewFavorite() {
-        CrashlyticsManager.log(Log.INFO, TAG,"addNewFavorite");
+        CrashlyticsManager.log(Log.INFO, TAG, "addNewFavorite");
         if (currentMenu == null || currentMenu.getItemId() != R.id.nav_next_to_arrive) {
             if (currentMenu != null)
                 currentMenu.setIcon(previousIcon);
@@ -203,7 +203,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void switchToFavorites() {
-        CrashlyticsManager.log(Log.INFO, TAG,"switchToFavorites");
+        CrashlyticsManager.log(Log.INFO, TAG, "switchToFavorites");
         if (currentMenu == null || currentMenu.getItemId() != R.id.nav_favorites) {
             if (currentMenu != null)
                 currentMenu.setIcon(previousIcon);
@@ -238,9 +238,16 @@ public class MainActivity extends AppCompatActivity
 
 
     public void switchToSchedules(Bundle data) {
-        CrashlyticsManager.log(Log.INFO, TAG,"switchToSchedules");
+        CrashlyticsManager.log(Log.INFO, TAG, "switchToSchedules");
 
         if (currentMenu == null || currentMenu.getItemId() != R.id.nav_schedule) {
+            try {
+                getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, schedules).commit();
+            } catch (Exception e) {
+                CrashlyticsManager.logException(TAG, e);
+                return;
+            }
+
             if (currentMenu != null)
                 currentMenu.setIcon(previousIcon);
             navigationView.setCheckedItem(R.id.nav_schedule);
@@ -250,14 +257,13 @@ public class MainActivity extends AppCompatActivity
             schedules = new SchedulesFragment();
             if (data != null)
                 schedules.prePopulate(data);
-            getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, schedules).commit();
             setTitle(R.string.schedule);
         }
     }
 
     @Override
     public void refresh() {
-        CrashlyticsManager.log(Log.INFO, TAG,"refresh");
+        CrashlyticsManager.log(Log.INFO, TAG, "refresh");
         favorites = FavoritesFragment.newInstance();
         getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, favorites).commit();
 

@@ -26,6 +26,8 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
@@ -429,6 +431,7 @@ public class ScheduleResultsActivity extends AppCompatActivity {
 
     class ReverseStopAsyncTask extends AsyncTask<Void, Void, Void> {
         ScheduleResultsActivity scheduleResultsActivity;
+        boolean found = false;
 
         ReverseStopAsyncTask(ScheduleResultsActivity scheduleResultsActivity) {
             this.scheduleResultsActivity = scheduleResultsActivity;
@@ -442,24 +445,29 @@ public class ScheduleResultsActivity extends AppCompatActivity {
                 newDest = getReverse(scheduleResultsActivity.start.getStopId(), scheduleResultsActivity.routeDirectionModel.getRouteShortName());
                 newStart = getReverse(scheduleResultsActivity.destination.getStopId(), scheduleResultsActivity.routeDirectionModel.getRouteShortName());
 
-                scheduleResultsActivity.destination = newDest;
-                scheduleResultsActivity.start = newStart;
+                if (newDest != null && newStart != null) {
+                    found = true;
+                    scheduleResultsActivity.destination = newDest;
+                    scheduleResultsActivity.start = newStart;
+                }
             } else {
+                found = true;
                 newDest = scheduleResultsActivity.start;
                 newStart = scheduleResultsActivity.destination;
             }
 
-            scheduleResultsActivity.destination = newDest;
-            scheduleResultsActivity.start = newStart;
-            List<Criteria> criterias = new ArrayList<Criteria>(2);
-            criterias.add(new Criteria("dircode", Criteria.Operation.EQ, scheduleResultsActivity.routeDirectionModel.getReverseDirectionCode()));
-            criterias.add(new Criteria("route_id", Criteria.Operation.EQ, scheduleResultsActivity.routeDirectionModel.getRouteId()));
+            if (found) {
+                scheduleResultsActivity.destination = newDest;
+                scheduleResultsActivity.start = newStart;
+                List<Criteria> criterias = new ArrayList<Criteria>(2);
+                criterias.add(new Criteria("dircode", Criteria.Operation.EQ, scheduleResultsActivity.routeDirectionModel.getReverseDirectionCode()));
+                criterias.add(new Criteria("route_id", Criteria.Operation.EQ, scheduleResultsActivity.routeDirectionModel.getRouteId()));
 
-            Cursor cursor = scheduleResultsActivity.reverseRouteCursorAdapterSupplier.getCursor(scheduleResultsActivity, criterias);
-            if (cursor.moveToFirst()) {
-                scheduleResultsActivity.routeDirectionModel = scheduleResultsActivity.reverseRouteCursorAdapterSupplier.getCurrentItemFromCursor(cursor);
+                Cursor cursor = scheduleResultsActivity.reverseRouteCursorAdapterSupplier.getCursor(scheduleResultsActivity, criterias);
+                if (cursor.moveToFirst()) {
+                    scheduleResultsActivity.routeDirectionModel = scheduleResultsActivity.reverseRouteCursorAdapterSupplier.getCurrentItemFromCursor(cursor);
+                }
             }
-
 
             return null;
         }
@@ -467,10 +475,19 @@ public class ScheduleResultsActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            scheduleResultsActivity.setUpHeaders();
-            int schedule = mapRadioButtonIdtoSchedule(scheduleResultsActivity.radioGroup.getCheckedRadioButtonId(), scheduleResultsActivity.routeDirectionModel.getRouteId());
-            ScheduleResultsAsyncTask scheduleResultsAsyncTask = new ScheduleResultsAsyncTask(scheduleResultsActivity);
-            scheduleResultsAsyncTask.execute(schedule);
+            if (found) {
+                scheduleResultsActivity.setUpHeaders();
+                int schedule = mapRadioButtonIdtoSchedule(scheduleResultsActivity.radioGroup.getCheckedRadioButtonId(), scheduleResultsActivity.routeDirectionModel.getRouteId());
+                ScheduleResultsAsyncTask scheduleResultsAsyncTask = new ScheduleResultsAsyncTask(scheduleResultsActivity);
+                scheduleResultsAsyncTask.execute(schedule);
+            } else {
+                Snackbar snackbar = Snackbar.make(scheduleResultsActivity.findViewById(R.id.schedule_results_coordinator), R.string.reverse_not_found, Snackbar.LENGTH_INDEFINITE);
+
+                View snackbarView = snackbar.getView();
+                android.widget.TextView tv = (android.widget.TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+                tv.setMaxLines(10);
+                snackbar.show();
+            }
         }
 
         StopModel getReverse(String stopId, String routeShortName) {

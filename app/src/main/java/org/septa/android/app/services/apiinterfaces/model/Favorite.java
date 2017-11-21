@@ -91,13 +91,33 @@ public class Favorite implements Serializable {
 
     @Override
     public String toString() {
-        return "Favorite{" +
-                "name='" + name + '\'' +
-                ", start=" + start.toString() +
-                ", destination=" + destination.toString() +
-                ", routeDirectionModel=" + routeDirectionModel.toString() +
-                ", transitType=" + transitType.toString() +
-                '}';
+
+        StringBuilder builder = new StringBuilder("Favorite{name='").append(name).append('\'');
+
+        builder.append(", start=");
+        if (start != null)
+            builder.append(start.toString());
+        else builder.append("NULL");
+
+        builder.append(", destination=");
+        if (destination != null)
+            builder.append(destination.toString());
+        else builder.append("NULL");
+
+        builder.append(", routeDirectionModel=");
+        if (routeDirectionModel != null)
+            builder.append(routeDirectionModel.toString());
+        else builder.append("NULL");
+
+        builder.append(", transitType=");
+        if (transitType != null)
+            builder.append(transitType.toString());
+        else builder.append("NULL");
+
+        builder.append('}');
+
+        return builder.toString();
+
     }
 }
 

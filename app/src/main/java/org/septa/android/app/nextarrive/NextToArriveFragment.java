@@ -1,6 +1,7 @@
 package org.septa.android.app.nextarrive;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -49,7 +50,7 @@ public class NextToArriveFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
-        Context context = getActivity();
+        Activity context = getActivity();
 
         if (context == null)
             return null;

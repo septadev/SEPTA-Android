@@ -208,5 +208,6 @@
     <string name="events_url">http://www.septa.org/service/special-events-mobile.html</string>
     <string name="trainview_url">http://realtime.septa.org/regionalrail</string>
     <string name="transitview_url">http://realtime.septa.org/bus_trolley</string>
+    <string name="reverse_not_found">We are sorry, we are unable to reverse your trip.  Please contact SEPTA and let us know what stops you were attempting to reverse.</string>
 
 </resources>

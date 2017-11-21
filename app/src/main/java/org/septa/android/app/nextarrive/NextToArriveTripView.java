@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -25,6 +26,7 @@ import org.septa.android.app.services.apiinterfaces.model.Alert;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalModelResponse;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalModelResponse.NextArrivalRecord;
 import org.septa.android.app.support.Consumer;
+import org.septa.android.app.support.CrashlyticsManager;
 import org.septa.android.app.support.GeneralUtils;
 import org.septa.android.app.systemstatus.GoToSystemStatusResultsOnClickListener;
 import org.septa.android.app.systemstatus.SystemStatusState;
@@ -40,6 +42,8 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class NextToArriveTripView extends FrameLayout {
+
+    static String TAG = NextToArriveTripView.class.getSimpleName();
 
     private TransitType transitType;
 
@@ -288,6 +292,15 @@ public class NextToArriveTripView extends FrameLayout {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(getContext(), NextToArriveTripDetailActivity.class);
+                    CrashlyticsManager.log(Log.INFO, TAG, "getSingleStopTripView");
+                    CrashlyticsManager.log(Log.INFO, TAG, start.getStopName());
+                    CrashlyticsManager.log(Log.INFO, TAG, destination.getStopName());
+                    CrashlyticsManager.log(Log.INFO, TAG, transitType.toString());
+                    CrashlyticsManager.log(Log.INFO, TAG, unit.getOrigRouteName());
+                    CrashlyticsManager.log(Log.INFO, TAG, unit.getOrigRouteId());
+                    CrashlyticsManager.log(Log.INFO, TAG, unit.getOrigLineTripId());
+                    CrashlyticsManager.log(Log.INFO, TAG, unit.getOrigVehicleId());
+
 
                     intent.putExtra(Constants.DESTINATAION_STATION, destination);
                     intent.putExtra(Constants.STARTING_STATION, start);
@@ -296,9 +309,11 @@ public class NextToArriveTripView extends FrameLayout {
                     intent.putExtra(Constants.ROUTE_ID, unit.getOrigRouteId());
                     intent.putExtra(Constants.TRIP_ID, unit.getOrigLineTripId());
                     intent.putExtra(Constants.VEHICLE_ID, unit.getOrigVehicleId());
-                    if (routeDirectionModel != null)
-                        intent.putExtra(Constants.ROUTE_DESCRIPTION, routeDirectionModel.getDirectionDescription());
 
+                    if (routeDirectionModel != null) {
+                        CrashlyticsManager.log(Log.INFO, TAG, routeDirectionModel.getDirectionDescription());
+                        intent.putExtra(Constants.ROUTE_DESCRIPTION, routeDirectionModel.getDirectionDescription());
+                    }
                     getContext().startActivity(intent);
                 }
             });
@@ -400,15 +415,26 @@ public class NextToArriveTripView extends FrameLayout {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(getContext(), NextToArriveTripDetailActivity.class);
+                    CrashlyticsManager.log(Log.INFO, TAG, "getMultistopTripView Orig");
+                    CrashlyticsManager.log(Log.INFO, TAG, start.getStopName());
+                    CrashlyticsManager.log(Log.INFO, TAG, destination.getStopName());
+                    CrashlyticsManager.log(Log.INFO, TAG, transitType.toString());
+                    CrashlyticsManager.log(Log.INFO, TAG, item.getOrigRouteName());
+                    CrashlyticsManager.log(Log.INFO, TAG, item.getOrigLineTripId());
+                    CrashlyticsManager.log(Log.INFO, TAG, item.getOrigVehicleId());
 
                     intent.putExtra(Constants.DESTINATAION_STATION, connectionStations.get(item.getConnectionStationId()));
                     intent.putExtra(Constants.STARTING_STATION, start);
                     intent.putExtra(Constants.TRANSIT_TYPE, transitType);
                     intent.putExtra(Constants.ROUTE_NAME, item.getOrigRouteName());
-                    if (routeDirectionModel != null)
-                        intent.putExtra(Constants.ROUTE_ID, routeDirectionModel.getRouteShortName());
-                    else
+                    if (routeDirectionModel != null){
+                        CrashlyticsManager.log(Log.INFO, TAG, routeDirectionModel.getDirectionDescription());
+                        intent.putExtra(Constants.ROUTE_ID, routeDirectionModel.getRouteShortName());}
+                    else {
+                        CrashlyticsManager.log(Log.INFO, TAG, item.getOrigRouteId());
                         intent.putExtra(Constants.ROUTE_ID, item.getOrigRouteId());
+                    }
+
                     intent.putExtra(Constants.TRIP_ID, item.getOrigLineTripId());
                     intent.putExtra(Constants.VEHICLE_ID, item.getOrigVehicleId());
 
@@ -504,6 +530,14 @@ public class NextToArriveTripView extends FrameLayout {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(getContext(), NextToArriveTripDetailActivity.class);
+                    CrashlyticsManager.log(Log.INFO, TAG, "getMultistopTripView Term");
+                    CrashlyticsManager.log(Log.INFO, TAG, start.getStopName());
+                    CrashlyticsManager.log(Log.INFO, TAG, destination.getStopName());
+                    CrashlyticsManager.log(Log.INFO, TAG, transitType.toString());
+                    CrashlyticsManager.log(Log.INFO, TAG, item.getTermRouteName());
+                    CrashlyticsManager.log(Log.INFO, TAG, item.getTermRouteId());
+                    CrashlyticsManager.log(Log.INFO, TAG, item.getTermLineTripId());
+                    CrashlyticsManager.log(Log.INFO, TAG, item.getTermVehicleId());
 
                     intent.putExtra(Constants.DESTINATAION_STATION, destination);
                     intent.putExtra(Constants.STARTING_STATION, connectionStations.get(item.getConnectionStationId()));

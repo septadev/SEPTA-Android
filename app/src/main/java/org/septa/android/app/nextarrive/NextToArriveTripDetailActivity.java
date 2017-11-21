@@ -37,6 +37,7 @@ import org.septa.android.app.TransitType;
 import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalDetails;
+import org.septa.android.app.support.CrashlyticsManager;
 import org.septa.android.app.support.GeneralUtils;
 import org.septa.android.app.support.MapUtils;
 import org.xmlpull.v1.XmlPullParserException;
@@ -124,6 +125,17 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
 
             getSupportFragmentManager().beginTransaction().add(R.id.map_container, mapFragment).commit();
 
+        } else {
+            StringBuilder builder = new StringBuilder("onCreate:");
+            if (start == null)
+                builder.append("Start is null. ");
+            if (destination == null)
+                builder.append("Destination is null. ");
+            if (transitType == null)
+                builder.append("Transit type is null. ");
+            CrashlyticsManager.log(Log.ERROR, TAG, builder.toString());
+            CrashlyticsManager.logException(TAG, new Exception("Start, Dest or Transit type is null"));
+            SeptaServiceFactory.displayWebServiceError(findViewById(R.id.trip_detail_coordinator), this);
         }
 
         nextStopValue = (TextView) findViewById(R.id.next_stop_value);

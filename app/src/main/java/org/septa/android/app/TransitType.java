@@ -3,7 +3,10 @@ package org.septa.android.app;
 import android.content.Context;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.gson.annotations.SerializedName;
+
+import org.septa.android.app.support.CrashlyticsManager;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -67,10 +70,17 @@ public enum TransitType implements Serializable {
 
     public String getString(String name, Context context) {
         if (context == null) {
-            Log.w(TAG, "getString method, context is null", new Exception("getString method, context is null"));
+            CrashlyticsManager.log(Log.ERROR, TAG, "getString method, context is null. Request was:" + name);
             return "";
         }
+
         int resId = context.getResources().getIdentifier(name + "_" + name().toLowerCase(), "string", R.class.getPackage().getName());
+        if (resId == 0) {
+            CrashlyticsManager.log(Log.ERROR, TAG, "Unable to find value for string.  Request was:" + name + "_" + name().toLowerCase());
+            CrashlyticsManager.logException(TAG, new Exception("Unable to find value for string.  Request was:" + name + "_" + name().toLowerCase()));
+            return "";
+        }
+
         return context.getString(resId);
     }
 

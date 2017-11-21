@@ -20,6 +20,9 @@ public class CrashlyticsManager {
 
 
     public static void log(int priority, String tag, String msg) {
+        if (msg == null)
+            msg = "";
+
         if (initalized)
             Crashlytics.log(priority, tag, msg);
         else

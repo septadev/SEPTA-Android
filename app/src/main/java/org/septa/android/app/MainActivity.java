@@ -23,6 +23,7 @@ import org.septa.android.app.favorites.FavoritesFragmentCallBacks;
 import org.septa.android.app.nextarrive.NextToArriveFragment;
 import org.septa.android.app.schedules.SchedulesFragment;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
+import org.septa.android.app.support.CrashlyticsManager;
 import org.septa.android.app.systemmap.SystemMapFragment;
 import org.septa.android.app.systemstatus.SystemStatusFragment;
 import org.septa.android.app.about.AboutFragement;
@@ -158,6 +159,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void switchToBundle(MenuItem item, Fragment targetFragment, int title, int highlitghtedIcon) {
+        CrashlyticsManager.log(Log.INFO, TAG, "switchToBundle:" + item.getTitle() + ", " + targetFragment.getClass().getCanonicalName());
         if ((currentMenu != null) && item.getItemId() == currentMenu.getItemId())
             return;
 
@@ -181,6 +183,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void addNewFavorite() {
+        CrashlyticsManager.log(Log.INFO, TAG,"addNewFavorite");
         if (currentMenu == null || currentMenu.getItemId() != R.id.nav_next_to_arrive) {
             if (currentMenu != null)
                 currentMenu.setIcon(previousIcon);
@@ -200,6 +203,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void switchToFavorites() {
+        CrashlyticsManager.log(Log.INFO, TAG,"switchToFavorites");
         if (currentMenu == null || currentMenu.getItemId() != R.id.nav_favorites) {
             if (currentMenu != null)
                 currentMenu.setIcon(previousIcon);
@@ -234,6 +238,8 @@ public class MainActivity extends AppCompatActivity
 
 
     public void switchToSchedules(Bundle data) {
+        CrashlyticsManager.log(Log.INFO, TAG,"switchToSchedules");
+
         if (currentMenu == null || currentMenu.getItemId() != R.id.nav_schedule) {
             if (currentMenu != null)
                 currentMenu.setIcon(previousIcon);
@@ -251,6 +257,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void refresh() {
+        CrashlyticsManager.log(Log.INFO, TAG,"refresh");
         favorites = FavoritesFragment.newInstance();
         getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, favorites).commit();
 

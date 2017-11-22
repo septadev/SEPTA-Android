@@ -206,8 +206,8 @@
     <string name="chat_title">Live Chat</string>
     <string name="comment_title">Send Us A Comment</string>
     <string name="events_url">http://www.septa.org/service/special-events-mobile.html</string>
-    <string name="trainview_url">http://realtime.septa.org/regionalrail</string>
-    <string name="transitview_url">http://realtime.septa.org/bus_trolley</string>
+    <string name="trainview_url">https://realtime.septa.org/regionalrail</string>
+    <string name="transitview_url">https://realtime.septa.org/bus_trolley</string>
     <string name="reverse_not_found">We are sorry, we are unable to reverse your trip.  Please contact SEPTA and let us know what stops you were attempting to reverse.</string>
 
 </resources>

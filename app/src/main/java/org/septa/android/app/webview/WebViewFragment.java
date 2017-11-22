@@ -7,6 +7,8 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.GeolocationPermissions;
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -38,6 +40,12 @@ public class WebViewFragment extends Fragment {
         webView.getSettings().setGeolocationEnabled(true);
 
         progressView = rootView.findViewById(R.id.progress_view);
+
+        webView.setWebChromeClient(new WebChromeClient(){
+            public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
+                callback.invoke(origin, true, false);
+            }
+        });
 
         webView.setWebViewClient(new WebViewClient() {
 

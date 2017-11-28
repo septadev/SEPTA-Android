@@ -59,12 +59,12 @@ import java.util.List;
 public class ScheduleResultsActivity extends AppCompatActivity {
 
     private static final int RAIL_MON_THUR = 8;
-    private static final int WEEK_DAY = 1;
+    private static final int WEEK_DAY = 32;
     private static final int RAIL_FRIDAY = 2;
     private static final int RAIL_SATURDAY = 1;
-    private static final int SATURDAY = 2;
+    private static final int SATURDAY = 1;
     private static final int RAIL_SUNDAY = 64;
-    private static final int SUNDAY = 3;
+    private static final int SUNDAY = 64;
 
 
     private DatabaseManager dbManager = null;

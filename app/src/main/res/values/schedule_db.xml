@@ -91,7 +91,7 @@ SELECT
 FROM
   stops_rail S
 JOIN routes_rail_stops RRS on S.stop_id = RRS.stop_id
-JOIN routes_rail_stops RRS2 on RRS2.sequence > RRS.sequence
+JOIN routes_rail_stops RRS2 on RRS2.sequence &lt; RRS.sequence
 WHERE RRS.route_id = \"{0}\" AND RRS.direction_id = \"{1}\" and RRS2.stop_id = {2} and RRS2.route_id = \"{0}\" AND RRS2.direction_id = \"{1}\"
     </string>
 </resources>

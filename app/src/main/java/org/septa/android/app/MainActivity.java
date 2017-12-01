@@ -43,7 +43,6 @@ public class MainActivity extends AppCompatActivity
     NextToArriveFragment nextToArriveFragment = new NextToArriveFragment();
     SchedulesFragment schedules = new SchedulesFragment();
 
-    Map<Integer, Bundle> fragmentStateMap = new HashMap<Integer, Bundle>();
     Fragment activeFragement;
     Drawable previousIcon;
     MenuItem currentMenu;
@@ -170,11 +169,7 @@ public class MainActivity extends AppCompatActivity
         previousIcon = item.getIcon();
         if (highlitghtedIcon != 0)
             currentMenu.setIcon(highlitghtedIcon);
-        Bundle targetBundle = fragmentStateMap.get(item.getItemId());
         activeFragement = targetFragment;
-        if (targetBundle != null)
-            targetFragment.setArguments(targetBundle);
-
 
         getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, targetFragment).commit();
 

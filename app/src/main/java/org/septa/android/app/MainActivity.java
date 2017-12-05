@@ -16,6 +16,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 
+import org.septa.android.app.about.AboutFragement;
 import org.septa.android.app.connect.ConnectFragement;
 import org.septa.android.app.fares.FaresFragment;
 import org.septa.android.app.favorites.FavoritesFragment;
@@ -26,11 +27,7 @@ import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.support.CrashlyticsManager;
 import org.septa.android.app.systemmap.SystemMapFragment;
 import org.septa.android.app.systemstatus.SystemStatusFragment;
-import org.septa.android.app.about.AboutFragement;
 import org.septa.android.app.webview.WebViewFragment;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by jkampf on 8/22/17.
@@ -236,6 +233,14 @@ public class MainActivity extends AppCompatActivity
         CrashlyticsManager.log(Log.INFO, TAG, "switchToSchedules");
 
         if (currentMenu == null || currentMenu.getItemId() != R.id.nav_schedule) {
+            if (currentMenu != null)
+                currentMenu.setIcon(previousIcon);
+            navigationView.setCheckedItem(R.id.nav_schedule);
+            currentMenu = navigationView.getMenu().findItem(R.id.nav_schedule);
+            previousIcon = currentMenu.getIcon();
+            currentMenu.setIcon(R.drawable.ic_schedule_active);
+            schedules = SchedulesFragment.newInstance();
+
             try {
                 getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, schedules).commit();
             } catch (Exception e) {
@@ -243,15 +248,9 @@ public class MainActivity extends AppCompatActivity
                 return;
             }
 
-            if (currentMenu != null)
-                currentMenu.setIcon(previousIcon);
-            navigationView.setCheckedItem(R.id.nav_schedule);
-            currentMenu = navigationView.getMenu().findItem(R.id.nav_schedule);
-            previousIcon = currentMenu.getIcon();
-            currentMenu.setIcon(R.drawable.ic_schedule_active);
-            schedules = new SchedulesFragment();
-            if (data != null)
+            if (data != null) {
                 schedules.prePopulate(data);
+            }
             setTitle(R.string.schedule);
         }
     }

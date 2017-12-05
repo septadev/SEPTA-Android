@@ -9,7 +9,7 @@ import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 import org.septa.android.app.support.CrashlyticsManager;
 
 public class SEPTADatabase extends SQLiteAssetHelper {
-    private static String TAG = SQLiteAssetHelper.class.getSimpleName();
+    private static String TAG = SEPTADatabase.class.getSimpleName();
 
     /**
      * Current packaged DB version, update number when packaged DB changes

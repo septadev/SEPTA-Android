@@ -40,7 +40,6 @@ import retrofit2.Response;
  */
 public class FavoritesFragment extends Fragment implements Runnable {
 
-
     private static final int REFRESH_DELAY_SECONDS = 30;
     private Map<String, Favorite> favoritesMap;
     private Map<String, TextView> favoriteTitlesMap = new HashMap<String, TextView>();
@@ -50,6 +49,11 @@ public class FavoritesFragment extends Fragment implements Runnable {
     private FavoritesFragmentCallBacks favoritesFragmentCallBacks;
     Handler refreshHandler = null;
     View fragmentView;
+
+    public static FavoritesFragment newInstance() {
+        FavoritesFragment instance = new FavoritesFragment();
+        return instance;
+    }
 
     @Nullable
     @Override
@@ -209,12 +213,6 @@ public class FavoritesFragment extends Fragment implements Runnable {
 
         return fragmentView;
     }
-
-    public static FavoritesFragment newInstance() {
-        FavoritesFragment instance = new FavoritesFragment();
-        return instance;
-    }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

@@ -12,6 +12,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,6 +41,11 @@ public class SchedulesFragment extends Fragment {
     int startingIndex = 0;
 
     Bundle prePopulated = null;
+
+    public static SchedulesFragment newInstance() {
+        SchedulesFragment instance = new SchedulesFragment();
+        return instance;
+    }
 
     @Override
     public void onResume() {

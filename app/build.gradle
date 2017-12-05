@@ -109,6 +109,7 @@ repositories {
     mavenCentral()
     maven { url 'http://mvnrepository.com/artifact/' }
     maven { url 'http://download.crashlytics.com/maven' }
+    google()
 }
 
 // buildscript

@@ -62,18 +62,18 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
 
     @Override
     public Fragment getFragment() {
-        return ByAddressFragement.newInstance(cursorAdapterSupplier);
+        return ByAddressFragment.newInstance(cursorAdapterSupplier);
     }
 
-    public static class ByAddressFragement extends Fragment {
+    public static class ByAddressFragment extends Fragment {
         CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
         MyLocationClickListener myLocationClickListener;
         ListView stopsListView;
         AutoCompleteTextView addressEntry;
         View progressView;
 
-        public static ByAddressFragement newInstance(CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
-            ByAddressFragement fragment = new ByAddressFragement();
+        public static ByAddressFragment newInstance(CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
+            ByAddressFragment fragment = new ByAddressFragment();
             Bundle args = new Bundle();
             args.putSerializable("cursorAdapterSupplier", cursorAdapterSupplier);
             fragment.setArguments(args);
@@ -148,7 +148,7 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
                     InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(rootView.getWindowToken(), 0);
                     String description = ((PlaceAutoComplete) parent.getItemAtPosition(position)).getPlaceDesc();
-                    FindAddressTask findAddressTask = new FindAddressTask(ByAddressFragement.this);
+                    FindAddressTask findAddressTask = new FindAddressTask(ByAddressFragment.this);
                     String[] args = new String[1];
                     args[0] = description;
                     findAddressTask.execute(args);
@@ -168,7 +168,7 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
                         imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
                         AutoCompleteTextView editText = (AutoCompleteTextView) v;
                         editText.dismissDropDown();
-                        FindAddressTask findAddressTask = new FindAddressTask(ByAddressFragement.this);
+                        FindAddressTask findAddressTask = new FindAddressTask(ByAddressFragment.this);
                         String[] args = new String[1];
                         args[0] = editText.getText().toString();
                         findAddressTask.execute(args);
@@ -191,9 +191,9 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
 
     static class FindClosestStationTask extends AsyncTask<LatLng, Void, List<StopModelWithDistance>> {
 
-        ByAddressFragement fragment;
+        ByAddressFragment fragment;
 
-        FindClosestStationTask(ByAddressFragement fragment) {
+        FindClosestStationTask(ByAddressFragment fragment) {
             this.fragment = fragment;
         }
 
@@ -261,7 +261,7 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
     }
 
     static class MyLocationClickListener implements View.OnClickListener {
-        ByAddressFragement fragment;
+        ByAddressFragment fragment;
 
         public void setActive(boolean active) {
             this.active = active;
@@ -269,7 +269,7 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
 
         boolean active = true;
 
-        MyLocationClickListener(ByAddressFragement fragment) {
+        MyLocationClickListener(ByAddressFragment fragment) {
             this.fragment = fragment;
         }
 
@@ -339,7 +339,7 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
     }
 
     static class FindAddressTask extends AsyncTask<String, Void, Location> {
-        ByAddressFragement fragment;
+        ByAddressFragment fragment;
 
         @Override
         protected void onPostExecute(Location location) {
@@ -349,7 +349,7 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
             }
         }
 
-        public FindAddressTask(ByAddressFragement fragment) {
+        public FindAddressTask(ByAddressFragment fragment) {
             this.fragment = fragment;
         }
 

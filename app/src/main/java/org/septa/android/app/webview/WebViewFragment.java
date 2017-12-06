@@ -67,12 +67,12 @@ public class WebViewFragment extends Fragment {
     }
 
     public static Fragment getInstance(String url) {
-        WebViewFragment fragement = new WebViewFragment();
+        WebViewFragment fragment = new WebViewFragment();
         Bundle args = new Bundle();
 
         args.putString("url", url);
-        fragement.setArguments(args);
-        return fragement;
+        fragment.setArguments(args);
+        return fragment;
     }
 
     private void restoreArgs() {

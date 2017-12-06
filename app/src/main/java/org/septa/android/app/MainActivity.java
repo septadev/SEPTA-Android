@@ -16,8 +16,8 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 
-import org.septa.android.app.about.AboutFragement;
-import org.septa.android.app.connect.ConnectFragement;
+import org.septa.android.app.about.AboutFragment;
+import org.septa.android.app.connect.ConnectFragment;
 import org.septa.android.app.fares.FaresFragment;
 import org.septa.android.app.favorites.FavoritesFragment;
 import org.septa.android.app.favorites.FavoritesFragmentCallBacks;
@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity
     NextToArriveFragment nextToArriveFragment = new NextToArriveFragment();
     SchedulesFragment schedules = new SchedulesFragment();
 
-    Fragment activeFragement;
+    Fragment activeFragment;
     Drawable previousIcon;
     MenuItem currentMenu;
     NavigationView navigationView;
@@ -53,8 +53,8 @@ public class MainActivity extends AppCompatActivity
     Fragment events = null;
     Fragment trainview = null;
     Fragment transitview = null;
-    Fragment connect = new ConnectFragement();
-    Fragment about = new AboutFragement();
+    Fragment connect = new ConnectFragment();
+    Fragment about = new AboutFragment();
 
     @Override
     public final void onCreate(@Nullable Bundle savedInstanceState) {
@@ -166,7 +166,7 @@ public class MainActivity extends AppCompatActivity
         previousIcon = item.getIcon();
         if (highlitghtedIcon != 0)
             currentMenu.setIcon(highlitghtedIcon);
-        activeFragement = targetFragment;
+        activeFragment = targetFragment;
 
         getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, targetFragment).commit();
 

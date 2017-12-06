@@ -25,7 +25,7 @@ public class FaresFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
-        View rootView = inflater.inflate(R.layout.fares_fragement_main, container, false);
+        View rootView = inflater.inflate(R.layout.fares_fragment_main, container, false);
 
         setHttpIntent(rootView, R.id.septa_key_link, getResources().getString(R.string.septa_key_url), getResources().getString(R.string.septa_key_title));
         setHttpIntent(rootView, R.id.more_about_fares_button, getResources().getString(R.string.about_fares_url), getResources().getString(R.string.about_fares_title));

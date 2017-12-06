@@ -35,7 +35,7 @@ import java.util.zip.ZipFile;
  * Created by jkampf on 9/5/17.
  */
 
-public class AboutFragement extends Fragment {
+public class AboutFragment extends Fragment {
     boolean attribExpanded = false;
     TextView attribTitle;
     LinearLayout attribListView;

@@ -24,8 +24,7 @@ public class DatabaseManager {
     private static SQLiteDatabase database;
 
     private static final int BUS = 3;
-    private static final int TROLLY = 0;
-
+    private static final int TROLLEY = 0;
 
     private DatabaseManager(Context context) {
     }
@@ -105,7 +104,7 @@ public class DatabaseManager {
     }
 
     public CursorAdapterSupplier<RouteDirectionModel> getTrolleyRouteCursorAdapterSupplier() {
-        return new CursorSuppliers.BusRouteCursorAdapterSupplier(TROLLY);
+        return new CursorSuppliers.BusRouteCursorAdapterSupplier(TROLLEY);
     }
 
     public CursorAdapterSupplier<RouteDirectionModel> getSubwayRouteCursorAdapterSupplier() {
@@ -129,7 +128,7 @@ public class DatabaseManager {
     }
 
     public CursorAdapterSupplier<RouteDirectionModel> getTrolleyNoDirectionRouteCursorAdapaterSupplier() {
-        return new CursorSuppliers.BusTrolleyNoDirectionRouteCursorAdapterSupplier(TROLLY);
+        return new CursorSuppliers.BusTrolleyNoDirectionRouteCursorAdapterSupplier(TROLLEY);
     }
 
     public CursorAdapterSupplier<RouteDirectionModel> getSubwayNoDirectionRouteCursorAdapaterSupplier() {

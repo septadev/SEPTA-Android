@@ -19,9 +19,9 @@ import org.septa.android.app.webview.WebViewActivity;
  * Created by jkampf on 9/29/17.
  */
 
-public class ConnectFragement extends Fragment {
+public class ConnectFragment extends Fragment {
 
-    private static final String TAG = ConnectFragement.class.getSimpleName();
+    private static final String TAG = ConnectFragment.class.getSimpleName();
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);

@@ -22,11 +22,11 @@
 
 
     <!-- Transit Type Tab Names -->
-    <string name="rail_tab">Rail</string>
-    <string name="bus_tab">Bus</string>
-    <string name="trolley_tab">Trolley</string>
-    <string name="subway_tab">Subway</string>
-    <string name="nhsl_tab">NHSL</string>
+    <string name="tab_rail">Rail</string>
+    <string name="tab_bus">Bus</string>
+    <string name="tab_trolley">Trolley</string>
+    <string name="tab_subway">Subway</string>
+    <string name="tab_nhsl">NHSL</string>
 
 
     <string name="starting_station">Starting Station</string>
@@ -167,7 +167,6 @@
     <string name="twitter_app_url_gc">twitter://user?user_id=430186590</string>
 
 
-
     <!-- Fares -->
     <string name="septa_key_url">http://www.septa.org/key/index.html</string>
     <string name="septa_key_title">Learn More About SEPTA Key</string>
@@ -210,4 +209,8 @@
     <string name="transitview_url">https://realtime.septa.org/bus_trolley</string>
     <string name="reverse_not_found">We are sorry, we are unable to reverse your trip.  Please contact SEPTA and let us know what stops you were attempting to reverse.</string>
 
+
+    <!-- Holiday Schedule -->
+    <string name="all_holiday_message">Holiday schedule is currently in effect.  Use Next to Arrive to display the current holiday schedule or visit septa.org.  Schedules shown in the app are the normal, non-holiday schedules.</string>
+    <string name="transit_weekday_message">Modified weekday schedule is currently in effect for Bus, Trolley, Subway and NHSL.  Use Next to Arrive to display the current schedule or visit septa.org.  Schedules shown in the app are the normal, non-holiday schedules.</string>
 </resources>

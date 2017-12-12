@@ -9,7 +9,10 @@ import com.google.gson.annotations.SerializedName;
 import org.septa.android.app.support.CrashlyticsManager;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -39,6 +42,8 @@ public enum TransitType implements Serializable {
     private LineIconProvider lineIconProvider;
     private AlertIdGenerator alertIdGenerator;
 
+    private boolean holidayToday = false;
+
     TransitType(int mapMarkerResource, int tabInactiveImageResource, int tabActiveImageResource, ColorProvider colorProvider, LineIconProvider lineIconProvider, AlertIdGenerator alertIdGenerator) {
         this.mapMarkerResource = mapMarkerResource;
         this.tabInactiveImageResource = tabInactiveImageResource;
@@ -46,6 +51,24 @@ public enum TransitType implements Serializable {
         this.colorProvider = colorProvider;
         this.lineIconProvider = lineIconProvider;
         this.alertIdGenerator = alertIdGenerator;
+    }
+
+    public boolean isHolidayToday() {
+        return holidayToday;
+    }
+
+    public void setHolidayToday(boolean holiday) {
+        holidayToday = holiday;
+    }
+
+    public static List<TransitType> transitTypesOnHolidayToday() {
+        List<TransitType> holidayTodayList = new ArrayList<TransitType>();
+        for (TransitType transitType : values()) {
+            if (transitType.isHolidayToday())
+                holidayTodayList.add(transitType);
+        }
+
+        return holidayTodayList;
     }
 
     public int getMapMarkerResource() {

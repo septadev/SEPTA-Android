@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import org.septa.android.app.TransitType;
 import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.domain.ScheduleModel;
 import org.septa.android.app.domain.StopModel;
@@ -191,5 +192,8 @@ public class DatabaseManager {
         };
     }
 
+    public CursorAdapterSupplier<Boolean> getHolidayIndicatorCursorAdapaterSupplier(TransitType transitType) {
+        return new CursorSuppliers.TransitTypeHolidayIndicatorCursorAdapaterSupplier(transitType);
+    }
 
 }

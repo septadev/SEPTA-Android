@@ -1,7 +1,12 @@
 package org.septa.android.app.schedules;
 
 import android.Manifest;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
@@ -22,6 +27,9 @@ import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
 import org.septa.android.app.database.DatabaseManager;
 import org.septa.android.app.locationpicker.LineAwareLocationPickerTabActivityHandler;
+import org.septa.android.app.webview.WebViewActivity;
+
+import java.util.List;
 
 /************************************************************************************************************
  * Class: SchedulesFragment
@@ -53,6 +61,66 @@ public class SchedulesFragment extends Fragment {
         ((TextView) tabLayout.getTabAt(tabLayout.getSelectedTabPosition()).getCustomView())
                 .setCompoundDrawablesWithIntrinsicBounds(tabActivityHandlers[tabLayout.getSelectedTabPosition()]
                         .getActiveDrawableId(), 0, 0, 0);
+
+        List<TransitType> holidayTransitTypes = TransitType.transitTypesOnHolidayToday();
+        if (holidayTransitTypes != null && holidayTransitTypes.size() > 0) {
+            Activity activity = getActivity();
+            if (activity != null) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("Holiday Schedules");
+
+                if (holidayTransitTypes.size() == TransitType.values().length) {
+                    builder.setMessage(R.string.all_holiday_message);
+                } else {
+                    builder.setMessage(R.string.transit_weekday_message);
+                }
+
+                builder.setNeutralButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+                if (holidayTransitTypes.contains(TransitType.BUS) || holidayTransitTypes.contains(TransitType.TROLLEY) || holidayTransitTypes.contains(TransitType.SUBWAY) || holidayTransitTypes.contains(TransitType.NHSL))
+                    builder.setPositiveButton("View Transit Schedule", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Activity activity = getActivity();
+                            if (activity != null) {
+//                                Intent myIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.septa.org/schedules/modified-mobile"));
+//                                startActivity(myIntent);
+                                Intent intent = new Intent(activity, WebViewActivity.class);
+                                intent.putExtra(Constants.TARGET_URL, "https://www.septa.org/schedules/modified-mobile");
+                                intent.putExtra(Constants.TITLE, "Transit Holiday Schedule");
+                                startActivity(intent);
+                            }
+                        }
+                    });
+
+                if (holidayTransitTypes.contains(TransitType.RAIL))
+                    builder.setNegativeButton("View Rail Schedule", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Activity activity = getActivity();
+                            if (activity != null) {
+                                Intent myIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://septa.org/schedules/rail/special/holidays-mobile.html"));
+                                startActivity(myIntent);
+//                                Intent intent = new Intent(activity, WebViewActivity.class);
+//                                intent.putExtra(Constants.TARGET_URL, "https://septa.org/schedules/rail/special/holidays-mobile.html");
+//                                intent.putExtra(Constants.TITLE, "Rail Holiday Schedule");
+//                                startActivity(intent);
+                            }
+                        }
+                    });
+
+
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+
+        }
+
     }
 
     @Nullable
@@ -60,16 +128,16 @@ public class SchedulesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         if (getActivity() == null)
-            return  null;
+            return null;
 
         DatabaseManager dbManager = DatabaseManager.getInstance(getActivity());
 
         tabActivityHandlers = new LineAwareLocationPickerTabActivityHandler[5];
-        tabActivityHandlers[1] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.rail_tab), "nta_picker_title", getString(R.string.schedule_query_button_text), TransitType.RAIL, dbManager.getRailRouteCursorAdapaterSupplier(), dbManager.getLineAwareRailStopCursorAdapterSupplier(), dbManager.getLineAwareRailStopAfterCursorAdapterSupplier(), ScheduleResultsActivity.class);
-        tabActivityHandlers[0] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.bus_tab), "nta_picker_title", getString(R.string.schedule_query_button_text), TransitType.BUS, dbManager.getBusRouteCursorAdapterSupplier(), dbManager.getBusStopCursorAdapterSupplier(), dbManager.getBusStopAfterCursorAdapterSupplier(), ScheduleResultsActivity.class);
-        tabActivityHandlers[3] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.trolley_tab), "nta_picker_title", getString(R.string.schedule_query_button_text), TransitType.TROLLEY, dbManager.getTrolleyRouteCursorAdapterSupplier(), dbManager.getTrolleyStopCursorAdapterSupplier(), dbManager.getTrolleyStopAfterCursorAdapterSupplier(), ScheduleResultsActivity.class);
-        tabActivityHandlers[2] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.subway_tab), "nta_picker_title", getString(R.string.schedule_query_button_text), TransitType.SUBWAY, dbManager.getSubwayRouteCursorAdapterSupplier(), dbManager.getSubwayStopCursorAdapterSupplier(), dbManager.getSubwayStopAfterCursorAdapterSupplier(), ScheduleResultsActivity.class);
-        tabActivityHandlers[4] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.nhsl_tab), "nta_picker_title", getString(R.string.schedule_query_button_text), TransitType.NHSL, dbManager.getNHSLRouteCursorAdapterSupplier(), dbManager.getBusStopCursorAdapterSupplier(), dbManager.getBusStopAfterCursorAdapterSupplier(), ScheduleResultsActivity.class);
+        tabActivityHandlers[1] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_rail), "nta_picker_title", getString(R.string.schedule_query_button_text), TransitType.RAIL, dbManager.getRailRouteCursorAdapaterSupplier(), dbManager.getLineAwareRailStopCursorAdapterSupplier(), dbManager.getLineAwareRailStopAfterCursorAdapterSupplier(), ScheduleResultsActivity.class);
+        tabActivityHandlers[0] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_bus), "nta_picker_title", getString(R.string.schedule_query_button_text), TransitType.BUS, dbManager.getBusRouteCursorAdapterSupplier(), dbManager.getBusStopCursorAdapterSupplier(), dbManager.getBusStopAfterCursorAdapterSupplier(), ScheduleResultsActivity.class);
+        tabActivityHandlers[3] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_trolley), "nta_picker_title", getString(R.string.schedule_query_button_text), TransitType.TROLLEY, dbManager.getTrolleyRouteCursorAdapterSupplier(), dbManager.getTrolleyStopCursorAdapterSupplier(), dbManager.getTrolleyStopAfterCursorAdapterSupplier(), ScheduleResultsActivity.class);
+        tabActivityHandlers[2] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_subway), "nta_picker_title", getString(R.string.schedule_query_button_text), TransitType.SUBWAY, dbManager.getSubwayRouteCursorAdapterSupplier(), dbManager.getSubwayStopCursorAdapterSupplier(), dbManager.getSubwayStopAfterCursorAdapterSupplier(), ScheduleResultsActivity.class);
+        tabActivityHandlers[4] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_nhsl), "nta_picker_title", getString(R.string.schedule_query_button_text), TransitType.NHSL, dbManager.getNHSLRouteCursorAdapterSupplier(), dbManager.getBusStopCursorAdapterSupplier(), dbManager.getBusStopAfterCursorAdapterSupplier(), ScheduleResultsActivity.class);
 
         if (prePopulated != null) {
             tabActivityHandlers[startingIndex].setPrepopulate(prePopulated);

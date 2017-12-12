@@ -7,6 +7,10 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.webkit.GeolocationPermissions;
+import android.webkit.WebChromeClient;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -46,8 +50,14 @@ public class WebViewActivity extends AppCompatActivity {
 
         progressView = findViewById(R.id.progress_view);
 
+        webView.setWebChromeClient(new WebChromeClient() {
+            public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
+                callback.invoke(origin, true, false);
+            }
+        });
 
         webView.setWebViewClient(new WebViewClient() {
+            private final String googleDocs = "https://docs.google.com/viewer?url=";
 
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 progressView.setVisibility(View.VISIBLE);
@@ -58,6 +68,16 @@ public class WebViewActivity extends AppCompatActivity {
                 progressView.setVisibility(View.GONE);
             }
 
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                if (url.toUpperCase().endsWith(".PDF")) {
+                    String pdfUrl = googleDocs + url;
+                    view.loadUrl(pdfUrl);
+                } else {
+                    view.loadUrl(url);
+                }
+                return true;
+            }
         });
 
         Intent intent = getIntent();

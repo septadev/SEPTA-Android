@@ -33,8 +33,8 @@ android {
         applicationId "org.septa.android.app"
         minSdkVersion 16
         targetSdkVersion 25
-        versionCode 267
-        versionName "2.0.267"
+        versionCode 268
+        versionName "2.0.268"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         manifestPlaceholders = [amazonawsApiKey:"${AMAZONAWS_API_KEY}",googleGeoApiKey:"${GOOGLE_GEO_API_KEY}",crashlyticsApiKey:"${CRASHLYTICS_API_KEY}"]
     }

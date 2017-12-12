@@ -48,6 +48,7 @@ public class WebViewFragment extends Fragment {
         });
 
         webView.setWebViewClient(new WebViewClient() {
+            private final String googleDocs = "https://docs.google.com/viewer?url=";
 
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 progressView.setVisibility(View.VISIBLE);
@@ -58,6 +59,16 @@ public class WebViewFragment extends Fragment {
                 progressView.setVisibility(View.GONE);
             }
 
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                if (url.toUpperCase().endsWith(".PDF")) {
+                    String pdfUrl = googleDocs + url;
+                    view.loadUrl(pdfUrl);
+                } else {
+                    view.loadUrl(url);
+                }
+                return true;
+            }
         });
 
         webView.loadUrl(url);

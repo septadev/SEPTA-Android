@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import org.septa.android.app.R;
+import org.septa.android.app.TransitType;
 import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.domain.ScheduleModel;
 import org.septa.android.app.domain.StopModel;
@@ -14,7 +15,10 @@ import org.septa.android.app.support.CursorAdapterSupplier;
 
 import java.io.Serializable;
 import java.text.MessageFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -973,6 +977,73 @@ class CursorSuppliers implements Serializable {
                 cursor.close();
             }
             return routeDirectionModel;
+        }
+    }
+
+    static class TransitTypeHolidayIndicatorCursorAdapaterSupplier implements CursorAdapterSupplier<Boolean> {
+
+        String tableName;
+
+        TransitTypeHolidayIndicatorCursorAdapaterSupplier(TransitType transitType) {
+            if (transitType == TransitType.RAIL) {
+                tableName = "holiday_rail";
+            } else {
+                tableName = "holiday_bus";
+            }
+        }
+
+        @Override
+        public Cursor getCursor(Context context, List<Criteria> whereClause) {
+            String dateString = null;
+
+            for (Criteria c : whereClause) {
+                if ("date".equalsIgnoreCase(c.getFieldName()) && c.getOperation() == Criteria.Operation.EQ && c.getValue() instanceof Date) {
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTimeInMillis(((Date) c.getValue()).getTime());
+                    StringBuilder builder = new StringBuilder();
+                    builder.append(String.format("%04d", cal.get(Calendar.YEAR)));
+                    builder.append(String.format("%02d", cal.get(Calendar.MONTH)));
+                    builder.append(String.format("%02d", cal.get(Calendar.DAY_OF_MONTH)));
+
+                    dateString = builder.toString();
+                }
+            }
+
+            if (dateString == null) {
+                throw new RuntimeException("Missing date where clause.");
+            }
+
+            String queryString = "SELECT CAST(CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END AS BIT) FROM " + tableName + " WHERE date = '" + dateString + "'";
+            Log.d(TAG, "Creating cursor:" + queryString.toString());
+
+            return getDatabase(context).rawQuery(queryString, null);
+        }
+
+        @Override
+        public Boolean getCurrentItemFromCursor(Cursor cursor) {
+            if (cursor.getInt(0) != 0)
+                return Boolean.FALSE;
+            else return Boolean.TRUE;
+        }
+
+        @Override
+        public Boolean getItemFromId(Context context, Object id) {
+            Calendar cal = Calendar.getInstance();
+            cal.setTimeInMillis(((Date) id).getTime());
+            StringBuilder builder = new StringBuilder();
+            builder.append(String.format("%04d", cal.get(Calendar.YEAR)));
+            builder.append(String.format("%02d", cal.get(Calendar.MONTH) + 1));
+            builder.append(String.format("%02d", cal.get(Calendar.DAY_OF_MONTH)));
+            String queryString = "SELECT CAST(CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END AS BIT) FROM " + tableName + " WHERE date = '" + builder.toString() + "'";
+
+            Cursor cursor = getDatabase(context).rawQuery(queryString, null);
+
+            if (cursor.moveToFirst()) {
+                if (cursor.getInt(0) == 0)
+                    return Boolean.FALSE;
+                else return Boolean.TRUE;
+            } else
+                return Boolean.FALSE;
         }
     }
 

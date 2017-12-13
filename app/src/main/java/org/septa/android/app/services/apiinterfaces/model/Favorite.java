@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
+import org.septa.android.app.BuildConfig;
 import org.septa.android.app.TransitType;
 import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.domain.StopModel;
@@ -28,6 +29,9 @@ public class Favorite implements Serializable {
     @SerializedName("transit_type")
     private TransitType transitType;
 
+    @SerializedName("created_with_version")
+    private int createdWithVersion = 0;
+
 
     public Favorite(@NonNull StopModel start, @NonNull StopModel destination, @NonNull TransitType transitType, @Nullable RouteDirectionModel routeDirectionModel) {
         this.start = start;
@@ -42,6 +46,8 @@ public class Favorite implements Serializable {
             name = "To " + destination.getStopName();
         }
 
+
+        createdWithVersion = BuildConfig.VERSION_CODE;
     }
 
     public String getKey() {
@@ -89,7 +95,11 @@ public class Favorite implements Serializable {
         return routeDirectionModel;
     }
 
-    @Override
+    public int getCreatedWithVersion() {
+        return createdWithVersion;
+    }
+
+     @Override
     public String toString() {
 
         StringBuilder builder = new StringBuilder("Favorite{name='").append(name).append('\'');

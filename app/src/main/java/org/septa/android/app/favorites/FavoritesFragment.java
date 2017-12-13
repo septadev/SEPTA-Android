@@ -1,6 +1,9 @@
 package org.septa.android.app.favorites;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -21,6 +24,7 @@ import android.widget.TextView;
 
 import org.septa.android.app.Constants;
 import org.septa.android.app.R;
+import org.septa.android.app.TransitType;
 import org.septa.android.app.nextarrive.NextArrivalModelResponseParser;
 import org.septa.android.app.nextarrive.NextToArriveResultsActivity;
 import org.septa.android.app.nextarrive.NextToArriveTripView;
@@ -29,6 +33,8 @@ import org.septa.android.app.services.apiinterfaces.model.Favorite;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalModelResponse;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import retrofit2.Call;
@@ -49,6 +55,8 @@ public class FavoritesFragment extends Fragment implements Runnable {
     private FavoritesFragmentCallBacks favoritesFragmentCallBacks;
     Handler refreshHandler = null;
     View fragmentView;
+    String alertMessage;
+    boolean firstPass = true;
 
     public static FavoritesFragment newInstance() {
         FavoritesFragment instance = new FavoritesFragment();
@@ -61,10 +69,48 @@ public class FavoritesFragment extends Fragment implements Runnable {
         super.onCreateView(inflater, container, savedInstanceState);
 
         favoritesMap = SeptaServiceFactory.getFavoritesService().getFavorites(getContext());
+        alertMessage = evaluateAndRemoveFavorites(favoritesMap);
+
         initialCount = favoritesMap.size();
         if (favoritesMap.size() == 0)
             return onCreateViewNoFavorites(inflater, container, savedInstanceState);
         else return onCreateViewFavorites(inflater, container, savedInstanceState);
+    }
+
+    private String evaluateAndRemoveFavorites(Map<String, Favorite> favoritesMap) {
+        // In Version 268 we fixed some issues with NHSL and Subway.  However users could have created
+        // faulty favorites with the version before 268.  We added a created with version number to
+        // the favorite record defaulting to 0.  We compare that value to the value 268.  If the
+        // favorite is NHSL or Subway and created in version is older than 268 we delete the
+        // favorite and display a message.
+
+
+        Map<String, Favorite> loopMap = new HashMap<String, Favorite>();
+        loopMap.putAll(favoritesMap);
+
+        List<Favorite> toDelete = new LinkedList<Favorite>();
+
+        String msg = null;
+        for (Map.Entry<String, Favorite> entry : loopMap.entrySet()) {
+            if ((entry.getValue().getCreatedWithVersion() < 268) &&
+                    ((entry.getValue().getTransitType() == TransitType.NHSL) ||
+                            (entry.getValue()).getTransitType() == TransitType.SUBWAY)) {
+                favoritesMap.remove(entry.getKey());
+                toDelete.add(entry.getValue());
+                msg = getString(R.string.force_delete_nhsl_subway_favorite);
+            }
+        }
+
+        Activity activity = getActivity();
+        if (activity == null)
+            return null;
+
+        for (Favorite favorite : toDelete) {
+            SeptaServiceFactory.getFavoritesService().deleteFavorite(activity, favorite.getKey());
+        }
+
+
+        return msg;
     }
 
     private View onCreateViewFavorites(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -171,24 +217,47 @@ public class FavoritesFragment extends Fragment implements Runnable {
     @Override
     public void onResume() {
         super.onResume();
-        favoritesMap = SeptaServiceFactory.getFavoritesService().getFavorites(getContext());
+        refreshHandler = new Handler();
+        if (!firstPass) {
+            favoritesMap = SeptaServiceFactory.getFavoritesService().getFavorites(getContext());
 
-        if (initialCount != favoritesMap.size()) {
-            favoritesFragmentCallBacks.refresh();
-            return;
-        }
-
-        for (Map.Entry<String, TextView> entry : favoriteTitlesMap.entrySet()) {
-            Favorite fav = favoritesMap.get(entry.getKey());
-            if (fav == null) {
+            if (initialCount != favoritesMap.size()) {
                 favoritesFragmentCallBacks.refresh();
                 return;
             }
-            entry.getValue().setText(fav.getName());
+
+            for (Map.Entry<String, TextView> entry : favoriteTitlesMap.entrySet()) {
+                Favorite fav = favoritesMap.get(entry.getKey());
+                if (fav == null) {
+                    favoritesFragmentCallBacks.refresh();
+                    return;
+                }
+                entry.getValue().setText(fav.getName());
+            }
+
+            run();
+        } else {
+            firstPass = false;
         }
 
-        refreshHandler = new Handler();
-        run();
+        if (alertMessage != null) {
+
+            Activity activity = getActivity();
+            if (activity != null) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+                builder.setMessage(alertMessage);
+                builder.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                builder.create().show();
+            }
+
+            alertMessage = null;
+        }
+
 
     }
 

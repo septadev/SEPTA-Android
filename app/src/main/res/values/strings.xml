@@ -213,4 +213,5 @@
     <!-- Holiday Schedule -->
     <string name="all_holiday_message">Holiday schedule is currently in effect.  Use Next to Arrive to display the current holiday schedule or visit septa.org.  Schedules shown in the app are the normal, non-holiday schedules.</string>
     <string name="transit_weekday_message">Modified weekday schedule is currently in effect for Bus, Trolley, Subway and NHSL.  Use Next to Arrive to display the current schedule or visit septa.org.  Schedules shown in the app are the normal, non-holiday schedules.</string>
+    <string name="force_delete_nhsl_subway_favorite">Sorry we had to remove one or more of your favorites for NHSL and/or Subway.  Please recreate them.</string>
 </resources>

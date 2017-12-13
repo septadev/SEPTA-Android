@@ -37,6 +37,8 @@ public class SeptaServiceFactory {
 
     static Retrofit septaAmazonServicesSingleton;
 
+    private static Favorites favoritesService = new FavoritesImpl();
+
     public static void init() {
         septaAmazonServicesSingleton = new Retrofit.Builder().client(new OkHttpClient.Builder().connectTimeout(5, TimeUnit.SECONDS).readTimeout(20, TimeUnit.SECONDS).addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)).addInterceptor(new Interceptor() {
             @Override
@@ -91,7 +93,7 @@ public class SeptaServiceFactory {
     }
 
     public static Favorites getFavoritesService() {
-        return new FavoritesImpl();
+        return favoritesService;
     }
 
 

@@ -88,12 +88,8 @@ public class SchedulesFragment extends Fragment {
                         public void onClick(DialogInterface dialog, int which) {
                             Activity activity = getActivity();
                             if (activity != null) {
-//                                Intent myIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.septa.org/schedules/modified-mobile"));
-//                                startActivity(myIntent);
-                                Intent intent = new Intent(activity, WebViewActivity.class);
-                                intent.putExtra(Constants.TARGET_URL, "https://www.septa.org/schedules/modified-mobile");
-                                intent.putExtra(Constants.TITLE, "Transit Holiday Schedule");
-                                startActivity(intent);
+                                Intent myIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.septa.org/schedules/modified-mobile"));
+                                startActivity(myIntent);
                             }
                         }
                     });
@@ -106,10 +102,6 @@ public class SchedulesFragment extends Fragment {
                             if (activity != null) {
                                 Intent myIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://septa.org/schedules/rail/special/holidays-mobile.html"));
                                 startActivity(myIntent);
-//                                Intent intent = new Intent(activity, WebViewActivity.class);
-//                                intent.putExtra(Constants.TARGET_URL, "https://septa.org/schedules/rail/special/holidays-mobile.html");
-//                                intent.putExtra(Constants.TITLE, "Rail Holiday Schedule");
-//                                startActivity(intent);
                             }
                         }
                     });

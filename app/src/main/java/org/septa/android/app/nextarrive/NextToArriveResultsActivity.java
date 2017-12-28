@@ -15,7 +15,6 @@ import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.TypedValue;
@@ -27,7 +26,6 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 
-import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -64,7 +62,6 @@ import org.septa.android.app.support.Criteria;
 import org.septa.android.app.support.CursorAdapterSupplier;
 import org.septa.android.app.support.GeneralUtils;
 import org.septa.android.app.support.MapUtils;
-import org.septa.android.app.systemstatus.SystemStatusResultsActivity;
 import org.septa.android.app.view.TextView;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -261,7 +258,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     private void gotoSchedulesForTarget() {
         Intent intent = new Intent();
         intent.putExtra(Constants.STARTING_STATION, start);
-        intent.putExtra(Constants.DESTINATAION_STATION, destination);
+        intent.putExtra(Constants.DESTINATION_STATION, destination);
         intent.putExtra(Constants.TRANSIT_TYPE, transitType);
         if (routeDirectionModel != null)
             intent.putExtra(Constants.ROUTE_DIRECTION_MODEL, routeDirectionModel);
@@ -271,7 +268,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     }
 
     private void restoreState(Bundle bundle) {
-        destination = (StopModel) bundle.get(Constants.DESTINATAION_STATION);
+        destination = (StopModel) bundle.get(Constants.DESTINATION_STATION);
         start = (StopModel) bundle.get(Constants.STARTING_STATION);
         transitType = (TransitType) bundle.get(Constants.TRANSIT_TYPE);
         routeDirectionModel = (RouteDirectionModel) bundle.get(Constants.ROUTE_DIRECTION_MODEL);
@@ -282,7 +279,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putSerializable(Constants.DESTINATAION_STATION, destination);
+        outState.putSerializable(Constants.DESTINATION_STATION, destination);
         outState.putSerializable(Constants.STARTING_STATION, start);
         outState.putSerializable(Constants.TRANSIT_TYPE, transitType);
         outState.putSerializable(Constants.ROUTE_DIRECTION_MODEL, routeDirectionModel);

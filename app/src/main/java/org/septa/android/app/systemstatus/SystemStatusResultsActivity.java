@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
 
@@ -15,7 +14,6 @@ import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
 import org.septa.android.app.domain.RouteDirectionModel;
-import org.septa.android.app.nextarrive.NextToArriveTripDetailActivity;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.AlertDetail;
 import org.septa.android.app.support.GeneralUtils;
@@ -152,7 +150,7 @@ public class SystemStatusResultsActivity extends AppCompatActivity {
         outState.putSerializable(Constants.TRANSIT_TYPE, transitType);
         outState.putSerializable(Constants.SERVICE_ADVISORY_EXPANDED, serviceAdvisoryExpanded);
         outState.putSerializable(Constants.SERVICE_ALERT_EXPANDED, serviceAlertExpanded);
-        outState.putSerializable(Constants.ACTIVE_DETOURT_EXPANDED, activeDetourtExpanded);
+        outState.putSerializable(Constants.ACTIVE_DETOUR_EXPANDED, activeDetourtExpanded);
         outState.putSerializable(Constants.WEATHER_ALERTS_EXPANDED, weatherAlertsExpanded);
     }
 
@@ -173,8 +171,8 @@ public class SystemStatusResultsActivity extends AppCompatActivity {
         if (inState.containsKey(Constants.SERVICE_ALERT_EXPANDED)) {
             serviceAlertExpanded = inState.getBoolean(Constants.SERVICE_ALERT_EXPANDED);
         }
-        if (inState.containsKey(Constants.ACTIVE_DETOURT_EXPANDED)) {
-            activeDetourtExpanded = inState.getBoolean(Constants.ACTIVE_DETOURT_EXPANDED);
+        if (inState.containsKey(Constants.ACTIVE_DETOUR_EXPANDED)) {
+            activeDetourtExpanded = inState.getBoolean(Constants.ACTIVE_DETOUR_EXPANDED);
         }
         if (inState.containsKey(Constants.WEATHER_ALERTS_EXPANDED)) {
             weatherAlertsExpanded = inState.getBoolean(Constants.WEATHER_ALERTS_EXPANDED);

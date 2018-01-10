@@ -1,12 +1,10 @@
 package org.septa.android.app.nextarrive;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -230,7 +228,7 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putSerializable(Constants.DESTINATAION_STATION, destination);
+        outState.putSerializable(Constants.DESTINATION_STATION, destination);
         outState.putSerializable(Constants.STARTING_STATION, start);
         outState.putSerializable(Constants.TRANSIT_TYPE, transitType);
         outState.putSerializable(Constants.VEHICLE_ID, vehicleId);
@@ -241,7 +239,7 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
     }
 
     private void restoreInstanceState(Bundle bundle) {
-        destination = (StopModel) bundle.get(Constants.DESTINATAION_STATION);
+        destination = (StopModel) bundle.get(Constants.DESTINATION_STATION);
         start = (StopModel) bundle.get(Constants.STARTING_STATION);
         transitType = (TransitType) bundle.get(Constants.TRANSIT_TYPE);
         vehicleId = bundle.getString(Constants.VEHICLE_ID);

@@ -160,7 +160,7 @@ public class FavoritesFragment extends Fragment implements Runnable {
                         return;
                     Intent intent = new Intent(getActivity(), NextToArriveResultsActivity.class);
                     intent.putExtra(Constants.STARTING_STATION, favorite.getStart());
-                    intent.putExtra(Constants.DESTINATAION_STATION, favorite.getDestination());
+                    intent.putExtra(Constants.DESTINATION_STATION, favorite.getDestination());
                     intent.putExtra(Constants.TRANSIT_TYPE, favorite.getTransitType());
                     intent.putExtra(Constants.ROUTE_DIRECTION_MODEL, favorite.getRouteDirectionModel());
                     intent.putExtra(Constants.EDIT_FAVORITES_FLAG, Boolean.TRUE);

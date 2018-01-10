@@ -151,7 +151,7 @@ public class LineUnawareLocationPickerTabActivityHandler extends BaseTabActivity
                         return;
                     Intent intent = new Intent(getActivity(), targetClass);
                     intent.putExtra(Constants.STARTING_STATION, startingStation);
-                    intent.putExtra(Constants.DESTINATAION_STATION, destinationStation);
+                    intent.putExtra(Constants.DESTINATION_STATION, destinationStation);
                     intent.putExtra(Constants.TRANSIT_TYPE, transitType);
 
                     getActivity().startActivityForResult(intent, Constants.NTA_REQUEST);

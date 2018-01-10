@@ -46,6 +46,10 @@ import retrofit2.Response;
  */
 public class FavoritesFragment extends Fragment implements Runnable {
 
+    // this version is the most recent to require a force delete of user favorites
+    private static final int FAVORITES_LAST_UPDATED_VERSION = 268;
+
+    private static final String KEY_TITLE = "KEY_TITLE";
     private static final int REFRESH_DELAY_SECONDS = 30;
     private Map<String, Favorite> favoritesMap;
     private Map<String, TextView> favoriteTitlesMap = new HashMap<String, TextView>();
@@ -84,6 +88,7 @@ public class FavoritesFragment extends Fragment implements Runnable {
         // favorite is NHSL or Subway and created in version is older than 268 we delete the
         // favorite and display a message.
 
+        // If need to force remove favorites in new version then change FAVORITES_LAST_UPDATED_VERSION
 
         Map<String, Favorite> loopMap = new HashMap<String, Favorite>();
         loopMap.putAll(favoritesMap);
@@ -92,7 +97,7 @@ public class FavoritesFragment extends Fragment implements Runnable {
 
         String msg = null;
         for (Map.Entry<String, Favorite> entry : loopMap.entrySet()) {
-            if ((entry.getValue().getCreatedWithVersion() < 268) &&
+            if ((entry.getValue().getCreatedWithVersion() < FAVORITES_LAST_UPDATED_VERSION) &&
                     ((entry.getValue().getTransitType() == TransitType.NHSL) ||
                             (entry.getValue()).getTransitType() == TransitType.SUBWAY)) {
                 favoritesMap.remove(entry.getKey());
@@ -202,7 +207,7 @@ public class FavoritesFragment extends Fragment implements Runnable {
             public void onFailure(@NonNull Call<NextArrivalModelResponse> call, @NonNull Throwable t) {
                 tripView.setNextToArriveData(new NextArrivalModelResponseParser());
                 Snackbar snackbar = Snackbar.make(fragmentView, R.string.realtime_failure_message, Snackbar.LENGTH_INDEFINITE);
-                snackbar.setAction("Scehedules", new View.OnClickListener() {
+                snackbar.setAction("Schedules", new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         favoritesFragmentCallBacks.gotoSchedules();
@@ -314,14 +319,14 @@ public class FavoritesFragment extends Fragment implements Runnable {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString("title", getActivity().getTitle().toString());
+        outState.putString(KEY_TITLE, getActivity().getTitle().toString());
     }
 
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
         if (savedInstanceState != null) {
-            String title = savedInstanceState.getString("title");
+            String title = savedInstanceState.getString(KEY_TITLE);
             if (title != null && getActivity() != null)
                 getActivity().setTitle(title);
         }

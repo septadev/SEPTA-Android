@@ -12,7 +12,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,8 +24,6 @@ import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
-
-import com.crashlytics.android.Crashlytics;
 
 import org.septa.android.app.Constants;
 import org.septa.android.app.R;
@@ -160,7 +157,7 @@ public class ScheduleResultsActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(ScheduleResultsActivity.this, NextToArriveResultsActivity.class);
                 intent.putExtra(Constants.STARTING_STATION, start);
-                intent.putExtra(Constants.DESTINATAION_STATION, destination);
+                intent.putExtra(Constants.DESTINATION_STATION, destination);
                 intent.putExtra(Constants.TRANSIT_TYPE, transitType);
                 intent.putExtra(Constants.ROUTE_DIRECTION_MODEL, routeDirectionModel);
 
@@ -200,7 +197,7 @@ public class ScheduleResultsActivity extends AppCompatActivity {
         View detourView = findViewById(R.id.active_detour);
         if (alert.isDetour()) {
             advistoryView.setVisibility(View.VISIBLE);
-            detourView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.ACTIVE_DETOURT_EXPANDED, this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName()));
+            detourView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.ACTIVE_DETOUR_EXPANDED, this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName()));
             displayAlerts = true;
         } else {
             LinearLayout.LayoutParams loparams = (LinearLayout.LayoutParams) detourView.getLayoutParams();
@@ -229,7 +226,7 @@ public class ScheduleResultsActivity extends AppCompatActivity {
     }
 
     private void restoreState(Bundle bundle) {
-        destination = (StopModel) bundle.get(Constants.DESTINATAION_STATION);
+        destination = (StopModel) bundle.get(Constants.DESTINATION_STATION);
         start = (StopModel) bundle.get(Constants.STARTING_STATION);
         transitType = (TransitType) bundle.get(Constants.TRANSIT_TYPE);
         routeDirectionModel = (RouteDirectionModel) bundle.get(Constants.ROUTE_DIRECTION_MODEL);
@@ -239,7 +236,7 @@ public class ScheduleResultsActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putSerializable(Constants.DESTINATAION_STATION, destination);
+        outState.putSerializable(Constants.DESTINATION_STATION, destination);
         outState.putSerializable(Constants.STARTING_STATION, start);
         outState.putSerializable(Constants.TRANSIT_TYPE, transitType);
         outState.putSerializable(Constants.ROUTE_DIRECTION_MODEL, routeDirectionModel);

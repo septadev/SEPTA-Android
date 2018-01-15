@@ -71,6 +71,17 @@ public class AlertDetail implements Serializable {
         public void setSnow(boolean snow) {
             this.snow = snow;
         }
+
+        @Override
+        public String toString() {
+            return "Detail{" +
+                    "message='" + message + '\'' +
+                    ", advisoryMessage='" + advisoryMessage + '\'' +
+                    ", detour=" + detour +
+                    ", lastUpdated='" + lastUpdated + '\'' +
+                    ", snow=" + snow +
+                    '}';
+        }
     }
 
 
@@ -157,6 +168,16 @@ public class AlertDetail implements Serializable {
 
     public void setAlerts(List<Detail> alerts) {
         this.alerts = alerts;
+    }
+
+    @Override
+    public String toString() {
+        return "AlertDetail{" +
+                "route='" + route + '\'' +
+                ", routeName='" + routeName + '\'' +
+                ", results=" + results +
+                ", alerts=" + alerts +
+                '}';
     }
 }
 

@@ -27,11 +27,16 @@ import org.septa.android.app.nextarrive.NextToArriveFragment;
 import org.septa.android.app.schedules.SchedulesFragment;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Alert;
+import org.septa.android.app.services.apiinterfaces.model.AlertDetail;
 import org.septa.android.app.support.CrashlyticsManager;
 import org.septa.android.app.systemmap.SystemMapFragment;
 import org.septa.android.app.systemstatus.SystemStatusFragment;
 import org.septa.android.app.systemstatus.SystemStatusState;
 import org.septa.android.app.webview.WebViewFragment;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by jkampf on 8/22/17.
@@ -60,7 +65,10 @@ public class MainActivity extends AppCompatActivity
     Fragment connect = new ConnectFragment();
     Fragment about = new AboutFragment();
 
-    public static final String MOBILE_APP_ALERT_ROUTE_NAME = "Mobile APP", GENERIC_ALERT_ROUTE_NAME = "Generic";
+    public static final String MOBILE_APP_ALERT_ROUTE_NAME = "Mobile APP",
+            MOBILE_APP_ALERT_MODE = "MOBILE",
+            GENERIC_ALERT_ROUTE_NAME = "Generic",
+            GENERIC_ALERT_MODE = "GENERIC";
 
     @Override
     public final void onCreate(@Nullable Bundle savedInstanceState) {
@@ -91,26 +99,85 @@ public class MainActivity extends AppCompatActivity
                 addNewFavorite();
             }
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
 
         // note that generic alert will show up before mobile app alert bc it was the most recently added
-        // TODO: if mobile app alert(s) exist then pop those up
+
+        // if mobile app alert(s) exist then pop those up
         if (SystemStatusState.getAlertForApp() != null) {
-            Alert mobileAppAlert = SystemStatusState.getAlertForApp();
-            // TODO: check that route name must match
-            if (MOBILE_APP_ALERT_ROUTE_NAME.equals(mobileAppAlert.getRouteName())) {
-                showAlert(mobileAppAlert);
+            final Alert mobileAppAlert = SystemStatusState.getAlertForApp();
+            Log.e(TAG, "MobileAppAlert: " + mobileAppAlert.toString());
+
+            // validate correct alert
+            if (MOBILE_APP_ALERT_ROUTE_NAME.equals(mobileAppAlert.getRouteName()) && MOBILE_APP_ALERT_MODE.equals(mobileAppAlert.getMode())) {
+
+                // get alert details
+                SeptaServiceFactory.getAlertDetailsService().getAlertDetails(mobileAppAlert.getRouteId()).enqueue(new Callback<AlertDetail>() {
+                    @Override
+                    public void onResponse(Call<AlertDetail> call, Response<AlertDetail> response) {
+                        if (response.body() != null || mobileAppAlert.isAlert()) {
+                            AlertDetail alertDetail = response.body();
+
+                            StringBuilder announcement = new StringBuilder();
+
+                            for (AlertDetail.Detail detail : alertDetail.getAlerts()) {
+                                announcement.append(detail.getMessage());
+                            }
+
+                            // show mobile app alert if current_message not blank
+                            if (!announcement.toString().isEmpty()) showAlert(announcement.toString());
+
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<AlertDetail> call, Throwable t) {
+                        SeptaServiceFactory.displayWebServiceError(findViewById(R.id.system_status_results_coordinator), MainActivity.this);
+                    }
+                });
+
+
             }
         }
 
-        // TODO: if general transit alert(s) exist then pop up global alert(s)
+        // if general transit alert(s) exist then pop up global alert(s)
         if (SystemStatusState.getGenericAlert() != null) {
-            Alert genericAlert = SystemStatusState.getGenericAlert();
-            // TODO: check that route name must match
-            if (GENERIC_ALERT_ROUTE_NAME.equals(genericAlert.getRouteName())) {
-                showAlert(genericAlert);
+            final Alert genericAlert = SystemStatusState.getGenericAlert();
+            Log.e(TAG, "Generic Alert: " + genericAlert.toString());
+
+            // TODO: check that route name and mode must match
+            if (GENERIC_ALERT_ROUTE_NAME.equals(genericAlert.getRouteName()) && GENERIC_ALERT_MODE.equals(genericAlert.getMode())) {
+
+                // get alert details
+                SeptaServiceFactory.getAlertDetailsService().getAlertDetails(genericAlert.getRouteId()).enqueue(new Callback<AlertDetail>() {
+                    @Override
+                    public void onResponse(Call<AlertDetail> call, Response<AlertDetail> response) {
+                        if (response.body() != null || genericAlert.isAlert()) {
+                            AlertDetail alertDetail = response.body();
+
+                            StringBuilder announcement = new StringBuilder();
+
+                            for (AlertDetail.Detail detail : alertDetail.getAlerts()) {
+                                announcement.append(detail.getMessage());
+                            }
+
+                            // show generic alert if current_message not blank
+                            if (!announcement.toString().isEmpty()) showAlert(announcement.toString());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<AlertDetail> call, Throwable t) {
+                        SeptaServiceFactory.displayWebServiceError(findViewById(R.id.system_status_results_coordinator), MainActivity.this);
+                    }
+                });
+
             }
         }
-
     }
 
     @Override
@@ -288,11 +355,13 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    public void showAlert(Alert alert) {
+    public void showAlert(String alert) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(Constants.TITLE_ANNOUNCEMENT);
 
-        builder.setMessage(alert.getDescription());
+        Log.e(TAG, alert.toString());
+
+        builder.setMessage(alert);
 
         builder.setNeutralButton(Constants.BUTTON_OK, new DialogInterface.OnClickListener() {
             @Override

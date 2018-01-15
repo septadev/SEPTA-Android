@@ -29,6 +29,6 @@ public interface Constants {
     public static final String VEHICLE_ID = "vehicleId";
     public static final String ROUTE_DESCRIPTION = "routeDescription";
 
-    public static final String BUTTON_OK = "Okay";
+    public static final String BUTTON_OK = "Ok";
     public static final String TITLE_ANNOUNCEMENT = "Announcement";
 }

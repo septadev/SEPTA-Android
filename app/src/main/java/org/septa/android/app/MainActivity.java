@@ -92,51 +92,22 @@ public class MainActivity extends AppCompatActivity
             }
         }
 
-
         // note that generic alert will show up before mobile app alert bc it was the most recently added
         // TODO: if mobile app alert(s) exist then pop those up
         if (SystemStatusState.getAlertForApp() != null) {
             Alert mobileAppAlert = SystemStatusState.getAlertForApp();
-            Log.e(TAG, mobileAppAlert.toString());
             // TODO: check that route name must match
             if (MOBILE_APP_ALERT_ROUTE_NAME.equals(mobileAppAlert.getRouteName())) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle(Constants.TITLE_ANNOUNCEMENT);
-
-                builder.setMessage(mobileAppAlert.getDescription());
-
-                builder.setNeutralButton(Constants.BUTTON_OK, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-
-                AlertDialog dialog = builder.create();
-                dialog.show();
+                showAlert(mobileAppAlert);
             }
         }
 
         // TODO: if general transit alert(s) exist then pop up global alert(s)
         if (SystemStatusState.getGenericAlert() != null) {
             Alert genericAlert = SystemStatusState.getGenericAlert();
-            Log.e(TAG, genericAlert.toString());
             // TODO: check that route name must match
             if (GENERIC_ALERT_ROUTE_NAME.equals(genericAlert.getRouteName())) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle(Constants.TITLE_ANNOUNCEMENT);
-
-                builder.setMessage(genericAlert.getDescription());
-
-                builder.setNeutralButton(Constants.BUTTON_OK, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-
-                AlertDialog dialog = builder.create();
-                dialog.show();
+                showAlert(genericAlert);
             }
         }
 
@@ -317,5 +288,21 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    public void showAlert(Alert alert) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(Constants.TITLE_ANNOUNCEMENT);
+
+        builder.setMessage(alert.getDescription());
+
+        builder.setNeutralButton(Constants.BUTTON_OK, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
 
 }

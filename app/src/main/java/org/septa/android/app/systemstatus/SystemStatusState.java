@@ -16,10 +16,10 @@ public class SystemStatusState {
 
     private static boolean initialized = false;
 
+    private static final String MOBILE_APP_ALERT_ROUTE_ID = "APP", GENERIC_ALERT_ROUTE_ID = "generic";
 
     public static void update(Alerts alerts){
-        if (alerts == null)
-            return;
+        if (alerts == null) return;
 
         for (Alert alert : alerts.getAlerts()) {
             map.put(alert.getRouteId(), alert);
@@ -27,7 +27,6 @@ public class SystemStatusState {
 
         initialized = true;
     }
-
 
     public static boolean isInitialized() {
         return initialized;
@@ -42,6 +41,14 @@ public class SystemStatusState {
         }
 
         return returnAlert;
+    }
+
+    public static Alert getGenericAlert() {
+        return map.get(GENERIC_ALERT_ROUTE_ID);
+    }
+
+    public static Alert getAlertForApp() {
+        return map.get(MOBILE_APP_ALERT_ROUTE_ID);
     }
 
 

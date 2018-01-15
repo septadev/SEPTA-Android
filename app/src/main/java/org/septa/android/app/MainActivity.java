@@ -1,5 +1,7 @@
 package org.septa.android.app;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -24,9 +26,11 @@ import org.septa.android.app.favorites.FavoritesFragmentCallBacks;
 import org.septa.android.app.nextarrive.NextToArriveFragment;
 import org.septa.android.app.schedules.SchedulesFragment;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
+import org.septa.android.app.services.apiinterfaces.model.Alert;
 import org.septa.android.app.support.CrashlyticsManager;
 import org.septa.android.app.systemmap.SystemMapFragment;
 import org.septa.android.app.systemstatus.SystemStatusFragment;
+import org.septa.android.app.systemstatus.SystemStatusState;
 import org.septa.android.app.webview.WebViewFragment;
 
 /**
@@ -56,6 +60,8 @@ public class MainActivity extends AppCompatActivity
     Fragment connect = new ConnectFragment();
     Fragment about = new AboutFragment();
 
+    public static final String MOBILE_APP_ALERT_ROUTE_NAME = "Mobile APP", GENERIC_ALERT_ROUTE_NAME = "Generic";
+
     @Override
     public final void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,15 +84,63 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        if (savedInstanceState == null)
+        if (savedInstanceState == null) {
             if (SeptaServiceFactory.getFavoritesService().getFavorites(this).size() > 0) {
                 switchToFavorites();
             } else {
                 addNewFavorite();
             }
+        }
+
+
+        // note that generic alert will show up before mobile app alert bc it was the most recently added
+        // TODO: if mobile app alert(s) exist then pop those up
+        if (SystemStatusState.getAlertForApp() != null) {
+            Alert mobileAppAlert = SystemStatusState.getAlertForApp();
+            Log.e(TAG, mobileAppAlert.toString());
+            // TODO: check that route name must match
+            if (MOBILE_APP_ALERT_ROUTE_NAME.equals(mobileAppAlert.getRouteName())) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle(Constants.TITLE_ANNOUNCEMENT);
+
+                builder.setMessage(mobileAppAlert.getDescription());
+
+                builder.setNeutralButton(Constants.BUTTON_OK, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        }
+
+        // TODO: if general transit alert(s) exist then pop up global alert(s)
+        if (SystemStatusState.getGenericAlert() != null) {
+            Alert genericAlert = SystemStatusState.getGenericAlert();
+            Log.e(TAG, genericAlert.toString());
+            // TODO: check that route name must match
+            if (GENERIC_ALERT_ROUTE_NAME.equals(genericAlert.getRouteName())) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle(Constants.TITLE_ANNOUNCEMENT);
+
+                builder.setMessage(genericAlert.getDescription());
+
+                builder.setNeutralButton(Constants.BUTTON_OK, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        }
 
     }
-
 
     @Override
     public void onBackPressed() {
@@ -213,15 +267,15 @@ public class MainActivity extends AppCompatActivity
         int unmaskedRequestCode = requestCode & 0x0000ffff;
         if (unmaskedRequestCode == Constants.NTA_REQUEST) {
             if (resultCode == Constants.VIEW_SCHEDULE) {
-                Message message = jumpToScheduelsHandler.obtainMessage();
+                Message message = jumpToSchedulesHandler.obtainMessage();
                 message.setData(data.getExtras());
-                jumpToScheduelsHandler.sendMessage(message);
+                jumpToSchedulesHandler.sendMessage(message);
             }
         }
 
     }
 
-    private Handler jumpToScheduelsHandler = new Handler() {
+    private Handler jumpToSchedulesHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             switchToSchedules(msg.getData());

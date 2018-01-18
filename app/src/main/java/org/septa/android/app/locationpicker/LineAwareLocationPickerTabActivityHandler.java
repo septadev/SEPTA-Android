@@ -187,7 +187,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
 
                     Intent intent = new Intent(getActivity(), targetClass);
                     intent.putExtra(Constants.STARTING_STATION, startingStation);
-                    intent.putExtra(Constants.DESTINATAION_STATION, destinationStation);
+                    intent.putExtra(Constants.DESTINATION_STATION, destinationStation);
                     intent.putExtra(Constants.TRANSIT_TYPE, transitType);
                     intent.putExtra(Constants.ROUTE_DIRECTION_MODEL, selectedRoute);
 
@@ -449,7 +449,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
             Context context = fragment.getContext();
             Bundle returnBundle = new Bundle();
 
-            StopModel inDest = (StopModel) params[0].get(Constants.DESTINATAION_STATION);
+            StopModel inDest = (StopModel) params[0].get(Constants.DESTINATION_STATION);
             StopModel inStart = (StopModel) params[0].get(Constants.STARTING_STATION);
             RouteDirectionModel inputRoute = (RouteDirectionModel) params[0].get(Constants.ROUTE_DIRECTION_MODEL);
             if (inputRoute == null)
@@ -506,7 +506,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
             }
 
             if (foundDest != null) {
-                returnBundle.putSerializable(Constants.DESTINATAION_STATION, foundDest);
+                returnBundle.putSerializable(Constants.DESTINATION_STATION, foundDest);
             }
 
             return returnBundle;
@@ -528,8 +528,8 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                     return;
                 }
 
-                if (bundle.containsKey(Constants.DESTINATAION_STATION)) {
-                    fragment.setDestinationStop((StopModel) bundle.get(Constants.DESTINATAION_STATION));
+                if (bundle.containsKey(Constants.DESTINATION_STATION)) {
+                    fragment.setDestinationStop((StopModel) bundle.get(Constants.DESTINATION_STATION));
                 }
             } finally {
                 fragment.progressView.setVisibility(View.GONE);

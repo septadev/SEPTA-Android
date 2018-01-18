@@ -15,8 +15,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import com.google.android.gms.maps.model.LatLng;
-
 import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
@@ -222,7 +220,7 @@ public class NextToArriveTripView extends FrameLayout {
         if (alert.isDetour()) {
             View targetView = convertView.findViewById(R.id.orig_line_detour_icon);
             targetView.setVisibility(VISIBLE);
-            targetView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.ACTIVE_DETOURT_EXPANDED, getContext(), transitType, lineId, routeNameForSystemStatus));
+            targetView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.ACTIVE_DETOUR_EXPANDED, getContext(), transitType, lineId, routeNameForSystemStatus));
             targetView.setContentDescription(R.string.detour_icon_content_description_prefix + routeNameForSystemStatus);
         }
         if (alert.isSnow()) {
@@ -302,7 +300,7 @@ public class NextToArriveTripView extends FrameLayout {
                     CrashlyticsManager.log(Log.INFO, TAG, unit.getOrigVehicleId());
 
 
-                    intent.putExtra(Constants.DESTINATAION_STATION, destination);
+                    intent.putExtra(Constants.DESTINATION_STATION, destination);
                     intent.putExtra(Constants.STARTING_STATION, start);
                     intent.putExtra(Constants.TRANSIT_TYPE, transitType);
                     intent.putExtra(Constants.ROUTE_NAME, unit.getOrigRouteName());
@@ -350,7 +348,7 @@ public class NextToArriveTripView extends FrameLayout {
         if (orig_alert.isDetour()) {
             View targetView = convertView.findViewById(R.id.orig_line_detour_icon);
             targetView.setVisibility(VISIBLE);
-            targetView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.ACTIVE_DETOURT_EXPANDED, getContext(), transitType, item.getOrigRouteId(), item.getOrigRouteName()));
+            targetView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.ACTIVE_DETOUR_EXPANDED, getContext(), transitType, item.getOrigRouteId(), item.getOrigRouteName()));
             targetView.setContentDescription(R.string.detour_icon_content_description_prefix + item.getOrigRouteName());
         }
         if (orig_alert.isSnow()) {
@@ -423,7 +421,7 @@ public class NextToArriveTripView extends FrameLayout {
                     CrashlyticsManager.log(Log.INFO, TAG, item.getOrigLineTripId());
                     CrashlyticsManager.log(Log.INFO, TAG, item.getOrigVehicleId());
 
-                    intent.putExtra(Constants.DESTINATAION_STATION, connectionStations.get(item.getConnectionStationId()));
+                    intent.putExtra(Constants.DESTINATION_STATION, connectionStations.get(item.getConnectionStationId()));
                     intent.putExtra(Constants.STARTING_STATION, start);
                     intent.putExtra(Constants.TRANSIT_TYPE, transitType);
                     intent.putExtra(Constants.ROUTE_NAME, item.getOrigRouteName());
@@ -467,7 +465,7 @@ public class NextToArriveTripView extends FrameLayout {
         if (alert.isDetour()) {
             View targetView = convertView.findViewById(R.id.term_line_detour_icon);
             targetView.setVisibility(VISIBLE);
-            targetView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.ACTIVE_DETOURT_EXPANDED, getContext(), transitType, item.getTermRouteId(), item.getTermRouteName()));
+            targetView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.ACTIVE_DETOUR_EXPANDED, getContext(), transitType, item.getTermRouteId(), item.getTermRouteName()));
             targetView.setContentDescription(R.string.detour_icon_content_description_prefix + item.getTermRouteName());
         }
         if (alert.isSnow()) {
@@ -539,7 +537,7 @@ public class NextToArriveTripView extends FrameLayout {
                     CrashlyticsManager.log(Log.INFO, TAG, item.getTermLineTripId());
                     CrashlyticsManager.log(Log.INFO, TAG, item.getTermVehicleId());
 
-                    intent.putExtra(Constants.DESTINATAION_STATION, destination);
+                    intent.putExtra(Constants.DESTINATION_STATION, destination);
                     intent.putExtra(Constants.STARTING_STATION, connectionStations.get(item.getConnectionStationId()));
                     intent.putExtra(Constants.TRANSIT_TYPE, transitType);
                     intent.putExtra(Constants.ROUTE_NAME, item.getTermRouteName());

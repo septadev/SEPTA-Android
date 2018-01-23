@@ -17,6 +17,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 
 import org.septa.android.app.about.AboutFragment;
 import org.septa.android.app.connect.ConnectFragment;
@@ -187,14 +188,15 @@ public class MainActivity extends AppCompatActivity
         // prevent stacking alertdialogs
         if (genericAlert != null) {
             genericAlert.dismiss();
-            genericAlert = null;
-        }
-        if (mobileAlert != null) {
-            mobileAlert.dismiss();
-            mobileAlert = null;
         }
 
-        // TODO: hide menu badge icon
+        if (mobileAlert != null) {
+            mobileAlert.dismiss();
+        }
+
+        // hide menu badge icon
+        View view = (View) navigationView.getMenu().findItem(R.id.nav_system_status).getActionView();
+        view.setVisibility(View.GONE);
     }
 
     @Override
@@ -391,12 +393,13 @@ public class MainActivity extends AppCompatActivity
 
         if (isGenericAlert) {
             genericAlert = dialog;
-            // TODO: show badge icon in menu here
-        }
-        else {
+        } else {
             mobileAlert = dialog;
-            // TODO: show badge icon in menu here
         }
+
+        // show badge icon in menu here
+        View view = (View) navigationView.getMenu().findItem(R.id.nav_system_status).getActionView();
+        view.setVisibility(View.VISIBLE);
 
         dialog.show();
     }

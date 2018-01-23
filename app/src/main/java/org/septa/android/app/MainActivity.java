@@ -69,6 +69,7 @@ public class MainActivity extends AppCompatActivity
             MOBILE_APP_ALERT_MODE = "MOBILE",
             GENERIC_ALERT_ROUTE_NAME = "Generic",
             GENERIC_ALERT_MODE = "GENERIC";
+    AlertDialog genericAlert, mobileAlert;
 
     @Override
     public final void onCreate(@Nullable Bundle savedInstanceState) {
@@ -129,8 +130,7 @@ public class MainActivity extends AppCompatActivity
                             }
 
                             // show mobile app alert if current_message not blank
-                            if (!announcement.toString().isEmpty()) showAlert(announcement.toString());
-
+                            if (!announcement.toString().isEmpty()) showAlert(announcement.toString(), false);
                         }
                     }
 
@@ -166,7 +166,7 @@ public class MainActivity extends AppCompatActivity
                             }
 
                             // show generic alert if current_message not blank
-                            if (!announcement.toString().isEmpty()) showAlert(announcement.toString());
+                            if (!announcement.toString().isEmpty()) showAlert(announcement.toString(), true);
                         }
                     }
 
@@ -178,6 +178,16 @@ public class MainActivity extends AppCompatActivity
 
             }
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        // prevent stacking alertdialogs
+        if (genericAlert != null) genericAlert.dismiss();
+        if (mobileAlert != null) mobileAlert.dismiss();
+
     }
 
     @Override
@@ -355,7 +365,7 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    public void showAlert(String alert) {
+    public void showAlert(String alert, Boolean isGenericAlert) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(Constants.TITLE_ANNOUNCEMENT);
 
@@ -371,6 +381,10 @@ public class MainActivity extends AppCompatActivity
         });
 
         AlertDialog dialog = builder.create();
+
+        if (isGenericAlert) genericAlert = dialog;
+        else mobileAlert = dialog;
+
         dialog.show();
     }
 

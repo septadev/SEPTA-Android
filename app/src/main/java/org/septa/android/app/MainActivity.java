@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity
         // if mobile app alert(s) exist then pop those up
         if (SystemStatusState.getAlertForApp() != null) {
             final Alert mobileAppAlert = SystemStatusState.getAlertForApp();
-            Log.e(TAG, "MobileAppAlert: " + mobileAppAlert.toString());
+//            Log.e(TAG, "MobileAppAlert: " + mobileAppAlert.toString());
 
             // validate correct alert
             if (MOBILE_APP_ALERT_ROUTE_NAME.equals(mobileAppAlert.getRouteName()) && MOBILE_APP_ALERT_MODE.equals(mobileAppAlert.getMode())) {
@@ -147,7 +147,7 @@ public class MainActivity extends AppCompatActivity
         // if general transit alert(s) exist then pop up global alert(s)
         if (SystemStatusState.getGenericAlert() != null) {
             final Alert genericAlert = SystemStatusState.getGenericAlert();
-            Log.e(TAG, "Generic Alert: " + genericAlert.toString());
+//            Log.e(TAG, "Generic Alert: " + genericAlert.toString());
 
             // TODO: check that route name and mode must match
             if (GENERIC_ALERT_ROUTE_NAME.equals(genericAlert.getRouteName()) && GENERIC_ALERT_MODE.equals(genericAlert.getMode())) {
@@ -367,9 +367,9 @@ public class MainActivity extends AppCompatActivity
 
     public void showAlert(String alert, Boolean isGenericAlert) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(Constants.TITLE_ANNOUNCEMENT);
 
-        Log.e(TAG, alert.toString());
+        if (isGenericAlert) builder.setTitle(Constants.TITLE_GENERIC_ALERT);
+        else builder.setTitle(Constants.TITLE_MOBILE_ALERT);
 
         builder.setMessage(alert);
 

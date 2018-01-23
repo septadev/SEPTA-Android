@@ -185,9 +185,16 @@ public class MainActivity extends AppCompatActivity
         super.onPause();
 
         // prevent stacking alertdialogs
-        if (genericAlert != null) genericAlert.dismiss();
-        if (mobileAlert != null) mobileAlert.dismiss();
+        if (genericAlert != null) {
+            genericAlert.dismiss();
+            genericAlert = null;
+        }
+        if (mobileAlert != null) {
+            mobileAlert.dismiss();
+            mobileAlert = null;
+        }
 
+        // TODO: hide menu badge icon
     }
 
     @Override
@@ -382,8 +389,14 @@ public class MainActivity extends AppCompatActivity
 
         AlertDialog dialog = builder.create();
 
-        if (isGenericAlert) genericAlert = dialog;
-        else mobileAlert = dialog;
+        if (isGenericAlert) {
+            genericAlert = dialog;
+            // TODO: show badge icon in menu here
+        }
+        else {
+            mobileAlert = dialog;
+            // TODO: show badge icon in menu here
+        }
 
         dialog.show();
     }

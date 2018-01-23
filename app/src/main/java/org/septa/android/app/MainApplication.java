@@ -12,12 +12,14 @@ import com.crashlytics.android.Crashlytics;
 import org.septa.android.app.database.DatabaseManager;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Alerts;
+import org.septa.android.app.support.AnalyticsManager;
 import org.septa.android.app.support.CrashlyticsManager;
 import org.septa.android.app.support.CursorAdapterSupplier;
 import org.septa.android.app.systemstatus.SystemStatusState;
 
 import java.util.Date;
 
+import io.fabric.sdk.android.Fabric;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -32,11 +34,16 @@ public class MainApplication extends Application implements Runnable {
     @Override
     public void onCreate() {
         super.onCreate();
+        Fabric.with(this, new Crashlytics());
         if (!BuildConfig.DEBUG) {
             CrashlyticsManager.init(this);
             Log.i(TAG, "Starting Crashlytics");
+
+            AnalyticsManager.init(this);
+            Log.i(TAG, "Starting Analytics");
         } else {
             Log.i(TAG, "Crashlytics disabled for DEBUG builds");
+            Log.i(TAG, "Analytics disabled for DEBUG builds");
         }
 
         try {

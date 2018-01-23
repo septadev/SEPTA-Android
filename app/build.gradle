@@ -19,6 +19,7 @@ def getSprintRound = { ->
 }
 
 apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
 
 // check that the SEPTA.signing gradle property exists and that its value is the filename to a file
 //  that has the extension of gradle
@@ -108,8 +109,8 @@ android {
 repositories {
     mavenCentral()
     maven { url 'http://mvnrepository.com/artifact/' }
-    maven { url 'http://download.crashlytics.com/maven' }
     google()
+    maven { url 'https://maven.fabric.io/public' }
 }
 
 // buildscript
@@ -117,24 +118,23 @@ buildscript {
     repositories {
         mavenCentral()
         maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
-        maven { url 'http://download.crashlytics.com/maven' }
+        maven { url 'https://maven.fabric.io/public' }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:1.0.0'
-        classpath 'com.crashlytics.tools.gradle:crashlytics-gradle:1.+'
+        classpath 'io.fabric.tools:gradle:1.+'
+
     }
 }
 
 
 apply plugin: 'com.android.application'
-apply plugin: 'crashlytics'
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.crashlytics.android:crashlytics:1+'
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support:design:25.3.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.0'
@@ -149,4 +149,7 @@ dependencies {
     compile 'com.google.maps.android:android-maps-utils:0.5'
     compile 'com.android.support:support-v4:25.3.1'
     testCompile 'junit:junit:4.12'
+    compile('com.crashlytics.sdk.android:crashlytics:2.8.0@aar') {
+        transitive = true;
+    }
 }

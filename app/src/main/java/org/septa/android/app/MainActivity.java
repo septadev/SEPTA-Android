@@ -27,6 +27,7 @@ import org.septa.android.app.favorites.FavoritesFragmentCallBacks;
 import org.septa.android.app.nextarrive.NextToArriveFragment;
 import org.septa.android.app.schedules.SchedulesFragment;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
+import org.septa.android.app.support.AnalyticsManager;
 import org.septa.android.app.services.apiinterfaces.model.Alert;
 import org.septa.android.app.services.apiinterfaces.model.AlertDetail;
 import org.septa.android.app.support.CrashlyticsManager;
@@ -221,46 +222,57 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
 
         if (id == R.id.nav_next_to_arrive) {
+            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_NEXT_TO_ARRIVE, null, null);
             switchToBundle(item, nextToArriveFragment, R.string.next_to_arrive, R.drawable.ic_nta_active);
         }
 
         if (id == R.id.nav_schedule) {
+            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_SCHEDULE, null, null);
             switchToBundle(item, schedules, R.string.schedule, R.drawable.ic_schedule_active);
         }
 
         if (id == R.id.nav_favorites) {
+            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_FAVORITES, null, null);
             switchToBundle(item, favorites, R.string.favorites, R.drawable.ic_favorites_active);
         }
 
         if (id == R.id.nav_system_status) {
+            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_SYSTEM_STATUS, null, null);
             switchToBundle(item, systemStatus, R.string.system_status, R.drawable.ic_status_active);
         }
 
         if (id == R.id.nav_fares_transit_info) {
+            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_FARES_TRANSIT, null, null);
             switchToBundle(item, faresTransitInfo, R.string.fares_and_transit_info, R.drawable.ic_fares_active);
         }
 
         if (id == R.id.nav_system_map) {
+            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_SYSTEM_MAP, null, null);
             switchToBundle(item, systemMap, R.string.system_map, R.drawable.ic_map_active);
         }
 
         if (id == R.id.nav_events) {
+            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_SPECIAL_EVENTS, null, null);
             switchToBundle(item, events, R.string.events, R.drawable.ic_calendar_active);
         }
 
         if (id == R.id.nav_connect) {
+            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_CONNECT, null, null);
             switchToBundle(item, connect, R.string.connect_with_septa, 0);
         }
 
         if (id == R.id.nav_about_app) {
+            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_ABOUT, null, null);
             switchToBundle(item, about, R.string.about_the_septa_app, 0);
         }
 
         if (id == R.id.nav_trainview) {
+            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_TRAIN_VIEW, null, null);
             switchToBundle(item, trainview, R.string.train_view, 0);
         }
 
         if (id == R.id.nav_transitview) {
+            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_TRANSIT_VIEW, null, null);
             switchToBundle(item, transitview, R.string.transit_view, 0);
         }
         return true;

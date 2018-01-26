@@ -5,6 +5,8 @@ import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 
+import io.fabric.sdk.android.Fabric;
+
 /**
  * Created by jkampf on 11/21/17.
  */
@@ -14,7 +16,7 @@ public class CrashlyticsManager {
 
 
     public static void init(Context context) {
-        Crashlytics.start(context);
+        Fabric.with(context, new Crashlytics());
         initalized = true;
     }
 

@@ -27,7 +27,7 @@
             android:value="${amazonawsApiKey}" />
 
         <meta-data
-            android:name="com.crashlytics.ApiKey"
+            android:name="io.fabric.ApiKey"
             android:value="${crashlyticsApiKey}" />
 
         <meta-data
@@ -38,7 +38,7 @@
             android:name=".MainActivity"
             android:label="@string/septa"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".nextarrive.NextToArriveResultsActivity"
             android:label="@string/septa"

@@ -19,7 +19,9 @@ public class SystemStatusState {
     private static final String MOBILE_APP_ALERT_ROUTE_ID = "APP", GENERIC_ALERT_ROUTE_ID = "generic";
 
     public static void update(Alerts alerts){
-        if (alerts == null) return;
+        if (alerts == null) {
+            return;
+        }
 
         for (Alert alert : alerts.getAlerts()) {
             map.put(alert.getRouteId(), alert);

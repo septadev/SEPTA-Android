@@ -112,7 +112,6 @@ public class MainActivity extends AppCompatActivity
         // if mobile app alert(s) exist then pop those up
         if (SystemStatusState.getAlertForApp() != null) {
             final Alert mobileAppAlert = SystemStatusState.getAlertForApp();
-//            Log.e(TAG, "MobileAppAlert: " + mobileAppAlert.toString());
 
             // validate correct alert
             if (MOBILE_APP_ALERT_ROUTE_NAME.equals(mobileAppAlert.getRouteName()) && MOBILE_APP_ALERT_MODE.equals(mobileAppAlert.getMode())) {
@@ -131,7 +130,9 @@ public class MainActivity extends AppCompatActivity
                             }
 
                             // show mobile app alert if current_message not blank
-                            if (!announcement.toString().isEmpty()) showAlert(announcement.toString(), false);
+                            if (!announcement.toString().isEmpty()) {
+                                showAlert(announcement.toString(), false);
+                            }
                         }
                     }
 
@@ -148,9 +149,7 @@ public class MainActivity extends AppCompatActivity
         // if general transit alert(s) exist then pop up global alert(s)
         if (SystemStatusState.getGenericAlert() != null) {
             final Alert genericAlert = SystemStatusState.getGenericAlert();
-//            Log.e(TAG, "Generic Alert: " + genericAlert.toString());
 
-            // TODO: check that route name and mode must match
             if (GENERIC_ALERT_ROUTE_NAME.equals(genericAlert.getRouteName()) && GENERIC_ALERT_MODE.equals(genericAlert.getMode())) {
 
                 // get alert details
@@ -167,7 +166,9 @@ public class MainActivity extends AppCompatActivity
                             }
 
                             // show generic alert if current_message not blank
-                            if (!announcement.toString().isEmpty()) showAlert(announcement.toString(), true);
+                            if (!announcement.toString().isEmpty()) {
+                                showAlert(announcement.toString(), true);
+                            }
                         }
                     }
 

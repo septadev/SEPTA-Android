@@ -15,6 +15,10 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
+import android.text.SpannableString;
+import android.text.method.LinkMovementMethod;
+import android.text.util.Linkify;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,13 +31,14 @@ import org.septa.android.app.favorites.FavoritesFragmentCallBacks;
 import org.septa.android.app.nextarrive.NextToArriveFragment;
 import org.septa.android.app.schedules.SchedulesFragment;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
-import org.septa.android.app.support.AnalyticsManager;
 import org.septa.android.app.services.apiinterfaces.model.Alert;
 import org.septa.android.app.services.apiinterfaces.model.AlertDetail;
+import org.septa.android.app.support.AnalyticsManager;
 import org.septa.android.app.support.CrashlyticsManager;
 import org.septa.android.app.systemmap.SystemMapFragment;
 import org.septa.android.app.systemstatus.SystemStatusFragment;
 import org.septa.android.app.systemstatus.SystemStatusState;
+import org.septa.android.app.view.TextView;
 import org.septa.android.app.webview.WebViewFragment;
 
 import retrofit2.Call;
@@ -393,7 +398,14 @@ public class MainActivity extends AppCompatActivity
         if (isGenericAlert) builder.setTitle(R.string.title_generic_alert);
         else builder.setTitle(R.string.title_mobile_app_alert);
 
-        builder.setMessage(alert);
+        // make message HTML enabled and allow for anchor links
+        View alertView = getLayoutInflater().inflate(R.layout.dialog_alert, null);
+        TextView message = (TextView) alertView.findViewById(R.id.dialog_alert_message);
+        final SpannableString s = new SpannableString(alert);
+        Linkify.addLinks(s, Linkify.WEB_URLS);
+        message.setText(Html.fromHtml(s.toString()));
+        message.setMovementMethod(LinkMovementMethod.getInstance());
+        builder.setView(alertView);
 
         builder.setNeutralButton(R.string.button_ok, new DialogInterface.OnClickListener() {
             @Override

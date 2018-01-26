@@ -377,12 +377,12 @@ public class MainActivity extends AppCompatActivity
     public void showAlert(String alert, Boolean isGenericAlert) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-        if (isGenericAlert) builder.setTitle(Constants.TITLE_GENERIC_ALERT);
-        else builder.setTitle(Constants.TITLE_MOBILE_ALERT);
+        if (isGenericAlert) builder.setTitle(R.string.title_generic_alert);
+        else builder.setTitle(R.string.title_mobile_app_alert);
 
         builder.setMessage(alert);
 
-        builder.setNeutralButton(Constants.BUTTON_OK, new DialogInterface.OnClickListener() {
+        builder.setNeutralButton(R.string.button_ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();

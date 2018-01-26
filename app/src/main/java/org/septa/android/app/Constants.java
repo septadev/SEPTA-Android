@@ -28,8 +28,4 @@ public interface Constants {
     public static final String TERM_TRIP = "termTrip";
     public static final String VEHICLE_ID = "vehicleId";
     public static final String ROUTE_DESCRIPTION = "routeDescription";
-
-    public static final String BUTTON_OK = "Ok";
-    public static final String TITLE_GENERIC_ALERT = "General SEPTA Alert";
-    public static final String TITLE_MOBILE_ALERT = "SEPTA Mobile App Alert";
 }

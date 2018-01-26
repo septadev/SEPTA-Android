@@ -144,4 +144,56 @@ For a complete list of the adjustments to service, please visit the delay night 
         </ScrollView>
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/mobile_alert_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="30dp"
+        android:background="#ffffff"
+        android:elevation="4dp"
+        android:orientation="vertical"
+        android:visibility="gone"
+        tool:visibility="visible">
+
+        <org.septa.android.app.view.TextView
+            android:id="@+id/mobile_alert_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="20dp"
+            android:drawableRight="@drawable/alert_toggle_closed"
+            android:paddingBottom="21dp"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
+            android:text="SEPTA Mobile App Alerts"
+            android:textColor="#000000"
+            android:textSize="16sp"
+            app:font="@string/font_roboto_medium" />
+
+        <ScrollView
+            android:id="@+id/mobile_alert_scrollview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone">
+
+            <org.septa.android.app.view.TextView
+                android:id="@+id/mobile_alert_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:linksClickable="true"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:text="Test"
+                android:textColor="#000000"
+                android:textSize="12sp"
+                app:font="@string/font_roboto_light" />
+        </ScrollView>
+    </LinearLayout>
+
+
 </LinearLayout>

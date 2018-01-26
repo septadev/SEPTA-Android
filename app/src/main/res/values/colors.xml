@@ -2,7 +2,7 @@
 <resources>
     <color name="colorPrimary">#215291</color>
     <color name="colorPrimaryDark">#063468</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorAccent">#09bbff</color>
 
     <color name="options_menu_tint">#ffffff</color>
 

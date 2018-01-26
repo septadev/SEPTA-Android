@@ -14,6 +14,4 @@ public interface AlertsService {
     @GET("/prod/alerts")
     public Call<Alerts> getAlerts();
 
-
-
 }

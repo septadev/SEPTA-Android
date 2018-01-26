@@ -1,5 +1,7 @@
 package org.septa.android.app;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -15,6 +17,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 
 import org.septa.android.app.about.AboutFragment;
 import org.septa.android.app.connect.ConnectFragment;
@@ -25,10 +28,17 @@ import org.septa.android.app.nextarrive.NextToArriveFragment;
 import org.septa.android.app.schedules.SchedulesFragment;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.support.AnalyticsManager;
+import org.septa.android.app.services.apiinterfaces.model.Alert;
+import org.septa.android.app.services.apiinterfaces.model.AlertDetail;
 import org.septa.android.app.support.CrashlyticsManager;
 import org.septa.android.app.systemmap.SystemMapFragment;
 import org.septa.android.app.systemstatus.SystemStatusFragment;
+import org.septa.android.app.systemstatus.SystemStatusState;
 import org.septa.android.app.webview.WebViewFragment;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by jkampf on 8/22/17.
@@ -57,6 +67,12 @@ public class MainActivity extends AppCompatActivity
     Fragment connect = new ConnectFragment();
     Fragment about = new AboutFragment();
 
+    public static final String MOBILE_APP_ALERT_ROUTE_NAME = "Mobile APP",
+            MOBILE_APP_ALERT_MODE = "MOBILE",
+            GENERIC_ALERT_ROUTE_NAME = "Generic",
+            GENERIC_ALERT_MODE = "GENERIC";
+    AlertDialog genericAlert, mobileAlert;
+
     @Override
     public final void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,13 +95,110 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        if (savedInstanceState == null)
+        if (savedInstanceState == null) {
             if (SeptaServiceFactory.getFavoritesService().getFavorites(this).size() > 0) {
                 switchToFavorites();
             } else {
                 addNewFavorite();
             }
+        }
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // note that generic alert will show up before mobile app alert bc it was the most recently added
+
+        // if mobile app alert(s) exist then pop those up
+        if (SystemStatusState.getAlertForApp() != null) {
+            final Alert mobileAppAlert = SystemStatusState.getAlertForApp();
+
+            // validate correct alert
+            if (MOBILE_APP_ALERT_ROUTE_NAME.equals(mobileAppAlert.getRouteName()) && MOBILE_APP_ALERT_MODE.equals(mobileAppAlert.getMode())) {
+
+                // get alert details
+                SeptaServiceFactory.getAlertDetailsService().getAlertDetails(mobileAppAlert.getRouteId()).enqueue(new Callback<AlertDetail>() {
+                    @Override
+                    public void onResponse(Call<AlertDetail> call, Response<AlertDetail> response) {
+                        if (response.body() != null || mobileAppAlert.isAlert()) {
+                            AlertDetail alertDetail = response.body();
+
+                            StringBuilder announcement = new StringBuilder();
+
+                            for (AlertDetail.Detail detail : alertDetail.getAlerts()) {
+                                announcement.append(detail.getMessage());
+                            }
+
+                            // show mobile app alert if current_message not blank
+                            if (!announcement.toString().isEmpty()) {
+                                showAlert(announcement.toString(), false);
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<AlertDetail> call, Throwable t) {
+                        SeptaServiceFactory.displayWebServiceError(findViewById(R.id.system_status_results_coordinator), MainActivity.this);
+                    }
+                });
+
+
+            }
+        }
+
+        // if general transit alert(s) exist then pop up global alert(s)
+        if (SystemStatusState.getGenericAlert() != null) {
+            final Alert genericAlert = SystemStatusState.getGenericAlert();
+
+            if (GENERIC_ALERT_ROUTE_NAME.equals(genericAlert.getRouteName()) && GENERIC_ALERT_MODE.equals(genericAlert.getMode())) {
+
+                // get alert details
+                SeptaServiceFactory.getAlertDetailsService().getAlertDetails(genericAlert.getRouteId()).enqueue(new Callback<AlertDetail>() {
+                    @Override
+                    public void onResponse(Call<AlertDetail> call, Response<AlertDetail> response) {
+                        if (response.body() != null || genericAlert.isAlert()) {
+                            AlertDetail alertDetail = response.body();
+
+                            StringBuilder announcement = new StringBuilder();
+
+                            for (AlertDetail.Detail detail : alertDetail.getAlerts()) {
+                                announcement.append(detail.getMessage());
+                            }
+
+                            // show generic alert if current_message not blank
+                            if (!announcement.toString().isEmpty()) {
+                                showAlert(announcement.toString(), true);
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<AlertDetail> call, Throwable t) {
+                        SeptaServiceFactory.displayWebServiceError(findViewById(R.id.system_status_results_coordinator), MainActivity.this);
+                    }
+                });
+
+            }
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        // prevent stacking alertdialogs
+        if (genericAlert != null) {
+            genericAlert.dismiss();
+        }
+
+        if (mobileAlert != null) {
+            mobileAlert.dismiss();
+        }
+
+        // hide menu badge icon
+        View view = (View) navigationView.getMenu().findItem(R.id.nav_system_status).getActionView();
+        view.setVisibility(View.GONE);
     }
 
     @Override
@@ -224,15 +337,15 @@ public class MainActivity extends AppCompatActivity
         int unmaskedRequestCode = requestCode & 0x0000ffff;
         if (unmaskedRequestCode == Constants.NTA_REQUEST) {
             if (resultCode == Constants.VIEW_SCHEDULE) {
-                Message message = jumpToScheduelsHandler.obtainMessage();
+                Message message = jumpToSchedulesHandler.obtainMessage();
                 message.setData(data.getExtras());
-                jumpToScheduelsHandler.sendMessage(message);
+                jumpToSchedulesHandler.sendMessage(message);
             }
         }
 
     }
 
-    private Handler jumpToScheduelsHandler = new Handler() {
+    private Handler jumpToSchedulesHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             switchToSchedules(msg.getData());
@@ -274,5 +387,34 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    public void showAlert(String alert, Boolean isGenericAlert) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        if (isGenericAlert) builder.setTitle(R.string.title_generic_alert);
+        else builder.setTitle(R.string.title_mobile_app_alert);
+
+        builder.setMessage(alert);
+
+        builder.setNeutralButton(R.string.button_ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+
+        if (isGenericAlert) {
+            genericAlert = dialog;
+        } else {
+            mobileAlert = dialog;
+        }
+
+        // show badge icon in menu here
+        View view = (View) navigationView.getMenu().findItem(R.id.nav_system_status).getActionView();
+        view.setVisibility(View.VISIBLE);
+
+        dialog.show();
+    }
 
 }

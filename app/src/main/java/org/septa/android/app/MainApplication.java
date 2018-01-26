@@ -7,8 +7,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
-
 import org.septa.android.app.database.DatabaseManager;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Alerts;
@@ -75,6 +73,8 @@ public class MainApplication extends Application implements Runnable {
         refreshHandler = new Handler();
         refreshHandler.postDelayed(this, 1);
     }
+
+
 
     @Override
     public void run() {

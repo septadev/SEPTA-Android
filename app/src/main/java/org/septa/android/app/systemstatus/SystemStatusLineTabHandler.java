@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.text.method.LinkMovementMethod;
+import android.text.util.Linkify;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -257,6 +258,7 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
 
                 if (found) {
                     globalAlertText.setHtml(GeneralUtils.updateUrls(alertText.toString()));
+                    Linkify.addLinks(globalAlertText, Linkify.WEB_URLS);
                 } else {
                     globalAlertView.setVisibility(View.GONE);
                 }
@@ -283,12 +285,12 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
 
                     for (AlertDetail.Detail alert : mobileAlertDetail.getAlerts()) {
                         if (!"".equals(alert.getAdvisoryMessage())) {
-                            alertText.append("<b>ADVISORIES<b><p>").append(alert.getAdvisoryMessage());
+                            alertText.append(alert.getAdvisoryMessage());
                             found = true;
                         }
 
                         if (!"".equals(alert.getMessage())) {
-                            alertText.append("<b>Alert<b><p>").append(alert.getMessage());
+                            alertText.append(alert.getMessage());
                             found = true;
                         }
                     }
@@ -296,6 +298,7 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
 
                 if (found) {
                     mobileAlertText.setHtml(GeneralUtils.updateUrls(alertText.toString()));
+                    Linkify.addLinks(mobileAlertText, Linkify.WEB_URLS);
                 } else {
                     mobileAlertView.setVisibility(View.GONE);
                 }

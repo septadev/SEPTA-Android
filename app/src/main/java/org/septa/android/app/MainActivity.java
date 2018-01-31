@@ -402,9 +402,10 @@ public class MainActivity extends AppCompatActivity
         View alertView = getLayoutInflater().inflate(R.layout.dialog_alert, null);
         TextView message = (TextView) alertView.findViewById(R.id.dialog_alert_message);
         final SpannableString s = new SpannableString(alert);
-        Linkify.addLinks(s, Linkify.WEB_URLS);
         message.setText(Html.fromHtml(s.toString()));
         message.setMovementMethod(LinkMovementMethod.getInstance());
+        Linkify.addLinks(message, Linkify.WEB_URLS);
+
         builder.setView(alertView);
 
         builder.setNeutralButton(R.string.button_ok, new DialogInterface.OnClickListener() {

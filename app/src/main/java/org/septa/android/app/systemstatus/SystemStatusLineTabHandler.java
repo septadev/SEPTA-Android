@@ -108,9 +108,6 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
             mobileAlertText = (org.septa.android.app.view.TextView) fragmentView.findViewById(R.id.mobile_alert_text);
             mobileAlertText.setMovementMethod(LinkMovementMethod.getInstance());
 
-            SeptaServiceFactory.getAlertDetailsService().getAlertDetails(MOBILE_ALERT_ROUTE_ID).enqueue(new MobileStatusCallBack());
-            SeptaServiceFactory.getAlertDetailsService().getAlertDetails(GLOBAL_ALERT_ROUTE_ID).enqueue(new GlobalStatusCallBack());
-
             queryButton = fragmentView.findViewById(R.id.view_status_button);
 
             queryButton.setOnClickListener(new View.OnClickListener() {
@@ -194,6 +191,15 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
 
             return fragmentView;
 
+        }
+
+        @Override
+        public void onResume() {
+            super.onResume();
+
+            // must call alerts onResume so page reloads
+            SeptaServiceFactory.getAlertDetailsService().getAlertDetails(MOBILE_ALERT_ROUTE_ID).enqueue(new MobileStatusCallBack());
+            SeptaServiceFactory.getAlertDetailsService().getAlertDetails(GLOBAL_ALERT_ROUTE_ID).enqueue(new GlobalStatusCallBack());
         }
 
         @Override

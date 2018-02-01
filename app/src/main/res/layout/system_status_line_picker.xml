@@ -102,7 +102,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:drawableRight="@drawable/alert_toggle_closed"
-                android:text="Global SEPTA System Alerts"
+                android:text="@string/title_generic_alert"
                 android:textColor="#000000"
                 android:textSize="16sp"
                 app:font="@string/font_roboto_medium" />
@@ -164,7 +164,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:drawableRight="@drawable/alert_toggle_closed"
-                android:text="SEPTA Mobile App Alerts"
+                android:text="@string/title_mobile_app_alert"
                 android:textColor="#000000"
                 android:textSize="16sp"
                 app:font="@string/font_roboto_medium" />

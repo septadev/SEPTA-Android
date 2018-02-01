@@ -219,5 +219,5 @@
     <!-- Alerts -->
     <string name="button_ok">Okay</string>
     <string name="title_generic_alert">General SEPTA Alert</string>
-    <string name="title_mobile_app_alert">SEPTA Mobile App Alert</string>
+    <string name="title_mobile_app_alert">Mobile App Alert</string>
 </resources>

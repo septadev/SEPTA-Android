@@ -256,7 +256,7 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
                         }
 
                         if (!alert.getMessage().isEmpty()) {
-                            alertText.append("<b>Alert<b><p>").append(alert.getMessage());
+                            alertText.append(alert.getMessage());
                             found = true;
                         }
                     }

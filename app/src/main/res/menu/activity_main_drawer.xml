@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <group
         android:id="@+id/topnavgroup"
@@ -16,6 +17,7 @@
         <item
             android:id="@+id/nav_system_status"
             android:icon="@drawable/ic_status_non"
+            app:actionLayout="@layout/menu_badge"
             android:title="@string/system_status" />
         <item
             android:id="@+id/nav_schedule"

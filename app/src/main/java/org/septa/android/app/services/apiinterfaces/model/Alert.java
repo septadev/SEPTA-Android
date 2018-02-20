@@ -117,4 +117,20 @@ public class Alert {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    @Override
+    public String toString() {
+        return "Alert{" +
+                "routeId='" + routeId + '\'' +
+                ", routeName='" + routeName + '\'' +
+                ", mode='" + mode + '\'' +
+                ", advisory=" + advisory +
+                ", detour=" + detour +
+                ", alert=" + alert +
+                ", suspended=" + suspended +
+                ", lastUpdate='" + lastUpdate + '\'' +
+                ", snow=" + snow +
+                ", description='" + description + '\'' +
+                '}';
+    }
 }

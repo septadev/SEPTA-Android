@@ -9,6 +9,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.text.method.LinkMovementMethod;
+import android.text.util.Linkify;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -66,15 +68,16 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
         TransitType transitType;
         CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier;
 
-        TextView globalAlertTitle;
-        View globalAlertScrollview;
-        View globalAlertView;
+        private static final String GLOBAL_ALERT_ROUTE_ID = "generic", MOBILE_ALERT_ROUTE_ID = "APP";
+
+        TextView globalAlertTitle, mobileAlertTitle;
+        View globalAlertScrollview, mobileAlertScrollview;
+        View globalAlertView, mobileAlertView;
         View queryButton;
         TextView lineText;
-        boolean globalAlertsExpanded = false;
+        boolean globalAlertsExpanded = false, mobileAlertsExpanded = false;
         RouteDirectionModel routeDirectionModel;
-        org.septa.android.app.view.TextView globalAlertText;
-
+        org.septa.android.app.view.TextView globalAlertText, mobileAlertText;
 
         @Override
         public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -93,13 +96,17 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
             TextView pickerHeaderText = (TextView) fragmentView.findViewById(R.id.picker_header_text);
             pickerHeaderText.setText(transitType.getString("system_status_picker_title", getContext()));
 
+            // set global alerts up
             globalAlertScrollview = fragmentView.findViewById(R.id.global_alert_scrollview);
             globalAlertView = fragmentView.findViewById(R.id.global_alert_view);
             globalAlertText = (org.septa.android.app.view.TextView) fragmentView.findViewById(R.id.global_alert_text);
             globalAlertText.setMovementMethod(LinkMovementMethod.getInstance());
 
-
-            SeptaServiceFactory.getAlertDetailsService().getAlertDetails("generic").enqueue(new GlobalStatusCallBack());
+            // set mobile app alerts up
+            mobileAlertScrollview = fragmentView.findViewById(R.id.mobile_alert_scrollview);
+            mobileAlertView = fragmentView.findViewById(R.id.mobile_alert_view);
+            mobileAlertText = (org.septa.android.app.view.TextView) fragmentView.findViewById(R.id.mobile_alert_text);
+            mobileAlertText.setMovementMethod(LinkMovementMethod.getInstance());
 
             queryButton = fragmentView.findViewById(R.id.view_status_button);
 
@@ -138,6 +145,7 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
                 });
             }
 
+            // global alert expansion handling
             globalAlertTitle = (TextView) fragmentView.findViewById(R.id.global_alert_title);
             globalAlertTitle.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -158,10 +166,40 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
                 }
             });
 
+            // mobile alert expansion handling
+            mobileAlertTitle = (TextView) fragmentView.findViewById(R.id.mobile_alert_title);
+            mobileAlertTitle.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (!mobileAlertsExpanded) {
+                        Drawable[] drawables = mobileAlertTitle.getCompoundDrawables();
+                        mobileAlertTitle.setCompoundDrawablesWithIntrinsicBounds(drawables[0], drawables[1],
+                                ContextCompat.getDrawable(getContext(), R.drawable.alert_toggle_open), drawables[3]);
+                        mobileAlertScrollview.setVisibility(View.VISIBLE);
+                        mobileAlertsExpanded = true;
+                    } else {
+                        Drawable[] drawables = mobileAlertTitle.getCompoundDrawables();
+                        mobileAlertTitle.setCompoundDrawablesWithIntrinsicBounds(drawables[0], drawables[1],
+                                ContextCompat.getDrawable(getContext(), R.drawable.alert_toggle_closed), drawables[3]);
+                        mobileAlertScrollview.setVisibility(View.GONE);
+                        mobileAlertsExpanded = false;
+                    }
+                }
+            });
+
             restoreState(savedInstanceState);
 
             return fragmentView;
 
+        }
+
+        @Override
+        public void onResume() {
+            super.onResume();
+
+            // must call alerts onResume so page reloads
+            SeptaServiceFactory.getAlertDetailsService().getAlertDetails(MOBILE_ALERT_ROUTE_ID).enqueue(new MobileStatusCallBack());
+            SeptaServiceFactory.getAlertDetailsService().getAlertDetails(GLOBAL_ALERT_ROUTE_ID).enqueue(new GlobalStatusCallBack());
         }
 
         @Override
@@ -212,13 +250,13 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
                     globalAlertView.setVisibility(View.VISIBLE);
 
                     for (AlertDetail.Detail alert : globalAlertDetail.getAlerts()) {
-                        if (!"".equals(alert.getAdvisoryMessage())) {
+                        if (!alert.getAdvisoryMessage().isEmpty()) {
                             alertText.append("<b>ADVISORIES<b><p>").append(alert.getAdvisoryMessage());
                             found = true;
                         }
 
-                        if (!"".equals(alert.getMessage())) {
-                            alertText.append("<b>Alert<b><p>").append(alert.getMessage());
+                        if (!alert.getMessage().isEmpty()) {
+                            alertText.append(alert.getMessage());
                             found = true;
                         }
                     }
@@ -226,6 +264,7 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
 
                 if (found) {
                     globalAlertText.setHtml(GeneralUtils.updateUrls(alertText.toString()));
+                    Linkify.addLinks(globalAlertText, Linkify.WEB_URLS);
                 } else {
                     globalAlertView.setVisibility(View.GONE);
                 }
@@ -233,7 +272,47 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
 
             @Override
             public void onFailure(Call<AlertDetail> call, Throwable t) {
+                Log.e(TAG, "Error with calling global application alerts.");
+            }
+        }
 
+        private class MobileStatusCallBack implements Callback<AlertDetail> {
+            @Override
+            public void onResponse(Call<AlertDetail> call, Response<AlertDetail> response) {
+                AlertDetail mobileAlertDetail = response.body();
+
+                boolean found = false;
+                StringBuilder alertText = new StringBuilder();
+
+                if (mobileAlertDetail != null && mobileAlertDetail.getAlerts().size() > 0 &&
+                        mobileAlertDetail.getAlerts().get(0).getMessage() != null &&
+                        !mobileAlertDetail.getAlerts().get(0).getMessage().equals("")) {
+                    mobileAlertView.setVisibility(View.VISIBLE);
+
+                    for (AlertDetail.Detail alert : mobileAlertDetail.getAlerts()) {
+                        if (!"".equals(alert.getAdvisoryMessage())) {
+                            alertText.append(alert.getAdvisoryMessage());
+                            found = true;
+                        }
+
+                        if (!"".equals(alert.getMessage())) {
+                            alertText.append(alert.getMessage());
+                            found = true;
+                        }
+                    }
+                }
+
+                if (found) {
+                    mobileAlertText.setHtml(GeneralUtils.updateUrls(alertText.toString()));
+                    Linkify.addLinks(mobileAlertText, Linkify.WEB_URLS);
+                } else {
+                    mobileAlertView.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<AlertDetail> call, Throwable t) {
+                Log.e(TAG, "Error with calling mobile application alerts.");
             }
         }
 

@@ -104,7 +104,7 @@ Last Schedule Update: 9/15/207 04:07 PM"
                 android:orientation="vertical">
 
                 <LinearLayout
-                    android:id="@+id/global_alert_view"
+                    android:id="@+id/attributions_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="15dp"

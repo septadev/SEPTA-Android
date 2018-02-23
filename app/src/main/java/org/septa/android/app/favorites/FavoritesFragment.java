@@ -213,6 +213,9 @@ public class FavoritesFragment extends Fragment implements Runnable {
                         favoritesFragmentCallBacks.gotoSchedules();
                     }
                 });
+                View snackbarView = snackbar.getView();
+                android.widget.TextView tv = (android.widget.TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+                tv.setMaxLines(10);
                 snackbar.show();
                 progressView.setVisibility(View.GONE);
             }

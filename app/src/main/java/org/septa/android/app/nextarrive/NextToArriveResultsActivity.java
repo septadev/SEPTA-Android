@@ -10,6 +10,7 @@ import android.graphics.Point;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.Snackbar;
@@ -25,6 +26,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -72,9 +74,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import android.os.Handler;
-import android.widget.RelativeLayout;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -83,7 +82,7 @@ import retrofit2.Response;
  * Created by jkampf on 8/3/17.
  */
 
-public class NextToArriveResultsActivity extends AppCompatActivity implements OnMapReadyCallback, EditFavoriteCallBack, Runnable {
+public class NextToArriveResultsActivity extends AppCompatActivity implements OnMapReadyCallback, EditFavoriteCallBack, Runnable, NextToArriveNoResultsFragment.NoResultsFragmentListener {
     public static final String TAG = NextToArriveResultsActivity.class.getSimpleName();
     public static final int REFRESH_DELAY_SECONDS = 30;
     StopModel start;
@@ -98,6 +97,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     View progressView;
     View progressViewBottom;
     View refresh;
+    TextView noResultsSchedulesButton;
     Favorite currentFavorite = null;
     NextToArriveTripView nextToArriveDetailsView;
     boolean editFavoritesFlag = false;
@@ -146,13 +146,19 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         final View anchor = bottomSheetLayout.findViewById(R.id.bottom_sheet_anchor);
         //anchor.setOnClickListener(myBottomSheetBehaviorCallBack);
 
-
         mapContainerView = (FrameLayout) findViewById(R.id.map_container);
 
         final TextView titleText = (TextView) bottomSheetLayout.findViewById(R.id.title_txt);
         nextToArriveDetailsView = (NextToArriveTripView) findViewById(R.id.next_to_arrive_trip_details);
         nextToArriveDetailsView.setMaxResults(null);
-        nextToArriveDetailsView.setResults(5, TimeUnit.HOURS);
+        nextToArriveDetailsView.setResults(5, TimeUnit.HOURS);  // if this value changes update UI message nta_empty_results
+
+        bottomSheetLayout.setVisibility(View.GONE);
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.map_container, new NextToArriveNoResultsFragment());
+        ft.commit();
+
+        // TODO: bug where indefinite loading once regaining signal
 
         nextToArriveDetailsView.setOnFirstElementHeight(new Consumer<Integer>() {
             @Override
@@ -378,6 +384,8 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
     @Override
     public void onMapReady(final GoogleMap googleMap) {
+        bottomSheetLayout.setVisibility(View.VISIBLE);
+
         this.googleMap = googleMap;
         MapStyleOptions mapStyle = MapStyleOptions.loadRawResourceStyle(this, R.raw.maps_json_styling);
 
@@ -705,18 +713,6 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                 private void onFailure() {
                     parser = new NextArrivalModelResponseParser();
                     //updateView();
-                    final Snackbar snackbar = Snackbar.make(rootView, R.string.realtime_failure_message, Snackbar.LENGTH_INDEFINITE);
-                    snackbar.setAction("Scehedules", new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            snackbar.dismiss();
-                            gotoSchedulesForTarget();
-                        }
-                    });
-                    View snackbarView = snackbar.getView();
-                    android.widget.TextView tv = (android.widget.TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
-                    tv.setMaxLines(10);
-                    snackbar.show();
                     progressVisibility(View.GONE);
                     refreshHandler.removeCallbacks(NextToArriveResultsActivity.this);
                     refreshHandler.postDelayed(NextToArriveResultsActivity.this, REFRESH_DELAY_SECONDS * 1000);
@@ -767,6 +763,11 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     public void updateFavorite(Favorite var1) {
         currentFavorite = var1;
         setTitle(currentFavorite.getName());
+    }
+
+    @Override
+    public void viewSchedulesClicked() {
+        gotoSchedulesForTarget();
     }
 
     private static class BottomSheetHandler extends BottomSheetBehavior.BottomSheetCallback implements View.OnClickListener {

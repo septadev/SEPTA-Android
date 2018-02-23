@@ -207,7 +207,7 @@ public class FavoritesFragment extends Fragment implements Runnable {
             public void onFailure(@NonNull Call<NextArrivalModelResponse> call, @NonNull Throwable t) {
                 tripView.setNextToArriveData(new NextArrivalModelResponseParser());
                 Snackbar snackbar = Snackbar.make(fragmentView, R.string.realtime_failure_message, Snackbar.LENGTH_INDEFINITE);
-                snackbar.setAction("Schedules", new View.OnClickListener() {
+                snackbar.setAction("Schedules »", new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         favoritesFragmentCallBacks.gotoSchedules();

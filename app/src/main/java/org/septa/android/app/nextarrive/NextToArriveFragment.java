@@ -28,7 +28,10 @@ import org.septa.android.app.support.TabActivityHandler;
 
 public class NextToArriveFragment extends Fragment {
 
-    public static final String TAG = NextToArriveFragment.class.getSimpleName();
+    public static final String TAG = NextToArriveFragment.class.getSimpleName(),
+        NTA_KEY_SECTIONS_PAGER_ADAPTER = "NTA_KEY_SECTIONS_PAGER_ADAPTER",
+            NTA_ACTIVITY_TITLE = "NTA_ACTIVITY_TITLE",
+            TAB_HEADER_STRING_NAME = "nta_picker_title";
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
@@ -61,11 +64,11 @@ public class NextToArriveFragment extends Fragment {
         DatabaseManager dbManager = DatabaseManager.getInstance(context);
 
         tabActivityHandlers = new TabActivityHandler[5];
-        tabActivityHandlers[1] = new LineUnawareLocationPickerTabActivityHandler(getString(R.string.tab_rail), "nta_picker_title", getString(R.string.nta_query_button_text), TransitType.RAIL, dbManager.getRailStopCursorAdapterSupplier(), NextToArriveResultsActivity.class);
-        tabActivityHandlers[0] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_bus), "nta_picker_title", getString(R.string.nta_query_button_text), TransitType.BUS, dbManager.getBusRouteCursorAdapterSupplier(), dbManager.getBusStopCursorAdapterSupplier(), dbManager.getBusStopAfterCursorAdapterSupplier(), NextToArriveResultsActivity.class);
-        tabActivityHandlers[3] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_trolley), "nta_picker_title", getString(R.string.nta_query_button_text), TransitType.TROLLEY, dbManager.getTrolleyRouteCursorAdapterSupplier(), dbManager.getTrolleyStopCursorAdapterSupplier(), dbManager.getTrolleyStopAfterCursorAdapterSupplier(), NextToArriveResultsActivity.class);
-        tabActivityHandlers[2] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_subway), "nta_picker_title", getString(R.string.nta_query_button_text), TransitType.SUBWAY, dbManager.getSubwayRouteCursorAdapterSupplier(), dbManager.getSubwayStopCursorAdapterSupplier(), dbManager.getSubwayStopAfterCursorAdapterSupplier(), NextToArriveResultsActivity.class);
-        tabActivityHandlers[4] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_nhsl), "nta_picker_title", getString(R.string.nta_query_button_text), TransitType.NHSL, dbManager.getNHSLRouteCursorAdapterSupplier(), dbManager.getBusStopCursorAdapterSupplier(), dbManager.getBusStopAfterCursorAdapterSupplier(), NextToArriveResultsActivity.class);
+        tabActivityHandlers[1] = new LineUnawareLocationPickerTabActivityHandler(getString(R.string.tab_rail), TAB_HEADER_STRING_NAME, getString(R.string.nta_query_button_text), TransitType.RAIL, dbManager.getRailStopCursorAdapterSupplier(), NextToArriveResultsActivity.class);
+        tabActivityHandlers[0] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_bus), TAB_HEADER_STRING_NAME, getString(R.string.nta_query_button_text), TransitType.BUS, dbManager.getBusRouteCursorAdapterSupplier(), dbManager.getBusStopCursorAdapterSupplier(), dbManager.getBusStopAfterCursorAdapterSupplier(), NextToArriveResultsActivity.class);
+        tabActivityHandlers[3] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_trolley), TAB_HEADER_STRING_NAME, getString(R.string.nta_query_button_text), TransitType.TROLLEY, dbManager.getTrolleyRouteCursorAdapterSupplier(), dbManager.getTrolleyStopCursorAdapterSupplier(), dbManager.getTrolleyStopAfterCursorAdapterSupplier(), NextToArriveResultsActivity.class);
+        tabActivityHandlers[2] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_subway), TAB_HEADER_STRING_NAME, getString(R.string.nta_query_button_text), TransitType.SUBWAY, dbManager.getSubwayRouteCursorAdapterSupplier(), dbManager.getSubwayStopCursorAdapterSupplier(), dbManager.getSubwayStopAfterCursorAdapterSupplier(), NextToArriveResultsActivity.class);
+        tabActivityHandlers[4] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_nhsl), TAB_HEADER_STRING_NAME, getString(R.string.nta_query_button_text), TransitType.NHSL, dbManager.getNHSLRouteCursorAdapterSupplier(), dbManager.getBusStopCursorAdapterSupplier(), dbManager.getBusStopAfterCursorAdapterSupplier(), NextToArriveResultsActivity.class);
 
         View fragmentView = inflater.inflate(R.layout.next_to_arrive_main, null);
 
@@ -101,18 +104,18 @@ public class NextToArriveFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable("org.septa.android.app.nextarrive.NextToArriveFragment.mSectionsPagerAdapter", mSectionsPagerAdapter.saveState());
-        outState.putString("title", getActivity().getTitle().toString());
+        outState.putParcelable(NTA_KEY_SECTIONS_PAGER_ADAPTER, mSectionsPagerAdapter.saveState());
+        outState.putString(NTA_ACTIVITY_TITLE, getActivity().getTitle().toString());
     }
 
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
         if (savedInstanceState != null) {
-            Parcelable parcelable = savedInstanceState.getParcelable("org.septa.android.app.nextarrive.NextToArriveFragment.mSectionsPagerAdapter");
+            Parcelable parcelable = savedInstanceState.getParcelable(NTA_KEY_SECTIONS_PAGER_ADAPTER);
             if (parcelable != null)
                 mSectionsPagerAdapter.restoreState(parcelable, this.getClass().getClassLoader());
-            String title = savedInstanceState.getString("title");
+            String title = savedInstanceState.getString(NTA_ACTIVITY_TITLE);
             if (title != null && getActivity() != null)
                 getActivity().setTitle(title);
         }
@@ -123,7 +126,7 @@ public class NextToArriveFragment extends Fragment {
             TextView tab = (TextView) inflater.inflate(R.layout.custom_tab, null);
             tab.setText(tabActivityHandlers[i].getTabTitle());
             tab.setCompoundDrawablesWithIntrinsicBounds(tabActivityHandlers[i].getInactiveDrawableId(), 0, 0, 0);
-            tab.setContentDescription("Tap to switch to " + tabActivityHandlers[i].getTabTitle());
+            tab.setContentDescription(getString(R.string.tab_description) + tabActivityHandlers[i].getTabTitle());
             tabLayout.getTabAt(i).setCustomView(tab);
         }
     }

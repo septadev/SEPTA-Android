@@ -84,7 +84,12 @@ import retrofit2.Response;
 
 public class NextToArriveResultsActivity extends AppCompatActivity implements OnMapReadyCallback, EditFavoriteCallBack, Runnable, NextToArriveNoResultsFragment.NoResultsFragmentListener {
     public static final String TAG = NextToArriveResultsActivity.class.getSimpleName();
-    public static final int REFRESH_DELAY_SECONDS = 30;
+    public static final int REFRESH_DELAY_SECONDS = 30,
+            NTA_RESULTS_FOR_NEXT_HOURS = 5;
+    private static final String EDIT_FAVORITE_DIALOG_KEY = "EDIT_FAVORITE_DIALOG_KEY",
+            NTA_RESULTS_TITLE = "NTA_RESULTS_TITLE",
+            NEED_TO_SEE = "NEED_TO_SEE";
+    private static final String NEW_LINE = "NEW_LINE";
     StopModel start;
     StopModel destination;
     TransitType transitType;
@@ -97,7 +102,6 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     View progressView;
     View progressViewBottom;
     View refresh;
-    TextView noResultsSchedulesButton;
     Favorite currentFavorite = null;
     NextToArriveTripView nextToArriveDetailsView;
     boolean editFavoritesFlag = false;
@@ -132,7 +136,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
 
         refresh = findViewById(R.id.refresh_button);
-        refresh.setContentDescription("Refresh");
+        refresh.setContentDescription(getString(R.string.nta_refresh));
 
         bottomSheetLayout = (ViewGroup) findViewById(R.id.bottomSheetLayout);
 
@@ -151,14 +155,12 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         final TextView titleText = (TextView) bottomSheetLayout.findViewById(R.id.title_txt);
         nextToArriveDetailsView = (NextToArriveTripView) findViewById(R.id.next_to_arrive_trip_details);
         nextToArriveDetailsView.setMaxResults(null);
-        nextToArriveDetailsView.setResults(5, TimeUnit.HOURS);  // if this value changes update UI message nta_empty_results
+        nextToArriveDetailsView.setResults(NTA_RESULTS_FOR_NEXT_HOURS, TimeUnit.HOURS);  // if this value changes update UI message nta_empty_results
 
         bottomSheetLayout.setVisibility(View.GONE);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.map_container, new NextToArriveNoResultsFragment());
         ft.commit();
-
-        // TODO: bug where indefinite loading once regaining signal
 
         nextToArriveDetailsView.setOnFirstElementHeight(new Consumer<Integer>() {
             @Override
@@ -205,8 +207,8 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
 
         if (start != null && destination != null && transitType != null) {
-            titleText.setText(transitType.getString("nta_results_title", this));
-            ((TextView) findViewById(R.id.see_later_text)).setText(transitType.getString("need_to_see", this));
+            titleText.setText(transitType.getString(NTA_RESULTS_TITLE, this));
+            ((TextView) findViewById(R.id.see_later_text)).setText(transitType.getString(NEED_TO_SEE, this));
 
             final TextView startingStationNameText = (TextView) findViewById(R.id.starting_station_name);
             startingStationNameText.setText(start.getStopName());
@@ -361,9 +363,9 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
             getMenuInflater().inflate(R.menu.favorite_menu, menu);
             if (currentFavorite != null) {
                 menu.findItem(R.id.create_favorite).setIcon(R.drawable.ic_favorite_made);
-                menu.findItem(R.id.create_favorite).setTitle("Tap to remove this next to arrive result as a favorite.");
+                menu.findItem(R.id.create_favorite).setTitle(R.string.favorite_icon_title_remove);
             } else {
-                menu.findItem(R.id.create_favorite).setTitle("Tap to create a favorite from this next to arrive result.");
+                menu.findItem(R.id.create_favorite).setTitle(R.string.favorite_icon_title_create);
             }
         } else {
             getMenuInflater().inflate(R.menu.edit_favorites_menu, menu);
@@ -377,7 +379,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         CrashlyticsManager.log(Log.INFO, TAG, "Creating EditFavoriteDialogFragment for:" + currentFavorite.toString());
         EditFavoriteDialogFragment fragment = EditFavoriteDialogFragment.getInstance(currentFavorite);
 
-        fragment.show(ft, "Dialog");
+        fragment.show(ft, EDIT_FAVORITE_DIALOG_KEY);
 
     }
 
@@ -466,18 +468,18 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                         if (transitType == TransitType.RAIL) {
                             StringBuilder builder = new StringBuilder("Train: " + marker.getTitle());
                             if (detail != null && detail.getDetails() != null) {
-                                builder.append("<br>");
-                                builder.append("Status: ");
+                                builder.append(NEW_LINE)
+                                        .append("Status: ");
                                 if (detail.getDetails().getNextStop() != null && detail.getDetails().getNextStop().getLate() > 0) {
                                     builder.append(GeneralUtils.getDurationAsLongString(detail.getDetails().getNextStop().getLate(), TimeUnit.MINUTES) + " late.");
                                 } else {
-                                    builder.append("On time");
+                                    builder.append(getString(R.string.nta_on_time));
                                 }
                                 if (detail.getDetails().getConsist() != null && detail.getDetails().getConsist().size() > 0) {
                                     if (!(detail.getDetails().getConsist().size() == 1 && "".equals(detail.getDetails().getConsist().get(0)))) {
-                                        builder.append("<br>");
-                                        builder.append("# of Train Cars: ");
-                                        builder.append(detail.getDetails().getConsist().size());
+                                        builder.append(NEW_LINE)
+                                                .append("# of Train Cars: ")
+                                                .append(detail.getDetails().getConsist().size());
                                     }
                                 }
                             }
@@ -485,15 +487,15 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                         } else {
                             StringBuilder builder = new StringBuilder("Block ID: " + marker.getTitle());
                             if (detail != null && detail.getDetails() != null) {
-                                builder.append("<br>");
-                                builder.append("Vehicle Number: ");
-                                builder.append(detail.getDetails().getVehicleId());
-                                builder.append("<br>");
-                                builder.append("Status: ");
+                                builder.append(NEW_LINE)
+                                        .append("Vehicle Number: ")
+                                        .append(detail.getDetails().getVehicleId())
+                                        .append(NEW_LINE)
+                                        .append("Status: ");
                                 if (detail.getDetails().getDestination() != null && detail.getDetails().getDestination().getDelay() > 0) {
                                     builder.append(GeneralUtils.getDurationAsLongString(detail.getDetails().getDestination().getDelay(), TimeUnit.MINUTES) + " late.");
                                 } else {
-                                    builder.append("On time");
+                                    builder.append(getString(R.string.nta_on_time));
                                 }
 
                             }

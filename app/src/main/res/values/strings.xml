@@ -28,6 +28,8 @@
     <string name="tab_subway">Subway</string>
     <string name="tab_nhsl">NHSL</string>
 
+    <string name="tab_description">Tap to switch to </string>
+
 
     <string name="starting_station">Starting Station</string>
     <string name="destionation_station_hint">Destination Station</string>
@@ -74,6 +76,7 @@
     <string name="dest_stop_text_trolley">Destination Stop</string>
     <string name="dest_stop_text_nhsl">Destination Station</string>
 
+
     <!-- Next to Arrive String by Transit Type -->
     <string name="nta_picker_title_rail">Regional Rail</string>
     <string name="nta_picker_title_bus">Bus</string>
@@ -93,6 +96,12 @@
     <string name="need_to_see_trolley">Need to see later trolley?</string>
     <string name="need_to_see_nhsl">Need to see later trains?</string>
 
+    <string name="trip_details_title_rail">Train Details</string>
+    <string name="trip_details_title_bus">Bus Details</string>
+    <string name="trip_details_title_trolley">Trolley Details</string>
+    <string name="trip_details_title_subway">Subway Details</string>
+    <string name="trip_details_title_nhsl">Train Details</string>
+
 
     <!-- Next To Arrive General -->
     <string name="nta_query_button_text">Next To Arrive</string>
@@ -105,11 +114,11 @@
     <string name="detour_icon_content_description_prefix">Detour on route:</string>
     <string name="weather_icon_content_description_prefix">Weather alert on route:</string>
 
-    <string name="trip_details_title_rail">Train Details</string>
-    <string name="trip_details_title_bus">Bus Details</string>
-    <string name="trip_details_title_trolley">Trolley Details</string>
-    <string name="trip_details_title_subway">Subway Details</string>
-    <string name="trip_details_title_nhsl">Train Details</string>
+    <string name="nta_on_time">On Time</string>
+    <string name="nta_now">Now</string>
+    <string name="nta_scheduled">Scheduled</string>
+
+    <string name="nta_refresh">Refresh</string>
 
 
     <!-- Favorite -->
@@ -118,6 +127,11 @@
     <string name="delete_fav_pos_button">OK</string>
     <string name="delete_fav_neg_button">Cancel</string>
     <string name="create_fav_snackbar_text">Trip saved to your Favorites</string>
+    <string name="favorite_icon_title_remove">Tap to remove this Next To Arrive result as a favorite</string>
+    <string name="favorite_icon_title_create">Tap to create a favorite from this Next To Arrive result</string>
+    <string name="favorite_more_button_description">Tap for more Next to Arrive details for your favorite, </string>
+
+    <string name="snackbar_no_connection_link_text">Schedules »</string>
 
 
     <!-- System Status -->
@@ -218,7 +232,11 @@
 
 
     <!-- Alerts -->
-    <string name="button_ok">Okay</string>
     <string name="title_generic_alert">General SEPTA Alert</string>
     <string name="title_mobile_app_alert">Mobile App Alert</string>
+
+    <!-- String Resources -->
+    <string name="button_ok">Okay</string>
+    <string name="empty_string"></string>
+
 </resources>

@@ -11,7 +11,6 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
@@ -145,7 +144,6 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
 
         // Prevent the bottom sheet from being dragged to be opened.  Force it to use the anchor image.
-        //BottomSheetHandler myBottomSheetBehaviorCallBack = new BottomSheetHandler(bottomSheetBehavior);
         //bottomSheetBehavior.setBottomSheetCallback(myBottomSheetBehaviorCallBack);
         final View anchor = bottomSheetLayout.findViewById(R.id.bottom_sheet_anchor);
         //anchor.setOnClickListener(myBottomSheetBehaviorCallBack);
@@ -772,40 +770,6 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         gotoSchedulesForTarget();
     }
 
-    private static class BottomSheetHandler extends BottomSheetBehavior.BottomSheetCallback implements View.OnClickListener {
-        BottomSheetBehavior bottomSheetBehavior;
-
-        int targetState;
-
-        BottomSheetHandler(BottomSheetBehavior bottomSheetBehavior) {
-            this.bottomSheetBehavior = bottomSheetBehavior;
-            targetState = bottomSheetBehavior.getState();
-        }
-
-        @Override
-        public void onStateChanged(@NonNull View bottomSheet, int newState) {
-            if (newState == BottomSheetBehavior.STATE_DRAGGING) {
-                bottomSheetBehavior.setState(targetState);
-            }
-        }
-
-        @Override
-        public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-
-        }
-
-        @Override
-        public void onClick(View view) {
-            Log.d(TAG, "state is:" + bottomSheetBehavior.getState());
-            if (targetState == BottomSheetBehavior.STATE_EXPANDED) {
-                targetState = BottomSheetBehavior.STATE_COLLAPSED;
-            } else if (targetState == BottomSheetBehavior.STATE_COLLAPSED) {
-                targetState = BottomSheetBehavior.STATE_EXPANDED;
-            }
-
-            bottomSheetBehavior.setState(targetState);
-        }
-    }
 }
 
 

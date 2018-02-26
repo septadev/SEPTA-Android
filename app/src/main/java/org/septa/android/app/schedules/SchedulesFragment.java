@@ -42,7 +42,7 @@ public class SchedulesFragment extends Fragment {
         KEY_SCHEDULES_SECTIONS_PAGER_ADAPTER = "KEY_SCHEDULES_SECTIONS_PAGER_ADAPTER",
             KEY_SCHEDULES_FRAGMENT_TITLE = "KEY_SCHEDULES_FRAGMENT_TITLE";
 
-    private static final String TAB_HEADER_STRING_NAME = "schedules_picker_title",
+    private static final String TAB_HEADER_STRING_NAME = "nta_picker_title",
         HOLIDAY_SCHEDULE_URL = "https://www.septa.org/schedules/modified-mobile",
         HOLIDAY_SCHEDULE_URL_RAIL = "https://septa.org/schedules/rail/special/holidays-mobile.html";
 

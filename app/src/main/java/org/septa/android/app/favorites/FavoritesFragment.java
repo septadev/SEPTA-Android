@@ -45,6 +45,7 @@ import retrofit2.Response;
  * Created by jkampf on 9/5/17.
  */
 public class FavoritesFragment extends Fragment implements Runnable {
+    public static final String TAG = FavoritesFragment.class.getSimpleName();
 
     // this version is the most recent to require a force delete of user favorites
     private static final int FAVORITES_LAST_UPDATED_VERSION = 268;
@@ -201,11 +202,18 @@ public class FavoritesFragment extends Fragment implements Runnable {
                 if (response != null && response.body() != null)
                     tripView.setNextToArriveData(new NextArrivalModelResponseParser(response.body()));
                 progressView.setVisibility(View.GONE);
+
+                // this snackbar is being created to be auto-dismissed in order to remove persistent snackbar when connection is regained
+                final Snackbar snackbar = Snackbar.make(fragmentView, "Test Snackbar", Snackbar.LENGTH_INDEFINITE);
+                snackbar.show();
+                snackbar.dismiss();
             }
 
             @Override
             public void onFailure(@NonNull Call<NextArrivalModelResponse> call, @NonNull Throwable t) {
                 tripView.setNextToArriveData(new NextArrivalModelResponseParser());
+
+                // this snackbar will persist until a connection is reestablished and favorites are refreshed
                 Snackbar snackbar = Snackbar.make(fragmentView, R.string.realtime_failure_message, Snackbar.LENGTH_INDEFINITE);
                 snackbar.setAction("Schedules »", new View.OnClickListener() {
                     @Override
@@ -217,6 +225,7 @@ public class FavoritesFragment extends Fragment implements Runnable {
                 android.widget.TextView tv = (android.widget.TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
                 tv.setMaxLines(10);
                 snackbar.show();
+
                 progressView.setVisibility(View.GONE);
             }
         });

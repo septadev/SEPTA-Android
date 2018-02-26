@@ -361,9 +361,9 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
             getMenuInflater().inflate(R.menu.favorite_menu, menu);
             if (currentFavorite != null) {
                 menu.findItem(R.id.create_favorite).setIcon(R.drawable.ic_favorite_made);
-                menu.findItem(R.id.create_favorite).setTitle(R.string.favorite_icon_title_remove);
+                menu.findItem(R.id.create_favorite).setTitle(R.string.nta_favorite_icon_title_remove);
             } else {
-                menu.findItem(R.id.create_favorite).setTitle(R.string.favorite_icon_title_create);
+                menu.findItem(R.id.create_favorite).setTitle(R.string.nta_favorite_icon_title_create);
             }
         } else {
             getMenuInflater().inflate(R.menu.edit_favorites_menu, menu);
@@ -474,7 +474,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                                     builder.append(getString(R.string.nta_on_time));
                                 }
                                 if (detail.getDetails().getConsist() != null && detail.getDetails().getConsist().size() > 0) {
-                                    if (!(detail.getDetails().getConsist().size() == 1 && "".equals(detail.getDetails().getConsist().get(0)))) {
+                                    if (!(detail.getDetails().getConsist().size() == 1 && getString(R.string.empty_string).equals(detail.getDetails().getConsist().get(0)))) {
                                         builder.append(NEW_LINE)
                                                 .append("# of Train Cars: ")
                                                 .append(detail.getDetails().getConsist().size());
@@ -591,7 +591,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                                 // Yes we are making a DB query on the UI thread.  But it is a local DB and it is a really fast single table look up.
                                 if (cursor.moveToFirst()) {
                                     String directionCode = cursor.getString(0);
-                                    routeDirectionModel = new RouteDirectionModel(routeId, response.body().getNextArrivalRecords().get(0).getOrigRouteName(), response.body().getNextArrivalRecords().get(0).getOrigRouteName(), "", directionCode, null);
+                                    routeDirectionModel = new RouteDirectionModel(routeId, response.body().getNextArrivalRecords().get(0).getOrigRouteName(), response.body().getNextArrivalRecords().get(0).getOrigRouteName(), getString(R.string.empty_string), directionCode, null);
                                 }
                             } catch (Exception e) {
                                 // Swallow the error.  The worst that happens is the route is not selected.

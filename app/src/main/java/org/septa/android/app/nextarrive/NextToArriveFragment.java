@@ -30,9 +30,9 @@ public class NextToArriveFragment extends Fragment {
 
     public static final String TAG = NextToArriveFragment.class.getSimpleName(),
         NTA_KEY_SECTIONS_PAGER_ADAPTER = "NTA_KEY_SECTIONS_PAGER_ADAPTER",
-            NTA_ACTIVITY_TITLE = "NTA_ACTIVITY_TITLE",
-            TAB_HEADER_STRING_NAME = "nta_picker_title";
+            NTA_ACTIVITY_TITLE = "NTA_ACTIVITY_TITLE";
 
+    private static final String TAB_HEADER_STRING_NAME = "nta_picker_title";
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
     private TabLayout tabLayout;

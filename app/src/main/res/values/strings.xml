@@ -38,6 +38,7 @@
     <string name="title_activity_next_to_arrive_results">NextToArriveResultsActivity</string>
     <string name="RailStationNextToArriveResults">Next To Arrive Rail</string>
 
+
     <!-- FONTS -->
     <string name="font_roboto_regular">fonts/Roboto-Regular.ttf</string>
     <string name="font_roboto_bold">fonts/Roboto-Bold.ttf</string>
@@ -127,9 +128,12 @@
     <string name="delete_fav_pos_button">OK</string>
     <string name="delete_fav_neg_button">Cancel</string>
     <string name="create_fav_snackbar_text">Trip saved to your Favorites</string>
-    <string name="favorite_icon_title_remove">Tap to remove this Next To Arrive result as a favorite</string>
-    <string name="favorite_icon_title_create">Tap to create a favorite from this Next To Arrive result</string>
+    <string name="nta_favorite_icon_title_remove">Tap to remove this Next To Arrive result as a favorite</string>
+    <string name="nta_favorite_icon_title_create">Tap to create a favorite from this Next To Arrive result</string>
     <string name="favorite_more_button_description">Tap for more Next to Arrive details for your favorite, </string>
+
+    <string name="schedule_favorite_icon_title_remove">Tap to remove this Schedule result as a favorite</string>
+    <string name="schedule_favorite_icon_title_create">Tap to create a favorite from this Schedule result</string>
 
     <string name="snackbar_no_connection_link_text">Schedules »</string>
 
@@ -147,6 +151,7 @@
     <string name="system_status_results_title_trolley">System Status: Trolley</string>
     <string name="system_status_results_title_nhsl">System Status: NHSL</string>
 
+
     <!-- Schedules -->
     <string name="schedule_query_button_text">View Schedules</string>
     <string name="schedule_trip_prefix_rail">Train #</string>
@@ -154,6 +159,10 @@
     <string name="schedule_trip_prefix_subway">Train #</string>
     <string name="schedule_trip_prefix_trolley">Trolley #</string>
     <string name="schedule_trip_prefix_nhsl">Train #</string>
+
+    <string name="holiday_schedule_title">Holiday Schedule</string>
+    <string name="holiday_alert_button_text">View Transit Schedule</string>
+    <string name="holiday_alert_button_text_rail">View Rail Schedule</string>
 
 
     <!-- Connect With SEPTA -->

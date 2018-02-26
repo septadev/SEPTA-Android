@@ -45,8 +45,6 @@ import retrofit2.Response;
  * Created by jkampf on 9/5/17.
  */
 public class FavoritesFragment extends Fragment implements Runnable {
-    public static final String TAG = FavoritesFragment.class.getSimpleName();
-
     // this version is the most recent to require a force delete of user favorites
     private static final int FAVORITES_LAST_UPDATED_VERSION = 268;
 

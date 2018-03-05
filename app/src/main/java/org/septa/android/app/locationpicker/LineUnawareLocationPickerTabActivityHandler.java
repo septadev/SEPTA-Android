@@ -35,7 +35,7 @@ import org.septa.android.app.support.CursorAdapterSupplier;
  */
 
 public class LineUnawareLocationPickerTabActivityHandler extends BaseTabActivityHandler {
-    private static final String TAG = "LineUnawareLocationPick";
+    private static final String TAG = LineUnawareLocationPickerTabActivityHandler.class.getSimpleName();
     private CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
     private TransitType transitType;
     private Class targetClass;

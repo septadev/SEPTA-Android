@@ -474,7 +474,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                                     builder.append(getString(R.string.nta_on_time));
                                 }
                                 if (detail.getDetails().getConsist() != null && detail.getDetails().getConsist().size() > 0) {
-                                    if (!(detail.getDetails().getConsist().size() == 1 && getString(R.string.empty_string).equals(detail.getDetails().getConsist().get(0)))) {
+                                    if (!(detail.getDetails().getConsist().size() == 1 && detail.getDetails().getConsist().get(0).trim().isEmpty())) {
                                         builder.append(NEW_LINE)
                                                 .append("# of Train Cars: ")
                                                 .append(detail.getDetails().getConsist().size());

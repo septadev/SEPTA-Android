@@ -321,18 +321,18 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
                         if (details.getDestination() != null)
                             destStationValue.setText(details.getDestination().getStation());
                         else
-                            destStationValue.setText("");
+                            destStationValue.setText(R.string.empty_string);
                         originStationValue.setText(details.getSource());
 
                         typeValue.setText(details.getService());
                         if (details.getNextStop() != null)
                             nextStopValue.setText(details.getNextStop().getStation());
                         else
-                            nextStopValue.setText("");
+                            nextStopValue.setText(R.string.empty_string);
 
                         if (details.getConsist() != null && details.getConsist().size() > 0) {
-                            if (details.getConsist().size() == 1 && "".equals(details.getConsist().get(0).trim())) {
-                                numTrainsValue.setText("");
+                            if (details.getConsist().size() == 1 && details.getConsist().get(0).trim().isEmpty()) {
+                                numTrainsValue.setText(R.string.empty_string);
                             } else {
                                 numTrainsValue.setText(details.getConsist().size() + " - ");
                                 StringBuilder trainsId = new StringBuilder();
@@ -345,7 +345,7 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
                                 trainsIdValue.setText(trainsId.toString());
                             }
                         } else {
-                            numTrainsValue.setText("");
+                            numTrainsValue.setText(R.string.empty_string);
                         }
                     }
                     updateMap();

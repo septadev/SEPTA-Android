@@ -88,7 +88,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     private static final String EDIT_FAVORITE_DIALOG_KEY = "EDIT_FAVORITE_DIALOG_KEY",
             NTA_RESULTS_TITLE = "nta_results_title",
             NEED_TO_SEE = "need_to_see";
-    private static final String NEW_LINE = "NEW_LINE";
+    private static final String NEW_LINE = "<br/>";
     StopModel start;
     StopModel destination;
     TransitType transitType;

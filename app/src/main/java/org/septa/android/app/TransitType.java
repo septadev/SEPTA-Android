@@ -3,15 +3,14 @@ package org.septa.android.app;
 import android.content.Context;
 import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
 import com.google.gson.annotations.SerializedName;
 
 import org.septa.android.app.support.CrashlyticsManager;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -202,10 +201,14 @@ public enum TransitType implements Serializable {
 
         @Override
         public String getAlertId(String id) {
-            id = id.toLowerCase();
+            // subway and nhsl IDs must be lowercase
+            List<String> lowerCaseIDs = new ArrayList<>(Arrays.asList("bso", "mfo", "bsl", "mfl", "nhsl"));
+            if (lowerCaseIDs.contains(id.toLowerCase())) {
+                return "rr_route_" + id.toLowerCase();
+            }
 
-            if (id.equals("bso") || id.equals("mfo")) {
-                return "rr_route_" + id;
+            if (id.equals("LUCYGO") || id.equals("LUCYGR")) {
+                id = "LUCY";
             }
 
             return base + "_" + id;

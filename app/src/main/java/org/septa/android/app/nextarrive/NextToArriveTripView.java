@@ -101,8 +101,6 @@ public class NextToArriveTripView extends FrameLayout {
             return;
 
         List<NextArrivalModelResponse.NextArrivalRecord> data = parser.getResults();
-//        if (data.size() <= 0)
-//            return;
 
         Collections.sort(data, new Comparator<NextArrivalRecord>() {
             @Override
@@ -256,7 +254,7 @@ public class NextToArriveTripView extends FrameLayout {
         if (origDepatureMillis >= 1000 * 60)
             origDepartureTime.setText(GeneralUtils.getDurationAsString(origDepatureMillis, TimeUnit.MILLISECONDS));
         else
-            origDepartureTime.setText("now");
+            origDepartureTime.setText(R.string.nta_now);
 
         boolean enableClick = true;
         android.widget.TextView origTardyText = (android.widget.TextView) line.findViewById(R.id.orig_tardy_text);
@@ -269,10 +267,10 @@ public class NextToArriveTripView extends FrameLayout {
             origDepartureTime.setTextColor(ContextCompat.getColor(getContext(), R.color.late_departing));
         } else {
             if (unit.isOrigRealtime()) {
-                origTardyText.setText("On time");
+                origTardyText.setText(R.string.nta_on_time);
                 origTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.no_delay_minutes));
             } else {
-                origTardyText.setText("Scheduled");
+                origTardyText.setText(R.string.nta_scheduled);
                 origTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.scheduled));
                 enableClick = false;
             }
@@ -376,7 +374,7 @@ public class NextToArriveTripView extends FrameLayout {
         if (origDepatureMillis >= 1000 * 60)
             origDepartureTime.setText(GeneralUtils.getDurationAsString(origDepatureMillis, TimeUnit.MILLISECONDS));
         else
-            origDepartureTime.setText("now");
+            origDepartureTime.setText(R.string.nta_now);
 
         boolean enableOrigClick = true;
         View origTripView = convertView.findViewById(R.id.orig_trip_layout);
@@ -390,10 +388,10 @@ public class NextToArriveTripView extends FrameLayout {
             origDepartureTime.setTextColor(ContextCompat.getColor(getContext(), R.color.late_departing));
         } else {
             if (item.isOrigRealtime()) {
-                origTardyText.setText("On time");
+                origTardyText.setText(R.string.nta_on_time);
                 origTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.no_delay_minutes));
             } else {
-                origTardyText.setText("Scheduled");
+                origTardyText.setText(R.string.nta_scheduled);
                 origTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.scheduled));
                 enableOrigClick = false;
             }
@@ -492,7 +490,7 @@ public class NextToArriveTripView extends FrameLayout {
         if (termDepatureMillis >= 1000 * 60)
             origDepartureTime.setText(GeneralUtils.getDurationAsString(termDepatureMillis, TimeUnit.MILLISECONDS));
         else
-            origDepartureTime.setText("now");
+            origDepartureTime.setText(R.string.nta_now);
 
         boolean termEnableClick = true;
         View termTripView = convertView.findViewById(R.id.term_trip_layout);
@@ -506,10 +504,10 @@ public class NextToArriveTripView extends FrameLayout {
             termDepartureTime.setTextColor(ContextCompat.getColor(getContext(), R.color.late_departing));
         } else {
             if (item.isTermRealtime()) {
-                termTardyText.setText("On time");
+                termTardyText.setText(R.string.nta_on_time);
                 termTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.no_delay_minutes));
             } else {
-                termTardyText.setText("Scheduled");
+                termTardyText.setText(R.string.nta_scheduled);
                 termTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.scheduled));
                 termEnableClick = false;
             }

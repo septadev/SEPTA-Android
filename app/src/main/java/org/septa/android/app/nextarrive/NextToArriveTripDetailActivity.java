@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -42,8 +43,6 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
-
-import android.os.Handler;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -311,7 +310,7 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
                     } else {
                         arrivingValue.setBackgroundResource(R.drawable.ontime_tripdetails_boarder);
                         arrivingValue.setTextColor(ContextCompat.getColor(NextToArriveTripDetailActivity.this, R.color.on_time_departing));
-                        arrivingValue.setText("On Time");
+                        arrivingValue.setText(R.string.nta_on_time);
                     }
 
 
@@ -322,18 +321,18 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
                         if (details.getDestination() != null)
                             destStationValue.setText(details.getDestination().getStation());
                         else
-                            destStationValue.setText("");
+                            destStationValue.setText(R.string.empty_string);
                         originStationValue.setText(details.getSource());
 
                         typeValue.setText(details.getService());
                         if (details.getNextStop() != null)
                             nextStopValue.setText(details.getNextStop().getStation());
                         else
-                            nextStopValue.setText("");
+                            nextStopValue.setText(R.string.empty_string);
 
                         if (details.getConsist() != null && details.getConsist().size() > 0) {
-                            if (details.getConsist().size() == 1 && "".equals(details.getConsist().get(0).trim())) {
-                                numTrainsValue.setText("");
+                            if (details.getConsist().size() == 1 && details.getConsist().get(0).trim().isEmpty()) {
+                                numTrainsValue.setText(R.string.empty_string);
                             } else {
                                 numTrainsValue.setText(details.getConsist().size() + " - ");
                                 StringBuilder trainsId = new StringBuilder();
@@ -346,7 +345,7 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
                                 trainsIdValue.setText(trainsId.toString());
                             }
                         } else {
-                            numTrainsValue.setText("");
+                            numTrainsValue.setText(R.string.empty_string);
                         }
                     }
                     updateMap();

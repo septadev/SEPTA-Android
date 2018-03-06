@@ -32,7 +32,7 @@ public enum TransitType implements Serializable {
     NHSL(R.drawable.pin_nhsl, R.drawable.ic_nhsl, R.drawable.nhsl_active_final, new BasicColorProvider(R.color.line_color_nhsl), new BasicLineIconProvider(R.drawable.ic_line_nhsl), new SimpleAlertIdGenerator("rr_route"));
 
 
-    private static final String TAG = "org.septa...TransitType";
+    private static final String TAG = TransitType.class.getSimpleName();
 
     private int mapMarkerResource;
     private int tabInactiveImageResource;

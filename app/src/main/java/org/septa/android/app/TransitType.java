@@ -3,7 +3,6 @@ package org.septa.android.app;
 import android.content.Context;
 import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
 import com.google.gson.annotations.SerializedName;
 
 import org.septa.android.app.support.CrashlyticsManager;
@@ -11,7 +10,6 @@ import org.septa.android.app.support.CrashlyticsManager;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -33,7 +31,7 @@ public enum TransitType implements Serializable {
     NHSL(R.drawable.pin_nhsl, R.drawable.ic_nhsl, R.drawable.nhsl_active_final, new BasicColorProvider(R.color.line_color_nhsl), new BasicLineIconProvider(R.drawable.ic_line_nhsl), new SimpleAlertIdGenerator("rr_route"));
 
 
-    private static final String TAG = "org.septa...TransitType";
+    private static final String TAG = TransitType.class.getSimpleName();
 
     private int mapMarkerResource;
     private int tabInactiveImageResource;

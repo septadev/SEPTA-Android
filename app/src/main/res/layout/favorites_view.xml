@@ -12,11 +12,10 @@
             android:id="@+id/favorites_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginTop="15dp"
+            android:padding="@dimen/favorite_container_padding"
+            android:clipToPadding="false"
             android:orientation="vertical" />
 
-
     </ScrollView>
+
 </FrameLayout>

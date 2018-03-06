@@ -24,6 +24,8 @@ public class EditFavoriteDialogFragment extends DialogFragment {
     private Favorite favorite;
     private EditFavoriteCallBack editFavoriteCallBack;
 
+    private static final String KEY_FAVORITE = "KEY_FAVORITE";
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -101,14 +103,14 @@ public class EditFavoriteDialogFragment extends DialogFragment {
         EditFavoriteDialogFragment fragment = new EditFavoriteDialogFragment();
 
         Bundle args = new Bundle();
-        args.putSerializable("favorite", favorite);
+        args.putSerializable(KEY_FAVORITE, favorite);
         fragment.setArguments(args);
 
         return fragment;
     }
 
     private void restoreArgs() {
-        favorite = (Favorite) getArguments().getSerializable("favorite");
+        favorite = (Favorite) getArguments().getSerializable(KEY_FAVORITE);
     }
 
 

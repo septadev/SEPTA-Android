@@ -507,9 +507,9 @@ public class ScheduleResultsActivity extends AppCompatActivity {
 
         if (currentFavorite != null) {
             menu.findItem(R.id.create_favorite).setIcon(R.drawable.ic_favorite_made);
-            menu.findItem(R.id.create_favorite).setTitle("Tap to remove this schedule result as a favorite.");
+            menu.findItem(R.id.create_favorite).setTitle(R.string.schedule_favorite_icon_title_remove);
         } else {
-            menu.findItem(R.id.create_favorite).setTitle("Tap to create a favorite from this schedule result.");
+            menu.findItem(R.id.create_favorite).setTitle(R.string.schedule_favorite_icon_title_create);
         }
 
         return true;

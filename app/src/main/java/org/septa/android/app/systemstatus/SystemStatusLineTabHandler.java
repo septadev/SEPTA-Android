@@ -246,7 +246,7 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
 
                 if (globalAlertDetail != null && globalAlertDetail.getAlerts().size() > 0 &&
                         globalAlertDetail.getAlerts().get(0).getMessage() != null &&
-                        !globalAlertDetail.getAlerts().get(0).getMessage().equals("")) {
+                        !globalAlertDetail.getAlerts().get(0).getMessage().trim().isEmpty()) {
                     globalAlertView.setVisibility(View.VISIBLE);
 
                     for (AlertDetail.Detail alert : globalAlertDetail.getAlerts()) {
@@ -286,16 +286,16 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
 
                 if (mobileAlertDetail != null && mobileAlertDetail.getAlerts().size() > 0 &&
                         mobileAlertDetail.getAlerts().get(0).getMessage() != null &&
-                        !mobileAlertDetail.getAlerts().get(0).getMessage().equals("")) {
+                        !mobileAlertDetail.getAlerts().get(0).getMessage().trim().isEmpty()) {
                     mobileAlertView.setVisibility(View.VISIBLE);
 
                     for (AlertDetail.Detail alert : mobileAlertDetail.getAlerts()) {
-                        if (!"".equals(alert.getAdvisoryMessage())) {
+                        if (!alert.getAdvisoryMessage().trim().isEmpty()) {
                             alertText.append(alert.getAdvisoryMessage());
                             found = true;
                         }
 
-                        if (!"".equals(alert.getMessage())) {
+                        if (!alert.getMessage().trim().isEmpty()) {
                             alertText.append(alert.getMessage());
                             found = true;
                         }

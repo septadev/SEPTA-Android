@@ -6,7 +6,7 @@
 
     <string name="action_settings">Settings</string>
 
-    <string name="realtime_failure_message">Unable to Show Results.  This may be due to a poor network connection or the real time data is temporarily unavailable, please try again later.</string>
+    <string name="realtime_failure_message">Unable to show results. This may be due to a poor network connection or the real time data is temporarily unavailable, please try again later.</string>
 
     <string name="find_next_train">FIND NEXT TRAIN</string>
     <string name="septa">SEPTA</string>
@@ -28,6 +28,8 @@
     <string name="tab_subway">Subway</string>
     <string name="tab_nhsl">NHSL</string>
 
+    <string name="tab_description">Tap to switch to </string>
+
 
     <string name="starting_station">Starting Station</string>
     <string name="destionation_station_hint">Destination Station</string>
@@ -35,6 +37,7 @@
     <string name="view_trains_button">VIEW TRAINS</string>
     <string name="title_activity_next_to_arrive_results">NextToArriveResultsActivity</string>
     <string name="RailStationNextToArriveResults">Next To Arrive Rail</string>
+
 
     <!-- FONTS -->
     <string name="font_roboto_regular">fonts/Roboto-Regular.ttf</string>
@@ -74,6 +77,7 @@
     <string name="dest_stop_text_trolley">Destination Stop</string>
     <string name="dest_stop_text_nhsl">Destination Station</string>
 
+
     <!-- Next to Arrive String by Transit Type -->
     <string name="nta_picker_title_rail">Regional Rail</string>
     <string name="nta_picker_title_bus">Bus</string>
@@ -93,22 +97,29 @@
     <string name="need_to_see_trolley">Need to see later trolley?</string>
     <string name="need_to_see_nhsl">Need to see later trains?</string>
 
+    <string name="trip_details_title_rail">Train Details</string>
+    <string name="trip_details_title_bus">Bus Details</string>
+    <string name="trip_details_title_trolley">Trolley Details</string>
+    <string name="trip_details_title_subway">Subway Details</string>
+    <string name="trip_details_title_nhsl">Train Details</string>
+
 
     <!-- Next To Arrive General -->
     <string name="nta_query_button_text">Next To Arrive</string>
     <string name="about_the_septa_app">About the SEPTA App</string>
     <string name="text_empty_trips">No recent trips</string>
+    <string name="nta_empty_results">No results found for the next 5 hours. \n\nThis could be due to operating hours having already ended or not yet begun, or a service outage on this route. \n\nPlease refer to Schedules for the next arrival times.</string>
 
     <string name="alert_icon_content_description_prefix">Service Alert on route:</string>
     <string name="advisory_icon_content_description_prefix">Advisory alert on route:</string>
     <string name="detour_icon_content_description_prefix">Detour on route:</string>
     <string name="weather_icon_content_description_prefix">Weather alert on route:</string>
 
-    <string name="trip_details_title_rail">Train Details</string>
-    <string name="trip_details_title_bus">Bus Details</string>
-    <string name="trip_details_title_trolley">Trolley Details</string>
-    <string name="trip_details_title_subway">Subway Details</string>
-    <string name="trip_details_title_nhsl">Train Details</string>
+    <string name="nta_on_time">On Time</string>
+    <string name="nta_now">Now</string>
+    <string name="nta_scheduled">Scheduled</string>
+
+    <string name="nta_refresh">Refresh</string>
 
 
     <!-- Favorite -->
@@ -117,6 +128,14 @@
     <string name="delete_fav_pos_button">OK</string>
     <string name="delete_fav_neg_button">Cancel</string>
     <string name="create_fav_snackbar_text">Trip saved to your Favorites</string>
+    <string name="nta_favorite_icon_title_remove">Tap to remove this Next To Arrive result as a favorite</string>
+    <string name="nta_favorite_icon_title_create">Tap to create a favorite from this Next To Arrive result</string>
+    <string name="favorite_more_button_description">Tap for more Next to Arrive details for your favorite, </string>
+
+    <string name="schedule_favorite_icon_title_remove">Tap to remove this Schedule result as a favorite</string>
+    <string name="schedule_favorite_icon_title_create">Tap to create a favorite from this Schedule result</string>
+
+    <string name="snackbar_no_connection_link_text">Schedules »</string>
 
 
     <!-- System Status -->
@@ -132,6 +151,7 @@
     <string name="system_status_results_title_trolley">System Status: Trolley</string>
     <string name="system_status_results_title_nhsl">System Status: NHSL</string>
 
+
     <!-- Schedules -->
     <string name="schedule_query_button_text">View Schedules</string>
     <string name="schedule_trip_prefix_rail">Train #</string>
@@ -139,6 +159,10 @@
     <string name="schedule_trip_prefix_subway">Train #</string>
     <string name="schedule_trip_prefix_trolley">Trolley #</string>
     <string name="schedule_trip_prefix_nhsl">Train #</string>
+
+    <string name="holiday_schedule_title">Holiday Schedule</string>
+    <string name="holiday_alert_button_text">View Transit Schedule</string>
+    <string name="holiday_alert_button_text_rail">View Rail Schedule</string>
 
 
     <!-- Connect With SEPTA -->
@@ -217,7 +241,11 @@
 
 
     <!-- Alerts -->
-    <string name="button_ok">Okay</string>
     <string name="title_generic_alert">General SEPTA Alert</string>
     <string name="title_mobile_app_alert">Mobile App Alert</string>
+
+    <!-- String Resources -->
+    <string name="button_ok">Okay</string>
+    <string name="empty_string"></string>
+
 </resources>

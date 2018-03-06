@@ -88,7 +88,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     private static final String EDIT_FAVORITE_DIALOG_KEY = "EDIT_FAVORITE_DIALOG_KEY",
             NTA_RESULTS_TITLE = "nta_results_title",
             NEED_TO_SEE = "need_to_see";
-    private static final String NEW_LINE = "<br/>";
+    private static final String HTML_NEW_LINE = "<br/>";
     StopModel start;
     StopModel destination;
     TransitType transitType;
@@ -466,7 +466,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                         if (transitType == TransitType.RAIL) {
                             StringBuilder builder = new StringBuilder("Train: " + marker.getTitle());
                             if (detail != null && detail.getDetails() != null) {
-                                builder.append(NEW_LINE)
+                                builder.append(HTML_NEW_LINE)
                                         .append("Status: ");
                                 if (detail.getDetails().getNextStop() != null && detail.getDetails().getNextStop().getLate() > 0) {
                                     builder.append(GeneralUtils.getDurationAsLongString(detail.getDetails().getNextStop().getLate(), TimeUnit.MINUTES) + " late.");
@@ -475,7 +475,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                                 }
                                 if (detail.getDetails().getConsist() != null && detail.getDetails().getConsist().size() > 0) {
                                     if (!(detail.getDetails().getConsist().size() == 1 && detail.getDetails().getConsist().get(0).trim().isEmpty())) {
-                                        builder.append(NEW_LINE)
+                                        builder.append(HTML_NEW_LINE)
                                                 .append("# of Train Cars: ")
                                                 .append(detail.getDetails().getConsist().size());
                                     }
@@ -485,10 +485,10 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                         } else {
                             StringBuilder builder = new StringBuilder("Block ID: " + marker.getTitle());
                             if (detail != null && detail.getDetails() != null) {
-                                builder.append(NEW_LINE)
+                                builder.append(HTML_NEW_LINE)
                                         .append("Vehicle Number: ")
                                         .append(detail.getDetails().getVehicleId())
-                                        .append(NEW_LINE)
+                                        .append(HTML_NEW_LINE)
                                         .append("Status: ");
                                 if (detail.getDetails().getDestination() != null && detail.getDetails().getDestination().getDelay() > 0) {
                                     builder.append(GeneralUtils.getDurationAsLongString(detail.getDetails().getDestination().getDelay(), TimeUnit.MINUTES) + " late.");

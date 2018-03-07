@@ -5,6 +5,7 @@ import android.support.design.widget.Snackbar;
 import android.view.View;
 
 import org.septa.android.app.R;
+import org.septa.android.app.systemstatus.SystemStatusResultsActivity;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -130,22 +131,43 @@ public class SeptaServiceFactory {
     }
 
     public static void displayWebServiceError(View rootView, final Activity activity) {
-        Snackbar snackbar = Snackbar.make(rootView, R.string.realtime_failure_message, Snackbar.LENGTH_LONG);
-        snackbar.addCallback(new Snackbar.Callback() {
-            @Override
-            public void onDismissed(Snackbar snackbar, int event) {
-                try {
-                    activity.onBackPressed();
-                } catch (Exception e) {
-                    e.printStackTrace();
+        Snackbar snackbar = Snackbar.make(rootView, R.string.realtime_failure_message, Snackbar.LENGTH_INDEFINITE);
+
+        // redirect to schedules
+        if (activity instanceof SeptaServiceFactoryCallBacks) {
+            final SeptaServiceFactoryCallBacks listener = (SeptaServiceFactoryCallBacks) activity;
+            snackbar.setAction(R.string.snackbar_no_connection_link_text, new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    listener.gotoSchedules();
                 }
-            }
-        });
+            });
+        }
+
+        // when looking at system status details, instead of redirecting to schedules just send them back
+        if (activity instanceof SystemStatusResultsActivity) {
+            snackbar.setDuration(Snackbar.LENGTH_LONG);
+            snackbar.addCallback(new Snackbar.Callback() {
+                @Override
+                public void onDismissed(Snackbar snackbar, int event) {
+                    try {
+                        activity.onBackPressed();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+
+                    }
+                }
+            });
+        }
+
         View snackbarView = snackbar.getView();
         android.widget.TextView tv = (android.widget.TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
         tv.setMaxLines(10);
-
         snackbar.show();
+    }
+
+    public interface SeptaServiceFactoryCallBacks {
+        public void gotoSchedules();
     }
 
 }

@@ -50,7 +50,7 @@ import retrofit2.Response;
  */
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, FavoritesFragmentCallBacks {
+        implements NavigationView.OnNavigationItemSelectedListener, FavoritesFragmentCallBacks, SeptaServiceFactory.SeptaServiceFactoryCallBacks {
 
     public static final String TAG = MainActivity.class.getSimpleName();
     NextToArriveFragment nextToArriveFragment = new NextToArriveFragment();
@@ -144,7 +144,7 @@ public class MainActivity extends AppCompatActivity
 
                     @Override
                     public void onFailure(Call<AlertDetail> call, Throwable t) {
-                        SeptaServiceFactory.displayWebServiceError(findViewById(R.id.system_status_results_coordinator), MainActivity.this);
+                        SeptaServiceFactory.displayWebServiceError(findViewById(R.id.drawer_layout), MainActivity.this);
                     }
                 });
 
@@ -180,7 +180,7 @@ public class MainActivity extends AppCompatActivity
 
                     @Override
                     public void onFailure(Call<AlertDetail> call, Throwable t) {
-                        SeptaServiceFactory.displayWebServiceError(findViewById(R.id.system_status_results_coordinator), MainActivity.this);
+                        SeptaServiceFactory.displayWebServiceError(findViewById(R.id.drawer_layout), MainActivity.this);
                     }
                 });
 

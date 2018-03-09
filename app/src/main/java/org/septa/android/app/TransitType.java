@@ -200,14 +200,15 @@ public enum TransitType implements Serializable {
 
         @Override
         public String getAlertId(String id) {
-            // subway IDs must be lowercase
-            if (base.equals(PREFIX_RR_ROUTE)) {
-                id = id.toLowerCase();
+            // the NHSL line can be picked from trolley
+            // BSO and MFO can be picked from buses
+            // all 3 listed above must have lowercase alert IDs and use rr_route prefix to hit API
+            if (id.equals("NHSL") || id.equals("BSO") || id.equals("MFO")) {
+                return PREFIX_RR_ROUTE + "_" + id.toLowerCase();
             }
 
-            // NHSL ID must be lowercase and use rr_route prefix
-            if (id.equals("NHSL")) {
-                base = PREFIX_RR_ROUTE;
+            // subway IDs must be lowercase
+            if (base.equals(PREFIX_RR_ROUTE)) {
                 id = id.toLowerCase();
             }
 
@@ -216,6 +217,7 @@ public enum TransitType implements Serializable {
                 id = "LUCY";
             }
 
+            Log.e(TAG, base + "_" + id);
             return base + "_" + id;
         }
 

@@ -9,7 +9,6 @@ import org.septa.android.app.support.CrashlyticsManager;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,8 +30,8 @@ public enum TransitType implements Serializable {
     @SerializedName("NHSL")
     NHSL(R.drawable.pin_nhsl, R.drawable.ic_nhsl, R.drawable.nhsl_active_final, new BasicColorProvider(R.color.line_color_nhsl), new BasicLineIconProvider(R.drawable.ic_line_nhsl), new SimpleAlertIdGenerator("rr_route"));
 
-
-    private static final String TAG = TransitType.class.getSimpleName();
+    private static final String TAG = TransitType.class.getSimpleName(),
+            PREFIX_RR_ROUTE = "rr_route";
 
     private int mapMarkerResource;
     private int tabInactiveImageResource;
@@ -201,12 +200,12 @@ public enum TransitType implements Serializable {
 
         @Override
         public String getAlertId(String id) {
-            // subway and nhsl IDs must be lowercase
-            List<String> lowerCaseIDs = new ArrayList<>(Arrays.asList("bso", "mfo", "bsl", "mfl", "nhsl"));
-            if (lowerCaseIDs.contains(id.toLowerCase())) {
-                return "rr_route_" + id.toLowerCase();
+            // subway and NHSL IDs must be lowercase
+            if (base.equals(PREFIX_RR_ROUTE)) {
+                id = id.toLowerCase();
             }
 
+            // Gold and Green loops through U-City need to use LUCY route ID for alerts
             if (id.equals("LUCYGO") || id.equals("LUCYGR")) {
                 id = "LUCY";
             }
@@ -226,26 +225,25 @@ public enum TransitType implements Serializable {
         Map<String, String> revIdMap = new HashMap<String, String>();
 
         protected RailAlertIdGenerator() {
-            idMap.put("air", "rr_route_apt");
-            idMap.put("cyn", "rr_route_cyn");
-            idMap.put("fox", "rr_route_fxc");
-            idMap.put("med", "rr_route_med");
-            idMap.put("nor", "rr_route_nor");
-            idMap.put("pao", "rr_route_pao");
-            idMap.put("tre", "rr_route_trent");
-            idMap.put("wtr", "rr_route_wtren");
-            idMap.put("war", "rr_route_warm");
-            idMap.put("che", "rr_route_che");
-            idMap.put("chw", "rr_route_chw");
-            idMap.put("lan", "rr_route_landdoy");
-            idMap.put("wil", "rr_route_wilm");
-            idMap.put("gc", "rr_route_gc");
+            idMap.put("air", PREFIX_RR_ROUTE + "_apt");
+            idMap.put("cyn", PREFIX_RR_ROUTE + "_cyn");
+            idMap.put("fox", PREFIX_RR_ROUTE + "_fxc");
+            idMap.put("med", PREFIX_RR_ROUTE + "_med");
+            idMap.put("nor", PREFIX_RR_ROUTE + "_nor");
+            idMap.put("pao", PREFIX_RR_ROUTE + "_pao");
+            idMap.put("tre", PREFIX_RR_ROUTE + "_trent");
+            idMap.put("wtr", PREFIX_RR_ROUTE + "_wtren");
+            idMap.put("war", PREFIX_RR_ROUTE + "_warm");
+            idMap.put("che", PREFIX_RR_ROUTE + "_che");
+            idMap.put("chw", PREFIX_RR_ROUTE + "_chw");
+            idMap.put("lan", PREFIX_RR_ROUTE + "_landdoy");
+            idMap.put("wil", PREFIX_RR_ROUTE + "_wilm");
+            idMap.put("gc", PREFIX_RR_ROUTE + "_gc");
 
             for (Map.Entry<String, String> entry : idMap.entrySet()) {
                 revIdMap.put(entry.getValue(), entry.getKey());
             }
         }
-
 
         @Override
         public String getAlertId(String id) {
@@ -274,6 +272,5 @@ public enum TransitType implements Serializable {
 
         return null;
     }
-
 
 }

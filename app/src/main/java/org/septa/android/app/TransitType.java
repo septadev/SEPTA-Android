@@ -30,8 +30,8 @@ public enum TransitType implements Serializable {
     @SerializedName("NHSL")
     NHSL(R.drawable.pin_nhsl, R.drawable.ic_nhsl, R.drawable.nhsl_active_final, new BasicColorProvider(R.color.line_color_nhsl), new BasicLineIconProvider(R.drawable.ic_line_nhsl), new SimpleAlertIdGenerator("rr_route"));
 
-    private static final String TAG = TransitType.class.getSimpleName(),
-            PREFIX_RR_ROUTE = "rr_route";
+    private static final String TAG = TransitType.class.getSimpleName();
+    private static final String PREFIX_RR_ROUTE = "rr_route";
 
     private int mapMarkerResource;
     private int tabInactiveImageResource;
@@ -200,8 +200,14 @@ public enum TransitType implements Serializable {
 
         @Override
         public String getAlertId(String id) {
-            // subway and NHSL IDs must be lowercase
+            // subway IDs must be lowercase
             if (base.equals(PREFIX_RR_ROUTE)) {
+                id = id.toLowerCase();
+            }
+
+            // NHSL ID must be lowercase and use rr_route prefix
+            if (id.equals("NHSL")) {
+                base = PREFIX_RR_ROUTE;
                 id = id.toLowerCase();
             }
 

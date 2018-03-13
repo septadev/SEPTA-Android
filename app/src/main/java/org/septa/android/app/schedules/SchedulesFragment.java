@@ -27,7 +27,6 @@ import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
 import org.septa.android.app.database.DatabaseManager;
 import org.septa.android.app.locationpicker.LineAwareLocationPickerTabActivityHandler;
-import org.septa.android.app.webview.WebViewActivity;
 
 import java.util.List;
 
@@ -39,7 +38,13 @@ import java.util.List;
 
 public class SchedulesFragment extends Fragment {
 
-    public static final String TAG = SchedulesFragment.class.getSimpleName();
+    public static final String TAG = SchedulesFragment.class.getSimpleName(),
+        KEY_SCHEDULES_SECTIONS_PAGER_ADAPTER = "KEY_SCHEDULES_SECTIONS_PAGER_ADAPTER",
+            KEY_SCHEDULES_FRAGMENT_TITLE = "KEY_SCHEDULES_FRAGMENT_TITLE";
+
+    private static final String TAB_HEADER_STRING_NAME = "nta_picker_title",
+        HOLIDAY_SCHEDULE_URL = "https://www.septa.org/schedules/modified-mobile",
+        HOLIDAY_SCHEDULE_URL_RAIL = "https://septa.org/schedules/rail/special/holidays-mobile.html";
 
     private SchedulesFragment.SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
@@ -67,7 +72,7 @@ public class SchedulesFragment extends Fragment {
             Activity activity = getActivity();
             if (activity != null) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setTitle("Holiday Schedules");
+                builder.setTitle(R.string.holiday_schedule_title);
 
                 if (holidayTransitTypes.size() == TransitType.values().length) {
                     builder.setMessage(R.string.all_holiday_message);
@@ -75,7 +80,7 @@ public class SchedulesFragment extends Fragment {
                     builder.setMessage(R.string.transit_weekday_message);
                 }
 
-                builder.setNeutralButton("Ok", new DialogInterface.OnClickListener() {
+                builder.setNeutralButton(R.string.button_ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
@@ -83,24 +88,24 @@ public class SchedulesFragment extends Fragment {
                 });
 
                 if (holidayTransitTypes.contains(TransitType.BUS) || holidayTransitTypes.contains(TransitType.TROLLEY) || holidayTransitTypes.contains(TransitType.SUBWAY) || holidayTransitTypes.contains(TransitType.NHSL))
-                    builder.setPositiveButton("View Transit Schedule", new DialogInterface.OnClickListener() {
+                    builder.setPositiveButton(R.string.holiday_alert_button_text, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             Activity activity = getActivity();
                             if (activity != null) {
-                                Intent myIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.septa.org/schedules/modified-mobile"));
+                                Intent myIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(HOLIDAY_SCHEDULE_URL));
                                 startActivity(myIntent);
                             }
                         }
                     });
 
                 if (holidayTransitTypes.contains(TransitType.RAIL))
-                    builder.setNegativeButton("View Rail Schedule", new DialogInterface.OnClickListener() {
+                    builder.setNegativeButton(R.string.holiday_alert_button_text_rail, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             Activity activity = getActivity();
                             if (activity != null) {
-                                Intent myIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://septa.org/schedules/rail/special/holidays-mobile.html"));
+                                Intent myIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(HOLIDAY_SCHEDULE_URL_RAIL));
                                 startActivity(myIntent);
                             }
                         }
@@ -125,11 +130,11 @@ public class SchedulesFragment extends Fragment {
         DatabaseManager dbManager = DatabaseManager.getInstance(getActivity());
 
         tabActivityHandlers = new LineAwareLocationPickerTabActivityHandler[5];
-        tabActivityHandlers[1] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_rail), "nta_picker_title", getString(R.string.schedule_query_button_text), TransitType.RAIL, dbManager.getRailRouteCursorAdapaterSupplier(), dbManager.getLineAwareRailStopCursorAdapterSupplier(), dbManager.getLineAwareRailStopAfterCursorAdapterSupplier(), ScheduleResultsActivity.class);
-        tabActivityHandlers[0] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_bus), "nta_picker_title", getString(R.string.schedule_query_button_text), TransitType.BUS, dbManager.getBusRouteCursorAdapterSupplier(), dbManager.getBusStopCursorAdapterSupplier(), dbManager.getBusStopAfterCursorAdapterSupplier(), ScheduleResultsActivity.class);
-        tabActivityHandlers[3] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_trolley), "nta_picker_title", getString(R.string.schedule_query_button_text), TransitType.TROLLEY, dbManager.getTrolleyRouteCursorAdapterSupplier(), dbManager.getTrolleyStopCursorAdapterSupplier(), dbManager.getTrolleyStopAfterCursorAdapterSupplier(), ScheduleResultsActivity.class);
-        tabActivityHandlers[2] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_subway), "nta_picker_title", getString(R.string.schedule_query_button_text), TransitType.SUBWAY, dbManager.getSubwayRouteCursorAdapterSupplier(), dbManager.getSubwayStopCursorAdapterSupplier(), dbManager.getSubwayStopAfterCursorAdapterSupplier(), ScheduleResultsActivity.class);
-        tabActivityHandlers[4] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_nhsl), "nta_picker_title", getString(R.string.schedule_query_button_text), TransitType.NHSL, dbManager.getNHSLRouteCursorAdapterSupplier(), dbManager.getBusStopCursorAdapterSupplier(), dbManager.getBusStopAfterCursorAdapterSupplier(), ScheduleResultsActivity.class);
+        tabActivityHandlers[1] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_rail), TAB_HEADER_STRING_NAME, getString(R.string.schedule_query_button_text), TransitType.RAIL, dbManager.getRailRouteCursorAdapaterSupplier(), dbManager.getLineAwareRailStopCursorAdapterSupplier(), dbManager.getLineAwareRailStopAfterCursorAdapterSupplier(), ScheduleResultsActivity.class);
+        tabActivityHandlers[0] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_bus), TAB_HEADER_STRING_NAME, getString(R.string.schedule_query_button_text), TransitType.BUS, dbManager.getBusRouteCursorAdapterSupplier(), dbManager.getBusStopCursorAdapterSupplier(), dbManager.getBusStopAfterCursorAdapterSupplier(), ScheduleResultsActivity.class);
+        tabActivityHandlers[3] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_trolley), TAB_HEADER_STRING_NAME, getString(R.string.schedule_query_button_text), TransitType.TROLLEY, dbManager.getTrolleyRouteCursorAdapterSupplier(), dbManager.getTrolleyStopCursorAdapterSupplier(), dbManager.getTrolleyStopAfterCursorAdapterSupplier(), ScheduleResultsActivity.class);
+        tabActivityHandlers[2] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_subway), TAB_HEADER_STRING_NAME, getString(R.string.schedule_query_button_text), TransitType.SUBWAY, dbManager.getSubwayRouteCursorAdapterSupplier(), dbManager.getSubwayStopCursorAdapterSupplier(), dbManager.getSubwayStopAfterCursorAdapterSupplier(), ScheduleResultsActivity.class);
+        tabActivityHandlers[4] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_nhsl), TAB_HEADER_STRING_NAME, getString(R.string.schedule_query_button_text), TransitType.NHSL, dbManager.getNHSLRouteCursorAdapterSupplier(), dbManager.getBusStopCursorAdapterSupplier(), dbManager.getBusStopAfterCursorAdapterSupplier(), ScheduleResultsActivity.class);
 
         if (prePopulated != null) {
             tabActivityHandlers[startingIndex].setPrepopulate(prePopulated);
@@ -176,18 +181,18 @@ public class SchedulesFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable("org.septa.android.app.nextarrive.NextToArriveFragment.mSectionsPagerAdapter", mSectionsPagerAdapter.saveState());
-        outState.putString("title", getActivity().getTitle().toString());
+        outState.putParcelable(KEY_SCHEDULES_SECTIONS_PAGER_ADAPTER, mSectionsPagerAdapter.saveState());
+        outState.putString(KEY_SCHEDULES_FRAGMENT_TITLE, getActivity().getTitle().toString());
     }
 
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
         if (savedInstanceState != null) {
-            Parcelable parcelable = savedInstanceState.getParcelable("org.septa.android.app.nextarrive.NextToArriveFragment.mSectionsPagerAdapter");
+            Parcelable parcelable = savedInstanceState.getParcelable(KEY_SCHEDULES_SECTIONS_PAGER_ADAPTER);
             if (parcelable != null)
                 mSectionsPagerAdapter.restoreState(parcelable, this.getClass().getClassLoader());
-            String title = savedInstanceState.getString("title");
+            String title = savedInstanceState.getString(KEY_SCHEDULES_FRAGMENT_TITLE);
             if (title != null && getActivity() != null)
                 getActivity().setTitle(title);
         }
@@ -198,7 +203,7 @@ public class SchedulesFragment extends Fragment {
             TextView tab = (TextView) inflater.inflate(R.layout.custom_tab, null);
             tab.setText(tabActivityHandlers[i].getTabTitle());
             tab.setCompoundDrawablesWithIntrinsicBounds(tabActivityHandlers[i].getInactiveDrawableId(), 0, 0, 0);
-            tab.setContentDescription("Tap to switch to " + tabActivityHandlers[i].getTabTitle());
+            tab.setContentDescription(getString(R.string.tab_description) + tabActivityHandlers[i].getTabTitle());
             tabLayout.getTabAt(i).setCustomView(tab);
         }
     }

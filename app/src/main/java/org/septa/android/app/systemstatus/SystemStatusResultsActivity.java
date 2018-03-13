@@ -205,12 +205,12 @@ public class SystemStatusResultsActivity extends AppCompatActivity {
         StringBuilder weatherBuilder = new StringBuilder();
 
         for (AlertDetail.Detail alertItem : detailList) {
-            if (!"".equals(alertItem.getAdvisoryMessage())) {
+            if (!alertItem.getAdvisoryMessage().trim().isEmpty()) {
                 advisoryCount++;
                 advisoryBuilder.append("<b>Advisory</b><p>").append(alertItem.getAdvisoryMessage()).append("<p>");
             }
 
-            if (alertItem.getDetour() != null && !"".equals(alertItem.getDetour().getMessage())) {
+            if (alertItem.getDetour() != null && !alertItem.getDetour().getMessage().trim().isEmpty()) {
                 detourCount++;
                 detourBuilder.append("<b>Start Location:</b> ").append(alertItem.getDetour().getStartLocation()).append("<br>");
                 detourBuilder.append("<b>Start Date:</b> ").append(alertItem.getDetour().getStartDateTime()).append("<br>");
@@ -223,7 +223,7 @@ public class SystemStatusResultsActivity extends AppCompatActivity {
                 weatherCount++;
                 weatherBuilder.append("<b>Weather</b><p>").append(alertItem.getMessage()).append("<p>");
             } else {
-                if (!"".equals(alertItem.getMessage())) {
+                if (!alertItem.getMessage().trim().isEmpty()) {
                     alertCount++;
                     alertBuilder.append("<b>Alert</b><p>").append(alertItem.getMessage()).append("<p>");
                 }

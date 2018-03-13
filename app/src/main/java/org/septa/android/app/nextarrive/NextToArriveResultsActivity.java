@@ -10,7 +10,7 @@ import android.graphics.Point;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import android.os.Handler;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
@@ -25,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -72,9 +73,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import android.os.Handler;
-import android.widget.RelativeLayout;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -83,9 +81,14 @@ import retrofit2.Response;
  * Created by jkampf on 8/3/17.
  */
 
-public class NextToArriveResultsActivity extends AppCompatActivity implements OnMapReadyCallback, EditFavoriteCallBack, Runnable {
+public class NextToArriveResultsActivity extends AppCompatActivity implements OnMapReadyCallback, EditFavoriteCallBack, Runnable, NextToArriveNoResultsFragment.NoResultsFragmentListener {
     public static final String TAG = NextToArriveResultsActivity.class.getSimpleName();
-    public static final int REFRESH_DELAY_SECONDS = 30;
+    public static final int REFRESH_DELAY_SECONDS = 30,
+            NTA_RESULTS_FOR_NEXT_HOURS = 5;
+    private static final String EDIT_FAVORITE_DIALOG_KEY = "EDIT_FAVORITE_DIALOG_KEY",
+            NTA_RESULTS_TITLE = "nta_results_title",
+            NEED_TO_SEE = "need_to_see";
+    private static final String HTML_NEW_LINE = "<br/>";
     StopModel start;
     StopModel destination;
     TransitType transitType;
@@ -132,7 +135,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
 
         refresh = findViewById(R.id.refresh_button);
-        refresh.setContentDescription("Refresh");
+        refresh.setContentDescription(getString(R.string.nta_refresh));
 
         bottomSheetLayout = (ViewGroup) findViewById(R.id.bottomSheetLayout);
 
@@ -141,18 +144,21 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
 
         // Prevent the bottom sheet from being dragged to be opened.  Force it to use the anchor image.
-        //BottomSheetHandler myBottomSheetBehaviorCallBack = new BottomSheetHandler(bottomSheetBehavior);
         //bottomSheetBehavior.setBottomSheetCallback(myBottomSheetBehaviorCallBack);
         final View anchor = bottomSheetLayout.findViewById(R.id.bottom_sheet_anchor);
         //anchor.setOnClickListener(myBottomSheetBehaviorCallBack);
-
 
         mapContainerView = (FrameLayout) findViewById(R.id.map_container);
 
         final TextView titleText = (TextView) bottomSheetLayout.findViewById(R.id.title_txt);
         nextToArriveDetailsView = (NextToArriveTripView) findViewById(R.id.next_to_arrive_trip_details);
         nextToArriveDetailsView.setMaxResults(null);
-        nextToArriveDetailsView.setResults(5, TimeUnit.HOURS);
+        nextToArriveDetailsView.setResults(NTA_RESULTS_FOR_NEXT_HOURS, TimeUnit.HOURS);  // if this value changes update UI message nta_empty_results
+
+        bottomSheetLayout.setVisibility(View.GONE);
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.map_container, new NextToArriveNoResultsFragment());
+        ft.commit();
 
         nextToArriveDetailsView.setOnFirstElementHeight(new Consumer<Integer>() {
             @Override
@@ -199,8 +205,8 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
 
         if (start != null && destination != null && transitType != null) {
-            titleText.setText(transitType.getString("nta_results_title", this));
-            ((TextView) findViewById(R.id.see_later_text)).setText(transitType.getString("need_to_see", this));
+            titleText.setText(transitType.getString(NTA_RESULTS_TITLE, this));
+            ((TextView) findViewById(R.id.see_later_text)).setText(transitType.getString(NEED_TO_SEE, this));
 
             final TextView startingStationNameText = (TextView) findViewById(R.id.starting_station_name);
             startingStationNameText.setText(start.getStopName());
@@ -355,9 +361,9 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
             getMenuInflater().inflate(R.menu.favorite_menu, menu);
             if (currentFavorite != null) {
                 menu.findItem(R.id.create_favorite).setIcon(R.drawable.ic_favorite_made);
-                menu.findItem(R.id.create_favorite).setTitle("Tap to remove this next to arrive result as a favorite.");
+                menu.findItem(R.id.create_favorite).setTitle(R.string.nta_favorite_icon_title_remove);
             } else {
-                menu.findItem(R.id.create_favorite).setTitle("Tap to create a favorite from this next to arrive result.");
+                menu.findItem(R.id.create_favorite).setTitle(R.string.nta_favorite_icon_title_create);
             }
         } else {
             getMenuInflater().inflate(R.menu.edit_favorites_menu, menu);
@@ -371,13 +377,15 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         CrashlyticsManager.log(Log.INFO, TAG, "Creating EditFavoriteDialogFragment for:" + currentFavorite.toString());
         EditFavoriteDialogFragment fragment = EditFavoriteDialogFragment.getInstance(currentFavorite);
 
-        fragment.show(ft, "Dialog");
+        fragment.show(ft, EDIT_FAVORITE_DIALOG_KEY);
 
     }
 
 
     @Override
     public void onMapReady(final GoogleMap googleMap) {
+        bottomSheetLayout.setVisibility(View.VISIBLE);
+
         this.googleMap = googleMap;
         MapStyleOptions mapStyle = MapStyleOptions.loadRawResourceStyle(this, R.raw.maps_json_styling);
 
@@ -458,18 +466,18 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                         if (transitType == TransitType.RAIL) {
                             StringBuilder builder = new StringBuilder("Train: " + marker.getTitle());
                             if (detail != null && detail.getDetails() != null) {
-                                builder.append("<br>");
-                                builder.append("Status: ");
+                                builder.append(HTML_NEW_LINE)
+                                        .append("Status: ");
                                 if (detail.getDetails().getNextStop() != null && detail.getDetails().getNextStop().getLate() > 0) {
                                     builder.append(GeneralUtils.getDurationAsLongString(detail.getDetails().getNextStop().getLate(), TimeUnit.MINUTES) + " late.");
                                 } else {
-                                    builder.append("On time");
+                                    builder.append(getString(R.string.nta_on_time));
                                 }
                                 if (detail.getDetails().getConsist() != null && detail.getDetails().getConsist().size() > 0) {
-                                    if (!(detail.getDetails().getConsist().size() == 1 && "".equals(detail.getDetails().getConsist().get(0)))) {
-                                        builder.append("<br>");
-                                        builder.append("# of Train Cars: ");
-                                        builder.append(detail.getDetails().getConsist().size());
+                                    if (!(detail.getDetails().getConsist().size() == 1 && detail.getDetails().getConsist().get(0).trim().isEmpty())) {
+                                        builder.append(HTML_NEW_LINE)
+                                                .append("# of Train Cars: ")
+                                                .append(detail.getDetails().getConsist().size());
                                     }
                                 }
                             }
@@ -477,15 +485,15 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                         } else {
                             StringBuilder builder = new StringBuilder("Block ID: " + marker.getTitle());
                             if (detail != null && detail.getDetails() != null) {
-                                builder.append("<br>");
-                                builder.append("Vehicle Number: ");
-                                builder.append(detail.getDetails().getVehicleId());
-                                builder.append("<br>");
-                                builder.append("Status: ");
+                                builder.append(HTML_NEW_LINE)
+                                        .append("Vehicle Number: ")
+                                        .append(detail.getDetails().getVehicleId())
+                                        .append(HTML_NEW_LINE)
+                                        .append("Status: ");
                                 if (detail.getDetails().getDestination() != null && detail.getDetails().getDestination().getDelay() > 0) {
                                     builder.append(GeneralUtils.getDurationAsLongString(detail.getDetails().getDestination().getDelay(), TimeUnit.MINUTES) + " late.");
                                 } else {
-                                    builder.append("On time");
+                                    builder.append(getString(R.string.nta_on_time));
                                 }
 
                             }
@@ -583,7 +591,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                                 // Yes we are making a DB query on the UI thread.  But it is a local DB and it is a really fast single table look up.
                                 if (cursor.moveToFirst()) {
                                     String directionCode = cursor.getString(0);
-                                    routeDirectionModel = new RouteDirectionModel(routeId, response.body().getNextArrivalRecords().get(0).getOrigRouteName(), response.body().getNextArrivalRecords().get(0).getOrigRouteName(), "", directionCode, null);
+                                    routeDirectionModel = new RouteDirectionModel(routeId, response.body().getNextArrivalRecords().get(0).getOrigRouteName(), response.body().getNextArrivalRecords().get(0).getOrigRouteName(), getString(R.string.empty_string), directionCode, null);
                                 }
                             } catch (Exception e) {
                                 // Swallow the error.  The worst that happens is the route is not selected.
@@ -705,18 +713,6 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                 private void onFailure() {
                     parser = new NextArrivalModelResponseParser();
                     //updateView();
-                    final Snackbar snackbar = Snackbar.make(rootView, R.string.realtime_failure_message, Snackbar.LENGTH_INDEFINITE);
-                    snackbar.setAction("Scehedules", new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            snackbar.dismiss();
-                            gotoSchedulesForTarget();
-                        }
-                    });
-                    View snackbarView = snackbar.getView();
-                    android.widget.TextView tv = (android.widget.TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
-                    tv.setMaxLines(10);
-                    snackbar.show();
                     progressVisibility(View.GONE);
                     refreshHandler.removeCallbacks(NextToArriveResultsActivity.this);
                     refreshHandler.postDelayed(NextToArriveResultsActivity.this, REFRESH_DELAY_SECONDS * 1000);
@@ -769,40 +765,11 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         setTitle(currentFavorite.getName());
     }
 
-    private static class BottomSheetHandler extends BottomSheetBehavior.BottomSheetCallback implements View.OnClickListener {
-        BottomSheetBehavior bottomSheetBehavior;
-
-        int targetState;
-
-        BottomSheetHandler(BottomSheetBehavior bottomSheetBehavior) {
-            this.bottomSheetBehavior = bottomSheetBehavior;
-            targetState = bottomSheetBehavior.getState();
-        }
-
-        @Override
-        public void onStateChanged(@NonNull View bottomSheet, int newState) {
-            if (newState == BottomSheetBehavior.STATE_DRAGGING) {
-                bottomSheetBehavior.setState(targetState);
-            }
-        }
-
-        @Override
-        public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-
-        }
-
-        @Override
-        public void onClick(View view) {
-            Log.d(TAG, "state is:" + bottomSheetBehavior.getState());
-            if (targetState == BottomSheetBehavior.STATE_EXPANDED) {
-                targetState = BottomSheetBehavior.STATE_COLLAPSED;
-            } else if (targetState == BottomSheetBehavior.STATE_COLLAPSED) {
-                targetState = BottomSheetBehavior.STATE_EXPANDED;
-            }
-
-            bottomSheetBehavior.setState(targetState);
-        }
+    @Override
+    public void viewSchedulesClicked() {
+        gotoSchedulesForTarget();
     }
+
 }
 
 

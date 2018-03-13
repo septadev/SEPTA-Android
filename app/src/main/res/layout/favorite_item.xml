@@ -4,11 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="10dp"
+    android:layout_marginTop="@dimen/favorite_item_margin"
+    android:layout_marginBottom="@dimen/favorite_item_margin"
     android:background="#ffffff"
     android:elevation="4dp"
     android:orientation="vertical">
-
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -35,7 +35,6 @@
             android:textSize="16sp"
             app:font="@string/font_roboto_bold" />
 
-
         <org.septa.android.app.view.TextView
             android:id="@+id/more_button"
             android:layout_width="wrap_content"
@@ -50,6 +49,7 @@
             android:textColor="#2f2f2f"
             android:textSize="10sp"
             app:font="@string/font_roboto_regular" />
+
     </LinearLayout>
 
     <FrameLayout
@@ -77,7 +77,7 @@
                 android:indeterminateDrawable="@drawable/basic_progress" />
 
         </FrameLayout>
-    </FrameLayout>
 
+    </FrameLayout>
 
 </LinearLayout>

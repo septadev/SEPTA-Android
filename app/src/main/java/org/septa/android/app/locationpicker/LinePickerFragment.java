@@ -190,7 +190,7 @@ public class LinePickerFragment extends DialogFragment {
                         descText.setText("to " + route.getDirectionDescription());
                     }
                 else {
-                    descText.setText("");
+                    descText.setText(R.string.empty_string);
                 }
 
                 Alert alert = SystemStatusState.getAlertForLine(transitType, route.getRouteId());
@@ -238,7 +238,7 @@ public class LinePickerFragment extends DialogFragment {
                 @Override
                 protected FilterResults performFiltering(CharSequence constraint) {
                     FilterResults filterResults = new FilterResults();
-                    if (constraint == null || "".equals(constraint.toString().trim())) {
+                    if (constraint == null || constraint.toString().trim().isEmpty()) {
                         filterResults.values = origRoutes;
                         filterResults.count = origRoutes.size();
 

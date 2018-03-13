@@ -45,7 +45,6 @@ import retrofit2.Response;
  * Created by jkampf on 9/5/17.
  */
 public class FavoritesFragment extends Fragment implements Runnable {
-
     // this version is the most recent to require a force delete of user favorites
     private static final int FAVORITES_LAST_UPDATED_VERSION = 268;
 
@@ -168,9 +167,10 @@ public class FavoritesFragment extends Fragment implements Runnable {
                     getActivity().startActivityForResult(intent, Constants.NTA_REQUEST);
                 }
             });
-            moreButton.setContentDescription("Tap for more Next to Arrive details for your favorite, " + favName.getText());
+            StringBuilder moreButtonDescription = new StringBuilder(getString(R.string.favorite_more_button_description));
+            moreButtonDescription.append(favName.getText());
+            moreButton.setContentDescription(moreButtonDescription.toString());
         }
-
 
         return fragmentView;
     }
@@ -201,19 +201,30 @@ public class FavoritesFragment extends Fragment implements Runnable {
                 if (response != null && response.body() != null)
                     tripView.setNextToArriveData(new NextArrivalModelResponseParser(response.body()));
                 progressView.setVisibility(View.GONE);
+
+                // this snackbar is being created to be auto-dismissed in order to remove persistent snackbar when connection is regained
+                final Snackbar snackbar = Snackbar.make(fragmentView, R.string.empty_string, Snackbar.LENGTH_SHORT);
+                snackbar.show();
+                snackbar.dismiss();
             }
 
             @Override
             public void onFailure(@NonNull Call<NextArrivalModelResponse> call, @NonNull Throwable t) {
                 tripView.setNextToArriveData(new NextArrivalModelResponseParser());
+
+                // this snackbar will persist until a connection is reestablished and favorites are refreshed
                 Snackbar snackbar = Snackbar.make(fragmentView, R.string.realtime_failure_message, Snackbar.LENGTH_INDEFINITE);
-                snackbar.setAction("Schedules", new View.OnClickListener() {
+                snackbar.setAction(R.string.snackbar_no_connection_link_text, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         favoritesFragmentCallBacks.gotoSchedules();
                     }
                 });
+                View snackbarView = snackbar.getView();
+                android.widget.TextView tv = (android.widget.TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+                tv.setMaxLines(10);
                 snackbar.show();
+
                 progressView.setVisibility(View.GONE);
             }
         });
@@ -251,7 +262,7 @@ public class FavoritesFragment extends Fragment implements Runnable {
             if (activity != null) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(activity);
                 builder.setMessage(alertMessage);
-                builder.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                builder.setNeutralButton(R.string.button_ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();

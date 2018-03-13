@@ -24,7 +24,7 @@ import org.septa.android.app.support.TabActivityHandler;
  */
 
 public class LocationPickerFragment extends DialogFragment {
-    public static final String TAG = "LocationPickerFragment";
+    public static final String TAG = LocationPickerFragment.class.getSimpleName();
     public static final int SUCCESS = 0;
     public static final String STOP_MODEL = "stopModel";
     private static final int STOP_MODEL_REQUEST = 1;

@@ -38,4 +38,5 @@ public class TextView extends AppCompatTextView {
     public void setHtml(String html) {
         this.setText(Html.fromHtml(html));
     }
+
 }

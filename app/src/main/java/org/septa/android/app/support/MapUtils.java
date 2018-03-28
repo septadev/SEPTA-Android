@@ -70,18 +70,25 @@ public class MapUtils {
             raw = context.getResources().openRawResource(resourceId);
             Document doc = db.parse(raw);
             XPath xPath = XPathFactory.newInstance().newXPath();
-            NodeList nodes = (NodeList) xPath.evaluate("//LineStyle/color",
-                    doc.getDocumentElement(), XPathConstants.NODESET);
 
-            for (int i = 0; i < nodes.getLength(); i++) {
-                nodes.item(i).setTextContent(colorValue);
+            // set line style color
+            NodeList nodesColor = (NodeList) xPath.evaluate("//LineStyle/color",
+                    doc.getDocumentElement(), XPathConstants.NODESET);
+            for (int i = 0; i < nodesColor.getLength(); i++) {
+                nodesColor.item(i).setTextContent(colorValue);
             }
 
             NodeList points = (NodeList) xPath.evaluate("//Placemark/MultiGeometry/Point",
                     doc.getDocumentElement(), XPathConstants.NODESET);
-
             for (int i = 0; i < points.getLength(); i++) {
                 points.item(i).getParentNode().removeChild(points.item(i));
+            }
+
+            // remove line style width
+            NodeList nodesWidth = (NodeList) xPath.evaluate("//LineStyle/width",
+                    doc.getDocumentElement(), XPathConstants.NODESET);
+            for (int i = 0; i < nodesWidth.getLength(); i++) {
+                nodesWidth.item(i).getParentNode().removeChild(nodesWidth.item(i));
             }
 
             TransformerFactory tf = TransformerFactory.newInstance();

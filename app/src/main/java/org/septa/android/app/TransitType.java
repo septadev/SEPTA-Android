@@ -212,7 +212,6 @@ public enum TransitType implements Serializable {
                 id = "LUCY";
             }
 
-            Log.e(TAG, base + "_" + id);
             return base + "_" + id;
         }
 

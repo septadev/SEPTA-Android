@@ -202,22 +202,16 @@ public enum TransitType implements Serializable {
         public String getAlertId(String id) {
             // the NHSL line can be picked from trolley
             // BSO and MFO can be picked from buses
-            // all 3 listed above must have lowercase alert IDs and use rr_route prefix to hit API
-            if (id.equals("NHSL") || id.equals("BSO") || id.equals("MFO")) {
-                return PREFIX_RR_ROUTE + "_" + id.toLowerCase();
-            }
-
-            // subway IDs must be lowercase
-            if (base.equals(PREFIX_RR_ROUTE)) {
-                id = id.toLowerCase();
+            // all 3 listed above must use rr_route prefix to hit API
+            if (id.equalsIgnoreCase("NHSL") || id.equalsIgnoreCase("BSO") || id.equalsIgnoreCase("MFO")) {
+                return PREFIX_RR_ROUTE + "_" + id;
             }
 
             // Gold and Green loops through U-City need to use LUCY route ID for alerts
-            if (id.equals("LUCYGO") || id.equals("LUCYGR")) {
+            if (id.equalsIgnoreCase("LUCYGO") || id.equalsIgnoreCase("LUCYGR")) {
                 id = "LUCY";
             }
 
-            Log.e(TAG, base + "_" + id);
             return base + "_" + id;
         }
 

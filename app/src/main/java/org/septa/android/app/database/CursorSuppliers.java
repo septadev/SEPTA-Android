@@ -54,9 +54,7 @@ class CursorSuppliers implements Serializable {
 
             Log.d(TAG, "Creating cursor:" + queryString.toString());
 
-            Cursor cursor = getDatabase(context).rawQuery(queryString.toString(), null);
-
-            return cursor;
+            return getDatabase(context).rawQuery(queryString.toString(), null);
         }
 
         @Override
@@ -116,9 +114,7 @@ class CursorSuppliers implements Serializable {
 
             Log.d(TAG, "Creating cursor:" + queryString.toString());
 
-            Cursor cursor = getDatabase(context).rawQuery(queryString.toString(), null);
-
-            return cursor;
+            return getDatabase(context).rawQuery(queryString.toString(), null);
         }
 
         @Override
@@ -147,13 +143,9 @@ class CursorSuppliers implements Serializable {
 
     static class LineAwareRailStopCursorAdapterSupplier implements CursorAdapterSupplier<StopModel> {
 
-        //private static final String SELECT_CLAUSE = "SELECT DISTINCT a.stop_id, a.stop_name, a.wheelchair_boarding, a.stop_lat, a.stop_lon, a.rowid AS _id FROM stops_rail a, trips_rail b, stop_times_rail c, routes_rail_boundaries r  WHERE b.trip_id=c.trip_id and c.stop_id=a.stop_id and r.route_id=b.route_id and r.direction_id=b.direction_id";
-
-
         @Override
         public Cursor getCursor(Context context, List<Criteria> whereClause) {
             StringBuilder queryString = new StringBuilder(context.getResources().getString(R.string.rail_trip_start));
-
 
             String routeId = null;
             String directionId = null;
@@ -183,10 +175,7 @@ class CursorSuppliers implements Serializable {
             String query = form.format(new Object[]{routeId, directionId});
             Log.d(TAG, "Creating cursor:" + query);
 
-
-            Cursor cursor = getDatabase(context).rawQuery(query, null);
-
-            return cursor;
+            return getDatabase(context).rawQuery(query, null);
         }
 
         @Override
@@ -216,9 +205,6 @@ class CursorSuppliers implements Serializable {
     }
 
     static class LineAwareRailStopAfterCursorAdapterSupplier implements CursorAdapterSupplier<StopModel> {
-
-        // private static final String SELECT_CLAUSE = "select distinct y.stop_id, y.stop_name, y.wheelchair_boarding, y.stop_lat, y.stop_lon, y.rowid AS _id from (SELECT a.stop_id, stop_name, wheelchair_boarding, stop_lat, stop_lon, c.stop_sequence, c.trip_id, a.rowid AS _id FROM stops_rail a, trips_rail b, stop_times_rail c WHERE c.trip_id=b.trip_id and c.stop_id=a.stop_id and a.stop_id=''{0}'' and b.route_id=''{1}'' and b.direction_id=''{2}'') x, (SELECT a.stop_id, stop_name, wheelchair_boarding, stop_lat, stop_lon, c.stop_sequence, c.trip_id, a.rowid AS _id FROM stops_rail a, trips_rail b, stop_times_rail c WHERE c.trip_id=b.trip_id and c.stop_id=a.stop_id) y where x.trip_id=y.trip_id and x.stop_sequence < y.stop_sequence";
-
 
         @Override
         public Cursor getCursor(Context context, List<Criteria> whereClause) {
@@ -263,9 +249,8 @@ class CursorSuppliers implements Serializable {
 
         @Override
         public StopModel getCurrentItemFromCursor(Cursor cursor) {
-            StopModel stopModel = new StopModel(cursor.getString(0), cursor.getString(1),
+            return new StopModel(cursor.getString(0), cursor.getString(1),
                     (cursor.getInt(4) == 1), cursor.getString(2), cursor.getString(3));
-            return stopModel;
         }
 
         @Override
@@ -403,7 +388,7 @@ class CursorSuppliers implements Serializable {
             String queryString = "SELECT a.stop_id, stop_name, wheelchair_boarding, stop_lat, stop_lon, a.rowid AS _id FROM stops_bus a where a.stop_id='" + id.toString() + "'";
 
             StopModel stopModel = null;
-            Cursor cursor = getDatabase(context).rawQuery(queryString.toString(), null);
+            Cursor cursor = getDatabase(context).rawQuery(queryString, null);
             if (cursor != null) {
                 if (cursor.moveToFirst()) {
                     stopModel = getCurrentItemFromCursor(cursor);
@@ -417,7 +402,7 @@ class CursorSuppliers implements Serializable {
 
 
     static class RailRouteCursorAdapterSupplier implements CursorAdapterSupplier<RouteDirectionModel> {
-        //private static final String SELECT_CLAUSE = "SELECT R.Route_id, R.route_short_name route_short_name, S.stop_name route_long_name, cast (T.direction_id  as TEXT ) dircode FROM routes_rail R JOIN trips_rail T ON R.route_id = T.route_id JOIN stop_times_rail ST ON T.trip_id = ST.trip_id JOIN stops_rail S ON ST.stop_id = S.stop_id JOIN ( SELECT R.route_id, T.direction_id, max(ST.stop_sequence) max_stop_sequence FROM routes_rail R JOIN trips_rail T ON R.route_id = T.route_id JOIN stop_times_rail ST ON T.trip_id = ST.trip_id JOIN stops_rail S ON ST.stop_id = S.stop_id GROUP BY R.route_id, T.direction_id) lastStop ON R.route_id = lastStop.route_id AND T.direction_id = lastStop.direction_id AND ST.stop_sequence = lastStop.max_stop_sequence ";
+
         private static final String SELECT_CLAUSE = "SELECT R.Route_id, R.route_short_name route_short_name, B.terminus_name route_long_name, cast (B.direction_id  as TEXT ) dircode FROM routes_rail R join routes_rail_boundaries B on R.route_id = b.route_id";
 
         @Override
@@ -438,8 +423,6 @@ class CursorSuppliers implements Serializable {
 
                 }
             }
-
-            //queryString.append(" GROUP BY R.Route_id,R.route_short_name, R.route_long_name,T.direction_id ,S.stop_name");
 
             Cursor cursor = getDatabase(context).rawQuery(queryString.toString(), null);
             Log.d(TAG, "Creating cursor:" + queryString.toString());
@@ -487,7 +470,7 @@ class CursorSuppliers implements Serializable {
 
         @Override
         public RouteDirectionModel getItemFromId(Context context, Object id) {
-            List<Criteria> criteria = new ArrayList<Criteria>(1);
+            List<Criteria> criteria = new ArrayList<>(1);
             criteria.add(new Criteria("route_id", Criteria.Operation.EQ, id.toString()));
             Cursor cursor = getCursor(context, criteria);
             RouteDirectionModel routeDirectionModel = null;
@@ -529,7 +512,7 @@ class CursorSuppliers implements Serializable {
 
         @Override
         public RouteDirectionModel getItemFromId(Context context, Object id) {
-            List<Criteria> criteria = new ArrayList<Criteria>(1);
+            List<Criteria> criteria = new ArrayList<>(1);
             criteria.add(new Criteria("route_id", Criteria.Operation.EQ, id.toString()));
             Cursor cursor = getCursor(context, criteria);
             RouteDirectionModel routeDirectionModel = null;
@@ -585,7 +568,7 @@ class CursorSuppliers implements Serializable {
 
         @Override
         public RouteDirectionModel getItemFromId(Context context, Object id) {
-            List<Criteria> criteria = new ArrayList<Criteria>(1);
+            List<Criteria> criteria = new ArrayList<>(1);
             criteria.add(new Criteria("route_id", Criteria.Operation.EQ, id.toString()));
             Cursor cursor = getCursor(context, criteria);
             RouteDirectionModel routeDirectionModel = null;
@@ -597,80 +580,6 @@ class CursorSuppliers implements Serializable {
                 cursor.close();
             }
             return routeDirectionModel;
-        }
-    }
-
-
-    static class SubwayStopCursorAdapterSupplier implements CursorAdapterSupplier<StopModel> {
-
-        private static final String SELECT_CLAUSE = "SELECT DISTINCT a.stop_id, stop_name, wheelchair_boarding, stop_lat, stop_lon, a.rowid AS _id FROM stops_bus a, {0} b, {1} c WHERE c.trip_id=b.trip_id and c.stop_id=a.stop_id";
-
-
-        @Override
-        public Cursor getCursor(Context context, List<Criteria> whereClause) {
-            StringBuilder queryString = new StringBuilder(SELECT_CLAUSE);
-
-            String tripsTable = "trips_bus";
-            String stopsTable = "stop_times_bus";
-
-            if (whereClause != null)
-                for (Criteria c : whereClause) {
-                    queryString.append(" AND ");
-
-                    if ("stop_lon".equals(c.getFieldName()) || "stop_lat".equals(c.getFieldName())) {
-                        queryString.append("CAST(a.").append(c.getFieldName()).append(" as decimal)")
-                                .append(c.getOperation()).append(c.getValue().toString());
-                        continue;
-                    } else if ("route_id".equals(c.getFieldName()) || "direction_id".equals(c.getFieldName())) {
-                        queryString.append("b.");
-                    } else queryString.append("a.");
-
-                    queryString.append(c.getFieldName()).append(c.getOperation()).append("''").append(c.getValue().toString()).append("''");
-
-                    if ("route_id".equals(c.getFieldName())) {
-                        if ("MFL".equals(c.getValue())) {
-                            tripsTable = "trips_MFL";
-                            stopsTable = "stop_times_MFL";
-                        } else if ("BSL".equals(c.getValue())) {
-                            tripsTable = "trips_BSL";
-                            stopsTable = "stop_times_BSL";
-                        }
-                    }
-                }
-
-            queryString.append(" ORDER BY stop_name");
-
-            MessageFormat form = new MessageFormat(queryString.toString());
-            String query = form.format(new Object[]{tripsTable, stopsTable});
-
-            Log.d(TAG, "SubwayStopCursorAdapterSupplier Creating cursor:" + query);
-
-            Cursor cursor = getDatabase(context).rawQuery(query, null);
-
-            return cursor;
-        }
-
-        @Override
-        public StopModel getCurrentItemFromCursor(Cursor cursor) {
-            StopModel stopModel = new StopModel(cursor.getString(0), cursor.getString(1),
-                    (cursor.getInt(2) == 1), cursor.getString(3), cursor.getString(4));
-            return stopModel;
-        }
-
-        @Override
-        public StopModel getItemFromId(Context context, Object id) {
-            String queryString = "SELECT DISTINCT a.stop_id, stop_name, wheelchair_boarding, stop_lat, stop_lon, a.rowid AS _id FROM stops_bus a where a.stop_id='" + id.toString() + "'";
-
-            StopModel stopModel = null;
-            Cursor cursor = getDatabase(context).rawQuery(queryString.toString(), null);
-            if (cursor != null) {
-                if (cursor.moveToFirst()) {
-                    stopModel = getCurrentItemFromCursor(cursor);
-                }
-                cursor.close();
-            }
-
-            return stopModel;
         }
     }
 
@@ -788,12 +697,11 @@ class CursorSuppliers implements Serializable {
                     tableSuffix = "nhsl";
                 }
 
-                MessageFormat form = new MessageFormat(queryString.toString());
+                MessageFormat form = new MessageFormat(queryString);
                 String query = form.format(new Object[]{start_stop_id, service_id, direction_id, end_stop_id, tableSuffix});
                 Log.d(TAG, "Creating cursor:" + query);
-                Cursor cursor = getDatabase(context).rawQuery(query, null);
 
-                return cursor;
+                return getDatabase(context).rawQuery(query, null);
             }
 
             throw new RuntimeException("Need a where clause.");
@@ -839,12 +747,11 @@ class CursorSuppliers implements Serializable {
                     }
                 }
 
-                MessageFormat form = new MessageFormat(queryString.toString());
+                MessageFormat form = new MessageFormat(queryString);
                 String query = form.format(new Object[]{start_stop_id, service_id, direction_id, end_stop_id});
                 Log.d(TAG, "Creating cursor:" + query);
-                Cursor cursor = getDatabase(context).rawQuery(query, null);
 
-                return cursor;
+                return getDatabase(context).rawQuery(query, null);
             }
 
             throw new RuntimeException("Need a where clause.");
@@ -889,16 +796,13 @@ class CursorSuppliers implements Serializable {
 
             Log.d(TAG, "NonRailReverseAdapterSupplier Creating cursor:" + queryString.toString());
 
-            Cursor cursor = getDatabase(context).rawQuery(queryString.toString(), null);
-
-            return cursor;
+            return getDatabase(context).rawQuery(queryString.toString(), null);
         }
 
         @Override
         public StopModel getCurrentItemFromCursor(Cursor cursor) {
-            StopModel stopModel = new StopModel(cursor.getString(0), cursor.getString(1),
+            return new StopModel(cursor.getString(0), cursor.getString(1),
                     (cursor.getInt(2) == 1), cursor.getString(3), cursor.getString(4));
-            return stopModel;
         }
 
         @Override
@@ -906,7 +810,7 @@ class CursorSuppliers implements Serializable {
             String queryString = "SELECT DISTINCT a.stop_id, stop_name, wheelchair_boarding, stop_lat, stop_lon, a.rowid AS _id FROM stops_bus a where a.stop_id='" + id.toString() + "'";
 
             StopModel stopModel = null;
-            Cursor cursor = getDatabase(context).rawQuery(queryString.toString(), null);
+            Cursor cursor = getDatabase(context).rawQuery(queryString, null);
             if (cursor != null) {
                 if (cursor.moveToFirst()) {
                     stopModel = getCurrentItemFromCursor(cursor);
@@ -1005,9 +909,9 @@ class CursorSuppliers implements Serializable {
                     Calendar cal = Calendar.getInstance();
                     cal.setTimeInMillis(((Date) c.getValue()).getTime());
                     StringBuilder builder = new StringBuilder();
-                    builder.append(String.format("%04d", cal.get(Calendar.YEAR)));
-                    builder.append(String.format("%02d", cal.get(Calendar.MONTH)));
-                    builder.append(String.format("%02d", cal.get(Calendar.DAY_OF_MONTH)));
+                    builder.append(String.format("%04d", cal.get(Calendar.YEAR)))
+                            .append(String.format("%02d", cal.get(Calendar.MONTH)))
+                            .append(String.format("%02d", cal.get(Calendar.DAY_OF_MONTH)));
 
                     dateString = builder.toString();
                 }
@@ -1051,51 +955,4 @@ class CursorSuppliers implements Serializable {
         }
     }
 
-
-    static class RailReverseRouteCursorAdapterSupplier implements CursorAdapterSupplier<RouteDirectionModel> {
-        String SELECT_CLAUSE = "SELECT a.route_id, a.route_short_name, a.route_long_name, b.DirectionDescription, b.dircode, a.route_type, a.rowid AS _id from routes_bus a, bus_stop_directions b WHERE  a.route_id=b.route";
-
-        @Override
-        public Cursor getCursor(Context context, List<Criteria> whereClause) {
-            StringBuilder queryString = new StringBuilder(SELECT_CLAUSE);
-
-
-            for (Criteria c : whereClause) {
-                queryString.append(" AND ");
-                if ("dircode".equals(c.getFieldName())) {
-                    queryString.append("b.");
-                } else if ("route_id".equals(c.getFieldName())) {
-                    queryString.append("a.");
-                }
-                queryString.append(c.getFieldName()).append(c.getOperation()).append("'").append(c.getValue().toString()).append("'");
-
-            }
-
-            Cursor cursor = getDatabase(context).rawQuery(queryString.toString(), null);
-            Log.d(TAG, "Creating cursor:" + queryString.toString());
-
-            return cursor;
-        }
-
-        @Override
-        public RouteDirectionModel getCurrentItemFromCursor(Cursor cursor) {
-            return new RouteDirectionModel(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getInt(5));
-        }
-
-        @Override
-        public RouteDirectionModel getItemFromId(Context context, Object id) {
-            List<Criteria> criteria = new ArrayList<>(1);
-            criteria.add(new Criteria("route_id", Criteria.Operation.EQ, id.toString()));
-            Cursor cursor = getCursor(context, criteria);
-            RouteDirectionModel routeDirectionModel = null;
-
-            if (cursor != null) {
-                if (cursor.moveToFirst()) {
-                    routeDirectionModel = getCurrentItemFromCursor(cursor);
-                }
-                cursor.close();
-            }
-            return routeDirectionModel;
-        }
-    }
 }

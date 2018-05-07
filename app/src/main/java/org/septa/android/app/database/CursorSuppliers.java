@@ -15,7 +15,6 @@ import org.septa.android.app.support.CursorAdapterSupplier;
 
 import java.io.Serializable;
 import java.text.MessageFormat;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -947,17 +946,22 @@ class CursorSuppliers implements Serializable {
         @Override
         public RouteDirectionModel getCurrentItemFromCursor(Cursor cursor) {
             String id = cursor.getString(0);
-
             String longName = cursor.getString(2);
 
-            if ("BSL".equals(id))
-                longName = "Broad Street Line";
-            else if ("MFL".equals(id))
-                longName = "Market Frankfor d Line";
-            else if ("BSO".equals(id))
-                longName = "Broad Street Overnight";
-            else if ("MFO".equals(id))
-                longName = "Market Frankford Overnight";
+            switch (id) {
+                case "BSL":
+                    longName = "Broad Street Line";
+                    break;
+                case "MFL":
+                    longName = "Market Frankford Line";
+                    break;
+                case "BSO":
+                    longName = "Broad Street Overnight";
+                    break;
+                case "MFO":
+                    longName = "Market Frankford Overnight";
+                    break;
+            }
 
             return new RouteDirectionModel(cursor.getString(0), cursor.getString(1), longName, cursor.getString(3), cursor.getString(4), cursor.getInt(5));
 
@@ -965,7 +969,7 @@ class CursorSuppliers implements Serializable {
 
         @Override
         public RouteDirectionModel getItemFromId(Context context, Object id) {
-            List<Criteria> criteria = new ArrayList<Criteria>(1);
+            List<Criteria> criteria = new ArrayList<>(1);
             criteria.add(new Criteria("route_id", Criteria.Operation.EQ, id.toString()));
             Cursor cursor = getCursor(context, criteria);
             RouteDirectionModel routeDirectionModel = null;
@@ -1080,7 +1084,7 @@ class CursorSuppliers implements Serializable {
 
         @Override
         public RouteDirectionModel getItemFromId(Context context, Object id) {
-            List<Criteria> criteria = new ArrayList<Criteria>(1);
+            List<Criteria> criteria = new ArrayList<>(1);
             criteria.add(new Criteria("route_id", Criteria.Operation.EQ, id.toString()));
             Cursor cursor = getCursor(context, criteria);
             RouteDirectionModel routeDirectionModel = null;

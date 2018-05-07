@@ -10,6 +10,7 @@ import android.graphics.Point;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.Snackbar;
@@ -25,7 +26,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
 
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -111,6 +111,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     private BottomSheetBehavior bottomSheetBehavior;
     private Handler refreshHandler;
     SupportMapFragment mapFragment;
+    private FrameLayout noResultsMessage;
 
     Map<String, NextArrivalDetails> details = new HashMap<String, NextArrivalDetails>();
 
@@ -132,7 +133,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         rootView = findViewById(R.id.rail_next_to_arrive_results_coordinator);
 
         progressView = findViewById(R.id.progress_view);
-
+        noResultsMessage = (FrameLayout) findViewById(R.id.nta_empty_results_msg);
 
         refresh = findViewById(R.id.refresh_button);
         refresh.setContentDescription(getString(R.string.nta_refresh));
@@ -154,11 +155,6 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         nextToArriveDetailsView = (NextToArriveTripView) findViewById(R.id.next_to_arrive_trip_details);
         nextToArriveDetailsView.setMaxResults(null);
         nextToArriveDetailsView.setResults(NTA_RESULTS_FOR_NEXT_HOURS, TimeUnit.HOURS);  // if this value changes update UI message nta_empty_results
-
-        bottomSheetLayout.setVisibility(View.GONE);
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.map_container, new NextToArriveNoResultsFragment());
-        ft.commit();
 
         nextToArriveDetailsView.setOnFirstElementHeight(new Consumer<Integer>() {
             @Override
@@ -232,7 +228,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
             refreshHandler = new Handler();
 
-            ((RelativeLayout) findViewById(R.id.header)).getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            (findViewById(R.id.header)).getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
                 public void onGlobalLayout() {
                     View refreshLabel = findViewById(R.id.refresh_label);
@@ -250,9 +246,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
         refreshHandler.postDelayed(this, 30 * 1000);
 
-        refresh.setOnClickListener(new View.OnClickListener()
-
-        {
+        refresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 refreshData();
@@ -378,12 +372,14 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         EditFavoriteDialogFragment fragment = EditFavoriteDialogFragment.getInstance(currentFavorite);
 
         fragment.show(ft, EDIT_FAVORITE_DIALOG_KEY);
-
     }
 
 
     @Override
     public void onMapReady(final GoogleMap googleMap) {
+        // hide error message in case connection regained
+        noResultsMessage.setVisibility(View.GONE);
+        mapContainerView.setVisibility(View.VISIBLE);
         bottomSheetLayout.setVisibility(View.VISIBLE);
 
         this.googleMap = googleMap;
@@ -413,7 +409,6 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                 Display mdisp = getWindowManager().getDefaultDisplay();
                 Point mdispSize = new Point();
                 mdisp.getSize(mdispSize);
-
 
                 updateMap();
 
@@ -508,9 +503,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         int permissionCheck = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION);
 
-        if (permissionCheck == PackageManager.PERMISSION_GRANTED)
-
-        {
+        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
             Log.d(TAG, "Location Permission Granted.");
             Task<Location> locationTask = LocationServices.getFusedLocationProviderClient(this).getLastLocation()
                     .addOnSuccessListener(this, new OnSuccessListener<Location>() {
@@ -558,6 +551,10 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     }
 
     private void refreshData() {
+        noResultsMessage.setVisibility(View.GONE);
+        mapContainerView.setVisibility(View.GONE);
+        bottomSheetLayout.setVisibility(View.GONE);
+
         final long timestamp = System.currentTimeMillis();
         if (start != null && destination != null) {
 
@@ -581,7 +578,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                                 String routeId = response.body().getNextArrivalRecords().get(0).getOrigRouteId();
                                 String trainId = response.body().getNextArrivalRecords().get(0).getOrigLineTripId();
 
-                                List<Criteria> criteriaList = new ArrayList<Criteria>(2);
+                                List<Criteria> criteriaList = new ArrayList<>(2);
                                 criteriaList.add(new Criteria("routeId", Criteria.Operation.EQ, routeId));
                                 criteriaList.add(new Criteria("trainId", Criteria.Operation.EQ, trainId));
 
@@ -722,6 +719,21 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
         }
 
+        // delay error message for 3 sec due to latency
+        new CountDownTimer(3000, 500) {
+            public void onTick(long millisUntilFinished) {
+            }
+
+            public void onFinish() {
+                // only load error message if no results found
+                // bottom sheet is only visible if map is loaded
+                if (View.VISIBLE != bottomSheetLayout.getVisibility()) {
+                    mapContainerView.setVisibility(View.GONE);
+                    noResultsMessage.setVisibility(View.VISIBLE);
+                }
+            }
+        }.start();
+
     }
 
     private void addDetail(Response<NextArrivalDetails> response, String origVehicleId) {
@@ -729,6 +741,11 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     }
 
     private void updateMap() {
+        // hide error message in case connection regained
+        noResultsMessage.setVisibility(View.GONE);
+        mapContainerView.setVisibility(View.VISIBLE);
+        bottomSheetLayout.setVisibility(View.VISIBLE);
+
         googleMap.clear();
         googleMap.addMarker(startMarker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
         googleMap.addMarker(destMarker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));

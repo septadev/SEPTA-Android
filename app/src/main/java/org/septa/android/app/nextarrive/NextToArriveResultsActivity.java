@@ -10,7 +10,6 @@ import android.graphics.Point;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.Snackbar;
@@ -570,9 +569,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
             results.enqueue(new Callback<NextArrivalModelResponse>() {
                 @Override
                 public void onResponse(Call<NextArrivalModelResponse> call, final Response<NextArrivalModelResponse> response) {
-                    if (response == null || response.body() == null) {
-                        onFailure();
-                    } else {
+                    if (response.body() != null && response.body().getNextArrivalRecords() != null && !response.body().getNextArrivalRecords().isEmpty()) {
                         if (transitType == TransitType.RAIL && response.body().getNextArrivalRecords().size() > 0) {
                             try {
                                 //Because RAIL does not need a Route to look up NTA if we want to link back to Schedules we need to figure out the Line and Direction.
@@ -626,6 +623,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
                                     @Override
                                     public void onFailure(Call<NextArrivalDetails> call, Throwable t) {
+                                        showNoResultsFoundErrorMessage();
                                     }
                                 });
                             }
@@ -649,6 +647,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
                                         @Override
                                         public void onFailure(Call<NextArrivalDetails> call, Throwable t) {
+                                            showNoResultsFoundErrorMessage();
                                         }
                                     });
                                 }
@@ -685,6 +684,10 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                             refreshHandler.removeCallbacks(NextToArriveResultsActivity.this);
                             refreshHandler.postDelayed(NextToArriveResultsActivity.this, REFRESH_DELAY_SECONDS * 1000);
                         }
+                    } else {
+                        // empty response
+                        Log.d(TAG, "Empty NTA response body");
+                        onFailure();
                     }
                 }
 
@@ -717,26 +720,19 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                     progressVisibility(View.GONE);
                     refreshHandler.removeCallbacks(NextToArriveResultsActivity.this);
                     refreshHandler.postDelayed(NextToArriveResultsActivity.this, REFRESH_DELAY_SECONDS * 1000);
+                    showNoResultsFoundErrorMessage();
                 }
             });
         }
 
-        // delay error message for 3 sec due to latency
-        new CountDownTimer(3000, 500) {
-            public void onTick(long millisUntilFinished) {
-            }
+    }
 
-            public void onFinish() {
-                // only load error message if no results found
-                // bottom sheet is only visible if map is loaded
-                if (View.VISIBLE != bottomSheetLayout.getVisibility()) {
-                    Log.v(TAG, "No results found in NTA records");
-                    mapContainerView.setVisibility(View.GONE);
-                    noResultsMessage.setVisibility(View.VISIBLE);
-                }
-            }
-        }.start();
-
+    private void showNoResultsFoundErrorMessage() {
+        // show error message and hide
+        mapContainerView.setVisibility(View.GONE);
+        bottomSheetLayout.setVisibility(View.GONE);
+        noResultsMessage.setVisibility(View.VISIBLE);
+        Log.d(TAG, "No results found in NTA records");
     }
 
     private void addDetail(Response<NextArrivalDetails> response, String origVehicleId) {
@@ -763,7 +759,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
         for (String routeId : parser.getRouteIdSet()) {
             KmlLayer layer = MapUtils.getKMLByLineId(NextToArriveResultsActivity.this, googleMap, routeId, transitType);
-            if (layer != null)
+            if (layer != null) {
                 try {
                     layer.addLayerToMap();
                 } catch (IOException e) {
@@ -771,6 +767,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                 } catch (XmlPullParserException e) {
                     e.printStackTrace();
                 }
+            }
         }
     }
 

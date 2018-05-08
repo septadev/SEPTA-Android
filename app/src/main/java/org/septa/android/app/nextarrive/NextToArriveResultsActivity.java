@@ -24,6 +24,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.Button;
 import android.widget.FrameLayout;
 
 import com.google.android.gms.location.LocationServices;
@@ -80,7 +81,7 @@ import retrofit2.Response;
  * Created by jkampf on 8/3/17.
  */
 
-public class NextToArriveResultsActivity extends AppCompatActivity implements OnMapReadyCallback, EditFavoriteCallBack, Runnable, NextToArriveNoResultsFragment.NoResultsFragmentListener {
+public class NextToArriveResultsActivity extends AppCompatActivity implements OnMapReadyCallback, EditFavoriteCallBack, Runnable {
     public static final String TAG = NextToArriveResultsActivity.class.getSimpleName();
     public static final int REFRESH_DELAY_SECONDS = 30,
             NTA_RESULTS_FOR_NEXT_HOURS = 5;
@@ -94,6 +95,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     RouteDirectionModel routeDirectionModel;
     private GoogleMap googleMap;
     boolean mapSized = false;
+    Button noResultsSchedulesButton;
     FrameLayout mapContainerView;
     ViewGroup bottomSheetLayout;
     View rootView;
@@ -142,6 +144,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLayout);
         progressViewBottom = findViewById(R.id.progress_view_bottom);
 
+        noResultsSchedulesButton = (Button) findViewById(R.id.button_view_schedules);
 
         // Prevent the bottom sheet from being dragged to be opened.  Force it to use the anchor image.
         //bottomSheetBehavior.setBottomSheetCallback(myBottomSheetBehaviorCallBack);
@@ -201,6 +204,12 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
             restoreState(bundle);
         }
 
+        noResultsSchedulesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                gotoSchedulesForTarget();
+            }
+        });
 
         if (start != null && destination != null && transitType != null) {
             titleText.setText(transitType.getString(NTA_RESULTS_TITLE, this));
@@ -780,11 +789,6 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     public void updateFavorite(Favorite var1) {
         currentFavorite = var1;
         setTitle(currentFavorite.getName());
-    }
-
-    @Override
-    public void viewSchedulesClicked() {
-        gotoSchedulesForTarget();
     }
 
 }

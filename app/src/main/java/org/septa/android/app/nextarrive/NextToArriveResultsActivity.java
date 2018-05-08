@@ -24,8 +24,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
 
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -81,7 +81,7 @@ import retrofit2.Response;
  * Created by jkampf on 8/3/17.
  */
 
-public class NextToArriveResultsActivity extends AppCompatActivity implements OnMapReadyCallback, EditFavoriteCallBack, Runnable, NextToArriveNoResultsFragment.NoResultsFragmentListener {
+public class NextToArriveResultsActivity extends AppCompatActivity implements OnMapReadyCallback, EditFavoriteCallBack, Runnable {
     public static final String TAG = NextToArriveResultsActivity.class.getSimpleName();
     public static final int REFRESH_DELAY_SECONDS = 30,
             NTA_RESULTS_FOR_NEXT_HOURS = 5;
@@ -95,6 +95,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     RouteDirectionModel routeDirectionModel;
     private GoogleMap googleMap;
     boolean mapSized = false;
+    Button noResultsSchedulesButton;
     FrameLayout mapContainerView;
     ViewGroup bottomSheetLayout;
     View rootView;
@@ -111,8 +112,9 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     private BottomSheetBehavior bottomSheetBehavior;
     private Handler refreshHandler;
     SupportMapFragment mapFragment;
+    private FrameLayout noResultsMessage;
 
-    Map<String, NextArrivalDetails> details = new HashMap<String, NextArrivalDetails>();
+    Map<String, NextArrivalDetails> details = new HashMap<>();
 
     public void setDestination(StopModel destination) {
         this.destination = destination;
@@ -132,7 +134,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         rootView = findViewById(R.id.rail_next_to_arrive_results_coordinator);
 
         progressView = findViewById(R.id.progress_view);
-
+        noResultsMessage = (FrameLayout) findViewById(R.id.nta_empty_results_msg);
 
         refresh = findViewById(R.id.refresh_button);
         refresh.setContentDescription(getString(R.string.nta_refresh));
@@ -142,6 +144,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLayout);
         progressViewBottom = findViewById(R.id.progress_view_bottom);
 
+        noResultsSchedulesButton = (Button) findViewById(R.id.button_view_schedules);
 
         // Prevent the bottom sheet from being dragged to be opened.  Force it to use the anchor image.
         //bottomSheetBehavior.setBottomSheetCallback(myBottomSheetBehaviorCallBack);
@@ -154,11 +157,6 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         nextToArriveDetailsView = (NextToArriveTripView) findViewById(R.id.next_to_arrive_trip_details);
         nextToArriveDetailsView.setMaxResults(null);
         nextToArriveDetailsView.setResults(NTA_RESULTS_FOR_NEXT_HOURS, TimeUnit.HOURS);  // if this value changes update UI message nta_empty_results
-
-        bottomSheetLayout.setVisibility(View.GONE);
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.map_container, new NextToArriveNoResultsFragment());
-        ft.commit();
 
         nextToArriveDetailsView.setOnFirstElementHeight(new Consumer<Integer>() {
             @Override
@@ -193,16 +191,25 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
             }
         });
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
 
         Bundle bundle = getIntent().getExtras();
 
         if (savedInstanceState != null) {
             restoreState(savedInstanceState);
-        } else
+        } else {
             restoreState(bundle);
+        }
 
+        noResultsSchedulesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                gotoSchedulesForTarget();
+            }
+        });
 
         if (start != null && destination != null && transitType != null) {
             titleText.setText(transitType.getString(NTA_RESULTS_TITLE, this));
@@ -232,7 +239,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
             refreshHandler = new Handler();
 
-            ((RelativeLayout) findViewById(R.id.header)).getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            (findViewById(R.id.header)).getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
                 public void onGlobalLayout() {
                     View refreshLabel = findViewById(R.id.refresh_label);
@@ -250,9 +257,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
         refreshHandler.postDelayed(this, 30 * 1000);
 
-        refresh.setOnClickListener(new View.OnClickListener()
-
-        {
+        refresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 refreshData();
@@ -353,7 +358,6 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         } else item.setEnabled(true);
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
@@ -378,12 +382,13 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         EditFavoriteDialogFragment fragment = EditFavoriteDialogFragment.getInstance(currentFavorite);
 
         fragment.show(ft, EDIT_FAVORITE_DIALOG_KEY);
-
     }
-
 
     @Override
     public void onMapReady(final GoogleMap googleMap) {
+        // hide error message in case connection regained
+        noResultsMessage.setVisibility(View.GONE);
+        mapContainerView.setVisibility(View.VISIBLE);
         bottomSheetLayout.setVisibility(View.VISIBLE);
 
         this.googleMap = googleMap;
@@ -413,7 +418,6 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                 Display mdisp = getWindowManager().getDefaultDisplay();
                 Point mdispSize = new Point();
                 mdisp.getSize(mdispSize);
-
 
                 updateMap();
 
@@ -508,9 +512,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         int permissionCheck = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION);
 
-        if (permissionCheck == PackageManager.PERMISSION_GRANTED)
-
-        {
+        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
             Log.d(TAG, "Location Permission Granted.");
             Task<Location> locationTask = LocationServices.getFusedLocationProviderClient(this).getLastLocation()
                     .addOnSuccessListener(this, new OnSuccessListener<Location>() {
@@ -558,21 +560,25 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     }
 
     private void refreshData() {
+        // hide all containers while refresh happening
+        noResultsMessage.setVisibility(View.GONE);
+        mapContainerView.setVisibility(View.GONE);
+        bottomSheetLayout.setVisibility(View.GONE);
+
         final long timestamp = System.currentTimeMillis();
         if (start != null && destination != null) {
 
             String routeId = null;
-            if (routeDirectionModel != null)
+            if (routeDirectionModel != null) {
                 routeId = routeDirectionModel.getRouteId();
+            }
             Call<NextArrivalModelResponse> results = SeptaServiceFactory.getNextArrivalService().getNextArrival(Integer.parseInt(start.getStopId()), Integer.parseInt(destination.getStopId()), transitType.name(), routeId);
             progressVisibility(View.VISIBLE);
 
             results.enqueue(new Callback<NextArrivalModelResponse>() {
                 @Override
                 public void onResponse(Call<NextArrivalModelResponse> call, final Response<NextArrivalModelResponse> response) {
-                    if (response == null || response.body() == null) {
-                        onFailure();
-                    } else {
+                    if (response.body() != null && response.body().getNextArrivalRecords() != null && !response.body().getNextArrivalRecords().isEmpty()) {
                         if (transitType == TransitType.RAIL && response.body().getNextArrivalRecords().size() > 0) {
                             try {
                                 //Because RAIL does not need a Route to look up NTA if we want to link back to Schedules we need to figure out the Line and Direction.
@@ -581,7 +587,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                                 String routeId = response.body().getNextArrivalRecords().get(0).getOrigRouteId();
                                 String trainId = response.body().getNextArrivalRecords().get(0).getOrigLineTripId();
 
-                                List<Criteria> criteriaList = new ArrayList<Criteria>(2);
+                                List<Criteria> criteriaList = new ArrayList<>(2);
                                 criteriaList.add(new Criteria("routeId", Criteria.Operation.EQ, routeId));
                                 criteriaList.add(new Criteria("trainId", Criteria.Operation.EQ, trainId));
 
@@ -600,7 +606,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                         }
 
 
-                        // Go through all of the results and kick off a call for Details for each vehichle that has RT data.
+                        // Go through all of the results and kick off a call for Details for each vehicle that has RT data.
                         for (final NextArrivalModelResponse.NextArrivalRecord nextArrivalRecord : response.body().getNextArrivalRecords()) {
                             if (nextArrivalRecord.isOrigRealtime()) {
 
@@ -626,6 +632,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
                                     @Override
                                     public void onFailure(Call<NextArrivalDetails> call, Throwable t) {
+                                        showNoResultsFoundErrorMessage();
                                     }
                                 });
                             }
@@ -649,6 +656,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
                                         @Override
                                         public void onFailure(Call<NextArrivalDetails> call, Throwable t) {
+                                            showNoResultsFoundErrorMessage();
                                         }
                                     });
                                 }
@@ -685,6 +693,10 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                             refreshHandler.removeCallbacks(NextToArriveResultsActivity.this);
                             refreshHandler.postDelayed(NextToArriveResultsActivity.this, REFRESH_DELAY_SECONDS * 1000);
                         }
+                    } else {
+                        // empty response
+                        Log.d(TAG, "Empty NTA response body");
+                        onFailure();
                     }
                 }
 
@@ -694,8 +706,10 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                     startMarker = new MarkerOptions().position(startingStationLatLng).title(start.getStopName());
                     destMarker = new MarkerOptions().position(destinationStationLatLng).title(destination.getStopName());
 
-                    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-                    getSupportActionBar().setDisplayShowHomeEnabled(true);
+                    if (getSupportActionBar() != null) {
+                        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                        getSupportActionBar().setDisplayShowHomeEnabled(true);
+                    }
 
                     nextToArriveDetailsView.setNextToArriveData(parser);
 
@@ -712,16 +726,22 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
                 private void onFailure() {
                     parser = new NextArrivalModelResponseParser();
-                    //updateView();
                     progressVisibility(View.GONE);
                     refreshHandler.removeCallbacks(NextToArriveResultsActivity.this);
                     refreshHandler.postDelayed(NextToArriveResultsActivity.this, REFRESH_DELAY_SECONDS * 1000);
-                    //SeptaServiceFactory.displayWebServiceError(findViewById(R.id.rail_next_to_arrive_results_coordinator), NextToArriveResultsActivity.this);
+                    showNoResultsFoundErrorMessage();
                 }
             });
-
         }
 
+    }
+
+    private void showNoResultsFoundErrorMessage() {
+        // show error message and hide
+        mapContainerView.setVisibility(View.GONE);
+        bottomSheetLayout.setVisibility(View.GONE);
+        noResultsMessage.setVisibility(View.VISIBLE);
+        Log.d(TAG, "No results found in NTA records");
     }
 
     private void addDetail(Response<NextArrivalDetails> response, String origVehicleId) {
@@ -729,6 +749,11 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     }
 
     private void updateMap() {
+        // hide error message in case connection regained
+        noResultsMessage.setVisibility(View.GONE);
+        mapContainerView.setVisibility(View.VISIBLE);
+        bottomSheetLayout.setVisibility(View.VISIBLE);
+
         googleMap.clear();
         googleMap.addMarker(startMarker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
         googleMap.addMarker(destMarker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
@@ -743,7 +768,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
         for (String routeId : parser.getRouteIdSet()) {
             KmlLayer layer = MapUtils.getKMLByLineId(NextToArriveResultsActivity.this, googleMap, routeId, transitType);
-            if (layer != null)
+            if (layer != null) {
                 try {
                     layer.addLayerToMap();
                 } catch (IOException e) {
@@ -751,6 +776,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                 } catch (XmlPullParserException e) {
                     e.printStackTrace();
                 }
+            }
         }
     }
 
@@ -763,11 +789,6 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     public void updateFavorite(Favorite var1) {
         currentFavorite = var1;
         setTitle(currentFavorite.getName());
-    }
-
-    @Override
-    public void viewSchedulesClicked() {
-        gotoSchedulesForTarget();
     }
 
 }

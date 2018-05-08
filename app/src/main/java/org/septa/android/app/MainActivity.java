@@ -362,8 +362,9 @@ public class MainActivity extends AppCompatActivity
         CrashlyticsManager.log(Log.INFO, TAG, "switchToSchedules");
 
         if (currentMenu == null || currentMenu.getItemId() != R.id.nav_schedule) {
-            if (currentMenu != null)
+            if (currentMenu != null) {
                 currentMenu.setIcon(previousIcon);
+            }
             navigationView.setCheckedItem(R.id.nav_schedule);
             currentMenu = navigationView.getMenu().findItem(R.id.nav_schedule);
             previousIcon = currentMenu.getIcon();

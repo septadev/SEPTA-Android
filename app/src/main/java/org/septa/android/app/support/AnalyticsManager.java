@@ -13,6 +13,8 @@ import io.fabric.sdk.android.Fabric;
 
 /**
  * Manages Analytics
+ *
+ * will only log events to Crashlytics on a release build of the app
  */
 
 public class AnalyticsManager {
@@ -28,7 +30,8 @@ public class AnalyticsManager {
     public static final String CUSTOM_EVENT_SYSTEM_STATUS = "System Status";
     public static final String CUSTOM_EVENT_TRAIN_VIEW = "TrainView";
     public static final String CUSTOM_EVENT_TRANSIT_VIEW = "TransitView";
-
+    public static final String CUSTOM_EVENT_SAVE_RENAMED_FAVORITE = "Save a Renamed Favorite";
+    public static final String CUSTOM_EVENT_DELETE_FAVORITE = "Delete a Favorite";
 
     private static boolean initalized = false;
 

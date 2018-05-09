@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import org.septa.android.app.Constants;
+import org.septa.android.app.MainActivity;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
 import org.septa.android.app.domain.RouteDirectionModel;
@@ -277,10 +278,12 @@ public class NextToArriveTripView extends FrameLayout {
             origDepartureTime.setTextColor(ContextCompat.getColor(getContext(), R.color.on_time_departing));
         }
 
-        if (transitType == TransitType.SUBWAY || transitType == TransitType.NHSL)
+        if (transitType == TransitType.SUBWAY || transitType == TransitType.NHSL) {
             enableClick = false;
+        }
 
-        if (!enableClick) {
+        // disable chevron for NTA result row when realtime data unavailable or in favorites fragment
+        if (!enableClick || getContext() instanceof MainActivity) {
             line.setClickable(false);
             line.findViewById(R.id.trip_details_button).setVisibility(GONE);
         } else {
@@ -403,7 +406,8 @@ public class NextToArriveTripView extends FrameLayout {
             enableOrigClick = false;
         }
 
-        if (!enableOrigClick) {
+        // disable chevron for NTA result row when realtime data unavailable or in favorites fragment
+        if (!enableOrigClick || getContext() instanceof MainActivity) {
             origTripView.setClickable(false);
             origTripView.findViewById(R.id.orig_trip_details_button).setVisibility(GONE);
         } else {
@@ -518,7 +522,8 @@ public class NextToArriveTripView extends FrameLayout {
             termEnableClick = false;
         }
 
-        if (!termEnableClick) {
+        // disable chevron for NTA result row when realtime data unavailable or in favorites fragment
+        if (!termEnableClick || getContext() instanceof MainActivity) {
             termTripView.setClickable(false);
             termTripView.findViewById(R.id.term_trip_details_button).setVisibility(GONE);
         } else {

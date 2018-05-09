@@ -198,8 +198,9 @@ public class FavoritesFragment extends Fragment implements Runnable {
         results.enqueue(new Callback<NextArrivalModelResponse>() {
             @Override
             public void onResponse(@NonNull Call<NextArrivalModelResponse> call, @NonNull Response<NextArrivalModelResponse> response) {
-                if (response != null && response.body() != null)
+                if (response != null && response.body() != null) {
                     tripView.setNextToArriveData(new NextArrivalModelResponseParser(response.body()));
+                }
                 progressView.setVisibility(View.GONE);
 
                 // this snackbar is being created to be auto-dismissed in order to remove persistent snackbar when connection is regained

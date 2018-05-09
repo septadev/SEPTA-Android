@@ -19,6 +19,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -117,27 +118,35 @@ public class FavoritesFragment extends Fragment implements Runnable {
         return msg;
     }
 
-    private View onCreateViewFavorites(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    private View onCreateViewFavorites(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
         setHasOptionsMenu(true);
         fragmentView = inflater.inflate(R.layout.favorites_view, container, false);
         LinearLayout favoritesListView = (LinearLayout) fragmentView.findViewById(R.id.favorites_list);
 
         for (Map.Entry<String, Favorite> entry : favoritesMap.entrySet()) {
-            final Favorite favorite = entry.getValue();
+            // get layout for that favorite row
             View convertView = inflater.inflate(R.layout.favorite_item, favoritesListView, false);
-            TextView favName = (TextView) convertView.findViewById(R.id.favorite_title_text);
+            final TextView favName = (TextView) convertView.findViewById(R.id.favorite_title_text);
+            final ImageButton expandCollapseButton = (ImageButton) convertView.findViewById(R.id.favorite_item_collapse_button);
+            final ViewGroup containerView = (ViewGroup) convertView.findViewById(R.id.next_to_arrive_trip_details);
+            final View progressView = containerView.findViewById(R.id.progress_view);
+
+            // get favorite
+            final Favorite favorite = entry.getValue();
             favoriteTitlesMap.put(entry.getKey(), favName);
+
+            // set favorite header text
             favName.setText(favorite.getName());
             Drawable drawables[] = favName.getCompoundDrawables();
             favName.setCompoundDrawablesWithIntrinsicBounds(ContextCompat.getDrawable(getContext(),
                     favorite.getTransitType().getTabActiveImageResource()),
                     drawables[1], drawables[2], drawables[3]);
 
-            ViewGroup containerView = (ViewGroup) convertView.findViewById(R.id.next_to_arrive_trip_details);
-            final View progressView = containerView.findViewById(R.id.progress_view);
+            // set up loading spinners for each favorite
             progressViewMap.put(entry.getKey(), progressView);
             progressView.setVisibility(View.VISIBLE);
 
+            // add 3 NTA results to favorite
             final NextToArriveTripView tripView = new NextToArriveTripView(getContext());
             tripView.setMaxResults(3);
             tripView.setTransitType(favorite.getTransitType());
@@ -145,14 +154,30 @@ public class FavoritesFragment extends Fragment implements Runnable {
             tripView.setDestination(favorite.getDestination());
             tripView.setRouteDirectionModel(favorite.getRouteDirectionModel());
             nextToArriveTripViewMap.put(entry.getKey(), tripView);
-
             containerView.addView(tripView);
-            favoritesListView.addView(convertView);
 
+            // add favorite results to listview
+            favoritesListView.addView(convertView);
             refreshFavorite(favorite, tripView, progressView);
 
-            View moreButton = convertView.findViewById(R.id.more_button);
-            moreButton.setOnClickListener(new View.OnClickListener() {
+            // clicking on + or - icon expands or collapses that favorite's results
+            expandCollapseButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int newVisibility, currentVisibility = containerView.getVisibility();
+                    if (currentVisibility == View.VISIBLE) {
+                        newVisibility = View.GONE;
+                        expandCollapseButton.setImageResource(R.drawable.ic_expand);
+                    } else {
+                        newVisibility = View.VISIBLE;
+                        expandCollapseButton.setImageResource(R.drawable.ic_collapse);
+                    }
+                    containerView.setVisibility(newVisibility);
+                }
+            });
+
+            // clicking on any results opens NTA Results for that favorite
+            containerView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     if (getActivity() == null)
@@ -167,9 +192,6 @@ public class FavoritesFragment extends Fragment implements Runnable {
                     getActivity().startActivityForResult(intent, Constants.NTA_REQUEST);
                 }
             });
-            StringBuilder moreButtonDescription = new StringBuilder(getString(R.string.favorite_more_button_description));
-            moreButtonDescription.append(favName.getText());
-            moreButton.setContentDescription(moreButtonDescription.toString());
         }
 
         return fragmentView;

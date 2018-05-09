@@ -52,9 +52,10 @@ public class FavoritesFragment extends Fragment implements Runnable {
     private static final String KEY_TITLE = "KEY_TITLE";
     private static final int REFRESH_DELAY_SECONDS = 30;
     private Map<String, Favorite> favoritesMap;
-    private Map<String, TextView> favoriteTitlesMap = new HashMap<String, TextView>();
-    private Map<String, NextToArriveTripView> nextToArriveTripViewMap = new HashMap<String, NextToArriveTripView>();
-    private Map<String, View> progressViewMap = new HashMap<String, View>();
+    private Map<String, TextView> favoriteTitlesMap = new HashMap<>();
+    private Map<String, NextToArriveTripView> nextToArriveTripViewMap = new HashMap<>();
+    private Map<String, View> progressViewMap = new HashMap<>();
+    private Map<String, View> noResultsMsgMap = new HashMap<>();
     int initialCount;
     private FavoritesFragmentCallBacks favoritesFragmentCallBacks;
     Handler refreshHandler = null;
@@ -76,9 +77,11 @@ public class FavoritesFragment extends Fragment implements Runnable {
         alertMessage = evaluateAndRemoveFavorites(favoritesMap);
 
         initialCount = favoritesMap.size();
-        if (favoritesMap.size() == 0)
+        if (favoritesMap.size() == 0) {
             return onCreateViewNoFavorites(inflater, container, savedInstanceState);
-        else return onCreateViewFavorites(inflater, container, savedInstanceState);
+        } else {
+            return onCreateViewFavorites(inflater, container, savedInstanceState);
+        }
     }
 
     private String evaluateAndRemoveFavorites(Map<String, Favorite> favoritesMap) {
@@ -156,9 +159,13 @@ public class FavoritesFragment extends Fragment implements Runnable {
             nextToArriveTripViewMap.put(entry.getKey(), tripView);
             containerView.addView(tripView);
 
+            // set up no results message for each favorite
+            TextView noResultsMsg = (TextView) convertView.findViewById(R.id.favorites_empty_results_msg);
+            noResultsMsgMap.put(entry.getKey(), noResultsMsg);
+
             // add favorite results to listview
             favoritesListView.addView(convertView);
-            refreshFavorite(favorite, tripView, progressView);
+            refreshFavorite(favorite, tripView, progressView, noResultsMsg);
 
             // clicking on + or - icon expands or collapses that favorite's results
             expandCollapseButton.setOnClickListener(new View.OnClickListener() {
@@ -200,13 +207,13 @@ public class FavoritesFragment extends Fragment implements Runnable {
     @Override
     public void run() {
         for (Map.Entry<String, Favorite> entry : favoritesMap.entrySet()) {
-            refreshFavorite(entry.getValue(), nextToArriveTripViewMap.get(entry.getKey()), progressViewMap.get(entry.getKey()));
+            refreshFavorite(entry.getValue(), nextToArriveTripViewMap.get(entry.getKey()), progressViewMap.get(entry.getKey()), noResultsMsgMap.get(entry.getKey()));
         }
 
         refreshHandler.postDelayed(this, REFRESH_DELAY_SECONDS * 1000);
     }
 
-    private void refreshFavorite(final Favorite favorite, final NextToArriveTripView tripView, final View progressView) {
+    private void refreshFavorite(final Favorite favorite, final NextToArriveTripView tripView, final View progressView, final View noResultsMsg) {
         progressView.setVisibility(View.VISIBLE);
 
         String routeId = null;
@@ -221,7 +228,16 @@ public class FavoritesFragment extends Fragment implements Runnable {
             @Override
             public void onResponse(@NonNull Call<NextArrivalModelResponse> call, @NonNull Response<NextArrivalModelResponse> response) {
                 if (response != null && response.body() != null) {
-                    tripView.setNextToArriveData(new NextArrivalModelResponseParser(response.body()));
+                    NextArrivalModelResponseParser parser = new NextArrivalModelResponseParser(response.body());
+
+                    // set no results message to visible if no results
+                    if (parser.getResults().isEmpty()) {
+                        noResultsMsg.setVisibility(View.VISIBLE);
+                    } else {
+                        noResultsMsg.setVisibility(View.GONE);
+                    }
+
+                    tripView.setNextToArriveData(parser);
                 }
                 progressView.setVisibility(View.GONE);
 
@@ -234,6 +250,9 @@ public class FavoritesFragment extends Fragment implements Runnable {
             @Override
             public void onFailure(@NonNull Call<NextArrivalModelResponse> call, @NonNull Throwable t) {
                 tripView.setNextToArriveData(new NextArrivalModelResponseParser());
+
+                // set no results message to visible if no results
+                noResultsMsg.setVisibility(View.VISIBLE);
 
                 // this snackbar will persist until a connection is reestablished and favorites are refreshed
                 Snackbar snackbar = Snackbar.make(fragmentView, R.string.realtime_failure_message, Snackbar.LENGTH_INDEFINITE);

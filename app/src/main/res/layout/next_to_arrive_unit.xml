@@ -4,7 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?android:attr/selectableItemBackground"
-    android:clickable="true">
+    android:clickable="true"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp" >
 
     <org.septa.android.app.view.TextView
         android:id="@+id/orig_arrival_time_text"
@@ -52,7 +54,6 @@
         android:id="@+id/orig_departing_border"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
         android:layout_marginRight="32dp"
         android:layout_marginTop="0dp"
         android:background="@drawable/ontime_boarder"
@@ -86,10 +87,7 @@
         android:id="@+id/trip_details_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="0dp"
-        android:layout_marginLeft="0dp"
-        android:layout_marginRight="0dp"
-        android:layout_marginTop="0dp"
+        android:layout_margin="0dp"
         android:src="@drawable/ic_keyboard_arrow_right_black_24dp"
         android:tint="@color/colorPrimaryDark"
         app:layout_constraintBottom_toBottomOf="@+id/orig_departing_border"

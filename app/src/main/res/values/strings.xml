@@ -136,6 +136,7 @@
     <string name="schedule_favorite_icon_title_create">Tap to create a favorite from this Schedule result</string>
 
     <string name="snackbar_no_connection_link_text">Schedules »</string>
+    <string name="favorites_empty_results">No results found for the next 5 hours.\nPlease refer to Schedules for the next arrival times.</string>
 
 
     <!-- System Status -->

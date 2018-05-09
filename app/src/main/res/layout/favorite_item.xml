@@ -41,7 +41,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginRight="18dp"
-            android:background="#ffffff"
+            android:background="?android:attr/selectableItemBackground"
             android:clickable="true"
             android:drawablePadding="6dp"
             android:gravity="center"
@@ -55,7 +55,21 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/favorite_title_text"
-        android:visibility="gone">
+        android:visibility="gone"
+        android:layout_marginBottom="8dp">
+
+        <TextView
+            android:id="@+id/favorites_empty_results_msg"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/favorites_empty_results"
+            android:textAlignment="center"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:visibility="gone"
+            />
 
         <FrameLayout
             android:id="@+id/progress_view"

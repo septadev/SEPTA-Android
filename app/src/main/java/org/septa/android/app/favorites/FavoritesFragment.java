@@ -5,8 +5,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -289,12 +287,6 @@ public class FavoritesFragment extends Fragment implements Runnable {
         final ImageButton expandCollapseButton = (ImageButton) favoriteRow.findViewById(R.id.favorite_item_collapse_button);
         final TextView noResultsMsg = (TextView) favoriteRow.findViewById(R.id.favorite_item_no_results_msg);
 
-        // change favorite icon to match transit type
-        Drawable drawables[] = favName.getCompoundDrawables();
-        favName.setCompoundDrawablesWithIntrinsicBounds(ContextCompat.getDrawable(getContext(),
-                favorite.getTransitType().getTabActiveImageResource()),
-                drawables[1], drawables[2], drawables[3]);
-
         // change no results message to + / - button
         noResultsMsg.setVisibility(View.GONE);
         expandCollapseButton.setVisibility(View.VISIBLE);
@@ -305,11 +297,6 @@ public class FavoritesFragment extends Fragment implements Runnable {
         final TextView favName = (TextView) favoriteRow.findViewById(R.id.favorite_title_text);
         final ImageButton expandCollapseButton = (ImageButton) favoriteRow.findViewById(R.id.favorite_item_collapse_button);
         final TextView noResultsMsg = (TextView) favoriteRow.findViewById(R.id.favorite_item_no_results_msg);
-
-        // change drawableLeft of favName to red ic_no_results
-        Drawable noResultsIcon = getActivity().getResources().getDrawable(R.drawable.ic_no_results_found);
-        noResultsIcon.setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);
-        favName.setCompoundDrawablesWithIntrinsicBounds(noResultsIcon, null, null, null);
 
         // change + / - button to no results message
         expandCollapseButton.setVisibility(View.GONE);

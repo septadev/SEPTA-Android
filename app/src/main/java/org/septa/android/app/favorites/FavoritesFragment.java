@@ -5,6 +5,8 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -55,9 +57,9 @@ public class FavoritesFragment extends Fragment implements Runnable {
     private Map<String, TextView> favoriteTitlesMap = new HashMap<>();
     private Map<String, NextToArriveTripView> nextToArriveTripViewMap = new HashMap<>();
     private Map<String, View> progressViewMap = new HashMap<>();
-    private Map<String, View> noResultsMsgMap = new HashMap<>();
+    private Map<String, LinearLayout> favoritesRowsMap = new HashMap<>();
     int initialCount;
-    private FavoritesFragmentCallBacks favoritesFragmentCallBacks;
+    private FavoritesFragmentListener mListener;
     Handler refreshHandler = null;
     View fragmentView;
     String alertMessage;
@@ -93,10 +95,10 @@ public class FavoritesFragment extends Fragment implements Runnable {
 
         // If need to force remove favorites in new version then change FAVORITES_LAST_UPDATED_VERSION
 
-        Map<String, Favorite> loopMap = new HashMap<String, Favorite>();
+        Map<String, Favorite> loopMap = new HashMap<>();
         loopMap.putAll(favoritesMap);
 
-        List<Favorite> toDelete = new LinkedList<Favorite>();
+        List<Favorite> toDelete = new LinkedList<>();
 
         String msg = null;
         for (Map.Entry<String, Favorite> entry : loopMap.entrySet()) {
@@ -129,7 +131,9 @@ public class FavoritesFragment extends Fragment implements Runnable {
         for (Map.Entry<String, Favorite> entry : favoritesMap.entrySet()) {
             // get layout for that favorite row
             View convertView = inflater.inflate(R.layout.favorite_item, favoritesListView, false);
+            final LinearLayout favoriteRow = (LinearLayout) convertView.findViewById(R.id.favorite_item_header);
             final TextView favName = (TextView) convertView.findViewById(R.id.favorite_title_text);
+            final TextView noResultsMsg = (TextView) convertView.findViewById(R.id.favorite_item_no_results_msg);
             final ImageButton expandCollapseButton = (ImageButton) convertView.findViewById(R.id.favorite_item_collapse_button);
             final ViewGroup containerView = (ViewGroup) convertView.findViewById(R.id.next_to_arrive_trip_details);
             final View progressView = containerView.findViewById(R.id.progress_view);
@@ -160,12 +164,11 @@ public class FavoritesFragment extends Fragment implements Runnable {
             containerView.addView(tripView);
 
             // set up no results message for each favorite
-            TextView noResultsMsg = (TextView) convertView.findViewById(R.id.favorites_empty_results_msg);
-            noResultsMsgMap.put(entry.getKey(), noResultsMsg);
+            favoritesRowsMap.put(entry.getKey(), favoriteRow);
 
             // add favorite results to listview
             favoritesListView.addView(convertView);
-            refreshFavorite(favorite, tripView, progressView, noResultsMsg);
+            refreshFavorite(favorite, tripView, progressView, favoriteRow);
 
             // clicking on + or - icon expands or collapses that favorite's results
             expandCollapseButton.setOnClickListener(new View.OnClickListener() {
@@ -180,6 +183,15 @@ public class FavoritesFragment extends Fragment implements Runnable {
                         expandCollapseButton.setImageResource(R.drawable.ic_collapse);
                     }
                     containerView.setVisibility(newVisibility);
+                }
+            });
+
+            // clicking on no results message navigates to prepopulated schedule selection picker
+            noResultsMsg.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // switch to schedules
+                    mListener.goToSchedulesForTarget(favorite.getStart(), favorite.getDestination(), favorite.getTransitType(), favorite.getRouteDirectionModel());
                 }
             });
 
@@ -207,13 +219,13 @@ public class FavoritesFragment extends Fragment implements Runnable {
     @Override
     public void run() {
         for (Map.Entry<String, Favorite> entry : favoritesMap.entrySet()) {
-            refreshFavorite(entry.getValue(), nextToArriveTripViewMap.get(entry.getKey()), progressViewMap.get(entry.getKey()), noResultsMsgMap.get(entry.getKey()));
+            refreshFavorite(entry.getValue(), nextToArriveTripViewMap.get(entry.getKey()), progressViewMap.get(entry.getKey()), favoritesRowsMap.get(entry.getKey()));
         }
 
         refreshHandler.postDelayed(this, REFRESH_DELAY_SECONDS * 1000);
     }
 
-    private void refreshFavorite(final Favorite favorite, final NextToArriveTripView tripView, final View progressView, final View noResultsMsg) {
+    private void refreshFavorite(final Favorite favorite, final NextToArriveTripView tripView, final View progressView, final LinearLayout favoriteRow) {
         progressView.setVisibility(View.VISIBLE);
 
         String routeId = null;
@@ -230,11 +242,10 @@ public class FavoritesFragment extends Fragment implements Runnable {
                 if (response != null && response.body() != null) {
                     NextArrivalModelResponseParser parser = new NextArrivalModelResponseParser(response.body());
 
-                    // set no results message to visible if no results
                     if (parser.getResults().isEmpty()) {
-                        noResultsMsg.setVisibility(View.VISIBLE);
+                        updateViewWhenNoResultsFound(favoriteRow);
                     } else {
-                        noResultsMsg.setVisibility(View.GONE);
+                        updateViewWhenResultsFound(favoriteRow, favorite);
                     }
 
                     tripView.setNextToArriveData(parser);
@@ -251,15 +262,15 @@ public class FavoritesFragment extends Fragment implements Runnable {
             public void onFailure(@NonNull Call<NextArrivalModelResponse> call, @NonNull Throwable t) {
                 tripView.setNextToArriveData(new NextArrivalModelResponseParser());
 
-                // set no results message to visible if no results
-                noResultsMsg.setVisibility(View.VISIBLE);
+                // show that NTA data unavailable for that favorites row
+                updateViewWhenNoResultsFound(favoriteRow);
 
                 // this snackbar will persist until a connection is reestablished and favorites are refreshed
                 Snackbar snackbar = Snackbar.make(fragmentView, R.string.realtime_failure_message, Snackbar.LENGTH_INDEFINITE);
                 snackbar.setAction(R.string.snackbar_no_connection_link_text, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        favoritesFragmentCallBacks.gotoSchedules();
+                        mListener.gotoSchedules();
                     }
                 });
                 View snackbarView = snackbar.getView();
@@ -272,6 +283,39 @@ public class FavoritesFragment extends Fragment implements Runnable {
         });
     }
 
+    private void updateViewWhenResultsFound(LinearLayout favoriteRow, Favorite favorite) {
+        // set no results message to visible if no results
+        final TextView favName = (TextView) favoriteRow.findViewById(R.id.favorite_title_text);
+        final ImageButton expandCollapseButton = (ImageButton) favoriteRow.findViewById(R.id.favorite_item_collapse_button);
+        final TextView noResultsMsg = (TextView) favoriteRow.findViewById(R.id.favorite_item_no_results_msg);
+
+        // change favorite icon to match transit type
+        Drawable drawables[] = favName.getCompoundDrawables();
+        favName.setCompoundDrawablesWithIntrinsicBounds(ContextCompat.getDrawable(getContext(),
+                favorite.getTransitType().getTabActiveImageResource()),
+                drawables[1], drawables[2], drawables[3]);
+
+        // change no results message to + / - button
+        noResultsMsg.setVisibility(View.GONE);
+        expandCollapseButton.setVisibility(View.VISIBLE);
+    }
+
+    private void updateViewWhenNoResultsFound(LinearLayout favoriteRow) {
+        // set no results message to visible if no results
+        final TextView favName = (TextView) favoriteRow.findViewById(R.id.favorite_title_text);
+        final ImageButton expandCollapseButton = (ImageButton) favoriteRow.findViewById(R.id.favorite_item_collapse_button);
+        final TextView noResultsMsg = (TextView) favoriteRow.findViewById(R.id.favorite_item_no_results_msg);
+
+        // change drawableLeft of favName to red ic_no_results
+        Drawable noResultsIcon = getActivity().getResources().getDrawable(R.drawable.ic_no_results_found);
+        noResultsIcon.setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);
+        favName.setCompoundDrawablesWithIntrinsicBounds(noResultsIcon, null, null, null);
+
+        // change + / - button to no results message
+        expandCollapseButton.setVisibility(View.GONE);
+        noResultsMsg.setVisibility(View.VISIBLE);
+    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -280,14 +324,14 @@ public class FavoritesFragment extends Fragment implements Runnable {
             favoritesMap = SeptaServiceFactory.getFavoritesService().getFavorites(getContext());
 
             if (initialCount != favoritesMap.size()) {
-                favoritesFragmentCallBacks.refresh();
+                mListener.refresh();
                 return;
             }
 
             for (Map.Entry<String, TextView> entry : favoriteTitlesMap.entrySet()) {
                 Favorite fav = favoritesMap.get(entry.getKey());
                 if (fav == null) {
-                    favoritesFragmentCallBacks.refresh();
+                    mListener.refresh();
                     return;
                 }
                 entry.getValue().setText(fav.getName());
@@ -334,7 +378,7 @@ public class FavoritesFragment extends Fragment implements Runnable {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                favoritesFragmentCallBacks.addNewFavorite();
+                mListener.addNewFavorite();
             }
         });
 
@@ -344,7 +388,7 @@ public class FavoritesFragment extends Fragment implements Runnable {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.add_favorite) {
-            favoritesFragmentCallBacks.addNewFavorite();
+            mListener.addNewFavorite();
         }
 
         return true;
@@ -354,14 +398,13 @@ public class FavoritesFragment extends Fragment implements Runnable {
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        if (!(context instanceof FavoritesFragmentCallBacks)) {
-            throw new RuntimeException("Context must implement FavoritesFragmentCallBacks");
+        if (!(context instanceof FavoritesFragmentListener)) {
+            throw new RuntimeException("Context must implement FavoritesFragmentListener");
         } else {
-            favoritesFragmentCallBacks = (FavoritesFragmentCallBacks) context;
+            mListener = (FavoritesFragmentListener) context;
         }
 
     }
-
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -384,6 +427,7 @@ public class FavoritesFragment extends Fragment implements Runnable {
                 getActivity().setTitle(title);
         }
     }
+
 }
 
 

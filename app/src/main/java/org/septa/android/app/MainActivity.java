@@ -25,9 +25,11 @@ import android.view.View;
 
 import org.septa.android.app.about.AboutFragment;
 import org.septa.android.app.connect.ConnectFragment;
+import org.septa.android.app.domain.RouteDirectionModel;
+import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.fares.FaresFragment;
 import org.septa.android.app.favorites.FavoritesFragment;
-import org.septa.android.app.favorites.FavoritesFragmentCallBacks;
+import org.septa.android.app.favorites.FavoritesFragmentListener;
 import org.septa.android.app.nextarrive.NextToArriveFragment;
 import org.septa.android.app.schedules.SchedulesFragment;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
@@ -50,7 +52,7 @@ import retrofit2.Response;
  */
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, FavoritesFragmentCallBacks, SeptaServiceFactory.SeptaServiceFactoryCallBacks {
+        implements NavigationView.OnNavigationItemSelectedListener, FavoritesFragmentListener, SeptaServiceFactory.SeptaServiceFactoryCallBacks {
 
     public static final String TAG = MainActivity.class.getSimpleName();
     NextToArriveFragment nextToArriveFragment = new NextToArriveFragment();
@@ -306,8 +308,9 @@ public class MainActivity extends AppCompatActivity
     public void addNewFavorite() {
         CrashlyticsManager.log(Log.INFO, TAG, "addNewFavorite");
         if (currentMenu == null || currentMenu.getItemId() != R.id.nav_next_to_arrive) {
-            if (currentMenu != null)
+            if (currentMenu != null) {
                 currentMenu.setIcon(previousIcon);
+            }
             navigationView.setCheckedItem(R.id.nav_next_to_arrive);
             currentMenu = navigationView.getMenu().findItem(R.id.nav_next_to_arrive);
             previousIcon = currentMenu.getIcon();
@@ -321,6 +324,20 @@ public class MainActivity extends AppCompatActivity
     public void gotoSchedules() {
         switchToSchedules(null);
         //switchToBundle(navigationView.getMenu().findItem(R.id.nav_schedule), schedules, R.string.schedule, R.drawable.ic_schedule_active);
+    }
+
+    @Override
+    public void goToSchedulesForTarget(StopModel start, StopModel destination, TransitType transitType, RouteDirectionModel routeDirectionModel) {
+        // navigate to schedule selection picker
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(Constants.STARTING_STATION, start);
+        bundle.putSerializable(Constants.DESTINATION_STATION, destination);
+        bundle.putSerializable(Constants.TRANSIT_TYPE, transitType);
+        if (routeDirectionModel != null) {
+            bundle.putSerializable(Constants.ROUTE_DIRECTION_MODEL, routeDirectionModel);
+        }
+
+        switchToSchedules(bundle);
     }
 
     public void switchToFavorites() {
@@ -347,7 +364,6 @@ public class MainActivity extends AppCompatActivity
                 jumpToSchedulesHandler.sendMessage(message);
             }
         }
-
     }
 
     private Handler jumpToSchedulesHandler = new Handler() {
@@ -362,8 +378,9 @@ public class MainActivity extends AppCompatActivity
         CrashlyticsManager.log(Log.INFO, TAG, "switchToSchedules");
 
         if (currentMenu == null || currentMenu.getItemId() != R.id.nav_schedule) {
-            if (currentMenu != null)
+            if (currentMenu != null) {
                 currentMenu.setIcon(previousIcon);
+            }
             navigationView.setCheckedItem(R.id.nav_schedule);
             currentMenu = navigationView.getMenu().findItem(R.id.nav_schedule);
             previousIcon = currentMenu.getIcon();

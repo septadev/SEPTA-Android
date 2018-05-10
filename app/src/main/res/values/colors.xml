@@ -55,4 +55,8 @@
     <color name="progress_background">@android:color/white</color>
     <color name="scheduled">#6d6d6d</color>
 
+
+    <!-- Favorites -->
+    <color name="red">#FF0000</color>
+
 </resources>

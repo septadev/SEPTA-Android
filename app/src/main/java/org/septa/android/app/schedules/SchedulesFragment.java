@@ -223,7 +223,6 @@ public class SchedulesFragment extends Fragment {
         }
 
         prePopulated = data;
-
     }
 
 

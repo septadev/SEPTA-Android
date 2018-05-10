@@ -11,6 +11,7 @@
     android:orientation="vertical">
 
     <LinearLayout
+        android:id="@+id/favorite_item_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
@@ -46,7 +47,23 @@
             android:drawablePadding="6dp"
             android:gravity="center"
             android:src="@drawable/ic_expand"
-            android:tint="@color/colorPrimaryDark" />
+            android:tint="@color/colorPrimaryDark"
+            android:visibility="visible" />
+
+        <TextView
+            android:id="@+id/favorite_item_no_results_msg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginRight="18dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:drawablePadding="6dp"
+            android:gravity="center"
+            android:text="@string/favorites_empty_results"
+            android:textColor="@color/red"
+            android:textSize="10dp"
+            android:visibility="gone" />
 
     </LinearLayout>
 
@@ -55,21 +72,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/favorite_title_text"
-        android:visibility="gone"
-        android:layout_marginBottom="8dp">
-
-        <TextView
-            android:id="@+id/favorites_empty_results_msg"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="@string/favorites_empty_results"
-            android:textAlignment="center"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            android:visibility="gone"
-            />
+        android:layout_marginBottom="8dp"
+        android:visibility="gone">
 
         <FrameLayout
             android:id="@+id/progress_view"

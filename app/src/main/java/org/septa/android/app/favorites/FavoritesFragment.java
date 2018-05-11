@@ -13,6 +13,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -46,11 +47,14 @@ import retrofit2.Response;
  * Created by jkampf on 9/5/17.
  */
 public class FavoritesFragment extends Fragment implements Runnable {
+    private static final String TAG = FavoritesFragment.class.getSimpleName();
+
     // this version is the most recent to require a force delete of user favorites
     private static final int FAVORITES_LAST_UPDATED_VERSION = 268;
 
     private static final String KEY_TITLE = "KEY_TITLE";
     private static final int REFRESH_DELAY_SECONDS = 30;
+    private List<FavoriteState> favoriteStateList;
     private Map<String, Favorite> favoritesMap;
     private Map<String, TextView> favoriteTitlesMap = new HashMap<>();
     private Map<String, NextToArriveTripView> nextToArriveTripViewMap = new HashMap<>();
@@ -73,6 +77,7 @@ public class FavoritesFragment extends Fragment implements Runnable {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
+        favoriteStateList = SeptaServiceFactory.getFavoritesService().getFavoriteStates(getContext());
         favoritesMap = SeptaServiceFactory.getFavoritesService().getFavorites(getContext());
         alertMessage = evaluateAndRemoveFavorites(favoritesMap);
 
@@ -126,7 +131,23 @@ public class FavoritesFragment extends Fragment implements Runnable {
         fragmentView = inflater.inflate(R.layout.favorites_view, container, false);
         LinearLayout favoritesListView = (LinearLayout) fragmentView.findViewById(R.id.favorites_list);
 
-        for (Map.Entry<String, Favorite> entry : favoritesMap.entrySet()) {
+        // initialize favoriteStateList with favorites collapsed by default
+        if (favoriteStateList.size() != favoritesMap.size()) {
+            SeptaServiceFactory.getFavoritesService().deleteAllFavoriteStates(getContext());
+            Log.d(TAG, "Reinitializing favorite states now...");
+
+            for (Map.Entry<String, Favorite> entry : favoritesMap.entrySet()) {
+                FavoriteState favoriteState = new FavoriteState(entry.getKey());
+                favoriteStateList.add(favoriteState);
+                SeptaServiceFactory.getFavoritesService().addFavoriteState(getContext(), favoriteState);
+            }
+        }
+
+        Log.e(TAG, favoriteStateList.toString());
+
+        for (int i = 0; i < favoriteStateList.size(); i++) {
+            final int index = i;
+
             // get layout for that favorite row
             View convertView = inflater.inflate(R.layout.favorite_item, favoritesListView, false);
             final LinearLayout favoriteRow = (LinearLayout) convertView.findViewById(R.id.favorite_item_header);
@@ -137,8 +158,11 @@ public class FavoritesFragment extends Fragment implements Runnable {
             final View progressView = containerView.findViewById(R.id.progress_view);
 
             // get favorite
-            final Favorite favorite = entry.getValue();
-            favoriteTitlesMap.put(entry.getKey(), favName);
+            FavoriteState favoriteState = favoriteStateList.get(i);
+            Log.d(TAG, "Favorite #" + i + ": " + favoriteState);
+            String favoriteKey = favoriteState.getFavoriteKey();
+            final Favorite favorite = favoritesMap.get(favoriteKey);
+            favoriteTitlesMap.put(favoriteKey, favName);
 
             // set favorite header text
             favName.setText(favorite.getName());
@@ -148,7 +172,7 @@ public class FavoritesFragment extends Fragment implements Runnable {
                     drawables[1], drawables[2], drawables[3]);
 
             // set up loading spinners for each favorite
-            progressViewMap.put(entry.getKey(), progressView);
+            progressViewMap.put(favoriteKey, progressView);
             progressView.setVisibility(View.VISIBLE);
 
             // add 3 NTA results to favorite
@@ -158,29 +182,33 @@ public class FavoritesFragment extends Fragment implements Runnable {
             tripView.setStart(favorite.getStart());
             tripView.setDestination(favorite.getDestination());
             tripView.setRouteDirectionModel(favorite.getRouteDirectionModel());
-            nextToArriveTripViewMap.put(entry.getKey(), tripView);
+            nextToArriveTripViewMap.put(favoriteKey, tripView);
             containerView.addView(tripView);
 
             // set up no results message for each favorite
-            favoritesRowsMap.put(entry.getKey(), favoriteRow);
+            favoritesRowsMap.put(favoriteKey, favoriteRow);
 
             // add favorite results to listview
             favoritesListView.addView(convertView);
             refreshFavorite(favorite, tripView, progressView, favoriteRow);
 
+            // remember which favorites user had expanded
+            if (favoriteState.isExpanded()) {
+                expandFavorite(i, containerView, expandCollapseButton);
+            } else {
+                collapseFavorite(i, containerView, expandCollapseButton);
+            }
+
             // clicking on + or - icon expands or collapses that favorite's results
             expandCollapseButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    int newVisibility, currentVisibility = containerView.getVisibility();
-                    if (currentVisibility == View.VISIBLE) {
-                        newVisibility = View.GONE;
-                        expandCollapseButton.setImageResource(R.drawable.ic_expand);
+                    // if results already visible
+                    if (containerView.getVisibility() == View.VISIBLE) {
+                        collapseFavorite(index, containerView, expandCollapseButton);
                     } else {
-                        newVisibility = View.VISIBLE;
-                        expandCollapseButton.setImageResource(R.drawable.ic_collapse);
+                        expandFavorite(index, containerView, expandCollapseButton);
                     }
-                    containerView.setVisibility(newVisibility);
                 }
             });
 
@@ -212,6 +240,18 @@ public class FavoritesFragment extends Fragment implements Runnable {
         }
 
         return fragmentView;
+    }
+
+    private void collapseFavorite(int index, ViewGroup favoriteResults, ImageButton expandCollapseButton) {
+        expandCollapseButton.setImageResource(R.drawable.ic_expand);
+        favoriteResults.setVisibility(View.GONE);
+        SeptaServiceFactory.getFavoritesService().modifyFavoriteState(getContext(), index, false);
+    }
+
+    private void expandFavorite(int index, ViewGroup favoriteResults, ImageButton expandCollapseButton) {
+        expandCollapseButton.setImageResource(R.drawable.ic_collapse);
+        favoriteResults.setVisibility(View.VISIBLE);
+        SeptaServiceFactory.getFavoritesService().modifyFavoriteState(getContext(), index, true);
     }
 
     @Override

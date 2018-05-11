@@ -36,7 +36,6 @@
             android:elevation="4dp"
             android:orientation="vertical">
 
-
             <org.septa.android.app.view.TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -47,7 +46,6 @@
                 android:textColor="#6d6d6d"
                 android:textSize="12sp"
                 app:font="@string/font_roboto_regular" />
-
 
             <org.septa.android.app.view.TextView
                 android:id="@+id/starting_stop"
@@ -99,7 +97,6 @@
 
     </LinearLayout>
 
-
     <FrameLayout
         android:id="@+id/progress_view"
         android:layout_width="match_parent"
@@ -122,4 +119,5 @@
             tools:alpha="128" />
 
     </FrameLayout>
+
 </FrameLayout>

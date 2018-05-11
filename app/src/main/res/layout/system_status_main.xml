@@ -185,8 +185,11 @@
                         android:visibility="gone"
                         app:font="@string/font_roboto_light"
                         tools:visibility="visible" />
+
                 </LinearLayout>
+
             </ScrollView>
+
         </LinearLayout>
 
         <FrameLayout
@@ -204,6 +207,9 @@
                 android:layout_gravity="center"
                 android:indeterminate="true"
                 android:indeterminateDrawable="@drawable/basic_progress" />
+
         </FrameLayout>
+
     </FrameLayout>
+
 </android.support.design.widget.CoordinatorLayout>

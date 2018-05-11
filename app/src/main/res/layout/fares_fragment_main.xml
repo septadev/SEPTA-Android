@@ -32,7 +32,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="#ffffff"
-                android:elevation="4dp"
+                android:elevation="@dimen/white_box_elevation"
                 android:orientation="vertical"
                 android:paddingLeft="15dp"
                 android:paddingRight="15dp">
@@ -370,7 +370,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
                 android:background="#ffffff"
-                android:elevation="4dp"
+                android:elevation="@dimen/white_box_elevation"
                 android:orientation="vertical">
 
                 <RelativeLayout

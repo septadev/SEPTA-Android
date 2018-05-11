@@ -9,4 +9,5 @@
     <dimen name="dialog_alert_padding">25dp</dimen>
     <dimen name="favorite_container_padding">10dp</dimen>
     <dimen name="favorite_item_margin">5dp</dimen>
+    <dimen name="white_box_elevation">1dp</dimen>
 </resources>

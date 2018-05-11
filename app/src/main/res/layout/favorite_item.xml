@@ -7,7 +7,7 @@
     android:layout_marginBottom="@dimen/favorite_item_margin"
     android:layout_marginTop="@dimen/favorite_item_margin"
     android:background="#ffffff"
-    android:elevation="4dp"
+    android:elevation="@dimen/white_box_elevation"
     android:orientation="vertical">
 
     <LinearLayout

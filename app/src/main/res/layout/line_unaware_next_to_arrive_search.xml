@@ -33,7 +33,7 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:background="#ffffff"
-            android:elevation="4dp"
+            android:elevation="@dimen/white_box_elevation"
             android:orientation="vertical">
 
             <org.septa.android.app.view.TextView

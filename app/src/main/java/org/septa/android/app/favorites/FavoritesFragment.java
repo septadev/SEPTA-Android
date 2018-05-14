@@ -152,7 +152,7 @@ public class FavoritesFragment extends Fragment implements Runnable {
             View convertView = inflater.inflate(R.layout.favorite_item, favoritesListView, false);
             final LinearLayout favoriteRow = (LinearLayout) convertView.findViewById(R.id.favorite_item_header);
             final TextView favName = (TextView) convertView.findViewById(R.id.favorite_title_text);
-            final TextView noResultsMsg = (TextView) convertView.findViewById(R.id.favorite_item_no_results_msg);
+            final LinearLayout noResultsMsg = (LinearLayout) convertView.findViewById(R.id.favorite_item_no_results);
             final ImageButton expandCollapseButton = (ImageButton) convertView.findViewById(R.id.favorite_item_collapse_button);
             final ViewGroup containerView = (ViewGroup) convertView.findViewById(R.id.next_to_arrive_trip_details);
             final View progressView = containerView.findViewById(R.id.progress_view);
@@ -323,9 +323,8 @@ public class FavoritesFragment extends Fragment implements Runnable {
 
     private void updateViewWhenResultsFound(LinearLayout favoriteRow, Favorite favorite) {
         // set no results message to visible if no results
-        final TextView favName = (TextView) favoriteRow.findViewById(R.id.favorite_title_text);
         final ImageButton expandCollapseButton = (ImageButton) favoriteRow.findViewById(R.id.favorite_item_collapse_button);
-        final TextView noResultsMsg = (TextView) favoriteRow.findViewById(R.id.favorite_item_no_results_msg);
+        final LinearLayout noResultsMsg = (LinearLayout) favoriteRow.findViewById(R.id.favorite_item_no_results);
 
         // change no results message to + / - button
         noResultsMsg.setVisibility(View.GONE);
@@ -334,9 +333,8 @@ public class FavoritesFragment extends Fragment implements Runnable {
 
     private void updateViewWhenNoResultsFound(LinearLayout favoriteRow) {
         // set no results message to visible if no results
-        final TextView favName = (TextView) favoriteRow.findViewById(R.id.favorite_title_text);
         final ImageButton expandCollapseButton = (ImageButton) favoriteRow.findViewById(R.id.favorite_item_collapse_button);
-        final TextView noResultsMsg = (TextView) favoriteRow.findViewById(R.id.favorite_item_no_results_msg);
+        final LinearLayout noResultsMsg = (LinearLayout) favoriteRow.findViewById(R.id.favorite_item_no_results);
 
         // change + / - button to no results message
         expandCollapseButton.setVisibility(View.GONE);

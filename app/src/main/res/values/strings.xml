@@ -136,7 +136,8 @@
     <string name="schedule_favorite_icon_title_create">Tap to create a favorite from this Schedule result</string>
 
     <string name="snackbar_no_connection_link_text">Schedules »</string>
-    <string name="favorites_empty_results">Next To Arrive\nInformation Unavailable\nView Schedule »</string>
+    <string name="favorites_empty_results_msg">No Update</string>
+    <string name="favorites_view_schedules_msg">View Schedule »</string>
 
 
     <!-- System Status -->

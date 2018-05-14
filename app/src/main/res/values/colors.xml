@@ -6,7 +6,6 @@
 
     <color name="options_menu_tint">#ffffff</color>
 
-
     <!-- Next To Arrive Colors -->
     <color name="delay_minutes">#d72e11</color>
     <color name="no_delay_minutes">#539e00</color>
@@ -57,6 +56,6 @@
 
 
     <!-- Favorites -->
-    <color name="red">#FF0000</color>
+    <color name="no_results_found">#fcbe56</color>
 
 </resources>

@@ -13,7 +13,9 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -27,6 +29,10 @@ import android.widget.TextView;
 import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
+import org.septa.android.app.draggable.DragItem;
+import org.septa.android.app.draggable.DragListView;
+import org.septa.android.app.draggable.swipe.ListSwipeHelper;
+import org.septa.android.app.draggable.swipe.ListSwipeItem;
 import org.septa.android.app.nextarrive.NextArrivalModelResponseParser;
 import org.septa.android.app.nextarrive.NextToArriveResultsActivity;
 import org.septa.android.app.nextarrive.NextToArriveTripView;
@@ -54,6 +60,7 @@ public class FavoritesFragment extends Fragment implements Runnable {
 
     private static final String KEY_TITLE = "KEY_TITLE";
     private static final int REFRESH_DELAY_SECONDS = 30;
+    private DragListView favoritesListView;
     private List<FavoriteState> favoriteStateList;
     private Map<String, Favorite> favoritesMap;
     private Map<String, TextView> favoriteTitlesMap = new HashMap<>();
@@ -129,7 +136,7 @@ public class FavoritesFragment extends Fragment implements Runnable {
     private View onCreateViewFavorites(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
         setHasOptionsMenu(true);
         fragmentView = inflater.inflate(R.layout.favorites_view, container, false);
-        LinearLayout favoritesListView = (LinearLayout) fragmentView.findViewById(R.id.favorites_list);
+        favoritesListView = (DragListView) fragmentView.findViewById(R.id.favorites_list);
 
         // initialize favoriteStateList with favorites collapsed by default
         if (favoriteStateList.size() != favoritesMap.size()) {
@@ -142,6 +149,46 @@ public class FavoritesFragment extends Fragment implements Runnable {
                 SeptaServiceFactory.getFavoritesService().addFavoriteState(getContext(), favoriteState);
             }
         }
+
+        // TODO: start new code
+
+
+        favoritesListView.getRecyclerView().setVerticalScrollBarEnabled(true);
+        favoritesListView.setDragListListener(new DragListView.DragListListenerAdapter() {
+            @Override
+            public void onItemDragStarted(int position) {
+                //Toast.makeText(mDragListView.getContext(), "Start - position: " + position, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onItemDragEnded(int fromPosition, int toPosition) {
+                if (fromPosition != toPosition) {
+                    //Toast.makeText(mDragListView.getContext(), "End - position: " + toPosition, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        favoritesListView.setSwipeListener(new ListSwipeHelper.OnSwipeListenerAdapter() {
+            @Override
+            public void onItemSwipeStarted(ListSwipeItem item) {
+//                mRefreshLayout.setEnabled(false);
+            }
+
+            @Override
+            public void onItemSwipeEnded(ListSwipeItem item, ListSwipeItem.SwipeDirection swipedDirection) {
+//                mRefreshLayout.setEnabled(true);
+
+                // Swipe to delete on left
+                if (swipedDirection == ListSwipeItem.SwipeDirection.LEFT) {
+                    Pair<Long, String> adapterItem = (Pair<Long, String>) item.getTag();
+                    int pos = favoritesListView.getAdapter().getPositionForItem(adapterItem);
+                    favoritesListView.getAdapter().removeItem(pos);
+                }
+            }
+        });
+
+        setupListRecyclerView();
+        // TODO: end new code
 
         Log.e(TAG, favoriteStateList.toString());
 
@@ -450,6 +497,28 @@ public class FavoritesFragment extends Fragment implements Runnable {
             String title = savedInstanceState.getString(KEY_TITLE);
             if (title != null && getActivity() != null)
                 getActivity().setTitle(title);
+        }
+    }
+
+    private void setupListRecyclerView() {
+        favoritesListView.setLayoutManager(new LinearLayoutManager(getContext()));
+        FavoriteItemAdapter listAdapter = new FavoriteItemAdapter(favoriteStateList, R.layout.favorite_item, R.id.favorite_item_drag_handle, false);
+        favoritesListView.setAdapter(listAdapter, true);
+        favoritesListView.setCanDragHorizontally(false);
+        favoritesListView.setCustomDragItem(new MyDragItem(getContext(), R.layout.favorite_item));
+    }
+
+    private static class MyDragItem extends DragItem {
+        MyDragItem(Context context, int layoutId) {
+            super(context, layoutId);
+        }
+
+        @Override
+        public void onBindDragView(View clickedView, View dragView) {
+            // TODO: what should happen in here???
+//            CharSequence text = ((TextView) clickedView.findViewById(R.id.text)).getText();
+//            ((TextView) dragView.findViewById(R.id.favorite_item_drag_handle)).setText(text);
+//            dragView.findViewById(R.id.item_layout).setBackgroundColor(dragView.getResources().getColor(R.color.list_item_background));
         }
     }
 

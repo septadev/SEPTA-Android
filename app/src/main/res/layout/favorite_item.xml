@@ -32,7 +32,7 @@
             android:gravity="center_vertical"
             android:maxLines="1"
             android:text="Office Commute"
-            android:textColor="#1b4e8e"
+            android:textColor="@color/colorPrimary"
             android:textSize="16sp"
             app:font="@string/font_roboto_bold" />
 
@@ -68,7 +68,6 @@
                 android:layout_height="wrap_content"
                 android:drawableLeft="@drawable/ic_no_results_found"
                 android:drawablePadding="6dp"
-                android:drawableTint="@color/no_results_found"
                 android:gravity="center"
                 android:text="@string/favorites_empty_results_msg"
                 android:textColor="@color/no_results_found"

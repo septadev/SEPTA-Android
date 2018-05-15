@@ -245,12 +245,14 @@ public class FavoritesFragment extends Fragment implements Runnable {
     private void collapseFavorite(int index, ViewGroup favoriteResults, ImageButton expandCollapseButton) {
         expandCollapseButton.setImageResource(R.drawable.ic_expand);
         favoriteResults.setVisibility(View.GONE);
+        favoriteStateList.get(index).setExpanded(false);
         SeptaServiceFactory.getFavoritesService().modifyFavoriteState(getContext(), index, false);
     }
 
     private void expandFavorite(int index, ViewGroup favoriteResults, ImageButton expandCollapseButton) {
         expandCollapseButton.setImageResource(R.drawable.ic_collapse);
         favoriteResults.setVisibility(View.VISIBLE);
+        favoriteStateList.get(index).setExpanded(true);
         SeptaServiceFactory.getFavoritesService().modifyFavoriteState(getContext(), index, true);
     }
 

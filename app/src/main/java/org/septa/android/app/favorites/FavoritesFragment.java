@@ -21,7 +21,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 import org.septa.android.app.Constants;
 import org.septa.android.app.R;
@@ -132,15 +131,6 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
         fragmentView = inflater.inflate(R.layout.fragment_favorites, container, false);
         mRefreshLayout = (FavoritesSwipeRefreshLayout) fragmentView.findViewById(R.id.favorites_swipe_refresh_layout);
         favoritesListView = (RecyclerView) fragmentView.findViewById(R.id.favorites_list);
-
-        // make new favorite text clickable
-        LinearLayout addNewFavorite = (LinearLayout) fragmentView.findViewById(R.id.favorites_add_new);
-        addNewFavorite.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mListener.addNewFavorite();
-            }
-        });
 
         // initialize favoriteStateList with favorites collapsed by default
         if (favoriteStateList.size() != favoritesMap.size()) {

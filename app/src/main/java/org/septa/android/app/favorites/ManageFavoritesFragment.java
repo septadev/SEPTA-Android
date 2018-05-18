@@ -74,22 +74,6 @@ public class ManageFavoritesFragment extends Fragment implements DraggableFavori
             }
         });
 
-
-//        ItemTouchHelper.SimpleCallback swipeToDeleteCallback = new ItemTouchHelper.SimpleCallback(0, LEFT) {
-//            @Override
-//            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-//                return false;
-//            }
-//
-//            @Override
-//            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-//                if (direction == LEFT) {
-//                    deleteFavorite(viewHolder.getAdapterPosition());
-//                }
-//            }
-//        };
-//        new ItemTouchHelper(swipeToDeleteCallback).attachToRecyclerView(favoritesListView.getRecyclerView());
-
         final SwipeController swipeController = new SwipeController(getContext(),ManageFavoritesFragment.this);
         itemTouchHelper = new ItemTouchHelper(swipeController);
         itemTouchHelper.attachToRecyclerView(favoritesListView.getRecyclerView());
@@ -100,33 +84,7 @@ public class ManageFavoritesFragment extends Fragment implements DraggableFavori
             }
         });
 
-        // enable swipe to delete
-//        favoritesListView.setSwipeListener(new ListSwipeHelper.OnSwipeListenerAdapter() {
-//            @Override
-//            public void onItemSwipeStarted(ListSwipeItem item) {
-//
-//                Favorite adapterItem = (Favorite) item.getTag();
-//                int pos = favoriteItemAdapter.getPositionForItem(adapterItem);
-//
-//                // TODO: remove
-//                Log.e(TAG, "Favorite at position " + pos + " swiped: " + adapterItem.toString());
-//            }
-//
-//            @Override
-//            public void onItemSwipeEnded(ListSwipeItem item, ListSwipeItem.SwipeDirection swipedDirection) {
-//                // swipe left to delete
-//                if (swipedDirection == ListSwipeItem.SwipeDirection.LEFT) {
-//                    Favorite adapterItem = (Favorite) item.getTag();
-//                    int pos = favoriteItemAdapter.getPositionForItem(adapterItem);
-//                    deleteFavorite(pos);
-//                }
-//            }
-//        });
-
         setupListRecyclerView();
-
-        // TODO: remove this
-        Log.e(TAG, favoriteList.toString());
 
         return fragmentView;
     }
@@ -180,6 +138,7 @@ public class ManageFavoritesFragment extends Fragment implements DraggableFavori
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
+                        revertSwipe(favoriteIndex);
                     }
                 }).create().show();
     }

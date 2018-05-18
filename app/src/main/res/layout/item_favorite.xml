@@ -61,7 +61,7 @@
             android:clickable="true"
             android:gravity="center"
             android:orientation="vertical"
-            android:visibility="gone" >
+            android:visibility="gone">
 
             <TextView
                 android:id="@+id/favorite_item_no_results_icon"

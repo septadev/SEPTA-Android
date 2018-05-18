@@ -1,4 +1,4 @@
-package org.septa.android.app.favorites;
+package org.septa.android.app.support;
 
 import android.content.Context;
 import android.graphics.Canvas;

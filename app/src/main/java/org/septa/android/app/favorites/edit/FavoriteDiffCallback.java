@@ -1,4 +1,4 @@
-package org.septa.android.app.favorites;
+package org.septa.android.app.favorites.edit;
 
 import android.support.v7.util.DiffUtil;
 

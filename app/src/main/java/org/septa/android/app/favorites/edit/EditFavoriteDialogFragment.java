@@ -1,4 +1,4 @@
-package org.septa.android.app.favorites;
+package org.septa.android.app.favorites.edit;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import org.septa.android.app.R;
+import org.septa.android.app.favorites.DeleteFavoritesAsyncTask;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Favorite;
 
@@ -73,8 +74,9 @@ public class EditFavoriteDialogFragment extends DialogFragment {
                                     DeleteFavoritesAsyncTask task = new DeleteFavoritesAsyncTask(getContext());
                                     task.execute(favorite.getKey());
                                     getDialog().dismiss();
-                                    if (getActivity() == null)
+                                    if (getActivity() == null) {
                                         return;
+                                    }
                                     getActivity().onBackPressed();
                                 }
                             }).setNegativeButton(R.string.delete_fav_neg_button, new DialogInterface.OnClickListener() {

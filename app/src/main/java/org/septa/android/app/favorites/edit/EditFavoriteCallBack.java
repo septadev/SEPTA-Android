@@ -1,4 +1,4 @@
-package org.septa.android.app.favorites;
+package org.septa.android.app.favorites.edit;
 
 import org.septa.android.app.services.apiinterfaces.model.Favorite;
 
@@ -8,5 +8,5 @@ import org.septa.android.app.services.apiinterfaces.model.Favorite;
 
 public interface EditFavoriteCallBack {
 
-    public void updateFavorite(Favorite var1);
+    void updateFavorite(Favorite var1);
 }

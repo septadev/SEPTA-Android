@@ -1,4 +1,4 @@
-package org.septa.android.app.favorites;
+package org.septa.android.app.favorites.edit;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import org.septa.android.app.R;
 import org.septa.android.app.draggable.DragItem;
 import org.septa.android.app.draggable.DragListView;
+import org.septa.android.app.support.SwipeController;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Favorite;
 

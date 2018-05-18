@@ -32,6 +32,7 @@ import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.nextarrive.NextToArriveResultsActivity;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Favorite;
+import org.septa.android.app.support.SwipeController;
 
 import java.util.ArrayList;
 import java.util.HashMap;

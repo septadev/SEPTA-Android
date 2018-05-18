@@ -29,7 +29,7 @@ import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.fares.FaresFragment;
 import org.septa.android.app.favorites.FavoritesFragment;
-import org.septa.android.app.favorites.ManageFavoritesFragment;
+import org.septa.android.app.favorites.edit.ManageFavoritesFragment;
 import org.septa.android.app.nextarrive.NextToArriveFragment;
 import org.septa.android.app.schedules.SchedulesFragment;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;

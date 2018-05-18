@@ -165,7 +165,7 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
         });
 
         // enabled swipe to delete
-        final SwipeController swipeController = new SwipeController(getContext(),FavoritesFragment.this);
+        final SwipeController swipeController = new SwipeController(getContext(), FavoritesFragment.this);
         itemTouchHelper = new ItemTouchHelper(swipeController);
         itemTouchHelper.attachToRecyclerView(favoritesListView);
         favoritesListView.addItemDecoration(new RecyclerView.ItemDecoration() {

@@ -187,10 +187,14 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
     }
 
     private void refreshFavorites() {
-        favoriteItemAdapter.refreshFavorites(SeptaServiceFactory.getFavoritesService().getFavoriteStates(getContext()));
+        if (getContext() != null) {
+            favoriteItemAdapter.refreshFavorites(SeptaServiceFactory.getFavoritesService().getFavoriteStates(getContext()));
 
-        // postpone next refresh to after 30 secs
-        refreshHandler.postDelayed(this, REFRESH_DELAY_SECONDS * 1000);
+            // postpone next refresh to after 30 secs
+            refreshHandler.postDelayed(this, REFRESH_DELAY_SECONDS * 1000);
+        } else {
+            Log.d(TAG, "Could not refresh favorites because context was null");
+        }
     }
 
     @Override

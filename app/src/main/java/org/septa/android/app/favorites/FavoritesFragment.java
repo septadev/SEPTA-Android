@@ -225,6 +225,7 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
     @Override
     public void onResume() {
         super.onResume();
+
         refreshHandler = new Handler();
         if (!firstPass) {
             favoritesMap = SeptaServiceFactory.getFavoritesService().getFavorites(getContext());
@@ -233,7 +234,9 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
                 return;
             }
 
-            run();
+            if (!favoritesMap.isEmpty()) {
+                run();
+            }
 
         } else {
             firstPass = false;

@@ -89,6 +89,7 @@ public class DraggableFavoriteItemAdapter extends DragItemAdapter<Favorite, Drag
 
     public void deleteFavorite(int favoriteIndex) {
         notifyItemRemoved(favoriteIndex);
+        notifyDataSetChanged();
     }
 
     public class DraggableFavoriteViewHolder extends DragItemAdapter.ViewHolder {

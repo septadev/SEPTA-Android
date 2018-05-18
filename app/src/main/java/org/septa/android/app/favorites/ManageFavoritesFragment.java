@@ -71,6 +71,7 @@ public class ManageFavoritesFragment extends Fragment implements DraggableFavori
             }
         });
 
+        // enabled swipe to delete
         final SwipeController swipeController = new SwipeController(getContext(),ManageFavoritesFragment.this);
         itemTouchHelper = new ItemTouchHelper(swipeController);
         itemTouchHelper.attachToRecyclerView(favoritesListView.getRecyclerView());
@@ -168,7 +169,6 @@ public class ManageFavoritesFragment extends Fragment implements DraggableFavori
 
     public void closeEditMode() {
         // TODO: save new order of favorites -- this may happen on drop
-        // TODO: disable swipe to delete
     }
 
     private static class FavoriteDragItem extends DragItem {

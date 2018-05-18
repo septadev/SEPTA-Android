@@ -9,7 +9,7 @@
     android:background="#ffffff"
     android:elevation="@dimen/white_box_elevation"
     android:orientation="vertical"
-    app:swipeViewId="@+id/favorite_item_drag_handle" >
+    app:swipeViewId="@+id/favorite_item_drag_handle">
 
     <LinearLayout
         android:layout_width="match_parent"

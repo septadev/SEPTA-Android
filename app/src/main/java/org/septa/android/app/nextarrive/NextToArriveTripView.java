@@ -203,7 +203,6 @@ public class NextToArriveTripView extends FrameLayout {
         android.widget.TextView lineNameText = (android.widget.TextView) convertView.findViewById(R.id.orig_line_name_text);
         lineNameText.setText(lineName);
 
-        // TODO: NPE
         ((ImageView) convertView.findViewById(R.id.orig_line_marker_left)).setColorFilter(ContextCompat.getColor(getContext(), transitType.getLineColor(lineId, context)));
 
         Alert alert = SystemStatusState.getAlertForLine(transitType, lineId);

@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Canvas;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -14,6 +15,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -40,7 +42,7 @@ import java.util.Map;
 /**
  * Created by jkampf on 9/5/17.
  */
-public class FavoritesFragment extends Fragment implements Runnable, FavoriteItemAdapter.FavoriteItemListener {
+public class FavoritesFragment extends Fragment implements Runnable, FavoriteItemAdapter.FavoriteItemListener, SwipeController.SwipeControllerListener {
     private static final String TAG = FavoritesFragment.class.getSimpleName();
 
     // this version is the most recent to require a force delete of user favorites
@@ -56,6 +58,7 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
     private FavoritesFragmentListener mListener;
     private FavoriteItemAdapter favoriteItemAdapter;
     private FavoritesSwipeRefreshLayout mRefreshLayout;
+    private ItemTouchHelper itemTouchHelper;
 
     int initialCount;
     Handler refreshHandler = null;
@@ -158,6 +161,17 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
                         refreshFavorites();
                     }
                 }, 2000);
+            }
+        });
+
+        // enabled swipe to delete
+        final SwipeController swipeController = new SwipeController(getContext(),FavoritesFragment.this);
+        itemTouchHelper = new ItemTouchHelper(swipeController);
+        itemTouchHelper.attachToRecyclerView(favoritesListView);
+        favoritesListView.addItemDecoration(new RecyclerView.ItemDecoration() {
+            @Override
+            public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
+                swipeController.onDraw(c);
             }
         });
 
@@ -337,9 +351,41 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
     }
 
     public List<Favorite> openEditMode() {
-        // TODO: enable swipe to delete
-
         return getFavoritesInOrder();
+    }
+
+    @Override
+    public void deleteFavorite(final int favoriteIndex) {
+        new AlertDialog.Builder(getContext()).setCancelable(true).setTitle(R.string.delete_fav_modal_title)
+                .setMessage(R.string.delete_fav_modal_text)
+
+                // confirm to delete
+                .setPositiveButton(R.string.delete_fav_pos_button, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        SeptaServiceFactory.getFavoritesService().deleteFavorite(getContext(), favoriteStateList.get(favoriteIndex).getFavoriteKey());
+                        favoriteStateList.remove(favoriteIndex);
+                        favoriteItemAdapter.deleteFavorite(favoriteIndex);
+                    }
+                })
+
+                // cancel deletion
+                .setNegativeButton(R.string.delete_fav_neg_button, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        revertSwipe(favoriteIndex);
+                    }
+                }).create().show();
+    }
+
+    @Override
+    public void revertSwipe(int index) {
+        itemTouchHelper.attachToRecyclerView(null);
+        itemTouchHelper.attachToRecyclerView(favoritesListView);
+
+        // revert UI for swiped row
+        favoriteItemAdapter.notifyItemChanged(index);
     }
 
     public List<Favorite> getFavoritesInOrder() {

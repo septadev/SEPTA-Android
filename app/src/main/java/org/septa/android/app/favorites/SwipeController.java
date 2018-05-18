@@ -19,6 +19,8 @@ import static android.support.v7.widget.helper.ItemTouchHelper.LEFT;
 
 public class SwipeController extends ItemTouchHelper.SimpleCallback {
 
+    private static final String TAG = SwipeController.class.getSimpleName();
+
     private Context context;
     private SwipeControllerListener mListener;
     private boolean swipeBack = false;
@@ -27,7 +29,6 @@ public class SwipeController extends ItemTouchHelper.SimpleCallback {
     private RecyclerView.ViewHolder currentItemViewHolder;
 
     private static final float buttonWidth = 300;
-    private static final float deleteBackgroundWidth = 1200;
 
     public SwipeController(Context context, SwipeControllerListener listener) {
         super(LEFT, LEFT);
@@ -51,8 +52,6 @@ public class SwipeController extends ItemTouchHelper.SimpleCallback {
             mListener.deleteFavorite(viewHolder.getAdapterPosition());
         }
     }
-
-    // TODO: hard swipe deletes without confirmation
 
     @Override
     public int convertToAbsoluteDirection(int flags, int layoutDirection) {
@@ -95,22 +94,21 @@ public class SwipeController extends ItemTouchHelper.SimpleCallback {
     }
 
     private void drawButtons(Canvas c, RecyclerView.ViewHolder viewHolder) {
-        float deleteBackgroundWidthWithoutPadding = deleteBackgroundWidth - 20;
-
         View itemView = viewHolder.itemView;
         Paint p = new Paint();
+        float deleteBackgroundWidth = viewHolder.itemView.getWidth();
 
-        RectF rightButton = new RectF(itemView.getRight() - deleteBackgroundWidthWithoutPadding, itemView.getTop(), itemView.getRight(), itemView.getBottom());
+        RectF rightButton = new RectF(itemView.getRight() - deleteBackgroundWidth, itemView.getTop(), itemView.getRight(), itemView.getBottom());
         p.setColor(Color.RED);
         c.drawRect(rightButton, p);
-        drawText(context.getResources().getString(R.string.delete_fav_pos_button), c, rightButton, p);
+        drawText(context.getResources().getString(R.string.delete_fav_pos_button), c, rightButton, p, deleteBackgroundWidth);
 
         if (buttonShowedState == ButtonsState.RIGHT_VISIBLE) {
             buttonInstance = rightButton;
         }
     }
 
-    private void drawText(String text, Canvas c, RectF button, Paint p) {
+    private void drawText(String text, Canvas c, RectF button, Paint p, float deleteBackgroundWidth) {
         float textSize = 40;
         p.setColor(Color.WHITE);
         p.setAntiAlias(true);
@@ -121,7 +119,7 @@ public class SwipeController extends ItemTouchHelper.SimpleCallback {
         p.setTypeface(tf);
 
         float textWidth = p.measureText(text);
-        c.drawText(text, button.centerX() + ((deleteBackgroundWidth - 20 - buttonWidth)/2) - (textWidth/2), button.centerY()+(textSize/2), p);
+        c.drawText(text, button.centerX() + ((deleteBackgroundWidth - buttonWidth)/2) - (textWidth/2), button.centerY()+(textSize/2), p);
     }
 
     private void setTouchListener(final Canvas c, final RecyclerView recyclerView, final RecyclerView.ViewHolder viewHolder, final float dX, final float dY, final int actionState, final boolean isCurrentlyActive) {

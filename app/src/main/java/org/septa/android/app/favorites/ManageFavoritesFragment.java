@@ -10,7 +10,6 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -56,8 +55,6 @@ public class ManageFavoritesFragment extends Fragment implements DraggableFavori
         setHasOptionsMenu(true);
         fragmentView = inflater.inflate(R.layout.fragment_manage_favorites, container, false);
         favoritesListView = (DragListView) fragmentView.findViewById(R.id.favorites_list_draggable);
-
-//        favoritesListView.getRecyclerView().setVerticalScrollBarEnabled(true);
 
         // enable drag to reorder
         favoritesListView.setDragListListener(new DragListView.DragListListenerAdapter() {
@@ -130,6 +127,11 @@ public class ManageFavoritesFragment extends Fragment implements DraggableFavori
                         SeptaServiceFactory.getFavoritesService().deleteFavorite(getContext(), favoriteList.get(favoriteIndex).getKey());
                         favoriteList.remove(favoriteIndex);
                         favoriteItemAdapter.deleteFavorite(favoriteIndex);
+
+                        // close edit mode if no favorites left
+                        if (favoriteList.isEmpty()) {
+                            mListener.toggleEditFavoritesMode(true);
+                        }
                     }
                 })
 

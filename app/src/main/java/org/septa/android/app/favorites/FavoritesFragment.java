@@ -155,18 +155,13 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
                     @Override
                     public void run() {
                         mRefreshLayout.setRefreshing(false);
-
                         refreshFavorites();
                     }
                 }, 2000);
             }
         });
 
-//        favoritesListView.setVerticalScrollBarEnabled(true);
         setupListRecyclerView();
-
-        // TODO: remove this
-        Log.e(TAG, favoriteStateList.toString());
 
         return fragmentView;
     }
@@ -233,15 +228,13 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
         refreshHandler = new Handler();
         if (!firstPass) {
             favoritesMap = SeptaServiceFactory.getFavoritesService().getFavorites(getContext());
-
             if (initialCount != favoritesMap.size()) {
                 mListener.refreshFavoritesInstance();
                 return;
             }
 
-//            favoriteItemAdapter.refreshFavoriteTitles();
-
             run();
+
         } else {
             firstPass = false;
         }
@@ -263,8 +256,6 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
 
             alertMessage = null;
         }
-
-
     }
 
     @Override

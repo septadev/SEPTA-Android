@@ -129,7 +129,7 @@ public class NextToArriveTripView extends FrameLayout {
 
         String currentLine = null;
         boolean firstPos = true;
-        final List<View> peakViews = new LinkedList<View>();
+        final List<View> peakViews = new LinkedList<>();
         for (NextArrivalModelResponse.NextArrivalRecord item : data) {
             if (item.getConnectionStationId() != null) {
                 currentLine = null;
@@ -157,8 +157,9 @@ public class NextToArriveTripView extends FrameLayout {
                 if (currentLine == null || !currentLine.equals(item.getOrigRouteId())) {
                     currentLine = item.getOrigRouteId();
                     View headerView = getLineHeader(currentLine, item.getOrigRouteName());
-                    if (firstPos)
+                    if (firstPos) {
                         peakViews.add(headerView);
+                    }
                     listView.addView(headerView);
                 }
                 final View singleView = getSingleStopTripView(item);
@@ -200,6 +201,8 @@ public class NextToArriveTripView extends FrameLayout {
 
         android.widget.TextView lineNameText = (android.widget.TextView) convertView.findViewById(R.id.orig_line_name_text);
         lineNameText.setText(lineName);
+
+        // TODO: NPE
         ((ImageView) convertView.findViewById(R.id.orig_line_marker_left)).setColorFilter(ContextCompat.getColor(getContext(), transitType.getLineColor(lineId, getContext())));
 
         Alert alert = SystemStatusState.getAlertForLine(transitType, lineId);

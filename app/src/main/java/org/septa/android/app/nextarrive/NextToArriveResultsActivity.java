@@ -561,7 +561,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     }
 
     private void refreshData() {
-        // hide all containers while refresh happening
+        // hide all containers while refreshFavoritesInstance happening
         noResultsMessage.setVisibility(View.GONE);
         mapContainerView.setVisibility(View.GONE);
         bottomSheetLayout.setVisibility(View.GONE);

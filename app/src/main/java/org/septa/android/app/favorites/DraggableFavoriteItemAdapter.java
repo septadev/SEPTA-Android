@@ -1,8 +1,6 @@
 package org.septa.android.app.favorites;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
@@ -62,29 +60,17 @@ public class DraggableFavoriteItemAdapter extends DragItemAdapter<Favorite, Drag
                 favorite.getTransitType().getTabActiveImageResource()),
                 drawables[1], drawables[2], drawables[3]);
 
-        // delete button fires confirmation message
+        // delete button clickable
         holder.deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new AlertDialog.Builder(context).setCancelable(true).setTitle(R.string.delete_fav_modal_title)
-                        .setMessage(R.string.delete_fav_modal_text)
-                        .setPositiveButton(R.string.delete_fav_pos_button, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                mListener.deleteFavorite(holder.getAdapterPosition());
-                            }
-                        })
-                        .setNegativeButton(R.string.delete_fav_neg_button, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        }).create().show();
+                mListener.deleteFavorite(holder.getAdapterPosition());
             }
         });
 
         // tag for draggability
         holder.itemView.setTag(mItemList.get(position));
+
         // TODO: drag handle stuff??
     }
 
@@ -116,7 +102,6 @@ public class DraggableFavoriteItemAdapter extends DragItemAdapter<Favorite, Drag
             favoriteName = (TextView) itemView.findViewById(R.id.favorite_title_text);
             dragHandle = (ImageButton) itemView.findViewById(R.id.favorite_item_drag_handle);
             deleteButton = (ImageButton) itemView.findViewById(R.id.favorite_item_delete_button);
-
         }
 
         @Override

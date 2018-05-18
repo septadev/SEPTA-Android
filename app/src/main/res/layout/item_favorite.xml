@@ -17,18 +17,6 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <ImageButton
-            android:id="@+id/favorite_item_drag_handle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginLeft="@dimen/favorite_item_margin"
-            android:layout_marginStart="@dimen/favorite_item_margin"
-            android:background="#ffffff"
-            android:padding="8dp"
-            android:src="@drawable/ic_drag_handle"
-            android:visibility="gone" />
-
         <org.septa.android.app.view.TextView
             android:id="@+id/favorite_title_text"
             android:layout_width="wrap_content"
@@ -63,19 +51,6 @@
             android:tint="@color/colorPrimaryDark"
             android:visibility="visible" />
 
-        <ImageButton
-            android:id="@+id/favorite_item_delete_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginRight="18dp"
-            android:background="?android:attr/selectableItemBackground"
-            android:clickable="true"
-            android:drawablePadding="6dp"
-            android:gravity="center"
-            android:src="@drawable/ic_delete"
-            android:visibility="gone" />
-
         <LinearLayout
             android:id="@+id/favorite_item_no_results"
             android:layout_width="wrap_content"
@@ -86,7 +61,7 @@
             android:clickable="true"
             android:gravity="center"
             android:orientation="vertical"
-            android:visibility="visible">
+            android:visibility="gone" >
 
             <TextView
                 android:id="@+id/favorite_item_no_results_icon"

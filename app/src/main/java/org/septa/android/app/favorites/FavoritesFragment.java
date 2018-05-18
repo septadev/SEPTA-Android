@@ -172,7 +172,7 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
             }
         });
 
-        favoritesListView.setVerticalScrollBarEnabled(true);
+//        favoritesListView.setVerticalScrollBarEnabled(true);
         setupListRecyclerView();
 
         // TODO: remove this

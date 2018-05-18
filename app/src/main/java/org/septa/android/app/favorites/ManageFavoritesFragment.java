@@ -54,7 +54,7 @@ public class ManageFavoritesFragment extends Fragment implements DraggableFavori
         fragmentView = inflater.inflate(R.layout.fragment_manage_favorites, container, false);
         favoritesListView = (DragListView) fragmentView.findViewById(R.id.favorites_list_draggable);
 
-        favoritesListView.getRecyclerView().setVerticalScrollBarEnabled(true);
+//        favoritesListView.getRecyclerView().setVerticalScrollBarEnabled(true);
 
         // make favorites draggable
         favoritesListView.setDragListListener(new DragListView.DragListListenerAdapter() {

@@ -92,7 +92,7 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<FavoriteItemAdapter.Favor
         holder.resultsContainer.removeAllViews();
         holder.resultsContainer.addView(holder.tripView);
 
-        // refreshFavoritesInstance favorite
+        // refresh favorite results
         refreshFavorite(favorite, holder.tripView, holder.progressView, holder.expandCollapseButton, holder.noResultsMsg);
 
         // initialize expanded state of favorite

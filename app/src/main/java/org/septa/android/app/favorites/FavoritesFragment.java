@@ -10,6 +10,8 @@ import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -54,6 +56,7 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
     private Map<String, Favorite> favoritesMap;
     private FavoritesFragmentListener mListener;
     private FavoriteItemAdapter favoriteItemAdapter;
+    private FavoritesSwipeRefreshLayout mRefreshLayout;
 
     int initialCount;
     Handler refreshHandler = null;
@@ -127,6 +130,7 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
     private View onCreateViewFavorites(LayoutInflater inflater, final ViewGroup container) {
         setHasOptionsMenu(true);
         fragmentView = inflater.inflate(R.layout.fragment_favorites, container, false);
+        mRefreshLayout = (FavoritesSwipeRefreshLayout) fragmentView.findViewById(R.id.favorites_swipe_refresh_layout);
         favoritesListView = (RecyclerView) fragmentView.findViewById(R.id.favorites_list);
 
         // make new favorite text clickable
@@ -151,6 +155,23 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
             SeptaServiceFactory.getFavoritesService().setFavoriteStates(getContext(), favoriteStateList);
         }
 
+        // swipe down to refresh favorites
+        mRefreshLayout.setScrollingView(favoritesListView);
+        mRefreshLayout.setColorSchemeColors(ContextCompat.getColor(getContext(), R.color.colorPrimary));
+        mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                mRefreshLayout.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mRefreshLayout.setRefreshing(false);
+
+                        refreshFavorites();
+                    }
+                }, 2000);
+            }
+        });
+
         favoritesListView.setVerticalScrollBarEnabled(true);
         setupListRecyclerView();
 
@@ -162,8 +183,13 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
 
     @Override
     public void run() {
+        refreshFavorites();
+    }
+
+    private void refreshFavorites() {
         favoriteItemAdapter.refreshFavorites(SeptaServiceFactory.getFavoritesService().getFavoriteStates(getContext()));
 
+        // postpone next refresh to after 30 secs
         refreshHandler.postDelayed(this, REFRESH_DELAY_SECONDS * 1000);
     }
 

@@ -6,13 +6,13 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import org.septa.android.app.R;
 import org.septa.android.app.draggable.DragItem;
@@ -71,20 +71,21 @@ public class ManageFavoritesFragment extends Fragment implements DraggableFavori
             }
         });
 
+
         // enable swipe to delete
         favoritesListView.setSwipeListener(new ListSwipeHelper.OnSwipeListenerAdapter() {
             @Override
             public void onItemSwipeStarted(ListSwipeItem item) {
-//                mRefreshLayout.setEnabled(false);
+
             }
 
             @Override
             public void onItemSwipeEnded(ListSwipeItem item, ListSwipeItem.SwipeDirection swipedDirection) {
-//                mRefreshLayout.setEnabled(true);
+                // TODO: confirm to delete dialog pop up?
 
                 // Swipe to delete on left
                 if (swipedDirection == ListSwipeItem.SwipeDirection.LEFT) {
-                    Pair<Long, String> adapterItem = (Pair<Long, String>) item.getTag();
+                    Favorite adapterItem = (Favorite) item.getTag();
                     int pos = favoritesListView.getAdapter().getPositionForItem(adapterItem);
                     favoritesListView.getAdapter().removeItem(pos);
                 }
@@ -142,7 +143,7 @@ public class ManageFavoritesFragment extends Fragment implements DraggableFavori
         favoriteItemAdapter = new DraggableFavoriteItemAdapter(getContext(), favoriteList, R.layout.item_favorite_draggable, R.id.favorite_item_drag_handle, true, this);
         favoritesListView.setAdapter(favoriteItemAdapter, true);
         favoritesListView.setCanDragHorizontally(false);
-        favoritesListView.setCustomDragItem(new MyDragItem(getContext(), R.layout.item_favorite));
+        favoritesListView.setCustomDragItem(new FavoriteDragItem(getContext(), R.layout.item_favorite));
 
         favoriteItemAdapter.updateList(favoriteList);
     }
@@ -152,17 +153,17 @@ public class ManageFavoritesFragment extends Fragment implements DraggableFavori
         // TODO: disable swipe to delete
     }
 
-    private static class MyDragItem extends DragItem {
-        MyDragItem(Context context, int layoutId) {
+    private static class FavoriteDragItem extends DragItem {
+        FavoriteDragItem(Context context, int layoutId) {
             super(context, layoutId);
         }
 
         @Override
         public void onBindDragView(View clickedView, View dragView) {
             // TODO: what should happen in here???
-//            CharSequence text = ((TextView) clickedView.findViewById(R.id.text)).getText();
-//            ((TextView) dragView.findViewById(R.id.favorite_item_drag_handle)).setText(text);
-//            dragView.findViewById(R.id.item_layout).setBackgroundColor(dragView.getResources().getColor(R.color.list_item_background));
+            CharSequence text = ((TextView) clickedView.findViewById(R.id.text)).getText();
+            ((TextView) dragView.findViewById(R.id.favorite_item_drag_handle)).setText(text);
+            dragView.findViewById(R.id.item_favorite_row_draggable).setBackground(dragView.getResources().getDrawable(R.drawable.full_page_gradient_background));
         }
     }
 

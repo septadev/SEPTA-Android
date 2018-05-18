@@ -44,7 +44,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:background="#ffffff"
-                android:elevation="4dp"
+                android:elevation="@dimen/white_box_elevation"
                 android:orientation="vertical">
 
                 <org.septa.android.app.view.TextView
@@ -109,7 +109,7 @@ Last Schedule Update: 9/15/207 04:07 PM"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="15dp"
                     android:background="#ffffff"
-                    android:elevation="4dp"
+                    android:elevation="@dimen/white_box_elevation"
                     android:orientation="vertical">
 
                     <org.septa.android.app.view.TextView

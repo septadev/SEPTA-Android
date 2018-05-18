@@ -271,8 +271,9 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         intent.putExtra(Constants.STARTING_STATION, start);
         intent.putExtra(Constants.DESTINATION_STATION, destination);
         intent.putExtra(Constants.TRANSIT_TYPE, transitType);
-        if (routeDirectionModel != null)
+        if (routeDirectionModel != null) {
             intent.putExtra(Constants.ROUTE_DIRECTION_MODEL, routeDirectionModel);
+        }
 
         setResult(Constants.VIEW_SCHEDULE, intent);
         finish();

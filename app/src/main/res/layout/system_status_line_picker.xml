@@ -4,14 +4,12 @@
     xmlns:tool="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/full_page_gradient_background"
-    >
+    android:background="@drawable/full_page_gradient_background">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        >
+        android:orientation="vertical">
 
         <org.septa.android.app.view.TextView
             android:id="@+id/picker_header_text"
@@ -27,12 +25,12 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginTop="11dp"
-            android:layout_marginBottom="15dp"
             android:background="#ffffff"
-            android:elevation="4dp"
+            android:elevation="@dimen/white_box_elevation"
             android:orientation="vertical">
 
             <org.septa.android.app.view.TextView
@@ -86,14 +84,14 @@
             android:id="@+id/global_alert_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginTop="15dp"
-            android:layout_marginBottom="15dp"
             android:background="#ffffff"
-            android:elevation="4dp"
-            android:padding="20dp"
+            android:elevation="@dimen/white_box_elevation"
             android:orientation="vertical"
+            android:padding="20dp"
             android:visibility="gone"
             tool:visibility="visible">
 
@@ -148,14 +146,14 @@
             android:id="@+id/mobile_alert_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginTop="15dp"
-            android:layout_marginBottom="15dp"
             android:background="#ffffff"
-            android:padding="20dp"
-            android:elevation="4dp"
+            android:elevation="@dimen/white_box_elevation"
             android:orientation="vertical"
+            android:padding="20dp"
             android:visibility="gone"
             tool:visibility="visible">
 
@@ -185,8 +183,11 @@
                     android:textColor="#000000"
                     android:textSize="12sp"
                     app:font="@string/font_roboto_light" />
+
             </ScrollView>
+
         </LinearLayout>
 
     </LinearLayout>
+
 </ScrollView>

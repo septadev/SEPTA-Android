@@ -6,7 +6,6 @@
 
     <color name="options_menu_tint">#ffffff</color>
 
-
     <!-- Next To Arrive Colors -->
     <color name="delay_minutes">#d72e11</color>
     <color name="no_delay_minutes">#539e00</color>
@@ -54,5 +53,9 @@
     <color name="inactive_toggle">#bdbdbd</color>
     <color name="progress_background">@android:color/white</color>
     <color name="scheduled">#6d6d6d</color>
+
+
+    <!-- Favorites -->
+    <color name="no_results_found">#fcbe56</color>
 
 </resources>

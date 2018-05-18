@@ -136,6 +136,12 @@
     <string name="schedule_favorite_icon_title_create">Tap to create a favorite from this Schedule result</string>
 
     <string name="snackbar_no_connection_link_text">Schedules »</string>
+    <string name="favorites_empty_results_msg">No Update</string>
+    <string name="favorites_view_schedules_msg">View Schedule »</string>
+
+    <string name="favorites_menu_item_edit">Edit</string>
+    <string name="favorites_menu_item_done">Done</string>
+    <string name="favorites_add_new">Add a Favorite</string>
 
 
     <!-- System Status -->

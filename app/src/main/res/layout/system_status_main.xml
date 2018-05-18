@@ -51,6 +51,7 @@
                         android:drawableLeft="@drawable/ic_advisory"
                         android:drawablePadding="9dp"
                         android:drawableRight="@drawable/alert_toggle_closed"
+                        android:elevation="@dimen/white_box_elevation"
                         android:gravity="center_vertical"
                         android:paddingBottom="20dp"
                         android:paddingLeft="15dp"
@@ -87,6 +88,7 @@
                         android:drawableLeft="@drawable/ic_alert"
                         android:drawablePadding="9dp"
                         android:drawableRight="@drawable/alert_toggle_closed"
+                        android:elevation="@dimen/white_box_elevation"
                         android:gravity="center_vertical"
                         android:paddingBottom="20dp"
                         android:paddingLeft="15dp"
@@ -123,6 +125,7 @@
                         android:drawableLeft="@drawable/ic_detour"
                         android:drawablePadding="9dp"
                         android:drawableRight="@drawable/alert_toggle_closed"
+                        android:elevation="@dimen/white_box_elevation"
                         android:gravity="center_vertical"
                         android:paddingBottom="20dp"
                         android:paddingLeft="15dp"
@@ -159,6 +162,7 @@
                         android:drawableLeft="@drawable/ic_weather"
                         android:drawablePadding="9dp"
                         android:drawableRight="@drawable/alert_toggle_closed"
+                        android:elevation="@dimen/white_box_elevation"
                         android:gravity="center_vertical"
                         android:paddingBottom="20dp"
                         android:paddingLeft="15dp"
@@ -185,8 +189,11 @@
                         android:visibility="gone"
                         app:font="@string/font_roboto_light"
                         tools:visibility="visible" />
+
                 </LinearLayout>
+
             </ScrollView>
+
         </LinearLayout>
 
         <FrameLayout
@@ -204,6 +211,9 @@
                 android:layout_gravity="center"
                 android:indeterminate="true"
                 android:indeterminateDrawable="@drawable/basic_progress" />
+
         </FrameLayout>
+
     </FrameLayout>
+
 </android.support.design.widget.CoordinatorLayout>

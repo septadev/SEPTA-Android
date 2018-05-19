@@ -87,30 +87,6 @@ public class ManageFavoritesFragment extends Fragment implements DraggableFavori
         return fragmentView;
     }
 
-    private void reorderFavorite(int fromPosition, int toPosition) {
-        SeptaServiceFactory.getFavoritesService().moveFavoriteStateToIndex(getContext(), fromPosition, toPosition);
-        favoriteItemAdapter.notifyItemMoved(fromPosition, toPosition);
-
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.my_favorites_menu, menu);
-
-        menu.findItem(R.id.edit_favorites).setTitle(R.string.favorites_menu_item_done);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // close edit mode and save new order
-        if (item.getItemId() == R.id.edit_favorites) {
-            mListener.toggleEditFavoritesMode(true);
-        }
-
-        return true;
-    }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -120,6 +96,33 @@ public class ManageFavoritesFragment extends Fragment implements DraggableFavori
         } else {
             mListener = (ManageFavoritesFragmentListener) context;
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.my_favorites_menu, menu);
+
+        MenuItem menuItemEdit = menu.findItem(R.id.edit_favorites);
+        if (menuItemEdit != null) {
+            // change icon and title to done
+            menuItemEdit.setIcon(R.drawable.ic_done);
+            menuItemEdit.setTitle(R.string.favorites_menu_item_done);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        if (item.getItemId() == R.id.add_favorite) {
+            mListener.addNewFavorite();
+
+        } else if (item.getItemId() == R.id.edit_favorites) {
+            // close edit mode and save new order
+            mListener.toggleEditFavoritesMode(true);
+        }
+
+        return true;
     }
 
     @Override
@@ -173,6 +176,12 @@ public class ManageFavoritesFragment extends Fragment implements DraggableFavori
         favoriteItemAdapter.updateList(favoriteList);
     }
 
+    private void reorderFavorite(int fromPosition, int toPosition) {
+        SeptaServiceFactory.getFavoritesService().moveFavoriteStateToIndex(getContext(), fromPosition, toPosition);
+        favoriteItemAdapter.notifyItemMoved(fromPosition, toPosition);
+
+    }
+
     private static class FavoriteDragItem extends DragItem {
         FavoriteDragItem(Context context, int layoutId) {
             super(context, layoutId);
@@ -195,6 +204,7 @@ public class ManageFavoritesFragment extends Fragment implements DraggableFavori
 
     public interface ManageFavoritesFragmentListener {
         void toggleEditFavoritesMode(boolean isInEditMode);
+        void addNewFavorite();
     }
 
 }

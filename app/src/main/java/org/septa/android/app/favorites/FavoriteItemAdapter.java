@@ -54,11 +54,6 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<FavoriteItemAdapter.Favor
     }
 
     @Override
-    public int getItemCount() {
-        return mItemList.size();
-    }
-
-    @Override
     public void onBindViewHolder(@NonNull final FavoriteViewHolder holder, final int position) {
         final FavoriteState favoriteState = mItemList.get(position);
         String favoriteKey = favoriteState.getFavoriteKey();
@@ -140,25 +135,16 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<FavoriteItemAdapter.Favor
         favoriteItemViews.put(favoriteKey, holder);
     }
 
-    /**
-     * hide no results message when results found
-     * show expand / collapse button
-     *
-     * @param expandCollapseButton
-     * @param noResultsMsg
-     */
+    @Override
+    public int getItemCount() {
+        return mItemList.size();
+    }
+
     private void updateViewWhenResultsFound(ImageButton expandCollapseButton, LinearLayout noResultsMsg) {
         noResultsMsg.setVisibility(View.GONE);
         expandCollapseButton.setVisibility(View.VISIBLE);
     }
 
-    /**
-     * show no results message when results not found
-     * hide expand / collapse button
-     *
-     * @param expandCollapseButton
-     * @param noResultsMsg
-     */
     private void updateViewWhenNoResultsFound(ImageButton expandCollapseButton, LinearLayout noResultsMsg) {
         expandCollapseButton.setVisibility(View.GONE);
         noResultsMsg.setVisibility(View.VISIBLE);
@@ -261,11 +247,8 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<FavoriteItemAdapter.Favor
 
     public interface FavoriteItemListener {
         void showSnackbarNoConnection();
-
         void autoDismissSnackbar();
-
         void goToSchedulesForTarget(Favorite favorite);
-
         void goToNextToArrive(Favorite favorite);
     }
 }

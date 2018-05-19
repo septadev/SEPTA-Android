@@ -1,20 +1,18 @@
 package org.septa.android.app.favorites.edit;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.util.DiffUtil;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.septa.android.app.R;
 import org.septa.android.app.draggable.DragItemAdapter;
+import org.septa.android.app.draggable.swipe.ListSwipeItem;
 import org.septa.android.app.services.apiinterfaces.model.Favorite;
 
 import java.util.List;
@@ -55,10 +53,7 @@ public class DraggableFavoriteItemAdapter extends DragItemAdapter<Favorite, Drag
         holder.favoriteName.setText(favorite.getName());
 
         // transit type icon on left
-        Drawable drawables[] = holder.favoriteName.getCompoundDrawables();
-        holder.favoriteName.setCompoundDrawablesWithIntrinsicBounds(ContextCompat.getDrawable(context,
-                favorite.getTransitType().getTabActiveImageResource()),
-                drawables[1], drawables[2], drawables[3]);
+        holder.transitTypeIcon.setImageDrawable(context.getResources().getDrawable(favorite.getTransitType().getTabActiveImageResource()));
 
         // delete button clickable
         holder.deleteButton.setOnClickListener(new View.OnClickListener() {
@@ -70,8 +65,6 @@ public class DraggableFavoriteItemAdapter extends DragItemAdapter<Favorite, Drag
 
         // tag for draggability
         holder.itemView.setTag(mItemList.get(position));
-
-        // TODO: drag handle stuff??
     }
 
     @Override
@@ -87,33 +80,19 @@ public class DraggableFavoriteItemAdapter extends DragItemAdapter<Favorite, Drag
         diffResult.dispatchUpdatesTo(this);
     }
 
-    public void deleteFavorite(int favoriteIndex) {
-        notifyItemRemoved(favoriteIndex);
-        notifyDataSetChanged();
-    }
-
     public class DraggableFavoriteViewHolder extends DragItemAdapter.ViewHolder {
-        LinearLayout favoriteRow;
+        ListSwipeItem favoriteRow;
+        ImageView transitTypeIcon;
         TextView favoriteName;
         ImageButton dragHandle, deleteButton;
 
         DraggableFavoriteViewHolder(final View itemView) {
             super(itemView, mGrabHandleId, mDragOnLongPress);
-            favoriteRow = (LinearLayout) itemView.findViewById(R.id.item_favorite_row_draggable);
+            favoriteRow = (ListSwipeItem) itemView.findViewById(R.id.item_favorite_row_draggable);
+            transitTypeIcon = (ImageView) itemView.findViewById(R.id.favorite_title_transit_type_icon);
             favoriteName = (TextView) itemView.findViewById(R.id.favorite_title_text);
             dragHandle = (ImageButton) itemView.findViewById(R.id.favorite_item_drag_handle);
             deleteButton = (ImageButton) itemView.findViewById(R.id.favorite_item_delete_button);
-        }
-
-        @Override
-        public void onItemClicked(View view) {
-            Toast.makeText(view.getContext(), "Item clicked", Toast.LENGTH_SHORT).show();
-        }
-
-        @Override
-        public boolean onItemLongClicked(View view) {
-            Toast.makeText(view.getContext(), "Item long clicked", Toast.LENGTH_SHORT).show();
-            return true;
         }
     }
 

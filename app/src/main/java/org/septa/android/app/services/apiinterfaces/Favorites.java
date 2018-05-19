@@ -40,7 +40,7 @@ public interface Favorites {
 
     FavoriteState getFavoriteStateByIndex(Context context, int index);
 
-    void moveFavoriteStateToIndex(Context context, int index, FavoriteState favoriteState);
+    void moveFavoriteStateToIndex(Context context, int fromPosition, int toPosition);
 
     void resyncFavoritesMap(Context context);
 }

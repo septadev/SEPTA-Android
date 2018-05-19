@@ -4,6 +4,8 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -16,13 +18,15 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import org.septa.android.app.R;
 import org.septa.android.app.draggable.DragItem;
 import org.septa.android.app.draggable.DragListView;
-import org.septa.android.app.support.SwipeController;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Favorite;
+import org.septa.android.app.support.SwipeController;
 
 import java.util.List;
 
@@ -60,14 +64,9 @@ public class ManageFavoritesFragment extends Fragment implements DraggableFavori
         // enable drag to reorder
         favoritesListView.setDragListListener(new DragListView.DragListListenerAdapter() {
             @Override
-            public void onItemDragStarted(int position) {
-                // Toast.makeText(mDragListView.getContext(), "Start - position: " + position, Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
             public void onItemDragEnded(int fromPosition, int toPosition) {
                 if (fromPosition != toPosition) {
-                    // Toast.makeText(mDragListView.getContext(), "End - position: " + toPosition, Toast.LENGTH_SHORT).show();
+                    reorderFavorite(fromPosition, toPosition);
                 }
             }
         });
@@ -86,6 +85,12 @@ public class ManageFavoritesFragment extends Fragment implements DraggableFavori
         setupListRecyclerView();
 
         return fragmentView;
+    }
+
+    private void reorderFavorite(int fromPosition, int toPosition) {
+        SeptaServiceFactory.getFavoritesService().moveFavoriteStateToIndex(getContext(), fromPosition, toPosition);
+        favoriteItemAdapter.notifyItemMoved(fromPosition, toPosition);
+
     }
 
     @Override
@@ -128,7 +133,8 @@ public class ManageFavoritesFragment extends Fragment implements DraggableFavori
                     public void onClick(DialogInterface dialog, int which) {
                         SeptaServiceFactory.getFavoritesService().deleteFavorite(getContext(), favoriteList.get(favoriteIndex).getKey());
                         favoriteList.remove(favoriteIndex);
-                        favoriteItemAdapter.deleteFavorite(favoriteIndex);
+                        favoriteItemAdapter.notifyItemRemoved(favoriteIndex);
+                        favoriteItemAdapter.notifyDataSetChanged();
 
                         // close edit mode if no favorites left
                         if (favoriteList.isEmpty()) {
@@ -156,20 +162,15 @@ public class ManageFavoritesFragment extends Fragment implements DraggableFavori
         favoriteItemAdapter.notifyItemChanged(index);
     }
 
-    // TODO: when item dropped, reorder in list but DO NOT change expanded state
     private void setupListRecyclerView() {
         favoritesListView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        favoriteItemAdapter = new DraggableFavoriteItemAdapter(getContext(), favoriteList, R.layout.item_favorite_draggable, R.id.favorite_item_drag_handle, true, this);
+        favoriteItemAdapter = new DraggableFavoriteItemAdapter(getContext(), favoriteList, R.layout.item_favorite_draggable, R.id.favorite_item_drag_handle, false, this);
         favoritesListView.setAdapter(favoriteItemAdapter, true);
         favoritesListView.setCanDragHorizontally(false);
         favoritesListView.setCustomDragItem(new FavoriteDragItem(getContext(), R.layout.item_favorite_draggable));
 
         favoriteItemAdapter.updateList(favoriteList);
-    }
-
-    public void closeEditMode() {
-        // TODO: save new order of favorites -- this may happen on drop
     }
 
     private static class FavoriteDragItem extends DragItem {
@@ -179,10 +180,16 @@ public class ManageFavoritesFragment extends Fragment implements DraggableFavori
 
         @Override
         public void onBindDragView(View clickedView, View dragView) {
-            // TODO: custom dragging view
-//            CharSequence text = ((TextView) clickedView.findViewById(R.id.text)).getText();
-//            ((TextView) dragView.findViewById(R.id.favorite_item_drag_handle)).setText(text);
-//            dragView.findViewById(R.id.item_favorite_row_draggable).setBackground(dragView.getResources().getDrawable(R.drawable.full_page_gradient_background));
+            // set favorite name on dragging view
+            CharSequence text = ((TextView) clickedView.findViewById(R.id.favorite_title_text)).getText();
+            ((TextView) dragView.findViewById(R.id.favorite_title_text)).setText(text);
+
+            // set transit type icon
+            Drawable transitTypeIcon = ((ImageView) clickedView.findViewById(R.id.favorite_title_transit_type_icon)).getDrawable();
+            ((ImageView) dragView.findViewById(R.id.favorite_title_transit_type_icon)).setImageDrawable(transitTypeIcon);
+
+            // set dragging view background
+            dragView.findViewById(R.id.item_favorite_row_draggable).setBackgroundColor(Color.WHITE);
         }
     }
 

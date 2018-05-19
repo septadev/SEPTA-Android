@@ -370,7 +370,8 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
                     public void onClick(DialogInterface dialog, int which) {
                         SeptaServiceFactory.getFavoritesService().deleteFavorite(getContext(), favoriteStateList.get(favoriteIndex).getFavoriteKey());
                         favoriteStateList.remove(favoriteIndex);
-                        favoriteItemAdapter.deleteFavorite(favoriteIndex);
+                        favoriteItemAdapter.notifyItemRemoved(favoriteIndex);
+                        favoriteItemAdapter.notifyDataSetChanged();
                     }
                 })
 

@@ -330,9 +330,6 @@ public class MainActivity extends AppCompatActivity
         CrashlyticsManager.log(Log.INFO, TAG, "toggling editFavoritesMode");
 
         if (isInEditMode) {
-            // close edit mode
-            manageFavoritesFragment.closeEditMode();
-
             // switch to favorites fragment
             favoritesFragment = FavoritesFragment.newInstance();
             activeFragment = favoritesFragment;

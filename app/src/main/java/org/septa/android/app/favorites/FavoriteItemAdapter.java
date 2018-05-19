@@ -238,11 +238,6 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<FavoriteItemAdapter.Favor
         diffResult.dispatchUpdatesTo(this);
     }
 
-    public void deleteFavorite(int favoriteIndex) {
-        notifyItemRemoved(favoriteIndex);
-        notifyDataSetChanged();
-    }
-
     public class FavoriteViewHolder extends RecyclerView.ViewHolder {
         LinearLayout favoriteRow;
         TextView favoriteName;

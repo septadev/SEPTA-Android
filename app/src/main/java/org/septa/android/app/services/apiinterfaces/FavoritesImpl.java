@@ -180,16 +180,18 @@ public class FavoritesImpl implements Favorites {
     }
 
     @Override
-    public void moveFavoriteStateToIndex(Context context, int index, FavoriteState favoriteState) {
+    public void moveFavoriteStateToIndex(Context context, int fromPosition, int toPosition) {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
+        List<FavoriteState> favoriteStateList = getFavoriteStates(context);
+        FavoriteState favoriteStateToMove = favoriteStateList.get(fromPosition);
 
         // remove favorite state
-        deleteFavoriteState(context, favoriteState.getFavoriteKey());
+        favoriteStateList.remove(fromPosition);
 
-        // set it at index which shifts everything else back one
-        List<FavoriteState> favoritesState = getFavoriteStates(context);
-        favoritesState.set(index, favoriteState);
-        storeFavoritesState(sharedPreferences, favoritesState);
+        // re-add at index which shifts everything else back one
+        favoriteStateList.add(toPosition, favoriteStateToMove);
+
+        storeFavoritesState(sharedPreferences, favoriteStateList);
     }
 
     @Override

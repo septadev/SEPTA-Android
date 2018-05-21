@@ -332,6 +332,10 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
                         favoriteStateList.remove(favoriteIndex);
                         favoriteItemAdapter.notifyItemRemoved(favoriteIndex);
                         favoriteItemAdapter.notifyDataSetChanged();
+
+                        // reattach recyclerview so that deleting last row hides red background
+                        itemTouchHelper.attachToRecyclerView(null);
+                        itemTouchHelper.attachToRecyclerView(favoritesListView);
                     }
                 })
 

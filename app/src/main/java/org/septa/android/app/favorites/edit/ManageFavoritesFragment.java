@@ -154,6 +154,10 @@ public class ManageFavoritesFragment extends Fragment implements DraggableFavori
                         favoriteItemAdapter.notifyItemRemoved(favoriteIndex);
                         favoriteItemAdapter.notifyDataSetChanged();
 
+                        // reattach recyclerview so that deleting last row hides red background
+                        itemTouchHelper.attachToRecyclerView(null);
+                        itemTouchHelper.attachToRecyclerView(favoritesListView.getRecyclerView());
+
                         // close edit mode if no favorites left
                         if (favoriteList.isEmpty()) {
                             mListener.toggleEditFavoritesMode(true);

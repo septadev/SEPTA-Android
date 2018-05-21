@@ -103,12 +103,12 @@ public class SwipeController extends ItemTouchHelper.Callback {
     private void drawButtons(Canvas c, RecyclerView.ViewHolder viewHolder) {
         View itemView = viewHolder.itemView;
         Paint p = new Paint();
-        float deleteBackgroundWidth = viewHolder.itemView.getWidth();
+        float buttonWidthWithoutPadding = buttonWidth - 20;
 
-        RectF rightButton = new RectF(itemView.getRight() - deleteBackgroundWidth, itemView.getTop(), itemView.getRight(), itemView.getBottom());
+        RectF rightButton = new RectF(itemView.getRight() - buttonWidthWithoutPadding, itemView.getTop(), itemView.getRight(), itemView.getBottom());
         p.setColor(Color.RED);
         c.drawRect(rightButton, p);
-        drawText(context.getResources().getString(R.string.delete_fav_pos_button), c, rightButton, p, deleteBackgroundWidth);
+        drawText(context.getResources().getString(R.string.delete_fav_pos_button), c, rightButton, p);
 
         if (buttonInstance != null) {
             buttonInstance.setEmpty();
@@ -119,7 +119,7 @@ public class SwipeController extends ItemTouchHelper.Callback {
         }
     }
 
-    private void drawText(String text, Canvas c, RectF button, Paint p, float deleteBackgroundWidth) {
+    private void drawText(String text, Canvas c, RectF button, Paint p) {
         float textSize = context.getResources().getDisplayMetrics().density * 14f;
         p.setColor(Color.WHITE);
         p.setAntiAlias(true);
@@ -130,7 +130,7 @@ public class SwipeController extends ItemTouchHelper.Callback {
         p.setTypeface(tf);
 
         float textWidth = p.measureText(text);
-        c.drawText(text, button.centerX() + ((deleteBackgroundWidth - buttonWidth)/2) - (textWidth/2), button.centerY()+(textSize/2), p);
+        c.drawText(text, button.centerX() - (textWidth/2), button.centerY()+(textSize/2), p);
     }
 
     public void removeButtons() {

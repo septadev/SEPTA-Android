@@ -337,7 +337,8 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
                         dialog.dismiss();
                         revertSwipe(favoriteIndex);
                     }
-                }).create().show();
+                })
+                .create().show();
     }
 
     @Override

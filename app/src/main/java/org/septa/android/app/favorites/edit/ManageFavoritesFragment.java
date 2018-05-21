@@ -61,16 +61,6 @@ public class ManageFavoritesFragment extends Fragment implements DraggableFavori
         fragmentView = inflater.inflate(R.layout.fragment_manage_favorites, container, false);
         favoritesListView = (DragListView) fragmentView.findViewById(R.id.favorites_list_draggable);
 
-        // enable drag to reorder
-        favoritesListView.setDragListListener(new DragListView.DragListListenerAdapter() {
-            @Override
-            public void onItemDragEnded(int fromPosition, int toPosition) {
-                if (fromPosition != toPosition) {
-                    reorderFavorite(fromPosition, toPosition);
-                }
-            }
-        });
-
         // enabled swipe to delete
         final SwipeController swipeController = new SwipeController(getContext(),ManageFavoritesFragment.this);
         itemTouchHelper = new ItemTouchHelper(swipeController);
@@ -79,6 +69,26 @@ public class ManageFavoritesFragment extends Fragment implements DraggableFavori
             @Override
             public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
                 swipeController.onDraw(c);
+            }
+        });
+
+
+        // enable drag to reorder
+        favoritesListView.setDragListListener(new DragListView.DragListListenerAdapter() {
+            @Override
+            public void onItemDragStarted(int position) {
+                // remove delete buttons when starting drag
+                swipeController.removeButtons();
+
+                super.onItemDragStarted(position);
+            }
+
+            @Override
+            public void onItemDragEnded(int fromPosition, int toPosition) {
+                // reorder favorite when drag item dropped
+                if (fromPosition != toPosition) {
+                    reorderFavorite(fromPosition, toPosition);
+                }
             }
         });
 
@@ -189,6 +199,8 @@ public class ManageFavoritesFragment extends Fragment implements DraggableFavori
 
         @Override
         public void onBindDragView(View clickedView, View dragView) {
+
+
             // set favorite name on dragging view
             CharSequence text = ((TextView) clickedView.findViewById(R.id.favorite_title_text)).getText();
             ((TextView) dragView.findViewById(R.id.favorite_title_text)).setText(text);

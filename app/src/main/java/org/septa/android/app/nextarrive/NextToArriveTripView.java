@@ -129,7 +129,7 @@ public class NextToArriveTripView extends FrameLayout {
 
         String currentLine = null;
         boolean firstPos = true;
-        final List<View> peakViews = new LinkedList<View>();
+        final List<View> peakViews = new LinkedList<>();
         for (NextArrivalModelResponse.NextArrivalRecord item : data) {
             if (item.getConnectionStationId() != null) {
                 currentLine = null;
@@ -157,8 +157,9 @@ public class NextToArriveTripView extends FrameLayout {
                 if (currentLine == null || !currentLine.equals(item.getOrigRouteId())) {
                     currentLine = item.getOrigRouteId();
                     View headerView = getLineHeader(currentLine, item.getOrigRouteName());
-                    if (firstPos)
+                    if (firstPos) {
                         peakViews.add(headerView);
+                    }
                     listView.addView(headerView);
                 }
                 final View singleView = getSingleStopTripView(item);
@@ -189,7 +190,8 @@ public class NextToArriveTripView extends FrameLayout {
     }
 
     private View getLineHeader(String lineId, String lineName) {
-        View convertView = LayoutInflater.from(getContext()).inflate(R.layout.next_to_arrive_line, this, false);
+        Context context = getContext();
+        View convertView = LayoutInflater.from(context).inflate(R.layout.next_to_arrive_line, this, false);
 
         String routeNameForSystemStatus;
         if (transitType == TransitType.RAIL || transitType == TransitType.NHSL) {
@@ -200,32 +202,33 @@ public class NextToArriveTripView extends FrameLayout {
 
         android.widget.TextView lineNameText = (android.widget.TextView) convertView.findViewById(R.id.orig_line_name_text);
         lineNameText.setText(lineName);
-        ((ImageView) convertView.findViewById(R.id.orig_line_marker_left)).setColorFilter(ContextCompat.getColor(getContext(), transitType.getLineColor(lineId, getContext())));
+
+        ((ImageView) convertView.findViewById(R.id.orig_line_marker_left)).setColorFilter(ContextCompat.getColor(getContext(), transitType.getLineColor(lineId, context)));
 
         Alert alert = SystemStatusState.getAlertForLine(transitType, lineId);
 
         if (alert.isAlert()) {
             View targetView = convertView.findViewById(R.id.orig_line_alert_icon);
             targetView.setVisibility(VISIBLE);
-            targetView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ALERT_EXPANDED, getContext(), transitType, lineId, routeNameForSystemStatus));
+            targetView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ALERT_EXPANDED, context, transitType, lineId, routeNameForSystemStatus));
             targetView.setContentDescription(R.string.alert_icon_content_description_prefix + routeNameForSystemStatus);
         }
         if (alert.isAdvisory()) {
             View targetView = convertView.findViewById(R.id.orig_line_advisory_icon);
             targetView.setVisibility(VISIBLE);
-            targetView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ADVISORY_EXPANDED, getContext(), transitType, lineId, routeNameForSystemStatus));
+            targetView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ADVISORY_EXPANDED, context, transitType, lineId, routeNameForSystemStatus));
             targetView.setContentDescription(R.string.advisory_icon_content_description_prefix + routeNameForSystemStatus);
         }
         if (alert.isDetour()) {
             View targetView = convertView.findViewById(R.id.orig_line_detour_icon);
             targetView.setVisibility(VISIBLE);
-            targetView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.ACTIVE_DETOUR_EXPANDED, getContext(), transitType, lineId, routeNameForSystemStatus));
+            targetView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.ACTIVE_DETOUR_EXPANDED, context, transitType, lineId, routeNameForSystemStatus));
             targetView.setContentDescription(R.string.detour_icon_content_description_prefix + routeNameForSystemStatus);
         }
         if (alert.isSnow()) {
             View targetView = convertView.findViewById(R.id.orig_line_weather_icon);
             targetView.setVisibility(VISIBLE);
-            targetView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.WEATHER_ALERTS_EXPANDED, getContext(), transitType, lineId, routeNameForSystemStatus));
+            targetView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.WEATHER_ALERTS_EXPANDED, context, transitType, lineId, routeNameForSystemStatus));
             targetView.setContentDescription(R.string.weather_icon_content_description_prefix + routeNameForSystemStatus);
         }
 

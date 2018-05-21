@@ -85,16 +85,29 @@ public class FavoritesImpl implements Favorites {
     }
 
     @Override
-    public void modifyFavoriteState(Context context, int index, boolean expanded) {
-        FavoriteState favoriteState = getFavoriteStateByIndex(context, index);
+    public void setFavorites(Context context, List<Favorite> favoriteList) {
+        SharedPreferences sharedPreferences = getSharedPreferences(context);
 
-        if (favoriteState != null) {
-            favoriteState.setExpanded(expanded);
-        } else {
-            Log.e(TAG, "Could not modify FavoriteState");
+        Map<String, Favorite> favoritesMap = new HashMap<>();
+        for (Favorite favorite : favoriteList) {
+            favoritesMap.put(favorite.getKey(), favorite);
         }
 
-        moveFavoriteStateToIndex(context, index, favoriteState);
+        storeFavorites(sharedPreferences, favoritesMap);
+    }
+
+    @Override
+    public void setFavoriteStates(Context context, List<FavoriteState> favoriteStateList) {
+        SharedPreferences sharedPreferences = getSharedPreferences(context);
+        storeFavoritesState(sharedPreferences, favoriteStateList);
+    }
+
+    @Override
+    public void modifyFavoriteState(Context context, int index, boolean expanded) {
+        SharedPreferences sharedPreferences = getSharedPreferences(context);
+        List<FavoriteState> favoriteStateList = getFavoriteStates(context);
+        favoriteStateList.get(index).setExpanded(expanded);
+        storeFavoritesState(sharedPreferences, favoriteStateList);
     }
 
     @Override
@@ -106,8 +119,7 @@ public class FavoritesImpl implements Favorites {
         storeFavorites(sharedPreferences, favorites);
     }
 
-    @Override
-    public void deleteFavoriteState(Context context, String favoriteKey) {
+    private void deleteFavoriteState(Context context, String favoriteKey) {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
         List<FavoriteState> favoriteStates = getFavoriteStates(context);
         int indexToRemove = -1;
@@ -122,6 +134,7 @@ public class FavoritesImpl implements Favorites {
         } else {
             Log.e(TAG, "Could not delete");
         }
+        storeFavoritesState(sharedPreferences, favoriteStates);
     }
 
     @Override
@@ -177,6 +190,28 @@ public class FavoritesImpl implements Favorites {
         List<FavoriteState> favoritesState = getFavoriteStates(context);
         favoritesState.set(index, favoriteState);
         storeFavoritesState(sharedPreferences, favoritesState);
+    }
+
+    @Override
+    public void resyncFavoritesMap(Context context) {
+        SharedPreferences sharedPreferences = getSharedPreferences(context);
+        List<FavoriteState> favoriteStateList = getFavoriteStates(context);
+        Map<String, Favorite> favoriteMap = getFavorites(context);
+
+        if (favoriteStateList != null && !favoriteStateList.isEmpty() && favoriteMap != null && !favoriteMap.isEmpty()) {
+            deleteAllFavorites(context);
+
+            Map<String, Favorite> newFavorites = new HashMap<>();
+
+            for (FavoriteState favoriteState: favoriteStateList) {
+                String favoriteKey = favoriteState.getFavoriteKey();
+                newFavorites.put(favoriteKey, favoriteMap.get(favoriteKey));
+            }
+
+            storeFavorites(sharedPreferences, newFavorites);
+        } else {
+            Log.e(TAG, "Resync of favorites map could not occur");
+        }
     }
 
     private SharedPreferences getSharedPreferences(Context context) {

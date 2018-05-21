@@ -11,25 +11,19 @@ import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 
 import org.septa.android.app.BuildConfig;
 import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.database.DatabaseManager;
-import org.septa.android.app.database.SEPTADatabase;
 import org.septa.android.app.view.TextView;
 import org.septa.android.app.webview.WebViewActivity;
-import org.w3c.dom.Text;
 
 import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 /**
  * Created by jkampf on 9/5/17.

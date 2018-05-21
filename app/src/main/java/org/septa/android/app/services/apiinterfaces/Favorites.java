@@ -22,11 +22,13 @@ public interface Favorites {
 
     void addFavoriteState(Context context, FavoriteState favoriteState);
 
+    void setFavorites(Context context, List<Favorite> favoriteList);
+
+    void setFavoriteStates(Context context, List<FavoriteState> favoriteStateList);
+
     void modifyFavoriteState(Context context, int index, boolean expanded);
 
     void deleteFavorite(Context context, String id);
-
-    void deleteFavoriteState(Context context, String favoriteKey);
 
     void deleteAllFavorites(Context context);
 
@@ -40,4 +42,5 @@ public interface Favorites {
 
     void moveFavoriteStateToIndex(Context context, int index, FavoriteState favoriteState);
 
+    void resyncFavoritesMap(Context context);
 }

@@ -50,8 +50,8 @@ import org.septa.android.app.database.DatabaseManager;
 import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.favorites.DeleteFavoritesAsyncTask;
-import org.septa.android.app.favorites.EditFavoriteCallBack;
-import org.septa.android.app.favorites.EditFavoriteDialogFragment;
+import org.septa.android.app.favorites.edit.EditFavoriteCallBack;
+import org.septa.android.app.favorites.edit.EditFavoriteDialogFragment;
 import org.septa.android.app.favorites.SaveFavoritesAsyncTask;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Favorite;
@@ -561,7 +561,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     }
 
     private void refreshData() {
-        // hide all containers while refresh happening
+        // hide all containers while refreshFavoritesInstance happening
         noResultsMessage.setVisibility(View.GONE);
         mapContainerView.setVisibility(View.GONE);
         bottomSheetLayout.setVisibility(View.GONE);

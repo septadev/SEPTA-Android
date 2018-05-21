@@ -29,12 +29,13 @@ import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.fares.FaresFragment;
 import org.septa.android.app.favorites.FavoritesFragment;
-import org.septa.android.app.favorites.FavoritesFragmentListener;
+import org.septa.android.app.favorites.edit.ManageFavoritesFragment;
 import org.septa.android.app.nextarrive.NextToArriveFragment;
 import org.septa.android.app.schedules.SchedulesFragment;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Alert;
 import org.septa.android.app.services.apiinterfaces.model.AlertDetail;
+import org.septa.android.app.services.apiinterfaces.model.Favorite;
 import org.septa.android.app.support.AnalyticsManager;
 import org.septa.android.app.support.CrashlyticsManager;
 import org.septa.android.app.systemmap.SystemMapFragment;
@@ -42,6 +43,8 @@ import org.septa.android.app.systemstatus.SystemStatusFragment;
 import org.septa.android.app.systemstatus.SystemStatusState;
 import org.septa.android.app.view.TextView;
 import org.septa.android.app.webview.WebViewFragment;
+
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -52,7 +55,7 @@ import retrofit2.Response;
  */
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, FavoritesFragmentListener, SeptaServiceFactory.SeptaServiceFactoryCallBacks {
+        implements NavigationView.OnNavigationItemSelectedListener, FavoritesFragment.FavoritesFragmentListener, ManageFavoritesFragment.ManageFavoritesFragmentListener, SeptaServiceFactory.SeptaServiceFactoryCallBacks {
 
     public static final String TAG = MainActivity.class.getSimpleName();
     NextToArriveFragment nextToArriveFragment = new NextToArriveFragment();
@@ -63,7 +66,8 @@ public class MainActivity extends AppCompatActivity
     MenuItem currentMenu;
     NavigationView navigationView;
 
-    FavoritesFragment favorites;
+    FavoritesFragment favoritesFragment;
+    ManageFavoritesFragment manageFavoritesFragment;
 
     SystemStatusFragment systemStatus = new SystemStatusFragment();
     Fragment faresTransitInfo = new FaresFragment();
@@ -83,7 +87,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public final void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        favorites = FavoritesFragment.newInstance();
+        favoritesFragment = FavoritesFragment.newInstance();
         events = WebViewFragment.getInstance(getResources().getString(R.string.events_url));
         trainview = WebViewFragment.getInstance(getResources().getString(R.string.trainview_url));
         transitview = WebViewFragment.getInstance(getResources().getString(R.string.transitview_url));
@@ -204,7 +208,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         // hide menu badge icon
-        View view = (View) navigationView.getMenu().findItem(R.id.nav_system_status).getActionView();
+        View view = navigationView.getMenu().findItem(R.id.nav_system_status).getActionView();
         view.setVisibility(View.GONE);
     }
 
@@ -240,7 +244,7 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_favorites) {
             AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_FAVORITES, null, null);
-            switchToBundle(item, favorites, R.string.favorites, R.drawable.ic_favorites_active);
+            switchToBundle(item, favoritesFragment, R.string.favorites, R.drawable.ic_favorites_active);
         }
 
         if (id == R.id.nav_system_status) {
@@ -285,7 +289,7 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private void switchToBundle(MenuItem item, Fragment targetFragment, int title, int highlitghtedIcon) {
+    private void switchToBundle(MenuItem item, Fragment targetFragment, int title, int highlightedIcon) {
         CrashlyticsManager.log(Log.INFO, TAG, "switchToBundle:" + item.getTitle() + ", " + targetFragment.getClass().getCanonicalName());
         if ((currentMenu != null) && item.getItemId() == currentMenu.getItemId())
             return;
@@ -295,8 +299,9 @@ public class MainActivity extends AppCompatActivity
         }
         currentMenu = item;
         previousIcon = item.getIcon();
-        if (highlitghtedIcon != 0)
-            currentMenu.setIcon(highlitghtedIcon);
+        if (highlightedIcon != 0) {
+            currentMenu.setIcon(highlightedIcon);
+        }
         activeFragment = targetFragment;
 
         getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, targetFragment).commit();
@@ -317,6 +322,29 @@ public class MainActivity extends AppCompatActivity
             currentMenu.setIcon(R.drawable.ic_nta_active);
             getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, nextToArriveFragment).commit();
             setTitle(R.string.next_to_arrive);
+        }
+    }
+
+    @Override
+    public void toggleEditFavoritesMode(boolean isInEditMode) {
+        CrashlyticsManager.log(Log.INFO, TAG, "toggling editFavoritesMode");
+
+        if (isInEditMode) {
+            // close edit mode
+            manageFavoritesFragment.closeEditMode();
+
+            // switch to favorites fragment
+            favoritesFragment = FavoritesFragment.newInstance();
+            activeFragment = favoritesFragment;
+            getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, activeFragment).commit();
+        } else {
+            // open edit mode
+            List<Favorite> favoriteList = favoritesFragment.openEditMode();
+
+            // switch to manage favorites fragment
+            manageFavoritesFragment = ManageFavoritesFragment.newInstance(favoriteList);
+            activeFragment = manageFavoritesFragment;
+            getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, activeFragment).commit();
         }
     }
 
@@ -343,13 +371,14 @@ public class MainActivity extends AppCompatActivity
     public void switchToFavorites() {
         CrashlyticsManager.log(Log.INFO, TAG, "switchToFavorites");
         if (currentMenu == null || currentMenu.getItemId() != R.id.nav_favorites) {
-            if (currentMenu != null)
+            if (currentMenu != null) {
                 currentMenu.setIcon(previousIcon);
+            }
             navigationView.setCheckedItem(R.id.nav_favorites);
             currentMenu = navigationView.getMenu().findItem(R.id.nav_favorites);
             previousIcon = currentMenu.getIcon();
             currentMenu.setIcon(R.drawable.ic_favorites_active);
-            getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, favorites).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, favoritesFragment).commit();
             setTitle(R.string.favorites);
         }
     }
@@ -402,11 +431,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void refresh() {
-        CrashlyticsManager.log(Log.INFO, TAG, "refresh");
-        favorites = FavoritesFragment.newInstance();
-        getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, favorites).commit();
-
+    public void refreshFavoritesInstance() {
+        CrashlyticsManager.log(Log.INFO, TAG, "refreshFavoritesInstance");
+        favoritesFragment = FavoritesFragment.newInstance();
+        getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, favoritesFragment).commit();
     }
 
     public void showAlert(String alert, Boolean isGenericAlert) {
@@ -441,7 +469,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         // show badge icon in menu here
-        View view = (View) navigationView.getMenu().findItem(R.id.nav_system_status).getActionView();
+        View view = navigationView.getMenu().findItem(R.id.nav_system_status).getActionView();
         view.setVisibility(View.VISIBLE);
 
         dialog.show();

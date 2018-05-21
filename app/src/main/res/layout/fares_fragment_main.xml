@@ -374,20 +374,20 @@
                 android:orientation="vertical">
 
                 <RelativeLayout
-                    android:id="@+id/pass_perks_logo_layout"
+                    android:id="@+id/perks_logo_layout"
                     android:layout_width="match_parent"
                     android:layout_height="93dp"
                     android:background="@drawable/perks_background"
                     android:orientation="horizontal">
 
                     <org.septa.android.app.view.TextView
-                        android:id="@+id/pass_perks_title"
+                        android:id="@+id/perks_title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="15dp"
                         android:layout_marginTop="25dp"
                         android:letterSpacing="-0.02"
-                        android:text="Pass Perks"
+                        android:text="Perks"
                         android:textColor="#ffffff"
                         android:textSize="24sp"
                         app:font="@string/font_roboto_bold" />
@@ -395,7 +395,7 @@
                     <org.septa.android.app.view.TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/pass_perks_title"
+                        android:layout_below="@id/perks_title"
                         android:layout_marginLeft="15dp"
                         android:text="Perks for all!"
                         android:textColor="#ffffff"
@@ -403,7 +403,7 @@
                         app:font="@string/font_roboto_light_italic" />
 
                     <ImageView
-                        android:id="@+id/pass_perks_logo"
+                        android:id="@+id/perks_logo"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
@@ -426,7 +426,7 @@
                     app:font="@string/font_roboto_regular" />
 
                 <org.septa.android.app.view.TextView
-                    android:id="@+id/pass_perks_button"
+                    android:id="@+id/perks_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"

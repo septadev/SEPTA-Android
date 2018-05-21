@@ -238,10 +238,15 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.my_favorites_menu, menu);
 
+        MenuItem menuItemAdd = menu.findItem(R.id.add_favorite);
         MenuItem menuItemEdit = menu.findItem(R.id.edit_favorites);
+
+        // show 'add' action in toolbar
+        if (menuItemAdd != null) {
+            menuItemAdd.setVisible(true);
+        }
+        // change title to edit
         if (menuItemEdit != null) {
-            // change icon and title to edit
-            menuItemEdit.setIcon(R.drawable.ic_edit);
             menuItemEdit.setTitle(R.string.favorites_menu_item_edit);
         }
     }

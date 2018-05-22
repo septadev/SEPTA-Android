@@ -1,15 +1,26 @@
 package org.septa.android.app;
 
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.DownloadManager;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -25,6 +36,9 @@ import android.view.View;
 
 import org.septa.android.app.about.AboutFragment;
 import org.septa.android.app.connect.ConnectFragment;
+import org.septa.android.app.database.CheckForLatestDB;
+import org.septa.android.app.database.DownloadNewDB;
+import org.septa.android.app.database.SEPTADatabase;
 import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.fares.FaresFragment;
@@ -44,6 +58,7 @@ import org.septa.android.app.systemstatus.SystemStatusState;
 import org.septa.android.app.view.TextView;
 import org.septa.android.app.webview.WebViewFragment;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -55,7 +70,9 @@ import retrofit2.Response;
  */
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, FavoritesFragment.FavoritesFragmentListener, ManageFavoritesFragment.ManageFavoritesFragmentListener, SeptaServiceFactory.SeptaServiceFactoryCallBacks {
+        implements NavigationView.OnNavigationItemSelectedListener, FavoritesFragment.FavoritesFragmentListener, ManageFavoritesFragment.ManageFavoritesFragmentListener, SeptaServiceFactory.SeptaServiceFactoryCallBacks, CheckForLatestDB.CheckForLatestDBListener, DownloadNewDB.DownloadNewDBListener {
+
+    private static final String SHARED_PREFERENCES_DATABASE = "SHARED_PREFERENCES_DATABASE";
 
     public static final String TAG = MainActivity.class.getSimpleName();
     NextToArriveFragment nextToArriveFragment = new NextToArriveFragment();
@@ -66,6 +83,7 @@ public class MainActivity extends AppCompatActivity
     MenuItem currentMenu;
     NavigationView navigationView;
 
+    // favorites
     FavoritesFragment favoritesFragment;
     ManageFavoritesFragment manageFavoritesFragment;
 
@@ -77,6 +95,13 @@ public class MainActivity extends AppCompatActivity
     Fragment transitview = null;
     Fragment connect = new ConnectFragment();
     Fragment about = new AboutFragment();
+
+    // in-app database update
+    CheckForLatestDB checkForLatestDB;
+    DownloadNewDB downloadNewDB;
+    DownloadManager downloadManager;
+    List<Long> downloadRefIds;
+    private static final String PERMISSION_TO_DOWNLOAD = "PERMISSION_TO_DOWNLOAD";
 
     public static final String MOBILE_APP_ALERT_ROUTE_NAME = "Mobile APP",
             MOBILE_APP_ALERT_MODE = "MOBILE",
@@ -105,6 +130,11 @@ public class MainActivity extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
+
+        // listen for new DB download
+        registerReceiver(onDBDownloadComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+        downloadManager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+        downloadRefIds = new ArrayList<>();
 
         if (savedInstanceState == null) {
             if (SeptaServiceFactory.getFavoritesService().getFavorites(this).size() > 0) {
@@ -192,6 +222,15 @@ public class MainActivity extends AppCompatActivity
 
             }
         }
+
+        // check if in-app DB update
+        if (isConnectedToInternet()) {
+            checkForLatestDB = new CheckForLatestDB(MainActivity.this);
+            checkForLatestDB.execute();
+        } else {
+            // do nothing -- do not tell user there may be a new DB available
+            Log.d(TAG, "No network connection established -- cannot check for new DB");
+        }
     }
 
     @Override
@@ -210,6 +249,14 @@ public class MainActivity extends AppCompatActivity
         // hide menu badge icon
         View view = navigationView.getMenu().findItem(R.id.nav_system_status).getActionView();
         view.setVisibility(View.GONE);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        // remove broadcast listener for DB download completion
+        unregisterReceiver(onDBDownloadComplete);
     }
 
     @Override
@@ -364,6 +411,21 @@ public class MainActivity extends AppCompatActivity
         switchToSchedules(bundle);
     }
 
+    public boolean isConnectedToInternet() {
+        ConnectivityManager connectivity = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivity != null) {
+            NetworkInfo[] info = connectivity.getAllNetworkInfo();
+            if (info != null) {
+                for (NetworkInfo anInfo : info) {
+                    if (anInfo.getState() == NetworkInfo.State.CONNECTED) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     private void switchToBundle(MenuItem item, Fragment targetFragment, int title, int highlightedIcon) {
         CrashlyticsManager.log(Log.INFO, TAG, "switchToBundle:" + item.getTitle() + ", " + targetFragment.getClass().getCanonicalName());
         if ((currentMenu != null) && item.getItemId() == currentMenu.getItemId())
@@ -382,6 +444,20 @@ public class MainActivity extends AppCompatActivity
         getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, targetFragment).commit();
 
         setTitle(title);
+    }
+
+    private void switchToNextToArrive() {
+        if (currentMenu == null || currentMenu.getItemId() != R.id.nav_next_to_arrive) {
+            if (currentMenu != null) {
+                currentMenu.setIcon(previousIcon);
+            }
+            navigationView.setCheckedItem(R.id.nav_next_to_arrive);
+            currentMenu = navigationView.getMenu().findItem(R.id.nav_next_to_arrive);
+            previousIcon = currentMenu.getIcon();
+            currentMenu.setIcon(R.drawable.ic_nta_active);
+            getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, nextToArriveFragment).commit();
+            setTitle(R.string.next_to_arrive);
+        }
     }
 
     public void switchToFavorites() {
@@ -432,6 +508,178 @@ public class MainActivity extends AppCompatActivity
             switchToSchedules(msg.getData());
         }
     };
+
+    @Override
+    public void afterLatestDBMetadataLoad(int latestDBVersion, final String latestDBURL, String updatedDate) {
+        // check API for DB version number
+        int currentDBVersion = SEPTADatabase.getDatabaseVersion();
+
+        // TODO: remove
+        Log.e(TAG, "Latest DB Version: " + latestDBVersion + " vs. Old DB Version: " + currentDBVersion);
+
+        // check if newer database available
+        // TODO: switch this later
+        if (latestDBVersion == 14) {
+//        if (latestDBVersion > currentDBVersion) {
+
+            // check if permission granted previously
+            if (!getSharedPreferences(SHARED_PREFERENCES_DATABASE, Context.MODE_PRIVATE).getBoolean(PERMISSION_TO_DOWNLOAD, false)) {
+
+                // prompt user to download new database
+                final AlertDialog dialog = new AlertDialog.Builder(this).setCancelable(true).setTitle(R.string.prompt_download_database_title)
+                        .setMessage(R.string.prompt_download_database_description)
+
+                        // approved download
+                        .setPositiveButton(R.string.prompt_download_button_positive_download_now, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                                // download new DB zip from url given by API
+                                if (latestDBURL != null && !latestDBURL.isEmpty()) {
+                                    // TODO: save permission to download - uncomment later
+//                                    getSharedPreferences(SHARED_PREFERENCES_DATABASE, Context.MODE_PRIVATE).edit().putBoolean(PERMISSION_TO_DOWNLOAD, true).apply();
+
+                                    // do not need to recheck for connection -- handled by DownloadManager
+                                    downloadNewDB = new DownloadNewDB(MainActivity.this, latestDBURL);
+                                    downloadNewDB.execute();
+                                }
+                            }
+                        })
+
+                        // remind of download later
+                        .setNegativeButton(R.string.prompt_download_button_negative_remind_later, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        })
+
+                        // link to NTA
+                        .setNeutralButton(R.string.prompt_download_button_neutral_nta, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                switchToNextToArrive();
+                            }
+                        })
+                        .create();
+
+                // set "download now" button color
+                dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                    @Override
+                    public void onShow(DialogInterface arg0) {
+                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.RED);
+                    }
+                });
+
+                dialog.show();
+            }
+        }
+    }
+
+    @Override
+    public void afterNewDBDownload(DownloadManager.Request request) {
+        // add to list of downloads
+        downloadRefIds.add(downloadManager.enqueue(request));
+
+        // TODO: how to handle interrupted downloads? -- DownloadManager should handle it all...
+    }
+
+    // listener for completed database downloads
+    BroadcastReceiver onDBDownloadComplete = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            // get the refid from the download manager
+            long referenceId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
+
+            // remove it from our list
+            downloadRefIds.remove(referenceId);
+
+            // if list is empty means all downloads completed
+            if (downloadRefIds.isEmpty()) {
+
+                prepareForNewDatabase();
+
+                // show notification that download completed
+                Log.e(TAG, "Completed download for ref ID: " + referenceId);
+                NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(MainActivity.this)
+                        .setSmallIcon(R.drawable.ic_launcher)
+                        .setContentTitle(getString(R.string.app_name))
+                        .setContentText(getString(R.string.notification_database_download_complete));   // TODO: language for complete download notification
+                // TODO: set action -- what does clicking on notif do?
+                // TODO: clicking on notif with app open --> restart app?
+                // TODO: clicking on notif just opens app
+
+                NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                if (notificationManager != null) {
+                    notificationManager.notify(455, mBuilder.build());
+                }
+
+                // prompt user to restart app?
+                final AlertDialog dialog = new AlertDialog.Builder(MainActivity.this).setCancelable(true).setTitle(R.string.prompt_restart_database_title)
+                        .setMessage(R.string.prompt_restart_database_description)
+
+                        // approved restart
+                        .setPositiveButton(R.string.prompt_restart_button_positive_now, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                // 0.5 sec delay to restart
+                                int delay = 500;
+
+                                // restart app
+                                restartApplication(delay);
+                            }
+                        })
+
+                        // remind of download later
+                        .setNegativeButton(R.string.prompt_restart_button_negative_later, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .create();
+
+                // set "restart now" button color
+                dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                    @Override
+                    public void onShow(DialogInterface arg0) {
+                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.RED);
+                    }
+                });
+
+                dialog.show();
+
+            }
+
+        }
+    };
+
+    private void prepareForNewDatabase() {
+        // TODO: expand new DB zip
+
+        // TODO: run script to create indices on new DB
+
+        // TODO: set new DB -- rename new DB with old name? does this overwrite / delete old DB
+
+//                    SEPTADatabase.setDatabaseVersion(newDBVersion);
+
+        // TODO: delete downloaded zip
+
+        // TODO: delete old version of DB
+
+        // restore download permission back to false
+        getSharedPreferences(SHARED_PREFERENCES_DATABASE, Context.MODE_PRIVATE).edit().putBoolean(PERMISSION_TO_DOWNLOAD, false).apply();
+
+    }
+
+    private void restartApplication(int delay) {
+        // restart the app
+        Intent restartIntent = MainActivity.this.getPackageManager().getLaunchIntentForPackage(MainActivity.this.getPackageName());
+        PendingIntent intent = PendingIntent.getActivity(MainActivity.this, 0, restartIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        AlarmManager manager = (AlarmManager) MainActivity.this.getSystemService(Context.ALARM_SERVICE);
+        manager.set(AlarmManager.RTC, System.currentTimeMillis() + delay, intent);
+        System.exit(2);
+    }
 
     public void showAlert(String alert, Boolean isGenericAlert) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);

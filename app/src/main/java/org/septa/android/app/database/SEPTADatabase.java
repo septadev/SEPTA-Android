@@ -14,7 +14,8 @@ public class SEPTADatabase extends SQLiteAssetHelper {
     /**
      * Current packaged DB version, update number when packaged DB changes
      */
-    private static final int DATABASE_VERSION = 282;
+    private static final String LATEST_DATABASE_API_URL = "https://s3.amazonaws.com/mobiledb.septa.org/latest/latestDb.json";
+    private static int DATABASE_VERSION = 282;
     private static final String DATABASE_FILE_NAME = "SEPTA.sqlite";
 
     public SEPTADatabase(Context context) {
@@ -46,5 +47,17 @@ public class SEPTADatabase extends SQLiteAssetHelper {
         } catch (SQLException e) {
             //e.printStackTrace();
         }
+    }
+
+    public static int getDatabaseVersion() {
+        return DATABASE_VERSION;
+    }
+
+    public static void setDatabaseVersion(int databaseVersion) {
+        DATABASE_VERSION = databaseVersion;
+    }
+
+    public static String getLatestDatabaseApiUrl() {
+        return LATEST_DATABASE_API_URL;
     }
 }

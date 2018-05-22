@@ -98,7 +98,7 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<FavoriteItemAdapter.Favor
         }
 
         // toggle expand / collapse button
-        holder.expandCollapseButton.setOnClickListener(new View.OnClickListener() {
+        holder.favoriteHeader.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // collapse favorite if already expanded
@@ -225,7 +225,7 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<FavoriteItemAdapter.Favor
     }
 
     public class FavoriteViewHolder extends RecyclerView.ViewHolder {
-        LinearLayout favoriteRow;
+        LinearLayout favoriteRow, favoriteHeader;
         TextView favoriteName;
         ImageButton expandCollapseButton;
         LinearLayout noResultsMsg;
@@ -236,6 +236,7 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<FavoriteItemAdapter.Favor
         FavoriteViewHolder(final View view) {
             super(view);
             favoriteRow = (LinearLayout) view.findViewById(R.id.favorite_item_row);
+            favoriteHeader = (LinearLayout) view.findViewById(R.id.favorite_item_header);
             favoriteName = (TextView) view.findViewById(R.id.favorite_title_text);
             expandCollapseButton = (ImageButton) view.findViewById(R.id.favorite_item_collapse_button);
             noResultsMsg = (LinearLayout) view.findViewById(R.id.favorite_item_no_results);

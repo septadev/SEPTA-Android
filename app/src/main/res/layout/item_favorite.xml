@@ -15,6 +15,8 @@
         android:id="@+id/favorite_item_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
         android:orientation="horizontal">
 
         <org.septa.android.app.view.TextView
@@ -29,6 +31,7 @@
             android:layout_weight="5"
             android:drawableLeft="@drawable/rail_active_final"
             android:drawablePadding="8dp"
+            android:drawableStart="@drawable/rail_active_final"
             android:ellipsize="end"
             android:gravity="center_vertical"
             android:maxLines="1"
@@ -42,13 +45,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginEnd="18dp"
             android:layout_marginRight="18dp"
-            android:background="?android:attr/selectableItemBackground"
-            android:clickable="true"
+            android:background="#ffffff"
+            android:clickable="false"
             android:drawablePadding="6dp"
             android:gravity="center"
             android:src="@drawable/ic_expand"
-            android:tint="@color/colorPrimaryDark"
             android:visibility="visible" />
 
         <LinearLayout
@@ -56,25 +59,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginEnd="14dp"
             android:layout_marginRight="14dp"
             android:background="?android:attr/selectableItemBackground"
             android:clickable="true"
+            android:focusable="true"
             android:gravity="center"
             android:orientation="vertical"
             android:visibility="gone">
-
-            <TextView
-                android:id="@+id/favorite_item_no_results_icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:drawableLeft="@drawable/ic_no_results_found"
-                android:drawablePadding="6dp"
-                android:gravity="center"
-                android:text="@string/favorites_empty_results_msg"
-                android:textColor="@color/no_results_found"
-                android:textSize="12dp"
-                app:font="@string/font_roboto_bold"
-                tools:ignore="MissingPrefix" />
 
             <TextView
                 android:id="@+id/favorite_item_no_results_msg"
@@ -100,7 +92,6 @@
             android:id="@+id/progress_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/top"
             android:background="@color/progress_background"
             android:clickable="true"
             android:visibility="gone"

@@ -88,7 +88,7 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<FavoriteItemAdapter.Favor
         holder.resultsContainer.addView(holder.tripView);
 
         // refresh favorite results
-        refreshFavorite(favorite, holder.tripView, holder.progressView, holder.expandCollapseButton, holder.noResultsMsg);
+        refreshFavorite(favorite, holder.favoriteHeader, holder.tripView, holder.progressView, holder.expandCollapseButton, holder.noResultsMsg);
 
         // initialize expanded state of favorite
         if (favoriteState.isExpanded()) {
@@ -140,12 +140,14 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<FavoriteItemAdapter.Favor
         return mItemList.size();
     }
 
-    private void updateViewWhenResultsFound(ImageButton expandCollapseButton, LinearLayout noResultsMsg) {
+    private void updateViewWhenResultsFound(LinearLayout favoriteHeader, ImageButton expandCollapseButton, LinearLayout noResultsMsg) {
+        favoriteHeader.setClickable(true);
         noResultsMsg.setVisibility(View.GONE);
         expandCollapseButton.setVisibility(View.VISIBLE);
     }
 
-    private void updateViewWhenNoResultsFound(ImageButton expandCollapseButton, LinearLayout noResultsMsg) {
+    private void updateViewWhenNoResultsFound(LinearLayout favoriteHeader, ImageButton expandCollapseButton, LinearLayout noResultsMsg) {
+        favoriteHeader.setClickable(false);
         expandCollapseButton.setVisibility(View.GONE);
         noResultsMsg.setVisibility(View.VISIBLE);
     }
@@ -170,7 +172,7 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<FavoriteItemAdapter.Favor
         notifyDataSetChanged();
     }
 
-    private void refreshFavorite(final Favorite favorite, final NextToArriveTripView tripView, final View progressView, final ImageButton expandCollapseButton, final LinearLayout noResultsMsg) {
+    private void refreshFavorite(final Favorite favorite, final LinearLayout favoriteHeader, final NextToArriveTripView tripView, final View progressView, final ImageButton expandCollapseButton, final LinearLayout noResultsMsg) {
         progressView.setVisibility(View.VISIBLE);
 
         String routeId = null;
@@ -189,9 +191,9 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<FavoriteItemAdapter.Favor
 
                     // change to no results message if needed
                     if (parser.getResults().isEmpty()) {
-                        updateViewWhenNoResultsFound(expandCollapseButton, noResultsMsg);
+                        updateViewWhenNoResultsFound(favoriteHeader, expandCollapseButton, noResultsMsg);
                     } else {
-                        updateViewWhenResultsFound(expandCollapseButton, noResultsMsg);
+                        updateViewWhenResultsFound(favoriteHeader, expandCollapseButton, noResultsMsg);
                     }
 
                     tripView.setNextToArriveData(parser);
@@ -207,7 +209,7 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<FavoriteItemAdapter.Favor
                 tripView.setNextToArriveData(new NextArrivalModelResponseParser());
 
                 // show that NTA data unavailable for that favorites row
-                updateViewWhenNoResultsFound(expandCollapseButton, noResultsMsg);
+                updateViewWhenNoResultsFound(favoriteHeader, expandCollapseButton, noResultsMsg);
 
                 mListener.showSnackbarNoConnection();
 

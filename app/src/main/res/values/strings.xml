@@ -137,7 +137,7 @@
 
     <string name="snackbar_no_connection_link_text">Schedules »</string>
     <string name="favorites_empty_results_msg">No Update</string>
-    <string name="favorites_view_schedules_msg">View Schedule »</string>
+    <string name="favorites_view_schedules_msg">View Schedules »</string>
 
     <string name="favorites_menu_item_add">Add</string>
     <string name="favorites_menu_item_edit">Edit</string>

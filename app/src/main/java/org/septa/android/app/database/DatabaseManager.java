@@ -83,7 +83,7 @@ public class DatabaseManager {
         return new CursorSuppliers.BusRouteCursorAdapterSupplier(BUS);
     }
 
-    public CursorAdapterSupplier<RouteDirectionModel> getRailRouteCursorAdapaterSupplier() {
+    public CursorAdapterSupplier<RouteDirectionModel> getRailRouteCursorAdapterSupplier() {
         return new CursorSuppliers.RailRouteCursorAdapterSupplier();
     }
 
@@ -119,19 +119,19 @@ public class DatabaseManager {
         return new CursorSuppliers.BusStopAfterCursorAdapterSupplier();
     }
 
-    public CursorAdapterSupplier<RouteDirectionModel> getRailNoDirectionRouteCursorAdapaterSupplier() {
+    public CursorAdapterSupplier<RouteDirectionModel> getRailNoDirectionRouteCursorAdapterSupplier() {
         return new CursorSuppliers.RailNoDirectionRouteCursorAdapterSupplier();
     }
 
-    public CursorAdapterSupplier<RouteDirectionModel> getBusNoDirectionRouteCursorAdapaterSupplier() {
+    public CursorAdapterSupplier<RouteDirectionModel> getBusNoDirectionRouteCursorAdapterSupplier() {
         return new CursorSuppliers.BusTrolleyNoDirectionRouteCursorAdapterSupplier(BUS);
     }
 
-    public CursorAdapterSupplier<RouteDirectionModel> getTrolleyNoDirectionRouteCursorAdapaterSupplier() {
+    public CursorAdapterSupplier<RouteDirectionModel> getTrolleyNoDirectionRouteCursorAdapterSupplier() {
         return new CursorSuppliers.BusTrolleyNoDirectionRouteCursorAdapterSupplier(TROLLEY);
     }
 
-    public CursorAdapterSupplier<RouteDirectionModel> getSubwayNoDirectionRouteCursorAdapaterSupplier() {
+    public CursorAdapterSupplier<RouteDirectionModel> getSubwayNoDirectionRouteCursorAdapterSupplier() {
         return new CursorSuppliers.SubwayNoDirectionRouteCursorAdapterSupplier();
     }
 
@@ -191,8 +191,8 @@ public class DatabaseManager {
         };
     }
 
-    public CursorAdapterSupplier<Boolean> getHolidayIndicatorCursorAdapaterSupplier(TransitType transitType) {
-        return new CursorSuppliers.TransitTypeHolidayIndicatorCursorAdapaterSupplier(transitType);
+    public CursorAdapterSupplier<Boolean> getHolidayIndicatorCursorAdapterSupplier(TransitType transitType) {
+        return new CursorSuppliers.TransitTypeHolidayIndicatorCursorAdapterSupplier(transitType);
     }
 
 }

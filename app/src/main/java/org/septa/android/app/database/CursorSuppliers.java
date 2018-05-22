@@ -888,11 +888,11 @@ class CursorSuppliers implements Serializable {
         }
     }
 
-    static class TransitTypeHolidayIndicatorCursorAdapaterSupplier implements CursorAdapterSupplier<Boolean> {
+    static class TransitTypeHolidayIndicatorCursorAdapterSupplier implements CursorAdapterSupplier<Boolean> {
 
         String tableName;
 
-        TransitTypeHolidayIndicatorCursorAdapaterSupplier(TransitType transitType) {
+        TransitTypeHolidayIndicatorCursorAdapterSupplier(TransitType transitType) {
             if (transitType == TransitType.RAIL) {
                 tableName = "holiday_rail";
             } else {

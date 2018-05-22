@@ -242,7 +242,7 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
         protected void onPostExecute(final List<StopModelWithDistance> stopModels) {
             if (fragment.getActivity() == null)
                 return;
-            fragment.stopsListView.setAdapter(new StopListAdapater(fragment.getActivity(), stopModels));
+            fragment.stopsListView.setAdapter(new StopListAdapter(fragment.getActivity(), stopModels));
             fragment.stopsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -311,10 +311,10 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
         }
     }
 
-    static class StopListAdapater extends ArrayAdapter<StopModelWithDistance> {
+    static class StopListAdapter extends ArrayAdapter<StopModelWithDistance> {
 
 
-        public StopListAdapater(@NonNull Context context, @NonNull List<StopModelWithDistance> objects) {
+        public StopListAdapter(@NonNull Context context, @NonNull List<StopModelWithDistance> objects) {
             super(context, 0, objects);
         }
 

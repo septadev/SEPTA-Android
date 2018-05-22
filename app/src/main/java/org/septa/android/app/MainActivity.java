@@ -289,24 +289,11 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private void switchToBundle(MenuItem item, Fragment targetFragment, int title, int highlightedIcon) {
-        CrashlyticsManager.log(Log.INFO, TAG, "switchToBundle:" + item.getTitle() + ", " + targetFragment.getClass().getCanonicalName());
-        if ((currentMenu != null) && item.getItemId() == currentMenu.getItemId())
-            return;
-
-        if (previousIcon != null) {
-            currentMenu.setIcon(previousIcon);
-        }
-        currentMenu = item;
-        previousIcon = item.getIcon();
-        if (highlightedIcon != 0) {
-            currentMenu.setIcon(highlightedIcon);
-        }
-        activeFragment = targetFragment;
-
-        getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, targetFragment).commit();
-
-        setTitle(title);
+    @Override
+    public void refreshFavoritesInstance() {
+        CrashlyticsManager.log(Log.INFO, TAG, "refreshFavoritesInstance");
+        favoritesFragment = FavoritesFragment.newInstance();
+        getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, favoritesFragment).commit();
     }
 
     @Override
@@ -346,6 +333,18 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        int unmaskedRequestCode = requestCode & 0x0000ffff;
+        if (unmaskedRequestCode == Constants.NTA_REQUEST) {
+            if (resultCode == Constants.VIEW_SCHEDULE) {
+                Message message = jumpToSchedulesHandler.obtainMessage();
+                message.setData(data.getExtras());
+                jumpToSchedulesHandler.sendMessage(message);
+            }
+        }
+    }
+
+    @Override
     public void gotoSchedules() {
         switchToSchedules(null);
         //switchToBundle(navigationView.getMenu().findItem(R.id.nav_schedule), schedules, R.string.schedule, R.drawable.ic_schedule_active);
@@ -365,6 +364,26 @@ public class MainActivity extends AppCompatActivity
         switchToSchedules(bundle);
     }
 
+    private void switchToBundle(MenuItem item, Fragment targetFragment, int title, int highlightedIcon) {
+        CrashlyticsManager.log(Log.INFO, TAG, "switchToBundle:" + item.getTitle() + ", " + targetFragment.getClass().getCanonicalName());
+        if ((currentMenu != null) && item.getItemId() == currentMenu.getItemId())
+            return;
+
+        if (previousIcon != null) {
+            currentMenu.setIcon(previousIcon);
+        }
+        currentMenu = item;
+        previousIcon = item.getIcon();
+        if (highlightedIcon != 0) {
+            currentMenu.setIcon(highlightedIcon);
+        }
+        activeFragment = targetFragment;
+
+        getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, targetFragment).commit();
+
+        setTitle(title);
+    }
+
     public void switchToFavorites() {
         CrashlyticsManager.log(Log.INFO, TAG, "switchToFavorites");
         if (currentMenu == null || currentMenu.getItemId() != R.id.nav_favorites) {
@@ -379,26 +398,6 @@ public class MainActivity extends AppCompatActivity
             setTitle(R.string.favorites);
         }
     }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        int unmaskedRequestCode = requestCode & 0x0000ffff;
-        if (unmaskedRequestCode == Constants.NTA_REQUEST) {
-            if (resultCode == Constants.VIEW_SCHEDULE) {
-                Message message = jumpToSchedulesHandler.obtainMessage();
-                message.setData(data.getExtras());
-                jumpToSchedulesHandler.sendMessage(message);
-            }
-        }
-    }
-
-    private Handler jumpToSchedulesHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switchToSchedules(msg.getData());
-        }
-    };
-
 
     public void switchToSchedules(Bundle data) {
         CrashlyticsManager.log(Log.INFO, TAG, "switchToSchedules");
@@ -427,12 +426,12 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    public void refreshFavoritesInstance() {
-        CrashlyticsManager.log(Log.INFO, TAG, "refreshFavoritesInstance");
-        favoritesFragment = FavoritesFragment.newInstance();
-        getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, favoritesFragment).commit();
-    }
+    private Handler jumpToSchedulesHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switchToSchedules(msg.getData());
+        }
+    };
 
     public void showAlert(String alert, Boolean isGenericAlert) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);

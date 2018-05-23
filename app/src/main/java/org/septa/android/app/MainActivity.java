@@ -15,6 +15,7 @@ import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
@@ -58,8 +59,16 @@ import org.septa.android.app.systemstatus.SystemStatusState;
 import org.septa.android.app.view.TextView;
 import org.septa.android.app.webview.WebViewFragment;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -72,7 +81,6 @@ import retrofit2.Response;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, FavoritesFragment.FavoritesFragmentListener, ManageFavoritesFragment.ManageFavoritesFragmentListener, SeptaServiceFactory.SeptaServiceFactoryCallBacks, CheckForLatestDB.CheckForLatestDBListener, DownloadNewDB.DownloadNewDBListener {
 
-    private static final String SHARED_PREFERENCES_DATABASE = "SHARED_PREFERENCES_DATABASE";
 
     public static final String TAG = MainActivity.class.getSimpleName();
     NextToArriveFragment nextToArriveFragment = new NextToArriveFragment();
@@ -101,7 +109,10 @@ public class MainActivity extends AppCompatActivity
     DownloadNewDB downloadNewDB;
     DownloadManager downloadManager;
     List<Long> downloadRefIds;
+    private static final String SHARED_PREFERENCES_DATABASE = "SHARED_PREFERENCES_DATABASE";
     private static final String PERMISSION_TO_DOWNLOAD = "PERMISSION_TO_DOWNLOAD";
+    private static final String NEWEST_DB_VERSION_DOWNLOADED = "NEWEST_DB_VERSION_DOWNLOADED";
+    private static final String NEWEST_DB_VERSION_INSTALLED = "NEWEST_DB_VERSION_INSTALLED";
 
     public static final String MOBILE_APP_ALERT_ROUTE_NAME = "Mobile APP",
             MOBILE_APP_ALERT_MODE = "MOBILE",
@@ -346,17 +357,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void addNewFavorite() {
         CrashlyticsManager.log(Log.INFO, TAG, "addNewFavorite");
-        if (currentMenu == null || currentMenu.getItemId() != R.id.nav_next_to_arrive) {
-            if (currentMenu != null) {
-                currentMenu.setIcon(previousIcon);
-            }
-            navigationView.setCheckedItem(R.id.nav_next_to_arrive);
-            currentMenu = navigationView.getMenu().findItem(R.id.nav_next_to_arrive);
-            previousIcon = currentMenu.getIcon();
-            currentMenu.setIcon(R.drawable.ic_nta_active);
-            getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, nextToArriveFragment).commit();
-            setTitle(R.string.next_to_arrive);
-        }
+        switchToNextToArrive();
     }
 
     @Override
@@ -510,7 +511,7 @@ public class MainActivity extends AppCompatActivity
     };
 
     @Override
-    public void afterLatestDBMetadataLoad(int latestDBVersion, final String latestDBURL, String updatedDate) {
+    public void afterLatestDBMetadataLoad(final int latestDBVersion, final String latestDBURL, String updatedDate) {
         // check API for DB version number
         int currentDBVersion = SEPTADatabase.getDatabaseVersion();
 
@@ -525,6 +526,7 @@ public class MainActivity extends AppCompatActivity
             // check if permission granted previously
             if (!getSharedPreferences(SHARED_PREFERENCES_DATABASE, Context.MODE_PRIVATE).getBoolean(PERMISSION_TO_DOWNLOAD, false)) {
 
+                // TODO: only show pop up if not already visible
                 // prompt user to download new database
                 final AlertDialog dialog = new AlertDialog.Builder(this).setCancelable(true).setTitle(R.string.prompt_download_database_title)
                         .setMessage(R.string.prompt_download_database_description)
@@ -540,7 +542,7 @@ public class MainActivity extends AppCompatActivity
 //                                    getSharedPreferences(SHARED_PREFERENCES_DATABASE, Context.MODE_PRIVATE).edit().putBoolean(PERMISSION_TO_DOWNLOAD, true).apply();
 
                                     // do not need to recheck for connection -- handled by DownloadManager
-                                    downloadNewDB = new DownloadNewDB(MainActivity.this, latestDBURL);
+                                    downloadNewDB = new DownloadNewDB(MainActivity.this,MainActivity.this, latestDBURL, latestDBVersion);
                                     downloadNewDB.execute();
                                 }
                             }
@@ -578,9 +580,13 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void afterNewDBDownload(DownloadManager.Request request) {
+    public void afterNewDBDownload(DownloadManager.Request request, int version) {
         // add to list of downloads
         downloadRefIds.add(downloadManager.enqueue(request));
+
+        // save new version # to shared preferences
+        getSharedPreferences(SHARED_PREFERENCES_DATABASE, Context.MODE_PRIVATE).edit().putInt(NEWEST_DB_VERSION_DOWNLOADED, version).apply();
+        // should not need to check if already downloaded -- this is used for unzipping the correct file
 
         // TODO: how to handle interrupted downloads? -- DownloadManager should handle it all...
     }
@@ -591,11 +597,11 @@ public class MainActivity extends AppCompatActivity
             // get the refid from the download manager
             long referenceId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
 
-            // remove it from our list
-            downloadRefIds.remove(referenceId);
+            // if contained, remove it from our list
+            boolean isRelevantDownload = downloadRefIds.remove(referenceId);
 
-            // if list is empty means all downloads completed
-            if (downloadRefIds.isEmpty()) {
+            // empty list means all downloads completed
+            if (isRelevantDownload && downloadRefIds.isEmpty()) {
 
                 prepareForNewDatabase();
 
@@ -614,6 +620,7 @@ public class MainActivity extends AppCompatActivity
                     notificationManager.notify(455, mBuilder.build());
                 }
 
+                // TODO: only show pop up if not already visible
                 // prompt user to restart app?
                 final AlertDialog dialog = new AlertDialog.Builder(MainActivity.this).setCancelable(true).setTitle(R.string.prompt_restart_database_title)
                         .setMessage(R.string.prompt_restart_database_description)
@@ -655,21 +662,119 @@ public class MainActivity extends AppCompatActivity
     };
 
     private void prepareForNewDatabase() {
-        // TODO: expand new DB zip
+        // TODO: what should default version number be
+        // get DB versionDownloaded and versionInstalled number
+        int versionDownloaded = getSharedPreferences(SHARED_PREFERENCES_DATABASE, Context.MODE_PRIVATE).getInt(NEWEST_DB_VERSION_DOWNLOADED, 0);
+        int versionInstalled = getSharedPreferences(SHARED_PREFERENCES_DATABASE, Context.MODE_PRIVATE).getInt(NEWEST_DB_VERSION_INSTALLED, 0);
 
-        // TODO: run script to create indices on new DB
+        // install if not done already
+        if (versionDownloaded == 14) {
+//        if (versionDownloaded > versionInstalled) { // TODO: uncomment later
+            // get downloaded file from databases directory
+            final File rootDir = new File(new File(getApplicationInfo().dataDir), "databases");
+
+//            File externalFiles = new File(getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath());
+
+            // TODO: remove later
+            File extraExpandedDBFile = new File(rootDir, "SEPTA_14.sqlite");
+            extraExpandedDBFile.delete();
+
+            // TODO: see external and internal files
+//            Log.e(TAG, "EXTERNAL FILES: ");
+//            for (String file : externalFiles.list()) {
+//                Log.e(TAG, file);
+//            }
+//            Log.e(TAG, "INTERNAL FILES: ");
+//            for (String file : rootDir.list()) {
+//                Log.e(TAG, file);
+//            }
+
+            String newDatabaseZipFilename = new StringBuilder("/SEPTA_").append(versionDownloaded).append("_sqlite.zip").toString();
+            File newDbZip = new File(getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath(), newDatabaseZipFilename);
+
+            // expand new database from zip in external storage into app storage
+            try {
+                ZipInputStream zipIn = new ZipInputStream(new FileInputStream(newDbZip));
+                ZipEntry entry = zipIn.getNextEntry();
+                while (entry != null) {
+                    File destFile = new File(rootDir, entry.getName());
+                    if (!entry.isDirectory()) {
+                        // if the entry is a file, extracts it
+                        extractFile(zipIn, destFile);
+                    } else {
+                        // if the entry is a directory, make the directory
+                        destFile.mkdir();
+                    }
+                    zipIn.closeEntry();
+                    entry = zipIn.getNextEntry();
+                    Log.e(TAG, "New DB Expanded Internal Location: " + destFile.getAbsolutePath() + "\nFile Size: " + destFile.length());
+                }
+                zipIn.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            // delete downloaded zip from external storage after expanding inside app
+            newDbZip.delete();
+
+            // delete extra copies -- TODO remove this after finished with development
+//            File newDbZip1 = new File(getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath(), "SEPTA_14_sqlite-1.zip");
+//            File newDbZip2 = new File(getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath(), "SEPTA_14_sqlite-2.zip");
+//            newDbZip1.delete();
+//            newDbZip2.delete();
+
+            // TODO: validate zip deleted from external and new db unzipped in internal
+//            Log.e(TAG, "EXTERNAL FILES: ");
+//            for (String file : externalFiles.list()) {
+//                Log.e(TAG, file);
+//            }
+//            Log.e(TAG, "INTERNAL FILES: ");
+//            for (String file : rootDir.list()) {
+//                Log.e(TAG, file);
+//            }
+
+            // save new versionInstalled number in sharedpref
+            getSharedPreferences(SHARED_PREFERENCES_DATABASE, Context.MODE_PRIVATE).edit().putInt(NEWEST_DB_VERSION_INSTALLED, versionDownloaded).apply();
+            // SEPTADatabase.setDatabaseVersion(versionDownloaded); // TODO: should this even happen while app is running
+        } else {
+            // TODO: just do post restart stuff
+        }
+
+        /** post restart
+         * assumes versionDownloaded == versionInstalled */
+        // TODO: init db manager with this version to use -- what should default be
+        // int dbVersionToUse = getSharedPreferences(SHARED_PREFERENCES_DATABASE, Context.MODE_PRIVATE).getInt(NEWEST_DB_VERSION_INSTALLED, -1);
+
+        // TODO: clean up old version of DB in app storage on start up
+        // look at directory of current files and find any databases that aren't dbVersionToUse
+        // -- SEPTA.sqlite is older, version numbers will be added in filename
+        // SEPTA_14_sqlite.zip and SEPTA_14.sqlite
+        // delete old copies of '<DBNAME>-journal' like 'SEPTA.sqlite-journal'
+        // journal made when db started up the first time
 
         // TODO: set new DB -- rename new DB with old name? does this overwrite / delete old DB
+        // make SEPTADatabase w filename / version # -- using DatabaseManager constructor
 
-//                    SEPTADatabase.setDatabaseVersion(newDBVersion);
-
-        // TODO: delete downloaded zip
-
-        // TODO: delete old version of DB
+        // TODO: run script to create indices on new DB
+        // or hard code create index script
+        // in onCreate -- or Constructor of SEPTADatabase
+        /** end post restart */
 
         // restore download permission back to false
         getSharedPreferences(SHARED_PREFERENCES_DATABASE, Context.MODE_PRIVATE).edit().putBoolean(PERMISSION_TO_DOWNLOAD, false).apply();
 
+    }
+
+    private void extractFile(ZipInputStream zipIn, File file) throws IOException {
+        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
+        byte[] bytesIn = new byte[256];
+        int read = 0;
+        while ((read = zipIn.read(bytesIn)) != -1) {
+            bos.write(bytesIn, 0, read);
+        }
+        bos.close();
     }
 
     private void restartApplication(int delay) {

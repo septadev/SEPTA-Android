@@ -40,6 +40,7 @@ import org.septa.android.app.connect.ConnectFragment;
 import org.septa.android.app.database.CheckForLatestDB;
 import org.septa.android.app.database.DownloadNewDB;
 import org.septa.android.app.database.SEPTADatabase;
+import org.septa.android.app.database.SEPTADatabaseUtils;
 import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.fares.FaresFragment;
@@ -65,7 +66,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -108,11 +108,7 @@ public class MainActivity extends AppCompatActivity
     CheckForLatestDB checkForLatestDB;
     DownloadNewDB downloadNewDB;
     DownloadManager downloadManager;
-    List<Long> downloadRefIds;
-    private static final String SHARED_PREFERENCES_DATABASE = "SHARED_PREFERENCES_DATABASE";
-    private static final String PERMISSION_TO_DOWNLOAD = "PERMISSION_TO_DOWNLOAD";
-    private static final String NEWEST_DB_VERSION_DOWNLOADED = "NEWEST_DB_VERSION_DOWNLOADED";
-    private static final String NEWEST_DB_VERSION_INSTALLED = "NEWEST_DB_VERSION_INSTALLED";
+    AlertDialog promptDownloadDB, promptRestartApp;
 
     public static final String MOBILE_APP_ALERT_ROUTE_NAME = "Mobile APP",
             MOBILE_APP_ALERT_MODE = "MOBILE",
@@ -145,8 +141,6 @@ public class MainActivity extends AppCompatActivity
         // listen for new DB download
         registerReceiver(onDBDownloadComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
         downloadManager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
-        downloadRefIds = new ArrayList<>();
-
         if (savedInstanceState == null) {
             if (SeptaServiceFactory.getFavoritesService().getFavorites(this).size() > 0) {
                 switchToFavorites();
@@ -194,8 +188,6 @@ public class MainActivity extends AppCompatActivity
                         SeptaServiceFactory.displayWebServiceError(findViewById(R.id.drawer_layout), MainActivity.this);
                     }
                 });
-
-
             }
         }
 
@@ -230,7 +222,6 @@ public class MainActivity extends AppCompatActivity
                         SeptaServiceFactory.displayWebServiceError(findViewById(R.id.drawer_layout), MainActivity.this);
                     }
                 });
-
             }
         }
 
@@ -242,6 +233,9 @@ public class MainActivity extends AppCompatActivity
             // do nothing -- do not tell user there may be a new DB available
             Log.d(TAG, "No network connection established -- cannot check for new DB");
         }
+
+        // prep for database if not already done
+        prepareForNewDatabase();
     }
 
     @Override
@@ -255,6 +249,16 @@ public class MainActivity extends AppCompatActivity
 
         if (mobileAlert != null) {
             mobileAlert.dismiss();
+        }
+
+        if (promptDownloadDB != null) {
+            promptDownloadDB.dismiss();
+            promptDownloadDB = null;
+        }
+
+        if (promptRestartApp != null) {
+            promptRestartApp.dismiss();
+            promptRestartApp = null;
         }
 
         // hide menu badge icon
@@ -412,6 +416,96 @@ public class MainActivity extends AppCompatActivity
         switchToSchedules(bundle);
     }
 
+    @Override
+    public void afterLatestDBMetadataLoad(final int latestDBVersion, final String latestDBURL, String updatedDate) {
+        // check API for DB version number
+        int currentDBVersion = SEPTADatabase.getDatabaseVersion();
+        int versionDownloaded = SEPTADatabaseUtils.getVersionDownloaded(MainActivity.this);
+
+        // TODO: remove
+        Log.e(TAG, "Latest DB Version: " + latestDBVersion + " vs. Old DB Version: " + currentDBVersion);
+
+        // check if newer database available
+        if (latestDBVersion > currentDBVersion && latestDBVersion > versionDownloaded) {
+
+            // check if permission granted previously
+            if (!SEPTADatabaseUtils.getPermissionToDownload(MainActivity.this)) {
+
+                // prompt user to download new database
+                final AlertDialog dialog = new AlertDialog.Builder(this).setCancelable(true).setTitle(R.string.prompt_download_database_title)
+                        .setMessage(R.string.prompt_download_database_description)
+
+                        // approved download
+                        .setPositiveButton(R.string.prompt_download_button_positive_download_now, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                                // download new DB zip from url given by API
+                                if (latestDBURL != null && !latestDBURL.isEmpty()) {
+                                    // save permission to download
+                                    SEPTADatabaseUtils.setPermissionToDownload(MainActivity.this, true);
+
+                                    // do not need to recheck for connection -- handled by DownloadManager
+                                    downloadNewDB = new DownloadNewDB(MainActivity.this, MainActivity.this, latestDBURL, latestDBVersion);
+                                    downloadNewDB.execute();
+                                }
+                            }
+                        })
+
+                        // remind of download later
+                        .setNegativeButton(R.string.prompt_download_button_negative_remind_later, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        })
+
+                        // link to NTA
+                        .setNeutralButton(R.string.prompt_download_button_neutral_nta, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                switchToNextToArrive();
+                            }
+                        })
+                        .create();
+
+                // set "download now" button color
+                dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                    @Override
+                    public void onShow(DialogInterface arg0) {
+                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.RED);
+                    }
+                });
+
+                // only show prompt once
+                if (promptDownloadDB != null && promptDownloadDB.isShowing()) {
+                    promptDownloadDB.dismiss();
+                    promptDownloadDB = null;
+                }
+                promptDownloadDB = dialog;
+
+                // show prompt
+                dialog.show();
+            }
+        }
+    }
+
+    @Override
+    public void afterNewDBDownload(DownloadManager.Request request, int version) {
+        // add to list of downloads
+        long refId = downloadManager.enqueue(request);
+        SEPTADatabaseUtils.saveDownloadRefId(MainActivity.this, refId);
+
+        // save new version # to shared preferences
+        SEPTADatabaseUtils.setVersionDownloaded(MainActivity.this, version);
+        // should not need to check if already downloaded -- this is used for unzipping the correct file
+
+        // this should handle receiving finished downloads that were interrupted
+        // DownloadManager handles resuming / finishing the downloads
+        Log.e(TAG, "Saving download ref ID: " + refId);
+    }
+
     public boolean isConnectedToInternet() {
         ConnectivityManager connectivity = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivity != null) {
@@ -510,103 +604,24 @@ public class MainActivity extends AppCompatActivity
         }
     };
 
-    @Override
-    public void afterLatestDBMetadataLoad(final int latestDBVersion, final String latestDBURL, String updatedDate) {
-        // check API for DB version number
-        int currentDBVersion = SEPTADatabase.getDatabaseVersion();
-
-        // TODO: remove
-        Log.e(TAG, "Latest DB Version: " + latestDBVersion + " vs. Old DB Version: " + currentDBVersion);
-
-        // check if newer database available
-        // TODO: switch this later
-        if (latestDBVersion == 14) {
-//        if (latestDBVersion > currentDBVersion) {
-
-            // check if permission granted previously
-            if (!getSharedPreferences(SHARED_PREFERENCES_DATABASE, Context.MODE_PRIVATE).getBoolean(PERMISSION_TO_DOWNLOAD, false)) {
-
-                // TODO: only show pop up if not already visible
-                // prompt user to download new database
-                final AlertDialog dialog = new AlertDialog.Builder(this).setCancelable(true).setTitle(R.string.prompt_download_database_title)
-                        .setMessage(R.string.prompt_download_database_description)
-
-                        // approved download
-                        .setPositiveButton(R.string.prompt_download_button_positive_download_now, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-
-                                // download new DB zip from url given by API
-                                if (latestDBURL != null && !latestDBURL.isEmpty()) {
-                                    // TODO: save permission to download - uncomment later
-//                                    getSharedPreferences(SHARED_PREFERENCES_DATABASE, Context.MODE_PRIVATE).edit().putBoolean(PERMISSION_TO_DOWNLOAD, true).apply();
-
-                                    // do not need to recheck for connection -- handled by DownloadManager
-                                    downloadNewDB = new DownloadNewDB(MainActivity.this,MainActivity.this, latestDBURL, latestDBVersion);
-                                    downloadNewDB.execute();
-                                }
-                            }
-                        })
-
-                        // remind of download later
-                        .setNegativeButton(R.string.prompt_download_button_negative_remind_later, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        })
-
-                        // link to NTA
-                        .setNeutralButton(R.string.prompt_download_button_neutral_nta, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                                switchToNextToArrive();
-                            }
-                        })
-                        .create();
-
-                // set "download now" button color
-                dialog.setOnShowListener(new DialogInterface.OnShowListener() {
-                    @Override
-                    public void onShow(DialogInterface arg0) {
-                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.RED);
-                    }
-                });
-
-                dialog.show();
-            }
-        }
-    }
-
-    @Override
-    public void afterNewDBDownload(DownloadManager.Request request, int version) {
-        // add to list of downloads
-        downloadRefIds.add(downloadManager.enqueue(request));
-
-        // save new version # to shared preferences
-        getSharedPreferences(SHARED_PREFERENCES_DATABASE, Context.MODE_PRIVATE).edit().putInt(NEWEST_DB_VERSION_DOWNLOADED, version).apply();
-        // should not need to check if already downloaded -- this is used for unzipping the correct file
-
-        // TODO: how to handle interrupted downloads? -- DownloadManager should handle it all...
-    }
 
     // listener for completed database downloads
     BroadcastReceiver onDBDownloadComplete = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             // get the refid from the download manager
-            long referenceId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
+            long referenceIdFound = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
 
-            // if contained, remove it from our list
-            boolean isRelevantDownload = downloadRefIds.remove(referenceId);
+            // grab refid we are looking for from shared pref
+            long referenceIdLookingFor = SEPTADatabaseUtils.getDownloadRefId(MainActivity.this);
 
-            // empty list means all downloads completed
-            if (isRelevantDownload && downloadRefIds.isEmpty()) {
+            Log.e(TAG, "Found download ref ID " + referenceIdFound + " and looking for " + referenceIdLookingFor);
 
-                prepareForNewDatabase();
+            if (referenceIdFound == referenceIdLookingFor && referenceIdLookingFor != -1) {
+                // stop looking for that download id
+                SEPTADatabaseUtils.clearDownloadRefId(MainActivity.this);
 
                 // show notification that download completed
-                Log.e(TAG, "Completed download for ref ID: " + referenceId);
+                Log.e(TAG, "Completed download for ref ID: " + referenceIdFound);
                 NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(MainActivity.this)
                         .setSmallIcon(R.drawable.ic_launcher)
                         .setContentTitle(getString(R.string.app_name))
@@ -620,74 +635,21 @@ public class MainActivity extends AppCompatActivity
                     notificationManager.notify(455, mBuilder.build());
                 }
 
-                // TODO: only show pop up if not already visible
-                // prompt user to restart app?
-                final AlertDialog dialog = new AlertDialog.Builder(MainActivity.this).setCancelable(true).setTitle(R.string.prompt_restart_database_title)
-                        .setMessage(R.string.prompt_restart_database_description)
-
-                        // approved restart
-                        .setPositiveButton(R.string.prompt_restart_button_positive_now, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                // 0.5 sec delay to restart
-                                int delay = 500;
-
-                                // restart app
-                                restartApplication(delay);
-                            }
-                        })
-
-                        // remind of download later
-                        .setNegativeButton(R.string.prompt_restart_button_negative_later, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        })
-                        .create();
-
-                // set "restart now" button color
-                dialog.setOnShowListener(new DialogInterface.OnShowListener() {
-                    @Override
-                    public void onShow(DialogInterface arg0) {
-                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.RED);
-                    }
-                });
-
-                dialog.show();
-
+                // expand new db
+                prepareForNewDatabase();
             }
-
         }
     };
 
     private void prepareForNewDatabase() {
-        // TODO: what should default version number be
         // get DB versionDownloaded and versionInstalled number
-        int versionDownloaded = getSharedPreferences(SHARED_PREFERENCES_DATABASE, Context.MODE_PRIVATE).getInt(NEWEST_DB_VERSION_DOWNLOADED, 0);
-        int versionInstalled = getSharedPreferences(SHARED_PREFERENCES_DATABASE, Context.MODE_PRIVATE).getInt(NEWEST_DB_VERSION_INSTALLED, 0);
+        int versionDownloaded = SEPTADatabaseUtils.getVersionDownloaded(MainActivity.this);
+        int versionInstalled = SEPTADatabaseUtils.getVersionInstalled(MainActivity.this);
 
         // install if not done already
-        if (versionDownloaded == 14) {
-//        if (versionDownloaded > versionInstalled) { // TODO: uncomment later
+        if (versionDownloaded > versionInstalled) {
             // get downloaded file from databases directory
             final File rootDir = new File(new File(getApplicationInfo().dataDir), "databases");
-
-//            File externalFiles = new File(getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath());
-
-            // TODO: remove later
-            File extraExpandedDBFile = new File(rootDir, "SEPTA_14.sqlite");
-            extraExpandedDBFile.delete();
-
-            // TODO: see external and internal files
-//            Log.e(TAG, "EXTERNAL FILES: ");
-//            for (String file : externalFiles.list()) {
-//                Log.e(TAG, file);
-//            }
-//            Log.e(TAG, "INTERNAL FILES: ");
-//            for (String file : rootDir.list()) {
-//                Log.e(TAG, file);
-//            }
 
             String newDatabaseZipFilename = new StringBuilder("/SEPTA_").append(versionDownloaded).append("_sqlite.zip").toString();
             File newDbZip = new File(getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath(), newDatabaseZipFilename);
@@ -719,52 +681,63 @@ public class MainActivity extends AppCompatActivity
             // delete downloaded zip from external storage after expanding inside app
             newDbZip.delete();
 
-            // delete extra copies -- TODO remove this after finished with development
-//            File newDbZip1 = new File(getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath(), "SEPTA_14_sqlite-1.zip");
-//            File newDbZip2 = new File(getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath(), "SEPTA_14_sqlite-2.zip");
-//            newDbZip1.delete();
-//            newDbZip2.delete();
+            // save new versionInstalled number in shared pref
+            SEPTADatabaseUtils.setVersionInstalled(MainActivity.this, versionDownloaded);
+            SEPTADatabaseUtils.setDatabaseFilename(MainActivity.this, new StringBuilder("/SEPTA_").append(versionDownloaded).append(".sqlite").toString());
 
-            // TODO: validate zip deleted from external and new db unzipped in internal
-//            Log.e(TAG, "EXTERNAL FILES: ");
-//            for (String file : externalFiles.list()) {
-//                Log.e(TAG, file);
-//            }
-//            Log.e(TAG, "INTERNAL FILES: ");
-//            for (String file : rootDir.list()) {
-//                Log.e(TAG, file);
-//            }
-
-            // save new versionInstalled number in sharedpref
-            getSharedPreferences(SHARED_PREFERENCES_DATABASE, Context.MODE_PRIVATE).edit().putInt(NEWEST_DB_VERSION_INSTALLED, versionDownloaded).apply();
-            // SEPTADatabase.setDatabaseVersion(versionDownloaded); // TODO: should this even happen while app is running
+            // restore download permission back to false
+            SEPTADatabaseUtils.setPermissionToDownload(MainActivity.this, false);
         } else {
-            // TODO: just do post restart stuff
+            // just do post restart stuff
         }
 
-        /** post restart
-         * assumes versionDownloaded == versionInstalled */
-        // TODO: init db manager with this version to use -- what should default be
-        // int dbVersionToUse = getSharedPreferences(SHARED_PREFERENCES_DATABASE, Context.MODE_PRIVATE).getInt(NEWEST_DB_VERSION_INSTALLED, -1);
+        // only prompt to restart if not using most up to date version of database
+        versionInstalled = SEPTADatabaseUtils.getVersionInstalled(MainActivity.this);
+        if (versionDownloaded == versionInstalled && versionInstalled > SEPTADatabase.getDatabaseVersion()) {
 
-        // TODO: clean up old version of DB in app storage on start up
-        // look at directory of current files and find any databases that aren't dbVersionToUse
-        // -- SEPTA.sqlite is older, version numbers will be added in filename
-        // SEPTA_14_sqlite.zip and SEPTA_14.sqlite
-        // delete old copies of '<DBNAME>-journal' like 'SEPTA.sqlite-journal'
-        // journal made when db started up the first time
+            // prompt user to restart app
+            final AlertDialog dialog = new AlertDialog.Builder(MainActivity.this).setCancelable(true).setTitle(R.string.prompt_restart_database_title)
+                    .setMessage(R.string.prompt_restart_database_description)
 
-        // TODO: set new DB -- rename new DB with old name? does this overwrite / delete old DB
-        // make SEPTADatabase w filename / version # -- using DatabaseManager constructor
+                    // approved restart
+                    .setPositiveButton(R.string.prompt_restart_button_positive_now, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // 0.5 sec delay to restart
+                            int delay = 500;
 
-        // TODO: run script to create indices on new DB
-        // or hard code create index script
-        // in onCreate -- or Constructor of SEPTADatabase
-        /** end post restart */
+                            // restart app
+                            restartApplication(delay);
+                        }
+                    })
 
-        // restore download permission back to false
-        getSharedPreferences(SHARED_PREFERENCES_DATABASE, Context.MODE_PRIVATE).edit().putBoolean(PERMISSION_TO_DOWNLOAD, false).apply();
+                    // remind of download later
+                    .setNegativeButton(R.string.prompt_restart_button_negative_later, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .create();
 
+            // set "restart now" button color
+            dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                @Override
+                public void onShow(DialogInterface arg0) {
+                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.RED);
+                }
+            });
+
+            // only show prompt once
+            if (promptRestartApp != null && promptRestartApp.isShowing()) {
+                promptRestartApp.dismiss();
+                promptRestartApp = null;
+            }
+            promptRestartApp = dialog;
+
+            // show prompt
+            dialog.show();
+        }
     }
 
     private void extractFile(ZipInputStream zipIn, File file) throws IOException {
@@ -784,6 +757,12 @@ public class MainActivity extends AppCompatActivity
         AlarmManager manager = (AlarmManager) MainActivity.this.getSystemService(Context.ALARM_SERVICE);
         manager.set(AlarmManager.RTC, System.currentTimeMillis() + delay, intent);
         System.exit(2);
+
+        // TODO: dismiss notif on restart of app
+//        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+//        if (notificationManager != null) {
+//            notificationManager.notify(455, mBuilder.build());
+//        }
     }
 
     public void showAlert(String alert, Boolean isGenericAlert) {

@@ -19,12 +19,12 @@ import java.net.URL;
 
 public class CheckForLatestDB extends AsyncTask<Object, Object, Void> {
 
+    // tag for logging purposes
+    private static final String TAG = CheckForLatestDB.class.getSimpleName();
+
     private CheckForLatestDBListener mListener;
     Integer latestDBVersion;
     String latestDBURL, updatedDate;
-
-    // tag for logging purposes
-    private static final String TAG = CheckForLatestDB.class.getSimpleName();
 
     public CheckForLatestDB(CheckForLatestDBListener listener) {
         this.mListener = listener;

@@ -41,13 +41,13 @@ public class DatabaseManager {
 
     private static synchronized void initDatabase(Context context) {
         if (database == null) {
-            database = new SEPTADatabase(context).getReadableDatabase();
+            database = new SEPTADatabase(context, SEPTADatabaseUtils.getVersionInstalled(context), SEPTADatabaseUtils.getDatabaseFilename(context)).getReadableDatabase();
         }
     }
 
     public static synchronized SQLiteDatabase getDatabase(Context context) {
         if (database == null) {
-            database = new SEPTADatabase(context).getReadableDatabase();
+            database = new SEPTADatabase(context, SEPTADatabaseUtils.getVersionInstalled(context), SEPTADatabaseUtils.getDatabaseFilename(context)).getReadableDatabase();
         }
         return database;
     }

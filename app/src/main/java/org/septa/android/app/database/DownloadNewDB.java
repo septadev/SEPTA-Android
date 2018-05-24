@@ -45,8 +45,6 @@ public class DownloadNewDB extends AsyncTask<Object, Object, Void> {
                 // download zip to external storage
                 .setDestinationInExternalFilesDir(context, Environment.DIRECTORY_DOWNLOADS, filename);
 
-        // TODO: android.permission.DOWNLOAD_WITHOUT_NOTIFICATION needed if set to VISIBILITY_HIDDEN
-
         return null;
     }
 

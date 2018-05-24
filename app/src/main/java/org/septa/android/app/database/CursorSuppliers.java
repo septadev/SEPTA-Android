@@ -85,7 +85,6 @@ class CursorSuppliers implements Serializable {
 
         private static final String SELECT_CLAUSE = "SELECT stop_id, stop_name, wheelchair_boarding, stop_lat, stop_lon, rowid AS _id FROM stops_rail a";
 
-
         @Override
         public Cursor getCursor(Context context, List<Criteria> whereClause) {
             StringBuilder queryString = new StringBuilder(SELECT_CLAUSE);

@@ -180,11 +180,12 @@
     <string name="prompt_download_button_neutral_nta">Go to Next to Arrive</string>
 
     <string name="prompt_restart_database_title">New Schedules Downloaded</string>
-    <string name="prompt_restart_database_description">We need to restart the app in order to install the new schedules. Would you like to restart now?\n\nIf you choose \'Remind Me Later\' the updates will automatically install the next time you start the app.</string>
+    <string name="prompt_restart_database_description">We need to restart the app in order to install the new schedules. Would you like to restart now?\n\nIf you choose to restart later the updates will automatically install the next time you restart the app.</string>
     <string name="prompt_restart_button_positive_now">Restart Now</string>
-    <string name="prompt_restart_button_negative_later">Remind Me Later</string>
+    <string name="prompt_restart_button_negative_later">I\'ll Do It Later</string>
 
     <string name="notification_database_download_complete">Schedule download complete. Restart app to get latest changes.</string>
+    <string name="notification_database_updated">Schedules Update Complete</string>
 
 
     <!-- Connect With SEPTA -->

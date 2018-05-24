@@ -25,11 +25,10 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainApplication extends Application implements Runnable {
-    private static final int SYSTEM_STATUS_REFRESH_DELAY_SECONDS = 5 * 60;
     public static final String TAG = MainApplication.class.getSimpleName();
 
+    private static final int SYSTEM_STATUS_REFRESH_DELAY_SECONDS = 5 * 60;
     private Handler refreshHandler;
-
 
     @Override
     public void onCreate() {
@@ -55,13 +54,11 @@ public class MainApplication extends Application implements Runnable {
             String googleBaseUrl = bundle.getString("com.google.android.geo.URL");
             SeptaServiceFactory.setGoogleApiBaseUrl(googleBaseUrl);
 
-
             String septaAmazonAwsApiKey = bundle.getString("org.septa.amazonaws.x-api-key");
             SeptaServiceFactory.setAmazonawsApiKey(septaAmazonAwsApiKey);
 
             String septaWebServicesBaseUrl = bundle.getString("org.septa.amazonaws.baseurl");
             SeptaServiceFactory.setSeptaWebServicesBaseUrl(septaWebServicesBaseUrl);
-
 
             SeptaServiceFactory.init();
 
@@ -75,8 +72,6 @@ public class MainApplication extends Application implements Runnable {
         refreshHandler = new Handler();
         refreshHandler.postDelayed(this, 1);
     }
-
-
 
     @Override
     public void run() {
@@ -99,7 +94,6 @@ public class MainApplication extends Application implements Runnable {
             CursorAdapterSupplier<Boolean> cursorAdapterSupplier = DatabaseManager.getInstance(this).getHolidayIndicatorCursorAdapterSupplier(transitType);
             transitType.setHolidayToday(cursorAdapterSupplier.getItemFromId(this, now));
         }
-
-
     }
+
 }

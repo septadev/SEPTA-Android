@@ -16,8 +16,12 @@ import org.septa.android.app.managers.FontManager;
 
 import static android.support.v7.widget.helper.ItemTouchHelper.ACTION_STATE_SWIPE;
 import static android.support.v7.widget.helper.ItemTouchHelper.LEFT;
+import static android.support.v7.widget.helper.ItemTouchHelper.RIGHT;
 
-public class SwipeController extends ItemTouchHelper.SimpleCallback {
+/**
+ * SwipeController handles swipe left to delete gestures for Favorites
+ */
+public class SwipeController extends ItemTouchHelper.Callback {
 
     private static final String TAG = SwipeController.class.getSimpleName();
 
@@ -31,14 +35,13 @@ public class SwipeController extends ItemTouchHelper.SimpleCallback {
     private static final float buttonWidth = 300;
 
     public SwipeController(Context context, SwipeControllerListener listener) {
-        super(LEFT, LEFT);
         this.context = context;
         this.mListener = listener;
     }
 
     @Override
     public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-        return makeMovementFlags(0, LEFT);
+        return makeMovementFlags(0, LEFT | RIGHT);
     }
 
     @Override
@@ -48,9 +51,13 @@ public class SwipeController extends ItemTouchHelper.SimpleCallback {
 
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+        int position = viewHolder.getAdapterPosition();
         if (direction == LEFT) {
-            mListener.deleteFavorite(viewHolder.getAdapterPosition());
+            mListener.deleteFavorite(position);
+        } else if (direction == RIGHT) {
+            mListener.revertSwipe(position);
         }
+        removeButtons();
     }
 
     @Override
@@ -80,7 +87,7 @@ public class SwipeController extends ItemTouchHelper.SimpleCallback {
         }
 
         // swipe back previously swiped row, if different
-        if (currentItemViewHolder != null && currentItemViewHolder != viewHolder) {
+        if (currentItemViewHolder != null && !currentItemViewHolder.equals(viewHolder)) {
             mListener.revertSwipe(currentItemViewHolder.getAdapterPosition());
         }
 
@@ -96,20 +103,24 @@ public class SwipeController extends ItemTouchHelper.SimpleCallback {
     private void drawButtons(Canvas c, RecyclerView.ViewHolder viewHolder) {
         View itemView = viewHolder.itemView;
         Paint p = new Paint();
-        float deleteBackgroundWidth = viewHolder.itemView.getWidth();
+        float buttonWidthWithoutPadding = buttonWidth - 20;
 
-        RectF rightButton = new RectF(itemView.getRight() - deleteBackgroundWidth, itemView.getTop(), itemView.getRight(), itemView.getBottom());
+        RectF rightButton = new RectF(itemView.getRight() - buttonWidthWithoutPadding, itemView.getTop(), itemView.getRight(), itemView.getBottom());
         p.setColor(Color.RED);
         c.drawRect(rightButton, p);
-        drawText(context.getResources().getString(R.string.delete_fav_pos_button), c, rightButton, p, deleteBackgroundWidth);
+        drawText(context.getResources().getString(R.string.delete_fav_pos_button), c, rightButton, p);
+
+        if (buttonInstance != null) {
+            buttonInstance.setEmpty();
+        }
 
         if (buttonShowedState == ButtonsState.RIGHT_VISIBLE) {
             buttonInstance = rightButton;
         }
     }
 
-    private void drawText(String text, Canvas c, RectF button, Paint p, float deleteBackgroundWidth) {
-        float textSize = 40;
+    private void drawText(String text, Canvas c, RectF button, Paint p) {
+        float textSize = context.getResources().getDisplayMetrics().density * 14f;
         p.setColor(Color.WHITE);
         p.setAntiAlias(true);
         p.setTextSize(textSize);
@@ -119,7 +130,18 @@ public class SwipeController extends ItemTouchHelper.SimpleCallback {
         p.setTypeface(tf);
 
         float textWidth = p.measureText(text);
-        c.drawText(text, button.centerX() + ((deleteBackgroundWidth - buttonWidth)/2) - (textWidth/2), button.centerY()+(textSize/2), p);
+        c.drawText(text, button.centerX() - (textWidth/2), button.centerY()+(textSize/2), p);
+    }
+
+    public void removeButtons() {
+        swipeBack = false;
+
+        buttonShowedState = ButtonsState.GONE;
+        if (buttonInstance != null) {
+            buttonInstance.setEmpty();
+        }
+
+        currentItemViewHolder = null;
     }
 
     private void setTouchListener(final Canvas c, final RecyclerView recyclerView, final RecyclerView.ViewHolder viewHolder, final float dX, final float dY, final int actionState, final boolean isCurrentlyActive) {
@@ -158,29 +180,24 @@ public class SwipeController extends ItemTouchHelper.SimpleCallback {
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_UP) {
                     SwipeController.super.onChildDraw(c, recyclerView, viewHolder, 0F, dY, actionState, isCurrentlyActive);
-                    recyclerView.setOnTouchListener(new View.OnTouchListener() {
-                        @Override
-                        public boolean onTouch(View v, MotionEvent event) {
-                            return false;
-                        }
-                    });
-                    setItemsClickable(recyclerView, true);
-                    swipeBack = false;
 
+                    setItemsClickable(recyclerView, true);
+
+                    // ask to delete favorite when item dropped
                     if (mListener != null && buttonInstance != null && buttonInstance.contains(event.getX(), event.getY())) {
                         if (buttonShowedState == ButtonsState.RIGHT_VISIBLE) {
                             mListener.deleteFavorite(viewHolder.getAdapterPosition());
                         }
                     }
-                    buttonShowedState = ButtonsState.GONE;
-                    currentItemViewHolder = null;
+                    // hide buttons
+                    removeButtons();
                 }
                 return false;
             }
         });
     }
 
-    private void setItemsClickable (RecyclerView recyclerView,boolean isClickable) {
+    private void setItemsClickable (RecyclerView recyclerView, boolean isClickable) {
         for (int i = 0; i < recyclerView.getChildCount(); ++i) {
             recyclerView.getChildAt(i).setClickable(isClickable);
         }

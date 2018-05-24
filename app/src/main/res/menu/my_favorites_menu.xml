@@ -3,10 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/add_favorite"
+        android:title="@string/favorites_menu_item_add"
+        app:showAsAction="always" />
+
+    <item
         android:id="@+id/edit_favorites"
         android:title="@string/favorites_menu_item_edit"
         app:showAsAction="always" />
 
-    <!-- this should be the only menu item with showAsAction always-->
+    <!-- these should be the only menu item with showAsAction always-->
 
 </menu>

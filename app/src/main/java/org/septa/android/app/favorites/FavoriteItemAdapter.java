@@ -54,11 +54,6 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<FavoriteItemAdapter.Favor
     }
 
     @Override
-    public int getItemCount() {
-        return mItemList.size();
-    }
-
-    @Override
     public void onBindViewHolder(@NonNull final FavoriteViewHolder holder, final int position) {
         final FavoriteState favoriteState = mItemList.get(position);
         String favoriteKey = favoriteState.getFavoriteKey();
@@ -93,7 +88,7 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<FavoriteItemAdapter.Favor
         holder.resultsContainer.addView(holder.tripView);
 
         // refresh favorite results
-        refreshFavorite(favorite, holder.tripView, holder.progressView, holder.expandCollapseButton, holder.noResultsMsg);
+        refreshFavorite(favorite, holder.favoriteHeader, holder.tripView, holder.progressView, holder.expandCollapseButton, holder.noResultsMsg);
 
         // initialize expanded state of favorite
         if (favoriteState.isExpanded()) {
@@ -103,7 +98,7 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<FavoriteItemAdapter.Favor
         }
 
         // toggle expand / collapse button
-        holder.expandCollapseButton.setOnClickListener(new View.OnClickListener() {
+        holder.favoriteHeader.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // collapse favorite if already expanded
@@ -140,26 +135,19 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<FavoriteItemAdapter.Favor
         favoriteItemViews.put(favoriteKey, holder);
     }
 
-    /**
-     * hide no results message when results found
-     * show expand / collapse button
-     *
-     * @param expandCollapseButton
-     * @param noResultsMsg
-     */
-    private void updateViewWhenResultsFound(ImageButton expandCollapseButton, LinearLayout noResultsMsg) {
+    @Override
+    public int getItemCount() {
+        return mItemList.size();
+    }
+
+    private void updateViewWhenResultsFound(LinearLayout favoriteHeader, ImageButton expandCollapseButton, LinearLayout noResultsMsg) {
+        favoriteHeader.setClickable(true);
         noResultsMsg.setVisibility(View.GONE);
         expandCollapseButton.setVisibility(View.VISIBLE);
     }
 
-    /**
-     * show no results message when results not found
-     * hide expand / collapse button
-     *
-     * @param expandCollapseButton
-     * @param noResultsMsg
-     */
-    private void updateViewWhenNoResultsFound(ImageButton expandCollapseButton, LinearLayout noResultsMsg) {
+    private void updateViewWhenNoResultsFound(LinearLayout favoriteHeader, ImageButton expandCollapseButton, LinearLayout noResultsMsg) {
+        favoriteHeader.setClickable(false);
         expandCollapseButton.setVisibility(View.GONE);
         noResultsMsg.setVisibility(View.VISIBLE);
     }
@@ -184,7 +172,7 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<FavoriteItemAdapter.Favor
         notifyDataSetChanged();
     }
 
-    private void refreshFavorite(final Favorite favorite, final NextToArriveTripView tripView, final View progressView, final ImageButton expandCollapseButton, final LinearLayout noResultsMsg) {
+    private void refreshFavorite(final Favorite favorite, final LinearLayout favoriteHeader, final NextToArriveTripView tripView, final View progressView, final ImageButton expandCollapseButton, final LinearLayout noResultsMsg) {
         progressView.setVisibility(View.VISIBLE);
 
         String routeId = null;
@@ -203,9 +191,9 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<FavoriteItemAdapter.Favor
 
                     // change to no results message if needed
                     if (parser.getResults().isEmpty()) {
-                        updateViewWhenNoResultsFound(expandCollapseButton, noResultsMsg);
+                        updateViewWhenNoResultsFound(favoriteHeader, expandCollapseButton, noResultsMsg);
                     } else {
-                        updateViewWhenResultsFound(expandCollapseButton, noResultsMsg);
+                        updateViewWhenResultsFound(favoriteHeader, expandCollapseButton, noResultsMsg);
                     }
 
                     tripView.setNextToArriveData(parser);
@@ -221,7 +209,7 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<FavoriteItemAdapter.Favor
                 tripView.setNextToArriveData(new NextArrivalModelResponseParser());
 
                 // show that NTA data unavailable for that favorites row
-                updateViewWhenNoResultsFound(expandCollapseButton, noResultsMsg);
+                updateViewWhenNoResultsFound(favoriteHeader, expandCollapseButton, noResultsMsg);
 
                 mListener.showSnackbarNoConnection();
 
@@ -238,13 +226,8 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<FavoriteItemAdapter.Favor
         diffResult.dispatchUpdatesTo(this);
     }
 
-    public void deleteFavorite(int favoriteIndex) {
-        notifyItemRemoved(favoriteIndex);
-        notifyDataSetChanged();
-    }
-
     public class FavoriteViewHolder extends RecyclerView.ViewHolder {
-        LinearLayout favoriteRow;
+        LinearLayout favoriteRow, favoriteHeader;
         TextView favoriteName;
         ImageButton expandCollapseButton;
         LinearLayout noResultsMsg;
@@ -255,6 +238,7 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<FavoriteItemAdapter.Favor
         FavoriteViewHolder(final View view) {
             super(view);
             favoriteRow = (LinearLayout) view.findViewById(R.id.favorite_item_row);
+            favoriteHeader = (LinearLayout) view.findViewById(R.id.favorite_item_header);
             favoriteName = (TextView) view.findViewById(R.id.favorite_title_text);
             expandCollapseButton = (ImageButton) view.findViewById(R.id.favorite_item_collapse_button);
             noResultsMsg = (LinearLayout) view.findViewById(R.id.favorite_item_no_results);
@@ -266,11 +250,8 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<FavoriteItemAdapter.Favor
 
     public interface FavoriteItemListener {
         void showSnackbarNoConnection();
-
         void autoDismissSnackbar();
-
         void goToSchedulesForTarget(Favorite favorite);
-
         void goToNextToArrive(Favorite favorite);
     }
 }

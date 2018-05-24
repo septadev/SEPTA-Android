@@ -91,7 +91,7 @@
                 android:background="@drawable/button_gradient_background"
                 android:clickable="true"
                 android:elevation="4dp"
-                android:text="View Schedules"
+                android:text="@string/schedule_query_button_text"
                 android:textColor="#ffffff" />
         </LinearLayout>
 

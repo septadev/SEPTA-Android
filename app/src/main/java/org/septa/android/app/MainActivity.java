@@ -39,6 +39,7 @@ import org.septa.android.app.about.AboutFragment;
 import org.septa.android.app.connect.ConnectFragment;
 import org.septa.android.app.database.CheckForLatestDB;
 import org.septa.android.app.database.DownloadNewDB;
+import org.septa.android.app.database.ExpandDBZip;
 import org.septa.android.app.database.SEPTADatabase;
 import org.septa.android.app.database.SEPTADatabaseUtils;
 import org.septa.android.app.domain.RouteDirectionModel;
@@ -60,15 +61,8 @@ import org.septa.android.app.systemstatus.SystemStatusState;
 import org.septa.android.app.view.TextView;
 import org.septa.android.app.webview.WebViewFragment;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -79,7 +73,7 @@ import retrofit2.Response;
  */
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, FavoritesFragment.FavoritesFragmentListener, ManageFavoritesFragment.ManageFavoritesFragmentListener, SeptaServiceFactory.SeptaServiceFactoryCallBacks, CheckForLatestDB.CheckForLatestDBListener, DownloadNewDB.DownloadNewDBListener {
+        implements NavigationView.OnNavigationItemSelectedListener, FavoritesFragment.FavoritesFragmentListener, ManageFavoritesFragment.ManageFavoritesFragmentListener, SeptaServiceFactory.SeptaServiceFactoryCallBacks, CheckForLatestDB.CheckForLatestDBListener, DownloadNewDB.DownloadNewDBListener, ExpandDBZip.ExpandDBZipListener {
 
 
     public static final String TAG = MainActivity.class.getSimpleName();
@@ -108,6 +102,7 @@ public class MainActivity extends AppCompatActivity
     CheckForLatestDB checkForLatestDB;
     DownloadNewDB downloadNewDB;
     DownloadManager downloadManager;
+    ExpandDBZip expandDBZip;
     AlertDialog promptDownloadDB, promptRestartApp;
 
     public static final String MOBILE_APP_ALERT_ROUTE_NAME = "Mobile APP",
@@ -234,7 +229,7 @@ public class MainActivity extends AppCompatActivity
             Log.d(TAG, "No network connection established -- cannot check for new DB");
         }
 
-        // prep for database if not already done
+        // prep for new DB if not already installed
         prepareForNewDatabase();
     }
 
@@ -506,6 +501,19 @@ public class MainActivity extends AppCompatActivity
         Log.e(TAG, "Saving download ref ID: " + refId);
     }
 
+    @Override
+    public void afterDBUnzipped(int versionInstalled) {
+        // save new versionInstalled number in shared pref
+        SEPTADatabaseUtils.setVersionInstalled(MainActivity.this, versionInstalled);
+        SEPTADatabaseUtils.setDatabaseFilename(MainActivity.this, new StringBuilder("/SEPTA_").append(versionInstalled).append(".sqlite").toString());
+
+        // restore download permission back to false
+        SEPTADatabaseUtils.setPermissionToDownload(MainActivity.this, false);
+
+        // only prompt to restart if not already using most up to date version of database
+        promptToRestart();
+    }
+
     public boolean isConnectedToInternet() {
         ConnectivityManager connectivity = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivity != null) {
@@ -620,6 +628,9 @@ public class MainActivity extends AppCompatActivity
                 // stop looking for that download id
                 SEPTADatabaseUtils.clearDownloadRefId(MainActivity.this);
 
+                // expand new db
+                prepareForNewDatabase();
+
                 // show notification that download completed
                 Log.e(TAG, "Completed download for ref ID: " + referenceIdFound);
                 NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(MainActivity.this)
@@ -634,9 +645,6 @@ public class MainActivity extends AppCompatActivity
                 if (notificationManager != null) {
                     notificationManager.notify(455, mBuilder.build());
                 }
-
-                // expand new db
-                prepareForNewDatabase();
             }
         }
     };
@@ -649,50 +657,21 @@ public class MainActivity extends AppCompatActivity
         // install if not done already
         if (versionDownloaded > versionInstalled) {
             // get downloaded file from databases directory
-            final File rootDir = new File(new File(getApplicationInfo().dataDir), "databases");
-
             String newDatabaseZipFilename = new StringBuilder("/SEPTA_").append(versionDownloaded).append("_sqlite.zip").toString();
             File newDbZip = new File(getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath(), newDatabaseZipFilename);
 
-            // expand new database from zip in external storage into app storage
-            try {
-                ZipInputStream zipIn = new ZipInputStream(new FileInputStream(newDbZip));
-                ZipEntry entry = zipIn.getNextEntry();
-                while (entry != null) {
-                    File destFile = new File(rootDir, entry.getName());
-                    if (!entry.isDirectory()) {
-                        // if the entry is a file, extracts it
-                        extractFile(zipIn, destFile);
-                    } else {
-                        // if the entry is a directory, make the directory
-                        destFile.mkdir();
-                    }
-                    zipIn.closeEntry();
-                    entry = zipIn.getNextEntry();
-                    Log.e(TAG, "New DB Expanded Internal Location: " + destFile.getAbsolutePath() + "\nFile Size: " + destFile.length());
-                }
-                zipIn.close();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            // delete downloaded zip from external storage after expanding inside app
-            newDbZip.delete();
-
-            // save new versionInstalled number in shared pref
-            SEPTADatabaseUtils.setVersionInstalled(MainActivity.this, versionDownloaded);
-            SEPTADatabaseUtils.setDatabaseFilename(MainActivity.this, new StringBuilder("/SEPTA_").append(versionDownloaded).append(".sqlite").toString());
-
-            // restore download permission back to false
-            SEPTADatabaseUtils.setPermissionToDownload(MainActivity.this, false);
-        } else {
-            // just do post restart stuff
+            // expand DB on a background thread
+            expandDBZip = new ExpandDBZip(MainActivity.this, MainActivity.this, newDbZip, versionDownloaded);
+            expandDBZip.execute();
+        } else if (versionDownloaded == versionInstalled) {
+            // only prompt to restart if not already using most up to date version of database
+            promptToRestart();
         }
+    }
 
-        // only prompt to restart if not using most up to date version of database
-        versionInstalled = SEPTADatabaseUtils.getVersionInstalled(MainActivity.this);
+    private void promptToRestart() {
+        int versionDownloaded = SEPTADatabaseUtils.getVersionDownloaded(MainActivity.this);
+        int versionInstalled = SEPTADatabaseUtils.getVersionInstalled(MainActivity.this);
         if (versionDownloaded == versionInstalled && versionInstalled > SEPTADatabase.getDatabaseVersion()) {
 
             // prompt user to restart app
@@ -738,16 +717,6 @@ public class MainActivity extends AppCompatActivity
             // show prompt
             dialog.show();
         }
-    }
-
-    private void extractFile(ZipInputStream zipIn, File file) throws IOException {
-        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
-        byte[] bytesIn = new byte[256];
-        int read = 0;
-        while ((read = zipIn.read(bytesIn)) != -1) {
-            bos.write(bytesIn, 0, read);
-        }
-        bos.close();
     }
 
     private void restartApplication(int delay) {

@@ -12,7 +12,6 @@ import android.os.Environment;
 
 public class DownloadNewDB extends AsyncTask<Object, Object, Void> {
 
-
     private DownloadManager.Request request;
     private Context context;
     private DownloadNewDBListener mListener;

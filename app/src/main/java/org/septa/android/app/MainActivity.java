@@ -106,6 +106,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     CleanOldDB cleanOldDB;
     AlertDialog promptDownloadDB, promptRestartApp;
 
+    // this must be a unique ID for the schedule update notif
+    // ensure that ID will not clash with push notifs IDs
+    final int SCHEDULE_UPDATE_NOTIF_ID = 1219;
+
     public static final String MOBILE_APP_ALERT_ROUTE_NAME = "Mobile APP",
             MOBILE_APP_ALERT_MODE = "MOBILE",
             GENERIC_ALERT_ROUTE_NAME = "Generic",
@@ -521,6 +525,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // notify user that database update complete
         Toast.makeText(this, R.string.notification_database_updated, Toast.LENGTH_SHORT).show();
+
+        // dismiss schedule restart notif
+        NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(SCHEDULE_UPDATE_NOTIF_ID);
     }
 
     public boolean isConnectedToInternet() {
@@ -652,7 +660,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
                 if (notificationManager != null) {
-                    notificationManager.notify(455, mBuilder.build());
+                    notificationManager.notify(SCHEDULE_UPDATE_NOTIF_ID, mBuilder.build());
                 }
             }
         }
@@ -744,12 +752,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         AlarmManager manager = (AlarmManager) MainActivity.this.getSystemService(Context.ALARM_SERVICE);
         manager.set(AlarmManager.RTC, System.currentTimeMillis() + delay, intent);
         System.exit(2);
-
-        // TODO: dismiss notif on restart of app
-//        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-//        if (notificationManager != null) {
-//            notificationManager.notify(455, mBuilder.build());
-//        }
     }
 
     public void showAlert(String alert, Boolean isGenericAlert) {

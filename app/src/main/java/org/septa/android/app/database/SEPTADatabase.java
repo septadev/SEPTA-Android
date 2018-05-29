@@ -27,9 +27,6 @@ public class SEPTADatabase extends SQLiteAssetHelper {
 
         setDatabaseVersion(databaseVersion);
 
-        // TODO: remove this log later
-        Log.e(TAG, "Initializing DB: " + databaseVersion);
-
         CrashlyticsManager.log(Log.INFO, TAG, "Initializing DB: " + databaseVersion);
 
         // Causes database to overwrite when version changes

@@ -54,8 +54,7 @@ public class ExpandDBZip extends AsyncTask<Object, Object, Void> {
                 zipIn.closeEntry();
                 entry = zipIn.getNextEntry();
 
-                // TODO: remove later
-                Log.e(TAG, "New DB Expanded Internal Location: " + destFile.getAbsolutePath() + "\nFile Size: " + destFile.length());
+                Log.d(TAG, "New DB Expanded Internal Location: " + destFile.getAbsolutePath() + "\nFile Size: " + destFile.length());
             }
             zipIn.close();
         } catch (FileNotFoundException e) {

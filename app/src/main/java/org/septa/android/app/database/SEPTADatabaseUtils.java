@@ -11,6 +11,7 @@ public class SEPTADatabaseUtils {
     private static final String PERMISSION_TO_DOWNLOAD = "PERMISSION_TO_DOWNLOAD";
     private static final String DB_FILENAME = "DB_FILENAME";
     private static final String DOWNLOAD_REF_ID = "DOWNLOAD_REF_ID";
+    private static final String NEED_DB_CLEANING = "NEED_DB_CLEANING";
 
     public static int getVersionDownloaded(Context context) {
         return context.getSharedPreferences(SHARED_PREFERENCES_DATABASE, Context.MODE_PRIVATE).getInt(NEWEST_DB_VERSION_DOWNLOADED, SEPTADatabase.getDatabaseVersion());
@@ -55,5 +56,13 @@ public class SEPTADatabaseUtils {
 
     public static void saveDownloadRefId(Context context, Long downloadRefId) {
         context.getSharedPreferences(SHARED_PREFERENCES_DATABASE, Context.MODE_PRIVATE).edit().putLong(DOWNLOAD_REF_ID, downloadRefId).apply();
+    }
+
+    public static boolean getNeedToClean(Context context) {
+        return context.getSharedPreferences(SHARED_PREFERENCES_DATABASE, Context.MODE_PRIVATE).getBoolean(NEED_DB_CLEANING, false);
+    }
+
+    public static void setNeedToClean(Context context, boolean permission) {
+        context.getSharedPreferences(SHARED_PREFERENCES_DATABASE, Context.MODE_PRIVATE).edit().putBoolean(NEED_DB_CLEANING, permission).apply();
     }
 }

@@ -3,19 +3,17 @@ package org.septa.android.app;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Window;
 import android.widget.ImageView;
-import android.widget.Toast;
 
-import org.septa.android.app.database.SEPTADatabase;
-import org.septa.android.app.database.SEPTADatabaseUtils;
+import org.septa.android.app.database.DatabaseManager;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Alerts;
+import org.septa.android.app.support.CursorAdapterSupplier;
 import org.septa.android.app.systemstatus.SystemStatusState;
 
-import java.io.File;
 import java.util.Calendar;
+import java.util.Date;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -75,42 +73,16 @@ public class SplashScreenActivity extends AppCompatActivity {
                     }
                 }
 
+                // check if today is a holiday
+                Date now = new Date();
+                for (TransitType transitType : TransitType.values()) {
+                    CursorAdapterSupplier<Boolean> cursorAdapterSupplier = DatabaseManager.getInstance(getBaseContext()).getHolidayIndicatorCursorAdapterSupplier(transitType);
+                    transitType.setHolidayToday(cursorAdapterSupplier.getItemFromId(getBaseContext(), now));
+                }
+
                 startActivity(intent);
                 SplashScreenActivity.this.finish();
-
-                // initialize new database, if version updated
-                int currentDBVersion = SEPTADatabase.getDatabaseVersion();
-                int versionDownloaded = SEPTADatabaseUtils.getVersionDownloaded(SplashScreenActivity.this);
-                int versionInstalled = SEPTADatabaseUtils.getVersionInstalled(SplashScreenActivity.this);
-                if (versionDownloaded == versionInstalled && versionInstalled > currentDBVersion) {
-                    initializeNewDatabase(versionInstalled);
-                }
             }
         });
-    }
-
-    private void initializeNewDatabase(int newDbVersionToUse) {
-        // look at directory of current files and find any databases that aren't newDbVersionToUse
-        // -- SEPTA.sqlite is legacy filename, starting after 282 version numbers will be added in filenames
-        // SEPTA_14_sqlite.zip (externaL) and SEPTA_14.sqlite (internal)
-        // delete old copies of '<DBNAME>-journal' like '<DBNAME>' ex. SEPTA_14.sqlite and SEPTA_14.sqlite-journal
-        // journal file is made when db started up for the first time
-
-        final File internalDir = new File(new File(getApplicationInfo().dataDir), "databases");
-
-        // clean up old database files
-        for (File fileToDelete : internalDir.listFiles()) {
-            String newDatabaseFilename = new StringBuilder("SEPTA_").append(newDbVersionToUse).append(".sqlite").toString();
-
-            // delete internal files unrelated to current database
-            if (!(fileToDelete.getName().contains(newDatabaseFilename))) {
-                Log.e(TAG, "Deleting " + fileToDelete.getName());
-                fileToDelete.delete();
-            }
-        }
-
-        // notify user that database update complete
-        Toast.makeText(this, R.string.notification_database_updated, Toast.LENGTH_SHORT).show();
-
     }
 }

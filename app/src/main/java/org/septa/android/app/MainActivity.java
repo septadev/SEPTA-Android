@@ -34,10 +34,12 @@ import android.text.util.Linkify;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import org.septa.android.app.about.AboutFragment;
 import org.septa.android.app.connect.ConnectFragment;
 import org.septa.android.app.database.CheckForLatestDB;
+import org.septa.android.app.database.CleanOldDB;
 import org.septa.android.app.database.DownloadNewDB;
 import org.septa.android.app.database.ExpandDBZip;
 import org.septa.android.app.database.SEPTADatabase;
@@ -72,9 +74,7 @@ import retrofit2.Response;
  * Created by jkampf on 8/22/17.
  */
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, FavoritesFragment.FavoritesFragmentListener, ManageFavoritesFragment.ManageFavoritesFragmentListener, SeptaServiceFactory.SeptaServiceFactoryCallBacks, CheckForLatestDB.CheckForLatestDBListener, DownloadNewDB.DownloadNewDBListener, ExpandDBZip.ExpandDBZipListener {
-
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, FavoritesFragment.FavoritesFragmentListener, ManageFavoritesFragment.ManageFavoritesFragmentListener, SeptaServiceFactory.SeptaServiceFactoryCallBacks, CheckForLatestDB.CheckForLatestDBListener, DownloadNewDB.DownloadNewDBListener, ExpandDBZip.ExpandDBZipListener, CleanOldDB.CleanOldDBListener {
 
     public static final String TAG = MainActivity.class.getSimpleName();
     NextToArriveFragment nextToArriveFragment = new NextToArriveFragment();
@@ -103,6 +103,7 @@ public class MainActivity extends AppCompatActivity
     DownloadNewDB downloadNewDB;
     DownloadManager downloadManager;
     ExpandDBZip expandDBZip;
+    CleanOldDB cleanOldDB;
     AlertDialog promptDownloadDB, promptRestartApp;
 
     public static final String MOBILE_APP_ALERT_ROUTE_NAME = "Mobile APP",
@@ -417,8 +418,7 @@ public class MainActivity extends AppCompatActivity
         int currentDBVersion = SEPTADatabase.getDatabaseVersion();
         int versionDownloaded = SEPTADatabaseUtils.getVersionDownloaded(MainActivity.this);
 
-        // TODO: remove
-        Log.e(TAG, "Latest DB Version: " + latestDBVersion + " vs. Old DB Version: " + currentDBVersion);
+        Log.d(TAG, "Latest DB Version: " + latestDBVersion + " vs. Old DB Version: " + currentDBVersion);
 
         // check if newer database available
         if (latestDBVersion > currentDBVersion && latestDBVersion > versionDownloaded) {
@@ -512,6 +512,15 @@ public class MainActivity extends AppCompatActivity
 
         // only prompt to restart if not already using most up to date version of database
         promptToRestart();
+    }
+
+    @Override
+    public void afterOldDBCleaned() {
+        // no need to clean DB files
+        SEPTADatabaseUtils.setNeedToClean(MainActivity.this, false);
+
+        // notify user that database update complete
+        Toast.makeText(this, R.string.notification_database_updated, Toast.LENGTH_SHORT).show();
     }
 
     public boolean isConnectedToInternet() {
@@ -653,6 +662,8 @@ public class MainActivity extends AppCompatActivity
         // get DB versionDownloaded and versionInstalled number
         int versionDownloaded = SEPTADatabaseUtils.getVersionDownloaded(MainActivity.this);
         int versionInstalled = SEPTADatabaseUtils.getVersionInstalled(MainActivity.this);
+        int currentDBVersion = SEPTADatabase.getDatabaseVersion();
+        boolean areThereFilesToClean = SEPTADatabaseUtils.getNeedToClean(MainActivity.this);
 
         // install if not done already
         if (versionDownloaded > versionInstalled) {
@@ -663,6 +674,10 @@ public class MainActivity extends AppCompatActivity
             // expand DB on a background thread
             expandDBZip = new ExpandDBZip(MainActivity.this, MainActivity.this, newDbZip, versionDownloaded);
             expandDBZip.execute();
+        } else if (versionDownloaded == versionInstalled && versionInstalled == currentDBVersion && areThereFilesToClean) {
+            // remove old DB files
+            cleanOldDB = new CleanOldDB(MainActivity.this, MainActivity.this, versionInstalled);
+            cleanOldDB.execute();
         } else if (versionDownloaded == versionInstalled) {
             // only prompt to restart if not already using most up to date version of database
             promptToRestart();
@@ -672,7 +687,10 @@ public class MainActivity extends AppCompatActivity
     private void promptToRestart() {
         int versionDownloaded = SEPTADatabaseUtils.getVersionDownloaded(MainActivity.this);
         int versionInstalled = SEPTADatabaseUtils.getVersionInstalled(MainActivity.this);
+
         if (versionDownloaded == versionInstalled && versionInstalled > SEPTADatabase.getDatabaseVersion()) {
+            // remember that old DB files need to be cleaned
+            SEPTADatabaseUtils.setNeedToClean(MainActivity.this, true);
 
             // prompt user to restart app
             final AlertDialog dialog = new AlertDialog.Builder(MainActivity.this).setCancelable(true).setTitle(R.string.prompt_restart_database_title)

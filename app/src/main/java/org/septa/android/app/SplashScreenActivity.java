@@ -19,10 +19,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
- * An example full-screen activity that shows and hides the system UI (i.e.
- * status bar and navigation/system bar) with user interaction.
- */
 public class SplashScreenActivity extends AppCompatActivity {
 
     public static final String TAG = SplashScreenActivity.class.getSimpleName();

@@ -33,99 +33,40 @@ import java.util.List;
 /************************************************************************************************************
  * Class: SchedulesFragment
  * Purpose: The Schedule adapter class manages the Transit Schedules Fragment in the application
- * Created by ttuggerson on 8/31/17.
  */
 
 public class SchedulesFragment extends Fragment {
 
     public static final String TAG = SchedulesFragment.class.getSimpleName(),
-        KEY_SCHEDULES_SECTIONS_PAGER_ADAPTER = "KEY_SCHEDULES_SECTIONS_PAGER_ADAPTER",
+            KEY_SCHEDULES_SECTIONS_PAGER_ADAPTER = "KEY_SCHEDULES_SECTIONS_PAGER_ADAPTER",
             KEY_SCHEDULES_FRAGMENT_TITLE = "KEY_SCHEDULES_FRAGMENT_TITLE";
 
     private static final String TAB_HEADER_STRING_NAME = "nta_picker_title",
-        HOLIDAY_SCHEDULE_URL = "https://www.septa.org/schedules/modified-mobile",
-        HOLIDAY_SCHEDULE_URL_RAIL = "https://septa.org/schedules/rail/special/holidays-mobile.html";
+            HOLIDAY_SCHEDULE_URL = "https://www.septa.org/schedules/modified-mobile",
+            HOLIDAY_SCHEDULE_URL_RAIL = "https://septa.org/schedules/rail/special/holidays-mobile.html";
 
     private SchedulesFragment.SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
     private TabLayout tabLayout;
     LineAwareLocationPickerTabActivityHandler tabActivityHandlers[];
     int startingIndex = 0;
-
     Bundle prePopulated = null;
+
+    AlertDialog holidayAlert;
 
     public static SchedulesFragment newInstance() {
         SchedulesFragment instance = new SchedulesFragment();
         return instance;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        ((TextView) tabLayout.getTabAt(tabLayout.getSelectedTabPosition()).getCustomView())
-                .setCompoundDrawablesWithIntrinsicBounds(tabActivityHandlers[tabLayout.getSelectedTabPosition()]
-                        .getActiveDrawableId(), 0, 0, 0);
-
-        List<TransitType> holidayTransitTypes = TransitType.transitTypesOnHolidayToday();
-        if (holidayTransitTypes != null && holidayTransitTypes.size() > 0) {
-            Activity activity = getActivity();
-            if (activity != null) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setTitle(R.string.holiday_schedule_title);
-
-                if (holidayTransitTypes.size() == TransitType.values().length) {
-                    builder.setMessage(R.string.all_holiday_message);
-                } else {
-                    builder.setMessage(R.string.transit_weekday_message);
-                }
-
-                builder.setNeutralButton(R.string.button_ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-
-                if (holidayTransitTypes.contains(TransitType.BUS) || holidayTransitTypes.contains(TransitType.TROLLEY) || holidayTransitTypes.contains(TransitType.SUBWAY) || holidayTransitTypes.contains(TransitType.NHSL))
-                    builder.setPositiveButton(R.string.holiday_alert_button_text, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            Activity activity = getActivity();
-                            if (activity != null) {
-                                Intent myIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(HOLIDAY_SCHEDULE_URL));
-                                startActivity(myIntent);
-                            }
-                        }
-                    });
-
-                if (holidayTransitTypes.contains(TransitType.RAIL))
-                    builder.setNegativeButton(R.string.holiday_alert_button_text_rail, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            Activity activity = getActivity();
-                            if (activity != null) {
-                                Intent myIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(HOLIDAY_SCHEDULE_URL_RAIL));
-                                startActivity(myIntent);
-                            }
-                        }
-                    });
-
-
-                AlertDialog dialog = builder.create();
-                dialog.show();
-            }
-
-        }
-
-    }
-
     @Nullable
     @Override
+
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        if (getActivity() == null)
+        if (getActivity() == null) {
             return null;
+        }
 
         DatabaseManager dbManager = DatabaseManager.getInstance(getActivity());
 
@@ -176,6 +117,80 @@ public class SchedulesFragment extends Fragment {
         tabLayout.getTabAt(startingIndex).select();
 
         return fragmentView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        ((TextView) tabLayout.getTabAt(tabLayout.getSelectedTabPosition()).getCustomView())
+                .setCompoundDrawablesWithIntrinsicBounds(tabActivityHandlers[tabLayout.getSelectedTabPosition()]
+                        .getActiveDrawableId(), 0, 0, 0);
+
+        // show holiday alert if today is a holiday
+        List<TransitType> holidayTransitTypes = TransitType.transitTypesOnHolidayToday();
+        if (holidayTransitTypes != null && holidayTransitTypes.size() > 0) {
+            Activity activity = getActivity();
+            if (activity != null) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle(R.string.holiday_schedule_title);
+
+                if (holidayTransitTypes.size() == TransitType.values().length) {
+                    builder.setMessage(R.string.all_holiday_message);
+                } else {
+                    builder.setMessage(R.string.transit_weekday_message);
+                }
+
+                builder.setNeutralButton(R.string.button_ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+                if (holidayTransitTypes.contains(TransitType.BUS) || holidayTransitTypes.contains(TransitType.TROLLEY) || holidayTransitTypes.contains(TransitType.SUBWAY) || holidayTransitTypes.contains(TransitType.NHSL))
+                    builder.setPositiveButton(R.string.holiday_alert_button_text, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Activity activity = getActivity();
+                            if (activity != null) {
+                                Intent myIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(HOLIDAY_SCHEDULE_URL));
+                                startActivity(myIntent);
+                            }
+                        }
+                    });
+
+                if (holidayTransitTypes.contains(TransitType.RAIL))
+                    builder.setNegativeButton(R.string.holiday_alert_button_text_rail, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Activity activity = getActivity();
+                            if (activity != null) {
+                                Intent myIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(HOLIDAY_SCHEDULE_URL_RAIL));
+                                startActivity(myIntent);
+                            }
+                        }
+                    });
+
+
+                AlertDialog dialog = builder.create();
+                holidayAlert = dialog;
+                dialog.show();
+            }
+
+        }
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        // prevent stacking holiday alert pop ups
+        if (holidayAlert != null) {
+            holidayAlert.dismiss();
+            holidayAlert = null;
+        }
     }
 
     @Override

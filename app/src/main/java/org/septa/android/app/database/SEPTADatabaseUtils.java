@@ -6,6 +6,8 @@ public class SEPTADatabaseUtils {
 
     // database shared preferences
     private static final String SHARED_PREFERENCES_DATABASE = "SHARED_PREFERENCES_DATABASE";
+    private static final String NEWEST_DB_VERSION_AVAILABLE = "NEWEST_DB_VERSION_AVAILABLE";
+    private static final String NEWEST_DB_VERSION_DOWNLOAD_URL = "NEWEST_DB_VERSION_DOWNLOAD_URL";
     private static final String NEWEST_DB_VERSION_DOWNLOADED = "NEWEST_DB_VERSION_DOWNLOADED";
     private static final String NEWEST_DB_VERSION_INSTALLED = "NEWEST_DB_VERSION_INSTALLED";
     private static final String PERMISSION_TO_DOWNLOAD = "PERMISSION_TO_DOWNLOAD";
@@ -13,6 +15,22 @@ public class SEPTADatabaseUtils {
     private static final String DOWNLOAD_REF_ID = "DOWNLOAD_REF_ID";
     private static final String NEED_DB_CLEANING = "NEED_DB_CLEANING";
     private static final String NEED_RESTART = "NEED_RESTART";
+
+    public static int getLatestVersionAvailable(Context context) {
+        return context.getSharedPreferences(SHARED_PREFERENCES_DATABASE, Context.MODE_PRIVATE).getInt(NEWEST_DB_VERSION_AVAILABLE, SEPTADatabase.getDatabaseVersion());
+    }
+
+    public static void setLatestVersionAvailable(Context context, int versionDownloaded) {
+        context.getSharedPreferences(SHARED_PREFERENCES_DATABASE, Context.MODE_PRIVATE).edit().putInt(NEWEST_DB_VERSION_AVAILABLE, versionDownloaded).apply();
+    }
+
+    public static String getLatestDownloadUrl(Context context) {
+        return context.getSharedPreferences(SHARED_PREFERENCES_DATABASE, Context.MODE_PRIVATE).getString(NEWEST_DB_VERSION_DOWNLOAD_URL, "");
+    }
+
+    public static void setLatestDownloadUrl(Context context, String url) {
+        context.getSharedPreferences(SHARED_PREFERENCES_DATABASE, Context.MODE_PRIVATE).edit().putString(NEWEST_DB_VERSION_DOWNLOAD_URL, url).apply();
+    }
 
     public static int getVersionDownloaded(Context context) {
         return context.getSharedPreferences(SHARED_PREFERENCES_DATABASE, Context.MODE_PRIVATE).getInt(NEWEST_DB_VERSION_DOWNLOADED, SEPTADatabase.getDatabaseVersion());

@@ -420,6 +420,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void afterLatestDBMetadataLoad(final int latestDBVersion, final String latestDBURL, String updatedDate) {
+        // save latest DB version and URL
+        SEPTADatabaseUtils.setLatestVersionAvailable(MainActivity.this, latestDBVersion);
+        SEPTADatabaseUtils.setLatestDownloadUrl(MainActivity.this, latestDBURL);
+
         // check API for DB version number
         int currentDBVersion = SEPTADatabase.getDatabaseVersion();
         int versionDownloaded = SEPTADatabaseUtils.getVersionDownloaded(MainActivity.this);
@@ -433,61 +437,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (!SEPTADatabaseUtils.getPermissionToDownload(MainActivity.this)) {
 
                 // prompt user to download new database
-                final AlertDialog dialog = new AlertDialog.Builder(this).setCancelable(true).setTitle(R.string.prompt_download_database_title)
-                        .setMessage(R.string.prompt_download_database_description)
-
-                        // approved download
-                        .setPositiveButton(R.string.prompt_download_button_positive_download_now, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-
-                                // download new DB zip from url given by API
-                                if (latestDBURL != null && !latestDBURL.isEmpty()) {
-                                    // save permission to download
-                                    SEPTADatabaseUtils.setPermissionToDownload(MainActivity.this, true);
-
-                                    // do not need to recheck for connection -- handled by DownloadManager
-                                    downloadNewDB = new DownloadNewDB(MainActivity.this, MainActivity.this, latestDBURL, latestDBVersion);
-                                    downloadNewDB.execute();
-                                }
-                            }
-                        })
-
-                        // remind of download later
-                        .setNegativeButton(R.string.prompt_download_button_negative_remind_later, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        })
-
-                        // link to NTA
-                        .setNeutralButton(R.string.prompt_download_button_neutral_nta, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                                switchToNextToArrive();
-                            }
-                        })
-                        .create();
-
-                // set "download now" button color
-                dialog.setOnShowListener(new DialogInterface.OnShowListener() {
-                    @Override
-                    public void onShow(DialogInterface arg0) {
-                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.RED);
-                    }
-                });
-
-                // only show prompt once
-                if (promptDownloadDB != null && promptDownloadDB.isShowing()) {
-                    promptDownloadDB.dismiss();
-                    promptDownloadDB = null;
-                }
-                promptDownloadDB = dialog;
-
-                // show prompt
-                dialog.show();
+                promptToDownloadNewDB();
             }
         }
     }
@@ -651,6 +601,75 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     };
 
+    private void promptToDownloadNewDB() {
+        final AlertDialog dialog = new AlertDialog.Builder(this).setCancelable(true).setTitle(R.string.prompt_download_database_title)
+                .setMessage(R.string.prompt_download_database_description)
+
+                // approved download
+                .setPositiveButton(R.string.prompt_download_button_positive_download_now, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        // start download
+                        downloadNewDB();
+                    }
+                })
+
+                // remind of download later
+                .setNegativeButton(R.string.prompt_download_button_negative_remind_later, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+
+                // link to NTA
+                .setNeutralButton(R.string.prompt_download_button_neutral_nta, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        switchToNextToArrive();
+                    }
+                })
+                .create();
+
+        // set "download now" button color
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface arg0) {
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.RED);
+            }
+        });
+
+        // only show prompt once
+        if (promptDownloadDB != null && promptDownloadDB.isShowing()) {
+            promptDownloadDB.dismiss();
+            promptDownloadDB = null;
+        }
+        promptDownloadDB = dialog;
+
+        // show prompt
+        dialog.show();
+    }
+
+    private void downloadNewDB() {
+        int currentDBVersion = SEPTADatabase.getDatabaseVersion();
+        int latestDBVersion = SEPTADatabaseUtils.getLatestVersionAvailable(MainActivity.this);
+        String latestDBURL = SEPTADatabaseUtils.getLatestDownloadUrl(MainActivity.this);
+
+        // download new DB zip from url given by API
+        if (latestDBVersion > currentDBVersion && !latestDBURL.isEmpty()) {
+            // save permission to download
+            SEPTADatabaseUtils.setPermissionToDownload(MainActivity.this, true);
+
+            // do not need to recheck for connection -- handled by DownloadManager
+            downloadNewDB = new DownloadNewDB(MainActivity.this, MainActivity.this, latestDBURL, latestDBVersion);
+            downloadNewDB.execute();
+        } else {
+            Log.e(TAG, "Could not download new DB with version: " + latestDBVersion + " from URL: " + latestDBURL);
+        }
+    }
+
     // listener for completed database downloads
     BroadcastReceiver onDBDownloadComplete = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
@@ -681,8 +700,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int currentDBVersion = SEPTADatabase.getDatabaseVersion();
         boolean areThereFilesToClean = SEPTADatabaseUtils.getNeedToClean(MainActivity.this);
 
-        // install if not done already
         if (versionDownloaded > versionInstalled) {
+            // install new DB if not done already
+
             // get downloaded file from databases directory
             String newDatabaseZipFilename = new StringBuilder("/SEPTA_").append(versionDownloaded).append("_sqlite.zip").toString();
             File newDbZip = new File(getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath(), newDatabaseZipFilename);
@@ -693,10 +713,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 expandDBZip.execute();
             } else {
                 // redo download
-                // check if in-app DB update
                 if (isConnectedToInternet()) {
-                    checkForLatestDB = new CheckForLatestDB(MainActivity.this, newDbZip);
-                    checkForLatestDB.execute();
+                    // user already granted permission and download was cancelled by user
+                    // download it without asking for permission again
+                    downloadNewDB();
                 } else {
                     // do nothing -- do not tell user there may be a new DB available
                     Log.d(TAG, "No network connection established -- cannot check for new DB");

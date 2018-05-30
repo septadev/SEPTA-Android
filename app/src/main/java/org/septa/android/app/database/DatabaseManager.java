@@ -71,10 +71,6 @@ public class DatabaseManager {
         return new CursorSuppliers.LineAwareRailStopAfterCursorAdapterSupplier();
     }
 
-    public CursorAdapterSupplier<StopModel> getNhslStopCursorAdapterSupplier() {
-        return new CursorSuppliers.NhslStopCursorAdapterSupplier();
-    }
-
     public CursorAdapterSupplier<StopModel> getBusStopCursorAdapterSupplier() {
         return new CursorSuppliers.BusStopCursorAdapterSupplier();
     }

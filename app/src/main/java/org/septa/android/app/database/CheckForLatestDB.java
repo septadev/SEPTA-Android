@@ -1,11 +1,13 @@
 package org.septa.android.app.database;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -25,14 +27,28 @@ public class CheckForLatestDB extends AsyncTask<Object, Object, Void> {
     private CheckForLatestDBListener mListener;
     Integer latestDBVersion;
     String latestDBURL, updatedDate;
+    File fileToDelete;
 
     public CheckForLatestDB(CheckForLatestDBListener listener) {
         this.mListener = listener;
+        this.fileToDelete = null;
+    }
+
+    public CheckForLatestDB(CheckForLatestDBListener listener, File fileToDelete) {
+        this.mListener = listener;
+        this.fileToDelete = fileToDelete;
     }
 
     @Override
     protected Void doInBackground(Object... voids) {
         try {
+            if (fileToDelete != null && !fileToDelete.isFile()) {
+                Log.d(TAG, "Deleting " + fileToDelete.getName());
+                if (!fileToDelete.delete()) {
+                    Log.e(TAG, "Unable to delete " + fileToDelete.getName());
+                }
+            }
+
             // connect to URL
             URL jsonDataUrl = new URL(SEPTADatabase.getLatestDatabaseApiUrl());
             HttpURLConnection httpURLConnection = (HttpURLConnection) jsonDataUrl.openConnection();

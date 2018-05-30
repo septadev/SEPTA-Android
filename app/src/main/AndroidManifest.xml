@@ -38,6 +38,7 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/septa"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
 

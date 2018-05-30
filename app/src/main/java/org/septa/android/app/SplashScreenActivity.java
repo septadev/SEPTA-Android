@@ -1,5 +1,8 @@
 package org.septa.android.app;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -7,6 +10,7 @@ import android.view.Window;
 import android.widget.ImageView;
 
 import org.septa.android.app.database.DatabaseManager;
+import org.septa.android.app.database.SEPTADatabaseUtils;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Alerts;
 import org.septa.android.app.support.CursorAdapterSupplier;
@@ -22,6 +26,8 @@ import retrofit2.Response;
 public class SplashScreenActivity extends AppCompatActivity {
 
     public static final String TAG = SplashScreenActivity.class.getSimpleName();
+
+    final int DELAY = 500;
 
     int[] images = new int[]{R.drawable.bus_image, R.drawable.bg_trolley_image, R.drawable.subway_septa};
 
@@ -40,6 +46,12 @@ public class SplashScreenActivity extends AppCompatActivity {
                 image.setImageResource(images[i]);
                 break;
             }
+        }
+
+        // restart application if redirected from notification
+        if (SEPTADatabaseUtils.getNeedToRestart(SplashScreenActivity.this)) {
+            SEPTADatabaseUtils.setNeedToRestart(SplashScreenActivity.this, false);
+            restartApplication();
         }
 
         final long timestamp = System.currentTimeMillis();
@@ -80,5 +92,14 @@ public class SplashScreenActivity extends AppCompatActivity {
                 SplashScreenActivity.this.finish();
             }
         });
+    }
+
+    private void restartApplication() {
+        // restart the app
+        Intent restartIntent = SplashScreenActivity.this.getPackageManager().getLaunchIntentForPackage(SplashScreenActivity.this.getPackageName());
+        PendingIntent intent = PendingIntent.getActivity(SplashScreenActivity.this, 0, restartIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        AlarmManager manager = (AlarmManager) SplashScreenActivity.this.getSystemService(Context.ALARM_SERVICE);
+        manager.set(AlarmManager.RTC, System.currentTimeMillis() + DELAY, intent);
+        System.exit(2);
     }
 }

@@ -105,6 +105,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     ExpandDBZip expandDBZip;
     CleanOldDB cleanOldDB;
     AlertDialog promptDownloadDB, promptRestartApp;
+    final String FORCE_FULL_RESTART = "FORCE_FULL_RESTART";
+    final int DELAY = 500;
 
     // this must be a unique ID for the schedule update notif
     // ensure that ID will not clash with push notifs IDs
@@ -514,6 +516,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // restore download permission back to false
         SEPTADatabaseUtils.setPermissionToDownload(MainActivity.this, false);
 
+        // show notification that download completed
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(MainActivity.this)
+                .setSmallIcon(R.drawable.ic_launcher)
+                .setContentTitle(getString(R.string.app_name))
+                .setContentText(getString(R.string.notification_database_download_complete));  // TODO: language for complete download notification
+
+        // set up notification intent to restart app on click
+        Intent notificationIntent = new Intent(MainActivity.this, SplashScreenActivity.class);
+
+        // force full restart of application on notification click
+        notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        SEPTADatabaseUtils.setNeedToRestart(MainActivity.this, true);
+        PendingIntent restartIntent = PendingIntent.getActivity(MainActivity.this, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        mBuilder.setContentIntent(restartIntent).setAutoCancel(true);
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        if (notificationManager != null) {
+            notificationManager.notify(SCHEDULE_UPDATE_NOTIF_ID, mBuilder.build());
+        }
+
         // only prompt to restart if not already using most up to date version of database
         promptToRestart();
     }
@@ -523,12 +545,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // no need to clean DB files
         SEPTADatabaseUtils.setNeedToClean(MainActivity.this, false);
 
+        // dismiss schedule restart notif
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(SCHEDULE_UPDATE_NOTIF_ID);
+
         // notify user that database update complete
         Toast.makeText(this, R.string.notification_database_updated, Toast.LENGTH_SHORT).show();
-
-        // dismiss schedule restart notif
-        NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.cancel(SCHEDULE_UPDATE_NOTIF_ID);
     }
 
     public boolean isConnectedToInternet() {
@@ -629,7 +651,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     };
 
-
     // listener for completed database downloads
     BroadcastReceiver onDBDownloadComplete = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
@@ -648,20 +669,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 // expand new db
                 prepareForNewDatabase();
 
-                // show notification that download completed
-                Log.e(TAG, "Completed download for ref ID: " + referenceIdFound);
-                NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(MainActivity.this)
-                        .setSmallIcon(R.drawable.ic_launcher)
-                        .setContentTitle(getString(R.string.app_name))
-                        .setContentText(getString(R.string.notification_database_download_complete));   // TODO: language for complete download notification
-                // TODO: set action -- what does clicking on notif do?
-                // TODO: clicking on notif with app open --> restart app?
-                // TODO: clicking on notif just opens app
-
-                NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                if (notificationManager != null) {
-                    notificationManager.notify(SCHEDULE_UPDATE_NOTIF_ID, mBuilder.build());
-                }
+                Log.d(TAG, "Completed download for ref ID: " + referenceIdFound);
             }
         }
     };
@@ -679,9 +687,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             String newDatabaseZipFilename = new StringBuilder("/SEPTA_").append(versionDownloaded).append("_sqlite.zip").toString();
             File newDbZip = new File(getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath(), newDatabaseZipFilename);
 
-            // expand DB on a background thread
-            expandDBZip = new ExpandDBZip(MainActivity.this, MainActivity.this, newDbZip, versionDownloaded);
-            expandDBZip.execute();
+            if (newDbZip.isFile()) {
+                // expand DB on a background thread
+                expandDBZip = new ExpandDBZip(MainActivity.this, MainActivity.this, newDbZip, versionDownloaded);
+                expandDBZip.execute();
+            } else {
+                // redo download
+                // check if in-app DB update
+                if (isConnectedToInternet()) {
+                    checkForLatestDB = new CheckForLatestDB(MainActivity.this, newDbZip);
+                    checkForLatestDB.execute();
+                } else {
+                    // do nothing -- do not tell user there may be a new DB available
+                    Log.d(TAG, "No network connection established -- cannot check for new DB");
+                }
+            }
         } else if (versionDownloaded == versionInstalled && versionInstalled == currentDBVersion && areThereFilesToClean) {
             // remove old DB files
             cleanOldDB = new CleanOldDB(MainActivity.this, MainActivity.this, versionInstalled);
@@ -708,11 +728,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     .setPositiveButton(R.string.prompt_restart_button_positive_now, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            // 0.5 sec delay to restart
-                            int delay = 500;
-
                             // restart app
-                            restartApplication(delay);
+                            restartApplication();
                         }
                     })
 
@@ -745,12 +762,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    private void restartApplication(int delay) {
+    private void restartApplication() {
         // restart the app
         Intent restartIntent = MainActivity.this.getPackageManager().getLaunchIntentForPackage(MainActivity.this.getPackageName());
+        restartIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent intent = PendingIntent.getActivity(MainActivity.this, 0, restartIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         AlarmManager manager = (AlarmManager) MainActivity.this.getSystemService(Context.ALARM_SERVICE);
-        manager.set(AlarmManager.RTC, System.currentTimeMillis() + delay, intent);
+        manager.set(AlarmManager.RTC, System.currentTimeMillis() + DELAY, intent);
         System.exit(2);
     }
 

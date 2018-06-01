@@ -242,6 +242,11 @@
     <string name="reverse_not_found">We are sorry, we are unable to reverse your trip.  Please contact SEPTA and let us know what stops you were attempting to reverse.</string>
 
 
+    <!-- About -->
+    <string name="activity_about_attributions">View Attributions</string>
+    <string name="activity_about_credits">Source code to the SEPTA Android application is available under an open source license, but the graphics are not.  \n\nThe graphics are subject to the following Copyright and Trademark terms: http://septa.org/site/copyright.html.  \n\nThe source code is available at: https://github.com/septadev/SEPTA-Android.</string>
+
+
     <!-- Holiday Schedule -->
     <string name="all_holiday_message">Holiday schedule is currently in effect.  Use Next to Arrive to display the current holiday schedule or visit septa.org.  Schedules shown in the app are the normal, non-holiday schedules.</string>
     <string name="transit_weekday_message">Modified weekday schedule is currently in effect for Bus, Trolley, Subway and NHSL.  Use Next to Arrive to display the current schedule or visit septa.org.  Schedules shown in the app are the normal, non-holiday schedules.</string>
@@ -251,6 +256,7 @@
     <!-- Alerts -->
     <string name="title_generic_alert">General SEPTA Alert</string>
     <string name="title_mobile_app_alert">Mobile App Alert</string>
+
 
     <!-- String Resources -->
     <string name="button_ok">Okay</string>

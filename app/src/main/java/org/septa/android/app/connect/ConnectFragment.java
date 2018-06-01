@@ -28,6 +28,17 @@ public class ConnectFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_connect, container, false);
 
+        // user can rate the app
+        View rateTheApp = rootView.findViewById(R.id.rate_the_app);
+        rateTheApp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.e(TAG, "Rate the App clicked!"); // TODO: remove
+
+                // TODO: pop open rate the app dialog
+            }
+        });
+
         setAppIntent(rootView, R.id.facebook_arrow, getResources().getString(R.string.facebook_url), getResources().getString(R.string.facebook_app_url));
         setAppIntent(rootView, R.id.twitter_arrow, getResources().getString(R.string.twitter_url), getResources().getString(R.string.twitter_app_url));
 

@@ -19,7 +19,7 @@
             android:layout_marginStart="12dp"
             android:layout_marginTop="12dp"
             android:text="Regional Rail Status"
-            android:textColor="#144b88"
+            android:textColor="@color/text_primary"
             android:textSize="20sp"
             app:font="@string/font_roboto_bold" />
 
@@ -30,7 +30,7 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginTop="11dp"
-            android:background="#ffffff"
+            android:background="@android:color/white"
             android:elevation="@dimen/white_box_elevation"
             android:orientation="vertical">
 
@@ -42,7 +42,7 @@
                 android:layout_marginLeft="12dp"
                 android:layout_marginTop="12dp"
                 android:text="Select Line to View Status"
-                android:textColor="#000000"
+                android:textColor="@android:color/black"
                 android:textSize="12sp"
                 app:font="@string/font_roboto_regular" />
 
@@ -61,7 +61,7 @@
                 android:paddingRight="13dp"
                 android:paddingTop="15dp"
                 android:text="Select Line"
-                android:textColor="#000000"
+                android:textColor="@android:color/black"
                 android:textSize="14sp"
                 app:font="@string/font_roboto_regular" />
 
@@ -77,7 +77,7 @@
                 android:background="@drawable/button_gradient_background"
                 android:clickable="false"
                 android:text="View Status"
-                android:textColor="#ffffff" />
+                android:textColor="@android:color/white" />
 
         </LinearLayout>
 
@@ -89,7 +89,7 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginTop="15dp"
-            android:background="#ffffff"
+            android:background="@android:color/white"
             android:elevation="@dimen/white_box_elevation"
             android:orientation="vertical"
             android:padding="20dp"
@@ -102,7 +102,7 @@
                 android:layout_height="match_parent"
                 android:drawableRight="@drawable/alert_toggle_closed"
                 android:text="@string/title_generic_alert"
-                android:textColor="#000000"
+                android:textColor="@android:color/black"
                 android:textSize="16sp"
                 app:font="@string/font_roboto_medium" />
 
@@ -137,7 +137,7 @@
     While this work takes place, ALL trains will board from the INBOUND (toward Center City) platform at Melrose and Elkins Park Stations. Please listen for station announcements for any additional changes to service or boarding locations.
 
     For a complete list of the adjustments to service, please visit the delay night service page."
-                    android:textColor="#000000"
+                    android:textColor="@android:color/black"
                     android:textSize="12sp"
                     app:font="@string/font_roboto_light" />
 
@@ -153,7 +153,7 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginTop="15dp"
-            android:background="#ffffff"
+            android:background="@android:color/white"
             android:elevation="@dimen/white_box_elevation"
             android:orientation="vertical"
             android:padding="20dp"
@@ -166,7 +166,7 @@
                 android:layout_height="wrap_content"
                 android:drawableRight="@drawable/alert_toggle_closed"
                 android:text="@string/title_mobile_app_alert"
-                android:textColor="#000000"
+                android:textColor="@android:color/black"
                 android:textSize="16sp"
                 app:font="@string/font_roboto_medium" />
 
@@ -183,7 +183,7 @@
                     android:linksClickable="true"
                     android:paddingTop="20dp"
                     android:text="Test"
-                    android:textColor="#000000"
+                    android:textColor="@android:color/black"
                     android:textSize="12sp"
                     app:font="@string/font_roboto_light" />
 

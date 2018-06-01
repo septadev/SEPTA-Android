@@ -14,7 +14,7 @@
         android:gravity="center"
         android:text="Love your favorite trips!"
         android:textAlignment="center"
-        android:textColor="#144b88"
+        android:textColor="@color/text_primary"
         android:textSize="18sp"
         app:font="@string/font_roboto_medium" />
 
@@ -34,7 +34,7 @@
             android:drawableTop="@drawable/ic_bus_blue"
             android:text="Bus"
             android:textAlignment="center"
-            android:textColor="#144b88"
+            android:textColor="@color/text_primary"
             android:textSize="12sp"
             app:font="@string/font_roboto_medium" />
 
@@ -46,7 +46,7 @@
             android:drawableTop="@drawable/ic_rail_blue"
             android:text="Rail"
             android:textAlignment="center"
-            android:textColor="#144b88"
+            android:textColor="@color/text_primary"
             android:textSize="12sp"
             app:font="@string/font_roboto_medium" />
 
@@ -58,7 +58,7 @@
             android:drawableTop="@drawable/ic_subway_blue"
             android:text="Subway"
             android:textAlignment="center"
-            android:textColor="#144b88"
+            android:textColor="@color/text_primary"
             android:textSize="12sp"
             app:font="@string/font_roboto_medium" />
 
@@ -70,7 +70,7 @@
             android:drawableTop="@drawable/ic_trolley_blue"
             android:text="Trolley"
             android:textAlignment="center"
-            android:textColor="#144b88"
+            android:textColor="@color/text_primary"
             android:textSize="12sp"
             app:font="@string/font_roboto_medium" />
 
@@ -82,7 +82,7 @@
             android:drawableTop="@drawable/ic_nhsl_blue"
             android:text="NHSL"
             android:textAlignment="center"
-            android:textColor="#144b88"
+            android:textColor="@color/text_primary"
             android:textSize="12sp"
             app:font="@string/font_roboto_medium" />
     </LinearLayout>
@@ -96,7 +96,7 @@
         android:gravity="center"
         android:text="Save your SEPTA trips as a favorite to get &lt;b>immediate access&lt;/b> to the Next to Arrive transit, and route schedule."
         android:textAlignment="center"
-        android:textColor="#144b88"
+        android:textColor="@color/text_primary"
         android:textSize="16sp"
         app:font="@string/font_roboto_medium" />
 
@@ -108,9 +108,9 @@
         android:layout_marginTop="23dp"
         android:drawableLeft="@drawable/ic_favorite_available"
         android:drawablePadding="13dp"
-        android:drawableTint="#144b88"
+        android:drawableTint="@color/text_primary"
         android:text="Find a trip, then use the favorite icon to add it to your Favorites."
-        android:textColor="#144b88"
+        android:textColor="@color/text_primary"
         android:textSize="16sp"
         app:font="@string/font_roboto_light" />
 
@@ -125,7 +125,7 @@
         android:gravity="center"
         android:text="Add Favorite"
         android:textAlignment="center"
-        android:textColor="#ffffff"
+        android:textColor="@android:color/white"
         android:textSize="16sp"
         app:font="@string/font_roboto_medium" />
 

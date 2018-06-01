@@ -58,4 +58,8 @@
     <!-- Favorites -->
     <color name="no_results_found">#fcbe56</color>
 
+
+    <!-- Text -->
+    <color name="text_primary">#144b88</color>
+
 </resources>

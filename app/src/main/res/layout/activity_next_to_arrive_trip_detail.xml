@@ -49,9 +49,9 @@
                             android:layout_height="wrap_content"
                             android:drawableLeft="@drawable/ic_rail"
                             android:drawablePadding="11dp"
-                            android:drawableTint="#144b88"
+                            android:drawableTint="@color/text_primary"
                             android:text="#564 to 30th Street Station"
-                            android:textColor="#144b88"
+                            android:textColor="@color/text_primary"
                             android:textSize="16sp"
                             app:font="@string/font_roboto_bold" />
 
@@ -61,7 +61,7 @@
                         android:id="@+id/next_stop_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="#16144b88"
+                        android:background="@color/text_primary"
                         android:gravity="center_horizontal">
 
                         <org.septa.android.app.view.TextView
@@ -72,7 +72,7 @@
                             android:layout_marginRight="4dp"
                             android:layout_marginTop="13dp"
                             android:text="Next Stop:"
-                            android:textColor="#000000"
+                            android:textColor="@android:color/black"
                             android:textSize="14dp"
                             app:font="@string/font_roboto_light" />
 
@@ -83,7 +83,7 @@
                             android:layout_marginBottom="13dp"
                             android:layout_marginTop="13dp"
                             android:text="Jefferson Station"
-                            android:textColor="#000000"
+                            android:textColor="@android:color/black"
                             android:textSize="14dp"
                             app:font="@string/font_roboto_bold" />
 
@@ -120,7 +120,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="5dp"
                                 android:text="Line"
-                                android:textColor="#000000"
+                                android:textColor="@android:color/black"
                                 android:textSize="14sp"
                                 app:font="@string/font_roboto_light" />
 
@@ -131,9 +131,10 @@
                                 android:layout_alignBottom="@id/line_label"
                                 android:layout_alignParentRight="true"
                                 android:text="Paoli / Thorndale"
-                                android:textColor="#000000"
+                                android:textColor="@android:color/black"
                                 android:textSize="14sp"
                                 app:font="@string/font_roboto_bold" />
+
                         </RelativeLayout>
 
                         <RelativeLayout
@@ -149,7 +150,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="5dp"
                                 android:text="Vehicle Number"
-                                android:textColor="#000000"
+                                android:textColor="@android:color/black"
                                 android:textSize="14sp"
                                 app:font="@string/font_roboto_light" />
 
@@ -160,7 +161,7 @@
                                 android:layout_alignBottom="@id/vehicle_label"
                                 android:layout_alignParentRight="true"
                                 android:text="3154"
-                                android:textColor="#000000"
+                                android:textColor="@android:color/black"
                                 android:textSize="14sp"
                                 app:font="@string/font_roboto_bold" />
                         </RelativeLayout>
@@ -178,7 +179,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="5dp"
                                 android:text="Block ID"
-                                android:textColor="#000000"
+                                android:textColor="@android:color/black"
                                 android:textSize="14sp"
                                 app:font="@string/font_roboto_light" />
 
@@ -189,7 +190,7 @@
                                 android:layout_alignBottom="@id/blockid_label"
                                 android:layout_alignParentRight="true"
                                 android:text="3154"
-                                android:textColor="#000000"
+                                android:textColor="@android:color/black"
                                 android:textSize="14sp"
                                 app:font="@string/font_roboto_bold" />
                         </RelativeLayout>
@@ -205,7 +206,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="5dp"
                                 android:text="Origination:"
-                                android:textColor="#000000"
+                                android:textColor="@android:color/black"
                                 android:textSize="14sp"
                                 app:font="@string/font_roboto_light" />
 
@@ -216,12 +217,13 @@
                                 android:layout_alignBottom="@id/origin_station_label"
                                 android:layout_alignParentRight="true"
                                 android:text="Temple University"
-                                android:textColor="#000000"
+                                android:textColor="@android:color/black"
                                 android:textSize="14sp"
                                 app:font="@string/font_roboto_bold" />
                         </RelativeLayout>
 
-                        <RelativeLayout android:id="@+id/dest_layout"
+                        <RelativeLayout
+                            android:id="@+id/dest_layout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content">
 
@@ -231,7 +233,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="5dp"
                                 android:text="Destination:"
-                                android:textColor="#000000"
+                                android:textColor="@android:color/black"
                                 android:textSize="14sp"
                                 app:font="@string/font_roboto_light" />
 
@@ -242,7 +244,7 @@
                                 android:layout_alignBottom="@id/dest_station_label"
                                 android:layout_alignParentRight="true"
                                 android:text="Thorndale"
-                                android:textColor="#000000"
+                                android:textColor="@android:color/black"
                                 android:textSize="14sp"
                                 app:font="@string/font_roboto_bold" />
                         </RelativeLayout>
@@ -258,7 +260,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="5dp"
                                 android:text="# of Train Cars:"
-                                android:textColor="#000000"
+                                android:textColor="@android:color/black"
                                 android:textSize="14sp"
                                 app:font="@string/font_roboto_light" />
 
@@ -271,7 +273,7 @@
                                 android:layout_alignParentRight="true"
                                 android:gravity="right"
                                 android:text="162, 161, 136, 135"
-                                android:textColor="#000000"
+                                android:textColor="@android:color/black"
                                 android:textSize="14sp"
                                 app:font="@string/font_roboto_light" />
 
@@ -282,7 +284,7 @@
                                 android:layout_alignBottom="@id/num_trains_label"
                                 android:layout_toLeftOf="@id/trains_id_value"
                                 android:text="4 - "
-                                android:textColor="#000000"
+                                android:textColor="@android:color/black"
                                 android:textSize="14sp"
                                 app:font="@string/font_roboto_bold" />
                         </RelativeLayout>
@@ -298,7 +300,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="5dp"
                                 android:text="Type:"
-                                android:textColor="#000000"
+                                android:textColor="@android:color/black"
                                 android:textSize="14sp"
                                 app:font="@string/font_roboto_light" />
 
@@ -309,7 +311,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentRight="true"
                                 android:text="Local"
-                                android:textColor="#000000"
+                                android:textColor="@android:color/black"
                                 android:textSize="14sp"
                                 app:font="@string/font_roboto_bold" />
                         </RelativeLayout>
@@ -331,7 +333,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="12dp"
                             android:text="Follow Us!"
-                            android:textColor="#144b88"
+                            android:textColor="@color/text_primary"
                             android:textSize="14sp"
                             app:font="@string/font_roboto_light" />
 
@@ -344,7 +346,7 @@
                             android:drawableRight="@drawable/twitter_logo_blue"
                             android:gravity="right"
                             android:text="\@SEPTA_PAO"
-                            android:textColor="#144b88"
+                            android:textColor="@color/text_primary"
                             android:textSize="14sp"
                             app:font="@string/font_roboto_bold" />
                     </LinearLayout>

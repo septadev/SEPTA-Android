@@ -25,7 +25,7 @@
                 android:layout_height="wrap_content"
                 android:letterSpacing="-0.02"
                 android:text="Have a problem, suggestion, question or want to follow us? Connect with us through our channels below."
-                android:textColor="#144b88"
+                android:textColor="@color/text_primary"
                 android:textSize="16sp"
                 app:font="@string/font_roboto_regular" />
 
@@ -141,7 +141,7 @@
                     android:layout_marginRight="16dp"
                     android:layout_marginTop="21dp"
                     android:src="@drawable/ic_arrow_forward_black_24dp"
-                    android:tint="#144b88" />
+                    android:tint="@color/text_primary" />
 
             </RelativeLayout>
 
@@ -219,7 +219,7 @@
                     android:layout_below="@id/social_media_header"
                     android:layout_marginTop="16dp"
                     android:src="@drawable/ic_arrow_forward_black_24dp"
-                    android:tint="#144b88" />
+                    android:tint="@color/text_primary" />
 
                 <org.septa.android.app.view.TextView
                     android:id="@+id/facebook_label"

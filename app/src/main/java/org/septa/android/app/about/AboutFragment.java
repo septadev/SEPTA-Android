@@ -39,7 +39,7 @@ public class AboutFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
-        View fragmentView = inflater.inflate(R.layout.activity_about, null);
+        View fragmentView = inflater.inflate(R.layout.fragment_about, null);
 
         attribListView = (LinearLayout) fragmentView.findViewById(R.id.attrib_list);
         for (String s : getResources().getStringArray(R.array.about_attributions_listview_items_texts)) {

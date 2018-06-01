@@ -2,13 +2,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
     <LinearLayout
         android:id="@+id/lines_list_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical" />
-
 
     <TextView
         android:id="@android:id/empty"
@@ -17,4 +15,5 @@
         android:padding="16dp"
         android:text="@string/text_empty_trips"
         android:visibility="gone" />
+
 </merge>

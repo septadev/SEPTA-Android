@@ -13,13 +13,13 @@
         android:background="@drawable/full_page_gradient_background"
         android:orientation="vertical">
 
-
         <org.septa.android.app.view.TextView
             android:id="@+id/picker_header_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="13dp"
             android:layout_marginLeft="12dp"
+            android:layout_marginStart="12dp"
             android:layout_marginTop="12dp"
             android:text="Regional Rail Schedules"
             android:textColor="#144b88"
@@ -46,8 +46,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="15dp"
+                    android:layout_marginStart="15dp"
                     android:layout_marginTop="13dp"
                     android:clickable="true"
+                    android:focusable="true"
                     android:text="Line"
                     android:textColor="#6d6d6d"
                     android:textSize="12sp"
@@ -57,7 +59,9 @@
                     android:id="@+id/reset_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
+                    android:layout_marginEnd="15dp"
                     android:layout_marginRight="15dp"
                     android:layout_marginTop="13dp"
                     android:clickable="true"
@@ -134,7 +138,6 @@
 
     </LinearLayout>
 
-
     <FrameLayout
         android:id="@+id/progress_view"
         android:layout_width="match_parent"
@@ -142,6 +145,7 @@
         android:layout_below="@id/top"
         android:background="@color/progress_background"
         android:clickable="true"
+        android:focusable="true"
         android:visibility="gone"
         tools:alpha=".3"
         tools:visibility="visible">
@@ -154,4 +158,5 @@
             android:indeterminateDrawable="@drawable/basic_progress" />
 
     </FrameLayout>
+
 </FrameLayout>

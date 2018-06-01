@@ -323,7 +323,7 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
         public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
             if (convertView == null) {
                 LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                convertView = inflater.inflate(R.layout.stop_by_address_list_item, null);
+                convertView = inflater.inflate(R.layout.item_stop_by_address, null);
             }
 
             TextView stationName = (TextView) convertView.findViewById(R.id.station_name_text);

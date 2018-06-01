@@ -20,7 +20,7 @@ public class SystemMapFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        View theView = inflater.inflate(R.layout.system_map_main, container, false);
+        View theView = inflater.inflate(R.layout.fragment_system_map, container, false);
 
         imageView = (SubsamplingScaleImageView) theView.findViewById(R.id.imageView);
         imageView.setImageAsset("system-map.png");

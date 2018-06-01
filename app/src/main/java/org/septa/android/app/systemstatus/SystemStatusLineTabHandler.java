@@ -91,7 +91,7 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
             super.onCreateView(inflater, container, savedInstanceState);
             restoreArgs();
 
-            View fragmentView = inflater.inflate(R.layout.system_status_line_picker, null);
+            View fragmentView = inflater.inflate(R.layout.fragment_system_status, null);
 
             TextView pickerHeaderText = (TextView) fragmentView.findViewById(R.id.picker_header_text);
             pickerHeaderText.setText(transitType.getString("system_status_picker_title", getContext()));

@@ -71,7 +71,7 @@ public class SystemStatusFragment extends Fragment {
         tabActivityHandlers[4] = new SystemStatusLineTabHandler(getString(R.string.tab_nhsl), TransitType.NHSL, new RouteDirectionModel("NHSL", "NHSL", "Norristown TC to 69th St TC", null, null, 0));
 
 
-        View fragmentView = inflater.inflate(R.layout.next_to_arrive_main, null);
+        View fragmentView = inflater.inflate(R.layout.fragment_next_to_arrive, null);
 
         mSectionsPagerAdapter = new SectionsPagerAdapter(getChildFragmentManager());
 

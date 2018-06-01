@@ -129,7 +129,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         super.onCreate(savedInstanceState);
 
         setTitle(R.string.next_to_arrive);
-        setContentView(R.layout.next_to_arrive_results);
+        setContentView(R.layout.activity_next_to_arrive_results);
 
         rootView = findViewById(R.id.rail_next_to_arrive_results_coordinator);
 

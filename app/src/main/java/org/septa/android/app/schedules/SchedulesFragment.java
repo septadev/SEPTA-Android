@@ -84,7 +84,7 @@ public class SchedulesFragment extends Fragment {
             ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
 
 
-        View fragmentView = inflater.inflate(R.layout.schedule_fragment_main, null);
+        View fragmentView = inflater.inflate(R.layout.fragment_schedules, null);
 
         mSectionsPagerAdapter = new SchedulesFragment.SectionsPagerAdapter(getChildFragmentManager());
 

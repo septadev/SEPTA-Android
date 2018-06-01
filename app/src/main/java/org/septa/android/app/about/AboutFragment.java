@@ -39,11 +39,11 @@ public class AboutFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
-        View fragmentView = inflater.inflate(R.layout.about_main, null);
+        View fragmentView = inflater.inflate(R.layout.activity_about, null);
 
         attribListView = (LinearLayout) fragmentView.findViewById(R.id.attrib_list);
         for (String s : getResources().getStringArray(R.array.about_attributions_listview_items_texts)) {
-            TextView attribLine = (TextView) inflater.inflate(R.layout.about_attrib_list_item, null);
+            TextView attribLine = (TextView) inflater.inflate(R.layout.item_about_attribute, null);
             attribLine.setHtml(s);
             attribListView.addView(attribLine);
 

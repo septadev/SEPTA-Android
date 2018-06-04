@@ -8,6 +8,9 @@ import android.util.AttributeSet;
 import org.septa.android.app.managers.FontManager;
 
 public class TextView extends AppCompatTextView {
+
+    private static final String NEW_LINE_CHARACTER = "\n", HTML_NEW_LINE_CHARACTER = "<br/>";
+
     public TextView(Context context) {
         super(context);
     }
@@ -22,7 +25,8 @@ public class TextView extends AppCompatTextView {
         FontManager.getInstance().setFont(this, attrs);
 
         if (this.getText() != null) {
-            this.setText(Html.fromHtml(this.getText().toString()));
+            this.setText(Html.fromHtml(this.getText().toString() // enable HTML support
+                    .replace(NEW_LINE_CHARACTER, HTML_NEW_LINE_CHARACTER))); // new line character support
         }
     }
 

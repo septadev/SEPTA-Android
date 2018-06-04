@@ -101,7 +101,7 @@ public class ScheduleResultsActivity extends AppCompatActivity {
         // * Note: Will have to create a special case with the Rail line due to (M-TH) Fri Sat Sunday option
         // _________________________________________________________________________________________
 
-        setContentView(R.layout.schedules_main);
+        setContentView(R.layout.activity_schedules_results);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
@@ -266,7 +266,7 @@ public class ScheduleResultsActivity extends AppCompatActivity {
     //               radio_btn_color_normalnormal.xml        - defines unselected button color
     //               radio_btn_color_selected.xmled.xml      - defines selected button background color
     //               radio_btn_font_color_selector.xml       - defines font colors for selection
-    //               schedules_main.xml                      - main schedule UI fragment
+    //               activity_schedules_results.xmlults.xml                      - main schedule UI fragment
     //-----------------------------------------------------------------------------------------------
     private void initRadioButtonGroup() {
         radioGroup = (RadioGroup) findViewById(R.id.day_of_week_button_group);

@@ -1,11 +1,10 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/full_page_gradient_background"
-    android:paddingLeft="10dp"
-    android:paddingRight="10dp">
+    android:paddingLeft="@dimen/activity_horizontal_padding"
+    android:paddingRight="@dimen/activity_horizontal_padding">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -13,9 +12,10 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="9dp"
-            android:orientation="vertical">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/activity_vertical_padding"
+            android:paddingTop="@dimen/activity_vertical_padding">
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -35,6 +35,7 @@
                 <ImageView
                     android:layout_width="58dp"
                     android:layout_height="57dp"
+                    android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
                     android:src="@drawable/septa_official_logo" />
             </RelativeLayout>
@@ -88,6 +89,8 @@ Last Schedule Update: 9/15/207 04:07 PM"
                     android:fontFamily="sans-serif-medium"
                     android:gravity="center_horizontal"
                     android:letterSpacing="-0.02"
+                    android:layout_marginLeft="@dimen/button_margin_horizontal"
+                    android:layout_marginRight="@dimen/button_margin_horizontal"
                     android:paddingBottom="12dp"
                     android:paddingLeft="15dp"
                     android:paddingRight="15dp"
@@ -96,6 +99,7 @@ Last Schedule Update: 9/15/207 04:07 PM"
                     android:textColor="#ffffff"
                     android:textSize="14sp"
                     app:font="@string/font_roboto_medium" />
+
             </LinearLayout>
 
             <LinearLayout
@@ -119,9 +123,10 @@ Last Schedule Update: 9/15/207 04:07 PM"
                         android:layout_marginLeft="15dp"
                         android:layout_marginRight="15dp"
                         android:layout_marginTop="20dp"
+                        android:drawableEnd="@drawable/alert_toggle_closed"
                         android:drawableRight="@drawable/alert_toggle_closed"
                         android:paddingBottom="21dp"
-                        android:text="View Attributions"
+                        android:text="@string/activity_about_attributions"
                         android:textColor="#000000"
                         android:textSize="16sp"
                         app:font="@string/font_roboto_medium" />
@@ -134,20 +139,26 @@ Last Schedule Update: 9/15/207 04:07 PM"
                         android:layout_marginRight="15dp"
                         android:orientation="vertical"
                         android:visibility="gone" />
+
                 </LinearLayout>
 
                 <org.septa.android.app.view.TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="17dp"
-
                     android:autoLink="web"
                     android:letterSpacing="-0.02"
-                    android:text="Source code to the SEPTA Android application is avaiable under an open source license, but the graphics are not.  The graphics are subject to the following Copyright and Trademark terms: http://septa.org/site/copyright.html.  The source code is available at: https://github.com/septadev/SEPTA-Android."
+                    android:paddingLeft="@dimen/indent_padding"
+                    android:paddingRight="@dimen/indent_padding"
+                    android:text="@string/activity_about_credits"
                     android:textColor="#2c2c2c"
                     android:textSize="12sp"
                     app:font="@string/font_roboto_regular" />
+
             </LinearLayout>
+
         </LinearLayout>
+
     </ScrollView>
+
 </FrameLayout>

@@ -26,7 +26,7 @@ public class ConnectFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
-        View rootView = inflater.inflate(R.layout.connect_fragment_main, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_connect, container, false);
 
         setAppIntent(rootView, R.id.facebook_arrow, getResources().getString(R.string.facebook_url), getResources().getString(R.string.facebook_app_url));
         setAppIntent(rootView, R.id.twitter_arrow, getResources().getString(R.string.twitter_url), getResources().getString(R.string.twitter_app_url));

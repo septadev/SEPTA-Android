@@ -355,8 +355,9 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
 
         @Override
         protected Location doInBackground(String... strings) {
-            if (fragment.getActivity() == null)
+            if (fragment.getActivity() == null) {
                 return null;
+            }
             return MapUtils.getLocationFromAddress(fragment.getActivity(), strings[0]);
         }
 

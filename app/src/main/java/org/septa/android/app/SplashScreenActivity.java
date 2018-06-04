@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Window;
 import android.widget.ImageView;
 
+import org.septa.android.app.rating.SharedPreferencesRatingUtil;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Alerts;
 import org.septa.android.app.systemstatus.SystemStatusState;
@@ -38,6 +39,9 @@ public class SplashScreenActivity extends AppCompatActivity {
         }
 
         final long timestamp = System.currentTimeMillis();
+
+        // increment number of times app used
+        SharedPreferencesRatingUtil.incrementNumberOfUses(getApplicationContext());
 
         SeptaServiceFactory.getAlertsService().getAlerts().enqueue(new Callback<Alerts>() {
             @Override

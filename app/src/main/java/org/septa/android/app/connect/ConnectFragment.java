@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 
 import org.septa.android.app.Constants;
 import org.septa.android.app.R;
+import org.septa.android.app.rating.RatingUtil;
 import org.septa.android.app.webview.WebViewActivity;
 
 /**
@@ -33,9 +34,8 @@ public class ConnectFragment extends Fragment {
         rateTheApp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.e(TAG, "Rate the App clicked!"); // TODO: remove
-
-                // TODO: pop open rate the app dialog
+                // send user to playstore to rate app
+                RatingUtil.rateAppInPlayStore(getContext());
             }
         });
 

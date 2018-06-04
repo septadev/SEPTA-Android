@@ -62,7 +62,6 @@ public class MainApplication extends Application implements Runnable {
             String septaWebServicesBaseUrl = bundle.getString("org.septa.amazonaws.baseurl");
             SeptaServiceFactory.setSeptaWebServicesBaseUrl(septaWebServicesBaseUrl);
 
-
             SeptaServiceFactory.init();
 
             //SeptaServiceFactory.getFavoritesService().deleteAllFavorites(this);
@@ -94,12 +93,11 @@ public class MainApplication extends Application implements Runnable {
             }
         });
 
+        // check if holiday
         Date now = new Date();
         for (TransitType transitType : TransitType.values()) {
             CursorAdapterSupplier<Boolean> cursorAdapterSupplier = DatabaseManager.getInstance(this).getHolidayIndicatorCursorAdapaterSupplier(transitType);
             transitType.setHolidayToday(cursorAdapterSupplier.getItemFromId(this, now));
         }
-
-
     }
 }

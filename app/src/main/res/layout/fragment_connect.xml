@@ -145,8 +145,6 @@
 
             </RelativeLayout>
 
-            <!-- TODO: Rate the App -->
-
             <RelativeLayout
                 android:id="@+id/rate_the_app"
                 android:layout_width="match_parent"

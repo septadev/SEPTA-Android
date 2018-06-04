@@ -27,6 +27,7 @@ import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
 import org.septa.android.app.database.DatabaseManager;
 import org.septa.android.app.locationpicker.LineAwareLocationPickerTabActivityHandler;
+import org.septa.android.app.rating.RatingUtil;
 
 import java.util.List;
 
@@ -114,8 +115,15 @@ public class SchedulesFragment extends Fragment {
 
         tabLayout.getTabAt(startingIndex).select();
 
+        // ask to rate app
+        if (RatingUtil.shouldShowDialog(getContext())) {
+            RatingUtil.showRatingDialog(getContext());
+        }
+
         return fragmentView;
     }
+
+
 
     @Override
     public void onResume() {

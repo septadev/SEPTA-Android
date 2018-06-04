@@ -70,7 +70,7 @@ public class NextToArriveFragment extends Fragment {
         tabActivityHandlers[2] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_subway), TAB_HEADER_STRING_NAME, getString(R.string.nta_query_button_text), TransitType.SUBWAY, dbManager.getSubwayRouteCursorAdapterSupplier(), dbManager.getSubwayStopCursorAdapterSupplier(), dbManager.getSubwayStopAfterCursorAdapterSupplier(), NextToArriveResultsActivity.class);
         tabActivityHandlers[4] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_nhsl), TAB_HEADER_STRING_NAME, getString(R.string.nta_query_button_text), TransitType.NHSL, dbManager.getNHSLRouteCursorAdapterSupplier(), dbManager.getBusStopCursorAdapterSupplier(), dbManager.getBusStopAfterCursorAdapterSupplier(), NextToArriveResultsActivity.class);
 
-        View fragmentView = inflater.inflate(R.layout.next_to_arrive_main, null);
+        View fragmentView = inflater.inflate(R.layout.fragment_next_to_arrive, null);
 
         mSectionsPagerAdapter = new SectionsPagerAdapter(getChildFragmentManager());
 

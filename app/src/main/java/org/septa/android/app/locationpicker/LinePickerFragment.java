@@ -64,7 +64,7 @@ public class LinePickerFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         restoreArgs();
 
-        View rootView = inflater.inflate(R.layout.line_picker_modal, container);
+        View rootView = inflater.inflate(R.layout.fragment_line_picker, container);
 
         View exitView = rootView.findViewById(R.id.exit);
         filterText = (EditText) rootView.findViewById(R.id.line_filter_text);
@@ -167,7 +167,7 @@ public class LinePickerFragment extends DialogFragment {
                             @NonNull ViewGroup parent) {
             if (convertView == null) {
                 LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                convertView = inflater.inflate(R.layout.line_picker_item, null);
+                convertView = inflater.inflate(R.layout.item_line_picker, null);
             }
 
             RouteDirectionModel route = getItem(position);
@@ -183,14 +183,16 @@ public class LinePickerFragment extends DialogFragment {
                     titleText.setText(route.getRouteLongName());
                 }
 
-                if (route.getDirectionDescription() != null)
+                if (route.getDirectionDescription() != null) {
                     if (transitType == TransitType.RAIL) {
                         descText.setText(route.getDirectionDescription());
                     } else {
                         descText.setText("to " + route.getDirectionDescription());
                     }
-                else {
+                    descText.setVisibility(View.VISIBLE);
+                } else {
                     descText.setText(R.string.empty_string);
+                    descText.setVisibility(View.GONE);
                 }
 
                 Alert alert = SystemStatusState.getAlertForLine(transitType, route.getRouteId());

@@ -59,7 +59,7 @@ public class SystemStatusResultsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.system_status_main);
+        setContentView(R.layout.activity_system_status_results);
         setTitle("System Status:");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);

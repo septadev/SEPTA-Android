@@ -58,7 +58,7 @@ public class ManageFavoritesFragment extends Fragment implements DraggableFavori
         initialCount = favoriteList.size();
 
         setHasOptionsMenu(true);
-        fragmentView = inflater.inflate(R.layout.fragment_manage_favorites, container, false);
+        fragmentView = inflater.inflate(R.layout.fragment_favorites_manage, container, false);
         favoritesListView = (DragListView) fragmentView.findViewById(R.id.favorites_list_draggable);
 
         // enabled swipe to delete

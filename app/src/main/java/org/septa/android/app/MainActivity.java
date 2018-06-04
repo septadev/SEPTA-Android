@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         trainview = WebViewFragment.getInstance(getResources().getString(R.string.trainview_url));
         transitview = WebViewFragment.getInstance(getResources().getString(R.string.transitview_url));
 
-        setContentView(R.layout.main_activity);
+        setContentView(R.layout.activity_main);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

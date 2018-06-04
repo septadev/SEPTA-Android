@@ -185,7 +185,7 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
         List<StopModel> filterRoutes;
 
         public StationNameAdapter2(@NonNull Context context, @NonNull List<StopModel> objects) {
-            super(context, R.layout.stop_picker_item, objects);
+            super(context, R.layout.item_stop_picker, objects);
             origRoutes = objects;
             filterRoutes = objects;
         }
@@ -195,7 +195,7 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
             // Get the data item for this position
             // Check if an existing view is being reused, otherwise inflate the view
             if (convertView == null) {
-                convertView = LayoutInflater.from(getContext()).inflate(R.layout.stop_picker_item, parent, false);
+                convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_stop_picker, parent, false);
             }
 
             StopModel stop = getItem(position);

@@ -101,7 +101,7 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        setContentView(R.layout.nta_trip_details);
+        setContentView(R.layout.activity_next_to_arrive_trip_detail);
 
         if (savedInstanceState != null) {
             restoreInstanceState(savedInstanceState);

@@ -86,8 +86,9 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
                                  Bundle savedInstanceState) {
             final View rootView = inflater.inflate(R.layout.location_picker_by_address, container, false);
 
-            if (getActivity() == null)
+            if (getActivity() == null) {
                 return rootView;
+            }
 
             restoreArgs();
             stopsListView = (ListView) rootView.findViewById(R.id.stop_list);
@@ -100,16 +101,14 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
             addressEntry = (AutoCompleteTextView) rootView.findViewById(R.id.address_text);
             int permissionCheck = ContextCompat.checkSelfPermission(getActivity(),
                     Manifest.permission.ACCESS_FINE_LOCATION);
-            if (permissionCheck == PackageManager.PERMISSION_GRANTED)
-
-            {
+            if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
                 Task<Location> locationTask = LocationServices.getFusedLocationProviderClient(getActivity()).getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
                     @Override
                     public void onSuccess(Location location) {
                         if (location != null) {
                             if (getActivity() == null)
                                 return;
-                            PlacesAutoCompleteAdapter placesAutoCompleteAdapter = new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item, new LatLng(location.getLatitude(), location.getLongitude()));
+                            PlacesAutoCompleteAdapter placesAutoCompleteAdapter = new PlacesAutoCompleteAdapter(getActivity(), R.layout.item_autocomplete_list, new LatLng(location.getLatitude(), location.getLongitude()));
                             addressEntry.setAdapter(placesAutoCompleteAdapter);
                             addressEntry.addTextChangedListener(placesAutoCompleteAdapter);
                         }
@@ -138,7 +137,6 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
                 addressEntry.setCompoundDrawablesWithIntrinsicBounds(drawables[0], drawables[1], ContextCompat.getDrawable(getContext(), R.drawable.ic_gps_not_fixed_black_24_px), drawables[3]);
             }
 
-
             addressEntry.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -154,7 +152,6 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
                     findAddressTask.execute(args);
                 }
             });
-
 
             addressEntry.setOnKeyListener(new View.OnKeyListener() {
                 public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -179,7 +176,6 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
                 }
             });
 
-
             return rootView;
         }
 
@@ -188,7 +184,6 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
         }
     }
 
-
     static class FindClosestStationTask extends AsyncTask<LatLng, Void, List<StopModelWithDistance>> {
 
         ByAddressFragment fragment;
@@ -196,7 +191,6 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
         FindClosestStationTask(ByAddressFragment fragment) {
             this.fragment = fragment;
         }
-
 
         @Override
         protected List<StopModelWithDistance> doInBackground(LatLng... locations) {
@@ -323,7 +317,7 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
         public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
             if (convertView == null) {
                 LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                convertView = inflater.inflate(R.layout.stop_by_address_list_item, null);
+                convertView = inflater.inflate(R.layout.item_stop_by_address, null);
             }
 
             TextView stationName = (TextView) convertView.findViewById(R.id.station_name_text);
@@ -334,7 +328,6 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
             return convertView;
 
         }
-
 
     }
 
@@ -355,14 +348,13 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
 
         @Override
         protected Location doInBackground(String... strings) {
-            if (fragment.getActivity() == null)
+            if (fragment.getActivity() == null) {
                 return null;
+            }
             return MapUtils.getLocationFromAddress(fragment.getActivity(), strings[0]);
         }
 
-
     }
-
 
     static class StopModelWithDistance implements Comparable<StopModelWithDistance> {
         Double distance;

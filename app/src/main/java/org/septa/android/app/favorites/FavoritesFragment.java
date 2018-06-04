@@ -146,7 +146,7 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
 
     private View onCreateViewNoFavorites(LayoutInflater inflater, @Nullable ViewGroup container) {
         setHasOptionsMenu(false);
-        View fragmentView = inflater.inflate(R.layout.no_favorites, container, false);
+        View fragmentView = inflater.inflate(R.layout.fragment_favorites_none, container, false);
 
         View button = fragmentView.findViewById(R.id.add_favorite_button);
 

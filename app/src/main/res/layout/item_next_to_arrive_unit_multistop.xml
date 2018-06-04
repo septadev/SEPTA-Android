@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:paddingBottom="8dp"
-    android:paddingTop="8dp" >
+    android:paddingTop="8dp">
 
     <!-- TODO: Extract constraint layouts into views as needed, remove text -->
     <android.support.constraint.ConstraintLayout
@@ -59,6 +59,7 @@
                 android:id="@+id/orig_line_advisory_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="7dp"
                 android:layout_marginRight="7dp"
                 android:layout_weight="1"
                 android:src="@drawable/ic_advisory"
@@ -69,6 +70,7 @@
                 android:id="@+id/orig_line_alert_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="7dp"
                 android:layout_marginRight="7dp"
                 android:layout_weight="1"
                 android:src="@drawable/ic_alert"
@@ -79,6 +81,7 @@
                 android:id="@+id/orig_line_detour_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="7dp"
                 android:layout_marginRight="7dp"
                 android:layout_weight="1"
                 android:src="@drawable/ic_detour"
@@ -89,11 +92,13 @@
                 android:id="@+id/orig_line_weather_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="7dp"
                 android:layout_marginRight="7dp"
                 android:layout_weight="1"
                 android:src="@drawable/ic_weather"
                 android:visibility="gone"
                 tools:visibility="visible" />
+
         </LinearLayout>
 
         <View
@@ -101,6 +106,7 @@
             android:layout_width="0dp"
             android:layout_height="1dp"
             android:layout_marginLeft="0dp"
+            android:layout_marginStart="0dp"
             android:layout_marginTop="0dp"
             android:background="#CCC"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -116,6 +122,7 @@
         android:layout_height="wrap_content"
         android:background="?android:attr/selectableItemBackground"
         android:clickable="true"
+        android:focusable="true"
         android:paddingTop="8dp">
 
         <ImageView
@@ -123,6 +130,7 @@
             android:layout_width="10dp"
             android:layout_height="10dp"
             android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="2dp"
             android:scaleType="centerInside"
             android:src="@drawable/shape_circle"
@@ -133,6 +141,7 @@
             android:id="@+id/view1"
             android:layout_width="1dp"
             android:layout_height="0dp"
+            android:layout_marginEnd="0dp"
             android:layout_marginRight="0dp"
             android:background="#A1B8D1"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -160,6 +169,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="0dp"
+            android:layout_marginStart="0dp"
             android:layout_marginTop="0dp"
             android:text="3 min delay"
             android:textColor="@color/no_delay_minutes"
@@ -171,8 +181,10 @@
             android:id="@+id/orig_trip_number_text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="32dp"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="32dp"
+            android:layout_marginStart="8dp"
             android:layout_marginTop="0dp"
             android:ellipsize="end"
             android:maxLines="1"
@@ -187,6 +199,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
+            android:layout_marginEnd="32dp"
             android:layout_marginRight="32dp"
             android:layout_marginTop="0dp"
             android:background="@drawable/ontime_boarder"
@@ -203,7 +216,7 @@
                 android:layout_height="wrap_content"
                 android:text="DEPARTING"
                 android:textAlignment="center"
-                android:textColor="#6d6d6d"
+                android:textColor="@color/light_gray"
                 app:font="@string/font_roboto_regular" />
 
             <org.septa.android.app.view.TextView
@@ -214,6 +227,7 @@
                 android:textAlignment="center"
                 android:textColor="@color/on_time_departing"
                 app:font="@string/font_roboto_bold" />
+
         </LinearLayout>
 
         <ImageView
@@ -230,6 +244,7 @@
             app:layout_constraintLeft_toRightOf="@+id/orig_departing_border"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="@+id/orig_departing_border" />
+
     </android.support.constraint.ConstraintLayout>
 
     <android.support.constraint.ConstraintLayout
@@ -252,6 +267,7 @@
             android:layout_height="10dp"
             android:layout_marginBottom="8dp"
             android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:tint="@color/colorPrimary"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -274,6 +290,7 @@
             app:layout_constraintLeft_toRightOf="@+id/imageView2"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
     </android.support.constraint.ConstraintLayout>
 
     <android.support.constraint.ConstraintLayout
@@ -285,17 +302,18 @@
             android:layout_width="1dp"
             android:layout_height="0dp"
             android:layout_marginLeft="20.5dp"
+            android:layout_marginStart="20.5dp"
             android:background="#A1B8D1"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
 
         <View
             android:id="@+id/view4"
             android:layout_width="0dp"
             android:layout_height="1dp"
             android:layout_marginLeft="32dp"
+            android:layout_marginStart="32dp"
             android:background="#CCC"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -342,6 +360,7 @@
                 android:id="@+id/term_line_advisory_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="7dp"
                 android:layout_marginRight="7dp"
                 android:layout_weight="1"
                 android:src="@drawable/ic_advisory"
@@ -352,6 +371,7 @@
                 android:id="@+id/term_line_alert_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="7dp"
                 android:layout_marginRight="7dp"
                 android:layout_weight="1"
                 android:src="@drawable/ic_alert"
@@ -372,25 +392,30 @@
                 android:id="@+id/term_line_weather_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="7dp"
                 android:layout_marginRight="7dp"
                 android:layout_weight="1"
                 android:src="@drawable/ic_weather"
                 android:visibility="gone"
                 tools:visibility="visible" />
+
         </LinearLayout>
 
         <View
             android:id="@+id/view5"
             android:layout_width="0dp"
             android:layout_height="1dp"
+            android:layout_marginEnd="32dp"
             android:layout_marginLeft="0dp"
             android:layout_marginRight="32dp"
+            android:layout_marginStart="0dp"
             android:layout_marginTop="0dp"
             android:background="#CCC"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toRightOf="@+id/linearLayout2"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
     </android.support.constraint.ConstraintLayout>
 
     <android.support.constraint.ConstraintLayout
@@ -398,13 +423,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?android:attr/selectableItemBackground"
-        android:clickable="true">
+        android:clickable="true"
+        android:focusable="true">
 
         <ImageView
             android:id="@+id/imageView7"
             android:layout_width="10dp"
             android:layout_height="10dp"
             android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="2dp"
             android:scaleType="centerInside"
             android:src="@drawable/ic_destination_pin"
@@ -441,6 +468,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="0dp"
+            android:layout_marginStart="0dp"
             android:layout_marginTop="0dp"
             android:text="On Time"
             android:textColor="@color/no_delay_minutes"
@@ -452,8 +480,10 @@
             android:id="@+id/term_trip_number_text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="32dp"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="32dp"
+            android:layout_marginStart="8dp"
             android:ellipsize="end"
             android:maxLines="1"
             android:text="#1081 to Cynwyd"
@@ -467,6 +497,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
+            android:layout_marginEnd="32dp"
             android:layout_marginRight="32dp"
             android:background="@drawable/ontime_boarder"
             android:orientation="vertical"
@@ -482,7 +513,7 @@
                 android:layout_height="wrap_content"
                 android:text="DEPARTING"
                 android:textAlignment="center"
-                android:textColor="#6d6d6d"
+                android:textColor="@color/light_gray"
                 app:font="@string/font_roboto_regular" />
 
             <org.septa.android.app.view.TextView
@@ -493,6 +524,7 @@
                 android:textAlignment="center"
                 android:textColor="@color/on_time_departing"
                 app:font="@string/font_roboto_bold" />
+
         </LinearLayout>
 
         <ImageView
@@ -505,5 +537,7 @@
             app:layout_constraintLeft_toRightOf="@+id/term_departing_border"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="@+id/term_departing_border" />
+
     </android.support.constraint.ConstraintLayout>
+
 </LinearLayout>

@@ -237,7 +237,7 @@ public class NextToArriveTripView extends FrameLayout {
 
     private View getSingleStopTripView(final NextArrivalRecord unit) {
 
-        View line = LayoutInflater.from(getContext()).inflate(R.layout.next_to_arrive_unit, this, false);
+        View line = LayoutInflater.from(getContext()).inflate(R.layout.item_next_to_arrive_unit, this, false);
 
 
         DateFormat dateFormat = DateFormat.getTimeInstance(DateFormat.SHORT);
@@ -327,7 +327,7 @@ public class NextToArriveTripView extends FrameLayout {
 
     public View getMultistopTripView(final NextArrivalRecord item) {
 
-        View convertView = LayoutInflater.from(getContext()).inflate(R.layout.next_to_arrive_unit_multistop, this, false);
+        View convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_next_to_arrive_unit_multistop, this, false);
 
         DateFormat dateFormat = DateFormat.getTimeInstance(DateFormat.SHORT);
 

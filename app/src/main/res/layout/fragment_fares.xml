@@ -421,7 +421,7 @@
                     android:paddingLeft="15dp"
                     android:paddingRight="11dp"
                     android:text="Did you know your SEPTA Pass, and now your SEPTA Key, gets you discounts on food, drink, museums, sports, shops and more? Use your valid SEPTA Key, TrailPass, TransPass, or One Day Independence Pass and receive discounts to any of our Perks Partners."
-                    android:textColor="#6d6d6d"
+                    android:textColor="@color/light_gray"
                     android:textSize="12sp"
                     app:font="@string/font_roboto_regular" />
 

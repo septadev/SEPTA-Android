@@ -111,7 +111,7 @@
             android:layout_toRightOf="@id/route_icon"
             android:clickable="false"
             android:text="to/from Center City Philadelphia"
-            android:textColor="@color/line_picker_direction"
+            android:textColor="@color/light_gray"
             android:textSize="15sp"
             app:font="@string/font_roboto_light" />
 

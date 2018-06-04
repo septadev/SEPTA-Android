@@ -40,6 +40,10 @@
 
     <color name="default_line_color">@android:color/holo_red_dark</color>
 
+    <!-- Route and Stop Picker Text Colors -->
+    <color name="light_gray">#6d6d6d</color>
+    <color name="route_stop_picker_item_border">#c6c6c6</color>
+
 
     <!-- Find Station/Stop Colors -->
     <color name="find_station_tab_active_text">#ffffff</color>
@@ -57,7 +61,5 @@
 
     <!-- Favorites -->
     <color name="no_results_found">#fcbe56</color>
-    <color name="line_picker_direction">#6D6D6D</color>
-    <color name="route_stop_picker_item_border">#c6c6c6</color>
 
 </resources>

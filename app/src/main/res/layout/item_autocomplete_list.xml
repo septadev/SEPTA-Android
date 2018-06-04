@@ -37,7 +37,7 @@
             android:layout_marginLeft="@dimen/line_stop_picker_name_padding"
             android:layout_marginStart="@dimen/line_stop_picker_name_padding"
             android:text="Philadelphia, PA 19107"
-            android:textColor="@color/line_picker_direction"
+            android:textColor="@color/light_gray"
             android:textSize="15sp"
             app:font="@string/font_roboto_light" />
 

@@ -2,10 +2,10 @@ package org.septa.android.app.rating;
 
 import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.v7.app.AlertDialog;
+import android.support.design.widget.BottomSheetDialog;
+import android.view.View;
 
 import org.septa.android.app.R;
 
@@ -18,40 +18,64 @@ public class RatingUtil {
     private static final int MIN_USES_TO_RATE = 2; // TODO: change to 20
 
     // increment this when wanting to re-ask user for a rating
-    private static final int CURRENT_RATING_ID = 1;
+    private static final int CURRENT_RATING_ID = 2;
 
     private RatingUtil() {
 
     }
 
     public static void showRatingDialog(final Context context) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle(context.getString(R.string.rating_title))
-                .setMessage(R.string.rating_details)
-                .setPositiveButton(R.string.rating_rate_button, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // link user to playstore
-                        rateAppInPlayStore(context);
+        final BottomSheetDialog ratingDialog = new BottomSheetDialog(context);
+        ratingDialog.setContentView(R.layout.dialog_rating);
 
-                        SharedPreferencesRatingUtil.setAppRated(context, true);
-                        dialog.dismiss();
-                    }
-                })
-                .setNegativeButton(R.string.rating_no_thanks_button, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        SharedPreferencesRatingUtil.setAppRated(context, true);
-                        dialog.dismiss();
-                    }
-                })
-                .setNeutralButton(R.string.rating_remind_me_later_button, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                })
-                .create().show();
+        final View closeDialog = ratingDialog.findViewById(R.id.rating_dialog_close),
+                rateApp = ratingDialog.findViewById(R.id.button_rate_app),
+                noThanks = ratingDialog.findViewById(R.id.button_rate_app_no_thanks),
+                remindMeLater = ratingDialog.findViewById(R.id.button_rate_app_remind_me_later);
+
+        if (closeDialog != null) {
+            closeDialog.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ratingDialog.dismiss();
+                }
+            });
+        }
+        if (rateApp != null) {
+            rateApp.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // link user to playstore
+                    rateAppInPlayStore(context);
+
+                    // save that user rated the app
+                    SharedPreferencesRatingUtil.setAppRated(context, true);
+
+                    ratingDialog.dismiss();
+                }
+            });
+        }
+        if (noThanks != null) {
+            noThanks.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // save that user declined to rate app
+                    SharedPreferencesRatingUtil.setAppRated(context, true);
+
+                    ratingDialog.dismiss();
+                }
+            });
+        }
+        if (remindMeLater != null) {
+            remindMeLater.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ratingDialog.dismiss();
+                }
+            });
+        }
+
+        ratingDialog.show();
     }
 
     public static void rateAppInPlayStore(Context context) {

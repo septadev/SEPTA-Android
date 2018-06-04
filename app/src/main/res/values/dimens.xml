@@ -12,4 +12,5 @@
     <dimen name="dialog_alert_padding">25dp</dimen>
     <dimen name="favorite_container_padding">10dp</dimen>
     <dimen name="favorite_item_margin">5dp</dimen>
+    <dimen name="line_stop_picker_name_padding">17dp</dimen>
 </resources>

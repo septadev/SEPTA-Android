@@ -5,34 +5,42 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout android:id="@+id/entry_view"
+    <LinearLayout
+        android:id="@+id/entry_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/line_item_background"
+        android:background="?android:attr/selectableItemBackground"
         android:orientation="vertical">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/route_stop_picker_item_border" />
 
         <org.septa.android.app.view.TextView
             android:id="@+id/street_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="17dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginLeft="@dimen/line_stop_picker_name_padding"
+            android:layout_marginStart="@dimen/line_stop_picker_name_padding"
+            android:layout_marginTop="@dimen/line_stop_picker_name_padding"
             android:text="1234 Market Street"
-            android:textColor="#000000"
-            android:textSize="20dp"
-
+            android:textColor="@android:color/black"
+            android:textSize="20sp"
             app:font="@string/font_roboto_medium" />
 
         <org.septa.android.app.view.TextView
             android:id="@+id/city_state_zip_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="21dp"
-            android:layout_marginLeft="17dp"
+            android:layout_marginBottom="@dimen/line_stop_picker_name_padding"
+            android:layout_marginLeft="@dimen/line_stop_picker_name_padding"
+            android:layout_marginStart="@dimen/line_stop_picker_name_padding"
             android:text="Philadelphia, PA 19107"
-            android:textColor="#8c8c8c"
-            android:textSize="15dp"
+            android:textColor="@color/line_picker_direction"
+            android:textSize="15sp"
             app:font="@string/font_roboto_light" />
+
     </LinearLayout>
 
     <ImageView
@@ -43,4 +51,5 @@
         android:src="@drawable/powered_by_google_light"
         android:visibility="gone"
         tools:visibility="gone" />
+
 </FrameLayout>

@@ -3,8 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/line_item_background"
+    android:background="?android:attr/selectableItemBackground"
     android:orientation="vertical">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/route_stop_picker_item_border" />
 
     <org.septa.android.app.view.TextView
         android:id="@+id/station_name_text"
@@ -13,9 +18,10 @@
         android:layout_marginLeft="17dp"
         android:layout_marginTop="17dp"
         android:text="Thorndale"
-        android:textColor="#000000"
+        android:textColor="@android:color/black"
         android:textSize="20sp"
-        app:font="@string/font_roboto_medium" />
+        app:font="@string/font_roboto_medium"
+        android:layout_marginStart="17dp" />
 
     <org.septa.android.app.view.TextView
         android:id="@+id/station_distance_text"
@@ -27,5 +33,7 @@
         android:text="1.0m"
         android:textColor="#144b88"
         android:textSize="15sp"
-        app:font="@string/font_roboto_regular" />
+        app:font="@string/font_roboto_regular"
+        android:layout_marginEnd="18dp" />
+
 </LinearLayout>

@@ -57,5 +57,7 @@
 
     <!-- Favorites -->
     <color name="no_results_found">#fcbe56</color>
+    <color name="line_picker_direction">#6D6D6D</color>
+    <color name="route_stop_picker_item_border">#c6c6c6</color>
 
 </resources>

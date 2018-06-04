@@ -25,11 +25,11 @@ public class FaresFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
-        View rootView = inflater.inflate(R.layout.fares_fragment_main, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_fares, container, false);
 
         setHttpIntent(rootView, R.id.septa_key_link, getResources().getString(R.string.septa_key_url), getResources().getString(R.string.septa_key_title));
         setHttpIntent(rootView, R.id.more_about_fares_button, getResources().getString(R.string.about_fares_url), getResources().getString(R.string.about_fares_title));
-        setHttpIntent(rootView, R.id.pass_perks_button, getResources().getString(R.string.about_pass_perks_url), getResources().getString(R.string.about_pass_perks_title));
+        setHttpIntent(rootView, R.id.perks_button, getResources().getString(R.string.about_perks_url), getResources().getString(R.string.about_perks_title));
 
         formatAndSetText(rootView, R.id.cash_text, R.string.cash_text, new Object[]{getResources().getString(R.string.cash_price), getResources().getString(R.string.quick_trip_price)});
         formatAndSetText(rootView, R.id.token_text, R.string.token_text, new Object[]{getResources().getString(R.string.token_each_price), getResources().getString(R.string.token_transfer_price)});

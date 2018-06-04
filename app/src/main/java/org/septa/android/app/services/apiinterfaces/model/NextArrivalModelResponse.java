@@ -25,7 +25,7 @@ public class NextArrivalModelResponse implements Serializable {
     @SerializedName("status")
     private int status;
     @SerializedName("arrivals")
-    private List<NextArrivalRecord> nextArrivalRecords = new ArrayList<NextArrivalRecord>();
+    private List<NextArrivalRecord> nextArrivalRecords = new ArrayList<>();
 
     public int getStartStationId() {
         return startStationId;

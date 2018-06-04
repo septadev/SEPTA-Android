@@ -1,5 +1,5 @@
 // ------------------
-//defiinition entries
+// definition entries
 // ------------------
 def getGitHash = { ->
     def stdout = new ByteArrayOutputStream()

@@ -13,13 +13,13 @@
         android:background="@drawable/full_page_gradient_background"
         android:orientation="vertical">
 
-
         <org.septa.android.app.view.TextView
             android:id="@+id/picker_header_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="13dp"
             android:layout_marginLeft="12dp"
+            android:layout_marginStart="12dp"
             android:layout_marginTop="12dp"
             android:text="Regional Rail"
             android:textColor="#144b88"
@@ -33,21 +33,21 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:background="#ffffff"
-            android:elevation="4dp"
+            android:elevation="@dimen/white_box_elevation"
             android:orientation="vertical">
-
 
             <org.septa.android.app.view.TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="15dp"
+                android:layout_marginStart="15dp"
                 android:layout_marginTop="13dp"
                 android:clickable="true"
+                android:focusable="true"
                 android:text="Select your stations to see Next To Arrive Trains."
-                android:textColor="#6d6d6d"
+                android:textColor="@color/light_gray"
                 android:textSize="12sp"
                 app:font="@string/font_roboto_regular" />
-
 
             <org.septa.android.app.view.TextView
                 android:id="@+id/starting_stop"
@@ -58,10 +58,14 @@
                 android:layout_marginTop="20dp"
                 android:background="@drawable/stop_picker_background"
                 android:clickable="true"
+                android:drawableEnd="@drawable/ic_search"
                 android:drawableRight="@drawable/ic_search"
+                android:focusable="true"
                 android:paddingBottom="14dp"
+                android:paddingEnd="13dp"
                 android:paddingLeft="10dp"
                 android:paddingRight="13dp"
+                android:paddingStart="10dp"
                 android:paddingTop="15dp"
                 android:text="Starting Station" />
 
@@ -74,10 +78,14 @@
                 android:layout_marginTop="10dp"
                 android:background="@drawable/stop_picker_background"
                 android:clickable="true"
+                android:drawableEnd="@drawable/ic_search"
                 android:drawableRight="@drawable/ic_search"
+                android:focusable="true"
                 android:paddingBottom="14dp"
+                android:paddingEnd="13dp"
                 android:paddingLeft="10dp"
                 android:paddingRight="13dp"
+                android:paddingStart="10dp"
                 android:paddingTop="15dp"
                 android:text="Destination Station" />
 
@@ -93,12 +101,12 @@
                 android:background="@drawable/button_gradient_background"
                 android:clickable="true"
                 android:elevation="4dp"
-                android:text="View Schedules"
+                android:focusable="true"
+                android:text="@string/schedule_query_button_text"
                 android:textColor="#ffffff" />
         </LinearLayout>
 
     </LinearLayout>
-
 
     <FrameLayout
         android:id="@+id/progress_view"
@@ -108,6 +116,7 @@
         android:background="@color/progress_background"
         android:clickable="true"
         android:elevation="4dp"
+        android:focusable="true"
         android:visibility="gone"
         tools:alpha="128"
         tools:background="0x00000000"
@@ -122,4 +131,5 @@
             tools:alpha="128" />
 
     </FrameLayout>
+
 </FrameLayout>

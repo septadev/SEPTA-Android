@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tool="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/full_page_gradient_background">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <org.septa.android.app.view.TextView
+            android:id="@+id/picker_header_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="12dp"
+            android:text="Regional Rail Status"
+            android:textColor="#144b88"
+            android:textSize="20sp"
+            app:font="@string/font_roboto_bold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="11dp"
+            android:background="#ffffff"
+            android:elevation="@dimen/white_box_elevation"
+            android:orientation="vertical">
+
+            <org.septa.android.app.view.TextView
+                android:id="@+id/select_line_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="13dp"
+                android:layout_marginLeft="12dp"
+                android:layout_marginTop="12dp"
+                android:text="Select Line to View Status"
+                android:textColor="#000000"
+                android:textSize="12sp"
+                app:font="@string/font_roboto_regular" />
+
+            <org.septa.android.app.view.TextView
+                android:id="@+id/line_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginTop="7dp"
+                android:background="@drawable/line_picker_background"
+                android:drawablePadding="10dp"
+                android:drawableRight="@drawable/ic_line_picker"
+                android:paddingBottom="14dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="13dp"
+                android:paddingTop="15dp"
+                android:text="Select Line"
+                android:textColor="#000000"
+                android:textSize="14sp"
+                app:font="@string/font_roboto_regular" />
+
+            <Button
+                android:id="@+id/view_status_button"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginBottom="15dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginTop="15dp"
+                android:alpha=".3"
+                android:background="@drawable/button_gradient_background"
+                android:clickable="false"
+                android:text="View Status"
+                android:textColor="#ffffff" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/global_alert_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="15dp"
+            android:background="#ffffff"
+            android:elevation="@dimen/white_box_elevation"
+            android:orientation="vertical"
+            android:padding="20dp"
+            android:visibility="gone"
+            tool:visibility="visible">
+
+            <org.septa.android.app.view.TextView
+                android:id="@+id/global_alert_title"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:drawableRight="@drawable/alert_toggle_closed"
+                android:text="@string/title_generic_alert"
+                android:textColor="#000000"
+                android:textSize="16sp"
+                app:font="@string/font_roboto_medium" />
+
+            <ScrollView
+                android:id="@+id/global_alert_scrollview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone">
+
+                <org.septa.android.app.view.TextView
+                    android:id="@+id/global_alert_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:linksClickable="true"
+                    android:paddingTop="20dp"
+                    android:text="ADVISORIES
+    Service Advisory Airport
+
+    Late Night Changes to Service
+
+    Beginning Monday, June 19, 2017
+
+    Due to an ongoing track improvement project, the following adjustments to delay night service will take effect starting Monday, June 19th. This construction is expected to last 18 weeks.
+
+    Weekday service will terminate at Temple University Station for trains #466 (departing terminals at 9:07 p.m. - Alternate Option: Lansdale/Doylestown #594, departing Suburban at 9:50 p.m., with stops at Melrose, Elkins Park Stations), #470 (departing terminals at 10:07 p.m. - Alternate Option, Warminster #472, departing Suburban at 11:05 p.m.), and #474 (departing terminals at 11:07 p.m. - Alternate Option: Lansdale/Doylestown #596, departing Suburban at 11:35 p.m., with stops at Elkins, Melrose Park Stations)
+
+    Weekday Train #475 (departing Glenside at 10:23 p.m.) will be CANCELED, however, this train will still operate from Temple University (departing at 10:44 p.m.) with service to airport terminals. As an alternate for service from Glenside, customers should take Train #473 (departing Glenside at 9:41 p.m.) or Train #477 (departing Glenside at 10:51 p.m.)
+
+    Saturday &amp; Sunday Train #476 (departing terminals at 11:37 p.m.) service will terminate at Temple University Station (Alternate Option: Glenside #478, departing Suburban at 12:35 a.m.)
+    Opposite Side Boarding at Melrose &amp; Elkins Park Stations: 9:30 p.m. - End of Service
+
+    While this work takes place, ALL trains will board from the INBOUND (toward Center City) platform at Melrose and Elkins Park Stations. Please listen for station announcements for any additional changes to service or boarding locations.
+
+    For a complete list of the adjustments to service, please visit the delay night service page."
+                    android:textColor="#000000"
+                    android:textSize="12sp"
+                    app:font="@string/font_roboto_light" />
+
+            </ScrollView>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/mobile_alert_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="15dp"
+            android:background="#ffffff"
+            android:elevation="@dimen/white_box_elevation"
+            android:orientation="vertical"
+            android:padding="20dp"
+            android:visibility="gone"
+            tool:visibility="visible">
+
+            <org.septa.android.app.view.TextView
+                android:id="@+id/mobile_alert_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableRight="@drawable/alert_toggle_closed"
+                android:text="@string/title_mobile_app_alert"
+                android:textColor="#000000"
+                android:textSize="16sp"
+                app:font="@string/font_roboto_medium" />
+
+            <ScrollView
+                android:id="@+id/mobile_alert_scrollview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone">
+
+                <org.septa.android.app.view.TextView
+                    android:id="@+id/mobile_alert_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:linksClickable="true"
+                    android:paddingTop="20dp"
+                    android:text="Test"
+                    android:textColor="#000000"
+                    android:textSize="12sp"
+                    app:font="@string/font_roboto_light" />
+
+            </ScrollView>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>

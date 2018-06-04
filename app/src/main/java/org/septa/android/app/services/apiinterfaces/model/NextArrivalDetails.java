@@ -116,7 +116,7 @@ public class NextArrivalDetails {
         @SerializedName("nextstop")
         NextStop nextStop;
         @SerializedName("consist")
-        List<String> consist = new ArrayList<String>();
+        List<String> consist = new ArrayList<>();
         @SerializedName("destination")
         Destination destination;
 

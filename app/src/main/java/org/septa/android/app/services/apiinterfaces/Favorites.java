@@ -2,8 +2,10 @@ package org.septa.android.app.services.apiinterfaces;
 
 import android.content.Context;
 
+import org.septa.android.app.favorites.FavoriteState;
 import org.septa.android.app.services.apiinterfaces.model.Favorite;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -12,14 +14,33 @@ import java.util.Map;
 
 public interface Favorites {
 
-    public Map<String, Favorite> getFavorites(Context context);
+    Map<String, Favorite> getFavorites(Context context);
 
-    public void addFavorites(Context context, Favorite favorite);
+    List<FavoriteState> getFavoriteStates(Context context);
 
-    public void deleteFavorite(Context context, String id);
+    void addFavorites(Context context, Favorite favorite);
 
-    public void deleteAllFavorites(Context context);
+    void addFavoriteState(Context context, FavoriteState favoriteState);
 
-    public Favorite getFavoriteByKey(Context context, String key);
+    void setFavorites(Context context, List<Favorite> favoriteList);
 
+    void setFavoriteStates(Context context, List<FavoriteState> favoriteStateList);
+
+    void modifyFavoriteState(Context context, int index, boolean expanded);
+
+    void deleteFavorite(Context context, String id);
+
+    void deleteAllFavorites(Context context);
+
+    void deleteAllFavoriteStates(Context context);
+
+    Favorite getFavoriteByKey(Context context, String key);
+
+    FavoriteState getFavoriteStateByKey(Context context, String key);
+
+    FavoriteState getFavoriteStateByIndex(Context context, int index);
+
+    void moveFavoriteStateToIndex(Context context, int fromPosition, int toPosition);
+
+    void resyncFavoritesMap(Context context);
 }

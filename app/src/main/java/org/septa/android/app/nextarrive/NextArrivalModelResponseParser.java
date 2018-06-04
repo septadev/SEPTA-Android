@@ -26,7 +26,7 @@ public class NextArrivalModelResponseParser {
     List<NextArrivalModelResponse.NextArrivalRecord> results;
 
     public NextArrivalModelResponseParser() {
-        results = new ArrayList<NextArrivalModelResponse.NextArrivalRecord>(0);
+        results = new ArrayList<>(0);
     }
 
     public NextArrivalModelResponseParser(NextArrivalModelResponse response) {

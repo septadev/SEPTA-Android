@@ -11,7 +11,6 @@ import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,6 +24,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 
+import org.septa.android.app.BaseActivity;
 import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
@@ -53,7 +53,8 @@ import java.util.List;
  * Created by ttuggerson on 9/13/17.
  */
 
-public class ScheduleResultsActivity extends AppCompatActivity {
+public class ScheduleResultsActivity extends
+        BaseActivity {
 
     private static final int RAIL_MON_THUR = 8;
     private static final int WEEK_DAY = 32;

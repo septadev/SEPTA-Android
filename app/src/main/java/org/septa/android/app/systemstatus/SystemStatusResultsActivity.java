@@ -6,10 +6,10 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
 
+import org.septa.android.app.BaseActivity;
 import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
@@ -29,7 +29,7 @@ import retrofit2.Response;
  * Created by jkampf on 9/13/17.
  */
 
-public class SystemStatusResultsActivity extends AppCompatActivity {
+public class SystemStatusResultsActivity extends BaseActivity {
 
     private static final String TAG = SystemStatusResultsActivity.class.getSimpleName();
     private TransitType transitType;

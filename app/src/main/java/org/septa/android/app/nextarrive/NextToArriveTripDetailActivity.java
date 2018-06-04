@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
@@ -30,6 +29,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.data.kml.KmlLayer;
 
+import org.septa.android.app.BaseActivity;
 import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
@@ -52,7 +52,7 @@ import retrofit2.Response;
  * Created by jkampf on 8/3/17.
  */
 
-public class NextToArriveTripDetailActivity extends AppCompatActivity implements OnMapReadyCallback, Runnable {
+public class NextToArriveTripDetailActivity extends BaseActivity implements OnMapReadyCallback, Runnable {
     public static final String TAG = NextToArriveTripDetailActivity.class.getSimpleName();
     public static final int REFRESH_DELAY_SECONDS = 30;
 

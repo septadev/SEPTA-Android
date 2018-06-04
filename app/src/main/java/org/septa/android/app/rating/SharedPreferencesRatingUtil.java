@@ -11,78 +11,55 @@ public class SharedPreferencesRatingUtil {
     private static final String PREF_APP_RATED = "PREF_APP_RATED";
     private static final String PREF_NUMBER_USES = "PREF_NUMBER_USES";
     private static final String PREF_RATING_ID = "PREF_RATING_ID";
+    private static final String PREF_APP_JUST_CRASHED = "PREF_APP_JUST_CRASHED";
+    private static final String PREF_APP_OPENED_WITHOUT_CRASH = "PREF_APP_OPENED_WITHOUT_CRASH";
 
     private static SharedPreferences getSharedPreferences(Context context) {
         return context.getSharedPreferences(SHARED_PREFERENCES_RATING, Context.MODE_PRIVATE);
     }
 
-    /**
-     * Get App Rated Preference
-     *
-     * @param context context to get shared preferences
-     * @return true if app rated otherwise false
-     */
     public static boolean getAppRated(Context context) {
         return getSharedPreferences(context).getBoolean(PREF_APP_RATED, false);
     }
 
-    /**
-     * Sets app rated shared preference in context.
-     *
-     * @param context  context to set shared preferences
-     * @param appRated true if app rated otherwise false
-     */
     public static void setAppRated(Context context, boolean appRated) {
         getSharedPreferences(context).edit().putBoolean(PREF_APP_RATED, appRated).apply();
     }
 
-    /**
-     * Get Number of Times the App Has Been Used
-     *
-     * @param context context to get shared preferences
-     * @return number of times app used or 0
-     */
     public static int getNumberOfUses(Context context) {
         return getSharedPreferences(context).getInt(PREF_NUMBER_USES, 0);
     }
 
-    /**
-     * Sets number of times app used shared preference in context.
-     *
-     * @param context  context to set shared preferences
-     * @param numberUses number of times app opened
-     */
     public static void setNumberOfUses(Context context, int numberUses) {
         getSharedPreferences(context).edit().putInt(PREF_NUMBER_USES, numberUses).apply();
     }
 
-    /**
-     * Increment Number of Times the App Has Been Used by 1
-     *
-     * @param context context to get shared preferences
-     */
     public static void incrementNumberOfUses(Context context) {
         getSharedPreferences(context).edit().putInt(PREF_NUMBER_USES, getNumberOfUses(context) + 1).apply();
     }
 
-    /**
-     * Get App Rating ID
-     *
-     * @param context context to get shared preferences
-     * @return rating ID, or 0 if not rated before
-     */
     public static int getRatingId(Context context) {
         return getSharedPreferences(context).getInt(PREF_RATING_ID, 0);
     }
 
-    /**
-     * Sets app rating shared preference in context.
-     *
-     * @param context  context to set shared preferences
-     * @param ratingId new rating ID
-     */
     public static void setRatingId(Context context, int ratingId) {
         getSharedPreferences(context).edit().putInt(PREF_RATING_ID, ratingId).apply();
+    }
+
+    public static boolean getAppJustCrashed(Context context) {
+        return getSharedPreferences(context).getBoolean(PREF_APP_JUST_CRASHED, false);
+    }
+
+    public static void setAppJustCrashed(Context context, boolean crash) {
+        getSharedPreferences(context).edit().putBoolean(PREF_APP_JUST_CRASHED, crash).apply();
+    }
+
+    public static boolean getAppRanOnceCrashFree(Context context) {
+        return getSharedPreferences(context).getBoolean(PREF_APP_OPENED_WITHOUT_CRASH, true);
+    }
+
+    public static void setAppRanOnceCrashFree(Context context, boolean wasAppCrashFree) {
+        getSharedPreferences(context).edit().putBoolean(PREF_APP_OPENED_WITHOUT_CRASH, wasAppCrashFree).apply();
     }
 
 }

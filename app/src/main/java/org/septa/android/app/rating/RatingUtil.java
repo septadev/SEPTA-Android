@@ -18,7 +18,7 @@ public class RatingUtil {
     private static final int MIN_USES_TO_RATE = 2; // TODO: change to 20
 
     // increment this when wanting to re-ask user for a rating
-    private static final int CURRENT_RATING_ID = 2;
+    private static final int CURRENT_RATING_ID = 0;
 
     private RatingUtil() {
 
@@ -37,7 +37,10 @@ public class RatingUtil {
             closeDialog.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    ratingDialog.dismiss();
+                    // force crash
+                    throw new RuntimeException();
+
+//                    ratingDialog.dismiss(); // TODO: put back later
                 }
             });
         }
@@ -97,7 +100,7 @@ public class RatingUtil {
             SharedPreferencesRatingUtil.setRatingId(context, CURRENT_RATING_ID);
         }
 
-        return !hasRated(context) && hasUsedAppEnough(context);
+        return !hasRated(context) && hasUsedAppEnough(context) && !didAppJustCrash(context) && hasAppRanOnceCrashFree(context);
     }
 
     private static boolean hasRated(final Context context) {
@@ -107,5 +110,12 @@ public class RatingUtil {
     private static boolean hasUsedAppEnough(final Context context) {
         return MIN_USES_TO_RATE <= SharedPreferencesRatingUtil.getNumberOfUses(context);
     }
-}
 
+    private static boolean didAppJustCrash(Context context) {
+        return SharedPreferencesRatingUtil.getAppJustCrashed(context);
+    }
+
+    private static boolean hasAppRanOnceCrashFree(Context context) {
+        return SharedPreferencesRatingUtil.getAppRanOnceCrashFree(context);
+    }
+}

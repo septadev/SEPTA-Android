@@ -10,6 +10,7 @@ import android.util.Log;
 import com.crashlytics.android.Crashlytics;
 
 import org.septa.android.app.database.DatabaseManager;
+import org.septa.android.app.rating.SharedPreferencesRatingUtil;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Alerts;
 import org.septa.android.app.support.AnalyticsManager;
@@ -73,9 +74,40 @@ public class MainApplication extends Application implements Runnable {
 
         refreshHandler = new Handler();
         refreshHandler.postDelayed(this, 1);
+
+        // if app just crashed, require one more full reboot before considering "crash free"
+        boolean justCrashed = SharedPreferencesRatingUtil.getAppJustCrashed(getApplicationContext()),
+                ranOnceCrashFree = SharedPreferencesRatingUtil.getAppRanOnceCrashFree(getApplicationContext());
+        if (!justCrashed && !ranOnceCrashFree) {
+            SharedPreferencesRatingUtil.setAppRanOnceCrashFree(getApplicationContext(), true);
+            Log.d(TAG, "Now crash free!");
+        }
+        if (justCrashed) {
+            SharedPreferencesRatingUtil.setAppRanOnceCrashFree(getApplicationContext(), false);
+            SharedPreferencesRatingUtil.setAppJustCrashed(getApplicationContext(), false);
+            Log.d(TAG, "Need one more reboot to be crash free");
+        }
+
+        // handler for uncaught exceptions
+        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+            @Override
+            public void uncaughtException(Thread thread, Throwable e) {
+                handleUncaughtException(thread, e);
+            }
+        });
     }
 
+    public void handleUncaughtException(Thread thread, Throwable e) {
+        e.printStackTrace(); // not all Android versions will print the stack trace automatically
 
+        SharedPreferencesRatingUtil.setAppRanOnceCrashFree(getApplicationContext(), false);
+        SharedPreferencesRatingUtil.setAppJustCrashed(getApplicationContext(), true);
+
+        Log.e(TAG, "The SEPTA app just crashed");
+
+        // close app
+        System.exit(1);
+    }
 
     @Override
     public void run() {

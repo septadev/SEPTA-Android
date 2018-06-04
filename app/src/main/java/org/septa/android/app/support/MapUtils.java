@@ -10,7 +10,6 @@ import android.support.v4.content.ContextCompat;
 
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.Task;
 import com.google.maps.android.data.kml.KmlLayer;
 
@@ -51,16 +50,16 @@ public class MapUtils {
     public static KmlLayer getKMLByLineId(Context context, GoogleMap googleMap, String lineId, TransitType transitType) {
         int resourceId = context.getResources().getIdentifier("kml_" + lineId.toLowerCase(), "raw", R.class.getPackage().getName());
 
-
-        // For some reason google maps is showing the colors of mfl and bsl reversed.  So this is a
-        // hack around that.
+        // For some reason google maps is showing the colors of MFL and BSL reversed.
+        // So the following code reverses that
         String modifiedLineId;
-        if (lineId.equalsIgnoreCase("mfl")){
+        if (lineId.equalsIgnoreCase("mfl")) {
             modifiedLineId = "bsl";
         } else if (lineId.equalsIgnoreCase("bsl")){
             modifiedLineId = "mfl";
-        } else
+        } else {
             modifiedLineId = lineId;
+        }
 
         String colorValue = Integer.toHexString(ContextCompat.getColor(context, transitType.getLineColor(modifiedLineId, context)));
         InputStream raw = null;
@@ -125,12 +124,11 @@ public class MapUtils {
     public static Location getLocationFromAddress(Context context, String strAddress) {
         Geocoder coder = new Geocoder(context);
         List<Address> address;
-        LatLng p1 = null;
 
         try {
             // May throw an IOException
             address = coder.getFromLocationName(strAddress, 5);
-            if (address == null) {
+            if (address == null || address.isEmpty()) {
                 return null;
             }
             Address location = address.get(0);
@@ -139,7 +137,6 @@ public class MapUtils {
             Location returnLocation = new Location(strAddress);
             returnLocation.setLatitude(location.getLatitude());
             returnLocation.setLongitude(location.getLongitude());
-
 
             return returnLocation;
 

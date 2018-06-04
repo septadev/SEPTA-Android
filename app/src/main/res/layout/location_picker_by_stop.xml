@@ -20,13 +20,16 @@
             android:background="@drawable/line_picker_background"
             android:drawableLeft="@drawable/ic_search"
             android:drawablePadding="4dp"
-            android:hint="Type stop name or select"
+            android:drawableStart="@drawable/ic_search"
+            android:hint="@string/location_picker_by_stop_hint"
             android:inputType="text"
             android:lines="1"
             android:maxLines="1"
             android:paddingBottom="12dp"
+            android:paddingEnd="8dp"
             android:paddingLeft="10dp"
             android:paddingRight="8dp"
+            android:paddingStart="10dp"
             android:paddingTop="12dp"
             android:textColor="@color/text_primary"
             android:textSize="14sp"
@@ -38,6 +41,11 @@
             android:layout_height="match_parent"
             android:choiceMode="singleChoice"
             android:fastScrollEnabled="true" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/route_stop_picker_item_border" />
 
     </LinearLayout>
 

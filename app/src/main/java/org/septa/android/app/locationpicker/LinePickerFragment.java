@@ -183,14 +183,16 @@ public class LinePickerFragment extends DialogFragment {
                     titleText.setText(route.getRouteLongName());
                 }
 
-                if (route.getDirectionDescription() != null)
+                if (route.getDirectionDescription() != null) {
                     if (transitType == TransitType.RAIL) {
                         descText.setText(route.getDirectionDescription());
                     } else {
                         descText.setText("to " + route.getDirectionDescription());
                     }
-                else {
+                    descText.setVisibility(View.VISIBLE);
+                } else {
                     descText.setText(R.string.empty_string);
+                    descText.setVisibility(View.GONE);
                 }
 
                 Alert alert = SystemStatusState.getAlertForLine(transitType, route.getRouteId());

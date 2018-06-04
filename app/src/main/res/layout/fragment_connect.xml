@@ -159,7 +159,9 @@
                 android:paddingLeft="12dp"
                 android:paddingRight="13dp"
                 android:paddingStart="12dp"
-                android:paddingTop="12dp">
+                android:paddingTop="12dp"
+                android:visibility="gone">
+                <!-- TODO: set to visible when implementing for MAPPS-79 -->
 
                 <org.septa.android.app.view.TextView
                     android:layout_width="wrap_content"

@@ -34,9 +34,9 @@
                     android:layout_marginLeft="13dp"
                     android:layout_marginTop="9dp"
                     android:text="Start:"
-                    android:textColor="#ffffff"
+                    android:textColor="@android:color/white"
                     android:textSize="14sp"
-                    app:font="@string/font_roboto_bold" />
+                    app:typeface="@string/font_roboto_bold" />
 
                 <org.septa.android.app.view.TextView
                     android:id="@+id/starting_station_name"
@@ -49,9 +49,9 @@
                     android:ellipsize="end"
                     android:maxLines="1"
                     android:text="placeholder Starting"
-                    android:textColor="#ffffff"
+                    android:textColor="@android:color/white"
                     android:textSize="14sp"
-                    app:font="@string/font_roboto_light" />
+                    app:typeface="@string/font_roboto_light" />
 
                 <org.septa.android.app.view.TextView
                     android:id="@+id/destination_station_label"
@@ -62,10 +62,10 @@
                     android:layout_marginLeft="13dp"
                     android:layout_marginTop="4dp"
                     android:text="Destination:"
-                    android:textColor="#ffffff"
+                    android:textColor="@android:color/white"
 
                     android:textSize="14sp"
-                    app:font="@string/font_roboto_bold" />
+                    app:typeface="@string/font_roboto_bold" />
 
                 <org.septa.android.app.view.TextView
                     android:id="@+id/destination_station_name"
@@ -79,9 +79,9 @@
                     android:ellipsize="end"
                     android:maxLines="1"
                     android:text="placeholder Destination"
-                    android:textColor="#ffffff"
+                    android:textColor="@android:color/white"
                     android:textSize="14sp"
-                    app:font="@string/font_roboto_light" />
+                    app:typeface="@string/font_roboto_light" />
 
                 <ImageView
                     android:id="@+id/refresh_button"
@@ -102,9 +102,9 @@
                     android:layout_marginRight="9dp"
                     android:layout_toLeftOf="@id/refresh_button"
                     android:text="Refresh"
-                    android:textColor="#ffffff"
+                    android:textColor="@android:color/white"
                     android:textSize="12sp"
-                    app:font="@string/font_roboto_light" />
+                    app:typeface="@string/font_roboto_light" />
             </RelativeLayout>
 
             <FrameLayout

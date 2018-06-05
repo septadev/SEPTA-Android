@@ -33,7 +33,7 @@
             android:paddingTop="12dp"
             android:textColor="#144b88"
             android:textSize="14sp"
-            app:font="@string/font_roboto_regular" />
+            app:typeface="@string/font_roboto_regular" />
 
         <ListView
             android:id="@+id/rail_station_list"

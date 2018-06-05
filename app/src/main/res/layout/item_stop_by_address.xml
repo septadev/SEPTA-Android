@@ -20,7 +20,7 @@
         android:text="Thorndale"
         android:textColor="@android:color/black"
         android:textSize="20sp"
-        app:font="@string/font_roboto_medium"
+        app:typeface="@string/font_roboto_medium"
         android:layout_marginStart="17dp" />
 
     <org.septa.android.app.view.TextView
@@ -33,7 +33,7 @@
         android:text="1.0m"
         android:textColor="#144b88"
         android:textSize="15sp"
-        app:font="@string/font_roboto_regular"
+        app:typeface="@string/font_roboto_regular"
         android:layout_marginEnd="18dp" />
 
 </LinearLayout>

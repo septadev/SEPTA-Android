@@ -26,7 +26,7 @@
             android:text="Paoli/Thorndale"
             android:textColor="#144b88"
             android:textSize="20sp"
-            app:font="@string/font_roboto_bold" />
+            app:typeface="@string/font_roboto_bold" />
 
         <org.septa.android.app.view.TextView
             android:id="@+id/route_description_text"
@@ -37,7 +37,7 @@
             android:text="to/from Center City Philadelphia"
             android:textColor="#144b88"
             android:textSize="12sp"
-            app:font="@string/font_roboto_medium" />
+            app:typeface="@string/font_roboto_medium" />
 
         <ImageView
             android:id="@+id/transit_type_image"
@@ -84,9 +84,9 @@
                     android:letterSpacing="-0.02"
                     android:maxLines="1"
                     android:text="Jefferson Station"
-                    android:textColor="#000000"
+                    android:textColor="@android:color/black"
                     android:textSize="12sp"
-                    app:font="@string/font_roboto_medium" />
+                    app:typeface="@string/font_roboto_medium" />
 
                 <ImageView
                     android:id="@+id/pin"
@@ -110,9 +110,9 @@
                     android:letterSpacing="-0.02"
                     android:maxLines="1"
                     android:text="Paoli Station"
-                    android:textColor="#000000"
+                    android:textColor="@android:color/black"
                     android:textSize="12sp"
-                    app:font="@string/font_roboto_medium" />
+                    app:typeface="@string/font_roboto_medium" />
 
                 <org.septa.android.app.view.TextView
                     android:id="@+id/reverse_trip_label"
@@ -130,7 +130,7 @@
                     android:text="Reverse&lt;br&gt;Trip"
                     android:textColor="#144b88"
                     android:textSize="10sp"
-                    app:font="@string/font_roboto_medium" />
+                    app:typeface="@string/font_roboto_medium" />
             </RelativeLayout>
 
 
@@ -150,7 +150,7 @@
                     android:fontFamily="sans-serif-medium"
                     android:letterSpacing="-0.02"
                     android:text="Line Status"
-                    android:textColor="#000000"
+                    android:textColor="@android:color/black"
                     android:textSize="12sp"
                     android:textStyle="normal" />
             </LinearLayout>
@@ -173,9 +173,9 @@
                     android:layout_height="wrap_content"
                     android:letterSpacing="-0.02"
                     android:text="Line Status"
-                    android:textColor="#000000"
+                    android:textColor="@android:color/black"
                     android:textSize="12sp"
-                    app:font="@string/font_roboto_bold" />
+                    app:typeface="@string/font_roboto_bold" />
 
                 <LinearLayout
                     android:id="@+id/status_layout"
@@ -193,10 +193,10 @@
                         android:drawablePadding="7dp"
                         android:letterSpacing="-0.02"
                         android:text="Advisory"
-                        android:textColor="#000000"
+                        android:textColor="@android:color/black"
                         android:textSize="12sp"
                         android:visibility="gone"
-                        app:font="@string/font_roboto_light"
+                        app:typeface="@string/font_roboto_light"
                         tools:visibility="visible" />
 
                     <org.septa.android.app.view.TextView
@@ -209,10 +209,10 @@
                         android:gravity="center_vertical"
                         android:letterSpacing="-0.02"
                         android:text="Alert"
-                        android:textColor="#000000"
+                        android:textColor="@android:color/black"
                         android:textSize="12sp"
                         android:visibility="gone"
-                        app:font="@string/font_roboto_light" />
+                        app:typeface="@string/font_roboto_light" />
 
                     <org.septa.android.app.view.TextView
                         android:id="@+id/active_detour"
@@ -224,10 +224,10 @@
                         android:gravity="center_vertical"
                         android:letterSpacing="-0.02"
                         android:text="Detour"
-                        android:textColor="#000000"
+                        android:textColor="@android:color/black"
                         android:textSize="12sp"
                         android:visibility="gone"
-                        app:font="@string/font_roboto_light" />
+                        app:typeface="@string/font_roboto_light" />
 
                     <org.septa.android.app.view.TextView
                         android:id="@+id/weather_alerts"
@@ -239,10 +239,10 @@
                         android:gravity="center_vertical"
                         android:letterSpacing="-0.02"
                         android:text="Weather"
-                        android:textColor="#000000"
+                        android:textColor="@android:color/black"
                         android:textSize="12sp"
                         android:visibility="gone"
-                        app:font="@string/font_roboto_light" />
+                        app:typeface="@string/font_roboto_light" />
 
                 </LinearLayout>
 
@@ -273,7 +273,7 @@
                     android:text="Weekday"
                     android:textColor="@drawable/radio_btn_font_color_selector"
                     android:textSize="13sp"
-                    app:font="@string/font_roboto_regular" />
+                    app:typeface="@string/font_roboto_regular" />
 
                 <org.septa.android.app.view.RadioButton
                     android:id="@+id/mon_thurs_button"
@@ -290,7 +290,7 @@
                     android:textColor="@drawable/radio_btn_font_color_selector"
                     android:textSize="13sp"
                     android:visibility="gone"
-                    app:font="@string/font_roboto_regular" />
+                    app:typeface="@string/font_roboto_regular" />
 
                 <org.septa.android.app.view.RadioButton
                     android:id="@+id/friday_button"
@@ -307,7 +307,7 @@
                     android:textColor="@drawable/radio_btn_font_color_selector"
                     android:textSize="13sp"
                     android:visibility="gone"
-                    app:font="@string/font_roboto_regular" />
+                    app:typeface="@string/font_roboto_regular" />
 
                 <org.septa.android.app.view.RadioButton
                     android:id="@+id/saturday_button"
@@ -323,7 +323,7 @@
                     android:text="Saturday"
                     android:textColor="@drawable/radio_btn_font_color_selector"
                     android:textSize="13sp"
-                    app:font="@string/font_roboto_regular" />
+                    app:typeface="@string/font_roboto_regular" />
 
                 <org.septa.android.app.view.RadioButton
                     android:id="@+id/sunday_button"
@@ -339,7 +339,7 @@
                     android:text="Sunday"
                     android:textColor="@drawable/radio_btn_font_color_selector"
                     android:textSize="13sp"
-                    app:font="@string/font_roboto_regular" />
+                    app:typeface="@string/font_roboto_regular" />
             </RadioGroup>
 
             <LinearLayout
@@ -373,9 +373,9 @@
                         android:paddingBottom="12dp"
                         android:paddingTop="12dp"
                         android:text="Next to Arrive for this Route"
-                        android:textColor="#ffffff"
+                        android:textColor="@android:color/white"
                         android:textSize="14sp"
-                        app:font="@string/font_roboto_medium" />
+                        app:typeface="@string/font_roboto_medium" />
 
                     <ImageView
                         android:layout_width="wrap_content"

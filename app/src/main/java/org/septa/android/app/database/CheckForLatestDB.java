@@ -1,6 +1,7 @@
 package org.septa.android.app.database;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -52,11 +53,11 @@ public class CheckForLatestDB extends AsyncTask<Object, Object, Void> {
             latestDBURL = latestDBMetadata.getString("url");
             updatedDate = latestDBMetadata.getString("updateDate");
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            Log.e(TAG, e.toString());
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(TAG, e.toString());
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.e(TAG, e.toString());
         }
 
         return null;

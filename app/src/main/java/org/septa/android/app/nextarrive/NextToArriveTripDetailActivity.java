@@ -279,7 +279,7 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
                             try {
                                 Thread.sleep(params[0]);
                             } catch (InterruptedException e) {
-                                e.printStackTrace();
+                                Log.e(TAG, e.toString());
                             }
 
                             return null;
@@ -397,9 +397,9 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
         try {
             layer.addLayerToMap();
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(TAG, e.toString());
         } catch (XmlPullParserException e) {
-            e.printStackTrace();
+            Log.e(TAG, e.toString());
         }
 
         LatLngBounds.Builder builder = new LatLngBounds.Builder();

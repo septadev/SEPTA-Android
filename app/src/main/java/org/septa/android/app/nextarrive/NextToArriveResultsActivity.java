@@ -181,7 +181,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                         try {
                             getSupportFragmentManager().beginTransaction().add(R.id.map_container, mapFragment).commit();
                         } catch (IllegalStateException e) {
-                            e.printStackTrace();
+                            Log.e(TAG, e.toString());
                         }
                         mapFragment.getMapAsync(NextToArriveResultsActivity.this);
 
@@ -681,7 +681,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                                     try {
                                         Thread.sleep(params[0]);
                                     } catch (InterruptedException e) {
-                                        e.printStackTrace();
+                                        Log.e(TAG, e.toString());
                                     }
 
                                     return null;
@@ -773,9 +773,9 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                 try {
                     layer.addLayerToMap();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Log.e(TAG, e.toString());
                 } catch (XmlPullParserException e) {
-                    e.printStackTrace();
+                    Log.e(TAG, e.toString());
                 }
             }
         }

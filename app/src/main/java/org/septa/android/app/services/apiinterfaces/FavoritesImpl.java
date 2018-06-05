@@ -59,8 +59,8 @@ public class FavoritesImpl implements Favorites {
             return gson.fromJson(preferencesJson, new TypeToken<List<FavoriteState>>() {
             }.getType());
         } catch (JsonSyntaxException e) {
-            e.printStackTrace();
-            sharedPreferences.edit().remove(KEY_FAVORITES_STATE);
+            Log.e(TAG, e.toString());
+            sharedPreferences.edit().remove(KEY_FAVORITES_STATE).apply();
             return new ArrayList<>();
         }
     }
@@ -231,8 +231,8 @@ public class FavoritesImpl implements Favorites {
             return gson.fromJson(preferencesJson, new TypeToken<Map<String, Favorite>>() {
             }.getType());
         } catch (JsonSyntaxException e) {
-            e.printStackTrace();
-            sharedPreferences.edit().remove(KEY_FAVORITES);
+            Log.e(TAG, e.toString());
+            sharedPreferences.edit().remove(KEY_FAVORITES).apply();
             return new HashMap<>();
         }
     }

@@ -138,7 +138,7 @@ public enum TransitType implements Serializable {
             try {
                 return context.getResources().getIdentifier("line_color_" + lineId.toLowerCase(), "color", R.class.getPackage().getName());
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(TAG, e.toString());
                 return R.color.default_line_color;
             }
         }
@@ -178,7 +178,7 @@ public enum TransitType implements Serializable {
                     return defaultValue;
                 return returnVal;
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(TAG, e.toString());
                 Log.d(TAG, "IconForLine: returning default value:" + defaultValue);
                 return defaultValue;
             }

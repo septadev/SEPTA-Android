@@ -57,7 +57,7 @@ public class SEPTADatabase extends SQLiteAssetHelper {
                 getWritableDatabase().execSQL(sql);
             }
         } catch (SQLException e) {
-            //e.printStackTrace();
+            Log.e(TAG, e.toString());
         }
     }
 

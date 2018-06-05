@@ -68,7 +68,7 @@ public class SEPTADatabase extends SQLiteAssetHelper {
     public static void setDatabaseVersion(int databaseVersion) {
         SEPTADatabase.databaseVersion = databaseVersion;
 
-        String newDatabaseFilename = new StringBuilder("/SEPTA_").append(databaseVersion).append(".sqlite").toString();
+        String newDatabaseFilename = new StringBuilder("SEPTA_").append(databaseVersion).append(".sqlite").toString();
         setDatabaseFileName(newDatabaseFilename);
     }
 

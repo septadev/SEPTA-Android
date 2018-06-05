@@ -183,6 +183,8 @@
     <string name="prompt_download_button_negative_remind_later">Remind Me Later</string>
     <string name="prompt_download_button_neutral_nta">Go to Next to Arrive</string>
 
+    <string name="download_permission_needed">We need your permission before we can download the new database onto your device.</string>
+
     <string name="prompt_restart_database_title">New Schedules Downloaded</string>
     <string name="prompt_restart_database_description">We need to restart the app in order to install the new schedules. Would you like to restart now?\n\nIf you choose to restart later the updates will automatically install the next time you restart the app.</string>
     <string name="prompt_restart_button_positive_now">Restart Now</string>

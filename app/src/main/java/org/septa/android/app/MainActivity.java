@@ -1,5 +1,6 @@
 package org.septa.android.app;
 
+import android.Manifest;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.DownloadManager;
@@ -10,16 +11,19 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -119,6 +123,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     // this must be a unique ID for the schedule update notif
     // ensure that ID will not clash with push notifs IDs
     final int SCHEDULE_UPDATE_NOTIF_ID = 1219;
+    final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 121915;
 
     public static final String MOBILE_APP_ALERT_ROUTE_NAME = "Mobile APP",
             MOBILE_APP_ALERT_MODE = "MOBILE",
@@ -178,7 +183,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // TODO: comment out when releasing to production
         // re-register the shake detector on resume
-        mSensorManager.registerListener(mShakeDetector, mAccelerometer,	SensorManager.SENSOR_DELAY_UI);
+        mSensorManager.registerListener(mShakeDetector, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
 
         // note that generic alert will show up before mobile app alert bc it was the most recently added
 
@@ -471,6 +476,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
+    public void onRequestPermissionsResult(final int requestCode, @NonNull final String[] permissions, @NonNull final int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // permission granted to start database download
+                downloadNewDB();
+            } else {
+                // user refused to grant permission.
+                Toast.makeText(this, R.string.download_permission_needed, Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    @Override
     public void afterNewDBDownload(DownloadManager.Request request, int version) {
         // add to list of downloads
         long refId = downloadManager.enqueue(request);
@@ -489,7 +508,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void afterDBUnzipped(int versionInstalled) {
         // save new versionInstalled number in shared pref
         SEPTADatabaseUtils.setVersionInstalled(MainActivity.this, versionInstalled);
-        SEPTADatabaseUtils.setDatabaseFilename(MainActivity.this, new StringBuilder("/SEPTA_").append(versionInstalled).append(".sqlite").toString());
+        SEPTADatabaseUtils.setDatabaseFilename(MainActivity.this, new StringBuilder("SEPTA_").append(versionInstalled).append(".sqlite").toString());
 
         // restore download permission back to false
         SEPTADatabaseUtils.setPermissionToDownload(MainActivity.this, false);
@@ -637,9 +656,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .setPositiveButton(R.string.prompt_download_button_positive_download_now, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        // ask for run time permission if running sdk 23+
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+                                checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                            // need user permission
 
-                        // start download
-                        downloadNewDB();
+                            if (shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                                // can explain why permissions needed here
+                            }
+
+                            // ask for permission
+                            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+                        } else {
+                            // permission granted to start download
+                            downloadNewDB();
+                        }
                     }
                 })
 
@@ -732,7 +763,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             // install new DB if not done already
 
             // get downloaded file from databases directory
-            String newDatabaseZipFilename = new StringBuilder("/SEPTA_").append(versionDownloaded).append("_sqlite.zip").toString();
+            String newDatabaseZipFilename = new StringBuilder("SEPTA_").append(versionDownloaded).append("_sqlite.zip").toString();
             File newDbZip = new File(getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath(), newDatabaseZipFilename);
 
             if (newDbZip.isFile()) {

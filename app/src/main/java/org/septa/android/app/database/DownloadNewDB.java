@@ -32,7 +32,7 @@ public class DownloadNewDB extends AsyncTask<Object, Object, Void> {
 
     @Override
     protected Void doInBackground(Object... voids) {
-        String filename = new StringBuilder("/SEPTA_").append(version).append("_sqlite.zip").toString();
+        String filename = new StringBuilder("SEPTA_").append(version).append("_sqlite.zip").toString();
 
         request = new DownloadManager.Request(url)
                 .setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE)

@@ -12,6 +12,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -57,6 +59,7 @@ import org.septa.android.app.services.apiinterfaces.model.AlertDetail;
 import org.septa.android.app.services.apiinterfaces.model.Favorite;
 import org.septa.android.app.support.AnalyticsManager;
 import org.septa.android.app.support.CrashlyticsManager;
+import org.septa.android.app.support.ShakeDetector;
 import org.septa.android.app.systemmap.SystemMapFragment;
 import org.septa.android.app.systemstatus.SystemStatusFragment;
 import org.septa.android.app.systemstatus.SystemStatusState;
@@ -105,8 +108,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     ExpandDBZip expandDBZip;
     CleanOldDB cleanOldDB;
     AlertDialog promptDownloadDB, promptRestartApp;
-    final String FORCE_FULL_RESTART = "FORCE_FULL_RESTART";
     final int DELAY = 500;
+
+    // shake detector used for crashing the app purposefully
+    // TODO: comment out when releasing to production
+    private SensorManager mSensorManager;
+    private Sensor mAccelerometer;
+    private ShakeDetector mShakeDetector;
 
     // this must be a unique ID for the schedule update notif
     // ensure that ID will not clash with push notifs IDs
@@ -150,11 +158,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 addNewFavorite();
             }
         }
+
+        // TODO: comment out when releasing to production
+        // ShakeDetector initialization
+        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        mShakeDetector = new ShakeDetector();
+        mShakeDetector.setOnShakeListener(new ShakeDetector.OnShakeListener() {
+            @Override
+            public void onShake(int count) {
+                handleShakeEvent(count);
+            }
+        });
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+
+        // TODO: comment out when releasing to production
+        // re-register the shake detector on resume
+        mSensorManager.registerListener(mShakeDetector, mAccelerometer,	SensorManager.SENSOR_DELAY_UI);
 
         // note that generic alert will show up before mobile app alert bc it was the most recently added
 
@@ -243,6 +267,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onPause() {
         super.onPause();
+
+        // TODO: comment out when releasing to production
+        // unregister the shake detector on pause
+        mSensorManager.unregisterListener(mShakeDetector);
 
         // prevent stacking alertdialogs
         if (genericAlert != null) {
@@ -828,6 +856,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         view.setVisibility(View.VISIBLE);
 
         dialog.show();
+    }
+
+    public void handleShakeEvent(int count) {
+        Log.d(TAG, "Device shaken!");
+
+        // force crash the app
+        throw new RuntimeException("This is a forced crash");
     }
 
 }

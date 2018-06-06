@@ -114,6 +114,9 @@
                 android:layout_below="@id/header"
                 android:background="@android:color/darker_gray" />
 
+            <include layout="@layout/next_to_arrive_results_empty"
+                android:visibility="gone" />
+
         </LinearLayout>
 
         <FrameLayout

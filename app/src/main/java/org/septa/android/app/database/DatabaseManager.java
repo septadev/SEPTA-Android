@@ -100,7 +100,6 @@ public class DatabaseManager {
     }
 
     public CursorAdapterSupplier<StopModel> getSubwayStopCursorAdapterSupplier() {
-        //return new CursorSuppliers.SubwayStopCursorAdapterSupplier();
         return new CursorSuppliers.BusStopCursorAdapterSupplier();
     }
 

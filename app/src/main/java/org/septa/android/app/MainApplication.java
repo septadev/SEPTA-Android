@@ -96,7 +96,7 @@ public class MainApplication extends Application implements Runnable {
 
         Date now = new Date();
         for (TransitType transitType : TransitType.values()) {
-            CursorAdapterSupplier<Boolean> cursorAdapterSupplier = DatabaseManager.getInstance(this).getHolidayIndicatorCursorAdapaterSupplier(transitType);
+            CursorAdapterSupplier<Boolean> cursorAdapterSupplier = DatabaseManager.getInstance(this).getHolidayIndicatorCursorAdapterSupplier(transitType);
             transitType.setHolidayToday(cursorAdapterSupplier.getItemFromId(this, now));
         }
 

@@ -67,7 +67,7 @@ public class ScheduleResultsActivity extends AppCompatActivity {
     private DatabaseManager dbManager = null;
     private RadioGroup radioGroup = null;
     CursorAdapterSupplier<ScheduleModel> scheduleCursorAdapterSupplier;
-    CursorAdapterSupplier<StopModel> reverseStopCursorAdapaterSupplier;
+    CursorAdapterSupplier<StopModel> reverseStopCursorAdapterSupplier;
 
     ListView scheduleResultsListView;
 
@@ -116,10 +116,10 @@ public class ScheduleResultsActivity extends AppCompatActivity {
 
         if (transitType == TransitType.RAIL) {
             scheduleCursorAdapterSupplier = DatabaseManager.getInstance(this).getRailScheduleCursorAdapterSupplier();
-            reverseRouteCursorAdapterSupplier = DatabaseManager.getInstance(this).getRailRouteCursorAdapaterSupplier();
+            reverseRouteCursorAdapterSupplier = DatabaseManager.getInstance(this).getRailRouteCursorAdapterSupplier();
         } else {
             scheduleCursorAdapterSupplier = DatabaseManager.getInstance(this).getNonRegionalRailScheduleCursorAdapterSupplier();
-            reverseStopCursorAdapaterSupplier = DatabaseManager.getInstance(this).getNonRailReverseAdapterSupplier();
+            reverseStopCursorAdapterSupplier = DatabaseManager.getInstance(this).getNonRailReverseAdapterSupplier();
             reverseRouteCursorAdapterSupplier = DatabaseManager.getInstance(this).getNonRailReverseRouteCursorAdapterSupplier();
         }
 
@@ -368,7 +368,7 @@ public class ScheduleResultsActivity extends AppCompatActivity {
         protected void onPostExecute(List<ScheduleModel> scheduleModels) {
             super.onPostExecute(scheduleModels);
             scheduleResultsActivity.scheduleResultsListView.setAdapter(
-                    new ScheduleResultsArrayAdapater(scheduleResultsActivity, scheduleModels));
+                    new ScheduleResultsArrayAdapter(scheduleResultsActivity, scheduleModels));
 
         }
 
@@ -393,9 +393,9 @@ public class ScheduleResultsActivity extends AppCompatActivity {
         }
     }
 
-    class ScheduleResultsArrayAdapater extends ArrayAdapter<ScheduleModel> {
+    class ScheduleResultsArrayAdapter extends ArrayAdapter<ScheduleModel> {
 
-        public ScheduleResultsArrayAdapater(@NonNull Context context, @NonNull List<ScheduleModel> objects) {
+        public ScheduleResultsArrayAdapter(@NonNull Context context, @NonNull List<ScheduleModel> objects) {
             super(context, 0, objects);
         }
 
@@ -491,9 +491,9 @@ public class ScheduleResultsActivity extends AppCompatActivity {
             List<Criteria> criteria = new ArrayList<Criteria>(2);
             criteria.add(new Criteria("route_short_name", Criteria.Operation.EQ, routeShortName));
             criteria.add(new Criteria("stop_id", Criteria.Operation.EQ, stopId));
-            Cursor cursor = scheduleResultsActivity.reverseStopCursorAdapaterSupplier.getCursor(scheduleResultsActivity, criteria);
+            Cursor cursor = scheduleResultsActivity.reverseStopCursorAdapterSupplier.getCursor(scheduleResultsActivity, criteria);
             if (cursor.moveToFirst()) {
-                return scheduleResultsActivity.reverseStopCursorAdapaterSupplier.getCurrentItemFromCursor(cursor);
+                return scheduleResultsActivity.reverseStopCursorAdapterSupplier.getCurrentItemFromCursor(cursor);
             } else return null;
         }
 

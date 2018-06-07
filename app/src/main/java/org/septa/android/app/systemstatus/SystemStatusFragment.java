@@ -64,10 +64,10 @@ public class SystemStatusFragment extends Fragment {
         DatabaseManager dbManager = DatabaseManager.getInstance(getActivity());
 
         tabActivityHandlers = new TabActivityHandler[5];
-        tabActivityHandlers[1] = new SystemStatusLineTabHandler(getString(R.string.tab_rail), TransitType.RAIL, dbManager.getRailNoDirectionRouteCursorAdapaterSupplier());
-        tabActivityHandlers[0] = new SystemStatusLineTabHandler(getString(R.string.tab_bus), TransitType.BUS, dbManager.getBusNoDirectionRouteCursorAdapaterSupplier());
-        tabActivityHandlers[3] = new SystemStatusLineTabHandler(getString(R.string.tab_trolley), TransitType.TROLLEY, dbManager.getTrolleyNoDirectionRouteCursorAdapaterSupplier());
-        tabActivityHandlers[2] = new SystemStatusLineTabHandler(getString(R.string.tab_subway), TransitType.SUBWAY, dbManager.getSubwayNoDirectionRouteCursorAdapaterSupplier());
+        tabActivityHandlers[1] = new SystemStatusLineTabHandler(getString(R.string.tab_rail), TransitType.RAIL, dbManager.getRailNoDirectionRouteCursorAdapterSupplier());
+        tabActivityHandlers[0] = new SystemStatusLineTabHandler(getString(R.string.tab_bus), TransitType.BUS, dbManager.getBusNoDirectionRouteCursorAdapterSupplier());
+        tabActivityHandlers[3] = new SystemStatusLineTabHandler(getString(R.string.tab_trolley), TransitType.TROLLEY, dbManager.getTrolleyNoDirectionRouteCursorAdapterSupplier());
+        tabActivityHandlers[2] = new SystemStatusLineTabHandler(getString(R.string.tab_subway), TransitType.SUBWAY, dbManager.getSubwayNoDirectionRouteCursorAdapterSupplier());
         tabActivityHandlers[4] = new SystemStatusLineTabHandler(getString(R.string.tab_nhsl), TransitType.NHSL, new RouteDirectionModel("NHSL", "NHSL", "Norristown TC to 69th St TC", null, null, 0));
 
         View fragmentView = inflater.inflate(R.layout.fragment_next_to_arrive, null);

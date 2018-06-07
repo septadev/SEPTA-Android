@@ -40,15 +40,17 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
 
     public static final String TAG = ByStopTabActivityHandler.class.getSimpleName();
     final private CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
+    StopPickerTabListener mListener;
 
-    public ByStopTabActivityHandler(String s, CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
+    public ByStopTabActivityHandler(StopPickerTabListener listener, String s, CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
         super(s);
+        this.mListener = listener;
         this.cursorAdapterSupplier = cursorAdapterSupplier;
     }
 
     @Override
     public Fragment getFragment() {
-        ByStopTabActivityHandler.PlaceholderFragment fragment = ByStopTabActivityHandler.PlaceholderFragment.newInstance(cursorAdapterSupplier);
+        ByStopTabActivityHandler.PlaceholderFragment fragment = ByStopTabActivityHandler.PlaceholderFragment.newInstance(mListener, cursorAdapterSupplier);
 
         return fragment;
     }
@@ -60,11 +62,15 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
         private CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
         View progressView;
         StationNameAdapter2 itemAdapater2;
+        StopPickerTabListener mListener;
 
         private static final int URL_LOADER = 0;
 
-        public static ByStopTabActivityHandler.PlaceholderFragment newInstance(CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
+        public static ByStopTabActivityHandler.PlaceholderFragment newInstance(StopPickerTabListener listener, CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
             ByStopTabActivityHandler.PlaceholderFragment fragment = new ByStopTabActivityHandler.PlaceholderFragment();
+
+            fragment.mListener = listener;
+
             Bundle args = new Bundle();
             args.putSerializable("cursorAdapterSupplier", cursorAdapterSupplier);
             fragment.setArguments(args);
@@ -102,8 +108,6 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
 
             progressView.setVisibility(View.VISIBLE);
 
-            final ListView localList = list;
-
             final Handler h = new Handler() {
                 @Override
                 public void handleMessage(Message msg) {
@@ -113,13 +117,12 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
                         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                             @Override
                             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                                Log.d(TAG, this.hashCode() + "onItemSelected " + i);
+                                Log.d(TAG, this.hashCode() + " onItemSelected " + i);
 
-                                if (getTargetFragment() != null) {
-                                    Intent intent = new Intent();
-                                    intent.putExtra(LocationPickerFragment.STOP_MODEL, cursorAdapterSupplier.getItemFromId(getContext(), view.getTag()));
-                                    getTargetFragment().onActivityResult(getTargetRequestCode(), LocationPickerFragment.SUCCESS, intent);
-                                }
+                                Intent intent = new Intent();
+                                intent.putExtra(LocationPickerFragment.STOP_MODEL, cursorAdapterSupplier.getItemFromId(getContext(), view.getTag()));
+
+                                mListener.onStopSelected(intent);
                             }
                         });
                         progressView.setVisibility(View.GONE);
@@ -128,7 +131,6 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
                     Log.d(TAG, "handleMessage - Done");
                 }
             };
-
 
             new AsyncTask<Void, Void, Void>() {
                 @Override
@@ -175,7 +177,6 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
             Log.d(TAG, "onCreateView() - DONE");
             return rootView;
         }
-
     }
 
 

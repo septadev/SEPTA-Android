@@ -23,11 +23,11 @@ import org.septa.android.app.support.TabActivityHandler;
  * Created by jkampf on 7/30/17.
  */
 
-public class LocationPickerFragment extends DialogFragment {
-    public static final String TAG = LocationPickerFragment.class.getSimpleName();
+public class LocationPickerFragment extends DialogFragment implements StopPickerTabListener {
+    private static final String TAG = LocationPickerFragment.class.getSimpleName();
     public static final int SUCCESS = 0;
     public static final String STOP_MODEL = "stopModel";
-    private static final int STOP_MODEL_REQUEST = 1;
+    public static final int STOP_MODEL_REQUEST = 1;
 
     TabActivityHandler tabActivityHandlers[];
 
@@ -69,8 +69,8 @@ public class LocationPickerFragment extends DialogFragment {
         View dialogView = getActivity().getLayoutInflater().inflate(R.layout.by_station, null);
 
         tabActivityHandlers = new TabActivityHandler[2];
-        tabActivityHandlers[0] = new ByStopTabActivityHandler("BY STATION", cursorAdapterSupplier);
-        tabActivityHandlers[1] = new ByAddressTabActivityHandler("BY ADDRESS", cursorAdapterSupplier);
+        tabActivityHandlers[0] = new ByStopTabActivityHandler(LocationPickerFragment.this,"BY STATION", cursorAdapterSupplier);
+        tabActivityHandlers[1] = new ByAddressTabActivityHandler(LocationPickerFragment.this,"BY ADDRESS", cursorAdapterSupplier);
 
         searchByStationTab = (TextView) dialogView.findViewById(R.id.search_by_station_tab);
         searchByAddressTab = (TextView) dialogView.findViewById(R.id.search_by_address_tab);
@@ -81,9 +81,7 @@ public class LocationPickerFragment extends DialogFragment {
             setActive(searchByAddressTab, searchByStationTab);
         }
         currentFragment = tabActivityHandlers[selected_index].getFragment();
-        currentFragment.setTargetFragment(this, STOP_MODEL_REQUEST);
-        getChildFragmentManager()
-                .beginTransaction().replace(R.id.stop_picker_container, currentFragment).commit();
+        getChildFragmentManager().beginTransaction().replace(R.id.stop_picker_container, currentFragment).commit();
 
         dialogView.findViewById(R.id.exit).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -99,9 +97,7 @@ public class LocationPickerFragment extends DialogFragment {
                 setActive(searchByStationTab, searchByAddressTab);
                 currentFragment = tabActivityHandlers[0].getFragment();
                 selected_index = 0;
-                currentFragment.setTargetFragment(LocationPickerFragment.this, STOP_MODEL_REQUEST);
-                getChildFragmentManager()
-                        .beginTransaction().replace(R.id.stop_picker_container, currentFragment).commit();
+                getChildFragmentManager().beginTransaction().replace(R.id.stop_picker_container, currentFragment).commit();
             }
         });
 
@@ -111,9 +107,7 @@ public class LocationPickerFragment extends DialogFragment {
                 setActive(searchByAddressTab, searchByStationTab);
                 currentFragment = tabActivityHandlers[1].getFragment();
                 selected_index = 1;
-                currentFragment.setTargetFragment(LocationPickerFragment.this, STOP_MODEL_REQUEST);
-                getChildFragmentManager()
-                        .beginTransaction().replace(R.id.stop_picker_container, currentFragment).commit();
+                getChildFragmentManager().beginTransaction().replace(R.id.stop_picker_container, currentFragment).commit();
 
             }
         });
@@ -132,7 +126,7 @@ public class LocationPickerFragment extends DialogFragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        // do what ever you want here, and get the result from intent like below
+        // pass the selected stop back to the picker fragment
         if (requestCode == STOP_MODEL_REQUEST && resultCode == LocationPickerFragment.SUCCESS) {
             StopModel var1 = (StopModel) data.getSerializableExtra(LocationPickerFragment.STOP_MODEL);
             if (locationPickerCallBack != null) {
@@ -145,7 +139,9 @@ public class LocationPickerFragment extends DialogFragment {
             dismiss();
         }
     }
-
+    public void onStopSelected(Intent intent) {
+        onActivityResult(STOP_MODEL_REQUEST, SUCCESS, intent);
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -187,6 +183,5 @@ public class LocationPickerFragment extends DialogFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
-
 
 }

@@ -154,7 +154,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
             lineText.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    FragmentTransaction ft = getChildFragmentManager().beginTransaction();
+                    FragmentTransaction ft = getFragmentManager().beginTransaction();
 
                     LinePickerFragment newFragment = LinePickerFragment.newInstance(routeCursorAdapterSupplier, transitType);
                     newFragment.setTargetFragment(PlaceholderFragment.this, LINE_PICKER_ID);
@@ -284,8 +284,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
             Drawable bullet = ContextCompat.getDrawable(getContext(), R.drawable.shape_line_marker);
             bullet.setColorFilter(color, PorterDuff.Mode.SRC);
 
-            lineText.setCompoundDrawablesWithIntrinsicBounds(bullet, drawables[1],
-                    drawables[2], drawables[3]);
+            lineText.setCompoundDrawablesWithIntrinsicBounds(bullet, drawables[1], drawables[2], drawables[3]);
 
             if (transitType == TransitType.RAIL) {
                 lineText.setText(selectedRoute.getRouteId() + " " + selectedRoute.getDirectionDescription());
@@ -370,11 +369,11 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                 }
 
                 FragmentTransaction ft = parent.getFragmentManager().beginTransaction();
-                Fragment prev = parent.getFragmentManager().findFragmentByTag("dialog");
-                if (prev != null) {
-                    ft.remove(prev);
-                }
-                ft.addToBackStack(null);
+//                Fragment prev = parent.getFragmentManager().findFragmentByTag("dialog");
+//                if (prev != null) {
+//                    ft.remove(prev);
+//                }
+//                ft.addToBackStack(null);
 
                 String stopId = null;
                 if (parent.startingStation != null) {

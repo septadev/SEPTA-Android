@@ -86,7 +86,7 @@ public class SchedulesFragment extends Fragment {
 
         View fragmentView = inflater.inflate(R.layout.fragment_schedules, null);
 
-        mSectionsPagerAdapter = new SchedulesFragment.SectionsPagerAdapter(getChildFragmentManager());
+        mSectionsPagerAdapter = new SchedulesFragment.SectionsPagerAdapter(getFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) fragmentView.findViewById(R.id.schedule_fragment_container);

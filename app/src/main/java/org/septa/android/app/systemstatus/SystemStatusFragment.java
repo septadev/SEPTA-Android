@@ -72,7 +72,7 @@ public class SystemStatusFragment extends Fragment {
 
         View fragmentView = inflater.inflate(R.layout.fragment_next_to_arrive, null);
 
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getChildFragmentManager());
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) fragmentView.findViewById(R.id.container);

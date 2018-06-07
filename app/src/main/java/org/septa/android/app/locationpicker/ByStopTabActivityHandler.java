@@ -55,7 +55,6 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
         return fragment;
     }
 
-
     public static class PlaceholderFragment extends Fragment {
         private ListView list = null;
         private StopModel currentStop;
@@ -178,7 +177,6 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
             return rootView;
         }
     }
-
 
     public static class StationNameAdapter2 extends ArrayAdapter<StopModel> implements Filterable {
 

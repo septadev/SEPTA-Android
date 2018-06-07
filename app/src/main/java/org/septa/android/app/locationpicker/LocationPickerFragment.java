@@ -139,6 +139,7 @@ public class LocationPickerFragment extends DialogFragment implements StopPicker
             dismiss();
         }
     }
+
     public void onStopSelected(Intent intent) {
         onActivityResult(STOP_MODEL_REQUEST, SUCCESS, intent);
     }
@@ -158,8 +159,7 @@ public class LocationPickerFragment extends DialogFragment implements StopPicker
         super.onSaveInstanceState(outState);
 
         if (currentFragment != null) {
-            currentFragment.setTargetFragment(null, STOP_MODEL_REQUEST);
-            getChildFragmentManager().beginTransaction().remove(currentFragment);
+            getChildFragmentManager().beginTransaction().remove(currentFragment).commit();
         }
 
         outState.putSerializable("selected_index", selected_index);

@@ -49,14 +49,17 @@ public class LinePickerFragment extends DialogFragment {
     TransitType transitType;
     private LinePickerCallBack linePickerCallBack;
 
-    @Override
-    public void onResume() {
-        ViewGroup.LayoutParams params = getDialog().getWindow().getAttributes();
-        params.width = WindowManager.LayoutParams.MATCH_PARENT;
-        params.height = WindowManager.LayoutParams.MATCH_PARENT;
-        getDialog().getWindow().setAttributes((android.view.WindowManager.LayoutParams) params);
+    public static LinePickerFragment newInstance(CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier, TransitType transitType) {
+        LinePickerFragment fragment;
+        fragment = new LinePickerFragment();
 
-        super.onResume();
+        Bundle args = new Bundle();
+        args.putSerializable("transitType", transitType);
+        args.putSerializable("routeCursorAdapterSupplier", routeCursorAdapterSupplier);
+
+        fragment.setArguments(args);
+
+        return fragment;
     }
 
     @Nullable
@@ -116,22 +119,15 @@ public class LinePickerFragment extends DialogFragment {
 
     }
 
-    public static LinePickerFragment newInstance(CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier, TransitType transitType) {
-        LinePickerFragment fragment;
-        fragment = new LinePickerFragment();
 
-        Bundle args = new Bundle();
-        args.putSerializable("transitType", transitType);
-        args.putSerializable("routeCursorAdapterSupplier", routeCursorAdapterSupplier);
+    @Override
+    public void onResume() {
+        ViewGroup.LayoutParams params = getDialog().getWindow().getAttributes();
+        params.width = WindowManager.LayoutParams.MATCH_PARENT;
+        params.height = WindowManager.LayoutParams.MATCH_PARENT;
+        getDialog().getWindow().setAttributes((android.view.WindowManager.LayoutParams) params);
 
-        fragment.setArguments(args);
-
-        return fragment;
-    }
-
-    private void restoreArgs() {
-        transitType = (TransitType) getArguments().getSerializable("transitType");
-        routeCursorAdapterSupplier = (CursorAdapterSupplier<RouteDirectionModel>) getArguments().getSerializable("routeCursorAdapterSupplier");
+        super.onResume();
     }
 
     @Override
@@ -141,7 +137,11 @@ public class LinePickerFragment extends DialogFragment {
         if ((context instanceof LinePickerCallBack)) {
             linePickerCallBack = (LinePickerCallBack) context;
         }
+    }
 
+    private void restoreArgs() {
+        transitType = (TransitType) getArguments().getSerializable("transitType");
+        routeCursorAdapterSupplier = (CursorAdapterSupplier<RouteDirectionModel>) getArguments().getSerializable("routeCursorAdapterSupplier");
     }
 
     public void setTransitType(TransitType transitType) {

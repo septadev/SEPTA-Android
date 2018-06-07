@@ -442,7 +442,7 @@ public class MainActivity extends AppCompatActivity
 
         // make message HTML enabled and allow for anchor links
         View alertView = getLayoutInflater().inflate(R.layout.dialog_alert, null);
-        TextView message = alertView.findViewById(R.id.dialog_alert_message);
+        TextView message = (TextView) alertView.findViewById(R.id.dialog_alert_message);
         final SpannableString s = new SpannableString(alert);
         message.setText(Html.fromHtml(s.toString()));
         message.setMovementMethod(LinkMovementMethod.getInstance());

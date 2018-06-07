@@ -94,7 +94,6 @@ public class LinePickerFragment extends DialogFragment {
         PopulateRouteListTask task = new PopulateRouteListTask(this);
         task.execute();
 
-
         filterText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -103,8 +102,9 @@ public class LinePickerFragment extends DialogFragment {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if (lineArrayAdapater != null)
+                if (lineArrayAdapater != null) {
                     lineArrayAdapater.getFilter().filter(charSequence.toString());
+                }
             }
 
             @Override
@@ -247,7 +247,7 @@ public class LinePickerFragment extends DialogFragment {
                         return filterResults;
                     }
 
-                    ArrayList<RouteDirectionModel> tempList = new ArrayList<RouteDirectionModel>();
+                    ArrayList<RouteDirectionModel> tempList = new ArrayList<>();
 
                     String constraintString = constraint.toString().toLowerCase();
 
@@ -301,7 +301,7 @@ public class LinePickerFragment extends DialogFragment {
         @Override
         protected List<RouteDirectionModel> doInBackground(Void... voids) {
 
-            List<RouteDirectionModel> routes = new ArrayList<RouteDirectionModel>();
+            List<RouteDirectionModel> routes = new ArrayList<>();
             if (fragment.getActivity() == null)
                 return routes;
             Cursor cursor = fragment.routeCursorAdapterSupplier.getCursor(fragment.getActivity(), null);

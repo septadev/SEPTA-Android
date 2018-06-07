@@ -237,7 +237,8 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
         @Override
         public void onActivityResult(int requestCode, int resultCode, Intent data) {
             super.onActivityResult(requestCode, resultCode, data);
-            //do what ever you want here, and get the result from intent like below
+
+            // route was picked
             if (requestCode == LINE_PICKER_ID && resultCode == LinePickerFragment.SUCCESS) {
                 RouteDirectionModel var1 = (RouteDirectionModel) data.getSerializableExtra(LinePickerFragment.ROUTE_DIRECTION_MODEL);
                 if (var1 != null) {
@@ -246,6 +247,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                 return;
             }
 
+            // start stop was picked
             if (requestCode == START_MODEL_ID && resultCode == LocationPickerFragment.SUCCESS) {
                 StopModel var1 = (StopModel) data.getSerializableExtra(LocationPickerFragment.STOP_MODEL);
                 if (var1 != null) {
@@ -254,6 +256,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                 return;
             }
 
+            // destination stop was picked
             if (requestCode == DEST_MODEL_ID && resultCode == LocationPickerFragment.SUCCESS) {
                 StopModel var1 = (StopModel) data.getSerializableExtra(LocationPickerFragment.STOP_MODEL);
                 if (var1 != null) {
@@ -266,8 +269,9 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
         @Override
         public void setRoute(RouteDirectionModel var1) {
             selectedRoute = var1;
-            if (getContext() == null)
+            if (getContext() == null) {
                 return;
+            }
             //lineText.setText(selectedRoute.getRouteLongName());
             int color;
             try {
@@ -361,8 +365,9 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
         public boolean onTouch(View view, MotionEvent motionEvent) {
             int action = motionEvent.getActionMasked();
             if (action == MotionEvent.ACTION_UP) {
-                if (userAfter && parent.startingStation == null)
+                if (userAfter && parent.startingStation == null) {
                     return true;
+                }
 
                 FragmentTransaction ft = parent.getFragmentManager().beginTransaction();
                 Fragment prev = parent.getFragmentManager().findFragmentByTag("dialog");
@@ -372,8 +377,9 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                 ft.addToBackStack(null);
 
                 String stopId = null;
-                if (parent.startingStation != null)
+                if (parent.startingStation != null) {
                     stopId = parent.startingStation.getStopId();
+                }
                 CursorAdapterSupplier<StopModel> routeSpecificCursorAdapterSupplier =
                         new RouteSpecificCursorAdapterSupplier(cursorAdapterSupplier, parent.selectedRoute.getRouteId(),
                                 parent.selectedRoute.getDirectionCode(), stopId, userAfter);

@@ -58,9 +58,11 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
 
     @Override
     public Fragment getFragment() {
-        if (routeCursorAdapterSupplier != null)
+        if (routeCursorAdapterSupplier != null) {
             return SystemStatusPickerFragment.getInstance(transitType, routeCursorAdapterSupplier);
-        else return SystemStatusPickerFragment.getInstance(transitType, routeDirectionModel);
+        } else {
+            return SystemStatusPickerFragment.getInstance(transitType, routeDirectionModel);
+        }
     }
 
     public static class SystemStatusPickerFragment extends Fragment implements LinePickerCallBack {
@@ -113,8 +115,9 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
             queryButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (getActivity() == null)
+                    if (getActivity() == null) {
                         return;
+                    }
                     Intent intent = new Intent(getActivity(), SystemStatusResultsActivity.class);
                     intent.putExtra(Constants.ROUTE_DIRECTION_MODEL, routeDirectionModel);
                     intent.putExtra(Constants.TRANSIT_TYPE, transitType);
@@ -230,8 +233,7 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
             Drawable bullet = ContextCompat.getDrawable(getContext(), R.drawable.shape_line_marker);
             bullet.setColorFilter(color, PorterDuff.Mode.SRC);
 
-            lineText.setCompoundDrawablesWithIntrinsicBounds(bullet, drawables[1],
-                    drawables[2], drawables[3]);
+            lineText.setCompoundDrawablesWithIntrinsicBounds(bullet, drawables[1], drawables[2], drawables[3]);
             queryButton.setAlpha(1);
             queryButton.setClickable(true);
         }
@@ -353,8 +355,9 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
         }
 
         private void restoreState(Bundle outState) {
-            if (outState == null)
+            if (outState == null) {
                 return;
+            }
 
             RouteDirectionModel rdm = (RouteDirectionModel) outState.getSerializable("routeDirectionModel");
             if (rdm != null) {
@@ -365,8 +368,9 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
 
         private void restoreArgs() {
             transitType = (TransitType) getArguments().getSerializable("transitType");
-            if (getArguments().containsKey("routeDirectionModel"))
+            if (getArguments().containsKey("routeDirectionModel")) {
                 routeDirectionModel = (RouteDirectionModel) getArguments().getSerializable("routeDirectionModel");
+            }
 
             routeCursorAdapterSupplier = (CursorAdapterSupplier<RouteDirectionModel>) getArguments().getSerializable("routeCursorAdapterSupplier");
 

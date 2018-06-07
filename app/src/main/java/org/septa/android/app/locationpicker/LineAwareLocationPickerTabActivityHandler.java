@@ -182,8 +182,9 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                         return;
                     }
 
-                    if (getActivity() == null)
+                    if (getActivity() == null) {
                         return;
+                    }
 
                     Intent intent = new Intent(getActivity(), targetClass);
                     intent.putExtra(Constants.STARTING_STATION, startingStation);
@@ -369,11 +370,6 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                 }
 
                 FragmentTransaction ft = parent.getFragmentManager().beginTransaction();
-//                Fragment prev = parent.getFragmentManager().findFragmentByTag("dialog");
-//                if (prev != null) {
-//                    ft.remove(prev);
-//                }
-//                ft.addToBackStack(null);
 
                 String stopId = null;
                 if (parent.startingStation != null) {
@@ -414,7 +410,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
         public Cursor getCursor(Context context, List<Criteria> whereClause) {
             StringBuilder whereClauseBuilder = new StringBuilder();
             if (whereClause == null) {
-                whereClause = new ArrayList<Criteria>();
+                whereClause = new ArrayList<>();
             }
             whereClause.add(new Criteria("route_id", Criteria.Operation.EQ, routeId));
             whereClause.add(new Criteria("direction_id", Criteria.Operation.EQ, routeDesc));

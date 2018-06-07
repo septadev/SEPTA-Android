@@ -73,7 +73,7 @@ public class NextToArriveFragment extends Fragment {
 
         View fragmentView = inflater.inflate(R.layout.fragment_next_to_arrive, null);
 
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager());
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getChildFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) fragmentView.findViewById(R.id.container);

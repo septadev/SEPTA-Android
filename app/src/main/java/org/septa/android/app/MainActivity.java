@@ -1,33 +1,22 @@
 package org.septa.android.app;
 
-import android.Manifest;
-import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.DownloadManager;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -40,15 +29,14 @@ import android.text.util.Linkify;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import org.septa.android.app.about.AboutFragment;
 import org.septa.android.app.connect.ConnectFragment;
 import org.septa.android.app.database.CheckForLatestDB;
 import org.septa.android.app.database.CleanOldDB;
+import org.septa.android.app.database.DatabaseUpgradeUtils;
 import org.septa.android.app.database.DownloadNewDB;
 import org.septa.android.app.database.ExpandDBZip;
-import org.septa.android.app.database.SEPTADatabase;
 import org.septa.android.app.database.SEPTADatabaseUtils;
 import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.domain.StopModel;
@@ -70,7 +58,6 @@ import org.septa.android.app.systemstatus.SystemStatusState;
 import org.septa.android.app.view.TextView;
 import org.septa.android.app.webview.WebViewFragment;
 
-import java.io.File;
 import java.util.List;
 
 import retrofit2.Call;
@@ -106,24 +93,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     Fragment about = new AboutFragment();
 
     // in-app database update
-    CheckForLatestDB checkForLatestDB;
-    DownloadNewDB downloadNewDB;
     DownloadManager downloadManager;
-    ExpandDBZip expandDBZip;
-    CleanOldDB cleanOldDB;
     AlertDialog promptDownloadDB, promptRestartApp;
-    final int DELAY = 500;
 
     // shake detector used for crashing the app purposefully
     // TODO: comment out when releasing to production
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
     private ShakeDetector mShakeDetector;
-
-    // this must be a unique ID for the schedule update notif
-    // ensure that ID will not clash with push notifs IDs
-    final int SCHEDULE_UPDATE_NOTIF_ID = 1219;
-    final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 121915;
 
     public static final String MOBILE_APP_ALERT_ROUTE_NAME = "Mobile APP",
             MOBILE_APP_ALERT_MODE = "MOBILE",
@@ -257,16 +234,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
         // check if in-app DB update
-        if (isConnectedToInternet()) {
-            checkForLatestDB = new CheckForLatestDB(MainActivity.this);
-            checkForLatestDB.execute();
-        } else {
-            // do nothing -- do not tell user there may be a new DB available
-            Log.d(TAG, "No network connection established -- cannot check for new DB");
-        }
+        DatabaseUpgradeUtils.checkForNewDatabase(MainActivity.this);
 
         // prep for new DB if not already installed
-        prepareForNewDatabase();
+        DatabaseUpgradeUtils.prepareForNewDatabase(MainActivity.this);
     }
 
     @Override
@@ -453,24 +424,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void afterLatestDBMetadataLoad(final int latestDBVersion, final String latestDBURL, String updatedDate) {
-        // save latest DB version and URL
-        SEPTADatabaseUtils.setLatestVersionAvailable(MainActivity.this, latestDBVersion);
-        SEPTADatabaseUtils.setLatestDownloadUrl(MainActivity.this, latestDBURL);
+        boolean shouldPrompt = DatabaseUpgradeUtils.decideWhetherToAskToDownload(MainActivity.this, latestDBVersion, latestDBURL, updatedDate);
 
-        // check API for DB version number
-        int currentDBVersion = SEPTADatabase.getDatabaseVersion();
-        int versionDownloaded = SEPTADatabaseUtils.getVersionDownloaded(MainActivity.this);
+        if (shouldPrompt) {
+            // prompt user to download new database
+            AlertDialog dialog = DatabaseUpgradeUtils.promptToDownload(MainActivity.this);
 
-        Log.d(TAG, "Latest DB Version: " + latestDBVersion + " vs. Old DB Version: " + currentDBVersion);
+            // only show prompt once
+            if (promptDownloadDB != null && promptDownloadDB.isShowing()) {
+                promptDownloadDB.dismiss();
+                promptDownloadDB = null;
+            }
+            promptDownloadDB = dialog;
 
-        // check if newer database available
-        if (latestDBVersion > currentDBVersion && latestDBVersion > versionDownloaded) {
-
-            // check if permission granted previously
-            if (!SEPTADatabaseUtils.getPermissionToDownload(MainActivity.this)) {
-
-                // prompt user to download new database
-                promptToDownloadNewDB();
+            // show prompt
+            if (promptDownloadDB != null) {
+                promptDownloadDB.show();
             }
         }
     }
@@ -478,91 +447,40 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public void onRequestPermissionsResult(final int requestCode, @NonNull final String[] permissions, @NonNull final int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // permission granted to start database download
-                downloadNewDB();
-            } else {
-                // user refused to grant permission.
-                Toast.makeText(this, R.string.download_permission_needed, Toast.LENGTH_LONG).show();
-            }
-        }
+
+        DatabaseUpgradeUtils.permissionResponseReceived(MainActivity.this ,requestCode, permissions, grantResults);
     }
 
     @Override
     public void afterNewDBDownload(DownloadManager.Request request, int version) {
-        // add to list of downloads
-        long refId = downloadManager.enqueue(request);
-        SEPTADatabaseUtils.saveDownloadRefId(MainActivity.this, refId);
+        long downloadRefId = downloadManager.enqueue(request);
 
-        // save new version # to shared preferences
-        SEPTADatabaseUtils.setVersionDownloaded(MainActivity.this, version);
-        // should not need to check if already downloaded -- this is used for unzipping the correct file
-
-        // this should handle receiving finished downloads that were interrupted
-        // DownloadManager handles resuming / finishing the downloads
-        Log.e(TAG, "Saving download ref ID: " + refId);
+        DatabaseUpgradeUtils.saveDownloadedVersionNumber(MainActivity.this, downloadRefId, version);
     }
 
     @Override
     public void afterDBUnzipped(int versionInstalled) {
-        // save new versionInstalled number in shared pref
-        SEPTADatabaseUtils.setVersionInstalled(MainActivity.this, versionInstalled);
-        SEPTADatabaseUtils.setDatabaseFilename(MainActivity.this, new StringBuilder("SEPTA_").append(versionInstalled).append(".sqlite").toString());
-
-        // restore download permission back to false
-        SEPTADatabaseUtils.setPermissionToDownload(MainActivity.this, false);
-
-        // show notification that download completed
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(MainActivity.this)
-                .setSmallIcon(R.drawable.ic_launcher)
-                .setContentTitle(getString(R.string.app_name))
-                .setContentText(getString(R.string.notification_database_download_complete));  // TODO: language for complete download notification
-
-        // set up notification intent to restart app on click
-        Intent notificationIntent = new Intent(MainActivity.this, SplashScreenActivity.class);
-
-        // force full restart of application on notification click
-        notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        SEPTADatabaseUtils.setNeedToRestart(MainActivity.this, true);
-        PendingIntent restartIntent = PendingIntent.getActivity(MainActivity.this, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-        mBuilder.setContentIntent(restartIntent).setAutoCancel(true);
-
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        if (notificationManager != null) {
-            notificationManager.notify(SCHEDULE_UPDATE_NOTIF_ID, mBuilder.build());
-        }
+        DatabaseUpgradeUtils.notifyNewDatabaseReady(MainActivity.this, versionInstalled);
 
         // only prompt to restart if not already using most up to date version of database
-        promptToRestart();
+        AlertDialog dialog = DatabaseUpgradeUtils.promptToRestart(MainActivity.this);
+
+        // only show prompt once
+        if (promptRestartApp != null && promptRestartApp.isShowing()) {
+            promptRestartApp.dismiss();
+            promptRestartApp = null;
+        }
+        promptRestartApp = dialog;
+
+        // show prompt
+        if (promptRestartApp != null) {
+            promptRestartApp.show();
+        }
     }
 
     @Override
     public void afterOldDBCleaned() {
-        // no need to clean DB files
-        SEPTADatabaseUtils.setNeedToClean(MainActivity.this, false);
-
-        // dismiss schedule restart notif
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.cancel(SCHEDULE_UPDATE_NOTIF_ID);
-
-        // notify user that database update complete
-        Toast.makeText(this, R.string.notification_database_updated, Toast.LENGTH_SHORT).show();
-    }
-
-    public boolean isConnectedToInternet() {
-        ConnectivityManager connectivity = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (connectivity != null) {
-            NetworkInfo[] info = connectivity.getAllNetworkInfo();
-            if (info != null) {
-                for (NetworkInfo anInfo : info) {
-                    if (anInfo.getState() == NetworkInfo.State.CONNECTED) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
+        DatabaseUpgradeUtils.databaseUpdateComplete(MainActivity.this);
     }
 
     private void switchToBundle(MenuItem item, Fragment targetFragment, int title, int highlightedIcon) {
@@ -585,7 +503,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setTitle(title);
     }
 
-    private void switchToNextToArrive() {
+    public void switchToNextToArrive() {
         if (currentMenu == null || currentMenu.getItemId() != R.id.nav_next_to_arrive) {
             if (currentMenu != null) {
                 currentMenu.setIcon(previousIcon);
@@ -648,86 +566,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     };
 
-    private void promptToDownloadNewDB() {
-        final AlertDialog dialog = new AlertDialog.Builder(this).setCancelable(true).setTitle(R.string.prompt_download_database_title)
-                .setMessage(R.string.prompt_download_database_description)
-
-                // approved download
-                .setPositiveButton(R.string.prompt_download_button_positive_download_now, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // ask for run time permission if running sdk 23+
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-                                checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                            // need user permission
-
-                            if (shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                                // can explain why permissions needed here
-                            }
-
-                            // ask for permission
-                            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
-                        } else {
-                            // permission granted to start download
-                            downloadNewDB();
-                        }
-                    }
-                })
-
-                // remind of download later
-                .setNegativeButton(R.string.prompt_download_button_negative_remind_later, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                })
-
-                // link to NTA
-                .setNeutralButton(R.string.prompt_download_button_neutral_nta, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        switchToNextToArrive();
-                    }
-                })
-                .create();
-
-        // set "download now" button color
-        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(DialogInterface arg0) {
-                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.RED);
-            }
-        });
-
-        // only show prompt once
-        if (promptDownloadDB != null && promptDownloadDB.isShowing()) {
-            promptDownloadDB.dismiss();
-            promptDownloadDB = null;
-        }
-        promptDownloadDB = dialog;
-
-        // show prompt
-        dialog.show();
-    }
-
-    private void downloadNewDB() {
-        int currentDBVersion = SEPTADatabase.getDatabaseVersion();
-        int latestDBVersion = SEPTADatabaseUtils.getLatestVersionAvailable(MainActivity.this);
-        String latestDBURL = SEPTADatabaseUtils.getLatestDownloadUrl(MainActivity.this);
-
-        // download new DB zip from url given by API
-        if (latestDBVersion > currentDBVersion && !latestDBURL.isEmpty()) {
-            // save permission to download
-            SEPTADatabaseUtils.setPermissionToDownload(MainActivity.this, true);
-
-            // do not need to recheck for connection -- handled by DownloadManager
-            downloadNewDB = new DownloadNewDB(MainActivity.this, MainActivity.this, latestDBURL, latestDBVersion);
-            downloadNewDB.execute();
-        } else {
-            Log.e(TAG, "Could not download new DB with version: " + latestDBVersion + " from URL: " + latestDBURL);
-        }
-    }
 
     // listener for completed database downloads
     BroadcastReceiver onDBDownloadComplete = new BroadcastReceiver() {
@@ -745,113 +583,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 SEPTADatabaseUtils.clearDownloadRefId(MainActivity.this);
 
                 // expand new db
-                prepareForNewDatabase();
+                DatabaseUpgradeUtils.prepareForNewDatabase(MainActivity.this);
 
                 Log.d(TAG, "Completed download for ref ID: " + referenceIdFound);
             }
         }
     };
-
-    private void prepareForNewDatabase() {
-        // get DB versionDownloaded and versionInstalled number
-        int versionDownloaded = SEPTADatabaseUtils.getVersionDownloaded(MainActivity.this);
-        int versionInstalled = SEPTADatabaseUtils.getVersionInstalled(MainActivity.this);
-        int currentDBVersion = SEPTADatabase.getDatabaseVersion();
-        boolean areThereFilesToClean = SEPTADatabaseUtils.getNeedToClean(MainActivity.this);
-
-        if (versionDownloaded > versionInstalled) {
-            // install new DB if not done already
-
-            // get downloaded file from databases directory
-            String newDatabaseZipFilename = new StringBuilder("SEPTA_").append(versionDownloaded).append("_sqlite.zip").toString();
-            File newDbZip = new File(getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath(), newDatabaseZipFilename);
-
-            if (newDbZip.isFile()) {
-                // expand DB on a background thread
-                expandDBZip = new ExpandDBZip(MainActivity.this, MainActivity.this, newDbZip, versionDownloaded);
-                expandDBZip.execute();
-            } else {
-                // redo download
-                if (isConnectedToInternet()) {
-                    // user already granted permission and download was cancelled by user
-                    // download it without asking for permission again
-                    downloadNewDB();
-                } else {
-                    // do nothing -- do not tell user there may be a new DB available
-                    Log.d(TAG, "No network connection established -- cannot check for new DB");
-                }
-            }
-        } else if (areThereFilesToClean && versionInstalled == currentDBVersion // app has been restarted
-                && (versionDownloaded == versionInstalled       // DB installed from download and ready for use
-                || currentDBVersion > versionDownloaded)) {     // DB in-app is newer than one on API
-            // remove old DB files
-            cleanOldDB = new CleanOldDB(MainActivity.this, MainActivity.this, versionInstalled);
-            cleanOldDB.execute();
-        } else if (versionDownloaded == versionInstalled) {
-            // only prompt to restart if not already using most up to date version of database
-            promptToRestart();
-        }
-    }
-
-    private void promptToRestart() {
-        int versionDownloaded = SEPTADatabaseUtils.getVersionDownloaded(MainActivity.this);
-        int versionInstalled = SEPTADatabaseUtils.getVersionInstalled(MainActivity.this);
-
-        if (versionDownloaded == versionInstalled && versionInstalled > SEPTADatabase.getDatabaseVersion()) {
-            // remember that old DB files need to be cleaned
-            SEPTADatabaseUtils.setNeedToClean(MainActivity.this, true);
-
-            // prompt user to restart app
-            final AlertDialog dialog = new AlertDialog.Builder(MainActivity.this).setCancelable(true).setTitle(R.string.prompt_restart_database_title)
-                    .setMessage(R.string.prompt_restart_database_description)
-
-                    // approved restart
-                    .setPositiveButton(R.string.prompt_restart_button_positive_now, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            // restart app
-                            restartApplication();
-                        }
-                    })
-
-                    // remind of download later
-                    .setNegativeButton(R.string.prompt_restart_button_negative_later, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    })
-                    .create();
-
-            // set "restart now" button color
-            dialog.setOnShowListener(new DialogInterface.OnShowListener() {
-                @Override
-                public void onShow(DialogInterface arg0) {
-                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.RED);
-                }
-            });
-
-            // only show prompt once
-            if (promptRestartApp != null && promptRestartApp.isShowing()) {
-                promptRestartApp.dismiss();
-                promptRestartApp = null;
-            }
-            promptRestartApp = dialog;
-
-            // show prompt
-            dialog.show();
-        }
-    }
-
-    private void restartApplication() {
-        // restart the app
-        Intent restartIntent = MainActivity.this.getPackageManager().getLaunchIntentForPackage(MainActivity.this.getPackageName());
-        restartIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent intent = PendingIntent.getActivity(MainActivity.this, 0, restartIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-        AlarmManager manager = (AlarmManager) MainActivity.this.getSystemService(Context.ALARM_SERVICE);
-        manager.set(AlarmManager.RTC, System.currentTimeMillis() + DELAY, intent);
-        System.exit(2);
-    }
 
     public void showAlert(String alert, Boolean isGenericAlert) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);

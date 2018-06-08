@@ -9,6 +9,8 @@ import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 
+import org.septa.android.app.database.SEPTADatabase;
+import org.septa.android.app.database.SEPTADatabaseUtils;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Alerts;
 import org.septa.android.app.support.AnalyticsManager;
@@ -29,6 +31,17 @@ public class MainApplication extends Application implements Runnable {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        // update database version if manually incremented
+        int currentDBVersion = SEPTADatabase.getDatabaseVersion();
+        if (currentDBVersion > SEPTADatabaseUtils.getVersionInstalled(MainApplication.this)) {
+            Log.d(TAG, "Found new DB! Updating sharedPreferences...");
+            String newDatabaseFilename = new StringBuilder("SEPTA_").append(currentDBVersion).append(".sqlite").toString();
+            SEPTADatabaseUtils.setDatabaseFilename(MainApplication.this, newDatabaseFilename);
+            SEPTADatabaseUtils.setNeedToClean(MainApplication.this, true);
+            SEPTADatabaseUtils.setVersionInstalled(MainApplication.this, currentDBVersion);
+        }
+
         Fabric.with(this, new Crashlytics());
         if (!BuildConfig.DEBUG) {
             CrashlyticsManager.init(this);

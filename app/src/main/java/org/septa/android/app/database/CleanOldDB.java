@@ -27,8 +27,6 @@ public class CleanOldDB extends AsyncTask<Object, Object, Void> {
 
     @Override
     protected Void doInBackground(Object... voids) {
-        final File rootDir = new File(new File(context.getApplicationInfo().dataDir), "databases");
-
         // look at directory of current files and find any databases that aren't newDbVersionToUse
         // -- SEPTA.sqlite is legacy filename, starting after 282 version numbers will be added in filenames
         // SEPTA_14_sqlite.zip (externaL) and SEPTA_14.sqlite (internal)
@@ -40,12 +38,19 @@ public class CleanOldDB extends AsyncTask<Object, Object, Void> {
         // clean up old database files
         for (File fileToDelete : internalDir.listFiles()) {
             String newDatabaseFilename = new StringBuilder("SEPTA_").append(version).append(".sqlite").toString();
+            String fileToDeleteName = fileToDelete.getName();
 
             // delete internal files unrelated to current database
-            if (!(fileToDelete.getName().contains(newDatabaseFilename))) {
-                Log.d(TAG, "Deleting " + fileToDelete.getName());
-                if (!fileToDelete.delete()) {
-                    Log.e(TAG, "Unable to delete " + fileToDelete.getName());
+            if (!(fileToDeleteName.contains(newDatabaseFilename))) {
+
+                // only delete files related to DB
+                if (fileToDeleteName.contains(".sqlite")) {
+                    // SEPTA.sqlite, SEPTA.sqlite.zip, SEPTA.sqlite-journal
+
+                    Log.d(TAG, "Deleting DB file " + fileToDeleteName);
+                    if (!fileToDelete.delete()) {
+                        Log.e(TAG, "Unable to delete DB file " + fileToDeleteName);
+                    }
                 }
             }
         }

@@ -781,7 +781,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     Log.d(TAG, "No network connection established -- cannot check for new DB");
                 }
             }
-        } else if (versionDownloaded == versionInstalled && versionInstalled == currentDBVersion && areThereFilesToClean) {
+        } else if (areThereFilesToClean && versionInstalled == currentDBVersion // app has been restarted
+                && (versionDownloaded == versionInstalled       // DB installed from download and ready for use
+                || currentDBVersion > versionDownloaded)) {     // DB in-app is newer than one on API
             // remove old DB files
             cleanOldDB = new CleanOldDB(MainActivity.this, MainActivity.this, versionInstalled);
             cleanOldDB.execute();

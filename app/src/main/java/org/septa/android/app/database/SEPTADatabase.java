@@ -18,9 +18,8 @@ public class SEPTADatabase extends SQLiteAssetHelper {
 
     // these are left in case the user does not have the most up to date version of the database
     // modify databaseVersion and databaseFileName when pushing out a new release with a new DB
-    private static int databaseVersion = 282;
-    private static String databaseFileName = "SEPTA.sqlite";
-    // TODO: have to update shared preferences when these constants are changed so that older DBs don't overwrite a newer one on the app
+    private static int databaseVersion = 286;
+    private static String databaseFileName = "SEPTA_286.sqlite";
 
     public SEPTADatabase(Context context, int databaseVersion, String databaseFileName) {
         super(context, databaseFileName, null, databaseVersion);

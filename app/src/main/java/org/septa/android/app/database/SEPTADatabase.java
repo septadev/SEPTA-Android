@@ -6,7 +6,9 @@ import android.util.Log;
 
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 
+import org.septa.android.app.R;
 import org.septa.android.app.support.CrashlyticsManager;
+import org.septa.android.app.support.GeneralUtils;
 
 public class SEPTADatabase extends SQLiteAssetHelper {
     private static String TAG = SEPTADatabase.class.getSimpleName();
@@ -32,22 +34,7 @@ public class SEPTADatabase extends SQLiteAssetHelper {
         setForcedUpgrade();
 
         // create indices on new app database
-        execSQL(new String[]{
-                "CREATE INDEX stop_srd_index ON stop_route_direction (stop_id);",
-                "CREATE INDEX route_srd_index ON stop_route_direction (route_id);",
-                "CREATE INDEX direction_srd_index ON stop_route_direction (direction_id);",
-                "CREATE INDEX trips_bus_route_id_index ON trips_bus (route_id);",
-                "CREATE INDEX trips_rail_route_id_trip_id_index ON trips_rail (route_id, trip_id);",
-                "CREATE INDEX trips_rail_trip_id_route_id_index ON trips_rail (trip_id, route_id);",
-                "CREATE INDEX routes_bus_route_id_index ON routes_bus (route_id);",
-                "CREATE INDEX routes_rail_route_id_index ON routes_rail (route_id);",
-                "CREATE INDEX reverseStopSearch_reverse_stop_id_stop_id_index ON reverseStopSearch (reverse_stop_id, stop_id);",
-                "CREATE INDEX reverseStopSearch_stop_id_reverse_stop_id_index ON reverseStopSearch (stop_id, reverse_stop_id);",
-                "CREATE INDEX bus_stop_directions_Route_index ON bus_stop_directions (Route);",
-                "CREATE INDEX stop_times_rail_trip_id_stop_id_stop_sequence_index ON stop_times_rail (trip_id, stop_id, stop_sequence);",
-                "CREATE INDEX stop_times_rail_stop_id_trip_id_index ON stop_times_rail (stop_id, trip_id);",
-                "VACUUM;"
-        });
+        execSQL(new String[]{GeneralUtils.readRawTextFile(context, R.raw.db_init_script)});
     }
 
     private void execSQL(String statements[]) {

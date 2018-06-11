@@ -3,12 +3,14 @@ package org.septa.android.app.database;
 import android.Manifest;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.DownloadManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Environment;
@@ -22,6 +24,7 @@ import org.septa.android.app.SplashScreenActivity;
 import org.septa.android.app.support.GeneralUtils;
 
 import java.io.File;
+import java.util.Arrays;
 
 public class DatabaseUpgradeUtils {
 
@@ -51,19 +54,19 @@ public class DatabaseUpgradeUtils {
         int currentDBVersion = SEPTADatabase.getDatabaseVersion();
         boolean areThereFilesToClean = SEPTADatabaseUtils.getNeedToClean(context);
 
+        // install new DB if not done already
         if (versionDownloaded > versionInstalled) {
-            // install new DB if not done already
-
             // get downloaded file from databases directory
             String newDatabaseZipFilename = new StringBuilder("SEPTA_").append(versionDownloaded).append("_sqlite.zip").toString();
             File newDbZip = new File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath(), newDatabaseZipFilename);
 
-            if (newDbZip.isFile()) {
+            // validate that zip file has finished downloading
+            if (newDbZip.isFile() && newDbZip.exists()) {
                 // expand DB on a background thread
                 ExpandDBZip expandDBZip = new ExpandDBZip(context, context, newDbZip, versionDownloaded);
                 expandDBZip.execute();
             } else {
-                // redo download
+                // redo download (it may have been interrupted)
                 if (GeneralUtils.isConnectedToInternet(context)) {
                     // user already granted permission and download was cancelled by user
                     // download it without asking for permission again
@@ -186,12 +189,42 @@ public class DatabaseUpgradeUtils {
             // save permission to download
             SEPTADatabaseUtils.setPermissionToDownload(context, true);
 
-            // do not need to recheck for connection -- handled by DownloadManager
-            DownloadNewDB downloadNewDB = new DownloadNewDB(context, context, latestDBURL, latestDBVersion);
-            downloadNewDB.execute();
+            // check if download already in progress
+            if (!isDownloading(context)) {
+                // do not need to recheck for connection -- handled by DownloadManager
+                DownloadNewDB downloadNewDB = new DownloadNewDB(context, context, latestDBURL, latestDBVersion);
+                downloadNewDB.execute();
+            } else {
+                Log.d(TAG, "DB download already in progress");
+            }
         } else {
             Log.e(TAG, "Could not download new DB with version: " + latestDBVersion + " from URL: " + latestDBURL);
         }
+    }
+
+    private static boolean isDownloading(MainActivity context) {
+        int downloadStatus = getDownloadStatus(context, SEPTADatabaseUtils.getDownloadRefId(context));
+        int[] inProgressStatuses = new int[]{DownloadManager.STATUS_RUNNING, DownloadManager.STATUS_PENDING, DownloadManager.STATUS_PAUSED, DownloadManager.PAUSED_WAITING_TO_RETRY, DownloadManager.PAUSED_WAITING_FOR_NETWORK, DownloadManager.PAUSED_QUEUED_FOR_WIFI};
+        return Arrays.asList(inProgressStatuses).contains(downloadStatus);
+    }
+
+    private static int getDownloadStatus(Context context , long downloadId) {
+        DownloadManager downloadManager =
+                (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+        DownloadManager.Query query = new DownloadManager.Query();
+        query.setFilterById(downloadId); // filter your download by download Id
+        Cursor c;
+        if (downloadManager != null) {
+            c = downloadManager.query(query);
+            if (c.moveToFirst()) {
+                int status = c.getInt(c.getColumnIndex(DownloadManager.COLUMN_STATUS));
+                c.close();
+                Log.i("DOWNLOAD_STATUS", String.valueOf(status));
+                return status;
+            }
+        }
+        Log.i("AUTOMATION_DOWNLOAD", "DEFAULT");
+        return -1;
     }
 
     public static void saveDownloadedVersionNumber(MainActivity context, long downloadRefId, int version) {        // add to list of downloads

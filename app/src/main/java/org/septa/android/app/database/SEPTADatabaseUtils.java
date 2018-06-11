@@ -65,8 +65,8 @@ public class SEPTADatabaseUtils {
     }
 
     public static long getDownloadRefId(Context context) {
-        // TODO: default download ref ID??
-        return context.getSharedPreferences(SHARED_PREFERENCES_DATABASE, Context.MODE_PRIVATE).getLong(DOWNLOAD_REF_ID, -1);
+        // default -10 instead of -1 just to ensure it won't be mistaken as in progress download
+        return context.getSharedPreferences(SHARED_PREFERENCES_DATABASE, Context.MODE_PRIVATE).getLong(DOWNLOAD_REF_ID, -10);
     }
 
     public static void clearDownloadRefId(Context context) {

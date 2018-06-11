@@ -566,7 +566,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     };
 
-
     // listener for completed database downloads
     BroadcastReceiver onDBDownloadComplete = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {

@@ -252,7 +252,7 @@ public class DatabaseUpgradeUtils {
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
                 .setSmallIcon(R.drawable.ic_launcher)
                 .setContentTitle(context.getString(R.string.app_name))
-                .setContentText(context.getString(R.string.notification_database_download_complete));  // TODO: language for complete download notification
+                .setContentText(context.getString(R.string.notification_database_download_complete));
 
         // set up notification intent to restart app on click
         Intent notificationIntent = new Intent(context, SplashScreenActivity.class);

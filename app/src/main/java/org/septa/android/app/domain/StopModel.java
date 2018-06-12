@@ -8,6 +8,7 @@
 package org.septa.android.app.domain;
 
 import java.io.Serializable;
+import java.util.Comparator;
 
 public class StopModel implements Comparable<StopModel>, Serializable {
 
@@ -192,6 +193,14 @@ public class StopModel implements Comparable<StopModel>, Serializable {
                 ", distance=" + distance +
                 ", directionId=" + directionId +
                 '}';
+    }
+
+    // allows for sorting in route order
+    public static class StopModelSequenceComparator implements Comparator<StopModel> {
+        @Override
+        public int compare(StopModel stop1, StopModel stop2) {
+            return stop1.getStopSequence() - stop2.getStopSequence();
+        }
     }
 }
 

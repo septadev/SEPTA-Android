@@ -151,9 +151,7 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
             });
 
             // set default sort based on shared preferences
-            int sortOrder = LocationPickerUtils.getStopPickerSortOrder(getContext());
-            Log.e(TAG, "Sort Order: " + sortOrder); // TODO: remove
-            switch (sortOrder) {
+            switch (LocationPickerUtils.getStopPickerSortOrder(getContext())) {
                 case 2:
                     // in stop order
                     sortStopsInOrder();
@@ -193,8 +191,6 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
         private class AlphabeticalSortButtonGestureListener extends GestureDetector.SimpleOnGestureListener {
             @Override
             public boolean onSingleTapConfirmed(MotionEvent e) {
-                Log.i(TAG, "onSingleTapConfirmed: "); // TODO: remove
-
                 // sort stops alphabetically
                 sortStopsAlphabetical();
                 return true;
@@ -202,8 +198,6 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
 
             @Override
             public boolean onDoubleTap(MotionEvent e) {
-                Log.i(TAG, "onDoubleTap: "); // TODO: remove
-
                 // sort stops reverse alphabetically
                 sortStopsReverseAlphabetical();
                 return true;
@@ -237,9 +231,9 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
         }
 
         private void sortStopsInOrder() {
-            // TODO: sort stops in order
-            Log.e(TAG, this.adapter.filterRoutes.toString()); // TODO: remove
-
+            // sort stops in route order
+            Collections.sort(this.adapter.filterRoutes, new StopModel.StopModelSequenceComparator());
+            this.adapter.notifyDataSetChanged();
 
             // change selected button background
             changeSortButtonBackground(sortAlphabeticalButton, R.drawable.button_sort_stops_border);
@@ -247,7 +241,6 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
 
             // save sort order
             LocationPickerUtils.setStopPickerSortOrder(getContext(), 2);
-
         }
 
         private void changeSortButtonBackground(View button, int backgroundResId) {

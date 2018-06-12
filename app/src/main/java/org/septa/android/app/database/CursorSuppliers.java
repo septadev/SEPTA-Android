@@ -157,8 +157,9 @@ class CursorSuppliers implements Serializable {
 
         @Override
         public Cursor getCursor(Context context, List<Criteria> whereClause) {
-            if (whereClause == null)
+            if (whereClause == null) {
                 throw new RuntimeException("Required where clause that includes after_stop_id, route_id and direction_id with Equals Operation");
+            }
 
             StringBuilder queryString = new StringBuilder(context.getResources().getString(R.string.rail_trip_end));
             String afterStopId = null;
@@ -221,7 +222,7 @@ class CursorSuppliers implements Serializable {
 
     static class BusStopCursorAdapterSupplier implements CursorAdapterSupplier<StopModel> {
 
-        private static final String SELECT_CLAUSE = "SELECT DISTINCT a.stop_id, stop_name, wheelchair_boarding, stop_lat, stop_lon, a.rowid AS _id FROM stops_bus a, stop_route_direction b WHERE a.stop_id=b.stop_id";
+        private static final String SELECT_CLAUSE = "SELECT DISTINCT a.stop_id, stop_name, wheelchair_boarding, stop_lat, stop_lon, b.route_sequence, a.rowid AS _id FROM stops_bus a, stop_route_direction b WHERE a.stop_id=b.stop_id";
 
         @Override
         public Cursor getCursor(Context context, List<Criteria> whereClause) {
@@ -255,6 +256,7 @@ class CursorSuppliers implements Serializable {
         public StopModel getCurrentItemFromCursor(Cursor cursor) {
             StopModel stopModel = new StopModel(cursor.getString(0), cursor.getString(1),
                     (cursor.getInt(2) == 1), cursor.getString(3), cursor.getString(4));
+            stopModel.setStopSequence(cursor.getInt(5));
             return stopModel;
         }
 
@@ -277,11 +279,10 @@ class CursorSuppliers implements Serializable {
 
     static class BusStopAfterCursorAdapterSupplier implements CursorAdapterSupplier<StopModel> {
 
-        private static final String SELECT_CLAUSE = "select distinct y.stop_id, y.stop_name, y.wheelchair_boarding, y.stop_lat, y.stop_lon, y.rowid AS _id from\n" +
+        private static final String SELECT_CLAUSE = "select distinct y.stop_id, y.stop_name, y.wheelchair_boarding, y.stop_lat, y.stop_lon, b.route_sequence, y.rowid AS _id from\n" +
                 "(select distinct stop_id, route_sequence from stop_route_direction where stop_id=''{0}'' and route_id=''{1}'' and direction_id=''{2}'' ) a,\n" +
                 "(select distinct stop_id, route_sequence from stop_route_direction where stop_id<>''{0}'' and route_id=''{1}'' and direction_id=''{2}'' ) b,\n" +
                 "stops_bus y where a.route_sequence < b.route_sequence and y.stop_id=b.stop_id";
-
 
         @Override
         public Cursor getCursor(Context context, List<Criteria> whereClause) {

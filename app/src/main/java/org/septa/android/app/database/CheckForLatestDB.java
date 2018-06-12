@@ -14,10 +14,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-/**
- * Created by mluansing on 9/20/17.
- */
-
 public class CheckForLatestDB extends AsyncTask<Object, Object, Void> {
 
     // tag for logging purposes

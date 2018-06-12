@@ -2,17 +2,15 @@ package org.septa.android.app.locationpicker;
 
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -29,6 +27,7 @@ import org.septa.android.app.support.BaseTabActivityHandler;
 import org.septa.android.app.support.CursorAdapterSupplier;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -53,13 +52,13 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
         return fragment;
     }
 
-
-    public static class PlaceholderFragment extends Fragment {
+    public static class PlaceholderFragment extends Fragment implements LoadStopsForPicker.LoadStopsForPickerListener {
         private ListView list = null;
+        StationNameAdapter2 adapter;
         private StopModel currentStop;
         private CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
-        View progressView;
-        StationNameAdapter2 itemAdapter2;
+        View progressView, sortAlphabeticalButton, sortInOrderButton;
+        EditText filterText;
 
         private static final int URL_LOADER = 0;
 
@@ -94,67 +93,84 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
         @Override
         public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                                  Bundle savedInstanceState) {
-            Log.d(TAG, "onCreateView()");
             restoreArgs();
             View rootView = inflater.inflate(R.layout.location_picker_by_stop, container, false);
+            sortAlphabeticalButton = rootView.findViewById(R.id.stop_list_sort_alphabetical);
+            sortInOrderButton = rootView.findViewById(R.id.stop_list_sort_in_order);
             list = (ListView) rootView.findViewById(R.id.rail_station_list);
             progressView = rootView.findViewById(R.id.progress_view);
+            filterText = (EditText) rootView.findViewById(R.id.station_filter);
 
             progressView.setVisibility(View.VISIBLE);
 
-            final ListView localList = list;
+            // load stops for the picker dialog
+            LoadStopsForPicker loadStopsForPicker = new LoadStopsForPicker(getContext(), PlaceholderFragment.this, cursorAdapterSupplier);
+            loadStopsForPicker.execute();
 
-            final Handler h = new Handler() {
+            // double tap listener for alphabetical button
+            final GestureDetector mDetector = new GestureDetector(getContext(), new AlphabeticalSortButtonGestureListener());
+            View.OnTouchListener touchListener = new View.OnTouchListener() {
                 @Override
-                public void handleMessage(Message msg) {
-                    Log.d(TAG, "handleMessage");
-                    if (msg.what == 0) {
-                        list.setAdapter(itemAdapter2);
-                        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                            @Override
-                            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                                Log.d(TAG, this.hashCode() + "onItemSelected " + i);
-
-                                if (getTargetFragment() != null) {
-                                    Intent intent = new Intent();
-                                    intent.putExtra(LocationPickerFragment.STOP_MODEL, cursorAdapterSupplier.getItemFromId(getContext(), view.getTag()));
-                                    getTargetFragment().onActivityResult(getTargetRequestCode(), LocationPickerFragment.SUCCESS, intent);
-                                }
-                            }
-                        });
-                        progressView.setVisibility(View.GONE);
-                    } else {
-                    }
-                    Log.d(TAG, "handleMessage - Done");
+                public boolean onTouch(View view, MotionEvent motionEvent) {
+                    // pass the events to the gesture detector
+                    // a return value of true means the detector is handling it
+                    // a return value of false means the detector didn't
+                    // recognize the event
+                    return mDetector.onTouchEvent(motionEvent);
                 }
             };
+            sortAlphabeticalButton.setOnTouchListener(touchListener);
 
-
-            new AsyncTask<Void, Void, Void>() {
+            // button to sort stops in order
+            sortInOrderButton.setOnTouchListener(new View.OnTouchListener() {
                 @Override
-                protected Void doInBackground(Void... voids) {
-                    Log.d(TAG, "creating cursor Adapter");
-                    List<StopModel> stops = new ArrayList<StopModel>();
-                    Context context = getContext();
-                    if (context == null)
-                        return null;
-                    Cursor c = cursorAdapterSupplier.getCursor(getContext(), null);
-                    if (c.moveToFirst()) {
-                        do {
-                            StopModel stop = cursorAdapterSupplier.getCurrentItemFromCursor(c);
-                            stops.add(stop);
-                        } while (c.moveToNext());
-                    }
-                    itemAdapter2 =
-                            new StationNameAdapter2(context, stops);
-                    Log.d(TAG, "creating cursor Adapter - Done");
-                    h.sendEmptyMessage(0);
-                    return null;
+                public boolean onTouch(View view, MotionEvent motionEvent) {
+                    sortStopsInOrder();
+                    return false;
                 }
-            }.execute();
+            });
 
-            EditText filterText = (EditText) rootView.findViewById(R.id.station_filter);
+            return rootView;
+        }
 
+        @Override
+        public void afterStopsLoaded(final StationNameAdapter2 adapter) {
+            this.adapter = adapter;
+            list.setAdapter(this.adapter);
+            list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    Log.d(TAG, this.hashCode() + "onItemSelected " + i);
+
+                    if (getTargetFragment() != null) {
+                        Intent intent = new Intent();
+                        intent.putExtra(LocationPickerFragment.STOP_MODEL, cursorAdapterSupplier.getItemFromId(getContext(), view.getTag()));
+                        getTargetFragment().onActivityResult(getTargetRequestCode(), LocationPickerFragment.SUCCESS, intent);
+                    }
+                }
+            });
+
+            // set default sort based on shared preferences
+            int sortOrder = LocationPickerUtils.getStopPickerSortOrder(getContext());
+            Log.e(TAG, "Sort Order: " + sortOrder); // TODO: remove
+            switch (sortOrder) {
+                case 2:
+                    // in stop order
+                    sortStopsInOrder();
+                    break;
+                case 1:
+                    // reverse alphabetical
+                    sortStopsReverseAlphabetical();
+                    break;
+                case 0:
+                    // alphabetical
+                    sortStopsAlphabetical();
+                    break;
+            }
+
+            progressView.setVisibility(View.GONE);
+
+            // add search filter to loaded stops
             filterText.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -163,21 +179,82 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
 
                 @Override
                 public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                    if (itemAdapter2 != null)
-                        itemAdapter2.getFilter().filter(charSequence.toString());
+                    if (adapter != null) {
+                        adapter.getFilter().filter(charSequence.toString());
+                    }
                 }
 
                 @Override
                 public void afterTextChanged(Editable editable) {
                 }
             });
+        }
 
-            Log.d(TAG, "onCreateView() - DONE");
-            return rootView;
+        private class AlphabeticalSortButtonGestureListener extends GestureDetector.SimpleOnGestureListener {
+            @Override
+            public boolean onSingleTapConfirmed(MotionEvent e) {
+                Log.i(TAG, "onSingleTapConfirmed: "); // TODO: remove
+
+                // sort stops alphabetically
+                sortStopsAlphabetical();
+                return true;
+            }
+
+            @Override
+            public boolean onDoubleTap(MotionEvent e) {
+                Log.i(TAG, "onDoubleTap: "); // TODO: remove
+
+                // sort stops reverse alphabetically
+                sortStopsReverseAlphabetical();
+                return true;
+            }
+        }
+
+        private void sortStopsAlphabetical() {
+            // sort stops a to z
+            Collections.sort(this.adapter.filterRoutes);
+            this.adapter.notifyDataSetChanged();
+
+            // change selected button background
+            changeSortButtonBackground(sortInOrderButton, R.drawable.button_sort_stops_border);
+            changeSortButtonBackground(sortAlphabeticalButton, R.drawable.button_sort_stops_selected);
+
+            // save sort order
+            LocationPickerUtils.setStopPickerSortOrder(getContext(), 0);
+        }
+
+        private void sortStopsReverseAlphabetical() {
+            // sort stops z to a
+            Collections.sort(this.adapter.filterRoutes, Collections.<StopModel>reverseOrder());
+            this.adapter.notifyDataSetChanged();
+
+            // TODO: change selected button background -- should this be different for reverse order?
+            changeSortButtonBackground(sortInOrderButton, R.drawable.button_sort_stops_border);
+            changeSortButtonBackground(sortAlphabeticalButton, R.drawable.button_sort_stops_selected);
+
+            // save sort order
+            LocationPickerUtils.setStopPickerSortOrder(getContext(), 1);
+        }
+
+        private void sortStopsInOrder() {
+            // TODO: sort stops in order
+            Log.e(TAG, this.adapter.filterRoutes.toString()); // TODO: remove
+
+
+            // change selected button background
+            changeSortButtonBackground(sortAlphabeticalButton, R.drawable.button_sort_stops_border);
+            changeSortButtonBackground(sortInOrderButton, R.drawable.button_sort_stops_selected);
+
+            // save sort order
+            LocationPickerUtils.setStopPickerSortOrder(getContext(), 2);
+
+        }
+
+        private void changeSortButtonBackground(View button, int backgroundResId) {
+            button.setBackgroundResource(backgroundResId);
         }
 
     }
-
 
     public static class StationNameAdapter2 extends ArrayAdapter<StopModel> implements Filterable {
 
@@ -220,7 +297,7 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
                         return filterResults;
                     }
 
-                    ArrayList<StopModel> tempList = new ArrayList<StopModel>();
+                    ArrayList<StopModel> tempList = new ArrayList<>();
 
                     String constraintString = constraint.toString().toLowerCase();
 

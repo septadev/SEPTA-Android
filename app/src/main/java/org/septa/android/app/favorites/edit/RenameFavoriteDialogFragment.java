@@ -16,21 +16,15 @@ import org.septa.android.app.favorites.DeleteFavoritesAsyncTask;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Favorite;
 
-/**
- * Created by jkampf on 9/9/17.
- */
-
-public class EditFavoriteDialogFragment extends DialogFragment {
+public class RenameFavoriteDialogFragment extends DialogFragment {
 
     private Favorite favorite;
-    private EditFavoriteCallBack editFavoriteCallBack;
+    private RenameFavoriteCallBack renameFavoriteCallBack;
 
     private static final String KEY_FAVORITE = "KEY_FAVORITE";
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         restoreArgs();
 
         View rootView = inflater.inflate(R.layout.edit_favorite_dialog, container);
@@ -54,9 +48,10 @@ public class EditFavoriteDialogFragment extends DialogFragment {
             @Override
             public void onClick(View v) {
                 favorite.setName(nameEditText.getText().toString());
-                SeptaServiceFactory.getFavoritesService().addFavorites(getContext(), favorite);
-                if (editFavoriteCallBack != null)
-                    editFavoriteCallBack.updateFavorite(favorite);
+                SeptaServiceFactory.getFavoritesService().renameFavorite(getContext(), favorite);
+                if (renameFavoriteCallBack != null) {
+                    renameFavoriteCallBack.updateFavorite(favorite);
+                }
                 getDialog().dismiss();
             }
         });
@@ -79,11 +74,13 @@ public class EditFavoriteDialogFragment extends DialogFragment {
                                     }
                                     getActivity().onBackPressed();
                                 }
-                            }).setNegativeButton(R.string.delete_fav_neg_button, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                        }
-                    }).create().show();
+                            })
+                            .setNegativeButton(R.string.delete_fav_neg_button, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                }
+                            })
+                            .create().show();
                 }
             }
         });
@@ -95,14 +92,14 @@ public class EditFavoriteDialogFragment extends DialogFragment {
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        if ((context instanceof EditFavoriteCallBack)) {
-            editFavoriteCallBack = (EditFavoriteCallBack) context;
+        if ((context instanceof RenameFavoriteCallBack)) {
+            renameFavoriteCallBack = (RenameFavoriteCallBack) context;
         }
 
     }
 
-    public static EditFavoriteDialogFragment getInstance(Favorite favorite) {
-        EditFavoriteDialogFragment fragment = new EditFavoriteDialogFragment();
+    public static RenameFavoriteDialogFragment getInstance(Favorite favorite) {
+        RenameFavoriteDialogFragment fragment = new RenameFavoriteDialogFragment();
 
         Bundle args = new Bundle();
         args.putSerializable(KEY_FAVORITE, favorite);

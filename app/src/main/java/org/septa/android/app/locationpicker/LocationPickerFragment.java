@@ -22,6 +22,7 @@ public class LocationPickerFragment extends DialogFragment {
     public static final int SUCCESS = 0;
     public static final String STOP_MODEL = "stopModel";
     private static final int STOP_MODEL_REQUEST = 1;
+    private static final String IS_LINE_AWARE = "IS_LINE_AWARE";
 
     TabActivityHandler tabActivityHandlers[];
 
@@ -33,6 +34,8 @@ public class LocationPickerFragment extends DialogFragment {
 
     private int selected_index = 0;
     private Fragment currentFragment;
+
+    private boolean isLineAware = false;
 
     @Override
     public void onResume() {
@@ -48,8 +51,9 @@ public class LocationPickerFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             Integer newIndex = (Integer) savedInstanceState.getSerializable("selected_index");
-            if (newIndex != null)
+            if (newIndex != null) {
                 selected_index = newIndex;
+            }
         }
 
         restoreArgs();
@@ -61,7 +65,7 @@ public class LocationPickerFragment extends DialogFragment {
         View dialogView = getActivity().getLayoutInflater().inflate(R.layout.by_station, null);
 
         tabActivityHandlers = new TabActivityHandler[2];
-        tabActivityHandlers[0] = new ByStopTabActivityHandler("BY STATION", cursorAdapterSupplier);
+        tabActivityHandlers[0] = new ByStopTabActivityHandler("BY STATION", cursorAdapterSupplier, isLineAware);
 
         tabActivityHandlers[1] = new ByAddressTabActivityHandler("BY ADDRESS", cursorAdapterSupplier);
 
@@ -84,7 +88,6 @@ public class LocationPickerFragment extends DialogFragment {
                 getDialog().dismiss();
             }
         });
-
 
         searchByStationTab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -135,11 +138,8 @@ public class LocationPickerFragment extends DialogFragment {
                 getTargetFragment().onActivityResult(getTargetRequestCode(), SUCCESS, intent);
             }
             dismiss();
-
-            return;
         }
     }
-
 
     @Override
     public void onAttach(Context context) {
@@ -163,11 +163,12 @@ public class LocationPickerFragment extends DialogFragment {
         outState.putSerializable("selected_index", selected_index);
     }
 
-    public static LocationPickerFragment newInstance(CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
+    public static LocationPickerFragment newInstance(CursorAdapterSupplier<StopModel> cursorAdapterSupplier, boolean lineAware) {
         LocationPickerFragment fragment = new LocationPickerFragment();
 
         Bundle args = new Bundle();
         args.putSerializable("cursorAdapterSupplier", cursorAdapterSupplier);
+        args.putBoolean(IS_LINE_AWARE, lineAware);
         fragment.setArguments(args);
 
         return fragment;
@@ -176,6 +177,7 @@ public class LocationPickerFragment extends DialogFragment {
 
     private void restoreArgs() {
         cursorAdapterSupplier = (CursorAdapterSupplier<StopModel>) getArguments().getSerializable("cursorAdapterSupplier");
+        isLineAware = getArguments().getBoolean(IS_LINE_AWARE);
     }
 
     public void onCreate(Bundle savedInstanceState) {

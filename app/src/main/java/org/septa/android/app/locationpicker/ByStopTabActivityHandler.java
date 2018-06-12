@@ -39,15 +39,17 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
 
     public static final String TAG = ByStopTabActivityHandler.class.getSimpleName();
     final private CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
+    private boolean isLineAware;
 
-    public ByStopTabActivityHandler(String s, CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
+    public ByStopTabActivityHandler(String s, CursorAdapterSupplier<StopModel> cursorAdapterSupplier, boolean isLineAware) {
         super(s);
         this.cursorAdapterSupplier = cursorAdapterSupplier;
+        this.isLineAware = isLineAware;
     }
 
     @Override
     public Fragment getFragment() {
-        ByStopTabActivityHandler.PlaceholderFragment fragment = ByStopTabActivityHandler.PlaceholderFragment.newInstance(cursorAdapterSupplier);
+        ByStopTabActivityHandler.PlaceholderFragment fragment = ByStopTabActivityHandler.PlaceholderFragment.newInstance(cursorAdapterSupplier, isLineAware);
 
         return fragment;
     }
@@ -59,13 +61,16 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
         private CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
         View progressView, sortAlphabeticalButton, sortInOrderButton;
         EditText filterText;
+        private boolean isLineAware = false;
+        private static final String IS_LINE_AWARE = "IS_LINE_AWARE";
 
         private static final int URL_LOADER = 0;
 
-        public static ByStopTabActivityHandler.PlaceholderFragment newInstance(CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
+        public static ByStopTabActivityHandler.PlaceholderFragment newInstance(CursorAdapterSupplier<StopModel> cursorAdapterSupplier, boolean isLineAware) {
             ByStopTabActivityHandler.PlaceholderFragment fragment = new ByStopTabActivityHandler.PlaceholderFragment();
             Bundle args = new Bundle();
             args.putSerializable("cursorAdapterSupplier", cursorAdapterSupplier);
+            args.putBoolean(IS_LINE_AWARE, isLineAware);
             fragment.setArguments(args);
 
             return fragment;
@@ -73,6 +78,7 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
 
         private void restoreArgs() {
             cursorAdapterSupplier = (CursorAdapterSupplier<StopModel>) getArguments().getSerializable("cursorAdapterSupplier");
+            isLineAware = getArguments().getBoolean(IS_LINE_AWARE);
         }
 
         @Override
@@ -95,8 +101,7 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
                                  Bundle savedInstanceState) {
             restoreArgs();
             View rootView = inflater.inflate(R.layout.location_picker_by_stop, container, false);
-            sortAlphabeticalButton = rootView.findViewById(R.id.stop_list_sort_alphabetical);
-            sortInOrderButton = rootView.findViewById(R.id.stop_list_sort_in_order);
+            View sortButtonsContainer = rootView.findViewById(R.id.stop_list_sort_container);
             list = (ListView) rootView.findViewById(R.id.rail_station_list);
             progressView = rootView.findViewById(R.id.progress_view);
             filterText = (EditText) rootView.findViewById(R.id.station_filter);
@@ -107,28 +112,35 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
             LoadStopsForPicker loadStopsForPicker = new LoadStopsForPicker(getContext(), PlaceholderFragment.this, cursorAdapterSupplier);
             loadStopsForPicker.execute();
 
-            // double tap listener for alphabetical button
-            final GestureDetector mDetector = new GestureDetector(getContext(), new AlphabeticalSortButtonGestureListener());
-            View.OnTouchListener touchListener = new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View view, MotionEvent motionEvent) {
-                    // pass the events to the gesture detector
-                    // a return value of true means the detector is handling it
-                    // a return value of false means the detector didn't
-                    // recognize the event
-                    return mDetector.onTouchEvent(motionEvent);
-                }
-            };
-            sortAlphabeticalButton.setOnTouchListener(touchListener);
+            if (isLineAware) {
+                sortButtonsContainer.setVisibility(View.VISIBLE);
 
-            // button to sort stops in order
-            sortInOrderButton.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View view, MotionEvent motionEvent) {
-                    sortStopsInOrder();
-                    return false;
-                }
-            });
+                sortAlphabeticalButton = rootView.findViewById(R.id.stop_list_sort_alphabetical);
+                sortInOrderButton = rootView.findViewById(R.id.stop_list_sort_in_order);
+
+                // double tap listener for alphabetical button
+                final GestureDetector mDetector = new GestureDetector(getContext(), new AlphabeticalSortButtonGestureListener());
+                View.OnTouchListener touchListener = new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View view, MotionEvent motionEvent) {
+                        // pass the events to the gesture detector
+                        // a return value of true means the detector is handling it
+                        // a return value of false means the detector didn't
+                        // recognize the event
+                        return mDetector.onTouchEvent(motionEvent);
+                    }
+                };
+                sortAlphabeticalButton.setOnTouchListener(touchListener);
+
+                // button to sort stops in order
+                sortInOrderButton.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View view, MotionEvent motionEvent) {
+                        sortStopsInOrder();
+                        return false;
+                    }
+                });
+            }
 
             return rootView;
         }
@@ -150,20 +162,22 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
                 }
             });
 
-            // set default sort based on shared preferences
-            switch (LocationPickerUtils.getStopPickerSortOrder(getContext())) {
-                case 2:
-                    // in stop order
-                    sortStopsInOrder();
-                    break;
-                case 1:
-                    // reverse alphabetical
-                    sortStopsReverseAlphabetical();
-                    break;
-                case 0:
-                    // alphabetical
-                    sortStopsAlphabetical();
-                    break;
+            if (isLineAware) {
+                // set default sort based on shared preferences
+                switch (LocationPickerUtils.getStopPickerSortOrder(getContext())) {
+                    case 2:
+                        // in stop order
+                        sortStopsInOrder();
+                        break;
+                    case 1:
+                        // reverse alphabetical
+                        sortStopsReverseAlphabetical();
+                        break;
+                    case 0:
+                        // alphabetical
+                        sortStopsAlphabetical();
+                        break;
+                }
             }
 
             progressView.setVisibility(View.GONE);

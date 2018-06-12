@@ -20,10 +20,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Created by jkampf on 10/4/17.
- */
-
 class CursorSuppliers implements Serializable {
     private static final String TAG = CursorSuppliers.class.getSimpleName();
 
@@ -192,7 +188,7 @@ class CursorSuppliers implements Serializable {
             String query = form.format(new Object[]{routeId, directionId, afterStopId});
 
             Cursor cursor = getDatabase(context).rawQuery(query, null);
-            Log.d(TAG, "BusStopAfterCursorAdapterSupplier Creating cursor:" + query);
+            Log.d(TAG, "TransitStopAfterCursorAdapterSupplier Creating cursor:" + query);
 
             return cursor;
         }
@@ -220,7 +216,10 @@ class CursorSuppliers implements Serializable {
         }
     }
 
-    static class BusStopCursorAdapterSupplier implements CursorAdapterSupplier<StopModel> {
+    /**
+     * get the stops for bus, subway, trolley, or NHSL
+     */
+    static class TransitStopCursorAdapterSupplier implements CursorAdapterSupplier<StopModel> {
 
         private static final String SELECT_CLAUSE = "SELECT DISTINCT a.stop_id, stop_name, wheelchair_boarding, stop_lat, stop_lon, b.route_sequence, a.rowid AS _id FROM stops_bus a, stop_route_direction b WHERE a.stop_id=b.stop_id";
 
@@ -245,7 +244,7 @@ class CursorSuppliers implements Serializable {
 
             queryString.append(" ORDER BY stop_name");
 
-            Log.d(TAG, "BusStopCursorAdapterSupplier Creating cursor:" + queryString.toString());
+            Log.d(TAG, "TransitStopCursorAdapterSupplier Creating cursor:" + queryString.toString());
 
             Cursor cursor = getDatabase(context).rawQuery(queryString.toString(), null);
 
@@ -277,7 +276,10 @@ class CursorSuppliers implements Serializable {
         }
     }
 
-    static class BusStopAfterCursorAdapterSupplier implements CursorAdapterSupplier<StopModel> {
+    /**
+     * get the stops for bus, subway, trolley, or NHSL on a route after a stop
+     */
+    static class TransitStopAfterCursorAdapterSupplier implements CursorAdapterSupplier<StopModel> {
 
         private static final String SELECT_CLAUSE = "select distinct y.stop_id, y.stop_name, y.wheelchair_boarding, y.stop_lat, y.stop_lon, b.route_sequence, y.rowid AS _id from\n" +
                 "(select distinct stop_id, route_sequence from stop_route_direction where stop_id=''{0}'' and route_id=''{1}'' and direction_id=''{2}'' ) a,\n" +
@@ -320,7 +322,7 @@ class CursorSuppliers implements Serializable {
             String query = form.format(new Object[]{afterStopId, routeId, directionId});
 
             Cursor cursor = getDatabase(context).rawQuery(query, null);
-            Log.d(TAG, "BusStopAfterCursorAdapterSupplier Creating cursor:" + query);
+            Log.d(TAG, "TransitStopAfterCursorAdapterSupplier Creating cursor:" + query);
 
             return cursor;
         }

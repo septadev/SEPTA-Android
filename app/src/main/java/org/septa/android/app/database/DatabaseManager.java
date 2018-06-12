@@ -72,7 +72,7 @@ public class DatabaseManager {
     }
 
     public CursorAdapterSupplier<StopModel> getBusStopCursorAdapterSupplier() {
-        return new CursorSuppliers.BusStopCursorAdapterSupplier();
+        return new CursorSuppliers.TransitStopCursorAdapterSupplier();
     }
 
     public CursorAdapterSupplier<RouteDirectionModel> getBusRouteCursorAdapterSupplier() {
@@ -88,15 +88,15 @@ public class DatabaseManager {
     }
 
     public CursorAdapterSupplier<StopModel> getBusStopAfterCursorAdapterSupplier() {
-        return new CursorSuppliers.BusStopAfterCursorAdapterSupplier();
+        return new CursorSuppliers.TransitStopAfterCursorAdapterSupplier();
     }
 
     public CursorAdapterSupplier<StopModel> getTrolleyStopCursorAdapterSupplier() {
-        return new CursorSuppliers.BusStopCursorAdapterSupplier();
+        return new CursorSuppliers.TransitStopCursorAdapterSupplier();
     }
 
     public CursorAdapterSupplier<StopModel> getSubwayStopCursorAdapterSupplier() {
-        return new CursorSuppliers.BusStopCursorAdapterSupplier();
+        return new CursorSuppliers.TransitStopCursorAdapterSupplier();
     }
 
     public CursorAdapterSupplier<RouteDirectionModel> getTrolleyRouteCursorAdapterSupplier() {
@@ -108,11 +108,11 @@ public class DatabaseManager {
     }
 
     public CursorAdapterSupplier<StopModel> getTrolleyStopAfterCursorAdapterSupplier() {
-        return new CursorSuppliers.BusStopAfterCursorAdapterSupplier();
+        return new CursorSuppliers.TransitStopAfterCursorAdapterSupplier();
     }
 
     public CursorAdapterSupplier<StopModel> getSubwayStopAfterCursorAdapterSupplier() {
-        return new CursorSuppliers.BusStopAfterCursorAdapterSupplier();
+        return new CursorSuppliers.TransitStopAfterCursorAdapterSupplier();
     }
 
     public CursorAdapterSupplier<RouteDirectionModel> getRailNoDirectionRouteCursorAdapterSupplier() {

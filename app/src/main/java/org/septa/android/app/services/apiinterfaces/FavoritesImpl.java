@@ -80,8 +80,12 @@ public class FavoritesImpl implements Favorites {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
         List<FavoriteState> favoritesState = getFavoriteStates(context);
 
-        favoritesState.add(favoriteState);
-        storeFavoritesState(sharedPreferences, favoritesState);
+        if (!favoritesState.contains(favoriteState)) {
+            favoritesState.add(favoriteState);
+            storeFavoritesState(sharedPreferences, favoritesState);
+        } else {
+            Log.d(TAG, "Already have a favorite state for " + favoriteState.getFavoriteKey());
+        }
     }
 
     @Override
@@ -108,6 +112,20 @@ public class FavoritesImpl implements Favorites {
         List<FavoriteState> favoriteStateList = getFavoriteStates(context);
         favoriteStateList.get(index).setExpanded(expanded);
         storeFavoritesState(sharedPreferences, favoriteStateList);
+    }
+
+    @Override
+    public void renameFavorite(Context context, Favorite favorite) {
+        SharedPreferences sharedPreferences = getSharedPreferences(context);
+        Map<String, Favorite> favorites = getFavorites(sharedPreferences);
+
+        if (favorites.containsKey(favorite.getKey())) {
+            favorites.put(favorite.getKey(), favorite);
+            storeFavorites(sharedPreferences, favorites);
+        } else {
+            Log.d(TAG, "Favorite could not be renamed because it did not exist!");
+            addFavorites(context, favorite);
+        }
     }
 
     @Override

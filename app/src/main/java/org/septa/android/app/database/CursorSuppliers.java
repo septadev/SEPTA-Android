@@ -27,6 +27,9 @@ class CursorSuppliers implements Serializable {
         return DatabaseManager.getDatabase(context);
     }
 
+    /**
+     * get all the stops for rail next to arrive picker (no line specified)
+     */
     static class RailStopCursorAdapterSupplier implements CursorAdapterSupplier<StopModel> {
 
         private static final String SELECT_CLAUSE = "SELECT stop_id, stop_name, wheelchair_boarding, stop_lat, stop_lon, rowid AS _id FROM stops_rail a";
@@ -70,7 +73,7 @@ class CursorSuppliers implements Serializable {
 
         @Override
         public StopModel getItemFromId(Context context, Object id) {
-            List<Criteria> criteria = new ArrayList<Criteria>(1);
+            List<Criteria> criteria = new ArrayList<>(1);
             criteria.add(new Criteria("stop_id", Criteria.Operation.EQ, id.toString()));
             Cursor cursor = getCursor(context, criteria);
             StopModel stopModel = null;
@@ -86,6 +89,9 @@ class CursorSuppliers implements Serializable {
         }
     }
 
+    /**
+     * gets the starting stops for rail schedule picker on a line
+     */
     static class LineAwareRailStopCursorAdapterSupplier implements CursorAdapterSupplier<StopModel> {
 
         @Override
@@ -125,8 +131,10 @@ class CursorSuppliers implements Serializable {
 
         @Override
         public StopModel getCurrentItemFromCursor(Cursor cursor) {
-            return new StopModel(cursor.getString(0), cursor.getString(1),
+            StopModel stopModel = new StopModel(cursor.getString(0), cursor.getString(1),
                     (cursor.getInt(3) == 1), cursor.getString(2), cursor.getString(3));
+            stopModel.setStopSequence(cursor.getInt(5));
+            return stopModel;
         }
 
         @Override
@@ -149,6 +157,9 @@ class CursorSuppliers implements Serializable {
         }
     }
 
+    /**
+     * gets the destination stops for rail schedule picker on a line
+     */
     static class LineAwareRailStopAfterCursorAdapterSupplier implements CursorAdapterSupplier<StopModel> {
 
         @Override
@@ -188,15 +199,17 @@ class CursorSuppliers implements Serializable {
             String query = form.format(new Object[]{routeId, directionId, afterStopId});
 
             Cursor cursor = getDatabase(context).rawQuery(query, null);
-            Log.d(TAG, "TransitStopAfterCursorAdapterSupplier Creating cursor:" + query);
+            Log.d(TAG, "Creating cursor:" + query);
 
             return cursor;
         }
 
         @Override
         public StopModel getCurrentItemFromCursor(Cursor cursor) {
-            return new StopModel(cursor.getString(0), cursor.getString(1),
+            StopModel stopModel = new StopModel(cursor.getString(0), cursor.getString(1),
                     (cursor.getInt(4) == 1), cursor.getString(2), cursor.getString(3));
+            stopModel.setStopSequence(cursor.getInt(5));
+            return stopModel;
         }
 
         @Override
@@ -217,7 +230,7 @@ class CursorSuppliers implements Serializable {
     }
 
     /**
-     * get the stops for bus, subway, trolley, or NHSL
+     * gets the starting stops for bus, subway, trolley, or NHSL on a route
      */
     static class TransitStopCursorAdapterSupplier implements CursorAdapterSupplier<StopModel> {
 
@@ -277,7 +290,7 @@ class CursorSuppliers implements Serializable {
     }
 
     /**
-     * get the stops for bus, subway, trolley, or NHSL on a route after a stop
+     * gets the destination stops for bus, subway, trolley, or NHSL on a route
      */
     static class TransitStopAfterCursorAdapterSupplier implements CursorAdapterSupplier<StopModel> {
 

@@ -70,6 +70,9 @@ public class CheckForLatestDB extends AsyncTask<Object, Object, Void> {
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
 
+        if (isCancelled()) {
+            return;
+        }
         // pass back latest DB metadata
         mListener.afterLatestDBMetadataLoad(latestDBVersion, latestDBURL, updatedDate);
     }

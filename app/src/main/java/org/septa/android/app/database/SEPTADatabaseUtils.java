@@ -16,6 +16,9 @@ public class SEPTADatabaseUtils {
     private static final String NEED_DB_CLEANING = "NEED_DB_CLEANING";
     private static final String NEED_RESTART = "NEED_RESTART";
 
+    // default -10 instead of -1 just to ensure it won't be mistaken as in progress download
+    public static final long DEFAULT_DOWNLOAD_REF_ID = -10;
+
     // using commit() instead of apply() so that the values are immediately written to memory before the restart
 
     public static int getLatestVersionAvailable(Context context) {
@@ -67,8 +70,7 @@ public class SEPTADatabaseUtils {
     }
 
     public static long getDownloadRefId(Context context) {
-        // default -10 instead of -1 just to ensure it won't be mistaken as in progress download
-        return context.getSharedPreferences(SHARED_PREFERENCES_DATABASE, Context.MODE_PRIVATE).getLong(DOWNLOAD_REF_ID, -10);
+        return context.getSharedPreferences(SHARED_PREFERENCES_DATABASE, Context.MODE_PRIVATE).getLong(DOWNLOAD_REF_ID, DEFAULT_DOWNLOAD_REF_ID);
     }
 
     public static void clearDownloadRefId(Context context) {

@@ -226,6 +226,10 @@ public class DatabaseUpgradeUtils {
 
             // check if download already in progress
             if (!isDownloading(context)) {
+                // overwrite any other download listeners
+                listener.clearCorruptedDownloadRefId();
+                SEPTADatabaseUtils.clearDownloadRefId(context);
+
                 // do not need to recheck for connection -- handled by DownloadManager
                 DownloadNewDB downloadNewDB = new DownloadNewDB(context, listener, latestDBURL, latestDBVersion);
                 downloadNewDB.execute();
@@ -271,7 +275,7 @@ public class DatabaseUpgradeUtils {
 
         // this should handle receiving finished downloads that were interrupted
         // DownloadManager handles resuming / finishing the downloads
-        Log.e(TAG, "Saving download ref ID: " + downloadRefId);
+        Log.d(TAG, "Saving DB download ref ID: " + downloadRefId);
     }
 
     public static void notifyNewDatabaseReady(Context context, int versionInstalled) {

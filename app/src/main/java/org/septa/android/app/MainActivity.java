@@ -64,9 +64,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
- * Created by jkampf on 8/22/17.
- */
+import static org.septa.android.app.database.SEPTADatabaseUtils.DEFAULT_DOWNLOAD_REF_ID;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, FavoritesFragment.FavoritesFragmentListener, ManageFavoritesFragment.ManageFavoritesFragmentListener, SeptaServiceFactory.SeptaServiceFactoryCallBacks, CheckForLatestDB.CheckForLatestDBListener, DownloadNewDB.DownloadNewDBListener, ExpandDBZip.ExpandDBZipListener, CleanOldDB.CleanOldDBListener {
 
@@ -459,6 +457,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
+    public void clearCorruptedDownloadRefId() {
+        long downloadRefId = SEPTADatabaseUtils.getDownloadRefId(MainActivity.this);
+        if (downloadRefId != DEFAULT_DOWNLOAD_REF_ID) {
+            downloadManager.remove();
+        }
+    }
+
+    @Override
     public void afterDBUnzipped(int versionInstalled) {
         DatabaseUpgradeUtils.notifyNewDatabaseReady(MainActivity.this, versionInstalled);
 
@@ -575,9 +581,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             // grab refid we are looking for from shared pref
             long referenceIdLookingFor = SEPTADatabaseUtils.getDownloadRefId(MainActivity.this);
 
-            Log.e(TAG, "Found download ref ID " + referenceIdFound + " and looking for " + referenceIdLookingFor);
+            Log.d(TAG, "Found DB download ref ID " + referenceIdFound + " and looking for " + referenceIdLookingFor);
 
-            if (referenceIdFound == referenceIdLookingFor && referenceIdLookingFor != -1) {
+            if (referenceIdFound == referenceIdLookingFor && referenceIdLookingFor != DEFAULT_DOWNLOAD_REF_ID) {
                 // stop looking for that download id
                 SEPTADatabaseUtils.clearDownloadRefId(MainActivity.this);
 

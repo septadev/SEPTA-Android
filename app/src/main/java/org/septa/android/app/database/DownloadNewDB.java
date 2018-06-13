@@ -57,6 +57,7 @@ public class DownloadNewDB extends AsyncTask<Object, Object, Void> {
 
     public interface DownloadNewDBListener {
         void afterNewDBDownload(DownloadManager.Request request, int version);
+        void clearCorruptedDownloadRefId();
     }
 
 }

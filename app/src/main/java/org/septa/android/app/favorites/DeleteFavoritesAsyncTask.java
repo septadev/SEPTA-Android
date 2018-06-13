@@ -34,14 +34,16 @@ public class DeleteFavoritesAsyncTask extends AsyncTask<String, Void, Void> {
     @Override
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
-        if (onPostExecute != null)
+        if (onPostExecute != null) {
             onPostExecute.run();
+        }
     }
 
     @Override
     protected void onCancelled() {
         super.onCancelled();
-        if (onCancel != null)
+        if (onCancel != null) {
             onCancel.run();
+        }
     }
 }

@@ -54,10 +54,13 @@ public class CheckForLatestDB extends AsyncTask<Object, Object, Void> {
             updatedDate = latestDBMetadata.getString("updateDate");
         } catch (MalformedURLException e) {
             Log.e(TAG, e.toString());
+            cancel(true);
         } catch (IOException e) {
             Log.e(TAG, e.toString());
+            cancel(true);
         } catch (JSONException e) {
             Log.e(TAG, e.toString());
+            cancel(true);
         }
 
         return null;

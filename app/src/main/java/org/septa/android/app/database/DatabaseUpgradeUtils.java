@@ -21,6 +21,7 @@ import android.widget.Toast;
 import org.septa.android.app.MainActivity;
 import org.septa.android.app.R;
 import org.septa.android.app.SplashScreenActivity;
+import org.septa.android.app.support.CrashlyticsManager;
 import org.septa.android.app.support.GeneralUtils;
 
 import java.io.File;
@@ -37,9 +38,18 @@ public class DatabaseUpgradeUtils {
     // ensure that ID will not clash with push notifs IDs
     private static final int SCHEDULE_UPDATE_NOTIF_ID = 1219;
 
-    public static void checkForNewDatabase(MainActivity context) {
+    public static void checkForNewDatabase(Context context) {
+        CheckForLatestDB.CheckForLatestDBListener listener;
+        if (context instanceof CheckForLatestDB.CheckForLatestDBListener) {
+            listener = (CheckForLatestDB.CheckForLatestDBListener) context;
+        } else {
+            IllegalArgumentException iae = new IllegalArgumentException("Context Must Implement CheckForLatestDBListener");
+            CrashlyticsManager.log(Log.ERROR, TAG, iae.toString());
+            throw iae;
+        }
+
         if (GeneralUtils.isConnectedToInternet(context)) {
-            CheckForLatestDB checkForLatestDB = new CheckForLatestDB(context);
+            CheckForLatestDB checkForLatestDB = new CheckForLatestDB(listener);
             checkForLatestDB.execute();
         } else {
             // do nothing -- do not tell user there may be a new DB available
@@ -47,7 +57,26 @@ public class DatabaseUpgradeUtils {
         }
     }
 
-    public static void prepareForNewDatabase(MainActivity context) {
+    public static void prepareForNewDatabase(Context context) {
+        // set up listeners
+        ExpandDBZip.ExpandDBZipListener zipListener;
+        if (context instanceof ExpandDBZip.ExpandDBZipListener) {
+            zipListener = (ExpandDBZip.ExpandDBZipListener) context;
+        } else {
+            IllegalArgumentException iae = new IllegalArgumentException("Context Must Implement ExpandDBZipListener");
+            CrashlyticsManager.log(Log.ERROR, TAG, iae.toString());
+            throw iae;
+        }
+
+        CleanOldDB.CleanOldDBListener cleanListener;
+        if (context instanceof CleanOldDB.CleanOldDBListener) {
+            cleanListener = (CleanOldDB.CleanOldDBListener) context;
+        } else {
+            IllegalArgumentException iae = new IllegalArgumentException("Context Must Implement CleanOldDBListener");
+            CrashlyticsManager.log(Log.ERROR, TAG, iae.toString());
+            throw iae;
+        }
+
         // get DB versionDownloaded and versionInstalled number
         int versionDownloaded = SEPTADatabaseUtils.getVersionDownloaded(context);
         int versionInstalled = SEPTADatabaseUtils.getVersionInstalled(context);
@@ -63,7 +92,7 @@ public class DatabaseUpgradeUtils {
             // validate that zip file has finished downloading
             if (newDbZip.isFile() && newDbZip.exists()) {
                 // expand DB on a background thread
-                ExpandDBZip expandDBZip = new ExpandDBZip(context, context, newDbZip, versionDownloaded);
+                ExpandDBZip expandDBZip = new ExpandDBZip(context, zipListener, newDbZip, versionDownloaded);
                 expandDBZip.execute();
             } else {
                 // redo download (it may have been interrupted)
@@ -80,7 +109,7 @@ public class DatabaseUpgradeUtils {
                 && (versionDownloaded == versionInstalled       // DB installed from download and ready for use
                 || currentDBVersion > versionDownloaded)) {     // DB in-app is newer than one on API
             // remove old DB files
-            CleanOldDB cleanOldDB = new CleanOldDB(context, context, versionInstalled);
+            CleanOldDB cleanOldDB = new CleanOldDB(context, cleanListener, versionInstalled);
             cleanOldDB.execute();
         } else if (versionDownloaded == versionInstalled) {
             // only prompt to restart if not already using most up to date version of database
@@ -88,8 +117,7 @@ public class DatabaseUpgradeUtils {
         }
     }
 
-    public static boolean decideWhetherToAskToDownload(MainActivity context, int latestDBVersion, String latestDBURL, String updatedDate) {
-
+    public static boolean decideWhetherToAskToDownload(Context context, int latestDBVersion, String latestDBURL, String updatedDate) {
         // save latest DB version and URL
         SEPTADatabaseUtils.setLatestVersionAvailable(context, latestDBVersion);
         SEPTADatabaseUtils.setLatestDownloadUrl(context, latestDBURL);
@@ -104,15 +132,13 @@ public class DatabaseUpgradeUtils {
         if (latestDBVersion > currentDBVersion && latestDBVersion > versionDownloaded) {
 
             // check if permission granted previously
-            if (!SEPTADatabaseUtils.getPermissionToDownload(context)) {
-                return true;
-            }
+            return !SEPTADatabaseUtils.getPermissionToDownload(context);
         }
 
         return false;
     }
 
-    public static AlertDialog promptToDownload(final MainActivity context) {
+    public static AlertDialog promptToDownload(final Context context) {
         final AlertDialog dialog = new AlertDialog.Builder(context).setCancelable(true).setTitle(R.string.prompt_download_database_title)
                 .setMessage(R.string.prompt_download_database_description)
 
@@ -125,12 +151,12 @@ public class DatabaseUpgradeUtils {
                                 context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                             // need user permission
 
-                            if (context.shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                            if (((MainActivity) context).shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)) {
                                 // can explain why permissions needed here
                             }
 
                             // ask for permission
-                            context.requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+                            ((MainActivity) context).requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
                         } else {
                             // permission granted to start download
                             DatabaseUpgradeUtils.downloadNewDatabase(context);
@@ -151,7 +177,7 @@ public class DatabaseUpgradeUtils {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
-                        context.switchToNextToArrive();
+                        ((MainActivity) context).switchToNextToArrive();
                     }
                 })
                 .create();
@@ -167,7 +193,7 @@ public class DatabaseUpgradeUtils {
         return dialog;
     }
 
-    public static void permissionResponseReceived(MainActivity context, int requestCode, String[] permissions, int[] grantResults) {
+    public static void permissionResponseReceived(Context context, int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode == MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // permission granted to start database download
@@ -179,7 +205,16 @@ public class DatabaseUpgradeUtils {
         }
     }
 
-    private static void downloadNewDatabase(MainActivity context) {
+    private static void downloadNewDatabase(Context context) {
+        DownloadNewDB.DownloadNewDBListener listener;
+        if (context instanceof DownloadNewDB.DownloadNewDBListener) {
+            listener = (DownloadNewDB.DownloadNewDBListener) context;
+        } else {
+            IllegalArgumentException iae = new IllegalArgumentException("Context Must Implement DownloadNewDBListener");
+            CrashlyticsManager.log(Log.ERROR, TAG, iae.toString());
+            throw iae;
+        }
+
         int currentDBVersion = SEPTADatabase.getDatabaseVersion();
         int latestDBVersion = SEPTADatabaseUtils.getLatestVersionAvailable(context);
         String latestDBURL = SEPTADatabaseUtils.getLatestDownloadUrl(context);
@@ -192,7 +227,7 @@ public class DatabaseUpgradeUtils {
             // check if download already in progress
             if (!isDownloading(context)) {
                 // do not need to recheck for connection -- handled by DownloadManager
-                DownloadNewDB downloadNewDB = new DownloadNewDB(context, context, latestDBURL, latestDBVersion);
+                DownloadNewDB downloadNewDB = new DownloadNewDB(context, listener, latestDBURL, latestDBVersion);
                 downloadNewDB.execute();
             } else {
                 Log.d(TAG, "DB download already in progress");
@@ -202,7 +237,7 @@ public class DatabaseUpgradeUtils {
         }
     }
 
-    private static boolean isDownloading(MainActivity context) {
+    private static boolean isDownloading(Context context) {
         int downloadStatus = getDownloadStatus(context, SEPTADatabaseUtils.getDownloadRefId(context));
         int[] inProgressStatuses = new int[]{DownloadManager.STATUS_RUNNING, DownloadManager.STATUS_PENDING, DownloadManager.STATUS_PAUSED, DownloadManager.PAUSED_WAITING_TO_RETRY, DownloadManager.PAUSED_WAITING_FOR_NETWORK, DownloadManager.PAUSED_QUEUED_FOR_WIFI};
         return Arrays.asList(inProgressStatuses).contains(downloadStatus);
@@ -227,7 +262,7 @@ public class DatabaseUpgradeUtils {
         return -1;
     }
 
-    public static void saveDownloadedVersionNumber(MainActivity context, long downloadRefId, int version) {        // add to list of downloads
+    public static void saveDownloadedVersionNumber(Context context, long downloadRefId, int version) {        // add to list of downloads
         SEPTADatabaseUtils.saveDownloadRefId(context, downloadRefId);
 
         // save new version # to shared preferences
@@ -237,10 +272,9 @@ public class DatabaseUpgradeUtils {
         // this should handle receiving finished downloads that were interrupted
         // DownloadManager handles resuming / finishing the downloads
         Log.e(TAG, "Saving download ref ID: " + downloadRefId);
-
     }
 
-    public static void notifyNewDatabaseReady(MainActivity context, int versionInstalled) {
+    public static void notifyNewDatabaseReady(Context context, int versionInstalled) {
         // save new versionInstalled number in shared pref
         SEPTADatabaseUtils.setVersionInstalled(context, versionInstalled);
         SEPTADatabaseUtils.setDatabaseFilename(context, new StringBuilder("SEPTA_").append(versionInstalled).append(".sqlite").toString());
@@ -263,13 +297,16 @@ public class DatabaseUpgradeUtils {
         PendingIntent restartIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         mBuilder.setContentIntent(restartIntent).setAutoCancel(true);
 
+        // send notification
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         if (notificationManager != null) {
             notificationManager.notify(SCHEDULE_UPDATE_NOTIF_ID, mBuilder.build());
+        } else {
+            Log.e(TAG, "Could not send notification that new DB is ready");
         }
     }
 
-    public static AlertDialog promptToRestart(final MainActivity context) {
+    public static AlertDialog promptToRestart(final Context context) {
         int versionDownloaded = SEPTADatabaseUtils.getVersionDownloaded(context);
         int versionInstalled = SEPTADatabaseUtils.getVersionInstalled(context);
 
@@ -312,7 +349,7 @@ public class DatabaseUpgradeUtils {
         return null;
     }
 
-    private static void restartApplication(MainActivity context) {
+    private static void restartApplication(Context context) {
         // restart the app
         Intent restartIntent = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
         restartIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -322,7 +359,7 @@ public class DatabaseUpgradeUtils {
         System.exit(2);
     }
 
-    public static void databaseUpdateComplete(MainActivity context) {
+    public static void databaseUpdateComplete(Context context) {
         // no need to clean DB files
         SEPTADatabaseUtils.setNeedToClean(context, false);
 

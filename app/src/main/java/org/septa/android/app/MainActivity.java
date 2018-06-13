@@ -448,7 +448,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onRequestPermissionsResult(final int requestCode, @NonNull final String[] permissions, @NonNull final int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        DatabaseUpgradeUtils.permissionResponseReceived(MainActivity.this ,requestCode, permissions, grantResults);
+        DatabaseUpgradeUtils.permissionResponseReceived(MainActivity.this, requestCode, permissions, grantResults);
     }
 
     @Override

@@ -59,8 +59,10 @@ public class ExpandDBZip extends AsyncTask<Object, Object, Void> {
             zipIn.close();
         } catch (FileNotFoundException e) {
             Log.e(TAG, e.toString());
+            cancel(true);
         } catch (IOException e) {
             Log.e(TAG, e.toString());
+            cancel(true);
         }
 
         // delete downloaded zip from external storage after expanding inside app

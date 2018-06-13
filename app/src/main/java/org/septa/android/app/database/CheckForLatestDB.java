@@ -50,10 +50,13 @@ public class CheckForLatestDB extends AsyncTask<Object, Object, Void> {
             updatedDate = latestDBMetadata.getString("updateDate");
         } catch (MalformedURLException e) {
             Log.e(TAG, e.toString());
+            cancel(true);
         } catch (IOException e) {
             Log.e(TAG, e.toString());
+            cancel(true);
         } catch (JSONException e) {
             Log.e(TAG, e.toString());
+            cancel(true);
         }
 
         return null;
@@ -63,6 +66,9 @@ public class CheckForLatestDB extends AsyncTask<Object, Object, Void> {
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
 
+        if (isCancelled()) {
+            return;
+        }
         // pass back latest DB metadata
         mListener.afterLatestDBMetadataLoad(latestDBVersion, latestDBURL, updatedDate);
     }

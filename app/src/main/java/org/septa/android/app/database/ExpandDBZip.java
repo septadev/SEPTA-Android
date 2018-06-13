@@ -55,8 +55,14 @@ public class ExpandDBZip extends AsyncTask<Object, Object, Void> {
             zipIn.close();
         } catch (FileNotFoundException e) {
             Log.e(TAG, e.toString());
+            cancel(true);
+            mListener.clearCorruptedDownloadRefId();
+            SEPTADatabaseUtils.clearDownloadRefId(context);
         } catch (IOException e) {
             Log.e(TAG, e.toString());
+            cancel(true);
+            mListener.clearCorruptedDownloadRefId();
+            SEPTADatabaseUtils.clearDownloadRefId(context);
         }
 
         // delete downloaded zip from external storage after expanding inside app
@@ -68,6 +74,10 @@ public class ExpandDBZip extends AsyncTask<Object, Object, Void> {
     @Override
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
+
+        if (isCancelled()) {
+            return;
+        }
 
         // pass back installed version number
         mListener.afterDBUnzipped(version);
@@ -85,6 +95,7 @@ public class ExpandDBZip extends AsyncTask<Object, Object, Void> {
 
     public interface ExpandDBZipListener {
         void afterDBUnzipped(int versionInstalled);
+        void clearCorruptedDownloadRefId();
     }
 
 }

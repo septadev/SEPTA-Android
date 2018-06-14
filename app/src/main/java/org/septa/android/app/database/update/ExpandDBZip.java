@@ -1,4 +1,4 @@
-package org.septa.android.app.database;
+package org.septa.android.app.database.update;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -57,12 +57,12 @@ public class ExpandDBZip extends AsyncTask<Object, Object, Void> {
             Log.e(TAG, e.toString());
             cancel(true);
             mListener.clearCorruptedDownloadRefId();
-            SEPTADatabaseUtils.clearDownloadRefId(context);
+            DatabaseSharedPrefsUtils.clearDownloadRefId(context);
         } catch (IOException e) {
             Log.e(TAG, e.toString());
             cancel(true);
             mListener.clearCorruptedDownloadRefId();
-            SEPTADatabaseUtils.clearDownloadRefId(context);
+            DatabaseSharedPrefsUtils.clearDownloadRefId(context);
         }
 
         // delete downloaded zip from external storage after expanding inside app

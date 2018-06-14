@@ -10,7 +10,7 @@ import android.util.Log;
 import com.crashlytics.android.Crashlytics;
 
 import org.septa.android.app.database.DatabaseManager;
-import org.septa.android.app.database.SEPTADatabaseUtils;
+import org.septa.android.app.database.update.DatabaseSharedPrefsUtils;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Alerts;
 import org.septa.android.app.support.AnalyticsManager;
@@ -34,12 +34,12 @@ public class MainApplication extends Application implements Runnable {
 
         // update database version if manually incremented
         int currentDBVersion = DatabaseManager.getDatabase(getApplicationContext()).getVersion();
-        if (currentDBVersion > SEPTADatabaseUtils.getVersionInstalled(MainApplication.this)) {
+        if (currentDBVersion > DatabaseSharedPrefsUtils.getVersionInstalled(MainApplication.this)) {
             Log.d(TAG, "Found new DB! Updating sharedPreferences...");
             String newDatabaseFilename = new StringBuilder("SEPTA_").append(currentDBVersion).append(".sqlite").toString();
-            SEPTADatabaseUtils.setDatabaseFilename(MainApplication.this, newDatabaseFilename);
-            SEPTADatabaseUtils.setNeedToClean(MainApplication.this, true);
-            SEPTADatabaseUtils.setVersionInstalled(MainApplication.this, currentDBVersion);
+            DatabaseSharedPrefsUtils.setDatabaseFilename(MainApplication.this, newDatabaseFilename);
+            DatabaseSharedPrefsUtils.setNeedToClean(MainApplication.this, true);
+            DatabaseSharedPrefsUtils.setVersionInstalled(MainApplication.this, currentDBVersion);
         }
 
         Fabric.with(this, new Crashlytics());

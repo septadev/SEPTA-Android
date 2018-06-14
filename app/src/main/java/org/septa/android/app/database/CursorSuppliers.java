@@ -31,6 +31,26 @@ class CursorSuppliers implements Serializable {
         return DatabaseManager.getDatabase(context);
     }
 
+    static class DatabaseVersionCursorAdapterSupplier implements CursorAdapterSupplier<Integer> {
+        String SELECT_CLAUSE = "SELECT version FROM dbVersion";
+
+        @Override
+        public Cursor getCursor(Context context, List<Criteria> whereClause) {
+            return TempDatabaseManager.getDatabaseWithVersion(context, SEPTADatabaseUtils.getVersionDownloaded(context)).rawQuery(SELECT_CLAUSE, null);
+        }
+
+        @Override
+        public Integer getCurrentItemFromCursor(Cursor cursor) {
+            Integer versionNumber = Integer.parseInt(cursor.getString(0));
+            return versionNumber;
+        }
+
+        @Override
+        public Integer getItemFromId(Context context, Object id) {
+            throw new RuntimeException("Not supported by getVersionOfDatabase");
+        }
+    }
+
     static class RailStopCursorAdapterSupplier implements CursorAdapterSupplier<StopModel> {
 
         private static final String SELECT_CLAUSE = "SELECT stop_id, stop_name, wheelchair_boarding, stop_lat, stop_lon, rowid AS _id FROM stops_rail a";

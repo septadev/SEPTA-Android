@@ -67,6 +67,7 @@ public class CleanOldDB extends AsyncTask<Object, Object, Void> {
 
     public interface CleanOldDBListener {
         void afterOldDBCleaned();
+        void notifyNewDatabaseReady();
     }
 
 }

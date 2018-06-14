@@ -1,27 +1,22 @@
 package org.septa.android.app.database;
 
 import android.Manifest;
-import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.DownloadManager;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Environment;
-import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
 import org.septa.android.app.MainActivity;
 import org.septa.android.app.R;
-import org.septa.android.app.SplashScreenActivity;
 import org.septa.android.app.support.CrashlyticsManager;
+import org.septa.android.app.support.CursorAdapterSupplier;
 import org.septa.android.app.support.GeneralUtils;
 
 import java.io.File;
@@ -31,12 +26,7 @@ public class DatabaseUpgradeUtils {
 
     private static String TAG = DatabaseUpgradeUtils.class.getSimpleName();
 
-    private static final int DELAY_TO_RESTART = 500,
-            MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 121915;
-
-    // this must be a unique ID for the schedule update notif
-    // ensure that ID will not clash with push notifs IDs
-    private static final int SCHEDULE_UPDATE_NOTIF_ID = 1219;
+    private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 121915;
 
     public static void checkForNewDatabase(Context context) {
         CheckForLatestDB.CheckForLatestDBListener listener;
@@ -80,7 +70,7 @@ public class DatabaseUpgradeUtils {
         // get DB versionDownloaded and versionInstalled number
         int versionDownloaded = SEPTADatabaseUtils.getVersionDownloaded(context);
         int versionInstalled = SEPTADatabaseUtils.getVersionInstalled(context);
-        int currentDBVersion = SEPTADatabase.getDatabaseVersion();
+        int currentDBVersion = DatabaseManager.getDatabase(context).getVersion();
         boolean areThereFilesToClean = SEPTADatabaseUtils.getNeedToClean(context);
 
         // install new DB if not done already
@@ -112,8 +102,8 @@ public class DatabaseUpgradeUtils {
             CleanOldDB cleanOldDB = new CleanOldDB(context, cleanListener, versionInstalled);
             cleanOldDB.execute();
         } else if (versionDownloaded == versionInstalled) {
-            // only prompt to restart if not already using most up to date version of database
-            promptToRestart(context);
+            // notify new database ready if not already using most up to date version of database
+            cleanListener.notifyNewDatabaseReady();
         }
     }
 
@@ -123,7 +113,7 @@ public class DatabaseUpgradeUtils {
         SEPTADatabaseUtils.setLatestDownloadUrl(context, latestDBURL);
 
         // check API for DB version number
-        int currentDBVersion = SEPTADatabase.getDatabaseVersion();
+        int currentDBVersion = DatabaseManager.getDatabase(context).getVersion();
         int versionDownloaded = SEPTADatabaseUtils.getVersionDownloaded(context);
 
         Log.d(TAG, "Latest DB Version: " + latestDBVersion + " vs. Old DB Version: " + currentDBVersion);
@@ -215,7 +205,7 @@ public class DatabaseUpgradeUtils {
             throw iae;
         }
 
-        int currentDBVersion = SEPTADatabase.getDatabaseVersion();
+        int currentDBVersion = DatabaseManager.getDatabase(context).getVersion();
         int latestDBVersion = SEPTADatabaseUtils.getLatestVersionAvailable(context);
         String latestDBURL = SEPTADatabaseUtils.getLatestDownloadUrl(context);
 
@@ -247,7 +237,7 @@ public class DatabaseUpgradeUtils {
         return Arrays.asList(inProgressStatuses).contains(downloadStatus);
     }
 
-    private static int getDownloadStatus(Context context , long downloadId) {
+    private static int getDownloadStatus(Context context, long downloadId) {
         DownloadManager downloadManager =
                 (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
         DownloadManager.Query query = new DownloadManager.Query();
@@ -271,105 +261,109 @@ public class DatabaseUpgradeUtils {
 
         // save new version # to shared preferences
         SEPTADatabaseUtils.setVersionDownloaded(context, version);
-        // should not need to check if already downloaded -- this is used for unzipping the correct file
 
         // this should handle receiving finished downloads that were interrupted
         // DownloadManager handles resuming / finishing the downloads
         Log.d(TAG, "Saving DB download ref ID: " + downloadRefId);
     }
 
-    public static void notifyNewDatabaseReady(Context context, int versionInstalled) {
-        // save new versionInstalled number in shared pref
-        SEPTADatabaseUtils.setVersionInstalled(context, versionInstalled);
-        SEPTADatabaseUtils.setDatabaseFilename(context, new StringBuilder("SEPTA_").append(versionInstalled).append(".sqlite").toString());
+    private static boolean validateDatabaseVersion(Context context) {
+        // validate new database is correct version by comparing version in table and version downloaded
+        int versionDownloaded = SEPTADatabaseUtils.getVersionDownloaded(context);
 
-        // restore download permission back to false
-        SEPTADatabaseUtils.setPermissionToDownload(context, false);
+        // get this from looking at DB table dbVersion
+        CursorAdapterSupplier<Integer> cursorAdapterSupplier = DatabaseManager.getInstance(context).getVersionOfDatabase();
+        Cursor cursor = cursorAdapterSupplier.getCursor(context, null);
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                Integer unzippedDbVersion = cursorAdapterSupplier.getCurrentItemFromCursor(cursor);
+                Log.d(TAG, "Unzipped DB Version: " + unzippedDbVersion);
 
-        // show notification that download completed
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
-                .setSmallIcon(R.drawable.ic_launcher)
-                .setContentTitle(context.getString(R.string.app_name))
-                .setContentText(context.getString(R.string.notification_database_download_complete));
-
-        // set up notification intent to restart app on click
-        Intent notificationIntent = new Intent(context, SplashScreenActivity.class);
-
-        // force full restart of application on notification click
-        notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        SEPTADatabaseUtils.setNeedToRestart(context, true);
-        PendingIntent restartIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-        mBuilder.setContentIntent(restartIntent).setAutoCancel(true);
-
-        // send notification
-        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        if (notificationManager != null) {
-            notificationManager.notify(SCHEDULE_UPDATE_NOTIF_ID, mBuilder.build());
+                // version of unzipped DB should match the downloaded version
+                return versionDownloaded == unzippedDbVersion;
+            }
+            cursor.close();
         } else {
-            Log.e(TAG, "Could not send notification that new DB is ready");
+            Log.e(TAG, "Error finding dbVersion in unzipped database");
+        }
+
+        return false;
+    }
+
+    public static void saveNewDatabaseReady(Context context, int versionInstalled) {
+        ExpandDBZip.ExpandDBZipListener listener;
+        if (context instanceof ExpandDBZip.ExpandDBZipListener) {
+            listener = (ExpandDBZip.ExpandDBZipListener) context;
+        } else {
+            IllegalArgumentException iae = new IllegalArgumentException("Context Must Implement ExpandDBZipListener");
+            CrashlyticsManager.log(Log.ERROR, TAG, iae.toString());
+            throw iae;
+        }
+
+        if (validateDatabaseVersion(context)) {
+            // save new versionInstalled number in shared pref
+            SEPTADatabaseUtils.setVersionInstalled(context, versionInstalled);
+            SEPTADatabaseUtils.setDatabaseFilename(context, new StringBuilder("SEPTA_").append(versionInstalled).append(".sqlite").toString());
+
+            // restore download permission back to false
+            SEPTADatabaseUtils.setPermissionToDownload(context, false);
+        } else {
+            Log.e(TAG, "Unzipped DB version did not match DB version downloaded -- removing corrupt file");
+            listener.clearCorruptedDownloadRefId();
+            SEPTADatabaseUtils.clearDownloadRefId(context);
         }
     }
 
-    public static AlertDialog promptToRestart(final Context context) {
+    public static AlertDialog buildNewDatabaseReadyPopUp(final Context context) {
         int versionDownloaded = SEPTADatabaseUtils.getVersionDownloaded(context);
         int versionInstalled = SEPTADatabaseUtils.getVersionInstalled(context);
+        int versionInUse = DatabaseManager.getDatabase(context).getVersion();
 
-        if (versionDownloaded == versionInstalled && versionInstalled > SEPTADatabase.getDatabaseVersion()) {
+        // validate using older DB version but new version is ready
+        if (versionDownloaded == versionInstalled && versionInstalled > versionInUse) {
             // remember that old DB files need to be cleaned
             SEPTADatabaseUtils.setNeedToClean(context, true);
 
-            // prompt user to restart app
-            final AlertDialog dialog = new AlertDialog.Builder(context).setCancelable(true).setTitle(R.string.prompt_restart_database_title)
-                    .setMessage(R.string.prompt_restart_database_description)
-
-                    // approved restart
-                    .setPositiveButton(R.string.prompt_restart_button_positive_now, new DialogInterface.OnClickListener() {
+            // notify user that new database ready for use
+            final AlertDialog dialog = new AlertDialog.Builder(context).setCancelable(true).setTitle(R.string.prompt_use_new_database_title)
+                    .setMessage(R.string.prompt_use_new_database_description)
+                    .setPositiveButton(R.string.prompt_use_new_database_button, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            // restart app
-                            restartApplication(context);
-                        }
-                    })
-
-                    // remind of download later
-                    .setNegativeButton(R.string.prompt_restart_button_negative_later, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
+                            // set up new database
+                            setUpNewDatabase(context);
                         }
                     })
                     .create();
 
-            // set "restart now" button color
-            dialog.setOnShowListener(new DialogInterface.OnShowListener() {
-                @Override
-                public void onShow(DialogInterface arg0) {
-                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.RED);
-                }
-            });
-
             return dialog;
+        } else {
+            Log.e(TAG, "New DB Version Not Yet Ready. Downloaded: " + versionDownloaded + " Installed: " + versionInstalled + " In Use: " + versionInUse);
         }
         return null;
     }
 
-    private static void restartApplication(Context context) {
-        // restart the app
-        Intent restartIntent = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
-        restartIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent intent = PendingIntent.getActivity(context, 0, restartIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-        AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        manager.set(AlarmManager.RTC, System.currentTimeMillis() + DELAY_TO_RESTART, intent);
-        System.exit(2);
+    private static void setUpNewDatabase(Context context) {
+        CleanOldDB.CleanOldDBListener cleanListener;
+        if (context instanceof CleanOldDB.CleanOldDBListener) {
+            cleanListener = (CleanOldDB.CleanOldDBListener) context;
+        } else {
+            IllegalArgumentException iae = new IllegalArgumentException("Context Must Implement CleanOldDBListener");
+            CrashlyticsManager.log(Log.ERROR, TAG, iae.toString());
+            throw iae;
+        }
+
+        // initialize new DB
+        DatabaseManager.reinitDatabase(context);
+
+        // remove old DB files
+        CleanOldDB cleanOldDB = new CleanOldDB(context, cleanListener, SEPTADatabaseUtils.getVersionInstalled(context));
+        cleanOldDB.execute();
     }
 
     public static void databaseUpdateComplete(Context context) {
         // no need to clean DB files
         SEPTADatabaseUtils.setNeedToClean(context, false);
-
-        // dismiss schedule restart notif
-        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.cancel(SCHEDULE_UPDATE_NOTIF_ID);
 
         // notify user that database update complete
         Toast.makeText(context, R.string.notification_database_updated, Toast.LENGTH_SHORT).show();

@@ -1,10 +1,11 @@
-package org.septa.android.app.database;
+package org.septa.android.app.database.update;
 
 import android.os.AsyncTask;
 import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.septa.android.app.database.SEPTADatabase;
 
 import java.io.BufferedReader;
 import java.io.IOException;

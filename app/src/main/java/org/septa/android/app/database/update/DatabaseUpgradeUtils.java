@@ -1,4 +1,4 @@
-package org.septa.android.app.database;
+package org.septa.android.app.database.update;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import org.septa.android.app.MainActivity;
 import org.septa.android.app.R;
+import org.septa.android.app.database.DatabaseManager;
 import org.septa.android.app.support.CrashlyticsManager;
 import org.septa.android.app.support.CursorAdapterSupplier;
 import org.septa.android.app.support.GeneralUtils;
@@ -68,10 +69,10 @@ public class DatabaseUpgradeUtils {
         }
 
         // get DB versionDownloaded and versionInstalled number
-        int versionDownloaded = SEPTADatabaseUtils.getVersionDownloaded(context);
-        int versionInstalled = SEPTADatabaseUtils.getVersionInstalled(context);
+        int versionDownloaded = DatabaseSharedPrefsUtils.getVersionDownloaded(context);
+        int versionInstalled = DatabaseSharedPrefsUtils.getVersionInstalled(context);
         int currentDBVersion = DatabaseManager.getDatabase(context).getVersion();
-        boolean areThereFilesToClean = SEPTADatabaseUtils.getNeedToClean(context);
+        boolean areThereFilesToClean = DatabaseSharedPrefsUtils.getNeedToClean(context);
 
         // install new DB if not done already
         if (versionDownloaded > versionInstalled) {
@@ -109,12 +110,12 @@ public class DatabaseUpgradeUtils {
 
     public static boolean decideWhetherToAskToDownload(Context context, int latestDBVersion, String latestDBURL, String updatedDate) {
         // save latest DB version and URL
-        SEPTADatabaseUtils.setLatestVersionAvailable(context, latestDBVersion);
-        SEPTADatabaseUtils.setLatestDownloadUrl(context, latestDBURL);
+        DatabaseSharedPrefsUtils.setLatestVersionAvailable(context, latestDBVersion);
+        DatabaseSharedPrefsUtils.setLatestDownloadUrl(context, latestDBURL);
 
         // check API for DB version number
         int currentDBVersion = DatabaseManager.getDatabase(context).getVersion();
-        int versionDownloaded = SEPTADatabaseUtils.getVersionDownloaded(context);
+        int versionDownloaded = DatabaseSharedPrefsUtils.getVersionDownloaded(context);
 
         Log.d(TAG, "Latest DB Version: " + latestDBVersion + " vs. Old DB Version: " + currentDBVersion);
 
@@ -122,7 +123,7 @@ public class DatabaseUpgradeUtils {
         if (latestDBVersion > currentDBVersion && latestDBVersion > versionDownloaded) {
 
             // check if permission granted previously
-            return !SEPTADatabaseUtils.getPermissionToDownload(context);
+            return !DatabaseSharedPrefsUtils.getPermissionToDownload(context);
         }
 
         return false;
@@ -206,19 +207,19 @@ public class DatabaseUpgradeUtils {
         }
 
         int currentDBVersion = DatabaseManager.getDatabase(context).getVersion();
-        int latestDBVersion = SEPTADatabaseUtils.getLatestVersionAvailable(context);
-        String latestDBURL = SEPTADatabaseUtils.getLatestDownloadUrl(context);
+        int latestDBVersion = DatabaseSharedPrefsUtils.getLatestVersionAvailable(context);
+        String latestDBURL = DatabaseSharedPrefsUtils.getLatestDownloadUrl(context);
 
         // download new DB zip from url given by API
         if (latestDBVersion > currentDBVersion && !latestDBURL.isEmpty()) {
             // save permission to download
-            SEPTADatabaseUtils.setPermissionToDownload(context, true);
+            DatabaseSharedPrefsUtils.setPermissionToDownload(context, true);
 
             // check if download already in progress
             if (!isDownloading(context)) {
                 // overwrite any other download listeners
                 listener.clearCorruptedDownloadRefId();
-                SEPTADatabaseUtils.clearDownloadRefId(context);
+                DatabaseSharedPrefsUtils.clearDownloadRefId(context);
 
                 // do not need to recheck for connection -- handled by DownloadManager
                 DownloadNewDB downloadNewDB = new DownloadNewDB(context, listener, latestDBURL, latestDBVersion);
@@ -232,7 +233,7 @@ public class DatabaseUpgradeUtils {
     }
 
     private static boolean isDownloading(Context context) {
-        int downloadStatus = getDownloadStatus(context, SEPTADatabaseUtils.getDownloadRefId(context));
+        int downloadStatus = getDownloadStatus(context, DatabaseSharedPrefsUtils.getDownloadRefId(context));
         int[] inProgressStatuses = new int[]{DownloadManager.STATUS_RUNNING, DownloadManager.STATUS_PENDING, DownloadManager.STATUS_PAUSED, DownloadManager.PAUSED_WAITING_TO_RETRY, DownloadManager.PAUSED_WAITING_FOR_NETWORK, DownloadManager.PAUSED_QUEUED_FOR_WIFI};
         return Arrays.asList(inProgressStatuses).contains(downloadStatus);
     }
@@ -257,10 +258,10 @@ public class DatabaseUpgradeUtils {
     }
 
     public static void saveDownloadedVersionNumber(Context context, long downloadRefId, int version) {        // add to list of downloads
-        SEPTADatabaseUtils.saveDownloadRefId(context, downloadRefId);
+        DatabaseSharedPrefsUtils.saveDownloadRefId(context, downloadRefId);
 
         // save new version # to shared preferences
-        SEPTADatabaseUtils.setVersionDownloaded(context, version);
+        DatabaseSharedPrefsUtils.setVersionDownloaded(context, version);
 
         // this should handle receiving finished downloads that were interrupted
         // DownloadManager handles resuming / finishing the downloads
@@ -269,7 +270,7 @@ public class DatabaseUpgradeUtils {
 
     private static boolean validateDatabaseVersion(Context context) {
         // validate new database is correct version by comparing version in table and version downloaded
-        int versionDownloaded = SEPTADatabaseUtils.getVersionDownloaded(context);
+        int versionDownloaded = DatabaseSharedPrefsUtils.getVersionDownloaded(context);
 
         // get this from looking at DB table dbVersion
         CursorAdapterSupplier<Integer> cursorAdapterSupplier = DatabaseManager.getInstance(context).getVersionOfDatabase();
@@ -302,27 +303,27 @@ public class DatabaseUpgradeUtils {
 
         if (validateDatabaseVersion(context)) {
             // save new versionInstalled number in shared pref
-            SEPTADatabaseUtils.setVersionInstalled(context, versionInstalled);
-            SEPTADatabaseUtils.setDatabaseFilename(context, new StringBuilder("SEPTA_").append(versionInstalled).append(".sqlite").toString());
+            DatabaseSharedPrefsUtils.setVersionInstalled(context, versionInstalled);
+            DatabaseSharedPrefsUtils.setDatabaseFilename(context, new StringBuilder("SEPTA_").append(versionInstalled).append(".sqlite").toString());
 
             // restore download permission back to false
-            SEPTADatabaseUtils.setPermissionToDownload(context, false);
+            DatabaseSharedPrefsUtils.setPermissionToDownload(context, false);
         } else {
             Log.e(TAG, "Unzipped DB version did not match DB version downloaded -- removing corrupt file");
             listener.clearCorruptedDownloadRefId();
-            SEPTADatabaseUtils.clearDownloadRefId(context);
+            DatabaseSharedPrefsUtils.clearDownloadRefId(context);
         }
     }
 
     public static AlertDialog buildNewDatabaseReadyPopUp(final Context context) {
-        int versionDownloaded = SEPTADatabaseUtils.getVersionDownloaded(context);
-        int versionInstalled = SEPTADatabaseUtils.getVersionInstalled(context);
+        int versionDownloaded = DatabaseSharedPrefsUtils.getVersionDownloaded(context);
+        int versionInstalled = DatabaseSharedPrefsUtils.getVersionInstalled(context);
         int versionInUse = DatabaseManager.getDatabase(context).getVersion();
 
         // validate using older DB version but new version is ready
         if (versionDownloaded == versionInstalled && versionInstalled > versionInUse) {
             // remember that old DB files need to be cleaned
-            SEPTADatabaseUtils.setNeedToClean(context, true);
+            DatabaseSharedPrefsUtils.setNeedToClean(context, true);
 
             // notify user that new database ready for use
             final AlertDialog dialog = new AlertDialog.Builder(context).setCancelable(true).setTitle(R.string.prompt_use_new_database_title)
@@ -357,13 +358,13 @@ public class DatabaseUpgradeUtils {
         DatabaseManager.reinitDatabase(context);
 
         // remove old DB files
-        CleanOldDB cleanOldDB = new CleanOldDB(context, cleanListener, SEPTADatabaseUtils.getVersionInstalled(context));
+        CleanOldDB cleanOldDB = new CleanOldDB(context, cleanListener, DatabaseSharedPrefsUtils.getVersionInstalled(context));
         cleanOldDB.execute();
     }
 
     public static void databaseUpdateComplete(Context context) {
         // no need to clean DB files
-        SEPTADatabaseUtils.setNeedToClean(context, false);
+        DatabaseSharedPrefsUtils.setNeedToClean(context, false);
 
         // notify user that database update complete
         Toast.makeText(context, R.string.notification_database_updated, Toast.LENGTH_SHORT).show();

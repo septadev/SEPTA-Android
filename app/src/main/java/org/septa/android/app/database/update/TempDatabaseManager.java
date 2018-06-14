@@ -1,9 +1,12 @@
-package org.septa.android.app.database;
+package org.septa.android.app.database.update;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
-class TempDatabaseManager {
+import org.septa.android.app.database.DatabaseManager;
+import org.septa.android.app.database.SEPTADatabase;
+
+public class TempDatabaseManager {
 
     public static final String TAG = DatabaseManager.class.getSimpleName();
 

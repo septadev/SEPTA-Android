@@ -32,12 +32,12 @@ import android.view.View;
 
 import org.septa.android.app.about.AboutFragment;
 import org.septa.android.app.connect.ConnectFragment;
-import org.septa.android.app.database.CheckForLatestDB;
-import org.septa.android.app.database.CleanOldDB;
-import org.septa.android.app.database.DatabaseUpgradeUtils;
-import org.septa.android.app.database.DownloadNewDB;
-import org.septa.android.app.database.ExpandDBZip;
-import org.septa.android.app.database.SEPTADatabaseUtils;
+import org.septa.android.app.database.update.CheckForLatestDB;
+import org.septa.android.app.database.update.CleanOldDB;
+import org.septa.android.app.database.update.DatabaseUpgradeUtils;
+import org.septa.android.app.database.update.DownloadNewDB;
+import org.septa.android.app.database.update.ExpandDBZip;
+import org.septa.android.app.database.update.DatabaseSharedPrefsUtils;
 import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.fares.FaresFragment;
@@ -64,7 +64,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static org.septa.android.app.database.SEPTADatabaseUtils.DEFAULT_DOWNLOAD_REF_ID;
+import static org.septa.android.app.database.update.DatabaseSharedPrefsUtils.DEFAULT_DOWNLOAD_REF_ID;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, FavoritesFragment.FavoritesFragmentListener, ManageFavoritesFragment.ManageFavoritesFragmentListener, SeptaServiceFactory.SeptaServiceFactoryCallBacks, CheckForLatestDB.CheckForLatestDBListener, DownloadNewDB.DownloadNewDBListener, ExpandDBZip.ExpandDBZipListener, CleanOldDB.CleanOldDBListener {
 
@@ -458,7 +458,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void clearCorruptedDownloadRefId() {
-        long downloadRefId = SEPTADatabaseUtils.getDownloadRefId(MainActivity.this);
+        long downloadRefId = DatabaseSharedPrefsUtils.getDownloadRefId(MainActivity.this);
         if (downloadRefId != DEFAULT_DOWNLOAD_REF_ID) {
             downloadManager.remove();
         }
@@ -585,13 +585,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             long referenceIdFound = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
 
             // grab refid we are looking for from shared pref
-            long referenceIdLookingFor = SEPTADatabaseUtils.getDownloadRefId(MainActivity.this);
+            long referenceIdLookingFor = DatabaseSharedPrefsUtils.getDownloadRefId(MainActivity.this);
 
             Log.d(TAG, "Found DB download ref ID " + referenceIdFound + " and looking for " + referenceIdLookingFor);
 
             if (referenceIdFound == referenceIdLookingFor && referenceIdLookingFor != DEFAULT_DOWNLOAD_REF_ID) {
                 // stop looking for that download id
-                SEPTADatabaseUtils.clearDownloadRefId(MainActivity.this);
+                DatabaseSharedPrefsUtils.clearDownloadRefId(MainActivity.this);
 
                 // expand new db
                 DatabaseUpgradeUtils.prepareForNewDatabase(MainActivity.this);

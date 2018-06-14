@@ -48,11 +48,11 @@ public class DownloadNewDB extends AsyncTask<Object, Object, Void> {
         super.onPostExecute(aVoid);
 
         // pass result back to activity
-        mListener.afterNewDBDownload(request, version);
+        mListener.afterNewDBDownloadStarted(request, version);
     }
 
     public interface DownloadNewDBListener {
-        void afterNewDBDownload(DownloadManager.Request request, int version);
+        void afterNewDBDownloadStarted(DownloadManager.Request request, int version);
         void clearCorruptedDownloadRefId();
     }
 

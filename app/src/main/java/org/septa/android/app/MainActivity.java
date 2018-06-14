@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     // in-app database update
     DownloadManager downloadManager;
-    AlertDialog promptDownloadDB, promptRestartApp;
+    AlertDialog promptDownloadDB, acknowledgeNewDatabaseReady;
 
     // shake detector used for crashing the app purposefully
     // TODO: comment out when releasing to production
@@ -260,9 +260,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             promptDownloadDB = null;
         }
 
-        if (promptRestartApp != null) {
-            promptRestartApp.dismiss();
-            promptRestartApp = null;
+        if (acknowledgeNewDatabaseReady != null) {
+            acknowledgeNewDatabaseReady.dismiss();
+            acknowledgeNewDatabaseReady = null;
         }
 
         // hide menu badge icon
@@ -450,7 +450,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
-    public void afterNewDBDownload(DownloadManager.Request request, int version) {
+    public void afterNewDBDownloadStarted(DownloadManager.Request request, int version) {
         long downloadRefId = downloadManager.enqueue(request);
 
         DatabaseUpgradeUtils.saveDownloadedVersionNumber(MainActivity.this, downloadRefId, version);
@@ -466,21 +466,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void afterDBUnzipped(int versionInstalled) {
-        DatabaseUpgradeUtils.notifyNewDatabaseReady(MainActivity.this, versionInstalled);
+        // validate that DB unzipped correctly and with correct version, then save if ready
+        DatabaseUpgradeUtils.saveNewDatabaseReady(MainActivity.this, versionInstalled);
 
-        // only prompt to restart if not already using most up to date version of database
-        AlertDialog dialog = DatabaseUpgradeUtils.promptToRestart(MainActivity.this);
+        notifyNewDatabaseReady();
+    }
+
+    @Override
+    public void notifyNewDatabaseReady() {
+        // only show that new database ready if not already using most up to date version of database
+        AlertDialog dialog = DatabaseUpgradeUtils.buildNewDatabaseReadyPopUp(MainActivity.this);
 
         // only show prompt once
-        if (promptRestartApp != null && promptRestartApp.isShowing()) {
-            promptRestartApp.dismiss();
-            promptRestartApp = null;
+        if (acknowledgeNewDatabaseReady != null && acknowledgeNewDatabaseReady.isShowing()) {
+            acknowledgeNewDatabaseReady.dismiss();
+            acknowledgeNewDatabaseReady = null;
         }
-        promptRestartApp = dialog;
+        acknowledgeNewDatabaseReady = dialog;
 
         // show prompt
-        if (promptRestartApp != null) {
-            promptRestartApp.show();
+        if (acknowledgeNewDatabaseReady != null) {
+            acknowledgeNewDatabaseReady.show();
         }
     }
 

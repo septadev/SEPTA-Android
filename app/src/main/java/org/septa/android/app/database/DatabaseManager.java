@@ -45,6 +45,13 @@ public class DatabaseManager {
         }
     }
 
+    public static synchronized void reinitDatabase(Context context) {
+        if (database != null) {
+            database.close();
+            database = new SEPTADatabase(context, SEPTADatabaseUtils.getVersionInstalled(context), SEPTADatabaseUtils.getDatabaseFilename(context)).getReadableDatabase();
+        }
+    }
+
     public static synchronized SQLiteDatabase getDatabase(Context context) {
         if (database == null) {
             database = new SEPTADatabase(context, SEPTADatabaseUtils.getVersionInstalled(context), SEPTADatabaseUtils.getDatabaseFilename(context)).getReadableDatabase();
@@ -57,6 +64,10 @@ public class DatabaseManager {
             throw new RuntimeException("DB was not initialized.");
         }
         return database;
+    }
+
+    public CursorAdapterSupplier<Integer> getVersionOfDatabase() {
+        return new CursorSuppliers.DatabaseVersionCursorAdapterSupplier();
     }
 
     public CursorAdapterSupplier<StopModel> getRailStopCursorAdapterSupplier() {
@@ -190,5 +201,4 @@ public class DatabaseManager {
     public CursorAdapterSupplier<Boolean> getHolidayIndicatorCursorAdapterSupplier(TransitType transitType) {
         return new CursorSuppliers.TransitTypeHolidayIndicatorCursorAdapterSupplier(transitType);
     }
-
 }

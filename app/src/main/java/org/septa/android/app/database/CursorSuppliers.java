@@ -7,6 +7,8 @@ import android.util.Log;
 
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
+import org.septa.android.app.database.update.DatabaseSharedPrefsUtils;
+import org.septa.android.app.database.update.TempDatabaseManager;
 import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.domain.ScheduleModel;
 import org.septa.android.app.domain.StopModel;
@@ -27,12 +29,12 @@ class CursorSuppliers implements Serializable {
         return DatabaseManager.getDatabase(context);
     }
 
-    static class DatabaseVersionCursorAdapterSupplier implements CursorAdapterSupplier<Integer> {
+    public static class DatabaseVersionCursorAdapterSupplier implements CursorAdapterSupplier<Integer> {
         String SELECT_CLAUSE = "SELECT version FROM dbVersion";
 
         @Override
         public Cursor getCursor(Context context, List<Criteria> whereClause) {
-            return TempDatabaseManager.getDatabaseWithVersion(context, SEPTADatabaseUtils.getVersionDownloaded(context)).rawQuery(SELECT_CLAUSE, null);
+            return TempDatabaseManager.getDatabaseWithVersion(context, DatabaseSharedPrefsUtils.getVersionDownloaded(context)).rawQuery(SELECT_CLAUSE, null);
         }
 
         @Override

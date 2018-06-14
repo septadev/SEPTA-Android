@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import org.septa.android.app.TransitType;
+import org.septa.android.app.database.update.DatabaseSharedPrefsUtils;
 import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.domain.ScheduleModel;
 import org.septa.android.app.domain.StopModel;
@@ -41,20 +42,20 @@ public class DatabaseManager {
 
     private static synchronized void initDatabase(Context context) {
         if (database == null) {
-            database = new SEPTADatabase(context, SEPTADatabaseUtils.getVersionInstalled(context), SEPTADatabaseUtils.getDatabaseFilename(context)).getReadableDatabase();
+            database = new SEPTADatabase(context, DatabaseSharedPrefsUtils.getVersionInstalled(context), DatabaseSharedPrefsUtils.getDatabaseFilename(context)).getReadableDatabase();
         }
     }
 
     public static synchronized void reinitDatabase(Context context) {
         if (database != null) {
             database.close();
-            database = new SEPTADatabase(context, SEPTADatabaseUtils.getVersionInstalled(context), SEPTADatabaseUtils.getDatabaseFilename(context)).getReadableDatabase();
+            database = new SEPTADatabase(context, DatabaseSharedPrefsUtils.getVersionInstalled(context), DatabaseSharedPrefsUtils.getDatabaseFilename(context)).getReadableDatabase();
         }
     }
 
     public static synchronized SQLiteDatabase getDatabase(Context context) {
         if (database == null) {
-            database = new SEPTADatabase(context, SEPTADatabaseUtils.getVersionInstalled(context), SEPTADatabaseUtils.getDatabaseFilename(context)).getReadableDatabase();
+            database = new SEPTADatabase(context, DatabaseSharedPrefsUtils.getVersionInstalled(context), DatabaseSharedPrefsUtils.getDatabaseFilename(context)).getReadableDatabase();
         }
         return database;
     }

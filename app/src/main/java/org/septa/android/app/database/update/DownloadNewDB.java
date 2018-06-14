@@ -1,4 +1,4 @@
-package org.septa.android.app.database;
+package org.septa.android.app.database.update;
 
 import android.app.DownloadManager;
 import android.content.Context;

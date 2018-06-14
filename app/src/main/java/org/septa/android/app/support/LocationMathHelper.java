@@ -2,11 +2,6 @@ package org.septa.android.app.support;
 
 import com.google.android.gms.maps.model.LatLng;
 
-/**
- * Created by jkampf on 8/7/17.
- */
-
-
 public class LocationMathHelper {
 
 

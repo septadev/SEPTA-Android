@@ -29,11 +29,6 @@ import org.septa.android.app.support.CursorAdapterSupplier;
 import java.util.ArrayList;
 import java.util.List;
 
-
-/**
- * Created by jkampf on 7/29/17.
- */
-
 public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHandler {
     CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier;
     CursorAdapterSupplier<StopModel> stopCursorAdapterSupplier;

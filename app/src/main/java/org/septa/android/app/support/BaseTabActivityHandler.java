@@ -1,9 +1,5 @@
 package org.septa.android.app.support;
 
-/**
- * Created by jkampf on 7/29/17.
- */
-
 public abstract class BaseTabActivityHandler implements TabActivityHandler {
 
     private String title;
@@ -19,7 +15,6 @@ public abstract class BaseTabActivityHandler implements TabActivityHandler {
         this.inactiveIconDrawable = inactiveIconDrawable;
         this.activeIconDrawable = activeIconDrawable;
     }
-
 
     @Override
     public String getTabTitle() {

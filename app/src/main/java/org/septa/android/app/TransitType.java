@@ -13,10 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by jkampf on 8/23/17.
- */
-
 public enum TransitType implements Serializable {
 
     @SerializedName("RAIL")

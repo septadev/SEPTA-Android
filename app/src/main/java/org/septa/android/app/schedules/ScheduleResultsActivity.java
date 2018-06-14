@@ -23,7 +23,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.RelativeLayout;
 
 import org.septa.android.app.Constants;
 import org.septa.android.app.R;
@@ -49,10 +48,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- * Created by ttuggerson on 9/13/17.
- */
-
 public class ScheduleResultsActivity extends AppCompatActivity {
 
     private static final int RAIL_MON_THUR = 8;
@@ -63,8 +58,6 @@ public class ScheduleResultsActivity extends AppCompatActivity {
     private static final int RAIL_SUNDAY = 64;
     private static final int SUNDAY = 64;
 
-
-    private DatabaseManager dbManager = null;
     private RadioGroup radioGroup = null;
     CursorAdapterSupplier<ScheduleModel> scheduleCursorAdapterSupplier;
     CursorAdapterSupplier<StopModel> reverseStopCursorAdapterSupplier;
@@ -83,30 +76,16 @@ public class ScheduleResultsActivity extends AppCompatActivity {
     TextView destinationTextView;
     TextView reverseTripLabel;
 
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitle("Schedules");
 
-        //-----------------------------------------------------------------------------------------
-        // note to self
-        // start the schedules activity
-        // Step 1: pieces of information necessary for the schedules activity
-        //         Transit Type
-        //         Line ID
-        //         Start Location
-        //         Stop Location
-        // Step 2: Query the database for the necessary schedule information
-        // Step 3: Create Array Result set and then
-        // Step 4: Inflate custom View and bind Data with list adapter
-        // * Note: Will have to create a special case with the Rail line due to (M-TH) Fri Sat Sunday option
-        // _________________________________________________________________________________________
-
         setContentView(R.layout.activity_schedules_results);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-
-        dbManager = DatabaseManager.getInstance(this);
-
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
 
         if (savedInstanceState != null) {
             restoreState(savedInstanceState);
@@ -137,7 +116,7 @@ public class ScheduleResultsActivity extends AppCompatActivity {
 
         setUpHeaders();
 
-        ((RelativeLayout) findViewById(R.id.line_station_layout)).getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+        findViewById(R.id.line_station_layout).getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
                 startStationText.setRight(reverseTripLabel.getLeft());
@@ -168,7 +147,6 @@ public class ScheduleResultsActivity extends AppCompatActivity {
         Alert alert = SystemStatusState.getAlertForLine(transitType, routeDirectionModel.getRouteId());
 
         boolean displayAlerts = false;
-
 
         View alertView = findViewById(R.id.service_alert);
         if (alert.isAlert()) {
@@ -225,13 +203,6 @@ public class ScheduleResultsActivity extends AppCompatActivity {
 
     }
 
-    private void restoreState(Bundle bundle) {
-        destination = (StopModel) bundle.get(Constants.DESTINATION_STATION);
-        start = (StopModel) bundle.get(Constants.STARTING_STATION);
-        transitType = (TransitType) bundle.get(Constants.TRANSIT_TYPE);
-        routeDirectionModel = (RouteDirectionModel) bundle.get(Constants.ROUTE_DIRECTION_MODEL);
-    }
-
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -243,31 +214,34 @@ public class ScheduleResultsActivity extends AppCompatActivity {
 
     }
 
-    //----------------------------------------------------------------------------------------------
-    //Method: initRadioButtonGroup
-    //
-    //Purpose: This is the main control for this form, this method is responsible for:
-    //         1. ) setting up the group onchanged click event
-    //              in the radio button group for the user control on the form.
-    //
-    //         2.) responsible for calling the "bindListView" method to rebind the view
-    //         with the corresonding data from the UI Selection.
-    //
-    //         3.) Setting default selection state
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        this.menu = menu;
+        getMenuInflater().inflate(R.menu.favorite_menu, menu);
 
-    // Note:   It is important to note the "clearCheck" method must be called before the
-    //         listener is invoked or event will not fire.
-    //
-    //         *IMPORTANT* Background and color change
-    //         events and processing are done in the custom xml files listed below
+        if (currentFavorite != null) {
+            menu.findItem(R.id.create_favorite).setIcon(R.drawable.ic_favorite_made);
+            menu.findItem(R.id.create_favorite).setTitle(R.string.schedule_favorite_icon_title_remove);
+        } else {
+            menu.findItem(R.id.create_favorite).setTitle(R.string.schedule_favorite_icon_title_create);
+        }
 
-    //         This method is used in conjuntion with five resource files:
-    //         File: radio_btn_background_selector.xmlor.xml - handles selector for background change
-    //               radio_btn_color_normalnormal.xml        - defines unselected button color
-    //               radio_btn_color_selected.xmled.xml      - defines selected button background color
-    //               radio_btn_font_color_selector.xml       - defines font colors for selection
-    //               activity_schedules_results.xmlults.xml                      - main schedule UI fragment
-    //-----------------------------------------------------------------------------------------------
+        return true;
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
+
+    private void restoreState(Bundle bundle) {
+        destination = (StopModel) bundle.get(Constants.DESTINATION_STATION);
+        start = (StopModel) bundle.get(Constants.STARTING_STATION);
+        transitType = (TransitType) bundle.get(Constants.TRANSIT_TYPE);
+        routeDirectionModel = (RouteDirectionModel) bundle.get(Constants.ROUTE_DIRECTION_MODEL);
+    }
+
     private void initRadioButtonGroup() {
         radioGroup = (RadioGroup) findViewById(R.id.day_of_week_button_group);
         radioGroup.clearCheck(); //must clear the defaults otherwise event wont fire
@@ -350,12 +324,66 @@ public class ScheduleResultsActivity extends AppCompatActivity {
         return 0;
     }
 
-    @Override
-    public boolean onSupportNavigateUp() {
-        onBackPressed();
-        return true;
-    }
+    public void saveAsFavorite(final MenuItem item) {
+        if (!item.isEnabled())
+            return;
 
+        item.setEnabled(false);
+
+        if (start != null && destination != null && transitType != null) {
+            if (currentFavorite == null) {
+                final Favorite favorite = new Favorite(start, destination, transitType, routeDirectionModel);
+                SaveFavoritesAsyncTask task = new SaveFavoritesAsyncTask(this, new Runnable() {
+                    @Override
+                    public void run() {
+                        item.setEnabled(true);
+                    }
+                }, new Runnable() {
+                    @Override
+                    public void run() {
+                        item.setEnabled(true);
+                        item.setIcon(R.drawable.ic_favorite_made);
+                        currentFavorite = favorite;
+                    }
+                });
+
+                task.execute(favorite);
+                Snackbar snackbar = Snackbar
+                        .make(findViewById(R.id.schedule_results_coordinator), R.string.create_fav_snackbar_text, Snackbar.LENGTH_LONG);
+
+                snackbar.show();
+            } else {
+                new AlertDialog.Builder(this).setCancelable(true).setTitle(R.string.delete_fav_modal_title)
+                        .setMessage(R.string.delete_fav_modal_text)
+                        .setPositiveButton(R.string.delete_fav_pos_button, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                DeleteFavoritesAsyncTask task = new DeleteFavoritesAsyncTask(ScheduleResultsActivity.this, new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        item.setEnabled(true);
+                                    }
+                                }, new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        item.setEnabled(true);
+                                        item.setIcon(R.drawable.ic_favorite_available);
+                                        currentFavorite = null;
+                                    }
+                                });
+
+                                task.execute(currentFavorite.getKey());
+                            }
+                        }).setNegativeButton(R.string.delete_fav_neg_button, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        item.setEnabled(true);
+                    }
+                }).create().show();
+            }
+
+        } else item.setEnabled(true);
+    }
 
     class ScheduleResultsAsyncTask extends AsyncTask<Integer, Void, List<ScheduleModel>> {
         ScheduleResultsActivity scheduleResultsActivity;
@@ -498,83 +526,5 @@ public class ScheduleResultsActivity extends AppCompatActivity {
         }
 
     }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        this.menu = menu;
-        getMenuInflater().inflate(R.menu.favorite_menu, menu);
-
-        if (currentFavorite != null) {
-            menu.findItem(R.id.create_favorite).setIcon(R.drawable.ic_favorite_made);
-            menu.findItem(R.id.create_favorite).setTitle(R.string.schedule_favorite_icon_title_remove);
-        } else {
-            menu.findItem(R.id.create_favorite).setTitle(R.string.schedule_favorite_icon_title_create);
-        }
-
-        return true;
-    }
-
-    public void saveAsFavorite(final MenuItem item) {
-        if (!item.isEnabled())
-            return;
-
-        item.setEnabled(false);
-
-        if (start != null && destination != null && transitType != null) {
-            if (currentFavorite == null) {
-                final Favorite favorite = new Favorite(start, destination, transitType, routeDirectionModel);
-                SaveFavoritesAsyncTask task = new SaveFavoritesAsyncTask(this, new Runnable() {
-                    @Override
-                    public void run() {
-                        item.setEnabled(true);
-                    }
-                }, new Runnable() {
-                    @Override
-                    public void run() {
-                        item.setEnabled(true);
-                        item.setIcon(R.drawable.ic_favorite_made);
-                        currentFavorite = favorite;
-                    }
-                });
-
-                task.execute(favorite);
-                Snackbar snackbar = Snackbar
-                        .make(findViewById(R.id.schedule_results_coordinator), R.string.create_fav_snackbar_text, Snackbar.LENGTH_LONG);
-
-                snackbar.show();
-            } else {
-                new AlertDialog.Builder(this).setCancelable(true).setTitle(R.string.delete_fav_modal_title)
-                        .setMessage(R.string.delete_fav_modal_text)
-                        .setPositiveButton(R.string.delete_fav_pos_button, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                DeleteFavoritesAsyncTask task = new DeleteFavoritesAsyncTask(ScheduleResultsActivity.this, new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        item.setEnabled(true);
-                                    }
-                                }, new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        item.setEnabled(true);
-                                        item.setIcon(R.drawable.ic_favorite_available);
-                                        currentFavorite = null;
-                                    }
-                                });
-
-                                task.execute(currentFavorite.getKey());
-                            }
-                        }).setNegativeButton(R.string.delete_fav_neg_button, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        item.setEnabled(true);
-                    }
-                }).create().show();
-            }
-
-        } else item.setEnabled(true);
-    }
-
 
 }

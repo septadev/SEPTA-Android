@@ -5,10 +5,6 @@ import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 import java.util.List;
 
-/**
- * Created by jkampf on 9/12/17.
- */
-
 public class AlertDetail implements Serializable {
     @SerializedName("route")
     String route;
@@ -18,7 +14,6 @@ public class AlertDetail implements Serializable {
     int results;
     @SerializedName("alerts")
     List<Detail> alerts;
-
 
     public class Detail implements Serializable {
         @SerializedName("message")

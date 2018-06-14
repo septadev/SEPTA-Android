@@ -7,10 +7,6 @@ import org.septa.android.app.services.apiinterfaces.model.Alerts;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by jkampf on 9/12/17.
- */
-
 public class SystemStatusState {
     private static Map<String, Alert> map = new HashMap<String, Alert>();
 

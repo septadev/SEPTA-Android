@@ -6,10 +6,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 
-/**
- * Created by mluansing on 9/20/17.
- */
-
 public class DownloadNewDB extends AsyncTask<Object, Object, Void> {
 
     private DownloadManager.Request request;

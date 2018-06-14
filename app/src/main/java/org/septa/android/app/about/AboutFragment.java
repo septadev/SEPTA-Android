@@ -25,10 +25,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
-/**
- * Created by jkampf on 9/5/17.
- */
-
 public class AboutFragment extends Fragment {
     boolean attribExpanded = false;
     TextView attribTitle;

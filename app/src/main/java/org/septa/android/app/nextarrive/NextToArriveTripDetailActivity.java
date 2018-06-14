@@ -48,10 +48,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
- * Created by jkampf on 8/3/17.
- */
-
 public class NextToArriveTripDetailActivity extends AppCompatActivity implements OnMapReadyCallback, Runnable {
     public static final String TAG = NextToArriveTripDetailActivity.class.getSimpleName();
     public static final int REFRESH_DELAY_SECONDS = 30;

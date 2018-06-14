@@ -15,10 +15,6 @@ import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.webview.WebViewActivity;
 
-/**
- * Created by jkampf on 9/29/17.
- */
-
 public class ConnectFragment extends Fragment {
 
     private static final String TAG = ConnectFragment.class.getSimpleName();

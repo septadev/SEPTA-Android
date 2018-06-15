@@ -226,8 +226,21 @@ public class ScheduleResultsActivity extends AppCompatActivity {
             menu.findItem(R.id.create_favorite).setTitle(R.string.schedule_favorite_icon_title_create);
         }
 
+        // hide refresh icon -- refresh only needed in NTA Results Activity
+        menu.findItem(R.id.refresh_nta_results).setVisible(false);
+
         return true;
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.create_favorite:
+                saveAsFavorite(item);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }    }
 
     @Override
     public boolean onSupportNavigateUp() {
@@ -349,7 +362,7 @@ public class ScheduleResultsActivity extends AppCompatActivity {
 
                 task.execute(favorite);
                 Snackbar snackbar = Snackbar
-                        .make(findViewById(R.id.schedule_results_coordinator), R.string.create_fav_snackbar_text, Snackbar.LENGTH_LONG);
+                        .make(findViewById(R.id.activity_schedule_results_container), R.string.create_fav_snackbar_text, Snackbar.LENGTH_LONG);
 
                 snackbar.show();
             } else {
@@ -506,7 +519,7 @@ public class ScheduleResultsActivity extends AppCompatActivity {
                 ScheduleResultsAsyncTask scheduleResultsAsyncTask = new ScheduleResultsAsyncTask(scheduleResultsActivity);
                 scheduleResultsAsyncTask.execute(schedule);
             } else {
-                Snackbar snackbar = Snackbar.make(scheduleResultsActivity.findViewById(R.id.schedule_results_coordinator), R.string.reverse_not_found, Snackbar.LENGTH_INDEFINITE);
+                Snackbar snackbar = Snackbar.make(scheduleResultsActivity.findViewById(R.id.activity_schedule_results_container), R.string.reverse_not_found, Snackbar.LENGTH_INDEFINITE);
 
                 View snackbarView = snackbar.getView();
                 android.widget.TextView tv = (android.widget.TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
@@ -516,7 +529,7 @@ public class ScheduleResultsActivity extends AppCompatActivity {
         }
 
         StopModel getReverse(String stopId, String routeShortName) {
-            List<Criteria> criteria = new ArrayList<Criteria>(2);
+            List<Criteria> criteria = new ArrayList<>(2);
             criteria.add(new Criteria("route_short_name", Criteria.Operation.EQ, routeShortName));
             criteria.add(new Criteria("stop_id", Criteria.Operation.EQ, stopId));
             Cursor cursor = scheduleResultsActivity.reverseStopCursorAdapterSupplier.getCursor(scheduleResultsActivity, criteria);

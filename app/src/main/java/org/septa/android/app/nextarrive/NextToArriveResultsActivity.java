@@ -95,9 +95,9 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     FrameLayout mapContainerView;
     ViewGroup bottomSheetLayout;
     View rootView;
+    View reverseTrip;
     View progressView;
     View progressViewBottom;
-    View refresh;
     Favorite currentFavorite = null;
     NextToArriveTripView nextToArriveDetailsView;
     boolean editFavoritesFlag = false;
@@ -124,8 +124,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         progressView = findViewById(R.id.progress_view);
         noResultsMessage = (FrameLayout) findViewById(R.id.nta_empty_results_msg);
 
-        refresh = findViewById(R.id.refresh_button);
-        refresh.setContentDescription(getString(R.string.nta_refresh));
+        reverseTrip = findViewById(R.id.button_reverse_nta_trip);
 
         bottomSheetLayout = (ViewGroup) findViewById(R.id.bottomSheetLayout);
 
@@ -230,10 +229,9 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
             (findViewById(R.id.header)).getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
                 public void onGlobalLayout() {
-                    View refreshLabel = findViewById(R.id.refresh_label);
-                    startingStationNameText.setRight(refreshLabel.getLeft());
+                    startingStationNameText.setRight(reverseTrip.getLeft());
                     startingStationNameText.setText(startingStationNameText.getText());
-                    destinationStationNameText.setRight(refreshLabel.getLeft());
+                    destinationStationNameText.setRight(reverseTrip.getLeft());
                     destinationStationNameText.setText(destinationStationNameText.getText());
                 }
             });
@@ -243,20 +241,19 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
             setTitle(currentFavorite.getName());
         }
 
-        refreshHandler.postDelayed(this, 30 * 1000);
-
-        refresh.setOnClickListener(new View.OnClickListener() {
+        // reverse trip button clickable
+        reverseTrip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                refreshData();
+                reverseTrip();
             }
         });
 
+        refreshHandler.postDelayed(this, 30 * 1000);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-
         if (!editFavoritesFlag) {
             getMenuInflater().inflate(R.menu.favorite_menu, menu);
             if (currentFavorite != null) {
@@ -269,6 +266,23 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
             getMenuInflater().inflate(R.menu.edit_favorites_menu, menu);
         }
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.create_favorite:
+                saveAsFavorite(item);
+                return true;
+            case R.id.refresh_nta_results:
+                refreshData();
+                return true;
+            case R.id.edit_favorite:
+                editFavorite(item);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
@@ -706,8 +720,9 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     }
 
     public void saveAsFavorite(final MenuItem item) {
-        if (!item.isEnabled())
+        if (!item.isEnabled()) {
             return;
+        }
 
         item.setEnabled(false);
 
@@ -763,7 +778,9 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                 }).create().show();
             }
 
-        } else item.setEnabled(true);
+        } else {
+            item.setEnabled(true);
+        }
     }
 
     public void editFavorite(final MenuItem item) {
@@ -773,6 +790,11 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         RenameFavoriteDialogFragment fragment = RenameFavoriteDialogFragment.getInstance(currentFavorite);
 
         fragment.show(ft, EDIT_FAVORITE_DIALOG_KEY);
+    }
+
+    private void reverseTrip() {
+        // TODO: reverse the trip
+        Log.e(TAG, "Reverse trip button clicked!"); // TODO: remove
     }
 
     private void gotoSchedulesForTarget() {

@@ -74,7 +74,7 @@ public class ScheduleResultsActivity extends AppCompatActivity {
 
     TextView startStationText;
     TextView destinationTextView;
-    TextView reverseTripLabel;
+    View reverseTripLabel;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -105,7 +105,7 @@ public class ScheduleResultsActivity extends AppCompatActivity {
         startStationText = (TextView) findViewById(R.id.start_station_text);
         destinationTextView = (TextView) findViewById(R.id.destination_station_text);
 
-        reverseTripLabel = (TextView) findViewById(R.id.reverse_trip_label);
+        reverseTripLabel = findViewById(R.id.button_reverse_schedule_trip);
         reverseTripLabel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

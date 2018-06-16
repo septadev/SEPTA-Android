@@ -122,29 +122,18 @@
                     android:textSize="12sp"
                     app:font="@string/font_roboto_medium" />
 
-                <org.septa.android.app.view.TextView
-                    android:id="@+id/reverse_trip_label"
+                <ImageView
+                    android:id="@+id/button_reverse_schedule_trip"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
                     android:layout_marginEnd="14dp"
-                    android:layout_marginLeft="5dp"
                     android:layout_marginRight="14dp"
-                    android:layout_marginStart="5dp"
-                    android:layout_marginTop="20dp"
-                    android:contentDescription="Reverse Trip"
-                    android:drawableEnd="@drawable/ic_reverse_blue"
-                    android:drawablePadding="8dp"
-                    android:drawableRight="@drawable/ic_reverse_blue"
-                    android:gravity="right"
-                    android:letterSpacing="-0.02"
-                    android:paddingLeft="5dp"
-                    android:paddingStart="5dp"
-                    android:text="Reverse&lt;br&gt;Trip"
-                    android:textColor="#144b88"
-                    android:textSize="10sp"
-                    app:font="@string/font_roboto_medium" />
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:src="@drawable/ic_reverse_blue" />
 
             </RelativeLayout>
 

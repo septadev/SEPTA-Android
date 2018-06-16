@@ -41,51 +41,8 @@
         android:textColor="#8c8c8c"
         android:textSize="14sp"
         app:font="@string/font_roboto_regular"
-        app:layout_constraintBottom_toTopOf="@+id/rating_bar"
-        app:layout_constraintTop_toBottomOf="@+id/rating_dialog_title" />
-
-    <LinearLayout
-        android:id="@+id/rating_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:padding="@dimen/activity_horizontal_padding"
-        android:weightSum="5"
         app:layout_constraintBottom_toTopOf="@+id/rating_buttons"
-        app:layout_constraintTop_toBottomOf="@+id/rating_dialog_details">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="2dp"
-            android:src="@drawable/ic_star" />
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="2dp"
-            android:src="@drawable/ic_star" />
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="2dp"
-            android:src="@drawable/ic_star" />
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="2dp"
-            android:src="@drawable/ic_star" />
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="2dp"
-            android:src="@drawable/ic_star" />
-
-    </LinearLayout>
+        app:layout_constraintTop_toBottomOf="@+id/rating_dialog_title" />
 
     <LinearLayout
         android:id="@+id/rating_buttons"
@@ -95,19 +52,7 @@
         android:paddingBottom="25dp"
         android:weightSum="3"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rating_bar"
-        >
-
-        <Button
-            android:id="@+id/button_rate_app"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="?android:attr/selectableItemBackground"
-            android:clickable="true"
-            android:focusable="true"
-            android:text="@string/rating_rate_button"
-            android:textColor="#d73a12" />
+        app:layout_constraintTop_toBottomOf="@+id/rating_dialog_details">
 
         <Button
             android:id="@+id/button_rate_app_no_thanks"
@@ -118,7 +63,7 @@
             android:clickable="true"
             android:focusable="true"
             android:text="@string/rating_no_thanks_button"
-            android:textColor="@color/text_primary" />
+            android:textColor="#9b9b9b" />
 
         <Button
             android:id="@+id/button_rate_app_remind_me_later"
@@ -129,6 +74,17 @@
             android:clickable="true"
             android:focusable="true"
             android:text="@string/rating_remind_me_later_button"
+            android:textColor="@color/text_primary" />
+
+        <Button
+            android:id="@+id/button_rate_app"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:text="@string/rating_rate_button"
             android:textColor="@color/text_primary" />
 
     </LinearLayout>

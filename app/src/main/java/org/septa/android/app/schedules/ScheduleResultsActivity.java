@@ -160,21 +160,21 @@ public class ScheduleResultsActivity extends AppCompatActivity {
             alertView.setLayoutParams(loparams);
         }
 
-        View advistoryView = findViewById(R.id.service_advisory);
+        View advisoryView = findViewById(R.id.service_advisory);
         if (alert.isAdvisory()) {
-            advistoryView.setVisibility(View.VISIBLE);
-            advistoryView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ADVISORY_EXPANDED, this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName()));
+            advisoryView.setVisibility(View.VISIBLE);
+            advisoryView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ADVISORY_EXPANDED, this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName()));
             displayAlerts = true;
         } else {
-            LinearLayout.LayoutParams loparams = (LinearLayout.LayoutParams) advistoryView.getLayoutParams();
+            LinearLayout.LayoutParams loparams = (LinearLayout.LayoutParams) advisoryView.getLayoutParams();
             loparams.height = 0;
             loparams.weight = 1;
-            advistoryView.setLayoutParams(loparams);
+            advisoryView.setLayoutParams(loparams);
         }
 
         View detourView = findViewById(R.id.active_detour);
         if (alert.isDetour()) {
-            advistoryView.setVisibility(View.VISIBLE);
+            advisoryView.setVisibility(View.VISIBLE);
             detourView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.ACTIVE_DETOUR_EXPANDED, this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName()));
             displayAlerts = true;
         } else {
@@ -497,7 +497,7 @@ public class ScheduleResultsActivity extends AppCompatActivity {
             if (found) {
                 scheduleResultsActivity.destination = newDest;
                 scheduleResultsActivity.start = newStart;
-                List<Criteria> criterias = new ArrayList<Criteria>(2);
+                List<Criteria> criterias = new ArrayList<>(2);
                 criterias.add(new Criteria("dircode", Criteria.Operation.EQ, scheduleResultsActivity.routeDirectionModel.getReverseDirectionCode()));
                 criterias.add(new Criteria("route_id", Criteria.Operation.EQ, scheduleResultsActivity.routeDirectionModel.getRouteId()));
 

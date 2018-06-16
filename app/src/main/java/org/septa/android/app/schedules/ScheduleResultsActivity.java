@@ -23,7 +23,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.RelativeLayout;
 
 import org.septa.android.app.Constants;
 import org.septa.android.app.R;
@@ -137,7 +136,7 @@ public class ScheduleResultsActivity extends AppCompatActivity {
 
         setUpHeaders();
 
-        ((RelativeLayout) findViewById(R.id.line_station_layout)).getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+        findViewById(R.id.line_station_layout).getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
                 startStationText.setRight(reverseTripLabel.getLeft());
@@ -182,21 +181,21 @@ public class ScheduleResultsActivity extends AppCompatActivity {
             alertView.setLayoutParams(loparams);
         }
 
-        View advistoryView = findViewById(R.id.service_advisory);
+        View advisoryView = findViewById(R.id.service_advisory);
         if (alert.isAdvisory()) {
-            advistoryView.setVisibility(View.VISIBLE);
-            advistoryView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ADVISORY_EXPANDED, this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName()));
+            advisoryView.setVisibility(View.VISIBLE);
+            advisoryView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ADVISORY_EXPANDED, this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName()));
             displayAlerts = true;
         } else {
-            LinearLayout.LayoutParams loparams = (LinearLayout.LayoutParams) advistoryView.getLayoutParams();
+            LinearLayout.LayoutParams loparams = (LinearLayout.LayoutParams) advisoryView.getLayoutParams();
             loparams.height = 0;
             loparams.weight = 1;
-            advistoryView.setLayoutParams(loparams);
+            advisoryView.setLayoutParams(loparams);
         }
 
         View detourView = findViewById(R.id.active_detour);
         if (alert.isDetour()) {
-            advistoryView.setVisibility(View.VISIBLE);
+            advisoryView.setVisibility(View.VISIBLE);
             detourView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.ACTIVE_DETOUR_EXPANDED, this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName()));
             displayAlerts = true;
         } else {
@@ -243,31 +242,6 @@ public class ScheduleResultsActivity extends AppCompatActivity {
 
     }
 
-    //----------------------------------------------------------------------------------------------
-    //Method: initRadioButtonGroup
-    //
-    //Purpose: This is the main control for this form, this method is responsible for:
-    //         1. ) setting up the group onchanged click event
-    //              in the radio button group for the user control on the form.
-    //
-    //         2.) responsible for calling the "bindListView" method to rebind the view
-    //         with the corresonding data from the UI Selection.
-    //
-    //         3.) Setting default selection state
-
-    // Note:   It is important to note the "clearCheck" method must be called before the
-    //         listener is invoked or event will not fire.
-    //
-    //         *IMPORTANT* Background and color change
-    //         events and processing are done in the custom xml files listed below
-
-    //         This method is used in conjuntion with five resource files:
-    //         File: radio_btn_background_selector.xmlor.xml - handles selector for background change
-    //               radio_btn_color_normalnormal.xml        - defines unselected button color
-    //               radio_btn_color_selected.xmled.xml      - defines selected button background color
-    //               radio_btn_font_color_selector.xml       - defines font colors for selection
-    //               activity_schedules_results.xmlults.xml                      - main schedule UI fragment
-    //-----------------------------------------------------------------------------------------------
     private void initRadioButtonGroup() {
         radioGroup = (RadioGroup) findViewById(R.id.day_of_week_button_group);
         radioGroup.clearCheck(); //must clear the defaults otherwise event wont fire
@@ -456,7 +430,7 @@ public class ScheduleResultsActivity extends AppCompatActivity {
             if (found) {
                 scheduleResultsActivity.destination = newDest;
                 scheduleResultsActivity.start = newStart;
-                List<Criteria> criterias = new ArrayList<Criteria>(2);
+                List<Criteria> criterias = new ArrayList<>(2);
                 criterias.add(new Criteria("dircode", Criteria.Operation.EQ, scheduleResultsActivity.routeDirectionModel.getReverseDirectionCode()));
                 criterias.add(new Criteria("route_id", Criteria.Operation.EQ, scheduleResultsActivity.routeDirectionModel.getRouteId()));
 

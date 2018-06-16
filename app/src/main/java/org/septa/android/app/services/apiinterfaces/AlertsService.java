@@ -12,6 +12,6 @@ import retrofit2.http.GET;
 public interface AlertsService {
 
     @GET("/prod/alerts")
-    public Call<Alerts> getAlerts();
+    Call<Alerts> getAlerts();
 
 }

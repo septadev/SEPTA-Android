@@ -113,6 +113,7 @@ public class LocationPickerFragment extends DialogFragment {
 
             }
         });
+
         return dialogView;
     }
 

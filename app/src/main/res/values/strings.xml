@@ -32,7 +32,7 @@
 
 
     <string name="starting_station">Starting Station</string>
-    <string name="destionation_station_hint">Destination Station</string>
+    <string name="destination_station_hint">Destination Station</string>
     <string name="starting_station_hint">Starting Station</string>
     <string name="view_trains_button">VIEW TRAINS</string>
     <string name="title_activity_next_to_arrive_results">NextToArriveResultsActivity</string>
@@ -243,7 +243,7 @@
     <string name="trail_text"><![CDATA[Weekly and Monthly TrailPasses<br><b>Price varies</b> by Zone.]]></string>
 
     <string name="cross_county_weekly_price">$30.75</string>
-    <string name="cross_county_mothly_price">$115.00</string>
+    <string name="cross_county_monthly_price">$115.00</string>
     <string name="cross_text"><![CDATA[Weekly Cross County Pass: <b>{0}</b><br>Monthly Cross County Pass: <b>{1}</b>]]></string>
 
     <string name="one_day_pass_price">$9.00</string>

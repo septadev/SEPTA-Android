@@ -267,7 +267,7 @@ public class LinePickerFragment extends DialogFragment {
 
                 @SuppressWarnings("unchecked")
                 @Override
-                protected void publishResults(CharSequence contraint, FilterResults results) {
+                protected void publishResults(CharSequence constraint, FilterResults results) {
                     filterRoutes = (List<RouteDirectionModel>) results.values;
                     notifyDataSetChanged();
 

@@ -234,7 +234,7 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
 
                 @SuppressWarnings("unchecked")
                 @Override
-                protected void publishResults(CharSequence contraint, FilterResults results) {
+                protected void publishResults(CharSequence constraint, FilterResults results) {
                     filterRoutes = (List<StopModel>) results.values;
                     if (results.count > 0) {
                         notifyDataSetChanged();

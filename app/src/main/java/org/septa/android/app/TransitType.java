@@ -115,15 +115,15 @@ public enum TransitType implements Serializable {
     }
 
     protected static class BasicColorProvider implements ColorProvider {
-        private int defaultCololor;
+        private int defaultColor;
 
         BasicColorProvider(int defaultColor) {
-            this.defaultCololor = defaultColor;
+            this.defaultColor = defaultColor;
         }
 
         @Override
         public int getColorForLine(String lineId, Context context) {
-            return defaultCololor;
+            return defaultColor;
         }
     }
 
@@ -145,15 +145,15 @@ public enum TransitType implements Serializable {
     }
 
     protected static class BasicLineIconProvider implements LineIconProvider {
-        private final int dafaultValue;
+        private final int defaultValue;
 
         BasicLineIconProvider(int defaultValue) {
-            this.dafaultValue = defaultValue;
+            this.defaultValue = defaultValue;
         }
 
         @Override
         public int getIconForLine(String lineId, Context context) {
-            return dafaultValue;
+            return defaultValue;
         }
     }
 

@@ -10,6 +10,4 @@ public interface GooglePlaceAutoCompleteService {
 
     @GET("maps/api/place/autocomplete/json?language=en&radius=500")
     Call<PlacePredictions> getAutoComplete(@Query("input") String input, @Query("location") String location);
-
-
 }

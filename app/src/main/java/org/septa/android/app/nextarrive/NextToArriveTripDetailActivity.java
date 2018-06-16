@@ -289,7 +289,7 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
             private boolean updateView(Response<NextArrivalDetails> response) {
                 NextArrivalDetails.Details details = response.body().getDetails();
                 if (details != null) {
-                    vehicleLat = details.getLatitiude();
+                    vehicleLat = details.getLatitude();
                     vehicleLon = details.getLongitude();
 
 

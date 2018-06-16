@@ -87,7 +87,7 @@ public class NextArrivalDetails {
         @SerializedName("tripid")
         String tripId;
         @SerializedName("latitude")
-        double latitiude;
+        double latitude;
         @SerializedName("longitude")
         double longitude;
         @SerializedName("line")
@@ -124,12 +124,12 @@ public class NextArrivalDetails {
             this.tripId = tripId;
         }
 
-        public double getLatitiude() {
-            return latitiude;
+        public double getLatitude() {
+            return latitude;
         }
 
-        public void setLatitiude(double latitiude) {
-            this.latitiude = latitiude;
+        public void setLatitude(double latitude) {
+            this.latitude = latitude;
         }
 
         public double getLongitude() {

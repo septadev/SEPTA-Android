@@ -102,7 +102,7 @@ public class DatabaseUpgradeUtils {
             // remove old DB files
             CleanOldDB cleanOldDB = new CleanOldDB(context, cleanListener, versionInstalled);
             cleanOldDB.execute();
-        } else if (versionDownloaded == versionInstalled) {
+        } else if (versionDownloaded == versionInstalled && versionInstalled != currentDBVersion) {
             // notify new database ready if not already using most up to date version of database
             cleanListener.notifyNewDatabaseReady();
         }

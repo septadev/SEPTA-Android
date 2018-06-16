@@ -7,5 +7,5 @@ import org.septa.android.app.domain.StopModel;
  */
 
 public interface LocationPickerCallBack {
-    public void setLocation(StopModel stopModel);
+    void setLocation(StopModel stopModel);
 }

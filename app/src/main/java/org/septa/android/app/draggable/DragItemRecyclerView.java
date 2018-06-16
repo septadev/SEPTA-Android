@@ -247,10 +247,7 @@ public class DragItemRecyclerView extends RecyclerView implements AutoScroller.A
             return false;
         }
         // Check with callback if we are allowed to drop at this position
-        if (mDragCallback != null && !mDragCallback.canDropItemAtPosition(newPos)) {
-            return false;
-        }
-        return true;
+        return mDragCallback == null || mDragCallback.canDropItemAtPosition(newPos);
     }
 
     private void updateDragPositionAndScroll() {

@@ -8,9 +8,7 @@ import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.GestureDetector;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -59,7 +57,7 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
         StationNameAdapter2 adapter;
         private StopModel currentStop;
         private CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
-        View progressView, sortAlphabeticalButton, sortInOrderButton;
+        View progressView, sortAlphabeticalButton, sortReverseAlphabeticalButton, sortInOrderButton;
         EditText filterText;
         private boolean isLineAware = false;
         private static final String IS_LINE_AWARE = "IS_LINE_AWARE";
@@ -116,28 +114,32 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
                 sortButtonsContainer.setVisibility(View.VISIBLE);
 
                 sortAlphabeticalButton = rootView.findViewById(R.id.stop_list_sort_alphabetical);
+                sortReverseAlphabeticalButton = rootView.findViewById(R.id.stop_list_sort_reverse_alphabetical);
                 sortInOrderButton = rootView.findViewById(R.id.stop_list_sort_in_order);
 
-                // double tap listener for alphabetical button
-                final GestureDetector mDetector = new GestureDetector(getContext(), new AlphabeticalSortButtonGestureListener());
-                View.OnTouchListener touchListener = new View.OnTouchListener() {
+                sortAlphabeticalButton.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public boolean onTouch(View view, MotionEvent motionEvent) {
-                        // pass the events to the gesture detector
-                        // a return value of true means the detector is handling it
-                        // a return value of false means the detector didn't
-                        // recognize the event
-                        return mDetector.onTouchEvent(motionEvent);
+                    public void onClick(View view) {
+                        // sort stops alphabetically
+                        sortStopsAlphabetical();
                     }
-                };
-                sortAlphabeticalButton.setOnTouchListener(touchListener);
+                });
+
+                sortReverseAlphabeticalButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        // sort stops reverse alphabetically
+                        sortStopsReverseAlphabetical();
+                    }
+                });
+
 
                 // button to sort stops in order
-                sortInOrderButton.setOnTouchListener(new View.OnTouchListener() {
+                sortInOrderButton.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public boolean onTouch(View view, MotionEvent motionEvent) {
+                    public void onClick(View view) {
+                        // sort stops in route order
                         sortStopsInOrder();
-                        return false;
                     }
                 });
             }
@@ -202,30 +204,15 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
             });
         }
 
-        private class AlphabeticalSortButtonGestureListener extends GestureDetector.SimpleOnGestureListener {
-            @Override
-            public boolean onSingleTapConfirmed(MotionEvent e) {
-                // sort stops alphabetically
-                sortStopsAlphabetical();
-                return true;
-            }
-
-            @Override
-            public boolean onDoubleTap(MotionEvent e) {
-                // sort stops reverse alphabetically
-                sortStopsReverseAlphabetical();
-                return true;
-            }
-        }
-
         private void sortStopsAlphabetical() {
             // sort stops a to z
             Collections.sort(this.adapter.filterRoutes);
             this.adapter.notifyDataSetChanged();
 
             // change selected button background
-            changeSortButtonBackground(sortInOrderButton, R.drawable.button_sort_stops_border);
-            changeSortButtonBackground(sortAlphabeticalButton, R.drawable.button_sort_stops_selected);
+            sortInOrderButton.setBackgroundResource(R.drawable.button_sort_stops_border);
+            sortReverseAlphabeticalButton.setBackgroundResource(R.drawable.button_sort_stops_border);
+            sortAlphabeticalButton.setBackgroundResource(R.drawable.button_sort_stops_selected);
 
             // save sort order
             LocationPickerUtils.setStopPickerSortOrder(getContext(), 0);
@@ -236,9 +223,10 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
             Collections.sort(this.adapter.filterRoutes, Collections.<StopModel>reverseOrder());
             this.adapter.notifyDataSetChanged();
 
-            // TODO: change selected button background -- should this be different for reverse order?
-            changeSortButtonBackground(sortInOrderButton, R.drawable.button_sort_stops_border);
-            changeSortButtonBackground(sortAlphabeticalButton, R.drawable.button_sort_stops_selected);
+            // change selected button background
+            sortInOrderButton.setBackgroundResource(R.drawable.button_sort_stops_border);
+            sortAlphabeticalButton.setBackgroundResource(R.drawable.button_sort_stops_border);
+            sortReverseAlphabeticalButton.setBackgroundResource(R.drawable.button_sort_stops_selected);
 
             // save sort order
             LocationPickerUtils.setStopPickerSortOrder(getContext(), 1);
@@ -250,15 +238,12 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
             this.adapter.notifyDataSetChanged();
 
             // change selected button background
-            changeSortButtonBackground(sortAlphabeticalButton, R.drawable.button_sort_stops_border);
-            changeSortButtonBackground(sortInOrderButton, R.drawable.button_sort_stops_selected);
+            sortReverseAlphabeticalButton.setBackgroundResource(R.drawable.button_sort_stops_border);
+            sortAlphabeticalButton.setBackgroundResource(R.drawable.button_sort_stops_border);
+            sortInOrderButton.setBackgroundResource(R.drawable.button_sort_stops_selected);
 
             // save sort order
             LocationPickerUtils.setStopPickerSortOrder(getContext(), 2);
-        }
-
-        private void changeSortButtonBackground(View button, int backgroundResId) {
-            button.setBackgroundResource(backgroundResId);
         }
 
     }

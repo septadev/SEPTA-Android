@@ -63,6 +63,20 @@
                 android:src="@drawable/ic_sort_alpha" />
 
             <ImageButton
+                android:id="@+id/stop_list_sort_reverse_alphabetical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/button_padding"
+                android:background="@drawable/button_sort_stops_border"
+                android:clickable="true"
+                android:focusable="true"
+                android:paddingBottom="@dimen/stop_picker_order_button_vertical_padding"
+                android:paddingLeft="@dimen/stop_picker_order_button_horizontal_padding"
+                android:paddingRight="@dimen/stop_picker_order_button_horizontal_padding"
+                android:paddingTop="@dimen/stop_picker_order_button_vertical_padding"
+                android:src="@drawable/ic_sort_reverse_alpha" />
+
+            <ImageButton
                 android:id="@+id/stop_list_sort_in_order"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

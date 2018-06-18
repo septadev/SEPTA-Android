@@ -42,7 +42,6 @@ public class Favorite implements Serializable {
             name = "To " + destination.getStopName();
         }
 
-
         createdWithVersion = BuildConfig.VERSION_CODE;
     }
 

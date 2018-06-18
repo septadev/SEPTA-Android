@@ -292,8 +292,9 @@ public class ScheduleResultsActivity extends AppCompatActivity {
         TextView routeTitleDescription = (TextView) findViewById(R.id.route_description_text);
         if (transitType == TransitType.RAIL) {
             routeTitleDescription.setText(routeDirectionModel.getDirectionDescription());
-        } else routeTitleDescription.setText("to " + routeDirectionModel.getDirectionDescription());
-
+        } else {
+            routeTitleDescription.setText("to " + routeDirectionModel.getDirectionDescription());
+        }
 
         startStationText.setText(start.getStopName());
         destinationTextView.setText(destination.getStopName());
@@ -304,10 +305,13 @@ public class ScheduleResultsActivity extends AppCompatActivity {
         String favKey = Favorite.generateKey(start, destination, transitType, routeDirectionModel);
         currentFavorite = SeptaServiceFactory.getFavoritesService().getFavoriteByKey(this, favKey);
 
+        // check if already a favorite
         if (menu != null) {
             if (currentFavorite != null) {
                 menu.findItem(R.id.create_favorite).setIcon(R.drawable.ic_favorite_made);
-            } else menu.findItem(R.id.create_favorite).setIcon(R.drawable.ic_favorite_available);
+            } else {
+                menu.findItem(R.id.create_favorite).setIcon(R.drawable.ic_favorite_available);
+            }
         }
     }
 
@@ -338,8 +342,9 @@ public class ScheduleResultsActivity extends AppCompatActivity {
     }
 
     public void saveAsFavorite(final MenuItem item) {
-        if (!item.isEnabled())
+        if (!item.isEnabled()) {
             return;
+        }
 
         item.setEnabled(false);
 
@@ -395,7 +400,9 @@ public class ScheduleResultsActivity extends AppCompatActivity {
                 }).create().show();
             }
 
-        } else item.setEnabled(true);
+        } else {
+            item.setEnabled(true);
+        }
     }
 
     class ScheduleResultsAsyncTask extends AsyncTask<Integer, Void, List<ScheduleModel>> {
@@ -415,14 +422,14 @@ public class ScheduleResultsActivity extends AppCompatActivity {
 
         @Override
         protected List<ScheduleModel> doInBackground(Integer... params) {
-            List<Criteria> criteriaList = new LinkedList<Criteria>();
+            List<Criteria> criteriaList = new LinkedList<>();
             criteriaList.add(new Criteria("start_stop_id", Criteria.Operation.EQ, scheduleResultsActivity.start.getStopId()));
             criteriaList.add(new Criteria("service_id", Criteria.Operation.EQ, params[0]));
             criteriaList.add(new Criteria("direction_id", Criteria.Operation.EQ, scheduleResultsActivity.routeDirectionModel.getDirectionCode()));
             criteriaList.add(new Criteria("end_stop_id", Criteria.Operation.EQ, scheduleResultsActivity.destination.getStopId()));
             criteriaList.add(new Criteria("route_id", Criteria.Operation.EQ, scheduleResultsActivity.routeDirectionModel.getRouteId()));
 
-            List<ScheduleModel> returnList = new ArrayList<ScheduleModel>();
+            List<ScheduleModel> returnList = new ArrayList<>();
             Cursor cursor = scheduleResultsActivity.scheduleCursorAdapterSupplier.getCursor(scheduleResultsActivity, criteriaList);
             if (cursor.moveToFirst()) {
                 do {
@@ -485,8 +492,6 @@ public class ScheduleResultsActivity extends AppCompatActivity {
 
                 if (newDest != null && newStart != null) {
                     found = true;
-                    scheduleResultsActivity.destination = newDest;
-                    scheduleResultsActivity.start = newStart;
                 }
             } else {
                 found = true;

@@ -16,6 +16,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -57,7 +58,8 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
         StationNameAdapter2 adapter;
         private StopModel currentStop;
         private CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
-        View progressView, sortAlphabeticalButton, sortReverseAlphabeticalButton, sortInOrderButton;
+        View progressView, sortInOrderButton;
+        ImageButton sortAlphabeticalButton;
         EditText filterText;
         private boolean isLineAware = false;
         private static final String IS_LINE_AWARE = "IS_LINE_AWARE";
@@ -80,23 +82,7 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
         }
 
         @Override
-        public void onSaveInstanceState(Bundle outState) {
-            super.onSaveInstanceState(outState);
-            if (currentStop != null)
-                Log.d(TAG, this.hashCode() + ":Current Stop is:" + currentStop.getStopName());
-            else Log.d(TAG, this.hashCode() + ":Current Stop is null");
-            outState.putSerializable("Station", currentStop);
-        }
-
-        @Override
-        public void onResume() {
-            Log.d(TAG, "onResume()");
-            super.onResume();
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, final ViewGroup container,
-                                 Bundle savedInstanceState) {
+        public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
             restoreArgs();
             View rootView = inflater.inflate(R.layout.location_picker_by_stop, container, false);
             View sortButtonsContainer = rootView.findViewById(R.id.stop_list_sort_container);
@@ -113,26 +99,23 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
             if (isLineAware) {
                 sortButtonsContainer.setVisibility(View.VISIBLE);
 
-                sortAlphabeticalButton = rootView.findViewById(R.id.stop_list_sort_alphabetical);
-                sortReverseAlphabeticalButton = rootView.findViewById(R.id.stop_list_sort_reverse_alphabetical);
+                sortAlphabeticalButton = (ImageButton) rootView.findViewById(R.id.stop_list_sort_alphabetical);
                 sortInOrderButton = rootView.findViewById(R.id.stop_list_sort_in_order);
 
                 sortAlphabeticalButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        // sort stops alphabetically
-                        sortStopsAlphabetical();
+                        boolean isAlphabetical = LocationPickerUtils.getStopPickerSortOrder(getContext()) == 0;
+
+                        if (isAlphabetical) {
+                            // sort stops reverse alphabetically
+                            sortStopsReverseAlphabetical();
+                        } else {
+                            // sort stops alphabetically
+                            sortStopsAlphabetical();
+                        }
                     }
                 });
-
-                sortReverseAlphabeticalButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        // sort stops reverse alphabetically
-                        sortStopsReverseAlphabetical();
-                    }
-                });
-
 
                 // button to sort stops in order
                 sortInOrderButton.setOnClickListener(new View.OnClickListener() {
@@ -145,6 +128,22 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
             }
 
             return rootView;
+        }
+
+        @Override
+        public void onResume() {
+            super.onResume();
+        }
+
+        @Override
+        public void onSaveInstanceState(Bundle outState) {
+            super.onSaveInstanceState(outState);
+            if (currentStop != null) {
+                Log.d(TAG, this.hashCode() + ":Current Stop is:" + currentStop.getStopName());
+            } else {
+                Log.d(TAG, this.hashCode() + ":Current Stop is null");
+            }
+            outState.putSerializable("Station", currentStop);
         }
 
         @Override
@@ -211,8 +210,8 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
 
             // change selected button background
             sortInOrderButton.setBackgroundResource(R.drawable.button_sort_stops_border);
-            sortReverseAlphabeticalButton.setBackgroundResource(R.drawable.button_sort_stops_border);
             sortAlphabeticalButton.setBackgroundResource(R.drawable.button_sort_stops_selected);
+            sortAlphabeticalButton.setImageResource(R.drawable.ic_sort_alpha);
 
             // save sort order
             LocationPickerUtils.setStopPickerSortOrder(getContext(), 0);
@@ -225,8 +224,8 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
 
             // change selected button background
             sortInOrderButton.setBackgroundResource(R.drawable.button_sort_stops_border);
-            sortAlphabeticalButton.setBackgroundResource(R.drawable.button_sort_stops_border);
-            sortReverseAlphabeticalButton.setBackgroundResource(R.drawable.button_sort_stops_selected);
+            sortAlphabeticalButton.setBackgroundResource(R.drawable.button_sort_stops_selected);
+            sortAlphabeticalButton.setImageResource(R.drawable.ic_sort_reverse_alpha);
 
             // save sort order
             LocationPickerUtils.setStopPickerSortOrder(getContext(), 1);
@@ -238,7 +237,7 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
             this.adapter.notifyDataSetChanged();
 
             // change selected button background
-            sortReverseAlphabeticalButton.setBackgroundResource(R.drawable.button_sort_stops_border);
+            sortAlphabeticalButton.setImageResource(R.drawable.ic_sort_alpha);
             sortAlphabeticalButton.setBackgroundResource(R.drawable.button_sort_stops_border);
             sortInOrderButton.setBackgroundResource(R.drawable.button_sort_stops_selected);
 

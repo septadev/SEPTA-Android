@@ -19,7 +19,7 @@
     <string name="connect_with_septa">Connect With SEPTA</string>
     <string name="train_view">TrainView</string>
     <string name="transit_view">TransitView</string>
-
+    <string name="transit_view_beta">TransitView (Beta)</string>
 
     <!-- Transit Type Tab Names -->
     <string name="tab_rail">Rail</string>
@@ -163,6 +163,13 @@
     <string name="system_status_results_title_trolley">System Status: Trolley</string>
     <string name="system_status_results_title_nhsl">System Status: NHSL</string>
 
+
+    <!-- TransitView -->
+    <string name="transitview_heading">Select Up to 3 Routes</string>
+    <string name="transitview_query_button_text">View Map</string>
+    <string name="transitview_line_picker_first_text">Select a Bus Route or Trolley Line</string>
+    <string name="transitview_line_picker_second_text">Select a Second Bus Route or Trolley Line</string>
+    <string name="transitview_line_picker_third_text">Select a Third Bus Route or Trolley Line</string>
 
     <!-- Schedules -->
     <string name="schedule_query_button_text">View Schedules</string>

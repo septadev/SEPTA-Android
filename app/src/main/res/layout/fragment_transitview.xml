@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/full_page_gradient_background">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -12,20 +13,20 @@
         android:orientation="vertical">
 
         <org.septa.android.app.view.TextView
-            android:id="@+id/picker_header_text"
+            android:id="@+id/transitview_picker_header_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="13dp"
             android:layout_marginLeft="12dp"
             android:layout_marginStart="12dp"
             android:layout_marginTop="12dp"
-            android:text="Regional Rail Schedules"
+            android:text="@string/transitview_heading"
             android:textColor="#144b88"
             android:textSize="20sp"
             app:font="@string/font_roboto_bold" />
 
         <LinearLayout
-            android:id="@+id/top"
+            android:id="@+id/transitview_top"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
@@ -39,8 +40,9 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
+                <!-- TODO: remove this placeholder? -->
                 <org.septa.android.app.view.TextView
-                    android:id="@+id/line_label"
+                    android:id="@+id/transitview_line_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="15dp"
@@ -51,6 +53,7 @@
                     android:text="Line"
                     android:textColor="@color/light_gray"
                     android:textSize="12sp"
+                    android:visibility="gone"
                     app:font="@string/font_roboto_regular" />
 
                 <org.septa.android.app.view.TextView
@@ -72,7 +75,7 @@
             </RelativeLayout>
 
             <org.septa.android.app.view.TextView
-                android:id="@+id/line_text"
+                android:id="@+id/transitview_line_picker_first"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="15dp"
@@ -89,48 +92,50 @@
                 android:paddingRight="13dp"
                 android:paddingStart="10dp"
                 android:paddingTop="15dp"
-                android:text="Select Line" />
+                android:text="@string/transitview_line_picker_first_text" />
 
             <org.septa.android.app.view.TextView
-                android:id="@+id/starting_stop"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp"
-                android:layout_marginTop="20dp"
-                android:alpha=".3"
-                android:background="@drawable/stop_picker_background"
-                android:drawableEnd="@drawable/ic_search"
-                android:drawableRight="@drawable/ic_search"
-                android:paddingBottom="14dp"
-                android:paddingEnd="13dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="13dp"
-                android:paddingStart="10dp"
-                android:paddingTop="15dp"
-                android:text="Starting Stop" />
-
-            <org.septa.android.app.view.TextView
-                android:id="@+id/destination_stop"
+                android:id="@+id/transitview_line_picker_second"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="15dp"
                 android:layout_marginRight="15dp"
                 android:layout_marginTop="10dp"
                 android:alpha=".3"
-                android:background="@drawable/stop_picker_background"
-                android:drawableEnd="@drawable/ic_search"
-                android:drawableRight="@drawable/ic_search"
+                android:background="@drawable/line_picker_background"
+                android:drawableEnd="@drawable/ic_line_picker"
+                android:drawablePadding="10dp"
+                android:drawableRight="@drawable/ic_line_picker"
                 android:paddingBottom="14dp"
                 android:paddingEnd="13dp"
                 android:paddingLeft="10dp"
                 android:paddingRight="13dp"
                 android:paddingStart="10dp"
                 android:paddingTop="15dp"
-                android:text="Destination Stop" />
+                android:text="@string/transitview_line_picker_second_text" />
+
+            <org.septa.android.app.view.TextView
+                android:id="@+id/transitview_line_picker_third"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginTop="10dp"
+                android:alpha=".3"
+                android:background="@drawable/line_picker_background"
+                android:drawableEnd="@drawable/ic_line_picker"
+                android:drawablePadding="10dp"
+                android:drawableRight="@drawable/ic_line_picker"
+                android:paddingBottom="14dp"
+                android:paddingEnd="13dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="13dp"
+                android:paddingStart="10dp"
+                android:paddingTop="15dp"
+                android:text="@string/transitview_line_picker_third_text" />
 
             <Button
-                android:id="@+id/view_buses_button"
+                android:id="@+id/view_map"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_marginBottom="15dp"
@@ -140,7 +145,7 @@
                 android:alpha=".3"
                 android:background="@drawable/button_gradient_background"
                 android:clickable="false"
-                android:text="@string/schedule_query_button_text"
+                android:text="@string/transitview_query_button_text"
                 android:textColor="@android:color/white" />
 
         </LinearLayout>

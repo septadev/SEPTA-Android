@@ -55,6 +55,7 @@ import org.septa.android.app.support.ShakeDetector;
 import org.septa.android.app.systemmap.SystemMapFragment;
 import org.septa.android.app.systemstatus.SystemStatusFragment;
 import org.septa.android.app.systemstatus.SystemStatusState;
+import org.septa.android.app.transitview.TransitViewFragment;
 import org.septa.android.app.view.TextView;
 import org.septa.android.app.webview.WebViewFragment;
 
@@ -87,6 +88,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     Fragment events = null;
     Fragment trainview = null;
     Fragment transitview = null;
+    Fragment transitviewBeta = new TransitViewFragment();
     Fragment connect = new ConnectFragment();
     Fragment about = new AboutFragment();
 
@@ -352,6 +354,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_TRANSIT_VIEW, null, null);
             switchToBundle(item, transitview, R.string.transit_view, 0);
         }
+
+        if (id == R.id.nav_transitview_beta) {
+            // TODO: analytics around use of beta transitview
+//            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_TRANSIT_VIEW, null, null);
+            switchToBundle(item, transitviewBeta, R.string.transit_view, R.drawable.ic_transitview_active);
+        }
         return true;
     }
 
@@ -403,7 +411,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public void gotoSchedules() {
         switchToSchedules(null);
-        //switchToBundle(navigationView.getMenu().findItem(R.id.nav_schedule), schedules, R.string.schedule, R.drawable.ic_schedule_active);
     }
 
     @Override

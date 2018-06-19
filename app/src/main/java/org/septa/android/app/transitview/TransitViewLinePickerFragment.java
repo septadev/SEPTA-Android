@@ -1,4 +1,4 @@
-package org.septa.android.app.locationpicker;
+package org.septa.android.app.transitview;
 
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,31 +27,51 @@ import android.widget.TextView;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
 import org.septa.android.app.domain.RouteDirectionModel;
+import org.septa.android.app.locationpicker.LinePickerCallBack;
 import org.septa.android.app.services.apiinterfaces.model.Alert;
 import org.septa.android.app.support.CursorAdapterSupplier;
 import org.septa.android.app.support.RouteModelComparator;
 import org.septa.android.app.systemstatus.SystemStatusState;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class LinePickerFragment extends DialogFragment {
+public class TransitViewLinePickerFragment extends DialogFragment {
+
+    public static final String TAG = TransitViewLinePickerFragment.class.getSimpleName();
+
     public static final int SUCCESS = 0;
-    public static final String ROUTE_DIRECTION_MODEL = "routeDirectionModel";
-    CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier;
+    public static final String ROUTE_DIRECTION_MODEL = "routeDirectionModel",
+            TROLLEY_ROUTE_CURSOR_ADAPTER_SUPPLIER = "TROLLEY_ROUTE_CURSOR_ADAPTER_SUPPLIER",
+            BUS_ROUTE_CURSOR_ADAPTER_SUPPLIER = "BUS_ROUTE_CURSOR_ADAPTER_SUPPLIER";
+    CursorAdapterSupplier<RouteDirectionModel> trolleyRouteCursorAdapterSupplier;
+    CursorAdapterSupplier<RouteDirectionModel> busRouteCursorAdapterSupplier;
     ListView linesList;
-    LineArrayAdapter lineArrayAdapter;
+    TransitViewLineArrayAdapter transitViewLineArrayAdapter;
     EditText filterText;
-    TransitType transitType;
-    private LinePickerCallBack linePickerCallBack;
+    private TransitViewLinePickerListener mListener;
+
+    public static TransitViewLinePickerFragment newInstance(CursorAdapterSupplier<RouteDirectionModel> busRouteCursorAdapterSupplier, CursorAdapterSupplier<RouteDirectionModel> trolleyRouteCursorAdapterSupplier) {
+        TransitViewLinePickerFragment fragment;
+        fragment = new TransitViewLinePickerFragment();
+
+        Bundle args = new Bundle();
+        args.putSerializable(BUS_ROUTE_CURSOR_ADAPTER_SUPPLIER, busRouteCursorAdapterSupplier);
+        args.putSerializable(TROLLEY_ROUTE_CURSOR_ADAPTER_SUPPLIER, trolleyRouteCursorAdapterSupplier);
+
+        fragment.setArguments(args);
+
+        return fragment;
+    }
 
     @Override
     public void onResume() {
         ViewGroup.LayoutParams params = getDialog().getWindow().getAttributes();
         params.width = WindowManager.LayoutParams.MATCH_PARENT;
         params.height = WindowManager.LayoutParams.MATCH_PARENT;
-        getDialog().getWindow().setAttributes((android.view.WindowManager.LayoutParams) params);
+        getDialog().getWindow().setAttributes((WindowManager.LayoutParams) params);
 
         super.onResume();
     }
@@ -76,12 +97,19 @@ public class LinePickerFragment extends DialogFragment {
         linesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                if (linePickerCallBack != null) {
-                    linePickerCallBack.setRoute(lineArrayAdapter.getItem(i));
-                } else if (getTargetFragment() != null) {
+                if (getTargetFragment() != null) {
+//                    Log.e(TAG, "Passing back RouteDirectionModel using onActivityResult"); // TODO: remove
+
                     Intent intent = new Intent();
-                    intent.putExtra(ROUTE_DIRECTION_MODEL, lineArrayAdapter.getItem(i));
+                    intent.putExtra(ROUTE_DIRECTION_MODEL, transitViewLineArrayAdapter.getItem(i));
                     getTargetFragment().onActivityResult(getTargetRequestCode(), SUCCESS, intent);
+//                } else if (mListener != null) {
+//                    Log.e(TAG, "Passing back RouteDirectionModel using listener"); // TODO: remove
+//
+//                    mListener.selectFirstRoute(transitViewLineArrayAdapter.getItem(i));
+//                    // TODO: handle second and third route -- should try to always pass back result using onActivityResult
+                } else {
+                    Log.e(TAG, "Could not pass back RouteDirectionModel result"); // TODO: remove
                 }
                 dismiss();
             }
@@ -89,7 +117,6 @@ public class LinePickerFragment extends DialogFragment {
         });
         PopulateRouteListTask task = new PopulateRouteListTask(this);
         task.execute();
-
 
         filterText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -99,8 +126,8 @@ public class LinePickerFragment extends DialogFragment {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if (lineArrayAdapter != null)
-                    lineArrayAdapter.getFilter().filter(charSequence.toString());
+                if (transitViewLineArrayAdapter != null)
+                    transitViewLineArrayAdapter.getFilter().filter(charSequence.toString());
             }
 
             @Override
@@ -112,55 +139,34 @@ public class LinePickerFragment extends DialogFragment {
 
     }
 
-    public static LinePickerFragment newInstance(CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier, TransitType transitType) {
-        LinePickerFragment fragment;
-        fragment = new LinePickerFragment();
-
-        Bundle args = new Bundle();
-        args.putSerializable("transitType", transitType);
-        args.putSerializable("routeCursorAdapterSupplier", routeCursorAdapterSupplier);
-
-        fragment.setArguments(args);
-
-        return fragment;
-    }
-
-    private void restoreArgs() {
-        transitType = (TransitType) getArguments().getSerializable("transitType");
-        routeCursorAdapterSupplier = (CursorAdapterSupplier<RouteDirectionModel>) getArguments().getSerializable("routeCursorAdapterSupplier");
-    }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
 
         if ((context instanceof LinePickerCallBack)) {
-            linePickerCallBack = (LinePickerCallBack) context;
+            mListener = (TransitViewLinePickerListener) context;
         }
-
     }
 
-    public void setTransitType(TransitType transitType) {
-        this.transitType = transitType;
+    private void restoreArgs() {
+        busRouteCursorAdapterSupplier = (CursorAdapterSupplier<RouteDirectionModel>) getArguments().getSerializable(BUS_ROUTE_CURSOR_ADAPTER_SUPPLIER);
+        trolleyRouteCursorAdapterSupplier = (CursorAdapterSupplier<RouteDirectionModel>) getArguments().getSerializable(TROLLEY_ROUTE_CURSOR_ADAPTER_SUPPLIER);
     }
 
-    static class LineArrayAdapter extends ArrayAdapter<RouteDirectionModel> implements Filterable {
+    static class TransitViewLineArrayAdapter extends ArrayAdapter<RouteDirectionModel> implements Filterable {
 
         List<RouteDirectionModel> origRoutes;
         List<RouteDirectionModel> filterRoutes;
-        TransitType transitType;
 
-        public LineArrayAdapter(Context context, List<RouteDirectionModel> routes, TransitType transitType) {
+        public TransitViewLineArrayAdapter(Context context, List<RouteDirectionModel> routes) {
             super(context, 0, routes);
             this.origRoutes = routes;
             this.filterRoutes = routes;
-            this.transitType = transitType;
         }
 
         @NonNull
         @Override
-        public View getView(int position, @Nullable View convertView,
-                            @NonNull ViewGroup parent) {
+        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
             if (convertView == null) {
                 LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 convertView = inflater.inflate(R.layout.item_line_picker, null);
@@ -171,20 +177,19 @@ public class LinePickerFragment extends DialogFragment {
                 TextView titleText = (TextView) convertView.findViewById(R.id.line_title);
                 TextView descText = (TextView) convertView.findViewById(R.id.line_desc);
                 ImageView lineIcon = (ImageView) convertView.findViewById(R.id.route_icon);
+
+                // set lineIcon based on whether the route is a bus or trolley
+                TransitType transitType = TransitType.BUS;
+                String[] trolleyRouteIds = new String[]{"10", "11", "13", "15", "34", "36", "101", "102"};
+                if (Arrays.asList(trolleyRouteIds).contains(route.getRouteId())) {
+                    transitType = TransitType.TROLLEY;
+                }
                 lineIcon.setImageResource(transitType.getIconForLine(route.getRouteId(), getContext()));
 
-                if (transitType == TransitType.TROLLEY || transitType == TransitType.BUS) {
-                    titleText.setText(route.getRouteShortName() + " " + route.getRouteLongName());
-                } else {
-                    titleText.setText(route.getRouteLongName());
-                }
+                titleText.setText(route.getRouteShortName() + " " + route.getRouteLongName());
 
                 if (route.getDirectionDescription() != null) {
-                    if (transitType == TransitType.RAIL) {
-                        descText.setText(route.getDirectionDescription());
-                    } else {
-                        descText.setText("to " + route.getDirectionDescription());
-                    }
+                    descText.setText("to " + route.getDirectionDescription());
                     descText.setVisibility(View.VISIBLE);
                 } else {
                     descText.setText(R.string.empty_string);
@@ -243,7 +248,7 @@ public class LinePickerFragment extends DialogFragment {
                         return filterResults;
                     }
 
-                    ArrayList<RouteDirectionModel> tempList = new ArrayList<RouteDirectionModel>();
+                    ArrayList<RouteDirectionModel> tempList = new ArrayList<>();
 
                     String constraintString = constraint.toString().toLowerCase();
 
@@ -276,7 +281,6 @@ public class LinePickerFragment extends DialogFragment {
             };
         }
 
-
         static boolean safeContains(String target, String input) {
             if (target == null) {
                 return false;
@@ -288,26 +292,41 @@ public class LinePickerFragment extends DialogFragment {
     }
 
     private static class PopulateRouteListTask extends AsyncTask<Void, Void, List<RouteDirectionModel>> {
-        LinePickerFragment fragment;
+        TransitViewLinePickerFragment fragment;
 
-        public PopulateRouteListTask(LinePickerFragment fragment) {
+        public PopulateRouteListTask(TransitViewLinePickerFragment fragment) {
             this.fragment = fragment;
         }
 
         @Override
         protected List<RouteDirectionModel> doInBackground(Void... voids) {
-
-            List<RouteDirectionModel> routes = new ArrayList<RouteDirectionModel>();
-            if (fragment.getActivity() == null)
+            List<RouteDirectionModel> routes = new ArrayList<>();
+            if (fragment.getActivity() == null) {
                 return routes;
-            Cursor cursor = fragment.routeCursorAdapterSupplier.getCursor(fragment.getActivity(), null);
+            }
+
+            // populate buses
+            Cursor cursor = fragment.busRouteCursorAdapterSupplier.getCursor(fragment.getActivity(), null);
             if (cursor != null) {
                 if (cursor.moveToFirst()) {
-
                     do {
-                        RouteDirectionModel route = fragment.routeCursorAdapterSupplier.getCurrentItemFromCursor(cursor);
-                        if (route != null)
-                            routes.add(fragment.routeCursorAdapterSupplier.getCurrentItemFromCursor(cursor));
+                        RouteDirectionModel route = fragment.busRouteCursorAdapterSupplier.getCurrentItemFromCursor(cursor);
+                        if (route != null) {
+                            routes.add(fragment.busRouteCursorAdapterSupplier.getCurrentItemFromCursor(cursor));
+                        }
+                    } while (cursor.moveToNext());
+                }
+            }
+
+            // populate trolleys
+            cursor = fragment.trolleyRouteCursorAdapterSupplier.getCursor(fragment.getActivity(), null);
+            if (cursor != null) {
+                if (cursor.moveToFirst()) {
+                    do {
+                        RouteDirectionModel route = fragment.trolleyRouteCursorAdapterSupplier.getCurrentItemFromCursor(cursor);
+                        if (route != null) {
+                            routes.add(fragment.trolleyRouteCursorAdapterSupplier.getCurrentItemFromCursor(cursor));
+                        }
                     } while (cursor.moveToNext());
                 }
             }
@@ -319,10 +338,18 @@ public class LinePickerFragment extends DialogFragment {
         protected void onPostExecute(List<RouteDirectionModel> routeDirectionModels) {
             Collections.sort(routeDirectionModels, new RouteModelComparator());
             if (fragment.getContext() != null) {
-                fragment.lineArrayAdapter = new LineArrayAdapter(fragment.getContext(), routeDirectionModels, fragment.transitType);
-                fragment.linesList.setAdapter(fragment.lineArrayAdapter);
-                fragment.lineArrayAdapter.getFilter().filter(fragment.filterText.getText());
+                fragment.transitViewLineArrayAdapter = new TransitViewLineArrayAdapter(fragment.getContext(), routeDirectionModels);
+                fragment.linesList.setAdapter(fragment.transitViewLineArrayAdapter);
+                fragment.transitViewLineArrayAdapter.getFilter().filter(fragment.filterText.getText());
             }
         }
+    }
+
+    public interface TransitViewLinePickerListener {
+        void selectFirstRoute(RouteDirectionModel route);
+
+        void selectSecondRoute(RouteDirectionModel route);
+
+        void selectThirdRoute(RouteDirectionModel route);
     }
 }

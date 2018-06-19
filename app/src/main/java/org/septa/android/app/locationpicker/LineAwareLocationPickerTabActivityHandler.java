@@ -29,11 +29,6 @@ import org.septa.android.app.support.CursorAdapterSupplier;
 import java.util.ArrayList;
 import java.util.List;
 
-
-/**
- * Created by jkampf on 7/29/17.
- */
-
 public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHandler {
     CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier;
     CursorAdapterSupplier<StopModel> stopCursorAdapterSupplier;
@@ -202,7 +197,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                 public void onClick(View view) {
                     selectedRoute = null;
                     lineText.setText(transitType.getString("line_text", getContext()));
-                    lineText.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
+                    lineText.setCompoundDrawablesWithIntrinsicBounds(null, null, ContextCompat.getDrawable(getContext(), R.drawable.ic_line_picker), null);
                     startingStation = null;
                     disableView(startingStopEditText);
                     startingStopEditText.setText(transitType.getString("start_stop_text", getContext()));
@@ -266,8 +261,9 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
         @Override
         public void setRoute(RouteDirectionModel var1) {
             selectedRoute = var1;
-            if (getContext() == null)
+            if (getContext() == null) {
                 return;
+            }
             //lineText.setText(selectedRoute.getRouteLongName());
             int color;
             try {
@@ -280,8 +276,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
             Drawable bullet = ContextCompat.getDrawable(getContext(), R.drawable.shape_line_marker);
             bullet.setColorFilter(color, PorterDuff.Mode.SRC);
 
-            lineText.setCompoundDrawablesWithIntrinsicBounds(bullet, drawables[1],
-                    drawables[2], drawables[3]);
+            lineText.setCompoundDrawablesWithIntrinsicBounds(bullet, drawables[1], drawables[2], drawables[3]);
 
             if (transitType == TransitType.RAIL) {
                 lineText.setText(selectedRoute.getRouteId() + " " + selectedRoute.getDirectionDescription());
@@ -342,7 +337,6 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                 setDestinationStop(destinationStation);
         }
     }
-
 
     public static class StopPickerOnTouchListener implements View.OnTouchListener {
         private PlaceholderFragment parent;

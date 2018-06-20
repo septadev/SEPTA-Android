@@ -8,8 +8,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
-import android.hardware.Sensor;
-import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -34,10 +32,10 @@ import org.septa.android.app.about.AboutFragment;
 import org.septa.android.app.connect.ConnectFragment;
 import org.septa.android.app.database.update.CheckForLatestDB;
 import org.septa.android.app.database.update.CleanOldDB;
+import org.septa.android.app.database.update.DatabaseSharedPrefsUtils;
 import org.septa.android.app.database.update.DatabaseUpgradeUtils;
 import org.septa.android.app.database.update.DownloadNewDB;
 import org.septa.android.app.database.update.ExpandDBZip;
-import org.septa.android.app.database.update.DatabaseSharedPrefsUtils;
 import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.fares.FaresFragment;
@@ -51,7 +49,6 @@ import org.septa.android.app.services.apiinterfaces.model.AlertDetail;
 import org.septa.android.app.services.apiinterfaces.model.Favorite;
 import org.septa.android.app.support.AnalyticsManager;
 import org.septa.android.app.support.CrashlyticsManager;
-import org.septa.android.app.support.ShakeDetector;
 import org.septa.android.app.systemmap.SystemMapFragment;
 import org.septa.android.app.systemstatus.SystemStatusFragment;
 import org.septa.android.app.systemstatus.SystemStatusState;
@@ -98,9 +95,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     // shake detector used for crashing the app purposefully
     // TODO: comment out when releasing to production
-    private SensorManager mSensorManager;
-    private Sensor mAccelerometer;
-    private ShakeDetector mShakeDetector;
+//    private SensorManager mSensorManager;
+//    private Sensor mAccelerometer;
+//    private ShakeDetector mShakeDetector;
 
     public static final String MOBILE_APP_ALERT_ROUTE_NAME = "Mobile APP",
             MOBILE_APP_ALERT_MODE = "MOBILE",
@@ -143,15 +140,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // TODO: comment out when releasing to production
         // ShakeDetector initialization
-        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        mShakeDetector = new ShakeDetector();
-        mShakeDetector.setOnShakeListener(new ShakeDetector.OnShakeListener() {
-            @Override
-            public void onShake(int count) {
-                handleShakeEvent(count);
-            }
-        });
+//        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+//        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+//        mShakeDetector = new ShakeDetector();
+//        mShakeDetector.setOnShakeListener(new ShakeDetector.OnShakeListener() {
+//            @Override
+//            public void onShake(int count) {
+//                handleShakeEvent(count);
+//            }
+//        });
     }
 
     @Override
@@ -160,7 +157,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // TODO: comment out when releasing to production
         // re-register the shake detector on resume
-        mSensorManager.registerListener(mShakeDetector, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
+//        mSensorManager.registerListener(mShakeDetector, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
 
         // note that generic alert will show up before mobile app alert bc it was the most recently added
 
@@ -246,7 +243,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // TODO: comment out when releasing to production
         // unregister the shake detector on pause
-        mSensorManager.unregisterListener(mShakeDetector);
+//        mSensorManager.unregisterListener(mShakeDetector);
 
         // prevent stacking alertdialogs
         if (genericAlert != null) {

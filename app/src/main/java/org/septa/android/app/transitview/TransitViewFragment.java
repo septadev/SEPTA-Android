@@ -21,20 +21,27 @@ import org.septa.android.app.TransitType;
 import org.septa.android.app.database.DatabaseManager;
 import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.support.CursorAdapterSupplier;
+import org.septa.android.app.support.RouteModelComparator;
 import org.septa.android.app.view.TextView;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class TransitViewFragment extends Fragment implements TransitViewLinePickerFragment.TransitViewLinePickerListener {
 
     private static final String TAG = TransitViewFragment.class.getSimpleName();
 
-    RouteDirectionModel firstRoute, secondRoute, thirdRoute;
-    CursorAdapterSupplier<RouteDirectionModel> busRouteCursorAdapterSupplier, trolleyRouteCursorAdapterSupplier;
+    private RouteDirectionModel firstRoute, secondRoute, thirdRoute;
+    private CursorAdapterSupplier<RouteDirectionModel> busRouteCursorAdapterSupplier, trolleyRouteCursorAdapterSupplier;
+    public static final String TRANSITVIEW_ROUTE_FIRST = "TRANSITVIEW_ROUTE_FIRST",
+            TRANSITVIEW_ROUTE_SECOND = "TRANSITVIEW_ROUTE_SECOND",
+            TRANSITVIEW_ROUTE_THIRD = "TRANSITVIEW_ROUTE_THIRD";
 
     // layout variables
-    TextView firstRoutePicker, secondRoutePicker, thirdRoutePicker;
-    View queryButton;
+    private TextView firstRoutePicker, secondRoutePicker, thirdRoutePicker;
+    private View queryButton;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -129,6 +136,8 @@ public class TransitViewFragment extends Fragment implements TransitViewLinePick
             public void onClick(View view) {
                 // TODO: go to TransitViewResultsActivity
                 Log.e(TAG, "TransitView query button clicked!");
+
+                goToTransitViewResults();
             }
         });
 
@@ -231,4 +240,19 @@ public class TransitViewFragment extends Fragment implements TransitViewLinePick
         return Arrays.asList(trolleyRouteIds).contains(routeId);
     }
 
+    private void goToTransitViewResults() {
+        Intent intent = new Intent(getActivity(), TransitViewResultsActivity.class);
+
+        // sort the routes
+        List<RouteDirectionModel> selectedRoutes = new ArrayList<>();
+        selectedRoutes.add(firstRoute);
+        selectedRoutes.add(secondRoute);
+        selectedRoutes.add(thirdRoute);
+        Collections.sort(selectedRoutes, new RouteModelComparator());
+
+        intent.putExtra(TRANSITVIEW_ROUTE_FIRST, selectedRoutes.get(0));
+        intent.putExtra(TRANSITVIEW_ROUTE_SECOND, selectedRoutes.get(1));
+        intent.putExtra(TRANSITVIEW_ROUTE_THIRD, selectedRoutes.get(2));
+        startActivity(intent);
+    }
 }

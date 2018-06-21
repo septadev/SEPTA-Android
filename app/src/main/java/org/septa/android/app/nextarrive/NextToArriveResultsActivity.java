@@ -50,9 +50,9 @@ import org.septa.android.app.database.DatabaseManager;
 import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.favorites.DeleteFavoritesAsyncTask;
+import org.septa.android.app.favorites.SaveFavoritesAsyncTask;
 import org.septa.android.app.favorites.edit.RenameFavoriteCallBack;
 import org.septa.android.app.favorites.edit.RenameFavoriteDialogFragment;
-import org.septa.android.app.favorites.SaveFavoritesAsyncTask;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Favorite;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalDetails;
@@ -77,9 +77,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
- * Created by jkampf on 8/3/17.
- */
 
 public class NextToArriveResultsActivity extends AppCompatActivity implements OnMapReadyCallback, RenameFavoriteCallBack, Runnable {
     public static final String TAG = NextToArriveResultsActivity.class.getSimpleName();
@@ -348,20 +345,22 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
                                 task.execute(currentFavorite.getKey());
                             }
-                        }).setNegativeButton(R.string.delete_fav_neg_button, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        item.setEnabled(true);
-                    }
-                }).create().show();
+                        })
+                        .setNegativeButton(R.string.delete_fav_neg_button, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                item.setEnabled(true);
+                            }
+                        }).create().show();
             }
 
-        } else item.setEnabled(true);
+        } else {
+            item.setEnabled(true);
+        }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-
         if (!editFavoritesFlag) {
             getMenuInflater().inflate(R.menu.favorite_menu, menu);
             if (currentFavorite != null) {

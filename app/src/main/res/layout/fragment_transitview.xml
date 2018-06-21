@@ -40,22 +40,6 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <!-- TODO: remove this placeholder? -->
-                <org.septa.android.app.view.TextView
-                    android:id="@+id/transitview_line_label"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="15dp"
-                    android:layout_marginStart="15dp"
-                    android:layout_marginTop="13dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:text="Line"
-                    android:textColor="@color/light_gray"
-                    android:textSize="12sp"
-                    android:visibility="gone"
-                    app:font="@string/font_roboto_regular" />
-
                 <org.septa.android.app.view.TextView
                     android:id="@+id/reset_button"
                     android:layout_width="wrap_content"

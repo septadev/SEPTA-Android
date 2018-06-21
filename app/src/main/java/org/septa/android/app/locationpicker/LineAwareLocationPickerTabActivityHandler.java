@@ -355,8 +355,9 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
         public boolean onTouch(View view, MotionEvent motionEvent) {
             int action = motionEvent.getActionMasked();
             if (action == MotionEvent.ACTION_UP) {
-                if (userAfter && parent.startingStation == null)
+                if (userAfter && parent.startingStation == null) {
                     return true;
+                }
 
                 FragmentTransaction ft = parent.getFragmentManager().beginTransaction();
                 Fragment prev = parent.getFragmentManager().findFragmentByTag("dialog");
@@ -366,8 +367,9 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                 ft.addToBackStack(null);
 
                 String stopId = null;
-                if (parent.startingStation != null)
+                if (parent.startingStation != null) {
                     stopId = parent.startingStation.getStopId();
+                }
                 CursorAdapterSupplier<StopModel> routeSpecificCursorAdapterSupplier =
                         new RouteSpecificCursorAdapterSupplier(cursorAdapterSupplier, parent.selectedRoute.getRouteId(),
                                 parent.selectedRoute.getDirectionCode(), stopId, userAfter);

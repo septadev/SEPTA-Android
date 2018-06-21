@@ -11,7 +11,16 @@ import android.view.View;
 
 import org.septa.android.app.R;
 import org.septa.android.app.domain.RouteDirectionModel;
+import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
+import org.septa.android.app.services.apiinterfaces.model.TransitViewModelResponse;
 import org.septa.android.app.view.TextView;
+
+import java.util.List;
+import java.util.Map;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class TransitViewResultsActivity extends AppCompatActivity implements Runnable {
 
@@ -146,6 +155,8 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
             activateView(addLabel);
         }
         routeIds = routeIdBuilder.toString();
+
+        refreshData();
     }
 
     private void disableView(View view) {
@@ -159,8 +170,40 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
     }
 
     private void refreshData() {
-        // TODO: refresh the data
-        Log.e(TAG, "Refreshing TransitView data for " + routeIds); // TODO: remove
+        Log.d(TAG, "Refreshing TransitView data for " + routeIds);
+
+        SeptaServiceFactory.getTransitViewService().getTransitViewResults(routeIds).enqueue(new Callback<TransitViewModelResponse>() {
+            @Override
+            public void onResponse(Call<TransitViewModelResponse> call, Response<TransitViewModelResponse> response) {
+                Map<String, List<TransitViewModelResponse.TransitViewRecord>> routesMap = response.body().getResults().get(0);
+
+                List<TransitViewModelResponse.TransitViewRecord> firstRoutesResults = routesMap.get(firstRoute.getRouteId()),
+                        secondRoutesResults, thirdRoutesResults;
+                Log.e(TAG, firstRoutesResults.toString()); // TODO: remove
+
+                if (secondRoute != null) {
+                    secondRoutesResults = routesMap.get(secondRoute.getRouteId());
+                    Log.e(TAG, secondRoutesResults.toString()); // TODO: remove
+                }
+
+                if (thirdRoute != null) {
+                    thirdRoutesResults = routesMap.get(thirdRoute.getRouteId());
+                    Log.e(TAG, thirdRoutesResults.toString()); // TODO: remove
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<TransitViewModelResponse> call, Throwable t) {
+                Log.e(TAG, "No TransitView results found", t);
+                showNoResultsFoundErrorMessage(); // TODO: how should this be handled
+            }
+        });
+    }
+
+    private void showNoResultsFoundErrorMessage() {
+        // show error message and hide
+        Log.e(TAG, "No TransitView results found");
     }
 
 }

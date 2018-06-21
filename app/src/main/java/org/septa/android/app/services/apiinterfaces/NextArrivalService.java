@@ -7,10 +7,6 @@ import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 
-/**
- * Created by jkampf on 8/20/17.
- */
-
 public interface NextArrivalService {
 
     @GET("/prod/realtimearrivals")

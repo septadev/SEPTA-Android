@@ -7,10 +7,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Created by jkampf on 8/20/17.
- */
-
 public class NextArrivalModelResponse implements Serializable {
     @SerializedName("origin")
     private int startStationId;

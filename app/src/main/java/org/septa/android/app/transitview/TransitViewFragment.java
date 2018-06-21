@@ -243,16 +243,24 @@ public class TransitViewFragment extends Fragment implements TransitViewLinePick
     private void goToTransitViewResults() {
         Intent intent = new Intent(getActivity(), TransitViewResultsActivity.class);
 
-        // sort the routes
+        // sort the routes and append null routes to the end
         List<RouteDirectionModel> selectedRoutes = new ArrayList<>();
         selectedRoutes.add(firstRoute);
-        selectedRoutes.add(secondRoute);
-        selectedRoutes.add(thirdRoute);
+        if (secondRoute != null) {
+            selectedRoutes.add(secondRoute);
+        }
+        if (thirdRoute != null) {
+            selectedRoutes.add(thirdRoute);
+        }
         Collections.sort(selectedRoutes, new RouteModelComparator());
+        while (selectedRoutes.size() < 3) {
+            selectedRoutes.add(null);
+        }
 
         intent.putExtra(TRANSITVIEW_ROUTE_FIRST, selectedRoutes.get(0));
         intent.putExtra(TRANSITVIEW_ROUTE_SECOND, selectedRoutes.get(1));
         intent.putExtra(TRANSITVIEW_ROUTE_THIRD, selectedRoutes.get(2));
         startActivity(intent);
     }
+
 }

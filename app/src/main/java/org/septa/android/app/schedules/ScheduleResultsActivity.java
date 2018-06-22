@@ -23,6 +23,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 
 import org.septa.android.app.Constants;
 import org.septa.android.app.R;
@@ -116,7 +117,7 @@ public class ScheduleResultsActivity extends AppCompatActivity {
 
         setUpHeaders();
 
-        findViewById(R.id.line_station_layout).getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+        ((RelativeLayout) findViewById(R.id.line_station_layout)).getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
                 startStationText.setRight(reverseTripLabel.getLeft());

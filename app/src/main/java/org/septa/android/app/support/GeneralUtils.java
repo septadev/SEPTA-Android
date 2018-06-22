@@ -1,5 +1,13 @@
 package org.septa.android.app.support;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -47,6 +55,38 @@ public class GeneralUtils {
     public static String updateUrls(String inString){
         String outString = inString.replace("href=\"/", "href=\"http://www.septa.org/");
         return outString;
+    }
+
+    public static String readRawTextFile(Context ctx, int resId) {
+        InputStream inputStream = ctx.getResources().openRawResource(resId);
+        InputStreamReader inputreader = new InputStreamReader(inputStream);
+        BufferedReader buffreader = new BufferedReader(inputreader);
+        String line;
+        StringBuilder text = new StringBuilder();
+        try {
+            while (( line = buffreader.readLine()) != null) {
+                text.append(line);
+                text.append("\n");
+            }
+        } catch (IOException e) {
+            return null;
+        }
+        return text.toString();
+    }
+
+    public static boolean isConnectedToInternet(Context context) {
+        ConnectivityManager connectivity = (ConnectivityManager) context.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivity != null) {
+            NetworkInfo[] info = connectivity.getAllNetworkInfo();
+            if (info != null) {
+                for (NetworkInfo anInfo : info) {
+                    if (anInfo.getState() == NetworkInfo.State.CONNECTED) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
 }

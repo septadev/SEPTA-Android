@@ -7,6 +7,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
@@ -98,24 +99,24 @@ public class MapUtils {
 
             return new KmlLayer(googleMap, new ByteArrayInputStream(writer.toString().getBytes()), context);
         } catch (XmlPullParserException e) {
-            e.printStackTrace();
+            Log.e(TAG, e.toString());
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(TAG, e.toString());
         } catch (ParserConfigurationException e) {
-            e.printStackTrace();
+            Log.e(TAG, e.toString());
         } catch (SAXException e) {
-            e.printStackTrace();
+            Log.e(TAG, e.toString());
         } catch (XPathExpressionException e) {
-            e.printStackTrace();
+            Log.e(TAG, e.toString());
         } catch (TransformerConfigurationException e) {
-            e.printStackTrace();
+            Log.e(TAG, e.toString());
         } catch (TransformerException e) {
-            e.printStackTrace();
+            Log.e(TAG, e.toString());
         } finally {
             if (raw != null) try {
                 raw.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.e(TAG, e.toString());
             }
         }
         return null;
@@ -159,7 +160,7 @@ public class MapUtils {
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    Log.e(TAG, e.toString());
                 }
             }
 
@@ -172,7 +173,7 @@ public class MapUtils {
                         return builder.toString();
                     }
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Log.e(TAG, e.toString());
                 }
             }
 

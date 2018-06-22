@@ -86,8 +86,9 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
                                  Bundle savedInstanceState) {
             final View rootView = inflater.inflate(R.layout.location_picker_by_address, container, false);
 
-            if (getActivity() == null)
+            if (getActivity() == null) {
                 return rootView;
+            }
 
             restoreArgs();
             stopsListView = (ListView) rootView.findViewById(R.id.stop_list);
@@ -100,9 +101,7 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
             addressEntry = (AutoCompleteTextView) rootView.findViewById(R.id.address_text);
             int permissionCheck = ContextCompat.checkSelfPermission(getActivity(),
                     Manifest.permission.ACCESS_FINE_LOCATION);
-            if (permissionCheck == PackageManager.PERMISSION_GRANTED)
-
-            {
+            if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
                 Task<Location> locationTask = LocationServices.getFusedLocationProviderClient(getActivity()).getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
                     @Override
                     public void onSuccess(Location location) {
@@ -138,7 +137,6 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
                 addressEntry.setCompoundDrawablesWithIntrinsicBounds(drawables[0], drawables[1], ContextCompat.getDrawable(getContext(), R.drawable.ic_gps_not_fixed_black_24_px), drawables[3]);
             }
 
-
             addressEntry.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -154,7 +152,6 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
                     findAddressTask.execute(args);
                 }
             });
-
 
             addressEntry.setOnKeyListener(new View.OnKeyListener() {
                 public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -179,7 +176,6 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
                 }
             });
 
-
             return rootView;
         }
 
@@ -188,7 +184,6 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
         }
     }
 
-
     static class FindClosestStationTask extends AsyncTask<LatLng, Void, List<StopModelWithDistance>> {
 
         ByAddressFragment fragment;
@@ -196,7 +191,6 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
         FindClosestStationTask(ByAddressFragment fragment) {
             this.fragment = fragment;
         }
-
 
         @Override
         protected List<StopModelWithDistance> doInBackground(LatLng... locations) {
@@ -242,7 +236,7 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
         protected void onPostExecute(final List<StopModelWithDistance> stopModels) {
             if (fragment.getActivity() == null)
                 return;
-            fragment.stopsListView.setAdapter(new StopListAdapater(fragment.getActivity(), stopModels));
+            fragment.stopsListView.setAdapter(new StopListAdapter(fragment.getActivity(), stopModels));
             fragment.stopsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -311,10 +305,10 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
         }
     }
 
-    static class StopListAdapater extends ArrayAdapter<StopModelWithDistance> {
+    static class StopListAdapter extends ArrayAdapter<StopModelWithDistance> {
 
 
-        public StopListAdapater(@NonNull Context context, @NonNull List<StopModelWithDistance> objects) {
+        public StopListAdapter(@NonNull Context context, @NonNull List<StopModelWithDistance> objects) {
             super(context, 0, objects);
         }
 
@@ -334,7 +328,6 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
             return convertView;
 
         }
-
 
     }
 
@@ -361,9 +354,7 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
             return MapUtils.getLocationFromAddress(fragment.getActivity(), strings[0]);
         }
 
-
     }
-
 
     static class StopModelWithDistance implements Comparable<StopModelWithDistance> {
         Double distance;

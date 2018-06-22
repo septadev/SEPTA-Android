@@ -6,11 +6,13 @@ import android.support.v4.app.Fragment;
  * Created by jkampf on 7/29/17.
  */
 
-public interface TabActivityHandler
-{
+public interface TabActivityHandler {
 
-    public String getTabTitle();
-    public Fragment getFragment();
-    public Integer getInactiveDrawableId();
-    public Integer getActiveDrawableId();
+    String getTabTitle();
+
+    Fragment getFragment();
+
+    Integer getInactiveDrawableId();
+
+    Integer getActiveDrawableId();
 }

@@ -2,6 +2,7 @@ package org.septa.android.app.services.apiinterfaces;
 
 import android.app.Activity;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 
 import org.septa.android.app.R;
@@ -153,8 +154,7 @@ public class SeptaServiceFactory {
                     try {
                         activity.onBackPressed();
                     } catch (Exception e) {
-                        e.printStackTrace();
-
+                        Log.e(TAG, e.toString());
                     }
                 }
             });
@@ -167,7 +167,7 @@ public class SeptaServiceFactory {
     }
 
     public interface SeptaServiceFactoryCallBacks {
-        public void gotoSchedules();
+        void gotoSchedules();
     }
 
 }

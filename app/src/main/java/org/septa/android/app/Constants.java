@@ -1,9 +1,5 @@
 package org.septa.android.app;
 
-/**
- * Created by jkampf on 8/28/17.
- */
-
 public interface Constants {
     String TRANSIT_TYPE = "transit_type";
     String ROUTE_DIRECTION_MODEL = "line_id";

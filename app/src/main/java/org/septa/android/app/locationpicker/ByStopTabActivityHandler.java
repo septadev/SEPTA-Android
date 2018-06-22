@@ -59,7 +59,7 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
         private StopModel currentStop;
         private CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
         View progressView;
-        StationNameAdapter2 itemAdapater2;
+        StationNameAdapter2 itemAdapter2;
 
         private static final int URL_LOADER = 0;
 
@@ -109,7 +109,7 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
                 public void handleMessage(Message msg) {
                     Log.d(TAG, "handleMessage");
                     if (msg.what == 0) {
-                        list.setAdapter(itemAdapater2);
+                        list.setAdapter(itemAdapter2);
                         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                             @Override
                             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -133,7 +133,7 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
             new AsyncTask<Void, Void, Void>() {
                 @Override
                 protected Void doInBackground(Void... voids) {
-                    Log.d(TAG, "creating cursor Adapater");
+                    Log.d(TAG, "creating cursor Adapter");
                     List<StopModel> stops = new ArrayList<StopModel>();
                     Context context = getContext();
                     if (context == null)
@@ -145,9 +145,9 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
                             stops.add(stop);
                         } while (c.moveToNext());
                     }
-                    itemAdapater2 =
+                    itemAdapter2 =
                             new StationNameAdapter2(context, stops);
-                    Log.d(TAG, "creating cursor Adapater - Done");
+                    Log.d(TAG, "creating cursor Adapter - Done");
                     h.sendEmptyMessage(0);
                     return null;
                 }
@@ -163,8 +163,8 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
 
                 @Override
                 public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                    if (itemAdapater2 != null)
-                        itemAdapater2.getFilter().filter(charSequence.toString());
+                    if (itemAdapter2 != null)
+                        itemAdapter2.getFilter().filter(charSequence.toString());
                 }
 
                 @Override
@@ -239,7 +239,7 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
 
                 @SuppressWarnings("unchecked")
                 @Override
-                protected void publishResults(CharSequence contraint, FilterResults results) {
+                protected void publishResults(CharSequence constraint, FilterResults results) {
                     filterRoutes = (List<StopModel>) results.values;
                     if (results.count > 0) {
                         notifyDataSetChanged();

@@ -254,9 +254,9 @@ public class NextToArriveTripView extends FrameLayout {
         departureCal.setTime(unit.getOrigDepartureTime());
         departureCal.add(Calendar.MINUTE, unit.getOrigDelayMinutes());
 
-        long origDepatureMillis = departureCal.getTimeInMillis() - System.currentTimeMillis();
-        if (origDepatureMillis >= 1000 * 60)
-            origDepartureTime.setText(GeneralUtils.getDurationAsString(origDepatureMillis, TimeUnit.MILLISECONDS));
+        long origDepartureMillis = departureCal.getTimeInMillis() - System.currentTimeMillis();
+        if (origDepartureMillis >= 1000 * 60)
+            origDepartureTime.setText(GeneralUtils.getDurationAsString(origDepartureMillis, TimeUnit.MILLISECONDS));
         else
             origDepartureTime.setText(R.string.nta_now);
 
@@ -376,9 +376,9 @@ public class NextToArriveTripView extends FrameLayout {
         departureCal.setTime(item.getOrigDepartureTime());
         departureCal.add(Calendar.MINUTE, item.getOrigDelayMinutes());
 
-        long origDepatureMillis = departureCal.getTimeInMillis() - System.currentTimeMillis();
-        if (origDepatureMillis >= 1000 * 60)
-            origDepartureTime.setText(GeneralUtils.getDurationAsString(origDepatureMillis, TimeUnit.MILLISECONDS));
+        long origDepartureMillis = departureCal.getTimeInMillis() - System.currentTimeMillis();
+        if (origDepartureMillis >= 1000 * 60)
+            origDepartureTime.setText(GeneralUtils.getDurationAsString(origDepartureMillis, TimeUnit.MILLISECONDS));
         else
             origDepartureTime.setText(R.string.nta_now);
 
@@ -493,11 +493,12 @@ public class NextToArriveTripView extends FrameLayout {
         termDepartureCal.setTime(item.getTermDepartureTime());
         termDepartureCal.add(Calendar.MINUTE, item.getTermDelayMinutes());
 
-        long termDepatureMillis = termDepartureCal.getTimeInMillis() - System.currentTimeMillis();
-        if (termDepatureMillis >= 1000 * 60)
-            origDepartureTime.setText(GeneralUtils.getDurationAsString(termDepatureMillis, TimeUnit.MILLISECONDS));
-        else
+        long termDepartureMillis = termDepartureCal.getTimeInMillis() - System.currentTimeMillis();
+        if (termDepartureMillis >= 1000 * 60) {
+            origDepartureTime.setText(GeneralUtils.getDurationAsString(termDepartureMillis, TimeUnit.MILLISECONDS));
+        } else {
             origDepartureTime.setText(R.string.nta_now);
+        }
 
         boolean termEnableClick = true;
         View termTripView = convertView.findViewById(R.id.term_trip_layout);

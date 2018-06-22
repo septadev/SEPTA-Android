@@ -30,15 +30,15 @@ public class AnalyticsManager {
     public static final String CUSTOM_EVENT_TRANSIT_VIEW = "TransitView";
 
 
-    private static boolean initalized = false;
+    private static boolean initialized = false;
 
     public static void init(Context context) {
         Fabric.with(context, new Answers());
-        initalized = true;
+        initialized = true;
     }
 
     public static void logContentType(String tag, String contentName, String contentId, String contentType) {
-        if (initalized) {
+        if (initialized) {
             ContentViewEvent contentViewEvent = new ContentViewEvent();
 
             if (contentId != null) {
@@ -64,7 +64,7 @@ public class AnalyticsManager {
     }
 
     public static void logCustomAction(String tag, String eventName, Map<String, String> customAttributes) {
-        if (initalized) {
+        if (initialized) {
             CustomEvent customEvent = new CustomEvent(eventName);
 
             if (customAttributes != null && !customAttributes.isEmpty()) {

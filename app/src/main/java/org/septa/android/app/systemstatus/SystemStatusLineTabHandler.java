@@ -37,11 +37,12 @@ import retrofit2.Response;
  */
 
 public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
+
     public static final String TAG = SystemStatusLineTabHandler.class.getSimpleName();
+
     TransitType transitType;
     CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier;
     RouteDirectionModel routeDirectionModel;
-
 
     public SystemStatusLineTabHandler(String title, TransitType transitType, CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier) {
         super(title, transitType.getTabInactiveImageResource(), transitType.getTabActiveImageResource());
@@ -61,7 +62,6 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
             return SystemStatusPickerFragment.getInstance(transitType, routeCursorAdapterSupplier);
         else return SystemStatusPickerFragment.getInstance(transitType, routeDirectionModel);
     }
-
 
     public static class SystemStatusPickerFragment extends Fragment implements LinePickerCallBack {
         private static final int LINE_PICKER_ID = 1;
@@ -91,7 +91,7 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
             super.onCreateView(inflater, container, savedInstanceState);
             restoreArgs();
 
-            View fragmentView = inflater.inflate(R.layout.system_status_line_picker, null);
+            View fragmentView = inflater.inflate(R.layout.fragment_system_status, null);
 
             TextView pickerHeaderText = (TextView) fragmentView.findViewById(R.id.picker_header_text);
             pickerHeaderText.setText(transitType.getString("system_status_picker_title", getContext()));

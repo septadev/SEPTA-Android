@@ -1,0 +1,14 @@
+CREATE INDEX IF NOT EXISTS stop_srd_index ON stop_route_direction (stop_id);
+CREATE INDEX IF NOT EXISTS route_srd_index ON stop_route_direction (route_id);
+CREATE INDEX IF NOT EXISTS direction_srd_index ON stop_route_direction (direction_id);
+CREATE INDEX IF NOT EXISTS trips_bus_route_id_index ON trips_bus (route_id);
+CREATE INDEX IF NOT EXISTS trips_rail_route_id_trip_id_index ON trips_rail (route_id, trip_id);
+CREATE INDEX IF NOT EXISTS trips_rail_trip_id_route_id_index ON trips_rail (trip_id, route_id);
+CREATE INDEX IF NOT EXISTS routes_bus_route_id_index ON routes_bus (route_id);
+CREATE INDEX IF NOT EXISTS routes_rail_route_id_index ON routes_rail (route_id);
+CREATE INDEX IF NOT EXISTS reverseStopSearch_reverse_stop_id_stop_id_index ON reverseStopSearch (reverse_stop_id, stop_id);
+CREATE INDEX IF NOT EXISTS reverseStopSearch_stop_id_reverse_stop_id_index ON reverseStopSearch (stop_id, reverse_stop_id);
+CREATE INDEX IF NOT EXISTS bus_stop_directions_Route_index ON bus_stop_directions (Route);
+CREATE INDEX IF NOT EXISTS stop_times_rail_trip_id_stop_id_stop_sequence_index ON stop_times_rail (trip_id, stop_id, stop_sequence);
+CREATE INDEX IF NOT EXISTS stop_times_rail_stop_id_trip_id_index ON stop_times_rail (stop_id, trip_id);
+VACUUM;

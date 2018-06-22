@@ -101,7 +101,7 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        setContentView(R.layout.nta_trip_details);
+        setContentView(R.layout.activity_next_to_arrive_trip_detail);
 
         if (savedInstanceState != null) {
             restoreInstanceState(savedInstanceState);
@@ -279,7 +279,7 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
                             try {
                                 Thread.sleep(params[0]);
                             } catch (InterruptedException e) {
-                                e.printStackTrace();
+                                Log.e(TAG, e.toString());
                             }
 
                             return null;
@@ -295,7 +295,7 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
             private boolean updateView(Response<NextArrivalDetails> response) {
                 NextArrivalDetails.Details details = response.body().getDetails();
                 if (details != null) {
-                    vehicleLat = details.getLatitiude();
+                    vehicleLat = details.getLatitude();
                     vehicleLon = details.getLongitude();
 
 
@@ -397,9 +397,9 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
         try {
             layer.addLayerToMap();
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(TAG, e.toString());
         } catch (XmlPullParserException e) {
-            e.printStackTrace();
+            Log.e(TAG, e.toString());
         }
 
         LatLngBounds.Builder builder = new LatLngBounds.Builder();

@@ -13,6 +13,4 @@ public interface CursorAdapterSupplier<T> extends Serializable {
     T getCurrentItemFromCursor(Cursor cursor);
 
     T getItemFromId(Context context, Object id);
-
-
 }

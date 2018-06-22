@@ -1,0 +1,543 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingBottom="8dp"
+    android:paddingTop="8dp">
+
+    <!-- TODO: Extract constraint layouts into views as needed, remove text -->
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <View
+            android:id="@+id/view2"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="#CCC"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/linearLayout1"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <LinearLayout
+            android:id="@+id/linearLayout1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toRightOf="@+id/view2"
+            app:layout_constraintRight_toLeftOf="@+id/view3"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/orig_line_marker_left"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@drawable/shape_line_marker"
+                android:tint="#12845A" />
+
+            <TextView
+                android:id="@+id/orig_line_name_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_weight="5"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="Paoli / Throndale" />
+
+            <ImageView
+                android:id="@+id/orig_line_advisory_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="7dp"
+                android:layout_marginRight="7dp"
+                android:layout_weight="1"
+                android:src="@drawable/ic_advisory"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+            <ImageView
+                android:id="@+id/orig_line_alert_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="7dp"
+                android:layout_marginRight="7dp"
+                android:layout_weight="1"
+                android:src="@drawable/ic_alert"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+            <ImageView
+                android:id="@+id/orig_line_detour_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="7dp"
+                android:layout_marginRight="7dp"
+                android:layout_weight="1"
+                android:src="@drawable/ic_detour"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+            <ImageView
+                android:id="@+id/orig_line_weather_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="7dp"
+                android:layout_marginRight="7dp"
+                android:layout_weight="1"
+                android:src="@drawable/ic_weather"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+        </LinearLayout>
+
+        <View
+            android:id="@+id/view3"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginLeft="0dp"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="0dp"
+            android:background="#CCC"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toRightOf="@+id/linearLayout1"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/orig_trip_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:paddingTop="8dp">
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="2dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/shape_circle"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/view1"
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+            android:layout_marginEnd="0dp"
+            android:layout_marginRight="0dp"
+            android:background="#A1B8D1"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="@+id/imageView"
+            app:layout_constraintRight_toRightOf="@+id/imageView"
+            app:layout_constraintTop_toBottomOf="@+id/imageView" />
+
+        <org.septa.android.app.view.TextView
+            android:id="@+id/orig_arrival_time_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="32dp"
+            android:layout_marginRight="32dp"
+            android:layout_marginTop="0dp"
+            android:maxLines="1"
+            android:text="9:29 AM - 10:03 AM"
+            android:textColor="#000"
+            app:font="@string/font_roboto_bold"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/orig_departing_border"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <org.septa.android.app.view.TextView
+            android:id="@+id/orig_tardy_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="0dp"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="0dp"
+            android:text="3 min delay"
+            android:textColor="@color/no_delay_minutes"
+            app:font="@string/font_roboto_bold"
+            app:layout_constraintLeft_toLeftOf="@+id/orig_arrival_time_text"
+            app:layout_constraintTop_toBottomOf="@+id/orig_arrival_time_text" />
+
+        <org.septa.android.app.view.TextView
+            android:id="@+id/orig_trip_number_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="32dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="32dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="0dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="#546 to 30th Street"
+            app:font="@string/font_roboto_light"
+            app:layout_constraintLeft_toRightOf="@+id/orig_tardy_text"
+            app:layout_constraintRight_toLeftOf="@+id/orig_departing_border"
+            app:layout_constraintTop_toBottomOf="@+id/orig_arrival_time_text" />
+
+        <LinearLayout
+            android:id="@+id/orig_departing_border"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginRight="32dp"
+            android:layout_marginTop="0dp"
+            android:background="@drawable/ontime_boarder"
+            android:orientation="vertical"
+            android:padding="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0">
+
+            <org.septa.android.app.view.TextView
+                android:id="@+id/orig_departing_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="DEPARTING"
+                android:textAlignment="center"
+                android:textColor="@color/light_gray"
+                app:font="@string/font_roboto_regular" />
+
+            <org.septa.android.app.view.TextView
+                android:id="@+id/orig_depature_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="25 min"
+                android:textAlignment="center"
+                android:textColor="@color/on_time_departing"
+                app:font="@string/font_roboto_bold" />
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/orig_trip_details_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="0dp"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="0dp"
+            android:layout_marginTop="0dp"
+            android:src="@drawable/ic_keyboard_arrow_right_black_24dp"
+            android:tint="@color/colorPrimaryDark"
+            app:layout_constraintBottom_toBottomOf="@+id/orig_departing_border"
+            app:layout_constraintLeft_toRightOf="@+id/orig_departing_border"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/orig_departing_border" />
+
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shape_blue_gradient">
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+            android:background="#A1B8D1"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="@+id/imageView2"
+            app:layout_constraintRight_toRightOf="@+id/imageView2"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:tint="@color/colorPrimary"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/shape_diamond" />
+
+        <org.septa.android.app.view.TextView
+            android:id="@+id/connection_station_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="0dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="0dp"
+            android:text="Connect @ 30th Street Station"
+            android:textColor="@color/colorPrimaryDark"
+            app:font="@string/font_roboto_medium_italic"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toRightOf="@+id/imageView2"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <View
+            android:id="@+id/view7"
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+            android:layout_marginLeft="20.5dp"
+            android:layout_marginStart="20.5dp"
+            android:background="#A1B8D1"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/view4"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginLeft="32dp"
+            android:layout_marginStart="32dp"
+            android:background="#CCC"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/linearLayout2"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <LinearLayout
+            android:id="@+id/linearLayout2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingBottom="16dp"
+            android:paddingTop="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toRightOf="@+id/view4"
+            app:layout_constraintRight_toLeftOf="@+id/view5"
+            app:layout_constraintTop_toTopOf="parent">
+
+
+            <ImageView
+                android:id="@+id/term_line_marker_left"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@drawable/shape_line_marker"
+                android:tint="#6F549C" />
+
+            <org.septa.android.app.view.TextView
+                android:id="@+id/term_line_name_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_weight="5"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="Cynwyd / Line"
+                app:font="@string/font_roboto_regular" />
+
+            <ImageView
+                android:id="@+id/term_line_advisory_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="7dp"
+                android:layout_marginRight="7dp"
+                android:layout_weight="1"
+                android:src="@drawable/ic_advisory"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+            <ImageView
+                android:id="@+id/term_line_alert_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="7dp"
+                android:layout_marginRight="7dp"
+                android:layout_weight="1"
+                android:src="@drawable/ic_alert"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+            <ImageView
+                android:id="@+id/term_line_detour_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="7dp"
+                android:layout_weight="1"
+                android:src="@drawable/ic_detour"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+            <ImageView
+                android:id="@+id/term_line_weather_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="7dp"
+                android:layout_marginRight="7dp"
+                android:layout_weight="1"
+                android:src="@drawable/ic_weather"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+        </LinearLayout>
+
+        <View
+            android:id="@+id/view5"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="32dp"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="0dp"
+            android:background="#CCC"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toRightOf="@+id/linearLayout2"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/term_trip_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true">
+
+        <ImageView
+            android:id="@+id/imageView7"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="2dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_destination_pin"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/view6"
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+            android:background="#A1B8D1"
+            app:layout_constraintBottom_toTopOf="@+id/imageView7"
+            app:layout_constraintLeft_toLeftOf="@+id/imageView7"
+            app:layout_constraintRight_toRightOf="@+id/imageView7"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/term_arrival_time_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="32dp"
+            android:layout_marginRight="32dp"
+            android:layout_marginTop="0dp"
+            android:maxLines="1"
+            android:text="9:29 AM - 10:03 AM"
+            android:textColor="#000"
+            android:textStyle="bold"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/term_departing_border"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <org.septa.android.app.view.TextView
+            android:id="@+id/term_tardy_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="0dp"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="0dp"
+            android:text="On Time"
+            android:textColor="@color/no_delay_minutes"
+            app:font="@string/font_roboto_bold"
+            app:layout_constraintLeft_toLeftOf="@+id/term_arrival_time_text"
+            app:layout_constraintTop_toBottomOf="@+id/term_arrival_time_text" />
+
+        <org.septa.android.app.view.TextView
+            android:id="@+id/term_trip_number_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="32dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="32dp"
+            android:layout_marginStart="8dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="#1081 to Cynwyd"
+            app:font="@string/font_roboto_light"
+            app:layout_constraintLeft_toRightOf="@+id/term_tardy_text"
+            app:layout_constraintRight_toLeftOf="@+id/term_departing_border"
+            app:layout_constraintTop_toBottomOf="@+id/term_arrival_time_text" />
+
+        <LinearLayout
+            android:id="@+id/term_departing_border"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginRight="32dp"
+            android:background="@drawable/ontime_boarder"
+            android:orientation="vertical"
+            android:padding="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0">
+
+            <org.septa.android.app.view.TextView
+                android:id="@+id/term_departing_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="DEPARTING"
+                android:textAlignment="center"
+                android:textColor="@color/light_gray"
+                app:font="@string/font_roboto_regular" />
+
+            <org.septa.android.app.view.TextView
+                android:id="@+id/term_depature_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="42 min"
+                android:textAlignment="center"
+                android:textColor="@color/on_time_departing"
+                app:font="@string/font_roboto_bold" />
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/term_trip_details_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_keyboard_arrow_right_black_24dp"
+            android:tint="@color/colorPrimaryDark"
+            app:layout_constraintBottom_toBottomOf="@+id/term_departing_border"
+            app:layout_constraintLeft_toRightOf="@+id/term_departing_border"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/term_departing_border" />
+
+    </android.support.constraint.ConstraintLayout>
+
+</LinearLayout>

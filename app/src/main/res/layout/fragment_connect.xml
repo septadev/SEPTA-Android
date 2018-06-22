@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/full_page_gradient_background"
+    android:orientation="vertical"
+    android:paddingLeft="12dp"
+    android:paddingRight="12dp"
+    android:paddingTop="21dp">
+
+    <org.septa.android.app.view.TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:letterSpacing="-0.02"
+        android:text="Have a problem, suggestion, question or want to follow us? Connect with us through our channels below."
+        android:textColor="#144b88"
+        android:textSize="16sp"
+        app:font="@string/font_roboto_regular" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="19dp"
+        android:background="#ffffff"
+        android:elevation="@dimen/white_box_elevation"
+        android:orientation="vertical"
+        android:paddingBottom="20dp">
+
+        <org.septa.android.app.view.TextView
+            android:id="@+id/customer_service_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/customer_service_gradient_background"
+            android:gravity="center_horizontal"
+            android:letterSpacing="-0.03"
+            android:paddingBottom="17dp"
+            android:paddingTop="17dp"
+            android:text="Customer Service"
+            android:textAlignment="center"
+            android:textColor="#144b88"
+            android:textSize="20sp"
+            app:font="@string/font_roboto_bold" />
+
+        <org.septa.android.app.view.TextView
+            android:id="@+id/voice_line"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/customer_service_header"
+            android:layout_marginLeft="13dp"
+            android:layout_marginTop="21dp"
+            android:autoLink="phone"
+            android:clickable="true"
+            android:drawableLeft="@drawable/phone"
+            android:drawablePadding="10.5dp"
+            android:linksClickable="true"
+            android:text="@string/voice_line_content"
+            android:textColor="#144b88"
+            android:textColorLink="#09bbff"
+            android:textSize="18sp"
+            app:font="@string/font_roboto_light" />
+
+        <org.septa.android.app.view.TextView
+            android:id="@+id/tdd_line"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/voice_line"
+            android:layout_marginLeft="13dp"
+            android:layout_marginTop="21dp"
+            android:autoLink="phone"
+            android:clickable="true"
+            android:drawableLeft="@drawable/tdd_icon"
+            android:drawablePadding="10.5dp"
+            android:linksClickable="true"
+            android:text="@string/tdd_phone_content"
+            android:textColor="#144b88"
+            android:textColorLink="#09bbff"
+            android:textSize="18sp"
+            app:font="@string/font_roboto_light" />
+
+        <org.septa.android.app.view.TextView
+            android:id="@+id/comment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tdd_line"
+            android:layout_marginLeft="13dp"
+            android:layout_marginTop="21dp"
+            android:clickable="true"
+            android:drawableLeft="@drawable/comment_icon"
+            android:drawablePadding="10.5dp"
+            android:linksClickable="true"
+            android:text="Send us a comment"
+            android:textColor="#144b88"
+            android:textSize="18sp"
+            app:font="@string/font_roboto_light" />
+
+        <ImageView
+            android:id="@+id/comment_arrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/tdd_line"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="21dp"
+            android:src="@drawable/ic_arrow_forward_black_24dp"
+            android:tint="#144b88" />
+
+        <org.septa.android.app.view.TextView
+            android:id="@+id/live_chat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/comment"
+            android:layout_marginLeft="13dp"
+            android:layout_marginTop="21dp"
+            android:clickable="true"
+            android:drawableLeft="@drawable/live_chat_icon"
+            android:drawablePadding="10.5dp"
+            android:linksClickable="true"
+            android:text="Live Chat"
+            android:textColor="#144b88"
+            android:textSize="18sp"
+            app:font="@string/font_roboto_light" />
+
+        <ImageView
+            android:id="@+id/chat_arrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/comment"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="21dp"
+            android:src="@drawable/ic_arrow_forward_black_24dp"
+            android:tint="#144b88" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/customer_service_boarder"
+        android:elevation="@dimen/white_box_elevation"
+        android:paddingBottom="17dp"
+        android:paddingLeft="12dp"
+        android:paddingRight="13dp"
+        android:paddingTop="12dp">
+
+        <org.septa.android.app.view.TextView
+            android:id="@+id/social_media_header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Social Media"
+            android:textColor="#144b88"
+            android:textSize="18sp"
+            app:font="@string/font_roboto_bold" />
+
+
+        <org.septa.android.app.view.TextView
+            android:id="@+id/twitter_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/social_media_header"
+            android:layout_marginTop="16dp"
+            android:drawableLeft="@drawable/twitter_logo_blue"
+            android:drawablePadding="10.5dp"
+            android:text="\@SEPTA_SOCIAL"
+            android:textColor="#144b88"
+            android:textSize="14sp"
+            app:font="@string/font_roboto_light" />
+
+        <ImageView
+            android:id="@+id/twitter_arrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/social_media_header"
+            android:layout_marginTop="16dp"
+            android:src="@drawable/ic_arrow_forward_black_24dp"
+            android:tint="#144b88" />
+
+        <org.septa.android.app.view.TextView
+            android:id="@+id/facebook_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/twitter_label"
+            android:layout_marginTop="16dp"
+            android:drawableLeft="@drawable/fb_logo"
+            android:drawablePadding="10.5dp"
+            android:text="SEPTA Facebook"
+            android:textColor="#144b88"
+            android:textSize="14sp"
+            app:font="@string/font_roboto_light" />
+
+        <ImageView
+            android:id="@+id/facebook_arrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/twitter_label"
+            android:layout_marginTop="16dp"
+            android:src="@drawable/ic_arrow_forward_black_24dp"
+            android:tint="#144b88" />
+
+    </RelativeLayout>
+
+</LinearLayout>

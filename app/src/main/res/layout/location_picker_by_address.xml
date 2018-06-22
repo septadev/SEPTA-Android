@@ -18,13 +18,17 @@
             android:layout_marginRight="10dp"
             android:layout_marginTop="12dp"
             android:background="@drawable/line_picker_background"
+            android:drawableEnd="@drawable/ic_gps_fixed_black_24_px"
             android:drawableLeft="@drawable/ic_search"
             android:drawablePadding="4dp"
             android:drawableRight="@drawable/ic_gps_fixed_black_24_px"
-            android:hint="Type address and select"
+            android:drawableStart="@drawable/ic_search"
+            android:hint="@string/location_picker_by_address_hint"
             android:paddingBottom="12dp"
+            android:paddingEnd="8dp"
             android:paddingLeft="10dp"
             android:paddingRight="8dp"
+            android:paddingStart="10dp"
             android:paddingTop="12dp"
             android:textColor="#144b88"
             android:textSize="14sp"
@@ -36,6 +40,11 @@
             android:layout_height="match_parent"
             android:choiceMode="singleChoice"
             android:fastScrollEnabled="true" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/route_stop_picker_item_border" />
 
     </LinearLayout>
 
@@ -54,6 +63,7 @@
             android:layout_gravity="center"
             android:indeterminate="true"
             android:indeterminateDrawable="@drawable/basic_progress" />
+
     </FrameLayout>
 
 </FrameLayout>

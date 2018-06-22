@@ -29,7 +29,7 @@ public class WebViewFragment extends Fragment {
         super.onCreateView(inflater, container, savedInstanceState);
         restoreArgs();
 
-        View rootView = inflater.inflate(R.layout.webview_fragment_main, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_webview, container, false);
 
         webView = (WebView) rootView.findViewById(R.id.web_contents);
         webView.getSettings().setJavaScriptEnabled(true);

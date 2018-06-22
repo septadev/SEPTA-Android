@@ -61,7 +61,7 @@ class PlacesAutoCompleteAdapter extends ArrayAdapter<PlaceAutoComplete> implemen
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = inflater.inflate(R.layout.autocomplete_list_item, null);
+            convertView = inflater.inflate(R.layout.item_autocomplete_list, null);
         }
 
         TextView streetText = (TextView) convertView.findViewById(R.id.street_text);

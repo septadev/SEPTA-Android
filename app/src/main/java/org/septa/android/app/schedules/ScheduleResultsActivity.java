@@ -67,7 +67,7 @@ public class ScheduleResultsActivity extends AppCompatActivity {
     private DatabaseManager dbManager = null;
     private RadioGroup radioGroup = null;
     CursorAdapterSupplier<ScheduleModel> scheduleCursorAdapterSupplier;
-    CursorAdapterSupplier<StopModel> reverseStopCursorAdapaterSupplier;
+    CursorAdapterSupplier<StopModel> reverseStopCursorAdapterSupplier;
 
     ListView scheduleResultsListView;
 
@@ -101,7 +101,7 @@ public class ScheduleResultsActivity extends AppCompatActivity {
         // * Note: Will have to create a special case with the Rail line due to (M-TH) Fri Sat Sunday option
         // _________________________________________________________________________________________
 
-        setContentView(R.layout.schedules_main);
+        setContentView(R.layout.activity_schedules_results);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
@@ -116,10 +116,10 @@ public class ScheduleResultsActivity extends AppCompatActivity {
 
         if (transitType == TransitType.RAIL) {
             scheduleCursorAdapterSupplier = DatabaseManager.getInstance(this).getRailScheduleCursorAdapterSupplier();
-            reverseRouteCursorAdapterSupplier = DatabaseManager.getInstance(this).getRailRouteCursorAdapaterSupplier();
+            reverseRouteCursorAdapterSupplier = DatabaseManager.getInstance(this).getRailRouteCursorAdapterSupplier();
         } else {
             scheduleCursorAdapterSupplier = DatabaseManager.getInstance(this).getNonRegionalRailScheduleCursorAdapterSupplier();
-            reverseStopCursorAdapaterSupplier = DatabaseManager.getInstance(this).getNonRailReverseAdapterSupplier();
+            reverseStopCursorAdapterSupplier = DatabaseManager.getInstance(this).getNonRailReverseAdapterSupplier();
             reverseRouteCursorAdapterSupplier = DatabaseManager.getInstance(this).getNonRailReverseRouteCursorAdapterSupplier();
         }
 
@@ -182,21 +182,21 @@ public class ScheduleResultsActivity extends AppCompatActivity {
             alertView.setLayoutParams(loparams);
         }
 
-        View advistoryView = findViewById(R.id.service_advisory);
+        View advisoryView = findViewById(R.id.service_advisory);
         if (alert.isAdvisory()) {
-            advistoryView.setVisibility(View.VISIBLE);
-            advistoryView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ADVISORY_EXPANDED, this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName()));
+            advisoryView.setVisibility(View.VISIBLE);
+            advisoryView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ADVISORY_EXPANDED, this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName()));
             displayAlerts = true;
         } else {
-            LinearLayout.LayoutParams loparams = (LinearLayout.LayoutParams) advistoryView.getLayoutParams();
+            LinearLayout.LayoutParams loparams = (LinearLayout.LayoutParams) advisoryView.getLayoutParams();
             loparams.height = 0;
             loparams.weight = 1;
-            advistoryView.setLayoutParams(loparams);
+            advisoryView.setLayoutParams(loparams);
         }
 
         View detourView = findViewById(R.id.active_detour);
         if (alert.isDetour()) {
-            advistoryView.setVisibility(View.VISIBLE);
+            advisoryView.setVisibility(View.VISIBLE);
             detourView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.ACTIVE_DETOUR_EXPANDED, this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName()));
             displayAlerts = true;
         } else {
@@ -243,31 +243,6 @@ public class ScheduleResultsActivity extends AppCompatActivity {
 
     }
 
-    //----------------------------------------------------------------------------------------------
-    //Method: initRadioButtonGroup
-    //
-    //Purpose: This is the main control for this form, this method is responsible for:
-    //         1. ) setting up the group onchanged click event
-    //              in the radio button group for the user control on the form.
-    //
-    //         2.) responsible for calling the "bindListView" method to rebind the view
-    //         with the corresonding data from the UI Selection.
-    //
-    //         3.) Setting default selection state
-
-    // Note:   It is important to note the "clearCheck" method must be called before the
-    //         listener is invoked or event will not fire.
-    //
-    //         *IMPORTANT* Background and color change
-    //         events and processing are done in the custom xml files listed below
-
-    //         This method is used in conjuntion with five resource files:
-    //         File: radio_btn_background_selector.xmlor.xml - handles selector for background change
-    //               radio_btn_color_normalnormal.xml        - defines unselected button color
-    //               radio_btn_color_selected.xmled.xml      - defines selected button background color
-    //               radio_btn_font_color_selector.xml       - defines font colors for selection
-    //               schedules_main.xml                      - main schedule UI fragment
-    //-----------------------------------------------------------------------------------------------
     private void initRadioButtonGroup() {
         radioGroup = (RadioGroup) findViewById(R.id.day_of_week_button_group);
         radioGroup.clearCheck(); //must clear the defaults otherwise event wont fire
@@ -368,7 +343,7 @@ public class ScheduleResultsActivity extends AppCompatActivity {
         protected void onPostExecute(List<ScheduleModel> scheduleModels) {
             super.onPostExecute(scheduleModels);
             scheduleResultsActivity.scheduleResultsListView.setAdapter(
-                    new ScheduleResultsArrayAdapater(scheduleResultsActivity, scheduleModels));
+                    new ScheduleResultsArrayAdapter(scheduleResultsActivity, scheduleModels));
 
         }
 
@@ -393,9 +368,9 @@ public class ScheduleResultsActivity extends AppCompatActivity {
         }
     }
 
-    class ScheduleResultsArrayAdapater extends ArrayAdapter<ScheduleModel> {
+    class ScheduleResultsArrayAdapter extends ArrayAdapter<ScheduleModel> {
 
-        public ScheduleResultsArrayAdapater(@NonNull Context context, @NonNull List<ScheduleModel> objects) {
+        public ScheduleResultsArrayAdapter(@NonNull Context context, @NonNull List<ScheduleModel> objects) {
             super(context, 0, objects);
         }
 
@@ -456,7 +431,7 @@ public class ScheduleResultsActivity extends AppCompatActivity {
             if (found) {
                 scheduleResultsActivity.destination = newDest;
                 scheduleResultsActivity.start = newStart;
-                List<Criteria> criterias = new ArrayList<Criteria>(2);
+                List<Criteria> criterias = new ArrayList<>(2);
                 criterias.add(new Criteria("dircode", Criteria.Operation.EQ, scheduleResultsActivity.routeDirectionModel.getReverseDirectionCode()));
                 criterias.add(new Criteria("route_id", Criteria.Operation.EQ, scheduleResultsActivity.routeDirectionModel.getRouteId()));
 
@@ -491,9 +466,9 @@ public class ScheduleResultsActivity extends AppCompatActivity {
             List<Criteria> criteria = new ArrayList<Criteria>(2);
             criteria.add(new Criteria("route_short_name", Criteria.Operation.EQ, routeShortName));
             criteria.add(new Criteria("stop_id", Criteria.Operation.EQ, stopId));
-            Cursor cursor = scheduleResultsActivity.reverseStopCursorAdapaterSupplier.getCursor(scheduleResultsActivity, criteria);
+            Cursor cursor = scheduleResultsActivity.reverseStopCursorAdapterSupplier.getCursor(scheduleResultsActivity, criteria);
             if (cursor.moveToFirst()) {
-                return scheduleResultsActivity.reverseStopCursorAdapaterSupplier.getCurrentItemFromCursor(cursor);
+                return scheduleResultsActivity.reverseStopCursorAdapterSupplier.getCurrentItemFromCursor(cursor);
             } else return null;
         }
 

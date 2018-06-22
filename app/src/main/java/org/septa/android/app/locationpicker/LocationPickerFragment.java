@@ -122,7 +122,7 @@ public class LocationPickerFragment extends DialogFragment {
 //        select.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View view) {
-//                Log.d(TAG, "Current Possition is:" + selectedTab);
+//                Log.d(TAG, "Current Position is:" + selectedTab);
 //
 //                if (currentStop[selectedTab] == null) {
 //                    Log.d(TAG, "No Station");

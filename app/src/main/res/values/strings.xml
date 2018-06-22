@@ -32,7 +32,7 @@
 
 
     <string name="starting_station">Starting Station</string>
-    <string name="destionation_station_hint">Destination Station</string>
+    <string name="destination_station_hint">Destination Station</string>
     <string name="starting_station_hint">Starting Station</string>
     <string name="view_trains_button">VIEW TRAINS</string>
     <string name="title_activity_next_to_arrive_results">NextToArriveResultsActivity</string>
@@ -76,6 +76,10 @@
     <string name="dest_stop_text_subway">Destination Stop</string>
     <string name="dest_stop_text_trolley">Destination Stop</string>
     <string name="dest_stop_text_nhsl">Destination Station</string>
+
+    <string name="location_picker_by_address_hint">Type address and select</string>
+    <string name="location_picker_by_stop_hint">Type stop name or select</string>
+    <string name="line_picker_hint">Type line name or select</string>
 
 
     <!-- Next to Arrive String by Transit Type -->
@@ -124,8 +128,8 @@
 
     <!-- Favorite -->
     <string name="delete_fav_modal_title">Delete Favorite?</string>
-    <string name="delete_fav_modal_text">Do you want to remove this Trip from your Favorites</string>
-    <string name="delete_fav_pos_button">OK</string>
+    <string name="delete_fav_modal_text">Are you sure you want to remove this trip from your favorites?</string>
+    <string name="delete_fav_pos_button">Delete</string>
     <string name="delete_fav_neg_button">Cancel</string>
     <string name="create_fav_snackbar_text">Trip saved to your Favorites</string>
     <string name="nta_favorite_icon_title_remove">Tap to remove this Next To Arrive result as a favorite</string>
@@ -136,6 +140,14 @@
     <string name="schedule_favorite_icon_title_create">Tap to create a favorite from this Schedule result</string>
 
     <string name="snackbar_no_connection_link_text">Schedules »</string>
+    <string name="favorites_empty_results_msg">No Update</string>
+    <string name="favorites_view_schedules_msg">View Schedules »</string>
+
+    <string name="favorites_menu_item_add">Add</string>
+    <string name="favorites_menu_item_edit">Edit</string>
+    <string name="favorites_menu_item_done">Done</string>
+    <string name="favorites_add_new">Add a Favorite</string>
+    <string name="no_favorites_to_edit">You have no favorites to edit!</string>
 
 
     <!-- System Status -->
@@ -163,6 +175,21 @@
     <string name="holiday_schedule_title">Holiday Schedule</string>
     <string name="holiday_alert_button_text">View Transit Schedule</string>
     <string name="holiday_alert_button_text_rail">View Rail Schedule</string>
+
+    <!-- In-App Database Update-->
+    <string name="prompt_download_database_title">New Schedules Available</string>
+    <string name="prompt_download_database_description">Would you like to download them now?\n\nIf you choose to wait until later, you can still view Next To Arrive information.</string>
+    <string name="prompt_download_button_positive_download_now">Download Now</string>
+    <string name="prompt_download_button_negative_remind_later">Remind Me Later</string>
+    <string name="prompt_download_button_neutral_nta">Go to Next to Arrive</string>
+
+    <string name="download_permission_needed">We need your permission before we can download the new database onto your device.</string>
+
+    <string name="prompt_use_new_database_title">New Schedules Downloaded</string>
+    <string name="prompt_use_new_database_description">The new schedule is ready for you to use.</string>
+    <string name="prompt_use_new_database_button">Great!</string>
+
+    <string name="notification_database_updated">Schedules Update Complete</string>
 
 
     <!-- Connect With SEPTA -->
@@ -198,8 +225,8 @@
     <string name="about_fares_url">http://www.septa.org/fares/</string>
     <string name="about_fares_title">More About SEPTA Fares</string>
 
-    <string name="about_pass_perks_url">http://www.iseptaphilly.com/passperks</string>
-    <string name="about_pass_perks_title">More About Pass Perks</string>
+    <string name="about_perks_url">http://www.iseptaphilly.com/perks</string>
+    <string name="about_perks_title">More About Perks</string>
 
     <string name="cash_price">$2.50</string>
     <string name="quick_trip_price">$2.50</string>
@@ -216,7 +243,7 @@
     <string name="trail_text"><![CDATA[Weekly and Monthly TrailPasses<br><b>Price varies</b> by Zone.]]></string>
 
     <string name="cross_county_weekly_price">$30.75</string>
-    <string name="cross_county_mothly_price">$115.00</string>
+    <string name="cross_county_monthly_price">$115.00</string>
     <string name="cross_text"><![CDATA[Weekly Cross County Pass: <b>{0}</b><br>Monthly Cross County Pass: <b>{1}</b>]]></string>
 
     <string name="one_day_pass_price">$9.00</string>
@@ -234,6 +261,11 @@
     <string name="reverse_not_found">We are sorry, we are unable to reverse your trip.  Please contact SEPTA and let us know what stops you were attempting to reverse.</string>
 
 
+    <!-- About -->
+    <string name="activity_about_attributions">View Attributions</string>
+    <string name="activity_about_credits">Source code to the SEPTA Android application is available under an open source license, but the graphics are not.  \n\nThe graphics are subject to the following Copyright and Trademark terms: http://septa.org/site/copyright.html.  \n\nThe source code is available at: https://github.com/septadev/SEPTA-Android.</string>
+
+
     <!-- Holiday Schedule -->
     <string name="all_holiday_message">Holiday schedule is currently in effect.  Use Next to Arrive to display the current holiday schedule or visit septa.org.  Schedules shown in the app are the normal, non-holiday schedules.</string>
     <string name="transit_weekday_message">Modified weekday schedule is currently in effect for Bus, Trolley, Subway and NHSL.  Use Next to Arrive to display the current schedule or visit septa.org.  Schedules shown in the app are the normal, non-holiday schedules.</string>
@@ -243,6 +275,7 @@
     <!-- Alerts -->
     <string name="title_generic_alert">General SEPTA Alert</string>
     <string name="title_mobile_app_alert">Mobile App Alert</string>
+
 
     <!-- String Resources -->
     <string name="button_ok">Okay</string>

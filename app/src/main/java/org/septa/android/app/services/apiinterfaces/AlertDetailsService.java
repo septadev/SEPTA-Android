@@ -13,5 +13,5 @@ import retrofit2.http.Query;
 public interface AlertDetailsService {
 
     @GET("/prod/alert-details")
-    public Call<AlertDetail> getAlertDetails(@Query("route-name") String route_id);
+    Call<AlertDetail> getAlertDetails(@Query("route-name") String route_id);
 }

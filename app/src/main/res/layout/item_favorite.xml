@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/favorite_item_row"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/favorite_item_margin"
+    android:layout_marginTop="@dimen/favorite_item_margin"
+    android:background="#ffffff"
+    android:elevation="@dimen/white_box_elevation"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/favorite_item_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:orientation="horizontal">
+
+        <org.septa.android.app.view.TextView
+            android:id="@+id/favorite_title_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="10dp"
+            android:layout_weight="5"
+            android:drawableLeft="@drawable/rail_active_final"
+            android:drawablePadding="8dp"
+            android:drawableStart="@drawable/rail_active_final"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:text="Office Commute"
+            android:textColor="@color/colorPrimary"
+            android:textSize="16sp"
+            app:font="@string/font_roboto_bold" />
+
+        <ImageButton
+            android:id="@+id/favorite_item_collapse_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginEnd="18dp"
+            android:layout_marginRight="18dp"
+            android:background="#ffffff"
+            android:clickable="false"
+            android:drawablePadding="6dp"
+            android:gravity="center"
+            android:src="@drawable/ic_expand"
+            android:visibility="visible" />
+
+        <LinearLayout
+            android:id="@+id/favorite_item_no_results"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginEnd="14dp"
+            android:layout_marginRight="14dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/favorite_item_no_results_msg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/favorites_view_schedules_msg"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="12dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/next_to_arrive_trip_details"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/favorite_title_text"
+        android:visibility="gone">
+
+        <FrameLayout
+            android:id="@+id/progress_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/progress_background"
+            android:clickable="true"
+            android:visibility="gone"
+            tools:alpha=".3"
+            tools:visibility="visible">
+
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:indeterminate="true"
+                android:indeterminateDrawable="@drawable/basic_progress" />
+
+        </FrameLayout>
+
+    </FrameLayout>
+
+</LinearLayout>

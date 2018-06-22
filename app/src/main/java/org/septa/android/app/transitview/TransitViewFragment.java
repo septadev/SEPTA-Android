@@ -77,9 +77,18 @@ public class TransitViewFragment extends Fragment implements TransitViewLinePick
         firstRoutePicker.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // get which routes have already been selected
+                String[] selectedRoutes = new String[2];
+                if (secondRoute != null) {
+                    selectedRoutes[0] = secondRoute.getRouteId();
+                }
+                if (thirdRoute != null) {
+                    selectedRoutes[1] = thirdRoute.getRouteId();
+                }
+
                 // pop-up transitview route picker
                 FragmentTransaction ft = getChildFragmentManager().beginTransaction();
-                TransitViewLinePickerFragment newFragment = TransitViewLinePickerFragment.newInstance(busRouteCursorAdapterSupplier, trolleyRouteCursorAdapterSupplier);
+                TransitViewLinePickerFragment newFragment = TransitViewLinePickerFragment.newInstance(busRouteCursorAdapterSupplier, trolleyRouteCursorAdapterSupplier, selectedRoutes);
                 newFragment.setTargetFragment(TransitViewFragment.this, 1);
                 newFragment.show(ft, "line_picker");
             }
@@ -89,9 +98,18 @@ public class TransitViewFragment extends Fragment implements TransitViewLinePick
         secondRoutePicker.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // get which routes have already been selected
+                String[] selectedRoutes = new String[2];
+                if (firstRoute != null) {
+                    selectedRoutes[0] = firstRoute.getRouteId();
+                }
+                if (thirdRoute != null) {
+                    selectedRoutes[1] = thirdRoute.getRouteId();
+                }
+
                 // pop-up transitview route picker
                 FragmentTransaction ft = getChildFragmentManager().beginTransaction();
-                TransitViewLinePickerFragment newFragment = TransitViewLinePickerFragment.newInstance(busRouteCursorAdapterSupplier, trolleyRouteCursorAdapterSupplier);
+                TransitViewLinePickerFragment newFragment = TransitViewLinePickerFragment.newInstance(busRouteCursorAdapterSupplier, trolleyRouteCursorAdapterSupplier, selectedRoutes);
                 newFragment.setTargetFragment(TransitViewFragment.this, 2);
                 newFragment.show(ft, "line_picker");
             }
@@ -101,9 +119,18 @@ public class TransitViewFragment extends Fragment implements TransitViewLinePick
         thirdRoutePicker.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // get which routes have already been selected
+                String[] selectedRoutes = new String[2];
+                if (firstRoute != null) {
+                    selectedRoutes[0] = firstRoute.getRouteId();
+                }
+                if (secondRoute != null) {
+                    selectedRoutes[1] = secondRoute.getRouteId();
+                }
+
                 // pop-up transitview route picker
                 FragmentTransaction ft = getChildFragmentManager().beginTransaction();
-                TransitViewLinePickerFragment newFragment = TransitViewLinePickerFragment.newInstance(busRouteCursorAdapterSupplier, trolleyRouteCursorAdapterSupplier);
+                TransitViewLinePickerFragment newFragment = TransitViewLinePickerFragment.newInstance(busRouteCursorAdapterSupplier, trolleyRouteCursorAdapterSupplier, selectedRoutes);
                 newFragment.setTargetFragment(TransitViewFragment.this, 3);
                 newFragment.show(ft, "line_picker");
             }
@@ -134,9 +161,6 @@ public class TransitViewFragment extends Fragment implements TransitViewLinePick
         queryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO: go to TransitViewResultsActivity
-                Log.e(TAG, "TransitView query button clicked!");
-
                 goToTransitViewResults();
             }
         });

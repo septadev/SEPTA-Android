@@ -27,7 +27,6 @@ import android.widget.TextView;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
 import org.septa.android.app.domain.RouteDirectionModel;
-import org.septa.android.app.locationpicker.LinePickerCallBack;
 import org.septa.android.app.services.apiinterfaces.model.Alert;
 import org.septa.android.app.support.CursorAdapterSupplier;
 import org.septa.android.app.support.RouteModelComparator;
@@ -45,21 +44,23 @@ public class TransitViewLinePickerFragment extends DialogFragment {
     public static final int SUCCESS = 0;
     public static final String ROUTE_DIRECTION_MODEL = "routeDirectionModel",
             TROLLEY_ROUTE_CURSOR_ADAPTER_SUPPLIER = "TROLLEY_ROUTE_CURSOR_ADAPTER_SUPPLIER",
-            BUS_ROUTE_CURSOR_ADAPTER_SUPPLIER = "BUS_ROUTE_CURSOR_ADAPTER_SUPPLIER";
+            BUS_ROUTE_CURSOR_ADAPTER_SUPPLIER = "BUS_ROUTE_CURSOR_ADAPTER_SUPPLIER",
+            SELECTED_ROUTES = "SELECTED_ROUTES";
     CursorAdapterSupplier<RouteDirectionModel> trolleyRouteCursorAdapterSupplier;
     CursorAdapterSupplier<RouteDirectionModel> busRouteCursorAdapterSupplier;
+    String[] selectedRoutes;
     ListView linesList;
     TransitViewLineArrayAdapter transitViewLineArrayAdapter;
     EditText filterText;
-    private TransitViewLinePickerListener mListener;
 
-    public static TransitViewLinePickerFragment newInstance(CursorAdapterSupplier<RouteDirectionModel> busRouteCursorAdapterSupplier, CursorAdapterSupplier<RouteDirectionModel> trolleyRouteCursorAdapterSupplier) {
+    public static TransitViewLinePickerFragment newInstance(CursorAdapterSupplier<RouteDirectionModel> busRouteCursorAdapterSupplier, CursorAdapterSupplier<RouteDirectionModel> trolleyRouteCursorAdapterSupplier, String[] strings) {
         TransitViewLinePickerFragment fragment;
         fragment = new TransitViewLinePickerFragment();
 
         Bundle args = new Bundle();
         args.putSerializable(BUS_ROUTE_CURSOR_ADAPTER_SUPPLIER, busRouteCursorAdapterSupplier);
         args.putSerializable(TROLLEY_ROUTE_CURSOR_ADAPTER_SUPPLIER, trolleyRouteCursorAdapterSupplier);
+        args.putStringArray(SELECTED_ROUTES, strings);
 
         fragment.setArguments(args);
 
@@ -115,7 +116,7 @@ public class TransitViewLinePickerFragment extends DialogFragment {
             }
 
         });
-        PopulateRouteListTask task = new PopulateRouteListTask(this);
+        PopulateRouteListTask task = new PopulateRouteListTask(this, selectedRoutes);
         task.execute();
 
         filterText.addTextChangedListener(new TextWatcher() {
@@ -139,29 +140,23 @@ public class TransitViewLinePickerFragment extends DialogFragment {
 
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-        if ((context instanceof LinePickerCallBack)) {
-            mListener = (TransitViewLinePickerListener) context;
-        }
-    }
-
     private void restoreArgs() {
         busRouteCursorAdapterSupplier = (CursorAdapterSupplier<RouteDirectionModel>) getArguments().getSerializable(BUS_ROUTE_CURSOR_ADAPTER_SUPPLIER);
         trolleyRouteCursorAdapterSupplier = (CursorAdapterSupplier<RouteDirectionModel>) getArguments().getSerializable(TROLLEY_ROUTE_CURSOR_ADAPTER_SUPPLIER);
+        selectedRoutes = getArguments().getStringArray(SELECTED_ROUTES);
     }
 
     static class TransitViewLineArrayAdapter extends ArrayAdapter<RouteDirectionModel> implements Filterable {
 
         List<RouteDirectionModel> origRoutes;
         List<RouteDirectionModel> filterRoutes;
+        String[] selectedRoutes;
 
-        public TransitViewLineArrayAdapter(Context context, List<RouteDirectionModel> routes) {
+        public TransitViewLineArrayAdapter(Context context, List<RouteDirectionModel> routes, String[] selectedRoutes) {
             super(context, 0, routes);
             this.origRoutes = routes;
             this.filterRoutes = routes;
+            this.selectedRoutes = selectedRoutes;
         }
 
         @NonNull
@@ -216,6 +211,18 @@ public class TransitViewLinePickerFragment extends DialogFragment {
                     convertView.findViewById(R.id.weather_icon).setVisibility(View.VISIBLE);
                 } else {
                     convertView.findViewById(R.id.weather_icon).setVisibility(View.GONE);
+                }
+
+                // disable route from picker if already selected
+                if (route.getRouteId().equals(selectedRoutes[0]) || route.getRouteId().equals(selectedRoutes[1])) {
+                    disableRouteItemView(convertView);
+
+                    // TODO: remove
+                    Log.e(TAG, "routeID: " + route.getRouteId());
+                    Log.e(TAG, "1st selected: " + selectedRoutes[0]);
+                    Log.e(TAG, "2nd selected: " + selectedRoutes[1]);
+                } else {
+                    activateRouteItemView(convertView);
                 }
             }
             return convertView;
@@ -289,13 +296,25 @@ public class TransitViewLinePickerFragment extends DialogFragment {
             return target.toLowerCase().contains(input);
         }
 
+        private void disableRouteItemView(View view) {
+            view.setAlpha((float) .3);
+            view.setClickable(true);
+        }
+
+        private void activateRouteItemView(View view) {
+            view.setAlpha(1);
+            view.setClickable(false);
+        }
+
     }
 
     private static class PopulateRouteListTask extends AsyncTask<Void, Void, List<RouteDirectionModel>> {
         TransitViewLinePickerFragment fragment;
+        String[] selectedRoutes;
 
-        public PopulateRouteListTask(TransitViewLinePickerFragment fragment) {
+        public PopulateRouteListTask(TransitViewLinePickerFragment fragment, String[] selectedRoutes) {
             this.fragment = fragment;
+            this.selectedRoutes = selectedRoutes;
         }
 
         @Override
@@ -338,7 +357,7 @@ public class TransitViewLinePickerFragment extends DialogFragment {
         protected void onPostExecute(List<RouteDirectionModel> routeDirectionModels) {
             Collections.sort(routeDirectionModels, new RouteModelComparator());
             if (fragment.getContext() != null) {
-                fragment.transitViewLineArrayAdapter = new TransitViewLineArrayAdapter(fragment.getContext(), routeDirectionModels);
+                fragment.transitViewLineArrayAdapter = new TransitViewLineArrayAdapter(fragment.getContext(), routeDirectionModels, selectedRoutes);
                 fragment.linesList.setAdapter(fragment.transitViewLineArrayAdapter);
                 fragment.transitViewLineArrayAdapter.getFilter().filter(fragment.filterText.getText());
             }

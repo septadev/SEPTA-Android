@@ -111,19 +111,37 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
             }
         });
 
+        secondRouteLabel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // TODO: prompt to delete
+
+                // delete second route
+                updateRouteLabels(firstRoute, thirdRoute, null);
+            }
+        });
+
+        thirdRouteLabel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // TODO: prompt to delete
+
+                // delete third route
+                updateRouteLabels(firstRoute, secondRoute, null);
+            }
+        });
+
+        addLabel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // TODO: pop-up route picker dialog
+            }
+        });
+
         if (secondRoute != null) {
             routeIdBuilder.append(",").append(secondRoute.getRouteId());
             secondRouteLabel.setText(secondRoute.getRouteId());
             secondRouteLabel.setVisibility(View.VISIBLE);
-            secondRouteLabel.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    // TODO: prompt to delete
-
-                    // delete second route
-                    updateRouteLabels(firstRoute, thirdRoute, null);
-                }
-            });
         } else {
             secondRouteLabel.setText(null);
             secondRouteLabel.setVisibility(View.GONE);
@@ -134,15 +152,6 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
             routeIdBuilder.append(",").append(thirdRoute.getRouteId());
             thirdRouteLabel.setText(thirdRoute.getRouteId());
             thirdRouteLabel.setVisibility(View.VISIBLE);
-            thirdRouteLabel.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    // TODO: prompt to delete
-
-                    // delete third route
-                    updateRouteLabels(firstRoute, secondRoute, null);
-                }
-            });
 
             // disable add button
             disableView(addLabel);

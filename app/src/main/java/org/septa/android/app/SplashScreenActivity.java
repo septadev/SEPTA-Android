@@ -7,17 +7,22 @@ import android.view.Window;
 import android.widget.ImageView;
 
 import org.septa.android.app.rating.SharedPreferencesRatingUtil;
+import org.septa.android.app.database.DatabaseManager;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Alerts;
+import org.septa.android.app.support.CursorAdapterSupplier;
 import org.septa.android.app.systemstatus.SystemStatusState;
 
 import java.util.Calendar;
+import java.util.Date;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class SplashScreenActivity extends AppCompatActivity {
+
+    public static final String TAG = SplashScreenActivity.class.getSimpleName();
 
     int[] images = new int[]{R.drawable.bus_image, R.drawable.bg_trolley_image, R.drawable.subway_septa};
 
@@ -68,10 +73,17 @@ public class SplashScreenActivity extends AppCompatActivity {
                     }
                 }
 
+                // check if today is a holiday
+                Date now = new Date();
+                for (TransitType transitType : TransitType.values()) {
+                    CursorAdapterSupplier<Boolean> cursorAdapterSupplier = DatabaseManager.getInstance(getBaseContext()).getHolidayIndicatorCursorAdapterSupplier(transitType);
+                    transitType.setHolidayToday(cursorAdapterSupplier.getItemFromId(getBaseContext(), now));
+                }
+
                 startActivity(intent);
                 SplashScreenActivity.this.finish();
             }
         });
-
     }
+
 }

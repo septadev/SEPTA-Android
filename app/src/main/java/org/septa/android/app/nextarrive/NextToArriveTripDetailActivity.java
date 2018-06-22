@@ -279,7 +279,7 @@ public class NextToArriveTripDetailActivity extends BaseActivity implements OnMa
                             try {
                                 Thread.sleep(params[0]);
                             } catch (InterruptedException e) {
-                                e.printStackTrace();
+                                Log.e(TAG, e.toString());
                             }
 
                             return null;
@@ -295,7 +295,7 @@ public class NextToArriveTripDetailActivity extends BaseActivity implements OnMa
             private boolean updateView(Response<NextArrivalDetails> response) {
                 NextArrivalDetails.Details details = response.body().getDetails();
                 if (details != null) {
-                    vehicleLat = details.getLatitiude();
+                    vehicleLat = details.getLatitude();
                     vehicleLon = details.getLongitude();
 
 
@@ -397,9 +397,9 @@ public class NextToArriveTripDetailActivity extends BaseActivity implements OnMa
         try {
             layer.addLayerToMap();
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(TAG, e.toString());
         } catch (XmlPullParserException e) {
-            e.printStackTrace();
+            Log.e(TAG, e.toString());
         }
 
         LatLngBounds.Builder builder = new LatLngBounds.Builder();

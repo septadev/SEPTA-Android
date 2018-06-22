@@ -43,4 +43,6 @@ public interface Favorites {
     void moveFavoriteStateToIndex(Context context, int fromPosition, int toPosition);
 
     void resyncFavoritesMap(Context context);
+
+    void renameFavorite(Context context, Favorite favorite);
 }

@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import org.septa.android.app.TransitType;
+import org.septa.android.app.database.update.DatabaseSharedPrefsUtils;
 import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.domain.ScheduleModel;
 import org.septa.android.app.domain.StopModel;
@@ -41,13 +42,20 @@ public class DatabaseManager {
 
     private static synchronized void initDatabase(Context context) {
         if (database == null) {
-            database = new SEPTADatabase(context).getReadableDatabase();
+            database = new SEPTADatabase(context, DatabaseSharedPrefsUtils.getVersionInstalled(context), DatabaseSharedPrefsUtils.getDatabaseFilename(context)).getReadableDatabase();
+        }
+    }
+
+    public static synchronized void reinitDatabase(Context context) {
+        if (database != null) {
+            database.close();
+            database = new SEPTADatabase(context, DatabaseSharedPrefsUtils.getVersionInstalled(context), DatabaseSharedPrefsUtils.getDatabaseFilename(context)).getReadableDatabase();
         }
     }
 
     public static synchronized SQLiteDatabase getDatabase(Context context) {
         if (database == null) {
-            database = new SEPTADatabase(context).getReadableDatabase();
+            database = new SEPTADatabase(context, DatabaseSharedPrefsUtils.getVersionInstalled(context), DatabaseSharedPrefsUtils.getDatabaseFilename(context)).getReadableDatabase();
         }
         return database;
     }
@@ -57,6 +65,10 @@ public class DatabaseManager {
             throw new RuntimeException("DB was not initialized.");
         }
         return database;
+    }
+
+    public CursorAdapterSupplier<Integer> getVersionOfDatabase() {
+        return new CursorSuppliers.DatabaseVersionCursorAdapterSupplier();
     }
 
     public CursorAdapterSupplier<StopModel> getRailStopCursorAdapterSupplier() {
@@ -71,10 +83,6 @@ public class DatabaseManager {
         return new CursorSuppliers.LineAwareRailStopAfterCursorAdapterSupplier();
     }
 
-    public CursorAdapterSupplier<StopModel> getNhslStopCursorAdapterSupplier() {
-        return new CursorSuppliers.NhslStopCursorAdapterSupplier();
-    }
-
     public CursorAdapterSupplier<StopModel> getBusStopCursorAdapterSupplier() {
         return new CursorSuppliers.BusStopCursorAdapterSupplier();
     }
@@ -83,7 +91,7 @@ public class DatabaseManager {
         return new CursorSuppliers.BusRouteCursorAdapterSupplier(BUS);
     }
 
-    public CursorAdapterSupplier<RouteDirectionModel> getRailRouteCursorAdapaterSupplier() {
+    public CursorAdapterSupplier<RouteDirectionModel> getRailRouteCursorAdapterSupplier() {
         return new CursorSuppliers.RailRouteCursorAdapterSupplier();
     }
 
@@ -119,19 +127,19 @@ public class DatabaseManager {
         return new CursorSuppliers.BusStopAfterCursorAdapterSupplier();
     }
 
-    public CursorAdapterSupplier<RouteDirectionModel> getRailNoDirectionRouteCursorAdapaterSupplier() {
+    public CursorAdapterSupplier<RouteDirectionModel> getRailNoDirectionRouteCursorAdapterSupplier() {
         return new CursorSuppliers.RailNoDirectionRouteCursorAdapterSupplier();
     }
 
-    public CursorAdapterSupplier<RouteDirectionModel> getBusNoDirectionRouteCursorAdapaterSupplier() {
+    public CursorAdapterSupplier<RouteDirectionModel> getBusNoDirectionRouteCursorAdapterSupplier() {
         return new CursorSuppliers.BusTrolleyNoDirectionRouteCursorAdapterSupplier(BUS);
     }
 
-    public CursorAdapterSupplier<RouteDirectionModel> getTrolleyNoDirectionRouteCursorAdapaterSupplier() {
+    public CursorAdapterSupplier<RouteDirectionModel> getTrolleyNoDirectionRouteCursorAdapterSupplier() {
         return new CursorSuppliers.BusTrolleyNoDirectionRouteCursorAdapterSupplier(TROLLEY);
     }
 
-    public CursorAdapterSupplier<RouteDirectionModel> getSubwayNoDirectionRouteCursorAdapaterSupplier() {
+    public CursorAdapterSupplier<RouteDirectionModel> getSubwayNoDirectionRouteCursorAdapterSupplier() {
         return new CursorSuppliers.SubwayNoDirectionRouteCursorAdapterSupplier();
     }
 
@@ -191,8 +199,7 @@ public class DatabaseManager {
         };
     }
 
-    public CursorAdapterSupplier<Boolean> getHolidayIndicatorCursorAdapaterSupplier(TransitType transitType) {
-        return new CursorSuppliers.TransitTypeHolidayIndicatorCursorAdapaterSupplier(transitType);
+    public CursorAdapterSupplier<Boolean> getHolidayIndicatorCursorAdapterSupplier(TransitType transitType) {
+        return new CursorSuppliers.TransitTypeHolidayIndicatorCursorAdapterSupplier(transitType);
     }
-
 }

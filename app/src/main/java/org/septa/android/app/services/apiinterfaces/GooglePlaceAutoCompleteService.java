@@ -13,7 +13,7 @@ import retrofit2.http.Query;
 public interface GooglePlaceAutoCompleteService {
 
     @GET("maps/api/place/autocomplete/json?language=en&radius=500")
-    public Call<PlacePredictions> getAutoComplete(@Query("input") String input, @Query("location") String location);
+    Call<PlacePredictions> getAutoComplete(@Query("input") String input, @Query("location") String location);
 
 
 

@@ -6,10 +6,6 @@ import android.util.AttributeSet;
 
 import org.septa.android.app.managers.FontManager;
 
-/**
- * Created by jkampf on 9/15/17.
- */
-
 public class RadioButton extends android.support.v7.widget.AppCompatRadioButton {
     public RadioButton(Context context) {
         super(context);

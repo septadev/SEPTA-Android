@@ -10,6 +10,7 @@ import android.util.Log;
 import com.crashlytics.android.Crashlytics;
 
 import org.septa.android.app.database.DatabaseManager;
+import org.septa.android.app.database.update.DatabaseSharedPrefsUtils;
 import org.septa.android.app.rating.SharedPreferencesRatingUtil;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Alerts;
@@ -26,15 +27,25 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainApplication extends Application implements Runnable {
-    private static final int SYSTEM_STATUS_REFRESH_DELAY_SECONDS = 5 * 60;
     public static final String TAG = MainApplication.class.getSimpleName();
 
+    private static final int SYSTEM_STATUS_REFRESH_DELAY_SECONDS = 5 * 60;
     private Handler refreshHandler;
-
 
     @Override
     public void onCreate() {
         super.onCreate();
+
+        // update database version if manually incremented
+        int currentDBVersion = DatabaseManager.getDatabase(getApplicationContext()).getVersion();
+        if (currentDBVersion > DatabaseSharedPrefsUtils.getVersionInstalled(MainApplication.this)) {
+            Log.d(TAG, "Found new DB! Updating sharedPreferences...");
+            String newDatabaseFilename = new StringBuilder("SEPTA_").append(currentDBVersion).append(".sqlite").toString();
+            DatabaseSharedPrefsUtils.setDatabaseFilename(MainApplication.this, newDatabaseFilename);
+            DatabaseSharedPrefsUtils.setNeedToClean(MainApplication.this, true);
+            DatabaseSharedPrefsUtils.setVersionInstalled(MainApplication.this, currentDBVersion);
+        }
+
         Fabric.with(this, new Crashlytics());
         if (!BuildConfig.DEBUG) {
             CrashlyticsManager.init(this);
@@ -55,7 +66,6 @@ public class MainApplication extends Application implements Runnable {
 
             String googleBaseUrl = bundle.getString("com.google.android.geo.URL");
             SeptaServiceFactory.setGoogleApiBaseUrl(googleBaseUrl);
-
 
             String septaAmazonAwsApiKey = bundle.getString("org.septa.amazonaws.x-api-key");
             SeptaServiceFactory.setAmazonawsApiKey(septaAmazonAwsApiKey);
@@ -128,8 +138,9 @@ public class MainApplication extends Application implements Runnable {
         // check if holiday
         Date now = new Date();
         for (TransitType transitType : TransitType.values()) {
-            CursorAdapterSupplier<Boolean> cursorAdapterSupplier = DatabaseManager.getInstance(this).getHolidayIndicatorCursorAdapaterSupplier(transitType);
+            CursorAdapterSupplier<Boolean> cursorAdapterSupplier = DatabaseManager.getInstance(this).getHolidayIndicatorCursorAdapterSupplier(transitType);
             transitType.setHolidayToday(cursorAdapterSupplier.getItemFromId(this, now));
         }
     }
+
 }

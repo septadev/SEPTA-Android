@@ -51,8 +51,8 @@ import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.favorites.DeleteFavoritesAsyncTask;
 import org.septa.android.app.favorites.SaveFavoritesAsyncTask;
-import org.septa.android.app.favorites.edit.EditFavoriteCallBack;
-import org.septa.android.app.favorites.edit.EditFavoriteDialogFragment;
+import org.septa.android.app.favorites.edit.RenameFavoriteCallBack;
+import org.septa.android.app.favorites.edit.RenameFavoriteDialogFragment;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Favorite;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalDetails;
@@ -77,11 +77,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
- * Created by jkampf on 8/3/17.
- */
-
-public class NextToArriveResultsActivity extends BaseActivity implements OnMapReadyCallback, EditFavoriteCallBack, Runnable {
+public class NextToArriveResultsActivity extends BaseActivity implements OnMapReadyCallback, RenameFavoriteCallBack, Runnable {
     public static final String TAG = NextToArriveResultsActivity.class.getSimpleName();
     public static final int REFRESH_DELAY_SECONDS = 30,
             NTA_RESULTS_FOR_NEXT_HOURS = 5;
@@ -181,7 +177,7 @@ public class NextToArriveResultsActivity extends BaseActivity implements OnMapRe
                         try {
                             getSupportFragmentManager().beginTransaction().add(R.id.map_container, mapFragment).commit();
                         } catch (IllegalStateException e) {
-                            e.printStackTrace();
+                            Log.e(TAG, e.toString());
                         }
                         mapFragment.getMapAsync(NextToArriveResultsActivity.this);
 
@@ -379,8 +375,8 @@ public class NextToArriveResultsActivity extends BaseActivity implements OnMapRe
     public void editFavorite(final MenuItem item) {
         Log.d(TAG, "edit Favorite.");
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        CrashlyticsManager.log(Log.INFO, TAG, "Creating EditFavoriteDialogFragment for:" + currentFavorite.toString());
-        EditFavoriteDialogFragment fragment = EditFavoriteDialogFragment.getInstance(currentFavorite);
+        CrashlyticsManager.log(Log.INFO, TAG, "Creating RenameFavoriteDialogFragment for:" + currentFavorite.toString());
+        RenameFavoriteDialogFragment fragment = RenameFavoriteDialogFragment.getInstance(currentFavorite);
 
         fragment.show(ft, EDIT_FAVORITE_DIALOG_KEY);
     }
@@ -681,7 +677,7 @@ public class NextToArriveResultsActivity extends BaseActivity implements OnMapRe
                                     try {
                                         Thread.sleep(params[0]);
                                     } catch (InterruptedException e) {
-                                        e.printStackTrace();
+                                        Log.e(TAG, e.toString());
                                     }
 
                                     return null;
@@ -773,9 +769,9 @@ public class NextToArriveResultsActivity extends BaseActivity implements OnMapRe
                 try {
                     layer.addLayerToMap();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Log.e(TAG, e.toString());
                 } catch (XmlPullParserException e) {
-                    e.printStackTrace();
+                    Log.e(TAG, e.toString());
                 }
             }
         }
@@ -787,8 +783,8 @@ public class NextToArriveResultsActivity extends BaseActivity implements OnMapRe
     }
 
     @Override
-    public void updateFavorite(Favorite var1) {
-        currentFavorite = var1;
+    public void updateFavorite(Favorite favorite) {
+        currentFavorite = favorite;
         setTitle(currentFavorite.getName());
     }
 

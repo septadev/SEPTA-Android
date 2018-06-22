@@ -44,7 +44,7 @@ public class SystemStatusResultsActivity extends BaseActivity {
 
     TextView activeDetour;
     TextView activeDetourDetails;
-    boolean activeDetourtExpanded = false;
+    boolean activeDetourExpanded = false;
 
     TextView weatherAlerts;
     TextView weatherAlertsDetails;
@@ -150,7 +150,7 @@ public class SystemStatusResultsActivity extends BaseActivity {
         outState.putSerializable(Constants.TRANSIT_TYPE, transitType);
         outState.putSerializable(Constants.SERVICE_ADVISORY_EXPANDED, serviceAdvisoryExpanded);
         outState.putSerializable(Constants.SERVICE_ALERT_EXPANDED, serviceAlertExpanded);
-        outState.putSerializable(Constants.ACTIVE_DETOUR_EXPANDED, activeDetourtExpanded);
+        outState.putSerializable(Constants.ACTIVE_DETOUR_EXPANDED, activeDetourExpanded);
         outState.putSerializable(Constants.WEATHER_ALERTS_EXPANDED, weatherAlertsExpanded);
     }
 
@@ -172,7 +172,7 @@ public class SystemStatusResultsActivity extends BaseActivity {
             serviceAlertExpanded = inState.getBoolean(Constants.SERVICE_ALERT_EXPANDED);
         }
         if (inState.containsKey(Constants.ACTIVE_DETOUR_EXPANDED)) {
-            activeDetourtExpanded = inState.getBoolean(Constants.ACTIVE_DETOUR_EXPANDED);
+            activeDetourExpanded = inState.getBoolean(Constants.ACTIVE_DETOUR_EXPANDED);
         }
         if (inState.containsKey(Constants.WEATHER_ALERTS_EXPANDED)) {
             weatherAlertsExpanded = inState.getBoolean(Constants.WEATHER_ALERTS_EXPANDED);
@@ -277,13 +277,13 @@ public class SystemStatusResultsActivity extends BaseActivity {
             activeDetour.setHtml("Active Detours: <b>" + detourCount + "</b>");
             Drawable[] drawables = activeDetour.getCompoundDrawables();
             activeDetour.setCompoundDrawablesWithIntrinsicBounds(drawables[0], drawables[1], active_toggle, drawables[3]);
-            handleExpand(!activeDetourtExpanded, activeDetour, activeDetourDetails);
+            handleExpand(!activeDetourExpanded, activeDetour, activeDetourDetails);
             activeDetour
                     .setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            handleExpand(activeDetourtExpanded, (TextView) v, activeDetourDetails);
-                            activeDetourtExpanded = !activeDetourtExpanded;
+                            handleExpand(activeDetourExpanded, (TextView) v, activeDetourDetails);
+                            activeDetourExpanded = !activeDetourExpanded;
                         }
                     });
 

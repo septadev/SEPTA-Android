@@ -10,10 +10,6 @@ import android.view.ViewGroup;
 import org.septa.android.app.R;
 import org.septa.android.app.view.SubsamplingScaleImageView;
 
-/**
- * Created by jkampf on 9/29/17.
- */
-
 public class SystemMapFragment extends Fragment {
     private SubsamplingScaleImageView imageView;
 

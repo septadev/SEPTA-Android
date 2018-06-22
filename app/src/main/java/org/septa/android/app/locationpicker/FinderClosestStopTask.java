@@ -16,10 +16,6 @@ import org.septa.android.app.support.LocationMathHelper;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- * Created by jkampf on 8/17/17.
- */
-
 public class FinderClosestStopTask extends AsyncTask<Location, Void, StopModel> {
     CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
     Context context;

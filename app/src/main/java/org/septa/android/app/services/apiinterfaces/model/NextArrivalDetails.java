@@ -5,10 +5,6 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by jkampf on 10/3/17.
- */
-
 public class NextArrivalDetails {
 
     @SerializedName("tripid")

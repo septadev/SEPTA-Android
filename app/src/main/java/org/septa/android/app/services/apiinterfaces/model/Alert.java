@@ -2,10 +2,6 @@ package org.septa.android.app.services.apiinterfaces.model;
 
 import com.google.gson.annotations.SerializedName;
 
-/**
- * Created by jkampf on 9/21/17.
- */
-
 public class Alert {
 
     @SerializedName("route_id")

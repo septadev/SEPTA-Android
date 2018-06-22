@@ -10,10 +10,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Created by jkampf on 9/19/17.
- */
-
 public class GeneralUtils {
 
     public static String getDurationAsString(long duration, TimeUnit timeUnit) {

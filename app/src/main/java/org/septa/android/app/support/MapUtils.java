@@ -41,10 +41,6 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-/**
- * Created by jkampf on 8/10/17.
- */
-
 public class MapUtils {
     private static final String TAG = MapUtils.class.getSimpleName();
 

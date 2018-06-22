@@ -22,10 +22,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Created by jkampf on 10/4/17.
- */
-
 class CursorSuppliers implements Serializable {
     private static final String TAG = CursorSuppliers.class.getSimpleName();
 

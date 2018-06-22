@@ -8,10 +8,6 @@ import org.septa.android.app.services.apiinterfaces.model.Favorite;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by jkampf on 9/6/17.
- */
-
 public interface Favorites {
 
     Map<String, Favorite> getFavorites(Context context);

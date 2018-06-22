@@ -20,10 +20,6 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-/**
- * Created by jkampf on 8/10/17.
- */
-
 public class SeptaServiceFactory {
     public static final String TAG = SeptaServiceFactory.class.getSimpleName();
 

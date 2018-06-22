@@ -1,13 +1,11 @@
 package org.septa.android.app.nextarrive;
 
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.TypedValue;
@@ -47,10 +45,6 @@ import java.util.concurrent.TimeUnit;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-/**
- * Created by jkampf on 8/3/17.
- */
 
 public class NextToArriveTripDetailActivity extends AppCompatActivity implements OnMapReadyCallback, Runnable {
     public static final String TAG = NextToArriveTripDetailActivity.class.getSimpleName();
@@ -387,8 +381,9 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
     }
 
     private void updateMap() {
-        if (googleMap == null)
+        if (googleMap == null) {
             return;
+        }
 
         final View mapContainer = findViewById(R.id.map_container);
         googleMap.clear();
@@ -466,9 +461,6 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.refresh_menu, menu);
-        Drawable drawable = menu.getItem(0).getIcon();
-        DrawableCompat.setTint(drawable, ContextCompat.getColor(this, R.color.options_menu_tint));
-        menu.getItem(0).setIcon(drawable);
         return super.onCreateOptionsMenu(menu);
     }
 

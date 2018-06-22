@@ -2,6 +2,7 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_next_to_arrive_results_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
@@ -18,7 +19,6 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-
             <RelativeLayout
                 android:id="@+id/header"
                 android:layout_width="match_parent"
@@ -33,7 +33,7 @@
                     android:layout_marginLeft="13dp"
                     android:layout_marginTop="9dp"
                     android:text="Start:"
-                    android:textColor="#ffffff"
+                    android:textColor="@android:color/white"
                     android:textSize="14sp"
                     app:font="@string/font_roboto_bold" />
 
@@ -48,7 +48,7 @@
                     android:ellipsize="end"
                     android:maxLines="1"
                     android:text="placeholder Starting"
-                    android:textColor="#ffffff"
+                    android:textColor="@android:color/white"
                     android:textSize="14sp"
                     app:font="@string/font_roboto_light" />
 
@@ -61,7 +61,7 @@
                     android:layout_marginLeft="13dp"
                     android:layout_marginTop="4dp"
                     android:text="Destination:"
-                    android:textColor="#ffffff"
+                    android:textColor="@android:color/white"
 
                     android:textSize="14sp"
                     app:font="@string/font_roboto_bold" />
@@ -73,47 +73,40 @@
                     android:layout_below="@+id/starting_station_label"
                     android:layout_marginBottom="11dp"
                     android:layout_marginLeft="5dp"
+                    android:layout_marginStart="5dp"
                     android:layout_marginTop="4dp"
+                    android:layout_toEndOf="@id/destination_station_label"
                     android:layout_toRightOf="@id/destination_station_label"
                     android:ellipsize="end"
                     android:maxLines="1"
                     android:text="placeholder Destination"
-                    android:textColor="#ffffff"
+                    android:textColor="@android:color/white"
                     android:textSize="14sp"
                     app:font="@string/font_roboto_light" />
 
                 <ImageView
-                    android:id="@+id/refresh_button"
+                    android:id="@+id/button_reverse_nta_trip"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
+                    android:layout_marginEnd="14dp"
                     android:layout_marginRight="14dp"
                     android:clickable="true"
-                    android:src="@drawable/ic_refresh_black_24dp"
-                    android:tint="@android:color/white" />
+                    android:focusable="true"
+                    android:src="@drawable/ic_reverse_white" />
 
-                <org.septa.android.app.view.TextView
-                    android:id="@+id/refresh_label"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginRight="9dp"
-                    android:layout_toLeftOf="@id/refresh_button"
-                    android:text="Refresh"
-                    android:textColor="#ffffff"
-                    android:textSize="12sp"
-                    app:font="@string/font_roboto_light" />
             </RelativeLayout>
 
             <FrameLayout
                 android:id="@+id/map_container"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_below="@id/header"
                 android:background="@android:color/darker_gray" />
 
-            <include layout="@layout/next_to_arrive_results_empty"
+            <include
+                layout="@layout/next_to_arrive_results_empty"
                 android:visibility="gone" />
 
         </LinearLayout>

@@ -18,11 +18,6 @@ import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.support.CursorAdapterSupplier;
 import org.septa.android.app.support.TabActivityHandler;
 
-
-/**
- * Created by jkampf on 7/30/17.
- */
-
 public class LocationPickerFragment extends DialogFragment {
     public static final String TAG = LocationPickerFragment.class.getSimpleName();
     public static final int SUCCESS = 0;
@@ -63,8 +58,9 @@ public class LocationPickerFragment extends DialogFragment {
 
         restoreArgs();
 
-        if (getActivity() == null)
+        if (getActivity() == null) {
             return null;
+        }
 
         View dialogView = getActivity().getLayoutInflater().inflate(R.layout.by_station, null);
 
@@ -77,9 +73,11 @@ public class LocationPickerFragment extends DialogFragment {
         searchByStationTab = (TextView) dialogView.findViewById(R.id.search_by_station_tab);
         searchByAddressTab = (TextView) dialogView.findViewById(R.id.search_by_address_tab);
 
-        if (selected_index == 0)
+        if (selected_index == 0) {
             setActive(searchByStationTab, searchByAddressTab);
-        else setActive(searchByAddressTab, searchByStationTab);
+        } else {
+            setActive(searchByAddressTab, searchByStationTab);
+        }
         currentFragment = tabActivityHandlers[selected_index].getFragment();
         currentFragment.setTargetFragment(this, STOP_MODEL_REQUEST);
         getChildFragmentManager()

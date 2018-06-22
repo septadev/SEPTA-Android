@@ -77,8 +77,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-
-public class NextToArriveResultsActivity extends AppCompatActivity implements OnMapReadyCallback, RenameFavoriteCallBack, Runnable {
+public class NextToArriveResultsActivity extends AppCompatActivity implements OnMapReadyCallback, RenameFavoriteCallBack, Runnable, ReverseNTAStopSelection.ReverseNTAStopSelectionListener {
     public static final String TAG = NextToArriveResultsActivity.class.getSimpleName();
     public static final int REFRESH_DELAY_SECONDS = 30,
             NTA_RESULTS_FOR_NEXT_HOURS = 5;
@@ -90,15 +89,18 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     StopModel destination;
     TransitType transitType;
     RouteDirectionModel routeDirectionModel;
+    View containerView;
     private GoogleMap googleMap;
     boolean mapSized = false;
     Button noResultsSchedulesButton;
     FrameLayout mapContainerView;
     ViewGroup bottomSheetLayout;
+    TextView titleText;
+    View anchor;
     View rootView;
+    View reverseTrip;
     View progressView;
     View progressViewBottom;
-    View refresh;
     Favorite currentFavorite = null;
     NextToArriveTripView nextToArriveDetailsView;
     boolean editFavoritesFlag = false;
@@ -113,14 +115,6 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
     Map<String, NextArrivalDetails> details = new HashMap<>();
 
-    public void setDestination(StopModel destination) {
-        this.destination = destination;
-    }
-
-    public void setStart(StopModel start) {
-        this.start = start;
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -128,13 +122,14 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         setTitle(R.string.next_to_arrive);
         setContentView(R.layout.activity_next_to_arrive_results);
 
+        containerView = findViewById(R.id.activity_next_to_arrive_results_container);
+
         rootView = findViewById(R.id.rail_next_to_arrive_results_coordinator);
 
         progressView = findViewById(R.id.progress_view);
         noResultsMessage = (FrameLayout) findViewById(R.id.nta_empty_results_msg);
 
-        refresh = findViewById(R.id.refresh_button);
-        refresh.setContentDescription(getString(R.string.nta_refresh));
+        reverseTrip = findViewById(R.id.button_reverse_nta_trip);
 
         bottomSheetLayout = (ViewGroup) findViewById(R.id.bottomSheetLayout);
 
@@ -145,143 +140,63 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
         // Prevent the bottom sheet from being dragged to be opened.  Force it to use the anchor image.
         //bottomSheetBehavior.setBottomSheetCallback(myBottomSheetBehaviorCallBack);
-        final View anchor = bottomSheetLayout.findViewById(R.id.bottom_sheet_anchor);
+        anchor = bottomSheetLayout.findViewById(R.id.bottom_sheet_anchor);
         //anchor.setOnClickListener(myBottomSheetBehaviorCallBack);
 
         mapContainerView = (FrameLayout) findViewById(R.id.map_container);
 
-        final TextView titleText = (TextView) bottomSheetLayout.findViewById(R.id.title_txt);
+        titleText = (TextView) bottomSheetLayout.findViewById(R.id.title_txt);
         nextToArriveDetailsView = (NextToArriveTripView) findViewById(R.id.next_to_arrive_trip_details);
-        nextToArriveDetailsView.setMaxResults(null);
-        nextToArriveDetailsView.setResults(NTA_RESULTS_FOR_NEXT_HOURS, TimeUnit.HOURS);  // if this value changes update UI message nta_empty_results
 
-        nextToArriveDetailsView.setOnFirstElementHeight(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer var1) {
-                titleText.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-                anchor.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-                int value = anchor.getMeasuredHeight() + anchor.getPaddingTop() + anchor.getPaddingBottom() +
-                        titleText.getMeasuredHeight() + titleText.getPaddingTop() +
-                        titleText.getPaddingBottom() + var1 + 50;
-                if (value != peekHeight) {
-                    peekHeight = value;
+        initializeView(savedInstanceState);
+    }
 
-                    if (!mapSized) {
-                        mapSized = true;
-                        mapFragment = SupportMapFragment.newInstance();
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        invalidateOptionsMenu();
 
-                        ViewGroup.LayoutParams mapContainerLayoutParams = mapContainerView.getLayoutParams();
-                        mapContainerLayoutParams.height = rootView.getHeight() - value - mapContainerView.getTop();
-                        mapContainerLayoutParams.width = rootView.getWidth();
-                        mapContainerView.setLayoutParams(mapContainerLayoutParams);
-
-                        try {
-                            getSupportFragmentManager().beginTransaction().add(R.id.map_container, mapFragment).commit();
-                        } catch (IllegalStateException e) {
-                            Log.e(TAG, e.toString());
-                        }
-                        mapFragment.getMapAsync(NextToArriveResultsActivity.this);
-
-                    }
-
-                }
+        if (!editFavoritesFlag) {
+            getMenuInflater().inflate(R.menu.favorite_menu, menu);
+            if (currentFavorite != null) {
+                menu.findItem(R.id.create_favorite).setIcon(R.drawable.ic_favorite_made);
+                menu.findItem(R.id.create_favorite).setTitle(R.string.nta_favorite_icon_title_remove);
+            } else {
+                menu.findItem(R.id.create_favorite).setTitle(R.string.nta_favorite_icon_title_create);
             }
-        });
-
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-        }
-
-        Bundle bundle = getIntent().getExtras();
-
-        if (savedInstanceState != null) {
-            restoreState(savedInstanceState);
         } else {
-            restoreState(bundle);
+            getMenuInflater().inflate(R.menu.edit_favorites_menu, menu);
         }
 
-        noResultsSchedulesButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                gotoSchedulesForTarget();
-            }
-        });
+        return super.onPrepareOptionsMenu(menu);
+    }
 
-        if (start != null && destination != null && transitType != null) {
-            titleText.setText(transitType.getString(NTA_RESULTS_TITLE, this));
-            ((TextView) findViewById(R.id.see_later_text)).setText(transitType.getString(NEED_TO_SEE, this));
-
-            final TextView startingStationNameText = (TextView) findViewById(R.id.starting_station_name);
-            startingStationNameText.setText(start.getStopName());
-
-            final TextView destinationStationNameText = (TextView) findViewById(R.id.destination_station_name);
-            destinationStationNameText.setText(destination.getStopName());
-
-            nextToArriveDetailsView.setTransitType(transitType);
-            nextToArriveDetailsView.setStart(start);
-            nextToArriveDetailsView.setDestination(destination);
-            nextToArriveDetailsView.setRouteDirectionModel(routeDirectionModel);
-
-
-            String favKey = Favorite.generateKey(start, destination, transitType, routeDirectionModel);
-            currentFavorite = SeptaServiceFactory.getFavoritesService().getFavoriteByKey(this, favKey);
-
-            findViewById(R.id.view_sched_view).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    gotoSchedulesForTarget();
-                }
-            });
-
-            refreshHandler = new Handler();
-
-            (findViewById(R.id.header)).getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                @Override
-                public void onGlobalLayout() {
-                    View refreshLabel = findViewById(R.id.refresh_label);
-                    startingStationNameText.setRight(refreshLabel.getLeft());
-                    startingStationNameText.setText(startingStationNameText.getText());
-                    destinationStationNameText.setRight(refreshLabel.getLeft());
-                    destinationStationNameText.setText(destinationStationNameText.getText());
-                }
-            });
-        }
-
-        if (currentFavorite != null && editFavoritesFlag) {
-            setTitle(currentFavorite.getName());
-        }
-
-        refreshHandler.postDelayed(this, 30 * 1000);
-
-        refresh.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.create_favorite:
+                saveAsFavorite(item);
+                return true;
+            case R.id.refresh_nta_results:
                 refreshData();
-            }
-        });
-
-    }
-
-    private void gotoSchedulesForTarget() {
-        Intent intent = new Intent();
-        intent.putExtra(Constants.STARTING_STATION, start);
-        intent.putExtra(Constants.DESTINATION_STATION, destination);
-        intent.putExtra(Constants.TRANSIT_TYPE, transitType);
-        if (routeDirectionModel != null) {
-            intent.putExtra(Constants.ROUTE_DIRECTION_MODEL, routeDirectionModel);
+                return true;
+            case R.id.edit_favorite:
+                editFavorite(item);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-
-        setResult(Constants.VIEW_SCHEDULE, intent);
-        finish();
     }
 
-    private void restoreState(Bundle bundle) {
-        destination = (StopModel) bundle.get(Constants.DESTINATION_STATION);
-        start = (StopModel) bundle.get(Constants.STARTING_STATION);
-        transitType = (TransitType) bundle.get(Constants.TRANSIT_TYPE);
-        routeDirectionModel = (RouteDirectionModel) bundle.get(Constants.ROUTE_DIRECTION_MODEL);
-        editFavoritesFlag = bundle.getBoolean(Constants.EDIT_FAVORITES_FLAG, false);
+    @Override
+    protected void onResume() {
+        super.onResume();
+        refreshData();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        refreshHandler.removeCallbacks(this);
     }
 
     @Override
@@ -295,93 +210,14 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         outState.putSerializable(Constants.EDIT_FAVORITES_FLAG, editFavoritesFlag);
     }
 
-    public void saveAsFavorite(final MenuItem item) {
-        if (!item.isEnabled())
-            return;
-
-        item.setEnabled(false);
-
-        if (start != null && destination != null && transitType != null) {
-            if (currentFavorite == null) {
-                final Favorite favorite = new Favorite(start, destination, transitType, routeDirectionModel);
-                SaveFavoritesAsyncTask task = new SaveFavoritesAsyncTask(this, new Runnable() {
-                    @Override
-                    public void run() {
-                        item.setEnabled(true);
-                    }
-                }, new Runnable() {
-                    @Override
-                    public void run() {
-                        item.setEnabled(true);
-                        item.setIcon(R.drawable.ic_favorite_made);
-                        currentFavorite = favorite;
-                    }
-                });
-
-                task.execute(favorite);
-                Snackbar snackbar = Snackbar
-                        .make(findViewById(R.id.rail_next_to_arrive_results_coordinator), R.string.create_fav_snackbar_text, Snackbar.LENGTH_LONG);
-
-                snackbar.show();
-            } else {
-                new AlertDialog.Builder(this).setCancelable(true).setTitle(R.string.delete_fav_modal_title)
-                        .setMessage(R.string.delete_fav_modal_text)
-                        .setPositiveButton(R.string.delete_fav_pos_button, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                DeleteFavoritesAsyncTask task = new DeleteFavoritesAsyncTask(NextToArriveResultsActivity.this, new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        item.setEnabled(true);
-                                    }
-                                }, new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        item.setEnabled(true);
-                                        item.setIcon(R.drawable.ic_favorite_available);
-                                        currentFavorite = null;
-                                    }
-                                });
-
-                                task.execute(currentFavorite.getKey());
-                            }
-                        })
-                        .setNegativeButton(R.string.delete_fav_neg_button, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                item.setEnabled(true);
-                            }
-                        }).create().show();
-            }
-
-        } else {
-            item.setEnabled(true);
-        }
-    }
-
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        if (!editFavoritesFlag) {
-            getMenuInflater().inflate(R.menu.favorite_menu, menu);
-            if (currentFavorite != null) {
-                menu.findItem(R.id.create_favorite).setIcon(R.drawable.ic_favorite_made);
-                menu.findItem(R.id.create_favorite).setTitle(R.string.nta_favorite_icon_title_remove);
-            } else {
-                menu.findItem(R.id.create_favorite).setTitle(R.string.nta_favorite_icon_title_create);
-            }
-        } else {
-            getMenuInflater().inflate(R.menu.edit_favorites_menu, menu);
+    public boolean onSupportNavigateUp() {
+        try {
+            onBackPressed();
+        } catch (Exception e) {
+            Log.w(TAG, "Exception on Backpress", e);
         }
         return true;
-    }
-
-    public void editFavorite(final MenuItem item) {
-        Log.d(TAG, "edit Favorite.");
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        CrashlyticsManager.log(Log.INFO, TAG, "Creating RenameFavoriteDialogFragment for:" + currentFavorite.toString());
-        RenameFavoriteDialogFragment fragment = RenameFavoriteDialogFragment.getInstance(currentFavorite);
-
-        fragment.show(ft, EDIT_FAVORITE_DIALOG_KEY);
     }
 
     @Override
@@ -533,30 +369,185 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     }
 
     @Override
-    public boolean onSupportNavigateUp() {
-        try {
-            onBackPressed();
-        } catch (Exception e) {
-            Log.w(TAG, "Exception on Backpress", e);
-        }
-        return true;
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        refreshHandler.removeCallbacks(this);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        refreshData();
-    }
-
-    @Override
     public void run() {
         refreshData();
+    }
+
+    @Override
+    public void updateFavorite(Favorite favorite) {
+        currentFavorite = favorite;
+        setTitle(currentFavorite.getName());
+    }
+
+    @Override
+    public void noReverseStopsFound() {
+        Snackbar snackbar = Snackbar.make(containerView, R.string.reverse_not_found, Snackbar.LENGTH_LONG);
+        View snackbarView = snackbar.getView();
+        android.widget.TextView tv = (android.widget.TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+        tv.setMaxLines(10);
+        snackbar.show();
+    }
+
+    @Override
+    public void reverseTrip(TransitType transitType, RouteDirectionModel newRouteDirectionModel, StopModel newStart, StopModel newDestination) {
+        this.transitType = transitType;
+        this.routeDirectionModel = newRouteDirectionModel;
+        this.start = newStart;
+        this.destination = newDestination;
+
+        // create bundle for reverse trip based on results
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(Constants.DESTINATION_STATION, destination);
+        bundle.putSerializable(Constants.STARTING_STATION, start);
+        bundle.putSerializable(Constants.TRANSIT_TYPE, transitType);
+        bundle.putSerializable(Constants.ROUTE_DIRECTION_MODEL, routeDirectionModel);
+
+        // check if reverse trip is a favorite
+        boolean isAlreadyAFavorite = false;
+        Favorite reverseFavoriteTemp = new Favorite(start, destination, transitType, routeDirectionModel);
+        if (SeptaServiceFactory.getFavoritesService().getFavoriteByKey(NextToArriveResultsActivity.this, reverseFavoriteTemp.getKey()) != null) {
+            isAlreadyAFavorite = true;
+            currentFavorite = reverseFavoriteTemp;
+        }
+        editFavoritesFlag = isAlreadyAFavorite;
+        bundle.putSerializable(Constants.EDIT_FAVORITES_FLAG, editFavoritesFlag);
+
+        // update menu dynamically
+        invalidateOptionsMenu();
+
+        // show the reverse trip results
+        initializeView(bundle);
+        refreshData();
+    }
+
+    private void initializeView(Bundle savedInstanceState) {
+        nextToArriveDetailsView.setMaxResults(null);
+        nextToArriveDetailsView.setResults(NTA_RESULTS_FOR_NEXT_HOURS, TimeUnit.HOURS);  // if this value changes update UI message nta_empty_results
+
+        nextToArriveDetailsView.setOnFirstElementHeight(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer var1) {
+                titleText.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+                anchor.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+                int value = anchor.getMeasuredHeight() + anchor.getPaddingTop() + anchor.getPaddingBottom() +
+                        titleText.getMeasuredHeight() + titleText.getPaddingTop() +
+                        titleText.getPaddingBottom() + var1 + 50;
+                if (value != peekHeight) {
+                    peekHeight = value;
+
+                    if (!mapSized) {
+                        mapSized = true;
+                        mapFragment = SupportMapFragment.newInstance();
+
+                        ViewGroup.LayoutParams mapContainerLayoutParams = mapContainerView.getLayoutParams();
+                        mapContainerLayoutParams.height = rootView.getHeight() - value - mapContainerView.getTop();
+                        mapContainerLayoutParams.width = rootView.getWidth();
+                        mapContainerView.setLayoutParams(mapContainerLayoutParams);
+
+                        try {
+                            getSupportFragmentManager().beginTransaction().add(R.id.map_container, mapFragment).commit();
+                        } catch (IllegalStateException e) {
+                            Log.e(TAG, e.toString());
+                        }
+                        mapFragment.getMapAsync(NextToArriveResultsActivity.this);
+
+                    }
+
+                }
+            }
+        });
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
+
+        Bundle bundle = getIntent().getExtras();
+
+        if (savedInstanceState != null) {
+            restoreState(savedInstanceState);
+        } else {
+            restoreState(bundle);
+        }
+
+        noResultsSchedulesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                gotoSchedulesForTarget();
+            }
+        });
+
+        if (start != null && destination != null && transitType != null) {
+            titleText.setText(transitType.getString(NTA_RESULTS_TITLE, this));
+            ((TextView) findViewById(R.id.see_later_text)).setText(transitType.getString(NEED_TO_SEE, this));
+
+            final TextView startingStationNameText = (TextView) findViewById(R.id.starting_station_name);
+            startingStationNameText.setText(start.getStopName());
+
+            final TextView destinationStationNameText = (TextView) findViewById(R.id.destination_station_name);
+            destinationStationNameText.setText(destination.getStopName());
+
+            nextToArriveDetailsView.setTransitType(transitType);
+            nextToArriveDetailsView.setStart(start);
+            nextToArriveDetailsView.setDestination(destination);
+            nextToArriveDetailsView.setRouteDirectionModel(routeDirectionModel);
+
+
+            String favKey = Favorite.generateKey(start, destination, transitType, routeDirectionModel);
+            currentFavorite = SeptaServiceFactory.getFavoritesService().getFavoriteByKey(this, favKey);
+
+            findViewById(R.id.view_sched_view).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    gotoSchedulesForTarget();
+                }
+            });
+
+            refreshHandler = new Handler();
+
+            (findViewById(R.id.header)).getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    startingStationNameText.setRight(reverseTrip.getLeft());
+                    startingStationNameText.setText(startingStationNameText.getText());
+                    destinationStationNameText.setRight(reverseTrip.getLeft());
+                    destinationStationNameText.setText(destinationStationNameText.getText());
+                }
+            });
+        }
+
+        // change title if the selection is an existing favorite
+        if (currentFavorite != null && editFavoritesFlag) {
+            setTitle(currentFavorite.getName());
+        } else {
+            setTitle(R.string.next_to_arrive);
+        }
+
+        // reverse trip button clickable
+        reverseTrip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onReverseTripButtonClicked();
+            }
+        });
+
+        refreshHandler.postDelayed(this, 30 * 1000);
+    }
+
+    public void setStart(StopModel start) {
+        this.start = start;
+    }
+
+    public void setDestination(StopModel destination) {
+        this.destination = destination;
+    }
+
+    private void restoreState(Bundle bundle) {
+        destination = (StopModel) bundle.get(Constants.DESTINATION_STATION);
+        start = (StopModel) bundle.get(Constants.STARTING_STATION);
+        transitType = (TransitType) bundle.get(Constants.TRANSIT_TYPE);
+        routeDirectionModel = (RouteDirectionModel) bundle.get(Constants.ROUTE_DIRECTION_MODEL);
+        editFavoritesFlag = bundle.getBoolean(Constants.EDIT_FAVORITES_FLAG, false);
     }
 
     private void refreshData() {
@@ -736,6 +727,11 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
     }
 
+    private void progressVisibility(int visibility) {
+        progressView.setVisibility(visibility);
+        progressViewBottom.setVisibility(visibility);
+    }
+
     private void showNoResultsFoundErrorMessage() {
         // show error message and hide
         mapContainerView.setVisibility(View.GONE);
@@ -780,17 +776,97 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         }
     }
 
-    private void progressVisibility(int visibility) {
-        progressView.setVisibility(visibility);
-        progressViewBottom.setVisibility(visibility);
+    public void saveAsFavorite(final MenuItem item) {
+        if (!item.isEnabled()) {
+            return;
+        }
+
+        item.setEnabled(false);
+
+        if (start != null && destination != null && transitType != null) {
+            if (currentFavorite == null) {
+                final Favorite favorite = new Favorite(start, destination, transitType, routeDirectionModel);
+                SaveFavoritesAsyncTask task = new SaveFavoritesAsyncTask(this, new Runnable() {
+                    @Override
+                    public void run() {
+                        item.setEnabled(true);
+                    }
+                }, new Runnable() {
+                    @Override
+                    public void run() {
+                        item.setEnabled(true);
+                        item.setIcon(R.drawable.ic_favorite_made);
+                        currentFavorite = favorite;
+                    }
+                });
+
+                task.execute(favorite);
+                Snackbar snackbar = Snackbar
+                        .make(findViewById(R.id.rail_next_to_arrive_results_coordinator), R.string.create_fav_snackbar_text, Snackbar.LENGTH_LONG);
+
+                snackbar.show();
+            } else {
+                new AlertDialog.Builder(this).setCancelable(true).setTitle(R.string.delete_fav_modal_title)
+                        .setMessage(R.string.delete_fav_modal_text)
+                        .setPositiveButton(R.string.delete_fav_pos_button, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                DeleteFavoritesAsyncTask task = new DeleteFavoritesAsyncTask(NextToArriveResultsActivity.this, new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        item.setEnabled(true);
+                                    }
+                                }, new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        item.setEnabled(true);
+                                        item.setIcon(R.drawable.ic_favorite_available);
+                                        currentFavorite = null;
+                                    }
+                                });
+
+                                task.execute(currentFavorite.getKey());
+                            }
+                        }).setNegativeButton(R.string.delete_fav_neg_button, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        item.setEnabled(true);
+                    }
+                }).create().show();
+            }
+
+        } else {
+            item.setEnabled(true);
+        }
     }
 
-    @Override
-    public void updateFavorite(Favorite favorite) {
-        currentFavorite = favorite;
-        setTitle(currentFavorite.getName());
+    public void editFavorite(final MenuItem item) {
+        Log.d(TAG, "edit Favorite.");
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        CrashlyticsManager.log(Log.INFO, TAG, "Creating RenameFavoriteDialogFragment for:" + currentFavorite.toString());
+        RenameFavoriteDialogFragment fragment = RenameFavoriteDialogFragment.getInstance(currentFavorite);
+
+        fragment.show(ft, EDIT_FAVORITE_DIALOG_KEY);
     }
 
+    private void onReverseTripButtonClicked() {
+        // look up reverse stop IDs
+        ReverseNTAStopSelection reverseTripAsyncTask = new ReverseNTAStopSelection(NextToArriveResultsActivity.this, transitType, routeDirectionModel, start, destination);
+        reverseTripAsyncTask.execute();
+    }
+
+    private void gotoSchedulesForTarget() {
+        Intent intent = new Intent();
+        intent.putExtra(Constants.STARTING_STATION, start);
+        intent.putExtra(Constants.DESTINATION_STATION, destination);
+        intent.putExtra(Constants.TRANSIT_TYPE, transitType);
+        if (routeDirectionModel != null) {
+            intent.putExtra(Constants.ROUTE_DIRECTION_MODEL, routeDirectionModel);
+        }
+
+        setResult(Constants.VIEW_SCHEDULE, intent);
+        finish();
+    }
 }
 
 

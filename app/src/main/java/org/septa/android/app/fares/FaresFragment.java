@@ -16,10 +16,6 @@ import org.septa.android.app.webview.WebViewActivity;
 
 import java.text.MessageFormat;
 
-/**
- * Created by jkampf on 9/29/17.
- */
-
 public class FaresFragment extends Fragment {
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

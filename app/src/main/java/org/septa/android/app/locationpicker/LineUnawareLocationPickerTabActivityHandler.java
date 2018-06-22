@@ -29,11 +29,6 @@ import org.septa.android.app.support.BaseTabActivityHandler;
 import org.septa.android.app.support.Consumer;
 import org.septa.android.app.support.CursorAdapterSupplier;
 
-
-/**
- * Created by jkampf on 7/29/17.
- */
-
 public class LineUnawareLocationPickerTabActivityHandler extends BaseTabActivityHandler {
     private static final String TAG = LineUnawareLocationPickerTabActivityHandler.class.getSimpleName();
     private CursorAdapterSupplier<StopModel> cursorAdapterSupplier;

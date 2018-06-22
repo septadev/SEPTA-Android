@@ -4,17 +4,24 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+import android.widget.Toast;
 
 import org.septa.android.app.R;
+import org.septa.android.app.database.DatabaseManager;
 import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.TransitViewModelResponse;
+import org.septa.android.app.support.CursorAdapterSupplier;
+import org.septa.android.app.support.RouteModelComparator;
 import org.septa.android.app.view.TextView;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -22,7 +29,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class TransitViewResultsActivity extends AppCompatActivity implements Runnable {
+public class TransitViewResultsActivity extends AppCompatActivity implements Runnable, TransitViewLinePickerFragment.TransitViewLinePickerListener {
 
     private static final String TAG = TransitViewResultsActivity.class.getSimpleName();
 
@@ -30,6 +37,9 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
     private String routeIds;
 
     private Handler refreshHandler;
+
+    // layout variables
+    TextView addLabel, firstRouteLabel, secondRouteLabel, thirdRouteLabel;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -39,6 +49,9 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
 
         setTitle(R.string.transit_view);
         setContentView(R.layout.activity_transitview_results);
+
+        // initialize view
+        initializeView();
 
         // initialize route labels
         updateRouteLabels(firstRoute, secondRoute, thirdRoute);
@@ -62,6 +75,38 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
         refreshData();
     }
 
+    @Override
+    public void selectFirstRoute(RouteDirectionModel route) {
+        Log.e(TAG, "Invalid attempt to select the first route from the TransitViewResultsActivity -- going back to TransitView route picker");
+
+        Toast.makeText(this, R.string.transitview_add_route, Toast.LENGTH_LONG).show();
+        finish();
+    }
+
+    @Override
+    public void selectSecondRoute(RouteDirectionModel route) {
+        // sort the routes and append a null route to the end
+        List<RouteDirectionModel> selectedRoutes = new ArrayList<>();
+        selectedRoutes.add(firstRoute);
+        selectedRoutes.add(route);
+        Collections.sort(selectedRoutes, new RouteModelComparator());
+        selectedRoutes.add(null);
+
+        updateRouteLabels(selectedRoutes.get(0), selectedRoutes.get(1), selectedRoutes.get(2));
+    }
+
+    @Override
+    public void selectThirdRoute(RouteDirectionModel route) {
+        // sort the routes
+        List<RouteDirectionModel> selectedRoutes = new ArrayList<>();
+        selectedRoutes.add(firstRoute);
+        selectedRoutes.add(secondRoute);
+        selectedRoutes.add(route);
+        Collections.sort(selectedRoutes, new RouteModelComparator());
+
+        updateRouteLabels(selectedRoutes.get(0), selectedRoutes.get(1), selectedRoutes.get(2));
+    }
+
     private void initializeActivity(@Nullable Bundle savedInstanceState) {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -83,19 +128,12 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
         thirdRoute = (RouteDirectionModel) bundle.get(TransitViewFragment.TRANSITVIEW_ROUTE_THIRD);
     }
 
-    private void updateRouteLabels(@NonNull RouteDirectionModel first, RouteDirectionModel second, RouteDirectionModel third) {
-        this.firstRoute = first;
-        this.secondRoute = second;
-        this.thirdRoute = third;
+    private void initializeView() {
+        firstRouteLabel = (TextView) findViewById(R.id.first_route_delete);
+        secondRouteLabel = (TextView) findViewById(R.id.second_route_delete);
+        thirdRouteLabel = (TextView) findViewById(R.id.third_route_delete);
+        addLabel = (TextView) findViewById(R.id.header_add_label);
 
-        TextView firstRouteLabel = (TextView) findViewById(R.id.first_route_delete);
-        TextView secondRouteLabel = (TextView) findViewById(R.id.second_route_delete);
-        TextView thirdRouteLabel = (TextView) findViewById(R.id.third_route_delete);
-        TextView addLabel = (TextView) findViewById(R.id.header_add_label);
-
-        StringBuilder routeIdBuilder = new StringBuilder(firstRoute.getRouteId());
-
-        firstRouteLabel.setText(firstRoute.getRouteId());
         firstRouteLabel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -134,9 +172,34 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
         addLabel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO: pop-up route picker dialog
+                // get which routes have already been selected
+                String[] selectedRoutes = new String[2];
+                if (firstRoute != null) {
+                    selectedRoutes[0] = firstRoute.getRouteId();
+                }
+                if (secondRoute != null) {
+                    selectedRoutes[1] = secondRoute.getRouteId();
+                }
+
+                // pop-up transitview route picker dialog
+                DatabaseManager dbManager = DatabaseManager.getInstance(TransitViewResultsActivity.this);
+                CursorAdapterSupplier<RouteDirectionModel> busRouteCursorAdapterSupplier = dbManager.getBusNoDirectionRouteCursorAdapterSupplier(),
+                        trolleyRouteCursorAdapterSupplier = dbManager.getTrolleyNoDirectionRouteCursorAdapterSupplier();
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                TransitViewLinePickerFragment newFragment = TransitViewLinePickerFragment.newInstance(busRouteCursorAdapterSupplier, trolleyRouteCursorAdapterSupplier, selectedRoutes);
+                newFragment.show(ft, "line_picker");
             }
         });
+    }
+
+    private void updateRouteLabels(@NonNull RouteDirectionModel first, RouteDirectionModel second, RouteDirectionModel third) {
+        this.firstRoute = first;
+        this.secondRoute = second;
+        this.thirdRoute = third;
+
+        StringBuilder routeIdBuilder = new StringBuilder(firstRoute.getRouteId());
+
+        firstRouteLabel.setText(firstRoute.getRouteId());
 
         if (secondRoute != null) {
             routeIdBuilder.append(",").append(secondRoute.getRouteId());
@@ -204,7 +267,7 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
 
             @Override
             public void onFailure(Call<TransitViewModelResponse> call, Throwable t) {
-                Log.e(TAG, "No TransitView results found", t);
+                Log.e(TAG, "No TransitView results found for the routes: " + routeIds, t);
                 showNoResultsFoundErrorMessage(); // TODO: how should this be handled
             }
         });

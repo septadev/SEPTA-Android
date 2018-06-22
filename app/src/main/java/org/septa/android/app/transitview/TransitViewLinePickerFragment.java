@@ -49,6 +49,9 @@ public class TransitViewLinePickerFragment extends DialogFragment {
     CursorAdapterSupplier<RouteDirectionModel> trolleyRouteCursorAdapterSupplier;
     CursorAdapterSupplier<RouteDirectionModel> busRouteCursorAdapterSupplier;
     String[] selectedRoutes;
+
+    TransitViewLinePickerListener mListener;
+
     ListView linesList;
     TransitViewLineArrayAdapter transitViewLineArrayAdapter;
     EditText filterText;
@@ -99,18 +102,22 @@ public class TransitViewLinePickerFragment extends DialogFragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 if (getTargetFragment() != null) {
-//                    Log.e(TAG, "Passing back RouteDirectionModel using onActivityResult"); // TODO: remove
+                    Log.d(TAG, "Passing back selected route to TransitViewFragment");
 
                     Intent intent = new Intent();
                     intent.putExtra(ROUTE_DIRECTION_MODEL, transitViewLineArrayAdapter.getItem(i));
                     getTargetFragment().onActivityResult(getTargetRequestCode(), SUCCESS, intent);
-//                } else if (mListener != null) {
-//                    Log.e(TAG, "Passing back RouteDirectionModel using listener"); // TODO: remove
-//
-//                    mListener.selectFirstRoute(transitViewLineArrayAdapter.getItem(i));
-//                    // TODO: handle second and third route -- should try to always pass back result using onActivityResult
+                } else if (mListener != null) {
+                    Log.d(TAG, "Passing back selected route to TransitViewResultsActivity");
+
+                    // one route must already be selected to add a route from TransitViewResultsActivity
+                    if (selectedRoutes[1] == null) {
+                        mListener.selectSecondRoute(transitViewLineArrayAdapter.getItem(i));
+                    } else {
+                        mListener.selectThirdRoute(transitViewLineArrayAdapter.getItem(i));
+                    }
                 } else {
-                    Log.e(TAG, "Could not pass back RouteDirectionModel result"); // TODO: remove
+                    Log.e(TAG, "Could not pass back RouteDirectionModel result");
                 }
                 dismiss();
             }
@@ -138,6 +145,15 @@ public class TransitViewLinePickerFragment extends DialogFragment {
 
         return rootView;
 
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        if (context instanceof TransitViewLinePickerListener) {
+            this.mListener = (TransitViewLinePickerListener) context;
+        }
     }
 
     private void restoreArgs() {
@@ -216,11 +232,6 @@ public class TransitViewLinePickerFragment extends DialogFragment {
                 // disable route from picker if already selected
                 if (route.getRouteId().equals(selectedRoutes[0]) || route.getRouteId().equals(selectedRoutes[1])) {
                     disableRouteItemView(convertView);
-
-                    // TODO: remove
-                    Log.e(TAG, "routeID: " + route.getRouteId());
-                    Log.e(TAG, "1st selected: " + selectedRoutes[0]);
-                    Log.e(TAG, "2nd selected: " + selectedRoutes[1]);
                 } else {
                     activateRouteItemView(convertView);
                 }

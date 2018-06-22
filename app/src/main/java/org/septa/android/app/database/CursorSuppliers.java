@@ -7,6 +7,8 @@ import android.util.Log;
 
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
+import org.septa.android.app.database.update.DatabaseSharedPrefsUtils;
+import org.septa.android.app.database.update.TempDatabaseManager;
 import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.domain.ScheduleModel;
 import org.septa.android.app.domain.StopModel;
@@ -31,60 +33,29 @@ class CursorSuppliers implements Serializable {
         return DatabaseManager.getDatabase(context);
     }
 
-    static class NhslStopCursorAdapterSupplier implements CursorAdapterSupplier<StopModel> {
-        private static final String SELECT_CLAUSE = "SELECT DISTINCT a.stop_id, stop_name, wheelchair_boarding, stop_lat, stop_lon, a.rowid AS _id FROM stops_bus a, stop_times_NHSL b WHERE b.stop_id = a.stop_id";
+    public static class DatabaseVersionCursorAdapterSupplier implements CursorAdapterSupplier<Integer> {
+        String SELECT_CLAUSE = "SELECT version FROM dbVersion";
 
         @Override
         public Cursor getCursor(Context context, List<Criteria> whereClause) {
-            StringBuilder queryString = new StringBuilder(SELECT_CLAUSE);
-
-            if (whereClause != null) {
-                for (Criteria c : whereClause) {
-                    queryString.append(" AND ");
-
-                    if ("stop_lon".equals(c.getFieldName()) || "stop_lat".equals(c.getFieldName())) {
-                        queryString.append("CAST(a.").append(c.getFieldName()).append(" as decimal)")
-                                .append(c.getOperation()).append(c.getValue().toString());
-                    } else {
-                        queryString.append("a.").append(c.getFieldName()).append(c.getOperation())
-                                .append("'").append(c.getValue().toString()).append("'");
-                    }
-                }
-            }
-
-            Log.d(TAG, "Creating cursor:" + queryString.toString());
-
-            return getDatabase(context).rawQuery(queryString.toString(), null);
+            return TempDatabaseManager.getDatabaseWithVersion(context, DatabaseSharedPrefsUtils.getVersionDownloaded(context)).rawQuery(SELECT_CLAUSE, null);
         }
 
         @Override
-        public StopModel getCurrentItemFromCursor(Cursor cursor) {
-            return new StopModel(cursor.getString(0), cursor.getString(1),
-                    (cursor.getInt(2) == 1), cursor.getString(3), cursor.getString(4));
+        public Integer getCurrentItemFromCursor(Cursor cursor) {
+            Integer versionNumber = Integer.parseInt(cursor.getString(0));
+            return versionNumber;
         }
 
         @Override
-        public StopModel getItemFromId(Context context, Object id) {
-            List<Criteria> criteria = new ArrayList<Criteria>(1);
-            criteria.add(new Criteria("stop_id", Criteria.Operation.EQ, id.toString()));
-            Cursor cursor = getCursor(context, criteria);
-            StopModel stopModel = null;
-
-            if (cursor != null) {
-                if (cursor.moveToFirst()) {
-                    stopModel = getCurrentItemFromCursor(cursor);
-                }
-                cursor.close();
-            }
-
-            return stopModel;
+        public Integer getItemFromId(Context context, Object id) {
+            throw new RuntimeException("Not supported by getVersionOfDatabase");
         }
     }
 
     static class RailStopCursorAdapterSupplier implements CursorAdapterSupplier<StopModel> {
 
         private static final String SELECT_CLAUSE = "SELECT stop_id, stop_name, wheelchair_boarding, stop_lat, stop_lon, rowid AS _id FROM stops_rail a";
-
 
         @Override
         public Cursor getCursor(Context context, List<Criteria> whereClause) {
@@ -400,7 +371,6 @@ class CursorSuppliers implements Serializable {
         }
     }
 
-
     static class RailRouteCursorAdapterSupplier implements CursorAdapterSupplier<RouteDirectionModel> {
 
         private static final String SELECT_CLAUSE = "SELECT R.Route_id, R.route_short_name route_short_name, B.terminus_name route_long_name, cast (B.direction_id  as TEXT ) dircode FROM routes_rail R join routes_rail_boundaries B on R.route_id = b.route_id";
@@ -554,14 +524,15 @@ class CursorSuppliers implements Serializable {
 
             String longName = cursor.getString(2);
 
-            if ("BSL".equals(id))
+            if ("BSL".equals(id)) {
                 longName = "Broad Street Line";
-            else if ("MFL".equals(id))
+            } else if ("MFL".equals(id)) {
                 longName = "Market Frankford Line";
-            else if ("BSO".equals(id))
+            } else if ("BSO".equals(id)) {
                 longName = "Broad Street Overnight";
-            else if ("MFO".equals(id))
+            } else if ("MFO".equals(id)) {
                 longName = "Market Frankford Overnight";
+            }
 
             return new RouteDirectionModel(cursor.getString(0), cursor.getString(1), longName, cursor.getString(3), cursor.getString(4), cursor.getInt(5));
         }
@@ -659,7 +630,6 @@ class CursorSuppliers implements Serializable {
         }
     }
 
-
     static class NonRegionalRailScheduleCursorAdapterSupplier implements CursorAdapterSupplier<ScheduleModel> {
 
         @Override
@@ -670,7 +640,6 @@ class CursorSuppliers implements Serializable {
             String service_id = null;
             String direction_id = null;
             String end_stop_id = null;
-            String route_id = null;
 
             if (whereClause != null) {
                 for (Criteria c : whereClause) {
@@ -682,20 +651,10 @@ class CursorSuppliers implements Serializable {
                         direction_id = c.getValue().toString();
                     } else if ("end_stop_id".equals(c.getFieldName())) {
                         end_stop_id = c.getValue().toString();
-                    } else if ("route_id".equals(c.getFieldName())) {
-                        route_id = c.getValue().toString();
                     }
                 }
 
                 String tableSuffix = "bus";
-
-                if ("MFL".equals(route_id)) {
-                    tableSuffix = "mfl";
-                } else if ("BSL".equals(route_id))
-                    tableSuffix = "bsl";
-                else if ("NHSL".equals(route_id)) {
-                    tableSuffix = "nhsl";
-                }
 
                 MessageFormat form = new MessageFormat(queryString);
                 String query = form.format(new Object[]{start_stop_id, service_id, direction_id, end_stop_id, tableSuffix});

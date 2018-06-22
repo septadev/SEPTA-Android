@@ -47,10 +47,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- * Created by jkampf on 7/30/17.
- */
-
 class ByAddressTabActivityHandler extends BaseTabActivityHandler {
     final private CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
     public static final String TAG = ByAddressTabActivityHandler.class.getSimpleName();
@@ -92,18 +88,19 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
                                  Bundle savedInstanceState) {
             final View rootView = inflater.inflate(R.layout.location_picker_by_address, container, false);
 
-            if (getActivity() == null)
+            if (getActivity() == null) {
                 return rootView;
+            }
 
             restoreArgs();
-            stopsListView = (ListView) rootView.findViewById(R.id.stop_list);
+            stopsListView = rootView.findViewById(R.id.stop_list);
             progressView = rootView.findViewById(R.id.progress_view);
 
             final FindClosestStationTask task = new FindClosestStationTask(this);
 
             myLocationClickListener = new MyLocationClickListener(this);
 
-            addressEntry = (AutoCompleteTextView) rootView.findViewById(R.id.address_text);
+            addressEntry = rootView.findViewById(R.id.address_text);
             int permissionCheck = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION);
             if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
                 Task<Location> locationTask = LocationServices.getFusedLocationProviderClient(getActivity()).getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
@@ -141,7 +138,6 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
                 addressEntry.setCompoundDrawablesWithIntrinsicBounds(drawables[0], drawables[1], ContextCompat.getDrawable(getContext(), R.drawable.ic_gps_not_fixed_black_24_px), drawables[3]);
             }
 
-
             addressEntry.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -157,7 +153,6 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
                     findAddressTask.execute(args);
                 }
             });
-
 
             addressEntry.setOnKeyListener(new View.OnKeyListener() {
                 public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -181,7 +176,6 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
                     return false;
                 }
             });
-
 
             return rootView;
         }
@@ -339,7 +333,6 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
 
         }
 
-
     }
 
     static class FindAddressTask extends AsyncTask<String, Void, Location> {
@@ -353,7 +346,7 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
             }
         }
 
-        public FindAddressTask(ByAddressFragment fragment) {
+        FindAddressTask(ByAddressFragment fragment) {
             this.fragment = fragment;
         }
 
@@ -365,14 +358,13 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
             return MapUtils.getLocationFromAddress(fragment.getActivity(), strings[0]);
         }
 
-
     }
 
     static class StopModelWithDistance implements Comparable<StopModelWithDistance> {
         Double distance;
         StopModel stopModel;
 
-        public StopModelWithDistance(Double distance, StopModel stopModel) {
+        StopModelWithDistance(Double distance, StopModel stopModel) {
             this.distance = distance;
             this.stopModel = stopModel;
         }

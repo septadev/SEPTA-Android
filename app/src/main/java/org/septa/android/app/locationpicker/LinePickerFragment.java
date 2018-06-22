@@ -35,10 +35,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Created by jkampf on 8/30/17.
- */
-
 public class LinePickerFragment extends DialogFragment {
     public static final int SUCCESS = 0;
     public static final String ROUTE_DIRECTION_MODEL = "routeDirectionModel";
@@ -70,7 +66,7 @@ public class LinePickerFragment extends DialogFragment {
         View rootView = inflater.inflate(R.layout.fragment_line_picker, container);
 
         View exitView = rootView.findViewById(R.id.exit);
-        filterText = (EditText) rootView.findViewById(R.id.line_filter_text);
+        filterText = rootView.findViewById(R.id.line_filter_text);
 
         exitView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,7 +75,7 @@ public class LinePickerFragment extends DialogFragment {
             }
         });
 
-        linesList = (ListView) rootView.findViewById(R.id.line_list);
+        linesList = rootView.findViewById(R.id.line_list);
         linesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -172,9 +168,9 @@ public class LinePickerFragment extends DialogFragment {
 
             RouteDirectionModel route = getItem(position);
             if (route != null) {
-                TextView titleText = (TextView) convertView.findViewById(R.id.line_title);
-                TextView descText = (TextView) convertView.findViewById(R.id.line_desc);
-                ImageView lineIcon = (ImageView) convertView.findViewById(R.id.route_icon);
+                TextView titleText = convertView.findViewById(R.id.line_title);
+                TextView descText = convertView.findViewById(R.id.line_desc);
+                ImageView lineIcon = convertView.findViewById(R.id.route_icon);
                 lineIcon.setImageResource(transitType.getIconForLine(route.getRouteId(), getContext()));
 
                 if (transitType == TransitType.TROLLEY || transitType == TransitType.BUS) {
@@ -267,7 +263,7 @@ public class LinePickerFragment extends DialogFragment {
 
                 @SuppressWarnings("unchecked")
                 @Override
-                protected void publishResults(CharSequence contraint, FilterResults results) {
+                protected void publishResults(CharSequence constraint, FilterResults results) {
                     filterRoutes = (List<RouteDirectionModel>) results.values;
                     notifyDataSetChanged();
 

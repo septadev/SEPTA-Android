@@ -53,8 +53,8 @@
                 android:layout_weight="5"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:text="Paoli / Throndale"
-                app:typeface="@string/font_roboto_regular" />
+                android:text="Paoli / Thorndale"
+                app:font="@string/font_roboto_regular" />
 
             <ImageView
                 android:id="@+id/orig_line_advisory_icon"

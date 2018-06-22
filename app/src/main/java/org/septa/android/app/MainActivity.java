@@ -1,12 +1,17 @@
 package org.septa.android.app;
 
 import android.app.AlertDialog;
+import android.app.DownloadManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -25,6 +30,12 @@ import android.view.View;
 
 import org.septa.android.app.about.AboutFragment;
 import org.septa.android.app.connect.ConnectFragment;
+import org.septa.android.app.database.update.CheckForLatestDB;
+import org.septa.android.app.database.update.CleanOldDB;
+import org.septa.android.app.database.update.DatabaseSharedPrefsUtils;
+import org.septa.android.app.database.update.DatabaseUpgradeUtils;
+import org.septa.android.app.database.update.DownloadNewDB;
+import org.septa.android.app.database.update.ExpandDBZip;
 import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.fares.FaresFragment;
@@ -50,12 +61,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
- * Created by jkampf on 8/22/17.
- */
+import static org.septa.android.app.database.update.DatabaseSharedPrefsUtils.DEFAULT_DOWNLOAD_REF_ID;
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, FavoritesFragment.FavoritesFragmentListener, ManageFavoritesFragment.ManageFavoritesFragmentListener, SeptaServiceFactory.SeptaServiceFactoryCallBacks {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, FavoritesFragment.FavoritesFragmentListener, ManageFavoritesFragment.ManageFavoritesFragmentListener, SeptaServiceFactory.SeptaServiceFactoryCallBacks, CheckForLatestDB.CheckForLatestDBListener, DownloadNewDB.DownloadNewDBListener, ExpandDBZip.ExpandDBZipListener, CleanOldDB.CleanOldDBListener {
 
     public static final String TAG = MainActivity.class.getSimpleName();
     NextToArriveFragment nextToArriveFragment = new NextToArriveFragment();
@@ -66,6 +74,7 @@ public class MainActivity extends AppCompatActivity
     MenuItem currentMenu;
     NavigationView navigationView;
 
+    // favorites
     FavoritesFragment favoritesFragment;
     ManageFavoritesFragment manageFavoritesFragment;
 
@@ -77,6 +86,16 @@ public class MainActivity extends AppCompatActivity
     Fragment transitview = null;
     Fragment connect = new ConnectFragment();
     Fragment about = new AboutFragment();
+
+    // in-app database update
+    DownloadManager downloadManager;
+    AlertDialog promptDownloadDB, acknowledgeNewDatabaseReady;
+
+    // shake detector used for crashing the app purposefully
+    // TODO: comment out when releasing to production
+//    private SensorManager mSensorManager;
+//    private Sensor mAccelerometer;
+//    private ShakeDetector mShakeDetector;
 
     public static final String MOBILE_APP_ALERT_ROUTE_NAME = "Mobile APP",
             MOBILE_APP_ALERT_MODE = "MOBILE",
@@ -106,6 +125,9 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
+        // listen for new DB download
+        registerReceiver(onDBDownloadComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+        downloadManager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
         if (savedInstanceState == null) {
             if (SeptaServiceFactory.getFavoritesService().getFavorites(this).size() > 0) {
                 switchToFavorites();
@@ -113,11 +135,27 @@ public class MainActivity extends AppCompatActivity
                 addNewFavorite();
             }
         }
+
+        // TODO: comment out when releasing to production
+        // ShakeDetector initialization
+//        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+//        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+//        mShakeDetector = new ShakeDetector();
+//        mShakeDetector.setOnShakeListener(new ShakeDetector.OnShakeListener() {
+//            @Override
+//            public void onShake(int count) {
+//                handleShakeEvent(count);
+//            }
+//        });
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+
+        // TODO: comment out when releasing to production
+        // re-register the shake detector on resume
+//        mSensorManager.registerListener(mShakeDetector, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
 
         // note that generic alert will show up before mobile app alert bc it was the most recently added
 
@@ -153,8 +191,6 @@ public class MainActivity extends AppCompatActivity
                         SeptaServiceFactory.displayWebServiceError(findViewById(R.id.drawer_layout), MainActivity.this);
                     }
                 });
-
-
             }
         }
 
@@ -189,14 +225,23 @@ public class MainActivity extends AppCompatActivity
                         SeptaServiceFactory.displayWebServiceError(findViewById(R.id.drawer_layout), MainActivity.this);
                     }
                 });
-
             }
         }
+
+        // check if in-app DB update
+        DatabaseUpgradeUtils.checkForNewDatabase(MainActivity.this);
+
+        // prep for new DB if not already installed
+        DatabaseUpgradeUtils.prepareForNewDatabase(MainActivity.this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+
+        // TODO: comment out when releasing to production
+        // unregister the shake detector on pause
+//        mSensorManager.unregisterListener(mShakeDetector);
 
         // prevent stacking alertdialogs
         if (genericAlert != null) {
@@ -207,9 +252,27 @@ public class MainActivity extends AppCompatActivity
             mobileAlert.dismiss();
         }
 
+        if (promptDownloadDB != null) {
+            promptDownloadDB.dismiss();
+            promptDownloadDB = null;
+        }
+
+        if (acknowledgeNewDatabaseReady != null) {
+            acknowledgeNewDatabaseReady.dismiss();
+            acknowledgeNewDatabaseReady = null;
+        }
+
         // hide menu badge icon
         View view = navigationView.getMenu().findItem(R.id.nav_system_status).getActionView();
         view.setVisibility(View.GONE);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        // remove broadcast listener for DB download completion
+        unregisterReceiver(onDBDownloadComplete);
     }
 
     @Override
@@ -289,40 +352,17 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private void switchToBundle(MenuItem item, Fragment targetFragment, int title, int highlightedIcon) {
-        CrashlyticsManager.log(Log.INFO, TAG, "switchToBundle:" + item.getTitle() + ", " + targetFragment.getClass().getCanonicalName());
-        if ((currentMenu != null) && item.getItemId() == currentMenu.getItemId())
-            return;
-
-        if (previousIcon != null) {
-            currentMenu.setIcon(previousIcon);
-        }
-        currentMenu = item;
-        previousIcon = item.getIcon();
-        if (highlightedIcon != 0) {
-            currentMenu.setIcon(highlightedIcon);
-        }
-        activeFragment = targetFragment;
-
-        getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, targetFragment).commit();
-
-        setTitle(title);
+    @Override
+    public void refreshFavoritesInstance() {
+        CrashlyticsManager.log(Log.INFO, TAG, "refreshFavoritesInstance");
+        favoritesFragment = FavoritesFragment.newInstance();
+        getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, favoritesFragment).commit();
     }
 
     @Override
     public void addNewFavorite() {
         CrashlyticsManager.log(Log.INFO, TAG, "addNewFavorite");
-        if (currentMenu == null || currentMenu.getItemId() != R.id.nav_next_to_arrive) {
-            if (currentMenu != null) {
-                currentMenu.setIcon(previousIcon);
-            }
-            navigationView.setCheckedItem(R.id.nav_next_to_arrive);
-            currentMenu = navigationView.getMenu().findItem(R.id.nav_next_to_arrive);
-            previousIcon = currentMenu.getIcon();
-            currentMenu.setIcon(R.drawable.ic_nta_active);
-            getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, nextToArriveFragment).commit();
-            setTitle(R.string.next_to_arrive);
-        }
+        switchToNextToArrive();
     }
 
     @Override
@@ -346,6 +386,18 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        int unmaskedRequestCode = requestCode & 0x0000ffff;
+        if (unmaskedRequestCode == Constants.NTA_REQUEST) {
+            if (resultCode == Constants.VIEW_SCHEDULE) {
+                Message message = jumpToSchedulesHandler.obtainMessage();
+                message.setData(data.getExtras());
+                jumpToSchedulesHandler.sendMessage(message);
+            }
+        }
+    }
+
+    @Override
     public void gotoSchedules() {
         switchToSchedules(null);
         //switchToBundle(navigationView.getMenu().findItem(R.id.nav_schedule), schedules, R.string.schedule, R.drawable.ic_schedule_active);
@@ -365,6 +417,115 @@ public class MainActivity extends AppCompatActivity
         switchToSchedules(bundle);
     }
 
+    @Override
+    public void afterLatestDBMetadataLoad(final int latestDBVersion, final String latestDBURL, String updatedDate) {
+        boolean shouldPrompt = DatabaseUpgradeUtils.decideWhetherToAskToDownload(MainActivity.this, latestDBVersion, latestDBURL, updatedDate);
+
+        if (shouldPrompt) {
+            // prompt user to download new database
+            AlertDialog dialog = DatabaseUpgradeUtils.promptToDownload(MainActivity.this);
+
+            // only show prompt once
+            if (promptDownloadDB != null && promptDownloadDB.isShowing()) {
+                promptDownloadDB.dismiss();
+                promptDownloadDB = null;
+            }
+            promptDownloadDB = dialog;
+
+            // show prompt
+            if (promptDownloadDB != null) {
+                promptDownloadDB.show();
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(final int requestCode, @NonNull final String[] permissions, @NonNull final int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        DatabaseUpgradeUtils.permissionResponseReceived(MainActivity.this, requestCode, permissions, grantResults);
+    }
+
+    @Override
+    public void afterNewDBDownloadStarted(DownloadManager.Request request, int version) {
+        long downloadRefId = downloadManager.enqueue(request);
+
+        DatabaseUpgradeUtils.saveDownloadedVersionNumber(MainActivity.this, downloadRefId, version);
+    }
+
+    @Override
+    public void clearCorruptedDownloadRefId() {
+        long downloadRefId = DatabaseSharedPrefsUtils.getDownloadRefId(MainActivity.this);
+        if (downloadRefId != DEFAULT_DOWNLOAD_REF_ID) {
+            downloadManager.remove();
+        }
+    }
+
+    @Override
+    public void afterDBUnzipped(int versionInstalled) {
+        // validate that DB unzipped correctly and with correct version, then save if ready
+        DatabaseUpgradeUtils.saveNewDatabaseReady(MainActivity.this, versionInstalled);
+
+        notifyNewDatabaseReady();
+    }
+
+    @Override
+    public void notifyNewDatabaseReady() {
+        // only show that new database ready if not already using most up to date version of database
+        AlertDialog dialog = DatabaseUpgradeUtils.buildNewDatabaseReadyPopUp(MainActivity.this);
+
+        // only show prompt once
+        if (acknowledgeNewDatabaseReady != null && acknowledgeNewDatabaseReady.isShowing()) {
+            acknowledgeNewDatabaseReady.dismiss();
+            acknowledgeNewDatabaseReady = null;
+        }
+        acknowledgeNewDatabaseReady = dialog;
+
+        // show prompt
+        if (acknowledgeNewDatabaseReady != null) {
+            acknowledgeNewDatabaseReady.show();
+        }
+    }
+
+    @Override
+    public void afterOldDBCleaned() {
+        DatabaseUpgradeUtils.databaseUpdateComplete(MainActivity.this);
+    }
+
+    private void switchToBundle(MenuItem item, Fragment targetFragment, int title, int highlightedIcon) {
+        CrashlyticsManager.log(Log.INFO, TAG, "switchToBundle:" + item.getTitle() + ", " + targetFragment.getClass().getCanonicalName());
+        if ((currentMenu != null) && item.getItemId() == currentMenu.getItemId())
+            return;
+
+        if (previousIcon != null) {
+            currentMenu.setIcon(previousIcon);
+        }
+        currentMenu = item;
+        previousIcon = item.getIcon();
+        if (highlightedIcon != 0) {
+            currentMenu.setIcon(highlightedIcon);
+        }
+        activeFragment = targetFragment;
+
+        getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, targetFragment).commit();
+
+        setTitle(title);
+    }
+
+    public void switchToNextToArrive() {
+        if (currentMenu == null || currentMenu.getItemId() != R.id.nav_next_to_arrive) {
+            if (currentMenu != null) {
+                currentMenu.setIcon(previousIcon);
+            }
+            navigationView.setCheckedItem(R.id.nav_next_to_arrive);
+            currentMenu = navigationView.getMenu().findItem(R.id.nav_next_to_arrive);
+            previousIcon = currentMenu.getIcon();
+            currentMenu.setIcon(R.drawable.ic_nta_active);
+            getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, nextToArriveFragment).commit();
+            setTitle(R.string.next_to_arrive);
+        }
+    }
+
     public void switchToFavorites() {
         CrashlyticsManager.log(Log.INFO, TAG, "switchToFavorites");
         if (currentMenu == null || currentMenu.getItemId() != R.id.nav_favorites) {
@@ -379,26 +540,6 @@ public class MainActivity extends AppCompatActivity
             setTitle(R.string.favorites);
         }
     }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        int unmaskedRequestCode = requestCode & 0x0000ffff;
-        if (unmaskedRequestCode == Constants.NTA_REQUEST) {
-            if (resultCode == Constants.VIEW_SCHEDULE) {
-                Message message = jumpToSchedulesHandler.obtainMessage();
-                message.setData(data.getExtras());
-                jumpToSchedulesHandler.sendMessage(message);
-            }
-        }
-    }
-
-    private Handler jumpToSchedulesHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switchToSchedules(msg.getData());
-        }
-    };
-
 
     public void switchToSchedules(Bundle data) {
         CrashlyticsManager.log(Log.INFO, TAG, "switchToSchedules");
@@ -427,12 +568,35 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    public void refreshFavoritesInstance() {
-        CrashlyticsManager.log(Log.INFO, TAG, "refreshFavoritesInstance");
-        favoritesFragment = FavoritesFragment.newInstance();
-        getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, favoritesFragment).commit();
-    }
+    private Handler jumpToSchedulesHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switchToSchedules(msg.getData());
+        }
+    };
+
+    // listener for completed database downloads
+    BroadcastReceiver onDBDownloadComplete = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            // get the refid from the download manager
+            long referenceIdFound = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
+
+            // grab refid we are looking for from shared pref
+            long referenceIdLookingFor = DatabaseSharedPrefsUtils.getDownloadRefId(MainActivity.this);
+
+            Log.d(TAG, "Found DB download ref ID " + referenceIdFound + " and looking for " + referenceIdLookingFor);
+
+            if (referenceIdFound == referenceIdLookingFor && referenceIdLookingFor != DEFAULT_DOWNLOAD_REF_ID) {
+                // stop looking for that download id
+                DatabaseSharedPrefsUtils.clearDownloadRefId(MainActivity.this);
+
+                // expand new db
+                DatabaseUpgradeUtils.prepareForNewDatabase(MainActivity.this);
+
+                Log.d(TAG, "Completed download for ref ID: " + referenceIdFound);
+            }
+        }
+    };
 
     public void showAlert(String alert, Boolean isGenericAlert) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -470,6 +634,13 @@ public class MainActivity extends AppCompatActivity
         view.setVisibility(View.VISIBLE);
 
         dialog.show();
+    }
+
+    public void handleShakeEvent(int count) {
+        Log.d(TAG, "Device shaken!");
+
+        // force crash the app
+        throw new RuntimeException("This is a forced crash");
     }
 
 }

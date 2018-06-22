@@ -61,10 +61,12 @@ public class SchedulesFragment extends Fragment {
 
     @Nullable
     @Override
+
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        if (getActivity() == null)
+        if (getActivity() == null) {
             return null;
+        }
 
         DatabaseManager dbManager = DatabaseManager.getInstance(getActivity());
 
@@ -80,9 +82,9 @@ public class SchedulesFragment extends Fragment {
         }
 
         if (ContextCompat.checkSelfPermission(getActivity(),
-                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
-
+        }
 
         View fragmentView = inflater.inflate(R.layout.fragment_schedules, null);
 
@@ -203,11 +205,13 @@ public class SchedulesFragment extends Fragment {
         super.onViewStateRestored(savedInstanceState);
         if (savedInstanceState != null) {
             Parcelable parcelable = savedInstanceState.getParcelable(KEY_SCHEDULES_SECTIONS_PAGER_ADAPTER);
-            if (parcelable != null)
+            if (parcelable != null) {
                 mSectionsPagerAdapter.restoreState(parcelable, this.getClass().getClassLoader());
+            }
             String title = savedInstanceState.getString(KEY_SCHEDULES_FRAGMENT_TITLE);
-            if (title != null && getActivity() != null)
+            if (title != null && getActivity() != null) {
                 getActivity().setTitle(title);
+            }
         }
     }
 

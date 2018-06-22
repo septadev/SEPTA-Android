@@ -18,11 +18,6 @@ import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.support.CursorAdapterSupplier;
 import org.septa.android.app.support.TabActivityHandler;
 
-
-/**
- * Created by jkampf on 7/30/17.
- */
-
 public class LocationPickerFragment extends DialogFragment implements StopPickerTabListener {
     private static final String TAG = LocationPickerFragment.class.getSimpleName();
     public static final int SUCCESS = 0;

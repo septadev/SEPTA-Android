@@ -31,11 +31,6 @@ import org.septa.android.app.support.CursorAdapterSupplier;
 import java.util.ArrayList;
 import java.util.List;
 
-
-/**
- * Created by jkampf on 7/30/17.
- */
-
 public class ByStopTabActivityHandler extends BaseTabActivityHandler {
 
     public static final String TAG = ByStopTabActivityHandler.class.getSimpleName();
@@ -102,7 +97,7 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
             Log.d(TAG, "onCreateView()");
             restoreArgs();
             View rootView = inflater.inflate(R.layout.location_picker_by_stop, container, false);
-            list = (ListView) rootView.findViewById(R.id.rail_station_list);
+            list = rootView.findViewById(R.id.rail_station_list);
             progressView = rootView.findViewById(R.id.progress_view);
 
             progressView.setVisibility(View.VISIBLE);
@@ -154,7 +149,7 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
                 }
             }.execute();
 
-            EditText filterText = (EditText) rootView.findViewById(R.id.station_filter);
+            EditText filterText = rootView.findViewById(R.id.station_filter);
 
             filterText.addTextChangedListener(new TextWatcher() {
                 @Override
@@ -198,7 +193,7 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
             }
 
             StopModel stop = getItem(position);
-            TextView station_name = (TextView) convertView.findViewById(R.id.station_name);
+            TextView station_name = convertView.findViewById(R.id.station_name);
             station_name.setText(stop.getStopName());
             convertView.setTag(stop.getStopId());
 
@@ -219,7 +214,7 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
                         return filterResults;
                     }
 
-                    ArrayList<StopModel> tempList = new ArrayList<StopModel>();
+                    ArrayList<StopModel> tempList = new ArrayList<>();
 
                     String constraintString = constraint.toString().toLowerCase();
 
@@ -238,7 +233,7 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
 
                 @SuppressWarnings("unchecked")
                 @Override
-                protected void publishResults(CharSequence contraint, FilterResults results) {
+                protected void publishResults(CharSequence constraint, FilterResults results) {
                     filterRoutes = (List<StopModel>) results.values;
                     if (results.count > 0) {
                         notifyDataSetChanged();

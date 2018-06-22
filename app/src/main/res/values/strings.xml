@@ -32,7 +32,7 @@
 
 
     <string name="starting_station">Starting Station</string>
-    <string name="destionation_station_hint">Destination Station</string>
+    <string name="destination_station_hint">Destination Station</string>
     <string name="starting_station_hint">Starting Station</string>
     <string name="view_trains_button">VIEW TRAINS</string>
     <string name="title_activity_next_to_arrive_results">NextToArriveResultsActivity</string>
@@ -176,6 +176,21 @@
     <string name="holiday_alert_button_text">View Transit Schedule</string>
     <string name="holiday_alert_button_text_rail">View Rail Schedule</string>
 
+    <!-- In-App Database Update-->
+    <string name="prompt_download_database_title">New Schedules Available</string>
+    <string name="prompt_download_database_description">Would you like to download them now?\n\nIf you choose to wait until later, you can still view Next To Arrive information.</string>
+    <string name="prompt_download_button_positive_download_now">Download Now</string>
+    <string name="prompt_download_button_negative_remind_later">Remind Me Later</string>
+    <string name="prompt_download_button_neutral_nta">Go to Next to Arrive</string>
+
+    <string name="download_permission_needed">We need your permission before we can download the new database onto your device.</string>
+
+    <string name="prompt_use_new_database_title">New Schedules Downloaded</string>
+    <string name="prompt_use_new_database_description">The new schedule is ready for you to use.</string>
+    <string name="prompt_use_new_database_button">Great!</string>
+
+    <string name="notification_database_updated">Schedules Update Complete</string>
+
 
     <!-- Connect With SEPTA -->
     <string name="facebook_url">http://www.facebook.com/septaphilly/</string>
@@ -228,7 +243,7 @@
     <string name="trail_text"><![CDATA[Weekly and Monthly TrailPasses<br><b>Price varies</b> by Zone.]]></string>
 
     <string name="cross_county_weekly_price">$30.75</string>
-    <string name="cross_county_mothly_price">$115.00</string>
+    <string name="cross_county_monthly_price">$115.00</string>
     <string name="cross_text"><![CDATA[Weekly Cross County Pass: <b>{0}</b><br>Monthly Cross County Pass: <b>{1}</b>]]></string>
 
     <string name="one_day_pass_price">$9.00</string>

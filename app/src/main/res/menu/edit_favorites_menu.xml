@@ -7,7 +7,7 @@
         android:title="Edit"
         app:showAsAction="always"
         android:onClick="editFavorite"/>
-    //set showAsAction always
-    //and this should be the only menu item with show as action always
+    <!--// set showAsAction always-->
+    <!--// and this should be the only menu item with show as action always-->
 
 </menu>

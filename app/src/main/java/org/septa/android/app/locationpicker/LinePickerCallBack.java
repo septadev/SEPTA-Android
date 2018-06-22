@@ -8,6 +8,6 @@ import org.septa.android.app.domain.RouteDirectionModel;
 
 public interface LinePickerCallBack {
 
-    public void setRoute(RouteDirectionModel routeDirectionModel);
+    void setRoute(RouteDirectionModel routeDirectionModel);
 
 }

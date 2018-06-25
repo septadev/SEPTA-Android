@@ -228,7 +228,7 @@ public class ScheduleResultsActivity extends AppCompatActivity {
         }
 
         // hide refresh icon -- refresh only needed in NTA Results Activity
-        menu.findItem(R.id.refresh_nta_results).setVisible(false);
+        menu.findItem(R.id.refresh_results).setVisible(false);
 
         return true;
     }

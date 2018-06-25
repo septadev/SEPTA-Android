@@ -176,7 +176,7 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
             case R.id.create_favorite:
                 saveAsFavorite(item);
                 return true;
-            case R.id.refresh_nta_results:
+            case R.id.refresh_results:
                 refreshData();
                 return true;
             case R.id.edit_favorite:

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/refresh_nta_results"
+        android:id="@+id/refresh_results"
         android:icon="@drawable/ic_refresh"
         android:title="Refresh"
         app:showAsAction="always|withText" />

@@ -1,45 +1,93 @@
 package org.septa.android.app.transitview;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.graphics.Point;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.Display;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MapStyleOptions;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.maps.android.data.kml.KmlLayer;
+
 import org.septa.android.app.R;
+import org.septa.android.app.TransitType;
 import org.septa.android.app.database.DatabaseManager;
 import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.TransitViewModelResponse;
 import org.septa.android.app.support.CursorAdapterSupplier;
+import org.septa.android.app.support.GeneralUtils;
+import org.septa.android.app.support.MapUtils;
 import org.septa.android.app.support.RouteModelComparator;
 import org.septa.android.app.view.TextView;
+import org.xmlpull.v1.XmlPullParserException;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class TransitViewResultsActivity extends AppCompatActivity implements Runnable, TransitViewLinePickerFragment.TransitViewLinePickerListener {
+public class TransitViewResultsActivity extends AppCompatActivity implements Runnable, TransitViewLinePickerFragment.TransitViewLinePickerListener, OnMapReadyCallback {
 
     private static final String TAG = TransitViewResultsActivity.class.getSimpleName();
 
     private RouteDirectionModel firstRoute, secondRoute, thirdRoute;
+    Set<TransitViewModelResponse.TransitViewRecord> firstRoutesResults, secondRoutesResults, thirdRoutesResults;
     private String routeIds;
+    private boolean isAFavorite = false;
 
+    // data refresh
     private Handler refreshHandler;
+    private static final int REFRESH_DELAY_SECONDS = 30;
+    private TransitViewModelResponseParser parser;
+    Map<String, TransitViewModelResponse.TransitViewRecord> details = new HashMap<>();
 
     // layout variables
     TextView addLabel, firstRouteLabel, secondRouteLabel, thirdRouteLabel;
+    FrameLayout mapContainerView;
+    View progressView;
+    boolean mapSized = false;
+    SupportMapFragment mapFragment;
+    GoogleMap googleMap;
+    private static final String HTML_NEW_LINE = "<br/>";
+    private static final String VEHICLE_MARKER_KEY_DELIM = "_";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -59,15 +107,45 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
         // set up automatic refresh
         if (firstRoute != null) {
             refreshHandler = new Handler();
-            refreshHandler.postDelayed(this, 30 * 1000);
+            refreshHandler.postDelayed(this, REFRESH_DELAY_SECONDS * 1000);
         }
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // TODO: inflate options menu
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        invalidateOptionsMenu();
 
-        return true;
+        getMenuInflater().inflate(R.menu.favorite_menu, menu);
+        if (isAFavorite) {
+            menu.findItem(R.id.create_favorite).setIcon(R.drawable.ic_favorite_made);
+            menu.findItem(R.id.create_favorite).setTitle(R.string.nta_favorite_icon_title_remove);
+        } else {
+            menu.findItem(R.id.create_favorite).setTitle(R.string.nta_favorite_icon_title_create);
+        }
+
+        // TODO: should there be an "edit" feature for transitview favorites, if so update onOptionsItemSelected
+
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.create_favorite:
+                Log.d(TAG, "Favoriting TransitView routes: " + routeIds);
+
+                // TODO: favorite a transitview selection
+//                saveAsFavorite(item);
+                return true;
+            case R.id.refresh_results:
+                refreshData();
+                return true;
+//            case R.id.edit_favorite:
+//                editFavorite(item);
+//                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
@@ -107,6 +185,152 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
         updateRouteLabels(selectedRoutes.get(0), selectedRoutes.get(1), selectedRoutes.get(2));
     }
 
+    @Override
+    public void onMapReady(final GoogleMap googleMap) {
+        this.googleMap = googleMap;
+        MapStyleOptions mapStyle = MapStyleOptions.loadRawResourceStyle(this, R.raw.maps_json_styling);
+        googleMap.setMapStyle(mapStyle);
+
+        final LatLng cityHall = new LatLng(39.9517999, -75.1633285);
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(cityHall));
+
+        // default map zoom to show KML of all routes using builder.include()
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+
+        // add to map of vehicle markers
+        for (String routeId : routeIds.split(",")) {
+            for (Map.Entry<TransitViewModelResponse.TransitViewRecord, LatLng> entry : parser.getResultsForRoute(routeId).entrySet()) {
+                String vehicleMarkerKey = new StringBuilder(routeId).append(VEHICLE_MARKER_KEY_DELIM).append(entry.getKey().getVehicleId()).toString();
+                details.put(vehicleMarkerKey, entry.getKey());
+
+                builder.include(entry.getValue());
+            }
+        }
+
+        final LatLngBounds bounds = builder.build();
+
+        googleMap.setContentDescription("Map displaying TransitView routes: " + routeIds);
+
+        googleMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
+            @Override
+            public void onMapLoaded() {
+                Display mdisp = getWindowManager().getDefaultDisplay();
+                Point mdispSize = new Point();
+                mdisp.getSize(mdispSize);
+
+                updateMap();
+
+                try {
+                    googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, getResources().getDisplayMetrics())));
+                    // TODO: calculate map height
+//                    ViewGroup.LayoutParams layoutParams =
+//                            bottomSheetLayout.getLayoutParams();
+//                    layoutParams.height = rootView.getHeight() - mapContainerView.getTop();
+//                    bottomSheetLayout.setLayoutParams(layoutParams);
+//                    bottomSheetBehavior.setPeekHeight(peekHeight);
+                } catch (IllegalStateException e) {
+                    if (mapContainerView.getViewTreeObserver().isAlive()) {
+                        mapContainerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                            @Override
+                            public void onGlobalLayout() {
+                                mapContainerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                                try {
+                                    googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, getResources().getDisplayMetrics())));
+                                } catch (Exception e1) {
+                                    Log.e(TAG, "Failed to move camera, defaulting map zoom to Philadelphia City Hall");
+
+                                    // TODO: where should I move map to on default?
+                                    googleMap.moveCamera(CameraUpdateFactory.zoomTo(13));
+                                    googleMap.moveCamera(CameraUpdateFactory.newLatLng(cityHall));
+                                }
+                                // TODO: calculate map height
+//                                ViewGroup.LayoutParams layoutParams =
+//                                        bottomSheetLayout.getLayoutParams();
+//                                layoutParams.height = rootView.getHeight() - mapContainerView.getTop();
+//                                bottomSheetLayout.setLayoutParams(layoutParams);
+//                                bottomSheetBehavior.setPeekHeight(peekHeight);
+                            }
+                        });
+                    }
+                }
+
+                googleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+
+                    @Override
+                    public View getInfoWindow(Marker arg0) {
+                        return null;
+                    }
+
+                    @Override
+                    public View getInfoContents(Marker marker) {
+                        // TODO: draw details in info window for each vehicle
+                        TextView title = (TextView) getLayoutInflater().inflate(R.layout.vehicle_map_details, null);
+
+                        // look up vehicle details
+                        String[] vehicleMarkerKey = marker.getTitle().split(VEHICLE_MARKER_KEY_DELIM);
+                        if (vehicleMarkerKey.length != 2) {
+                            String routeId = vehicleMarkerKey[0];
+                            TransitViewModelResponse.TransitViewRecord vehicleRecord = details.get(vehicleMarkerKey);
+
+                            if (vehicleRecord != null) {
+                                TransitType transitType = TransitType.BUS;
+                                if (isTrolley(routeId)) {
+                                    transitType = TransitType.TROLLEY;
+                                }
+
+                                // TODO: bold each heading
+                                StringBuilder builder = new StringBuilder(GeneralUtils.boldHtmlString(transitType + ": ") + routeId);
+                                builder.append(HTML_NEW_LINE)
+                                        .append(GeneralUtils.boldHtmlString("Vehicle Number: "))
+                                        .append(vehicleRecord.getVehicleId())
+                                        .append(HTML_NEW_LINE)
+                                        .append(GeneralUtils.boldHtmlString("Block ID: "))
+                                        .append(vehicleRecord.getBlockId())
+                                        .append(HTML_NEW_LINE)
+                                        .append(GeneralUtils.boldHtmlString("Status: "));
+                                if (vehicleRecord.getLate() != null && vehicleRecord.getLate() > 0) {
+                                    builder.append(GeneralUtils.getDurationAsLongString(vehicleRecord.getLate(), TimeUnit.MINUTES) + " late.");
+                                } else {
+                                    builder.append(getString(R.string.nta_on_time));
+                                }
+
+                                title.setHtml(builder.toString());
+                            }
+                        } else {
+                            Log.e(TAG, "Could not parse vehicleMarkerKey for marker: " + marker.toString());
+                        }
+
+                        return title;
+                    }
+                });
+            }
+        });
+
+        // hide progress view and show map
+        progressView.setVisibility(View.GONE);
+        mapContainerView.setVisibility(View.VISIBLE);
+//        alertsView.setVisibility(View.VISIBLE); // TODO: show alerts
+
+        int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
+        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+            Log.d(TAG, "Location Permission Granted.");
+            Task<Location> locationTask = LocationServices.getFusedLocationProviderClient(this).getLastLocation()
+                    .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            // Got last known location. In some rare situations this can be null.
+                            if (location != null) {
+                                int permissionCheck = ContextCompat.checkSelfPermission(TransitViewResultsActivity.this,
+                                        Manifest.permission.ACCESS_FINE_LOCATION);
+                                googleMap.setMyLocationEnabled(true);
+                            } else {
+                                Log.d(TAG, "location was null");
+                            }
+                        }
+                    });
+        }
+    }
+
     private void initializeActivity(@Nullable Bundle savedInstanceState) {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -129,6 +353,9 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
     }
 
     private void initializeView() {
+        mapContainerView = (FrameLayout) findViewById(R.id.map_container);
+//        alertsView = findViewById(R.id.transitview_alerts); TODO: initialize alerts view
+        progressView = findViewById(R.id.progress_view);
         firstRouteLabel = (TextView) findViewById(R.id.first_route_delete);
         secondRouteLabel = (TextView) findViewById(R.id.second_route_delete);
         thirdRouteLabel = (TextView) findViewById(R.id.third_route_delete);
@@ -244,33 +471,113 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
     private void refreshData() {
         Log.d(TAG, "Refreshing TransitView data for " + routeIds);
 
+        // show progress view and hide everything else
+        progressView.setVisibility(View.VISIBLE);
+        mapContainerView.setVisibility(View.GONE);
+//        alertsView.setVisibility(View.GONE); // TODO: hide alerts
+
         SeptaServiceFactory.getTransitViewService().getTransitViewResults(routeIds).enqueue(new Callback<TransitViewModelResponse>() {
             @Override
-            public void onResponse(Call<TransitViewModelResponse> call, Response<TransitViewModelResponse> response) {
-                Map<String, List<TransitViewModelResponse.TransitViewRecord>> routesMap = response.body().getResults().get(0);
+            public void onResponse(Call<TransitViewModelResponse> call, @NonNull Response<TransitViewModelResponse> response) {
+                if (response.body() != null) {
 
-                List<TransitViewModelResponse.TransitViewRecord> firstRoutesResults = routesMap.get(firstRoute.getRouteId()),
-                        secondRoutesResults, thirdRoutesResults;
-                Log.e(TAG, firstRoutesResults.toString()); // TODO: remove
+                    parser = new TransitViewModelResponseParser(response.body());
 
-                if (secondRoute != null) {
-                    secondRoutesResults = routesMap.get(secondRoute.getRouteId());
-                    Log.e(TAG, secondRoutesResults.toString()); // TODO: remove
+                    firstRoutesResults = parser.getResultsForRoute(firstRoute.getRouteId()).keySet();
+                    Log.d(TAG, firstRoutesResults.toString());
+
+                    if (secondRoute != null) {
+                        secondRoutesResults = parser.getResultsForRoute(secondRoute.getRouteId()).keySet();
+                        Log.d(TAG, secondRoutesResults.toString());
+                    }
+
+                    if (thirdRoute != null) {
+                        thirdRoutesResults = parser.getResultsForRoute(thirdRoute.getRouteId()).keySet();
+                        Log.d(TAG, thirdRoutesResults.toString());
+                    }
+
+                    prepareToDrawMap();
+                } else {
+                    Log.e(TAG, "Null response body when fetching TransitVIew results for: " + routeIds);
+                    failure();
                 }
-
-                if (thirdRoute != null) {
-                    thirdRoutesResults = routesMap.get(thirdRoute.getRouteId());
-                    Log.e(TAG, thirdRoutesResults.toString()); // TODO: remove
-                }
-
             }
 
             @Override
             public void onFailure(Call<TransitViewModelResponse> call, Throwable t) {
                 Log.e(TAG, "No TransitView results found for the routes: " + routeIds, t);
+                failure();
+            }
+
+            private void failure() {
+                progressView.setVisibility(View.GONE);
+                refreshHandler.removeCallbacks(TransitViewResultsActivity.this);
+                refreshHandler.postDelayed(TransitViewResultsActivity.this, REFRESH_DELAY_SECONDS * 1000);
                 showNoResultsFoundErrorMessage(); // TODO: how should this be handled
             }
         });
+    }
+
+    private void prepareToDrawMap() {
+        if (!mapSized) {
+            mapSized = true;
+            mapFragment = SupportMapFragment.newInstance();
+
+            // TODO: calculate map size after drawing alerts
+//                    ViewGroup.LayoutParams mapContainerLayoutParams = mapContainerView.getLayoutParams();
+//                    mapContainerLayoutParams.height = rootView.getHeight() - value - mapContainerView.getTop();
+//                    mapContainerLayoutParams.width = rootView.getWidth();
+//                    mapContainerView.setLayoutParams(mapContainerLayoutParams);
+
+            try {
+                getSupportFragmentManager().beginTransaction().add(R.id.map_container, mapFragment).commit();
+            } catch (IllegalStateException e) {
+                Log.e(TAG, e.toString());
+            }
+            mapFragment.getMapAsync(TransitViewResultsActivity.this);
+        } else {
+            // TODO: distinguish refresh from change in results? move camera if change in route selection, otherwise stay in same location
+            onMapReady(googleMap);
+        }
+    }
+
+    private void updateMap() {
+        googleMap.clear();
+        details.clear();
+
+        for (String routeId : routeIds.split(",")) {
+            TransitType transitType = TransitType.BUS;
+            if (isTrolley(routeId)) {
+                transitType = TransitType.TROLLEY;
+            }
+
+            // redraw all vehicles
+            BitmapDescriptor vehicleBitMap = BitmapDescriptorFactory.fromResource(transitType.getMapMarkerResource());
+            for (Map.Entry<TransitViewModelResponse.TransitViewRecord, LatLng> entry : parser.getResultsForRoute(routeId).entrySet()) {
+                String vehicleMarkerKey = new StringBuilder(routeId).append(VEHICLE_MARKER_KEY_DELIM).append(entry.getKey().getVehicleId()).toString();
+                googleMap.addMarker(new MarkerOptions()
+                        .position(entry.getValue())
+                        .title(vehicleMarkerKey)
+                        .icon(vehicleBitMap));
+            }
+
+            // redraw route on map
+            KmlLayer layer = MapUtils.getKMLByLineId(TransitViewResultsActivity.this, googleMap, routeId, transitType);
+            if (layer != null) {
+                try {
+                    layer.addLayerToMap();
+                } catch (IOException e) {
+                    Log.e(TAG, e.toString());
+                } catch (XmlPullParserException e) {
+                    Log.e(TAG, e.toString());
+                }
+            }
+        }
+
+        // hide error message in case connection regained
+        progressView.setVisibility(View.GONE);
+        mapContainerView.setVisibility(View.VISIBLE);
+//        alertsView.setVisibility(View.VISIBLE); // TODO: show alerts
     }
 
     private void showNoResultsFoundErrorMessage() {
@@ -278,4 +585,8 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
         Log.e(TAG, "No TransitView results found");
     }
 
+    private boolean isTrolley(String routeId) {
+        String[] trolleyRouteIds = new String[]{"10", "11", "13", "15", "34", "36", "101", "102"};
+        return Arrays.asList(trolleyRouteIds).contains(routeId);
+    }
 }

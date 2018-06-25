@@ -191,6 +191,9 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
         MapStyleOptions mapStyle = MapStyleOptions.loadRawResourceStyle(this, R.raw.maps_json_styling);
         googleMap.setMapStyle(mapStyle);
 
+        // hide navigation options
+        googleMap.getUiSettings().setMapToolbarEnabled(false);
+
         // TODO: do i need to move the camera here
         final LatLng cityHall = new LatLng(39.9517999, -75.1633285);
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(cityHall));

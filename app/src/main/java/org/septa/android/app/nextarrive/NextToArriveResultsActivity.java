@@ -229,8 +229,10 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
         this.googleMap = googleMap;
         MapStyleOptions mapStyle = MapStyleOptions.loadRawResourceStyle(this, R.raw.maps_json_styling);
-
         googleMap.setMapStyle(mapStyle);
+
+        // hide navigation options
+        googleMap.getUiSettings().setMapToolbarEnabled(false);
 
         final View mapContainer = findViewById(R.id.map_container);
 

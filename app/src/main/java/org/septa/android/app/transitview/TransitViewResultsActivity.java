@@ -191,6 +191,7 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
         MapStyleOptions mapStyle = MapStyleOptions.loadRawResourceStyle(this, R.raw.maps_json_styling);
         googleMap.setMapStyle(mapStyle);
 
+        // TODO: do i need to move the camera here
         final LatLng cityHall = new LatLng(39.9517999, -75.1633285);
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(cityHall));
 
@@ -198,6 +199,7 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
 
         // add to map of vehicle markers
+        details.clear();
         for (String routeId : routeIds.split(",")) {
             for (Map.Entry<TransitViewModelResponse.TransitViewRecord, LatLng> entry : parser.getResultsForRoute(routeId).entrySet()) {
                 String vehicleMarkerKey = new StringBuilder(routeId).append(VEHICLE_MARKER_KEY_DELIM).append(entry.getKey().getVehicleId()).toString();
@@ -263,41 +265,38 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
 
                     @Override
                     public View getInfoContents(Marker marker) {
-                        // TODO: draw details in info window for each vehicle
                         TextView title = (TextView) getLayoutInflater().inflate(R.layout.vehicle_map_details, null);
 
                         // look up vehicle details
                         String[] vehicleMarkerKey = marker.getTitle().split(VEHICLE_MARKER_KEY_DELIM);
-                        if (vehicleMarkerKey.length != 2) {
-                            String routeId = vehicleMarkerKey[0];
-                            TransitViewModelResponse.TransitViewRecord vehicleRecord = details.get(vehicleMarkerKey);
+                        String routeId = vehicleMarkerKey[0];
+                        TransitViewModelResponse.TransitViewRecord vehicleRecord = details.get(marker.getTitle());
 
-                            if (vehicleRecord != null) {
-                                TransitType transitType = TransitType.BUS;
-                                if (isTrolley(routeId)) {
-                                    transitType = TransitType.TROLLEY;
-                                }
-
-                                // TODO: bold each heading
-                                StringBuilder builder = new StringBuilder(GeneralUtils.boldHtmlString(transitType + ": ") + routeId);
-                                builder.append(HTML_NEW_LINE)
-                                        .append(GeneralUtils.boldHtmlString("Vehicle Number: "))
-                                        .append(vehicleRecord.getVehicleId())
-                                        .append(HTML_NEW_LINE)
-                                        .append(GeneralUtils.boldHtmlString("Block ID: "))
-                                        .append(vehicleRecord.getBlockId())
-                                        .append(HTML_NEW_LINE)
-                                        .append(GeneralUtils.boldHtmlString("Status: "));
-                                if (vehicleRecord.getLate() != null && vehicleRecord.getLate() > 0) {
-                                    builder.append(GeneralUtils.getDurationAsLongString(vehicleRecord.getLate(), TimeUnit.MINUTES) + " late.");
-                                } else {
-                                    builder.append(getString(R.string.nta_on_time));
-                                }
-
-                                title.setHtml(builder.toString());
+                        // add vehicle details to info window
+                        if (vehicleRecord != null) {
+                            TransitType transitType = TransitType.BUS;
+                            if (isTrolley(routeId)) {
+                                transitType = TransitType.TROLLEY;
                             }
+
+                            StringBuilder builder = new StringBuilder(transitType + ": " + routeId);
+                            builder.append(HTML_NEW_LINE)
+                                    .append("Vehicle Number: ")
+                                    .append(vehicleRecord.getVehicleId())
+                                    .append(HTML_NEW_LINE)
+                                    .append("Block ID: ")
+                                    .append(vehicleRecord.getBlockId())
+                                    .append(HTML_NEW_LINE)
+                                    .append("Status: ");
+                            if (vehicleRecord.getLate() != null && vehicleRecord.getLate() > 0) {
+                                builder.append(GeneralUtils.getDurationAsLongString(vehicleRecord.getLate(), TimeUnit.MINUTES) + " late.");
+                            } else {
+                                builder.append(getString(R.string.nta_on_time));
+                            }
+
+                            title.setHtml(builder.toString());
                         } else {
-                            Log.e(TAG, "Could not parse vehicleMarkerKey for marker: " + marker.toString());
+                            Log.e(TAG, "Could not find vehicle with marker ID: " + marker.getTitle());
                         }
 
                         return title;
@@ -543,7 +542,6 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
 
     private void updateMap() {
         googleMap.clear();
-        details.clear();
 
         for (String routeId : routeIds.split(",")) {
             TransitType transitType = TransitType.BUS;

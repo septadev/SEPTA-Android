@@ -36,7 +36,10 @@ public abstract class RatingUtil {
             closeDialog.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    ratingDialog.dismiss();
+                    // force crash the app // TODO: remove
+                    throw new RuntimeException("This is a forced crash");
+
+//                    ratingDialog.dismiss(); // TODO: put this back
                 }
             });
         }

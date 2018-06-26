@@ -149,6 +149,16 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
     }
 
     @Override
+    public boolean onSupportNavigateUp() {
+        try {
+            onBackPressed();
+        } catch (Exception e) {
+            Log.w(TAG, "Exception on Backpress", e);
+        }
+        return true;
+    }
+
+    @Override
     public void run() {
         refreshData();
     }
@@ -194,7 +204,7 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
         // hide navigation options
         googleMap.getUiSettings().setMapToolbarEnabled(false);
 
-        // TODO: do i need to move the camera here
+        // move camera to city hall to speed up zoom process
         final LatLng cityHall = new LatLng(39.9517999, -75.1633285);
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(cityHall));
 

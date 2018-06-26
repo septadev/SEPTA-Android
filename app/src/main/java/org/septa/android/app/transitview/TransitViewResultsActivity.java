@@ -77,6 +77,7 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
     private static final int REFRESH_DELAY_SECONDS = 30;
     private TransitViewModelResponseParser parser;
     Map<String, TransitViewModelResponse.TransitViewRecord> details = new HashMap<>();
+    private boolean refreshed = false; // used to distinguish refresh from a change in route selection
 
     // layout variables
     TextView addLabel, firstRouteLabel, secondRouteLabel, thirdRouteLabel;
@@ -137,6 +138,7 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
 //                saveAsFavorite(item);
                 return true;
             case R.id.refresh_results:
+                refreshed = true;
                 refreshData();
                 return true;
 //            case R.id.edit_favorite:
@@ -159,6 +161,7 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
 
     @Override
     public void run() {
+        refreshed = true;
         refreshData();
     }
 
@@ -218,6 +221,7 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
                 String vehicleMarkerKey = new StringBuilder(routeId).append(VEHICLE_MARKER_KEY_DELIM).append(entry.getKey().getVehicleId()).toString();
                 details.put(vehicleMarkerKey, entry.getKey());
 
+                // map must include this vehicle when automatically moving
                 builder.include(entry.getValue());
             }
         }
@@ -467,6 +471,7 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
         }
         routeIds = routeIdBuilder.toString();
 
+        refreshed = false;
         refreshData();
     }
 
@@ -525,6 +530,7 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
                 progressView.setVisibility(View.GONE);
                 refreshHandler.removeCallbacks(TransitViewResultsActivity.this);
                 refreshHandler.postDelayed(TransitViewResultsActivity.this, REFRESH_DELAY_SECONDS * 1000);
+                refreshed = false;
                 showNoResultsFoundErrorMessage(); // TODO: how should this be handled
             }
         });
@@ -547,8 +553,10 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
                 Log.e(TAG, e.toString());
             }
             mapFragment.getMapAsync(TransitViewResultsActivity.this);
+        } else if (refreshed) {
+            updateMap();
+            refreshed = false;
         } else {
-            // TODO: distinguish refresh from change in results? move camera if change in route selection, otherwise stay in same location
             onMapReady(googleMap);
         }
     }
@@ -569,7 +577,7 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
             // redraw all vehicles
             for (Map.Entry<TransitViewModelResponse.TransitViewRecord, LatLng> entry : parser.getResultsForRoute(routeId).entrySet()) {
                 // create directional icon with bus or trolley
-                BitmapDescriptor vehicleBitMap = GeneralUtils.getDirectionalIconForTransitType(this, transitTypeDrawableId, entry.getKey().getHeading());
+                BitmapDescriptor vehicleBitMap = TransitViewUtils.getDirectionalIconForTransitType(this, transitTypeDrawableId, entry.getKey().getHeading());
                 String vehicleMarkerKey = new StringBuilder(routeId).append(VEHICLE_MARKER_KEY_DELIM).append(entry.getKey().getVehicleId()).toString();
                 googleMap.addMarker(new MarkerOptions()
                         .position(entry.getValue())

@@ -184,7 +184,7 @@ public class LineUnawareLocationPickerTabActivityHandler extends BaseTabActivity
                     ft.addToBackStack(null);
 
                     // Create and show the dialog.
-                    LocationPickerFragment newFragment = LocationPickerFragment.newInstance(cursorAdapterSupplier);
+                    LocationPickerFragment newFragment = LocationPickerFragment.newInstance(cursorAdapterSupplier, false);
                     newFragment.setTargetFragment(parent, requestCode);
                     try {
                         newFragment.show(ft, "dialog");
@@ -249,13 +249,16 @@ public class LineUnawareLocationPickerTabActivityHandler extends BaseTabActivity
         }
 
         private void restoreState(Bundle outState) {
-            if (outState == null)
+            if (outState == null) {
                 return;
+            }
 
             StopModel starting = (StopModel) outState.getSerializable("startingStation");
             if (starting != null) {
                 setStartingStation(starting);
-            } else return;
+            } else {
+                return;
+            }
 
             StopModel dest = (StopModel) outState.getSerializable("destinationStation");
             if (dest != null) {

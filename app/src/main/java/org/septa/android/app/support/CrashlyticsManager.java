@@ -7,10 +7,6 @@ import com.crashlytics.android.Crashlytics;
 
 import io.fabric.sdk.android.Fabric;
 
-/**
- * Created by jkampf on 11/21/17.
- */
-
 public class CrashlyticsManager {
     private static boolean initalized = false;
 

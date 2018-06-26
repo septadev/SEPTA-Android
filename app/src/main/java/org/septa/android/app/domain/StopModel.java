@@ -15,7 +15,6 @@ public class StopModel implements Comparable<StopModel>, Serializable {
     private String stopId;
     private String stopName;
 
-
     private int stopSequence = 0;
     private boolean wheelchairBoarding;
     private double latitude;

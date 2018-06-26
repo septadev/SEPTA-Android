@@ -8,10 +8,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Created by jkampf on 9/14/17.
- */
-
 public class ScheduleModel implements Comparable<ScheduleModel> {
     Date departureDate;
     Date arrivalDate;

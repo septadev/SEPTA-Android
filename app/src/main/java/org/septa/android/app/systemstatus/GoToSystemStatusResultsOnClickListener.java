@@ -7,10 +7,6 @@ import android.view.View;
 import org.septa.android.app.Constants;
 import org.septa.android.app.TransitType;
 
-/**
- * Created by jkampf on 9/21/17.
- */
-
 public class GoToSystemStatusResultsOnClickListener implements View.OnClickListener {
     String statusType;
     Context context;

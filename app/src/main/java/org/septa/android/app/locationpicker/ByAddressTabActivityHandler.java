@@ -47,10 +47,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- * Created by jkampf on 7/30/17.
- */
-
 class ByAddressTabActivityHandler extends BaseTabActivityHandler {
     final private CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
     public static final String TAG = ByAddressTabActivityHandler.class.getSimpleName();

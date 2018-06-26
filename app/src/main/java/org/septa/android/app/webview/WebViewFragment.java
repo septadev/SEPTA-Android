@@ -14,10 +14,6 @@ import android.webkit.WebViewClient;
 
 import org.septa.android.app.R;
 
-/**
- * Created by jkampf on 10/3/17.
- */
-
 public class WebViewFragment extends Fragment {
     WebView webView;
 

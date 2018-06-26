@@ -12,10 +12,6 @@ import org.septa.android.app.domain.StopModel;
 
 import java.io.Serializable;
 
-/**
- * Created by jkampf on 9/6/17.
- */
-
 public class Favorite implements Serializable {
     @SerializedName("name")
     private String name;
@@ -45,7 +41,6 @@ public class Favorite implements Serializable {
         } else {
             name = "To " + destination.getStopName();
         }
-
 
         createdWithVersion = BuildConfig.VERSION_CODE;
     }

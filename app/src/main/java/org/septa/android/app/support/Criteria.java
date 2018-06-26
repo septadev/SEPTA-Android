@@ -1,9 +1,5 @@
 package org.septa.android.app.support;
 
-/**
- * Created by jkampf on 8/16/17.
- */
-
 public class Criteria {
 
     private Operation operation;

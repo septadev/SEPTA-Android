@@ -26,19 +26,14 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
- * Created by jkampf on 8/29/17.
- */
-
 class PlacesAutoCompleteAdapter extends ArrayAdapter<PlaceAutoComplete> implements Filterable, TextWatcher {
 
-    List<PlaceAutoComplete> resultList = new ArrayList<PlaceAutoComplete>(0);
+    List<PlaceAutoComplete> resultList = new ArrayList<>(0);
 
     Context mContext;
     int mResource;
     String locationString;
     Call<PlacePredictions> activeCall;
-
 
     GooglePlaceAutoCompleteService mPlaceAPI = SeptaServiceFactory.getAutoCompletePlaceService();
 

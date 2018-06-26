@@ -35,10 +35,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Created by jkampf on 8/30/17.
- */
-
 public class LinePickerFragment extends DialogFragment {
     public static final int SUCCESS = 0;
     public static final String ROUTE_DIRECTION_MODEL = "routeDirectionModel";

@@ -100,7 +100,7 @@ public class ReverseNTAStopSelection extends AsyncTask<Void, Void, Void> {
         }
     }
 
-    StopModel getReverseStopID(String stopId, String routeShortName) {
+    private StopModel getReverseStopID(String stopId, String routeShortName) {
         List<Criteria> criteria = new ArrayList<>(2);
         criteria.add(new Criteria("route_short_name", Criteria.Operation.EQ, routeShortName));
         criteria.add(new Criteria("stop_id", Criteria.Operation.EQ, stopId));

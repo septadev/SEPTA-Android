@@ -21,6 +21,12 @@ def getSprintRound = { ->
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 
+// Build config types set by the variants
+final String CONFIG_TYPE_BOOLEAN = 'boolean'
+
+// Build config fields set by the variants
+final String CONFIG_FORCE_CRASH_ENABLED = 'FORCE_CRASH_ENABLED'
+
 // check that the SEPTA.signing gradle property exists and that its value is the filename to a file
 //  that has the extension of gradle
 if (project.hasProperty("SEPTA.signing") && file(project.property("SEPTA.signing") + ".gradle").exists()) {
@@ -74,6 +80,7 @@ android {
             signingConfig signingConfigs.prerelease
             versionNameSuffix "d" + "${getSprintRound}" + "${getGitHash}"
             buildConfigField "String", "VERSIONNAME", "\"${defaultConfig.versionName}-b${defaultConfig.versionCode}\""
+            buildConfigField CONFIG_TYPE_BOOLEAN, CONFIG_FORCE_CRASH_ENABLED, true.toString()
         }
         alpha {
             minifyEnabled false
@@ -82,6 +89,7 @@ android {
             signingConfig signingConfigs.prerelease
             versionNameSuffix "a" + "${getSprintRound}" + "${getGitHash}"
             buildConfigField "String", "VERSIONNAME", "\"${defaultConfig.versionName}-b${defaultConfig.versionCode}\""
+            buildConfigField CONFIG_TYPE_BOOLEAN, CONFIG_FORCE_CRASH_ENABLED, true.toString()
         }
         beta {
             minifyEnabled true
@@ -91,6 +99,7 @@ android {
             signingConfig signingConfigs.prerelease
             versionNameSuffix "b" + "${getSprintRound}" + "${getGitHash}"
             buildConfigField "String", "VERSIONNAME", "\"${defaultConfig.versionName}-b${defaultConfig.versionCode}\""
+            buildConfigField CONFIG_TYPE_BOOLEAN, CONFIG_FORCE_CRASH_ENABLED, true.toString()
         }
         release {
             minifyEnabled false
@@ -99,6 +108,7 @@ android {
             zipAlignEnabled true
             signingConfig signingConfigs.prerelease
             buildConfigField "String", "VERSIONNAME", "\"${defaultConfig.versionName}\""
+            buildConfigField CONFIG_TYPE_BOOLEAN, CONFIG_FORCE_CRASH_ENABLED, false.toString()
         }
     }
     productFlavors {

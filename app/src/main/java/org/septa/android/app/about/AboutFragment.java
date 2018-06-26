@@ -68,18 +68,27 @@ public class AboutFragment extends Fragment {
             }
         });
 
-        // reset the number of app uses TODO: remove this whole thing
-        fragmentView.findViewById(R.id.septa_logo).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SharedPreferencesRatingUtil.setAppRated(getContext(), false);
-                SharedPreferencesRatingUtil.setNumberOfUses(getContext(), 0);
-                Toast.makeText(getContext(), "App Rating Reset", Toast.LENGTH_SHORT).show();
-            }
-        });
+        // reset the number of app uses
+        if (BuildConfig.FORCE_CRASH_ENABLED) {
+            fragmentView.findViewById(R.id.septa_logo).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    SharedPreferencesRatingUtil.setAppRated(getContext(), false);
+                    SharedPreferencesRatingUtil.setNumberOfUses(getContext(), 0);
+                    Toast.makeText(getContext(), "App Rating Reset", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
 
+        // version number
         StringBuilder versionInfoBuilder = new StringBuilder("App Version: ");
-        versionInfoBuilder.append(BuildConfig.VERSIONNAME).append("<br>");
+        versionInfoBuilder.append(BuildConfig.VERSIONNAME);
+
+        // add note if built as beta
+        if (BuildConfig.FORCE_CRASH_ENABLED) {
+            versionInfoBuilder.append(" (BETA)");
+        }
+        versionInfoBuilder.append("<br>");
 
         SimpleDateFormat formatter = (SimpleDateFormat) SimpleDateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
         formatter.setTimeZone(TimeZone.getTimeZone("gmt"));

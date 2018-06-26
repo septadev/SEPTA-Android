@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.support.design.widget.BottomSheetDialog;
 import android.view.View;
 
+import org.septa.android.app.BuildConfig;
 import org.septa.android.app.R;
 
 /**
@@ -36,10 +37,14 @@ public abstract class RatingUtil {
             closeDialog.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    // force crash the app // TODO: remove
-                    throw new RuntimeException("This is a forced crash");
+                    // tapping the close button force crashes the app for debug / alpha
+                    if (BuildConfig.FORCE_CRASH_ENABLED) {
+                        // force crash the app
+                        throw new RuntimeException("This is a forced crash");
 
-//                    ratingDialog.dismiss(); // TODO: put this back
+                    } else {
+                        ratingDialog.dismiss();
+                    }
                 }
             });
         }

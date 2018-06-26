@@ -101,8 +101,7 @@ public class MainActivity extends BaseActivity implements
     DownloadManager downloadManager;
     AlertDialog promptDownloadDB, acknowledgeNewDatabaseReady;
 
-    // shake detector used for crashing the app purposefully
-    // TODO: comment out when releasing to production
+    // shake detector used for crashing the app purposefully -- only in debug and alpha
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
     private ShakeDetector mShakeDetector;
@@ -146,26 +145,28 @@ public class MainActivity extends BaseActivity implements
             }
         }
 
-        // TODO: comment out when releasing to production
         // ShakeDetector initialization
-        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        mShakeDetector = new ShakeDetector();
-        mShakeDetector.setOnShakeListener(new ShakeDetector.OnShakeListener() {
-            @Override
-            public void onShake(int count) {
-                handleShakeEvent(count);
-            }
-        });
+        if (BuildConfig.FORCE_CRASH_ENABLED) {
+            mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+            mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+            mShakeDetector = new ShakeDetector();
+            mShakeDetector.setOnShakeListener(new ShakeDetector.OnShakeListener() {
+                @Override
+                public void onShake(int count) {
+                    handleShakeEvent(count);
+                }
+            });
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        // TODO: comment out when releasing to production
         // re-register the shake detector on resume
-        mSensorManager.registerListener(mShakeDetector, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
+        if (BuildConfig.FORCE_CRASH_ENABLED) {
+            mSensorManager.registerListener(mShakeDetector, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
+        }
 
         // note that generic alert will show up before mobile app alert bc it was the most recently added
 
@@ -249,9 +250,10 @@ public class MainActivity extends BaseActivity implements
     protected void onPause() {
         super.onPause();
 
-        // TODO: comment out when releasing to production
         // unregister the shake detector on pause
-        mSensorManager.unregisterListener(mShakeDetector);
+        if (BuildConfig.FORCE_CRASH_ENABLED) {
+            mSensorManager.unregisterListener(mShakeDetector);
+        }
 
         // prevent stacking alertdialogs
         if (genericAlert != null) {

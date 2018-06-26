@@ -27,7 +27,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
@@ -201,8 +200,9 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
         MapStyleOptions mapStyle = MapStyleOptions.loadRawResourceStyle(this, R.raw.maps_json_styling);
         googleMap.setMapStyle(mapStyle);
 
-        // hide navigation options
+        // hide navigation options and disable rotation
         googleMap.getUiSettings().setMapToolbarEnabled(false);
+        googleMap.getUiSettings().setRotateGesturesEnabled(false);
 
         // move camera to city hall to speed up zoom process
         final LatLng cityHall = new LatLng(39.9517999, -75.1633285);
@@ -558,17 +558,23 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
 
         for (String routeId : routeIds.split(",")) {
             TransitType transitType = TransitType.BUS;
+            int transitTypeDrawableId = R.drawable.ic_bus_blue;
             if (isTrolley(routeId)) {
                 transitType = TransitType.TROLLEY;
+                transitTypeDrawableId = R.drawable.ic_trolley_blue;
             }
 
+//            BitmapDescriptor vehicleBitMap = BitmapDescriptorFactory.fromResource(transitType.getMapMarkerResource());
+
             // redraw all vehicles
-            BitmapDescriptor vehicleBitMap = BitmapDescriptorFactory.fromResource(transitType.getMapMarkerResource());
             for (Map.Entry<TransitViewModelResponse.TransitViewRecord, LatLng> entry : parser.getResultsForRoute(routeId).entrySet()) {
+                // create directional icon with bus or trolley
+                BitmapDescriptor vehicleBitMap = GeneralUtils.getDirectionalIconForTransitType(this, transitTypeDrawableId, entry.getKey().getHeading());
                 String vehicleMarkerKey = new StringBuilder(routeId).append(VEHICLE_MARKER_KEY_DELIM).append(entry.getKey().getVehicleId()).toString();
                 googleMap.addMarker(new MarkerOptions()
                         .position(entry.getValue())
                         .title(vehicleMarkerKey)
+                        .anchor((float) 0.5, (float) 0.5)
                         .icon(vehicleBitMap));
             }
 

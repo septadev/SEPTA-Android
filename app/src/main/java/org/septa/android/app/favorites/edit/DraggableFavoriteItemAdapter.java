@@ -2,6 +2,7 @@ package org.septa.android.app.favorites.edit;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.util.DiffUtil;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -53,7 +54,7 @@ public class DraggableFavoriteItemAdapter extends DragItemAdapter<Favorite, Drag
         holder.favoriteName.setText(favorite.getName());
 
         // transit type icon on left
-        holder.transitTypeIcon.setImageDrawable(context.getResources().getDrawable(favorite.getTransitType().getTabActiveImageResource()));
+        holder.transitTypeIcon.setImageDrawable(ContextCompat.getDrawable(context, favorite.getTransitType().getTabActiveImageResource()));
 
         // delete button clickable
         holder.deleteButton.setOnClickListener(new View.OnClickListener() {

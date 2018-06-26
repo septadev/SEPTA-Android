@@ -12,7 +12,8 @@ public class SharedPreferencesRatingUtil {
     private static final String PREF_NUMBER_USES = "PREF_NUMBER_USES";
     private static final String PREF_RATING_ID = "PREF_RATING_ID";
     private static final String PREF_APP_JUST_CRASHED = "PREF_APP_JUST_CRASHED";
-    private static final String PREF_APP_OPENED_WITHOUT_CRASH = "PREF_APP_OPENED_WITHOUT_CRASH";
+
+    // using commit() instead of apply() so that the values are immediately written to memory before the restart
 
     private static SharedPreferences getSharedPreferences(Context context) {
         return context.getSharedPreferences(SHARED_PREFERENCES_RATING, Context.MODE_PRIVATE);
@@ -23,7 +24,7 @@ public class SharedPreferencesRatingUtil {
     }
 
     public static void setAppRated(Context context, boolean appRated) {
-        getSharedPreferences(context).edit().putBoolean(PREF_APP_RATED, appRated).apply();
+        getSharedPreferences(context).edit().putBoolean(PREF_APP_RATED, appRated).commit();
     }
 
     public static int getNumberOfUses(Context context) {
@@ -31,11 +32,11 @@ public class SharedPreferencesRatingUtil {
     }
 
     public static void setNumberOfUses(Context context, int numberUses) {
-        getSharedPreferences(context).edit().putInt(PREF_NUMBER_USES, numberUses).apply();
+        getSharedPreferences(context).edit().putInt(PREF_NUMBER_USES, numberUses).commit();
     }
 
     public static void incrementNumberOfUses(Context context) {
-        getSharedPreferences(context).edit().putInt(PREF_NUMBER_USES, getNumberOfUses(context) + 1).apply();
+        getSharedPreferences(context).edit().putInt(PREF_NUMBER_USES, getNumberOfUses(context) + 1).commit();
     }
 
     public static int getRatingId(Context context) {
@@ -43,7 +44,7 @@ public class SharedPreferencesRatingUtil {
     }
 
     public static void setRatingId(Context context, int ratingId) {
-        getSharedPreferences(context).edit().putInt(PREF_RATING_ID, ratingId).apply();
+        getSharedPreferences(context).edit().putInt(PREF_RATING_ID, ratingId).commit();
     }
 
     public static boolean getAppJustCrashed(Context context) {
@@ -51,15 +52,6 @@ public class SharedPreferencesRatingUtil {
     }
 
     public static void setAppJustCrashed(Context context, boolean crash) {
-        getSharedPreferences(context).edit().putBoolean(PREF_APP_JUST_CRASHED, crash).apply();
+        getSharedPreferences(context).edit().putBoolean(PREF_APP_JUST_CRASHED, crash).commit();
     }
-
-    public static boolean getAppRanOnceCrashFree(Context context) {
-        return getSharedPreferences(context).getBoolean(PREF_APP_OPENED_WITHOUT_CRASH, true);
-    }
-
-    public static void setAppRanOnceCrashFree(Context context, boolean wasAppCrashFree) {
-        getSharedPreferences(context).edit().putBoolean(PREF_APP_OPENED_WITHOUT_CRASH, wasAppCrashFree).apply();
-    }
-
 }

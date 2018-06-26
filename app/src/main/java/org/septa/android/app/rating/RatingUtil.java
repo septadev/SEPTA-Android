@@ -15,7 +15,10 @@ import org.septa.android.app.R;
 
 public class RatingUtil {
 
-    private static final int MIN_USES_TO_RATE = 2; // TODO: change to 20
+    public static final int MIN_USES_TO_RATE = 5; // TODO: change to 20
+
+    // TODO: change to 6 (must be one more than the number of uses)
+    public static final int MIN_CRASH_FREE_USES_TO_RATE = 3; // must be one more than the number of uses wanted
 
     // increment this when wanting to re-ask user for a rating
     private static final int CURRENT_RATING_ID = 0;
@@ -37,10 +40,7 @@ public class RatingUtil {
             closeDialog.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    // force crash
-                    throw new RuntimeException();
-
-//                    ratingDialog.dismiss(); // TODO: put back later
+                    ratingDialog.dismiss();
                 }
             });
         }
@@ -100,7 +100,7 @@ public class RatingUtil {
             SharedPreferencesRatingUtil.setRatingId(context, CURRENT_RATING_ID);
         }
 
-        return !hasRated(context) && hasUsedAppEnough(context) && !didAppJustCrash(context) && hasAppRanOnceCrashFree(context);
+        return !hasRated(context) && hasUsedAppEnough(context) && !didAppJustCrash(context);
     }
 
     private static boolean hasRated(final Context context) {
@@ -113,9 +113,5 @@ public class RatingUtil {
 
     private static boolean didAppJustCrash(Context context) {
         return SharedPreferencesRatingUtil.getAppJustCrashed(context);
-    }
-
-    private static boolean hasAppRanOnceCrashFree(Context context) {
-        return SharedPreferencesRatingUtil.getAppRanOnceCrashFree(context);
     }
 }

@@ -12,11 +12,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import org.septa.android.app.BuildConfig;
 import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.database.DatabaseManager;
+import org.septa.android.app.rating.SharedPreferencesRatingUtil;
 import org.septa.android.app.view.TextView;
 import org.septa.android.app.webview.WebViewActivity;
 
@@ -24,10 +26,6 @@ import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
-
-/**
- * Created by jkampf on 9/5/17.
- */
 
 public class AboutFragment extends Fragment {
     boolean attribExpanded = false;
@@ -46,7 +44,6 @@ public class AboutFragment extends Fragment {
             TextView attribLine = (TextView) inflater.inflate(R.layout.item_about_attribute, null);
             attribLine.setHtml(s);
             attribListView.addView(attribLine);
-
         }
 
         attribTitle = (TextView) fragmentView.findViewById(R.id.attrib_title);
@@ -71,6 +68,16 @@ public class AboutFragment extends Fragment {
             }
         });
 
+        // reset the number of app uses TODO: remove this whole thing
+        fragmentView.findViewById(R.id.septa_logo).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SharedPreferencesRatingUtil.setAppRated(getContext(), false);
+                SharedPreferencesRatingUtil.setNumberOfUses(getContext(), 0);
+                Toast.makeText(getContext(), "App Rating Reset", Toast.LENGTH_SHORT).show();
+            }
+        });
+
         StringBuilder versionInfoBuilder = new StringBuilder("App Version: ");
         versionInfoBuilder.append(BuildConfig.VERSIONNAME).append("<br>");
 
@@ -78,8 +85,9 @@ public class AboutFragment extends Fragment {
         formatter.setTimeZone(TimeZone.getTimeZone("gmt"));
 
 
-        if (getActivity() == null)
+        if (getActivity() == null) {
             return fragmentView;
+        }
 
         try {
             ApplicationInfo ai = getActivity().getPackageManager().getApplicationInfo(getActivity().getPackageName(), 0);
@@ -104,7 +112,6 @@ public class AboutFragment extends Fragment {
 
         setHttpIntent(fragmentView, R.id.feedback_button, getResources().getString(R.string.comment_url), getResources().getString(R.string.comment_title));
         return fragmentView;
-
     }
 
     private void setHttpIntent(View rootView, int viewId, final String url, final String title) {

@@ -11,6 +11,7 @@ import com.crashlytics.android.Crashlytics;
 
 import org.septa.android.app.database.DatabaseManager;
 import org.septa.android.app.database.update.DatabaseSharedPrefsUtils;
+import org.septa.android.app.rating.RatingUtil;
 import org.septa.android.app.rating.SharedPreferencesRatingUtil;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Alerts;
@@ -85,17 +86,15 @@ public class MainApplication extends Application implements Runnable {
         refreshHandler = new Handler();
         refreshHandler.postDelayed(this, 1);
 
-        // if app just crashed, require one more full reboot before considering "crash free"
-        boolean justCrashed = SharedPreferencesRatingUtil.getAppJustCrashed(getApplicationContext()),
-                ranOnceCrashFree = SharedPreferencesRatingUtil.getAppRanOnceCrashFree(getApplicationContext());
-        if (!justCrashed && !ranOnceCrashFree) {
-            SharedPreferencesRatingUtil.setAppRanOnceCrashFree(getApplicationContext(), true);
-            Log.d(TAG, "Now crash free!");
-        }
-        if (justCrashed) {
-            SharedPreferencesRatingUtil.setAppRanOnceCrashFree(getApplicationContext(), false);
+        if (SharedPreferencesRatingUtil.getAppJustCrashed(getApplicationContext())) {
             SharedPreferencesRatingUtil.setAppJustCrashed(getApplicationContext(), false);
-            Log.d(TAG, "Need one more reboot to be crash free");
+
+            // require more crash free uses before prompting
+            int numberUses = SharedPreferencesRatingUtil.getNumberOfUses(getApplicationContext());
+            int crashFreeUsesRequired = RatingUtil.MIN_USES_TO_RATE - RatingUtil.MIN_CRASH_FREE_USES_TO_RATE;
+            if (numberUses > crashFreeUsesRequired) {
+                SharedPreferencesRatingUtil.setNumberOfUses(getApplicationContext(), crashFreeUsesRequired);
+            }
         }
 
         // handler for uncaught exceptions
@@ -110,8 +109,14 @@ public class MainApplication extends Application implements Runnable {
     public void handleUncaughtException(Thread thread, Throwable e) {
         e.printStackTrace(); // not all Android versions will print the stack trace automatically
 
-        SharedPreferencesRatingUtil.setAppRanOnceCrashFree(getApplicationContext(), false);
         SharedPreferencesRatingUtil.setAppJustCrashed(getApplicationContext(), true);
+
+        // require more crash free uses before prompting
+        int numberUses = SharedPreferencesRatingUtil.getNumberOfUses(getApplicationContext());
+        int crashFreeUsesRequired = RatingUtil.MIN_USES_TO_RATE - RatingUtil.MIN_CRASH_FREE_USES_TO_RATE;
+        if (numberUses > crashFreeUsesRequired) {
+            SharedPreferencesRatingUtil.setNumberOfUses(getApplicationContext(), crashFreeUsesRequired);
+        }
 
         Log.e(TAG, "The SEPTA app just crashed");
 

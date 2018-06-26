@@ -6,11 +6,6 @@ import org.septa.android.app.domain.RouteDirectionModel;
 
 import java.util.Comparator;
 
-/**
- * Created by jkampf on 8/15/17.
- */
-
-
 public class RouteModelComparator implements Comparator<RouteDirectionModel> {
 
     @Override

@@ -49,12 +49,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- * Created by ttuggerson on 9/13/17.
- */
-
-public class ScheduleResultsActivity extends
-        BaseActivity {
+public class ScheduleResultsActivity extends BaseActivity {
 
     private static final int RAIL_MON_THUR = 8;
     private static final int WEEK_DAY = 32;
@@ -64,8 +59,6 @@ public class ScheduleResultsActivity extends
     private static final int RAIL_SUNDAY = 64;
     private static final int SUNDAY = 64;
 
-
-    private DatabaseManager dbManager = null;
     private RadioGroup radioGroup = null;
     CursorAdapterSupplier<ScheduleModel> scheduleCursorAdapterSupplier;
     CursorAdapterSupplier<StopModel> reverseStopCursorAdapterSupplier;
@@ -82,32 +75,18 @@ public class ScheduleResultsActivity extends
 
     TextView startStationText;
     TextView destinationTextView;
-    TextView reverseTripLabel;
+    View reverseTripLabel;
 
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitle("Schedules");
 
-        //-----------------------------------------------------------------------------------------
-        // note to self
-        // start the schedules activity
-        // Step 1: pieces of information necessary for the schedules activity
-        //         Transit Type
-        //         Line ID
-        //         Start Location
-        //         Stop Location
-        // Step 2: Query the database for the necessary schedule information
-        // Step 3: Create Array Result set and then
-        // Step 4: Inflate custom View and bind Data with list adapter
-        // * Note: Will have to create a special case with the Rail line due to (M-TH) Fri Sat Sunday option
-        // _________________________________________________________________________________________
-
         setContentView(R.layout.activity_schedules_results);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-
-        dbManager = DatabaseManager.getInstance(this);
-
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
 
         if (savedInstanceState != null) {
             restoreState(savedInstanceState);
@@ -127,7 +106,7 @@ public class ScheduleResultsActivity extends
         startStationText = (TextView) findViewById(R.id.start_station_text);
         destinationTextView = (TextView) findViewById(R.id.destination_station_text);
 
-        reverseTripLabel = (TextView) findViewById(R.id.reverse_trip_label);
+        reverseTripLabel = findViewById(R.id.button_reverse_schedule_trip);
         reverseTripLabel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -169,7 +148,6 @@ public class ScheduleResultsActivity extends
         Alert alert = SystemStatusState.getAlertForLine(transitType, routeDirectionModel.getRouteId());
 
         boolean displayAlerts = false;
-
 
         View alertView = findViewById(R.id.service_alert);
         if (alert.isAlert()) {
@@ -226,13 +204,6 @@ public class ScheduleResultsActivity extends
 
     }
 
-    private void restoreState(Bundle bundle) {
-        destination = (StopModel) bundle.get(Constants.DESTINATION_STATION);
-        start = (StopModel) bundle.get(Constants.STARTING_STATION);
-        transitType = (TransitType) bundle.get(Constants.TRANSIT_TYPE);
-        routeDirectionModel = (RouteDirectionModel) bundle.get(Constants.ROUTE_DIRECTION_MODEL);
-    }
-
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -242,6 +213,48 @@ public class ScheduleResultsActivity extends
         outState.putSerializable(Constants.TRANSIT_TYPE, transitType);
         outState.putSerializable(Constants.ROUTE_DIRECTION_MODEL, routeDirectionModel);
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        this.menu = menu;
+        getMenuInflater().inflate(R.menu.favorite_menu, menu);
+
+        if (currentFavorite != null) {
+            menu.findItem(R.id.create_favorite).setIcon(R.drawable.ic_favorite_made);
+            menu.findItem(R.id.create_favorite).setTitle(R.string.schedule_favorite_icon_title_remove);
+        } else {
+            menu.findItem(R.id.create_favorite).setTitle(R.string.schedule_favorite_icon_title_create);
+        }
+
+        // hide refresh icon -- refresh only needed in NTA Results Activity
+        menu.findItem(R.id.refresh_nta_results).setVisible(false);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.create_favorite:
+                saveAsFavorite(item);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
+
+    private void restoreState(Bundle bundle) {
+        destination = (StopModel) bundle.get(Constants.DESTINATION_STATION);
+        start = (StopModel) bundle.get(Constants.STARTING_STATION);
+        transitType = (TransitType) bundle.get(Constants.TRANSIT_TYPE);
+        routeDirectionModel = (RouteDirectionModel) bundle.get(Constants.ROUTE_DIRECTION_MODEL);
     }
 
     private void initRadioButtonGroup() {
@@ -281,8 +294,9 @@ public class ScheduleResultsActivity extends
         TextView routeTitleDescription = (TextView) findViewById(R.id.route_description_text);
         if (transitType == TransitType.RAIL) {
             routeTitleDescription.setText(routeDirectionModel.getDirectionDescription());
-        } else routeTitleDescription.setText("to " + routeDirectionModel.getDirectionDescription());
-
+        } else {
+            routeTitleDescription.setText("to " + routeDirectionModel.getDirectionDescription());
+        }
 
         startStationText.setText(start.getStopName());
         destinationTextView.setText(destination.getStopName());
@@ -293,10 +307,13 @@ public class ScheduleResultsActivity extends
         String favKey = Favorite.generateKey(start, destination, transitType, routeDirectionModel);
         currentFavorite = SeptaServiceFactory.getFavoritesService().getFavoriteByKey(this, favKey);
 
+        // check if already a favorite
         if (menu != null) {
             if (currentFavorite != null) {
                 menu.findItem(R.id.create_favorite).setIcon(R.drawable.ic_favorite_made);
-            } else menu.findItem(R.id.create_favorite).setIcon(R.drawable.ic_favorite_available);
+            } else {
+                menu.findItem(R.id.create_favorite).setIcon(R.drawable.ic_favorite_available);
+            }
         }
     }
 
@@ -326,12 +343,69 @@ public class ScheduleResultsActivity extends
         return 0;
     }
 
-    @Override
-    public boolean onSupportNavigateUp() {
-        onBackPressed();
-        return true;
-    }
+    public void saveAsFavorite(final MenuItem item) {
+        if (!item.isEnabled()) {
+            return;
+        }
 
+        item.setEnabled(false);
+
+        if (start != null && destination != null && transitType != null) {
+            if (currentFavorite == null) {
+                final Favorite favorite = new Favorite(start, destination, transitType, routeDirectionModel);
+                SaveFavoritesAsyncTask task = new SaveFavoritesAsyncTask(this, new Runnable() {
+                    @Override
+                    public void run() {
+                        item.setEnabled(true);
+                    }
+                }, new Runnable() {
+                    @Override
+                    public void run() {
+                        item.setEnabled(true);
+                        item.setIcon(R.drawable.ic_favorite_made);
+                        currentFavorite = favorite;
+                    }
+                });
+
+                task.execute(favorite);
+                Snackbar snackbar = Snackbar
+                        .make(findViewById(R.id.activity_schedule_results_container), R.string.create_fav_snackbar_text, Snackbar.LENGTH_LONG);
+
+                snackbar.show();
+            } else {
+                new AlertDialog.Builder(this).setCancelable(true).setTitle(R.string.delete_fav_modal_title)
+                        .setMessage(R.string.delete_fav_modal_text)
+                        .setPositiveButton(R.string.delete_fav_pos_button, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                DeleteFavoritesAsyncTask task = new DeleteFavoritesAsyncTask(ScheduleResultsActivity.this, new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        item.setEnabled(true);
+                                    }
+                                }, new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        item.setEnabled(true);
+                                        item.setIcon(R.drawable.ic_favorite_available);
+                                        currentFavorite = null;
+                                    }
+                                });
+
+                                task.execute(currentFavorite.getKey());
+                            }
+                        }).setNegativeButton(R.string.delete_fav_neg_button, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        item.setEnabled(true);
+                    }
+                }).create().show();
+            }
+
+        } else {
+            item.setEnabled(true);
+        }
+    }
 
     class ScheduleResultsAsyncTask extends AsyncTask<Integer, Void, List<ScheduleModel>> {
         ScheduleResultsActivity scheduleResultsActivity;
@@ -350,14 +424,14 @@ public class ScheduleResultsActivity extends
 
         @Override
         protected List<ScheduleModel> doInBackground(Integer... params) {
-            List<Criteria> criteriaList = new LinkedList<Criteria>();
+            List<Criteria> criteriaList = new LinkedList<>();
             criteriaList.add(new Criteria("start_stop_id", Criteria.Operation.EQ, scheduleResultsActivity.start.getStopId()));
             criteriaList.add(new Criteria("service_id", Criteria.Operation.EQ, params[0]));
             criteriaList.add(new Criteria("direction_id", Criteria.Operation.EQ, scheduleResultsActivity.routeDirectionModel.getDirectionCode()));
             criteriaList.add(new Criteria("end_stop_id", Criteria.Operation.EQ, scheduleResultsActivity.destination.getStopId()));
             criteriaList.add(new Criteria("route_id", Criteria.Operation.EQ, scheduleResultsActivity.routeDirectionModel.getRouteId()));
 
-            List<ScheduleModel> returnList = new ArrayList<ScheduleModel>();
+            List<ScheduleModel> returnList = new ArrayList<>();
             Cursor cursor = scheduleResultsActivity.scheduleCursorAdapterSupplier.getCursor(scheduleResultsActivity, criteriaList);
             if (cursor.moveToFirst()) {
                 do {
@@ -420,8 +494,6 @@ public class ScheduleResultsActivity extends
 
                 if (newDest != null && newStart != null) {
                     found = true;
-                    scheduleResultsActivity.destination = newDest;
-                    scheduleResultsActivity.start = newStart;
                 }
             } else {
                 found = true;
@@ -454,7 +526,7 @@ public class ScheduleResultsActivity extends
                 ScheduleResultsAsyncTask scheduleResultsAsyncTask = new ScheduleResultsAsyncTask(scheduleResultsActivity);
                 scheduleResultsAsyncTask.execute(schedule);
             } else {
-                Snackbar snackbar = Snackbar.make(scheduleResultsActivity.findViewById(R.id.schedule_results_coordinator), R.string.reverse_not_found, Snackbar.LENGTH_INDEFINITE);
+                Snackbar snackbar = Snackbar.make(scheduleResultsActivity.findViewById(R.id.activity_schedule_results_container), R.string.reverse_not_found, Snackbar.LENGTH_INDEFINITE);
 
                 View snackbarView = snackbar.getView();
                 android.widget.TextView tv = (android.widget.TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
@@ -464,7 +536,7 @@ public class ScheduleResultsActivity extends
         }
 
         StopModel getReverse(String stopId, String routeShortName) {
-            List<Criteria> criteria = new ArrayList<Criteria>(2);
+            List<Criteria> criteria = new ArrayList<>(2);
             criteria.add(new Criteria("route_short_name", Criteria.Operation.EQ, routeShortName));
             criteria.add(new Criteria("stop_id", Criteria.Operation.EQ, stopId));
             Cursor cursor = scheduleResultsActivity.reverseStopCursorAdapterSupplier.getCursor(scheduleResultsActivity, criteria);
@@ -474,83 +546,5 @@ public class ScheduleResultsActivity extends
         }
 
     }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        this.menu = menu;
-        getMenuInflater().inflate(R.menu.favorite_menu, menu);
-
-        if (currentFavorite != null) {
-            menu.findItem(R.id.create_favorite).setIcon(R.drawable.ic_favorite_made);
-            menu.findItem(R.id.create_favorite).setTitle(R.string.schedule_favorite_icon_title_remove);
-        } else {
-            menu.findItem(R.id.create_favorite).setTitle(R.string.schedule_favorite_icon_title_create);
-        }
-
-        return true;
-    }
-
-    public void saveAsFavorite(final MenuItem item) {
-        if (!item.isEnabled())
-            return;
-
-        item.setEnabled(false);
-
-        if (start != null && destination != null && transitType != null) {
-            if (currentFavorite == null) {
-                final Favorite favorite = new Favorite(start, destination, transitType, routeDirectionModel);
-                SaveFavoritesAsyncTask task = new SaveFavoritesAsyncTask(this, new Runnable() {
-                    @Override
-                    public void run() {
-                        item.setEnabled(true);
-                    }
-                }, new Runnable() {
-                    @Override
-                    public void run() {
-                        item.setEnabled(true);
-                        item.setIcon(R.drawable.ic_favorite_made);
-                        currentFavorite = favorite;
-                    }
-                });
-
-                task.execute(favorite);
-                Snackbar snackbar = Snackbar
-                        .make(findViewById(R.id.schedule_results_coordinator), R.string.create_fav_snackbar_text, Snackbar.LENGTH_LONG);
-
-                snackbar.show();
-            } else {
-                new AlertDialog.Builder(this).setCancelable(true).setTitle(R.string.delete_fav_modal_title)
-                        .setMessage(R.string.delete_fav_modal_text)
-                        .setPositiveButton(R.string.delete_fav_pos_button, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                DeleteFavoritesAsyncTask task = new DeleteFavoritesAsyncTask(ScheduleResultsActivity.this, new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        item.setEnabled(true);
-                                    }
-                                }, new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        item.setEnabled(true);
-                                        item.setIcon(R.drawable.ic_favorite_available);
-                                        currentFavorite = null;
-                                    }
-                                });
-
-                                task.execute(currentFavorite.getKey());
-                            }
-                        }).setNegativeButton(R.string.delete_fav_neg_button, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        item.setEnabled(true);
-                    }
-                }).create().show();
-            }
-
-        } else item.setEnabled(true);
-    }
-
 
 }

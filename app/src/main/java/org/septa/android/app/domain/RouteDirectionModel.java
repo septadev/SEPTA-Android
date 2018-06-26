@@ -2,10 +2,6 @@ package org.septa.android.app.domain;
 
 import java.io.Serializable;
 
-/**
- * Created by jkampf on 8/15/17.
- */
-
 public class RouteDirectionModel implements Serializable {
     private static final String TAG = RouteDirectionModel.class.getName();
 

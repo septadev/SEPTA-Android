@@ -40,9 +40,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by jkampf on 9/5/17.
- */
 public class FavoritesFragment extends Fragment implements Runnable, FavoriteItemAdapter.FavoriteItemListener, SwipeController.SwipeControllerListener {
     private static final String TAG = FavoritesFragment.class.getSimpleName();
 

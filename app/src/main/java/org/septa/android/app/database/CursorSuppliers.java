@@ -22,10 +22,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Created by jkampf on 10/4/17.
- */
-
 class CursorSuppliers implements Serializable {
     private static final String TAG = CursorSuppliers.class.getSimpleName();
 
@@ -53,6 +49,9 @@ class CursorSuppliers implements Serializable {
         }
     }
 
+    /**
+     * get all the stops for rail next to arrive picker (no line specified)
+     */
     static class RailStopCursorAdapterSupplier implements CursorAdapterSupplier<StopModel> {
 
         private static final String SELECT_CLAUSE = "SELECT stop_id, stop_name, wheelchair_boarding, stop_lat, stop_lon, rowid AS _id FROM stops_rail a";
@@ -96,7 +95,7 @@ class CursorSuppliers implements Serializable {
 
         @Override
         public StopModel getItemFromId(Context context, Object id) {
-            List<Criteria> criteria = new ArrayList<Criteria>(1);
+            List<Criteria> criteria = new ArrayList<>(1);
             criteria.add(new Criteria("stop_id", Criteria.Operation.EQ, id.toString()));
             Cursor cursor = getCursor(context, criteria);
             StopModel stopModel = null;
@@ -112,6 +111,9 @@ class CursorSuppliers implements Serializable {
         }
     }
 
+    /**
+     * gets the starting stops for rail schedule picker on a line
+     */
     static class LineAwareRailStopCursorAdapterSupplier implements CursorAdapterSupplier<StopModel> {
 
         @Override
@@ -151,8 +153,10 @@ class CursorSuppliers implements Serializable {
 
         @Override
         public StopModel getCurrentItemFromCursor(Cursor cursor) {
-            return new StopModel(cursor.getString(0), cursor.getString(1),
+            StopModel stopModel = new StopModel(cursor.getString(0), cursor.getString(1),
                     (cursor.getInt(3) == 1), cursor.getString(2), cursor.getString(3));
+            stopModel.setStopSequence(cursor.getInt(5));
+            return stopModel;
         }
 
         @Override
@@ -175,12 +179,16 @@ class CursorSuppliers implements Serializable {
         }
     }
 
+    /**
+     * gets the destination stops for rail schedule picker on a line
+     */
     static class LineAwareRailStopAfterCursorAdapterSupplier implements CursorAdapterSupplier<StopModel> {
 
         @Override
         public Cursor getCursor(Context context, List<Criteria> whereClause) {
-            if (whereClause == null)
+            if (whereClause == null) {
                 throw new RuntimeException("Required where clause that includes after_stop_id, route_id and direction_id with Equals Operation");
+            }
 
             StringBuilder queryString = new StringBuilder(context.getResources().getString(R.string.rail_trip_end));
             String afterStopId = null;
@@ -213,15 +221,17 @@ class CursorSuppliers implements Serializable {
             String query = form.format(new Object[]{routeId, directionId, afterStopId});
 
             Cursor cursor = getDatabase(context).rawQuery(query, null);
-            Log.d(TAG, "BusStopAfterCursorAdapterSupplier Creating cursor:" + query);
+            Log.d(TAG, "Creating cursor:" + query);
 
             return cursor;
         }
 
         @Override
         public StopModel getCurrentItemFromCursor(Cursor cursor) {
-            return new StopModel(cursor.getString(0), cursor.getString(1),
+            StopModel stopModel = new StopModel(cursor.getString(0), cursor.getString(1),
                     (cursor.getInt(4) == 1), cursor.getString(2), cursor.getString(3));
+            stopModel.setStopSequence(cursor.getInt(5));
+            return stopModel;
         }
 
         @Override
@@ -241,9 +251,12 @@ class CursorSuppliers implements Serializable {
         }
     }
 
-    static class BusStopCursorAdapterSupplier implements CursorAdapterSupplier<StopModel> {
+    /**
+     * gets the starting stops for bus, subway, trolley, or NHSL on a route
+     */
+    static class TransitStopCursorAdapterSupplier implements CursorAdapterSupplier<StopModel> {
 
-        private static final String SELECT_CLAUSE = "SELECT DISTINCT a.stop_id, stop_name, wheelchair_boarding, stop_lat, stop_lon, a.rowid AS _id FROM stops_bus a, stop_route_direction b WHERE a.stop_id=b.stop_id";
+        private static final String SELECT_CLAUSE = "SELECT DISTINCT a.stop_id, stop_name, wheelchair_boarding, stop_lat, stop_lon, b.route_sequence, a.rowid AS _id FROM stops_bus a, stop_route_direction b WHERE a.stop_id=b.stop_id";
 
         @Override
         public Cursor getCursor(Context context, List<Criteria> whereClause) {
@@ -266,7 +279,7 @@ class CursorSuppliers implements Serializable {
 
             queryString.append(" ORDER BY stop_name");
 
-            Log.d(TAG, "BusStopCursorAdapterSupplier Creating cursor:" + queryString.toString());
+            Log.d(TAG, "TransitStopCursorAdapterSupplier Creating cursor:" + queryString.toString());
 
             Cursor cursor = getDatabase(context).rawQuery(queryString.toString(), null);
 
@@ -277,6 +290,7 @@ class CursorSuppliers implements Serializable {
         public StopModel getCurrentItemFromCursor(Cursor cursor) {
             StopModel stopModel = new StopModel(cursor.getString(0), cursor.getString(1),
                     (cursor.getInt(2) == 1), cursor.getString(3), cursor.getString(4));
+            stopModel.setStopSequence(cursor.getInt(5));
             return stopModel;
         }
 
@@ -297,13 +311,15 @@ class CursorSuppliers implements Serializable {
         }
     }
 
-    static class BusStopAfterCursorAdapterSupplier implements CursorAdapterSupplier<StopModel> {
+    /**
+     * gets the destination stops for bus, subway, trolley, or NHSL on a route
+     */
+    static class TransitStopAfterCursorAdapterSupplier implements CursorAdapterSupplier<StopModel> {
 
-        private static final String SELECT_CLAUSE = "select distinct y.stop_id, y.stop_name, y.wheelchair_boarding, y.stop_lat, y.stop_lon, y.rowid AS _id from\n" +
+        private static final String SELECT_CLAUSE = "select distinct y.stop_id, y.stop_name, y.wheelchair_boarding, y.stop_lat, y.stop_lon, b.route_sequence, y.rowid AS _id from\n" +
                 "(select distinct stop_id, route_sequence from stop_route_direction where stop_id=''{0}'' and route_id=''{1}'' and direction_id=''{2}'' ) a,\n" +
                 "(select distinct stop_id, route_sequence from stop_route_direction where stop_id<>''{0}'' and route_id=''{1}'' and direction_id=''{2}'' ) b,\n" +
                 "stops_bus y where a.route_sequence < b.route_sequence and y.stop_id=b.stop_id";
-
 
         @Override
         public Cursor getCursor(Context context, List<Criteria> whereClause) {
@@ -341,7 +357,7 @@ class CursorSuppliers implements Serializable {
             String query = form.format(new Object[]{afterStopId, routeId, directionId});
 
             Cursor cursor = getDatabase(context).rawQuery(query, null);
-            Log.d(TAG, "BusStopAfterCursorAdapterSupplier Creating cursor:" + query);
+            Log.d(TAG, "TransitStopAfterCursorAdapterSupplier Creating cursor:" + query);
 
             return cursor;
         }

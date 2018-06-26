@@ -70,7 +70,8 @@ SELECT
   cast(S.stop_lon AS DECIMAL) stopLongitude,
   CASE WHEN S.wheelchair_boarding = \'1\'
     THEN 1
-  ELSE 0 END                  wheelchairBoarding
+  ELSE 0 END                  wheelchairBoarding,
+  sequence
 FROM
   stops_rail S
 JOIN routes_rail_stops RRS on S.stop_id = RRS.stop_id
@@ -81,17 +82,19 @@ WHERE RRS.route_id = \"{0}\" AND RRS.direction_id = \"{1}\"
     <!--route_id={0}, direction_id={1}, stop_id={2} -->
     <string name="rail_trip_end">
 SELECT
-  S.stop_id                   stopId,
-  S.stop_name                 stopName,
-  cast(S.stop_lat AS DECIMAL) stopLatitude,
-  cast(S.stop_lon AS DECIMAL) stopLongitude,
-  CASE WHEN S.wheelchair_boarding = \'1\'
-    THEN 1
-  ELSE 0 END                  wheelchairBoarding
+	S.stop_id 					stopId,
+	S.stop_name					stopName,
+	cast(S.stop_lat AS DECIMAL) 	stopLatitude,
+	cast(S.stop_lon AS DECIMAL) 	stopLongitude,
+	CASE WHEN S.wheelchair_boarding = \'1\'
+    		THEN 1 ELSE 0 END 		wheelchairBoarding,
+	sequence
 FROM
-  stops_rail S
+	stops_rail S
 JOIN routes_rail_stops RRS on S.stop_id = RRS.stop_id
-JOIN routes_rail_stops RRS2 on RRS2.sequence &lt; RRS.sequence
-WHERE RRS.route_id = \"{0}\" AND RRS.direction_id = \"{1}\" and RRS2.stop_id = {2} and RRS2.route_id = \"{0}\" AND RRS2.direction_id = \"{1}\"
+WHERE route_id = \"{0}\" AND direction_id = \"{1}\" AND sequence >
+	(SELECT sequence
+	FROM routes_rail_stops
+	WHERE route_id = \"{0}\" AND direction_id = \"{1}\" AND stop_id = {2})
     </string>
 </resources>

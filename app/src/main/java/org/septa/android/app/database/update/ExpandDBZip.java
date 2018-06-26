@@ -13,10 +13,6 @@ import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-/**
- * Created by mluansing on 9/20/17.
- */
-
 public class ExpandDBZip extends AsyncTask<Object, Object, Void> {
 
     // tag for logging purposes

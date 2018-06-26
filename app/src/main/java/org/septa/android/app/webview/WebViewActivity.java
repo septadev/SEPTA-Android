@@ -14,10 +14,6 @@ import org.septa.android.app.BaseActivity;
 import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 
-/**
- * Created by jkampf on 9/13/17.
- */
-
 public class WebViewActivity extends BaseActivity {
 
     private static final String TAG = WebViewActivity.class.getSimpleName();

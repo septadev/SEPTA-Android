@@ -4,10 +4,6 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-/**
- * Created by jkampf on 9/21/17.
- */
-
 public class Alerts {
 
     @SerializedName("alerts")

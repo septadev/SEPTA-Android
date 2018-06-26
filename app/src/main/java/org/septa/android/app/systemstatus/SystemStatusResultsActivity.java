@@ -25,10 +25,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
- * Created by jkampf on 9/13/17.
- */
-
 public class SystemStatusResultsActivity extends BaseActivity {
 
     private static final String TAG = SystemStatusResultsActivity.class.getSimpleName();

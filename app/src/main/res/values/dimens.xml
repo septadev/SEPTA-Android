@@ -14,4 +14,8 @@
     <dimen name="favorite_container_padding">10dp</dimen>
     <dimen name="favorite_item_margin">5dp</dimen>
     <dimen name="line_stop_picker_name_padding">17dp</dimen>
+
+    <dimen name="stop_picker_order_button_horizontal_padding">17dp</dimen>
+    <dimen name="stop_picker_order_button_vertical_padding">5dp</dimen>
+    <dimen name="button_padding">5dp</dimen>
 </resources>

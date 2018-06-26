@@ -41,7 +41,8 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-public class MapUtils {
+public abstract class MapUtils {
+
     private static final String TAG = MapUtils.class.getSimpleName();
 
     public static KmlLayer getKMLByLineId(Context context, GoogleMap googleMap, String lineId, TransitType transitType) {

@@ -13,7 +13,7 @@ import org.septa.android.app.R;
  * Rating Utilities
  */
 
-public class RatingUtil {
+public abstract class RatingUtil {
 
     public static final int MIN_USES_TO_RATE = 5; // TODO: change to 20
 
@@ -22,10 +22,6 @@ public class RatingUtil {
 
     // increment this when wanting to re-ask user for a rating
     private static final int CURRENT_RATING_ID = 0;
-
-    private RatingUtil() {
-
-    }
 
     public static void showRatingDialog(final Context context) {
         final BottomSheetDialog ratingDialog = new BottomSheetDialog(context);

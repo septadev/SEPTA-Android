@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import org.septa.android.app.database.DatabaseManager;
 import org.septa.android.app.database.SEPTADatabase;
 
-public class TempDatabaseManager {
+public abstract class TempDatabaseManager {
 
     public static final String TAG = DatabaseManager.class.getSimpleName();
 

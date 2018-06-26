@@ -10,7 +10,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.concurrent.TimeUnit;
 
-public class GeneralUtils {
+public abstract class GeneralUtils {
 
     public static String getDurationAsString(long duration, TimeUnit timeUnit) {
         long totalMinutes = TimeUnit.MINUTES.convert(

@@ -3,7 +3,7 @@ package org.septa.android.app.rating;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-public class SharedPreferencesRatingUtil {
+public abstract class SharedPreferencesRatingUtil {
 
     public static final String TAG = SharedPreferencesRatingUtil.class.getSimpleName();
 

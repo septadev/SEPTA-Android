@@ -566,13 +566,11 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
 
         for (String routeId : routeIds.split(",")) {
             TransitType transitType = TransitType.BUS;
-            int transitTypeDrawableId = R.drawable.ic_bus_blue;
+            int transitTypeDrawableId = R.drawable.ic_bus_blue_small;
             if (isTrolley(routeId)) {
                 transitType = TransitType.TROLLEY;
-                transitTypeDrawableId = R.drawable.ic_trolley_blue;
+                transitTypeDrawableId = R.drawable.ic_trolley_blue_small;
             }
-
-//            BitmapDescriptor vehicleBitMap = BitmapDescriptorFactory.fromResource(transitType.getMapMarkerResource());
 
             // redraw all vehicles
             for (Map.Entry<TransitViewModelResponse.TransitViewRecord, LatLng> entry : parser.getResultsForRoute(routeId).entrySet()) {

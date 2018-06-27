@@ -33,7 +33,7 @@ public class WebViewActivity extends BaseActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
 
-        webView = (WebView) findViewById(R.id.web_contents);
+        webView = findViewById(R.id.web_contents);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setSupportZoom(true);
         webView.getSettings().setLoadWithOverviewMode(true);

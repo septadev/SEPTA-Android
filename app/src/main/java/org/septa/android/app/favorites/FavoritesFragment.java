@@ -93,8 +93,8 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
     private View onCreateViewFavorites(LayoutInflater inflater, final ViewGroup container) {
         setHasOptionsMenu(true);
         fragmentView = inflater.inflate(R.layout.fragment_favorites, container, false);
-        mRefreshLayout = (FavoritesSwipeRefreshLayout) fragmentView.findViewById(R.id.favorites_swipe_refresh_layout);
-        favoritesListView = (RecyclerView) fragmentView.findViewById(R.id.favorites_list);
+        mRefreshLayout = fragmentView.findViewById(R.id.favorites_swipe_refresh_layout);
+        favoritesListView = fragmentView.findViewById(R.id.favorites_list);
 
         // initialize favoriteStateList with favorites collapsed by default
         if (favoriteStateList.size() != favoritesMap.size()) {

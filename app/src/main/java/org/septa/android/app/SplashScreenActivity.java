@@ -33,7 +33,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_splash_screen);
 
-        ImageView image = (ImageView) findViewById(R.id.splash_image);
+        ImageView image = findViewById(R.id.splash_image);
 
         Calendar date = Calendar.getInstance();
 

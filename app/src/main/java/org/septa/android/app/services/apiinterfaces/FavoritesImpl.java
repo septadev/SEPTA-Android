@@ -20,8 +20,8 @@ public class FavoritesImpl implements Favorites {
 
     public static final String TAG = FavoritesImpl.class.getSimpleName();
 
-    public static final String KEY_FAVORITES = "favorite_json";
-    public static final String KEY_FAVORITES_STATE = "favorite_state_json";
+    private static final String KEY_FAVORITES = "favorite_json";
+    private static final String KEY_FAVORITES_STATE = "favorite_state_json";
 
     /**
      * fixing some corrupt favorites

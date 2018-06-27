@@ -6,7 +6,8 @@ import java.util.ArrayList;
 
 public class PlacePredictions {
 
-
+    @SerializedName("predictions")
+    private ArrayList<PlaceAutoComplete> predictions;
 
     public ArrayList<PlaceAutoComplete> getPlaces() {
         return predictions;
@@ -15,7 +16,4 @@ public class PlacePredictions {
     public void setPlaces(ArrayList<PlaceAutoComplete> places) {
         this.predictions = places;
     }
-
-    @SerializedName("predictions")
-    private ArrayList<PlaceAutoComplete> predictions;
 }

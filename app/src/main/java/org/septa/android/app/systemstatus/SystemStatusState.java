@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SystemStatusState {
+
     private static Map<String, Alert> map = new HashMap<String, Alert>();
 
     private static boolean initialized = false;

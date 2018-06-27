@@ -15,7 +15,7 @@ public class CleanOldDB extends AsyncTask<Object, Object, Void> {
     private CleanOldDBListener mListener;
     private int version;
 
-    public CleanOldDB(Context context, CleanOldDBListener listener, int version) {
+    CleanOldDB(Context context, CleanOldDBListener listener, int version) {
         this.context = context;
         this.mListener = listener;
         this.version = version;

@@ -8,6 +8,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -18,7 +20,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.SpannableString;
@@ -49,6 +50,7 @@ import org.septa.android.app.services.apiinterfaces.model.AlertDetail;
 import org.septa.android.app.services.apiinterfaces.model.Favorite;
 import org.septa.android.app.support.AnalyticsManager;
 import org.septa.android.app.support.CrashlyticsManager;
+import org.septa.android.app.support.ShakeDetector;
 import org.septa.android.app.systemmap.SystemMapFragment;
 import org.septa.android.app.systemstatus.SystemStatusFragment;
 import org.septa.android.app.systemstatus.SystemStatusState;
@@ -63,7 +65,15 @@ import retrofit2.Response;
 
 import static org.septa.android.app.database.update.DatabaseSharedPrefsUtils.DEFAULT_DOWNLOAD_REF_ID;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, FavoritesFragment.FavoritesFragmentListener, ManageFavoritesFragment.ManageFavoritesFragmentListener, SeptaServiceFactory.SeptaServiceFactoryCallBacks, CheckForLatestDB.CheckForLatestDBListener, DownloadNewDB.DownloadNewDBListener, ExpandDBZip.ExpandDBZipListener, CleanOldDB.CleanOldDBListener {
+public class MainActivity extends BaseActivity implements
+        NavigationView.OnNavigationItemSelectedListener,
+        FavoritesFragment.FavoritesFragmentListener,
+        ManageFavoritesFragment.ManageFavoritesFragmentListener,
+        SeptaServiceFactory.SeptaServiceFactoryCallBacks,
+        CheckForLatestDB.CheckForLatestDBListener,
+        DownloadNewDB.DownloadNewDBListener,
+        ExpandDBZip.ExpandDBZipListener,
+        CleanOldDB.CleanOldDBListener {
 
     public static final String TAG = MainActivity.class.getSimpleName();
     NextToArriveFragment nextToArriveFragment = new NextToArriveFragment();
@@ -91,11 +101,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     DownloadManager downloadManager;
     AlertDialog promptDownloadDB, acknowledgeNewDatabaseReady;
 
-    // shake detector used for crashing the app purposefully
-    // TODO: comment out when releasing to production
-//    private SensorManager mSensorManager;
-//    private Sensor mAccelerometer;
-//    private ShakeDetector mShakeDetector;
+    // shake detector used for crashing the app purposefully -- only in debug and alpha
+    private SensorManager mSensorManager;
+    private Sensor mAccelerometer;
+    private ShakeDetector mShakeDetector;
 
     public static final String MOBILE_APP_ALERT_ROUTE_NAME = "Mobile APP",
             MOBILE_APP_ALERT_MODE = "MOBILE",
@@ -136,26 +145,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         }
 
-        // TODO: comment out when releasing to production
         // ShakeDetector initialization
-//        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-//        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-//        mShakeDetector = new ShakeDetector();
-//        mShakeDetector.setOnShakeListener(new ShakeDetector.OnShakeListener() {
-//            @Override
-//            public void onShake(int count) {
-//                handleShakeEvent(count);
-//            }
-//        });
+        if (BuildConfig.FORCE_CRASH_ENABLED) {
+            mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+            mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+            mShakeDetector = new ShakeDetector();
+            mShakeDetector.setOnShakeListener(new ShakeDetector.OnShakeListener() {
+                @Override
+                public void onShake(int count) {
+                    handleShakeEvent(count);
+                }
+            });
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        // TODO: comment out when releasing to production
         // re-register the shake detector on resume
-//        mSensorManager.registerListener(mShakeDetector, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
+        if (BuildConfig.FORCE_CRASH_ENABLED) {
+            mSensorManager.registerListener(mShakeDetector, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
+        }
 
         // note that generic alert will show up before mobile app alert bc it was the most recently added
 
@@ -239,9 +250,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onPause() {
         super.onPause();
 
-        // TODO: comment out when releasing to production
         // unregister the shake detector on pause
-//        mSensorManager.unregisterListener(mShakeDetector);
+        if (BuildConfig.FORCE_CRASH_ENABLED) {
+            mSensorManager.unregisterListener(mShakeDetector);
+        }
 
         // prevent stacking alertdialogs
         if (genericAlert != null) {

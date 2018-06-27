@@ -15,8 +15,7 @@ import io.fabric.sdk.android.Fabric;
  * Manages Analytics
  */
 
-public class AnalyticsManager {
-
+public abstract class AnalyticsManager {
     public static final String CUSTOM_EVENT_ABOUT = "About";
     public static final String CUSTOM_EVENT_CONNECT = "Connect with SEPTA";
     public static final String CUSTOM_EVENT_FARES_TRANSIT = "Fares and Transit Info";
@@ -28,7 +27,6 @@ public class AnalyticsManager {
     public static final String CUSTOM_EVENT_SYSTEM_STATUS = "System Status";
     public static final String CUSTOM_EVENT_TRAIN_VIEW = "TrainView";
     public static final String CUSTOM_EVENT_TRANSIT_VIEW = "TransitView";
-
 
     private static boolean initialized = false;
 

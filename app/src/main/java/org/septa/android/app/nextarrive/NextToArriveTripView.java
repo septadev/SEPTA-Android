@@ -57,7 +57,7 @@ public class NextToArriveTripView extends FrameLayout {
 
     private Integer maxResults = 10;
 
-    private static Map<Integer, StopModel> connectionStations = new HashMap<Integer, StopModel>();
+    private static Map<Integer, StopModel> connectionStations = new HashMap<>();
 
     static {
         // 90004,'30th Street Station','39.9566667','-75.1816667'
@@ -73,7 +73,6 @@ public class NextToArriveTripView extends FrameLayout {
         connectionStations.put(90007, new StopModel("90007", "Temple University", 0, true, "39.9813889", "-75.1494444"));
     }
 
-
     public NextToArriveTripView(@NonNull Context context) {
         super(context);
         init();
@@ -88,7 +87,6 @@ public class NextToArriveTripView extends FrameLayout {
         super(context, attrs, defStyleAttr);
         init();
     }
-
 
     private void init() {
         inflate(getContext(), R.layout.view_next_to_arrive_trip, this);
@@ -324,7 +322,6 @@ public class NextToArriveTripView extends FrameLayout {
         return line;
     }
 
-
     public View getMultistopTripView(final NextArrivalRecord item) {
 
         View convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_next_to_arrive_unit_multistop, this, false);
@@ -430,10 +427,10 @@ public class NextToArriveTripView extends FrameLayout {
                     intent.putExtra(Constants.STARTING_STATION, start);
                     intent.putExtra(Constants.TRANSIT_TYPE, transitType);
                     intent.putExtra(Constants.ROUTE_NAME, item.getOrigRouteName());
-                    if (routeDirectionModel != null){
+                    if (routeDirectionModel != null) {
                         CrashlyticsManager.log(Log.INFO, TAG, routeDirectionModel.getDirectionDescription());
-                        intent.putExtra(Constants.ROUTE_ID, routeDirectionModel.getRouteShortName());}
-                    else {
+                        intent.putExtra(Constants.ROUTE_ID, routeDirectionModel.getRouteShortName());
+                    } else {
                         CrashlyticsManager.log(Log.INFO, TAG, item.getOrigRouteId());
                         intent.putExtra(Constants.ROUTE_ID, item.getOrigRouteId());
                     }

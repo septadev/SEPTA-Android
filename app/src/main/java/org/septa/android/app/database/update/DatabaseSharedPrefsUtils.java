@@ -4,7 +4,7 @@ import android.content.Context;
 
 import org.septa.android.app.database.SEPTADatabase;
 
-public class DatabaseSharedPrefsUtils {
+public abstract class DatabaseSharedPrefsUtils {
 
     // database shared preferences
     private static final String SHARED_PREFERENCES_DATABASE = "SHARED_PREFERENCES_DATABASE";

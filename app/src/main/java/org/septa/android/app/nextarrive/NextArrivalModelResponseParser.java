@@ -18,7 +18,7 @@ public class NextArrivalModelResponseParser {
     private Map<LatLng, NextArrivalModelResponse.NextArrivalRecord> origLatLngMap = new HashMap<LatLng, NextArrivalModelResponse.NextArrivalRecord>();
     private Map<LatLng, NextArrivalModelResponse.NextArrivalRecord> termLatLngMap = new HashMap<LatLng, NextArrivalModelResponse.NextArrivalRecord>();
 
-    private Set<String> routeIdSet = new HashSet<String>();
+    private Set<String> routeIdSet = new HashSet<>();
     List<NextArrivalModelResponse.NextArrivalRecord> results;
 
     public NextArrivalModelResponseParser() {

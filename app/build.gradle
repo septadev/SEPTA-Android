@@ -21,6 +21,12 @@ def getSprintRound = { ->
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 
+// Build config types set by the variants
+final String CONFIG_TYPE_BOOLEAN = 'boolean'
+
+// Build config fields set by the variants
+final String CONFIG_FORCE_CRASH_ENABLED = 'FORCE_CRASH_ENABLED'
+
 // check that the SEPTA.signing gradle property exists and that its value is the filename to a file
 //  that has the extension of gradle
 if (project.hasProperty("SEPTA.signing") && file(project.property("SEPTA.signing") + ".gradle").exists()) {
@@ -74,6 +80,7 @@ android {
             signingConfig signingConfigs.prerelease
             versionNameSuffix "d" + "${getSprintRound}" + "${getGitHash}"
             buildConfigField "String", "VERSIONNAME", "\"${defaultConfig.versionName}-b${defaultConfig.versionCode}\""
+            buildConfigField CONFIG_TYPE_BOOLEAN, CONFIG_FORCE_CRASH_ENABLED, true.toString()
         }
         alpha {
             minifyEnabled false
@@ -82,6 +89,7 @@ android {
             signingConfig signingConfigs.prerelease
             versionNameSuffix "a" + "${getSprintRound}" + "${getGitHash}"
             buildConfigField "String", "VERSIONNAME", "\"${defaultConfig.versionName}-b${defaultConfig.versionCode}\""
+            buildConfigField CONFIG_TYPE_BOOLEAN, CONFIG_FORCE_CRASH_ENABLED, true.toString()
         }
         beta {
             minifyEnabled true
@@ -91,6 +99,7 @@ android {
             signingConfig signingConfigs.prerelease
             versionNameSuffix "b" + "${getSprintRound}" + "${getGitHash}"
             buildConfigField "String", "VERSIONNAME", "\"${defaultConfig.versionName}-b${defaultConfig.versionCode}\""
+            buildConfigField CONFIG_TYPE_BOOLEAN, CONFIG_FORCE_CRASH_ENABLED, true.toString()
         }
         release {
             minifyEnabled false
@@ -99,6 +108,7 @@ android {
             zipAlignEnabled true
             signingConfig signingConfigs.prerelease
             buildConfigField "String", "VERSIONNAME", "\"${defaultConfig.versionName}\""
+            buildConfigField CONFIG_TYPE_BOOLEAN, CONFIG_FORCE_CRASH_ENABLED, false.toString()
         }
     }
     productFlavors {
@@ -122,7 +132,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.2'
+        classpath 'com.android.tools.build:gradle:3.1.3'
         classpath 'io.fabric.tools:gradle:1.25.4'
 
     }
@@ -138,7 +148,7 @@ dependencies {
     })
     implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation 'com.android.support:design:27.1.1'
-    implementation 'com.android.support.constraint:constraint-layout:1.1.1'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
     implementation 'com.readystatesoftware.sqliteasset:sqliteassethelper:2.0.1'
     implementation 'com.google.android.gms:play-services-maps:15.0.1'
     implementation 'com.google.android.gms:play-services-location:15.0.1'
@@ -151,6 +161,6 @@ dependencies {
     implementation 'com.android.support:support-v4:27.1.1'
     testImplementation 'junit:junit:4.12'
     implementation('com.crashlytics.sdk.android:crashlytics:2.8.0@aar') {
-        transitive = true;
+        transitive = true
     }
 }

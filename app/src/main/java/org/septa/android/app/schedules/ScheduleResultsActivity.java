@@ -11,7 +11,6 @@ import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,8 +22,8 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.RelativeLayout;
 
+import org.septa.android.app.BaseActivity;
 import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
@@ -49,7 +48,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ScheduleResultsActivity extends AppCompatActivity {
+public class ScheduleResultsActivity extends BaseActivity {
 
     private static final int RAIL_MON_THUR = 8;
     private static final int WEEK_DAY = 32;
@@ -103,8 +102,8 @@ public class ScheduleResultsActivity extends AppCompatActivity {
             reverseRouteCursorAdapterSupplier = DatabaseManager.getInstance(this).getNonRailReverseRouteCursorAdapterSupplier();
         }
 
-        startStationText = (TextView) findViewById(R.id.start_station_text);
-        destinationTextView = (TextView) findViewById(R.id.destination_station_text);
+        startStationText = findViewById(R.id.start_station_text);
+        destinationTextView = findViewById(R.id.destination_station_text);
 
         reverseTripLabel = findViewById(R.id.button_reverse_schedule_trip);
         reverseTripLabel.setOnClickListener(new View.OnClickListener() {
@@ -117,7 +116,7 @@ public class ScheduleResultsActivity extends AppCompatActivity {
 
         setUpHeaders();
 
-        ((RelativeLayout) findViewById(R.id.line_station_layout)).getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+        findViewById(R.id.line_station_layout).getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
                 startStationText.setRight(reverseTripLabel.getLeft());
@@ -129,7 +128,7 @@ public class ScheduleResultsActivity extends AppCompatActivity {
 
         initRadioButtonGroup();
 
-        scheduleResultsListView = (ListView) findViewById(R.id.schedule_list_view);
+        scheduleResultsListView = findViewById(R.id.schedule_list_view);
 
         View ntaLink = findViewById(R.id.nta_link);
         ntaLink.setOnClickListener(new View.OnClickListener() {
@@ -241,7 +240,8 @@ public class ScheduleResultsActivity extends AppCompatActivity {
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
-        }    }
+        }
+    }
 
     @Override
     public boolean onSupportNavigateUp() {
@@ -257,12 +257,12 @@ public class ScheduleResultsActivity extends AppCompatActivity {
     }
 
     private void initRadioButtonGroup() {
-        radioGroup = (RadioGroup) findViewById(R.id.day_of_week_button_group);
+        radioGroup = findViewById(R.id.day_of_week_button_group);
         radioGroup.clearCheck(); //must clear the defaults otherwise event wont fire
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, @IdRes int checkedID) {
-                RadioButton rb = (RadioButton) radioGroup.findViewById(checkedID);
+                RadioButton rb = radioGroup.findViewById(checkedID);
                 if (rb.isChecked()) {
                     ScheduleResultsAsyncTask task = new ScheduleResultsAsyncTask(ScheduleResultsActivity.this);
                     task.execute(mapRadioButtonIdtoSchedule(checkedID, routeDirectionModel.getRouteId()));
@@ -275,22 +275,22 @@ public class ScheduleResultsActivity extends AppCompatActivity {
             findViewById(R.id.weekday_button).setVisibility(View.GONE);
             findViewById(R.id.mon_thurs_button).setVisibility(View.VISIBLE);
             findViewById(R.id.friday_button).setVisibility(View.VISIBLE);
-            RadioButton rb = (RadioButton) radioGroup.findViewById(R.id.mon_thurs_button);
+            RadioButton rb = radioGroup.findViewById(R.id.mon_thurs_button);
             rb.setChecked(true);
         } else
 
         {
-            RadioButton rb = (RadioButton) radioGroup.findViewById(R.id.weekday_button);
+            RadioButton rb = radioGroup.findViewById(R.id.weekday_button);
             rb.setChecked(true);
         }
 
     }
 
     private void setUpHeaders() {
-        TextView routeNameTextView = (TextView) findViewById(R.id.route_name_text);
+        TextView routeNameTextView = findViewById(R.id.route_name_text);
         routeNameTextView.setText(routeDirectionModel.getRouteLongName());
 
-        TextView routeTitleDescription = (TextView) findViewById(R.id.route_description_text);
+        TextView routeTitleDescription = findViewById(R.id.route_description_text);
         if (transitType == TransitType.RAIL) {
             routeTitleDescription.setText(routeDirectionModel.getDirectionDescription());
         } else {
@@ -300,7 +300,7 @@ public class ScheduleResultsActivity extends AppCompatActivity {
         startStationText.setText(start.getStopName());
         destinationTextView.setText(destination.getStopName());
 
-        ImageView transitTypeImageView = (ImageView) findViewById(R.id.transit_type_image);
+        ImageView transitTypeImageView = findViewById(R.id.transit_type_image);
         transitTypeImageView.setImageResource(transitType.getIconForLine(routeDirectionModel.getRouteId(), this));
 
         String favKey = Favorite.generateKey(start, destination, transitType, routeDirectionModel);
@@ -458,17 +458,17 @@ public class ScheduleResultsActivity extends AppCompatActivity {
 
             DateFormat timeFormat = DateFormat.getTimeInstance(DateFormat.SHORT);
 
-            TextView departureTime = (TextView) convertView.findViewById(R.id.departure_text);
+            TextView departureTime = convertView.findViewById(R.id.departure_text);
             departureTime.setText(timeFormat.format(scheduleModel.getDepartureDate()));
 
-            TextView arrivalTime = (TextView) convertView.findViewById(R.id.arrival_text);
+            TextView arrivalTime = convertView.findViewById(R.id.arrival_text);
             arrivalTime.setText(timeFormat.format(scheduleModel.getArrivalDate()));
 
-            TextView duration = (TextView) convertView.findViewById(R.id.duration_text);
+            TextView duration = convertView.findViewById(R.id.duration_text);
             duration.setText(scheduleModel.getDurationAsString());
             duration.setContentDescription(scheduleModel.getDurationAsLongString());
 
-            TextView blockText = (TextView) convertView.findViewById(R.id.block_text);
+            TextView blockText = convertView.findViewById(R.id.block_text);
             blockText.setHtml(transitType.getString("schedule_trip_prefix", getContext()) + "<b>" + scheduleModel.getBlockId() + "</b>");
 
             return convertView;
@@ -528,7 +528,7 @@ public class ScheduleResultsActivity extends AppCompatActivity {
                 Snackbar snackbar = Snackbar.make(scheduleResultsActivity.findViewById(R.id.activity_schedule_results_container), R.string.reverse_not_found, Snackbar.LENGTH_INDEFINITE);
 
                 View snackbarView = snackbar.getView();
-                android.widget.TextView tv = (android.widget.TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+                android.widget.TextView tv = snackbarView.findViewById(android.support.design.R.id.snackbar_text);
                 tv.setMaxLines(10);
                 snackbar.show();
             }

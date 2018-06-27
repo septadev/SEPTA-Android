@@ -3,6 +3,7 @@ package org.septa.android.app.domain;
 import java.io.Serializable;
 
 public class RouteDirectionModel implements Serializable {
+
     private static final String TAG = RouteDirectionModel.class.getName();
 
     private String routeId;

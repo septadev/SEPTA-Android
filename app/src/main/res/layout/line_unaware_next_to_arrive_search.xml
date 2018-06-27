@@ -22,7 +22,7 @@
             android:layout_marginStart="12dp"
             android:layout_marginTop="12dp"
             android:text="Regional Rail"
-            android:textColor="#144b88"
+            android:textColor="@color/text_primary"
             android:textSize="20sp"
             app:typeface="@string/font_roboto_bold" />
 

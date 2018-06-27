@@ -21,6 +21,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class SeptaServiceFactory {
+
     public static final String TAG = SeptaServiceFactory.class.getSimpleName();
 
     private static String googleKey;
@@ -157,7 +158,7 @@ public class SeptaServiceFactory {
         }
 
         View snackbarView = snackbar.getView();
-        android.widget.TextView tv = (android.widget.TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+        android.widget.TextView tv = snackbarView.findViewById(android.support.design.R.id.snackbar_text);
         tv.setMaxLines(10);
         snackbar.show();
     }

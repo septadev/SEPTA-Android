@@ -16,12 +16,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="17dp"
+        android:layout_marginStart="17dp"
         android:layout_marginTop="17dp"
         android:text="Thorndale"
         android:textColor="@android:color/black"
         android:textSize="20sp"
-        app:typeface="@string/font_roboto_medium"
-        android:layout_marginStart="17dp" />
+        app:typeface="@string/font_roboto_medium" />
 
     <org.septa.android.app.view.TextView
         android:id="@+id/station_distance_text"
@@ -29,11 +29,11 @@
         android:layout_height="wrap_content"
         android:layout_gravity="right"
         android:layout_marginBottom="20dp"
+        android:layout_marginEnd="18dp"
         android:layout_marginRight="18dp"
         android:text="1.0m"
-        android:textColor="#144b88"
+        android:textColor="@color/text_primary"
         android:textSize="15sp"
-        app:typeface="@string/font_roboto_regular"
-        android:layout_marginEnd="18dp" />
+        app:typeface="@string/font_roboto_regular" />
 
 </LinearLayout>

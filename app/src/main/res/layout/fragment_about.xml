@@ -28,16 +28,18 @@
                     android:fontFamily="sans-serif"
                     android:letterSpacing="-0.03"
                     android:text="The Official App of SEPTA"
-                    android:textColor="#144b88"
+                    android:textColor="@color/text_primary"
                     android:textSize="18sp"
                     app:typeface="@string/font_roboto_bold" />
 
                 <ImageView
+                    android:id="@+id/septa_logo"
                     android:layout_width="58dp"
                     android:layout_height="57dp"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
                     android:src="@drawable/septa_official_logo" />
+
             </RelativeLayout>
 
             <LinearLayout
@@ -58,7 +60,7 @@
                     android:paddingLeft="15dp"
                     android:paddingTop="15dp"
                     android:text="App Information"
-                    android:textColor="#144b88"
+                    android:textColor="@color/text_primary"
                     android:textSize="18sp"
                     app:typeface="@string/font_roboto_bold" />
 
@@ -75,7 +77,7 @@
                     android:text="App Version: 2.0.0
 Last App Update: 9/15/2017 04:07 PM
 Last Schedule Update: 9/15/207 04:07 PM"
-                    android:textColor="#144b88"
+                    android:textColor="@color/text_primary"
                     android:textSize="14sp"
                     app:typeface="@string/font_roboto_light" />
 
@@ -84,13 +86,13 @@ Last Schedule Update: 9/15/207 04:07 PM"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="15dp"
+                    android:layout_marginLeft="@dimen/button_margin_horizontal"
+                    android:layout_marginRight="@dimen/button_margin_horizontal"
                     android:layout_marginTop="42dp"
                     android:background="@drawable/button_gradient_background"
                     android:fontFamily="sans-serif-medium"
                     android:gravity="center_horizontal"
                     android:letterSpacing="-0.02"
-                    android:layout_marginLeft="@dimen/button_margin_horizontal"
-                    android:layout_marginRight="@dimen/button_margin_horizontal"
                     android:paddingBottom="12dp"
                     android:paddingLeft="15dp"
                     android:paddingRight="15dp"

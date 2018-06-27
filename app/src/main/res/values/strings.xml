@@ -202,6 +202,8 @@
     <string name="tdd_phone_content">TDD/TTY (215)-580-7853</string>
     <string name="voice_line_content">Call (215)-580-7800</string>
 
+    <string name="fragment_connect_rate_app">Rate the SEPTA Transit App</string>
+
     <string name="twitter_app_url_air">twitter://user?user_id=381660241</string>
     <string name="twitter_app_url_che">twitter://user?user_id=381664276</string>
     <string name="twitter_app_url_chw">twitter://user?user_id=382065845</string>
@@ -280,5 +282,10 @@
     <!-- String Resources -->
     <string name="button_ok">Okay</string>
     <string name="empty_string"></string>
+    <string name="rating_title">How are we doing?</string>
+    <string name="rating_rate_button">Rate Now</string>
+    <string name="rating_no_thanks_button">No Thanks</string>
+    <string name="rating_remind_me_later_button">Remind Me Later</string>
+    <string name="rating_details">We\'d love your feedback on the SEPTA app</string>
 
 </resources>

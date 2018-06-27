@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -12,11 +13,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import org.septa.android.app.BuildConfig;
 import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.database.DatabaseManager;
+import org.septa.android.app.rating.SharedPreferencesRatingUtil;
 import org.septa.android.app.view.TextView;
 import org.septa.android.app.webview.WebViewActivity;
 
@@ -26,26 +29,26 @@ import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
 public class AboutFragment extends Fragment {
-    boolean attribExpanded = false;
-    TextView attribTitle;
-    LinearLayout attribListView;
+
+    private boolean attribExpanded = false;
+    private TextView attribTitle;
+    private LinearLayout attribListView;
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
         View fragmentView = inflater.inflate(R.layout.fragment_about, null);
 
-        attribListView = (LinearLayout) fragmentView.findViewById(R.id.attrib_list);
+        attribListView = fragmentView.findViewById(R.id.attrib_list);
         for (String s : getResources().getStringArray(R.array.about_attributions_listview_items_texts)) {
             TextView attribLine = (TextView) inflater.inflate(R.layout.item_about_attribute, null);
             attribLine.setHtml(s);
             attribListView.addView(attribLine);
-
         }
 
-        attribTitle = (TextView) fragmentView.findViewById(R.id.attrib_title);
+        attribTitle = fragmentView.findViewById(R.id.attrib_title);
         attribTitle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -67,15 +70,35 @@ public class AboutFragment extends Fragment {
             }
         });
 
+        // reset the number of app uses
+        if (BuildConfig.FORCE_CRASH_ENABLED) {
+            fragmentView.findViewById(R.id.septa_logo).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    SharedPreferencesRatingUtil.setAppRated(getContext(), false);
+                    SharedPreferencesRatingUtil.setNumberOfUses(getContext(), 0);
+                    Toast.makeText(getContext(), "App Rating Reset", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
+        // version number
         StringBuilder versionInfoBuilder = new StringBuilder("App Version: ");
-        versionInfoBuilder.append(BuildConfig.VERSIONNAME).append("<br>");
+        versionInfoBuilder.append(BuildConfig.VERSIONNAME);
+
+        // add note if built as beta
+        if (BuildConfig.FORCE_CRASH_ENABLED) {
+            versionInfoBuilder.append(" (BETA)");
+        }
+        versionInfoBuilder.append("<br>");
 
         SimpleDateFormat formatter = (SimpleDateFormat) SimpleDateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
         formatter.setTimeZone(TimeZone.getTimeZone("gmt"));
 
 
-        if (getActivity() == null)
+        if (getActivity() == null) {
             return fragmentView;
+        }
 
         try {
             ApplicationInfo ai = getActivity().getPackageManager().getApplicationInfo(getActivity().getPackageName(), 0);
@@ -100,7 +123,6 @@ public class AboutFragment extends Fragment {
 
         setHttpIntent(fragmentView, R.id.feedback_button, getResources().getString(R.string.comment_url), getResources().getString(R.string.comment_title));
         return fragmentView;
-
     }
 
     private void setHttpIntent(View rootView, int viewId, final String url, final String title) {

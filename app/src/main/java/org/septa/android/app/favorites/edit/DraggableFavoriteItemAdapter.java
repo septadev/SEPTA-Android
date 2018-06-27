@@ -80,7 +80,7 @@ public class DraggableFavoriteItemAdapter extends DragItemAdapter<Favorite, Drag
         diffResult.dispatchUpdatesTo(this);
     }
 
-    public class DraggableFavoriteViewHolder extends DragItemAdapter.ViewHolder {
+    class DraggableFavoriteViewHolder extends DragItemAdapter.ViewHolder {
         ListSwipeItem favoriteRow;
         ImageView transitTypeIcon;
         TextView favoriteName;

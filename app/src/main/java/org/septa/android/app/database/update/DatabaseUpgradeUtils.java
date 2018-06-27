@@ -23,7 +23,7 @@ import org.septa.android.app.support.GeneralUtils;
 import java.io.File;
 import java.util.Arrays;
 
-public class DatabaseUpgradeUtils {
+public abstract class DatabaseUpgradeUtils {
 
     private static String TAG = DatabaseUpgradeUtils.class.getSimpleName();
 

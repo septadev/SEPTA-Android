@@ -22,7 +22,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-class CursorSuppliers implements Serializable {
+abstract class CursorSuppliers implements Serializable {
+
     private static final String TAG = CursorSuppliers.class.getSimpleName();
 
     private static SQLiteDatabase getDatabase(Context context) {
@@ -39,8 +40,7 @@ class CursorSuppliers implements Serializable {
 
         @Override
         public Integer getCurrentItemFromCursor(Cursor cursor) {
-            Integer versionNumber = Integer.parseInt(cursor.getString(0));
-            return versionNumber;
+            return Integer.parseInt(cursor.getString(0));
         }
 
         @Override
@@ -929,5 +929,4 @@ class CursorSuppliers implements Serializable {
                 return Boolean.FALSE;
         }
     }
-
 }

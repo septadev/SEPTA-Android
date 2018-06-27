@@ -10,7 +10,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.concurrent.TimeUnit;
 
-public class GeneralUtils {
+public abstract class GeneralUtils {
 
     public static String getDurationAsString(long duration, TimeUnit timeUnit) {
         long totalMinutes = TimeUnit.MINUTES.convert(
@@ -49,8 +49,7 @@ public class GeneralUtils {
     }
 
     public static String updateUrls(String inString){
-        String outString = inString.replace("href=\"/", "href=\"http://www.septa.org/");
-        return outString;
+        return inString.replace("href=\"/", "href=\"http://www.septa.org/");
     }
 
     public static String readRawTextFile(Context ctx, int resId) {

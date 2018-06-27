@@ -6,7 +6,6 @@ public class Criteria {
     private String fieldName;
     private Object value;
 
-
     public Criteria(String fieldName, Operation operation, Object value) {
         this.operation = operation;
         this.fieldName = fieldName;
@@ -43,6 +42,5 @@ public class Criteria {
             return opText;
         }
     }
-
 
 }

@@ -15,7 +15,7 @@
         android:layout_marginTop="12dp"
         android:letterSpacing="-0.02"
         android:text="SEPTA Fares"
-        android:textColor="#144b88"
+        android:textColor="@color/text_primary"
         android:textSize="20sp"
         app:typeface="@string/font_roboto_bold" />
 
@@ -59,7 +59,7 @@
                         android:layout_toRightOf="@id/key_image"
                         android:letterSpacing="-0.02"
                         android:text="SEPTA Key"
-                        android:textColor="#144b88"
+                        android:textColor="@color/text_primary"
                         android:textSize="14sp"
                         app:typeface="@string/font_roboto_light" />
 
@@ -85,7 +85,7 @@
                         android:layout_toRightOf="@id/key_image"
                         android:lineSpacingExtra="3sp"
                         android:text="Learn More about SEPTA Key »"
-                        android:textColor="#144b88"
+                        android:textColor="@color/text_primary"
                         android:textSize="12sp"
                         app:typeface="@string/font_roboto_medium" />
 
@@ -114,7 +114,7 @@
                         android:layout_toRightOf="@id/cash_image"
                         android:letterSpacing="-0.02"
                         android:text="Cash"
-                        android:textColor="#144b88"
+                        android:textColor="@color/text_primary"
                         android:textSize="14sp"
                         app:typeface="@string/font_roboto_light" />
 
@@ -155,7 +155,7 @@
                         android:layout_toRightOf="@id/token_image"
                         android:letterSpacing="-0.02"
                         android:text="Token"
-                        android:textColor="#144b88"
+                        android:textColor="@color/text_primary"
                         android:textSize="14sp"
                         app:typeface="@string/font_roboto_light" />
 
@@ -194,7 +194,7 @@
                         android:layout_toRightOf="@id/weekly_image"
                         android:letterSpacing="-0.02"
                         android:text="TransPass"
-                        android:textColor="#144b88"
+                        android:textColor="@color/text_primary"
                         android:textSize="14sp"
                         app:typeface="@string/font_roboto_light" />
 
@@ -235,7 +235,7 @@
                         android:layout_toRightOf="@id/trail_image"
                         android:letterSpacing="-0.02"
                         android:text="TrailPass"
-                        android:textColor="#144b88"
+                        android:textColor="@color/text_primary"
                         android:textSize="14sp"
                         app:typeface="@string/font_roboto_light" />
 
@@ -276,7 +276,7 @@
                         android:layout_toRightOf="@id/cross_image"
                         android:letterSpacing="-0.02"
                         android:text="Cross County Pass"
-                        android:textColor="#144b88"
+                        android:textColor="@color/text_primary"
                         android:textSize="14sp"
                         app:typeface="@string/font_roboto_light" />
 
@@ -317,7 +317,7 @@
                         android:layout_toRightOf="@id/one_day_con_image"
                         android:letterSpacing="-0.02"
                         android:text="One Day Convenience Pass"
-                        android:textColor="#144b88"
+                        android:textColor="@color/text_primary"
                         android:textSize="14sp"
                         app:typeface="@string/font_roboto_light" />
 
@@ -358,7 +358,7 @@
                         android:layout_toRightOf="@id/one_day_ind_image"
                         android:letterSpacing="-0.02"
                         android:text="One Day Independence Pass"
-                        android:textColor="#144b88"
+                        android:textColor="@color/text_primary"
                         android:textSize="14sp"
                         app:typeface="@string/font_roboto_light" />
 

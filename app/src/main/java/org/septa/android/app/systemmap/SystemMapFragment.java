@@ -1,6 +1,7 @@
 package org.septa.android.app.systemmap;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -11,21 +12,20 @@ import org.septa.android.app.R;
 import org.septa.android.app.view.SubsamplingScaleImageView;
 
 public class SystemMapFragment extends Fragment {
-    private SubsamplingScaleImageView imageView;
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         View theView = inflater.inflate(R.layout.fragment_system_map, container, false);
 
-        imageView = (SubsamplingScaleImageView) theView.findViewById(R.id.imageView);
+        SubsamplingScaleImageView imageView = theView.findViewById(R.id.imageView);
         imageView.setImageAsset("system-map.png");
 
         return theView;
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString("title", getActivity().getTitle().toString());
     }

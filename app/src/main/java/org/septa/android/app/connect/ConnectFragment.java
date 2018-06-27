@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -13,16 +14,27 @@ import android.view.ViewGroup;
 
 import org.septa.android.app.Constants;
 import org.septa.android.app.R;
+import org.septa.android.app.rating.RatingUtil;
 import org.septa.android.app.webview.WebViewActivity;
 
 public class ConnectFragment extends Fragment {
 
     private static final String TAG = ConnectFragment.class.getSimpleName();
 
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
         View rootView = inflater.inflate(R.layout.fragment_connect, container, false);
+
+        // user can rate the app
+        View rateTheApp = rootView.findViewById(R.id.rate_the_app);
+        rateTheApp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // send user to playstore to rate app
+                RatingUtil.rateAppInPlayStore(getContext());
+            }
+        });
 
         setAppIntent(rootView, R.id.facebook_arrow, getResources().getString(R.string.facebook_url), getResources().getString(R.string.facebook_app_url));
         setAppIntent(rootView, R.id.twitter_arrow, getResources().getString(R.string.twitter_url), getResources().getString(R.string.twitter_app_url));

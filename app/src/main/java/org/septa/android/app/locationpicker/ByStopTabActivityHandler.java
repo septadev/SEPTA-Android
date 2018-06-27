@@ -32,8 +32,8 @@ import java.util.List;
 public class ByStopTabActivityHandler extends BaseTabActivityHandler {
 
     public static final String TAG = ByStopTabActivityHandler.class.getSimpleName();
-    final private CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
-    StopPickerTabListener mListener;
+    private final CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
+    private StopPickerTabListener mListener;
     private boolean isLineAware;
 
     public ByStopTabActivityHandler(StopPickerTabListener listener, String s, CursorAdapterSupplier<StopModel> cursorAdapterSupplier, boolean isLineAware) {

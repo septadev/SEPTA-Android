@@ -47,12 +47,12 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-class ByAddressTabActivityHandler extends BaseTabActivityHandler {
-    final private CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
+public class ByAddressTabActivityHandler extends BaseTabActivityHandler {
+    private final CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
     public static final String TAG = ByAddressTabActivityHandler.class.getSimpleName();
-    StopPickerTabListener mListener;
+    private StopPickerTabListener mListener;
 
-    public ByAddressTabActivityHandler(StopPickerTabListener listener, String s, CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
+    ByAddressTabActivityHandler(StopPickerTabListener listener, String s, CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
         super(s);
         this.mListener = listener;
         this.cursorAdapterSupplier = cursorAdapterSupplier;
@@ -199,10 +199,10 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
             if (fragment.getActivity() == null)
                 return new ArrayList<>(0);
             LatLng location = locations[0];
-            List<StopModelWithDistance> returnList = new ArrayList<StopModelWithDistance>();
+            List<StopModelWithDistance> returnList = new ArrayList<>();
             if (location != null) {
 
-                List<Criteria> criteria = new LinkedList<Criteria>();
+                List<Criteria> criteria = new LinkedList<>();
                 criteria.add(new Criteria("stop_lon", Criteria.Operation.GT, LocationMathHelper.calculateDerivedPosition(location, 5, 270).longitude));
                 criteria.add(new Criteria("stop_lon", Criteria.Operation.LT, LocationMathHelper.calculateDerivedPosition(location, 5, 90).longitude));
                 criteria.add(new Criteria("stop_lat", Criteria.Operation.LT, LocationMathHelper.calculateDerivedPosition(location, 5, 0).latitude));
@@ -324,8 +324,8 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
                 convertView = inflater.inflate(R.layout.item_stop_by_address, null);
             }
 
-            TextView stationName = (TextView) convertView.findViewById(R.id.station_name_text);
-            TextView distance = (TextView) convertView.findViewById(R.id.station_distance_text);
+            TextView stationName = convertView.findViewById(R.id.station_name_text);
+            TextView distance = convertView.findViewById(R.id.station_distance_text);
             stationName.setText(this.getItem(position).getStopModel().getStopName());
             DecimalFormat numberFormat = new DecimalFormat("0.0m");
             distance.setText(numberFormat.format(this.getItem(position).getDistance()));

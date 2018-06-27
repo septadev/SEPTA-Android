@@ -3,10 +3,12 @@ package org.septa.android.app;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Window;
 import android.widget.ImageView;
 
 import org.septa.android.app.database.DatabaseManager;
+import org.septa.android.app.rating.SharedPreferencesRatingUtil;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Alerts;
 import org.septa.android.app.support.CursorAdapterSupplier;
@@ -43,6 +45,10 @@ public class SplashScreenActivity extends AppCompatActivity {
         }
 
         final long timestamp = System.currentTimeMillis();
+
+        // increment number of times app used
+        SharedPreferencesRatingUtil.incrementNumberOfUses(getApplicationContext());
+        Log.d(TAG, "Number of App Uses: " + SharedPreferencesRatingUtil.getNumberOfUses(getApplicationContext()));
 
         SeptaServiceFactory.getAlertsService().getAlerts().enqueue(new Callback<Alerts>() {
             @Override

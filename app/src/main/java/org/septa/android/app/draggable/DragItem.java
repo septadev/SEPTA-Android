@@ -13,7 +13,7 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 
 public class DragItem {
-    protected static final int ANIMATION_DURATION = 250;
+    private static final int ANIMATION_DURATION = 250;
     private View mDragView;
     private View mRealDragView;
 

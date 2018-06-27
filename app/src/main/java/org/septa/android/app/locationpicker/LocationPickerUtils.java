@@ -2,7 +2,7 @@ package org.septa.android.app.locationpicker;
 
 import android.content.Context;
 
-public class LocationPickerUtils {
+public abstract class LocationPickerUtils {
 
     // location picker shared preferences
     private static final String SHARED_PREFERENCES_LOCATION_PICKER = "SHARED_PREFERENCES_LOCATION_PICKER";

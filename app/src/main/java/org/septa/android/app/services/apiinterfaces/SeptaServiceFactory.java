@@ -129,7 +129,7 @@ public class SeptaServiceFactory {
     }
 
     public static void displayWebServiceError(View rootView, final Activity activity) {
-        Snackbar snackbar = Snackbar.make(rootView, R.string.realtime_failure_message, Snackbar.LENGTH_INDEFINITE);
+        Snackbar snackbar = Snackbar.make(rootView, R.string.realtime_failure_message, Snackbar.LENGTH_LONG);
 
         // redirect to schedules
         if (activity instanceof SeptaServiceFactoryCallBacks) {

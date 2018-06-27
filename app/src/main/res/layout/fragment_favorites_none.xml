@@ -6,7 +6,6 @@
     android:background="@drawable/full_page_gradient_background"
     android:orientation="vertical">
 
-
     <org.septa.android.app.view.TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -21,10 +20,10 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="29dp"
-        android:orientation="horizontal"
         android:layout_marginLeft="41dp"
-        android:layout_marginRight="41dp">
+        android:layout_marginRight="41dp"
+        android:layout_marginTop="29dp"
+        android:orientation="horizontal">
 
         <org.septa.android.app.view.TextView
             android:layout_width="wrap_content"
@@ -114,7 +113,6 @@
         android:textSize="16sp"
         app:typeface="@string/font_roboto_light" />
 
-
     <org.septa.android.app.view.TextView
         android:id="@+id/add_favorite_button"
         android:layout_width="293dp"
@@ -128,6 +126,5 @@
         android:textColor="@android:color/white"
         android:textSize="16sp"
         app:typeface="@string/font_roboto_medium" />
-
 
 </LinearLayout>

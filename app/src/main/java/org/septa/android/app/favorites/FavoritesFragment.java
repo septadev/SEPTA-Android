@@ -64,6 +64,9 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
     private String alertMessage;
     private boolean firstPass = true;
 
+    // snackbar no connection message
+    private boolean isSnackbarShowing = false;
+
     private ViewGroup mContainer;
 
     public static FavoritesFragment newInstance() {
@@ -83,7 +86,7 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
         mContainer = container;
 
         initialCount = favoritesMap.size();
-        if (favoritesMap.size() == 0) {
+        if (favoritesMap.isEmpty()) {
             return onCreateViewNoFavorites(inflater, container);
         } else {
             return onCreateViewFavorites(inflater, container);
@@ -282,6 +285,19 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
                 mListener.gotoSchedules();
             }
         });
+        snackbar.addCallback(new Snackbar.Callback() {
+            @Override
+            public void onShown(Snackbar sb) {
+                super.onShown(sb);
+                isSnackbarShowing = true;
+            }
+
+            @Override
+            public void onDismissed(Snackbar transientBottomBar, int event) {
+                super.onDismissed(transientBottomBar, event);
+                isSnackbarShowing = false;
+            }
+        });
 
         View snackbarView = snackbar.getView();
         android.widget.TextView tv = snackbarView.findViewById(android.support.design.R.id.snackbar_text);
@@ -291,9 +307,11 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
 
     @Override
     public void autoDismissSnackbar() {
-        final Snackbar snackbar = Snackbar.make(fragmentView, R.string.empty_string, Snackbar.LENGTH_SHORT);
-        snackbar.show();
-        snackbar.dismiss();
+        if (isSnackbarShowing) {
+            final Snackbar snackbar = Snackbar.make(fragmentView, R.string.empty_string, Snackbar.LENGTH_SHORT);
+            snackbar.show();
+            snackbar.dismiss();
+        }
     }
 
     @Override
@@ -318,21 +336,44 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
 
     @Override
     public void deleteFavorite(final int favoriteIndex) {
+        final String favoriteKey = favoriteStateList.get(favoriteIndex).getFavoriteKey();
+
         new AlertDialog.Builder(getContext()).setCancelable(true).setTitle(R.string.delete_fav_modal_title)
                 .setMessage(R.string.delete_fav_modal_text)
 
                 // confirm to delete
                 .setPositiveButton(R.string.delete_fav_pos_button, new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        SeptaServiceFactory.getFavoritesService().deleteFavorite(getContext(), favoriteStateList.get(favoriteIndex).getFavoriteKey());
-                        favoriteStateList.remove(favoriteIndex);
-                        favoriteItemAdapter.notifyItemRemoved(favoriteIndex);
-                        favoriteItemAdapter.notifyDataSetChanged();
+                    public void onClick(final DialogInterface dialog, int which) {
+                        DeleteFavoritesAsyncTask task = new DeleteFavoritesAsyncTask(getContext(), new Runnable() {
+                            @Override
+                            public void run() {
+                                // on unsuccessful deletion
+                                dialog.dismiss();
+                                revertSwipe(favoriteIndex);
+                                Log.e(TAG, "Favorite with key " + favoriteKey + " could not be deleted at this time");
+                            }
+                        }, new Runnable() {
+                            @Override
+                            public void run() {
+                                // on successful deletion
+                                favoriteStateList.remove(favoriteIndex);
+                                favoritesMap.remove(favoriteKey);
+                                favoriteItemAdapter.notifyItemRemoved(favoriteIndex);
+                                favoriteItemAdapter.notifyDataSetChanged();
 
-                        // reattach recyclerview so that deleting last row hides red background
-                        itemTouchHelper.attachToRecyclerView(null);
-                        itemTouchHelper.attachToRecyclerView(favoritesListView);
+                                // reattach recyclerview so that deleting last row hides red background
+                                itemTouchHelper.attachToRecyclerView(null);
+                                itemTouchHelper.attachToRecyclerView(favoritesListView);
+
+                                Log.e(TAG, "Map size: " + favoritesMap.size() + " List size: " + favoriteStateList.size()); // TODO: remove
+                                if (favoritesMap.isEmpty()) {
+                                    // TODO: why isn't this working
+                                    onCreateViewNoFavorites(getActivity().getLayoutInflater(), mContainer);
+                                }
+                            }
+                        });
+                        task.execute(favoriteKey);
                     }
                 })
 
@@ -388,7 +429,6 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
         for (Favorite favorite : toDelete) {
             SeptaServiceFactory.getFavoritesService().deleteFavorite(activity, favorite.getKey());
         }
-
 
         return msg;
     }

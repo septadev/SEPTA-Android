@@ -54,9 +54,11 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
 
     @Override
     public Fragment getFragment() {
-        if (routeCursorAdapterSupplier != null)
-            return SystemStatusPickerFragment.getInstance(transitType, routeCursorAdapterSupplier);
-        else return SystemStatusPickerFragment.getInstance(transitType, routeDirectionModel);
+        if (routeCursorAdapterSupplier != null) {
+            return SystemStatusPickerFragment.newInstance(transitType, routeCursorAdapterSupplier);
+        } else {
+            return SystemStatusPickerFragment.newInstance(transitType, routeDirectionModel);
+        }
     }
 
     public static class SystemStatusPickerFragment extends Fragment implements LinePickerCallBack {
@@ -74,6 +76,30 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
         boolean globalAlertsExpanded = false, mobileAlertsExpanded = false;
         RouteDirectionModel routeDirectionModel;
         org.septa.android.app.view.TextView globalAlertText, mobileAlertText;
+
+        public static SystemStatusPickerFragment newInstance(TransitType transitType, CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier) {
+            SystemStatusPickerFragment fragment = new SystemStatusPickerFragment();
+
+            Bundle args = new Bundle();
+            args.putSerializable("transitType", transitType);
+            args.putSerializable("routeCursorAdapterSupplier", routeCursorAdapterSupplier);
+            fragment.setArguments(args);
+
+            return fragment;
+        }
+
+        public static SystemStatusPickerFragment newInstance(TransitType transitType, RouteDirectionModel routeDirectionModel) {
+            SystemStatusPickerFragment fragment = new SystemStatusPickerFragment();
+
+            Bundle args = new Bundle();
+            args.putSerializable("transitType", transitType);
+            if (routeDirectionModel != null) {
+                args.putSerializable("routeDirectionModel", routeDirectionModel);
+            }
+            fragment.setArguments(args);
+
+            return fragment;
+        }
 
         @Override
         public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -109,8 +135,9 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
             queryButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (getActivity() == null)
+                    if (getActivity() == null) {
                         return;
+                    }
                     Intent intent = new Intent(getActivity(), SystemStatusResultsActivity.class);
                     intent.putExtra(Constants.ROUTE_DIRECTION_MODEL, routeDirectionModel);
                     intent.putExtra(Constants.TRANSIT_TYPE, transitType);
@@ -132,7 +159,7 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
                 lineText.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        FragmentTransaction ft = getChildFragmentManager().beginTransaction();
+                        FragmentTransaction ft = getFragmentManager().beginTransaction();
 
                         LinePickerFragment newFragment = LinePickerFragment.newInstance(routeCursorAdapterSupplier, transitType);
                         newFragment.setTargetFragment(SystemStatusPickerFragment.this, LINE_PICKER_ID);
@@ -186,7 +213,6 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
             restoreState(savedInstanceState);
 
             return fragmentView;
-
         }
 
         @Override
@@ -199,9 +225,22 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
         }
 
         @Override
+        public void onSaveInstanceState(Bundle outState) {
+            super.onSaveInstanceState(outState);
+            outState.putSerializable("routeDirectionModel", routeDirectionModel);
+        }
+
+        @Override
+        public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+            super.onViewStateRestored(savedInstanceState);
+            restoreState(savedInstanceState);
+        }
+
+        @Override
         public void onActivityResult(int requestCode, int resultCode, Intent data) {
             super.onActivityResult(requestCode, resultCode, data);
-            //do what ever you want here, and get the result from intent like below
+
+            // pass selected route back to the system status picker fragment
             if (requestCode == LINE_PICKER_ID && resultCode == LinePickerFragment.SUCCESS) {
                 RouteDirectionModel var1 = (RouteDirectionModel) data.getSerializableExtra(LinePickerFragment.ROUTE_DIRECTION_MODEL);
                 if (var1 != null) {
@@ -226,8 +265,7 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
             Drawable bullet = ContextCompat.getDrawable(getContext(), R.drawable.shape_line_marker);
             bullet.setColorFilter(color, PorterDuff.Mode.SRC);
 
-            lineText.setCompoundDrawablesWithIntrinsicBounds(bullet, drawables[1],
-                    drawables[2], drawables[3]);
+            lineText.setCompoundDrawablesWithIntrinsicBounds(bullet, drawables[1], drawables[2], drawables[3]);
             queryButton.setAlpha(1);
             queryButton.setClickable(true);
         }
@@ -312,45 +350,10 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
             }
         }
 
-        public static SystemStatusPickerFragment getInstance(TransitType transitType, CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier) {
-            SystemStatusPickerFragment fragment = new SystemStatusPickerFragment();
-            Bundle args = new Bundle();
-
-            args.putSerializable("transitType", transitType);
-            args.putSerializable("routeCursorAdapterSupplier", routeCursorAdapterSupplier);
-
-            fragment.setArguments(args);
-
-            return fragment;
-        }
-
-        public static SystemStatusPickerFragment getInstance(TransitType transitType, RouteDirectionModel routeDirectionModel) {
-            SystemStatusPickerFragment fragment = new SystemStatusPickerFragment();
-            Bundle args = new Bundle();
-            args.putSerializable("transitType", transitType);
-            if (routeDirectionModel != null) {
-                args.putSerializable("routeDirectionModel", routeDirectionModel);
-            }
-            fragment.setArguments(args);
-
-            return fragment;
-        }
-
-        @Override
-        public void onSaveInstanceState(Bundle outState) {
-            super.onSaveInstanceState(outState);
-            outState.putSerializable("routeDirectionModel", routeDirectionModel);
-        }
-
-        @Override
-        public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-            super.onViewStateRestored(savedInstanceState);
-            restoreState(savedInstanceState);
-        }
-
         private void restoreState(Bundle outState) {
-            if (outState == null)
+            if (outState == null) {
                 return;
+            }
 
             RouteDirectionModel rdm = (RouteDirectionModel) outState.getSerializable("routeDirectionModel");
             if (rdm != null) {
@@ -361,8 +364,9 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
 
         private void restoreArgs() {
             transitType = (TransitType) getArguments().getSerializable("transitType");
-            if (getArguments().containsKey("routeDirectionModel"))
+            if (getArguments().containsKey("routeDirectionModel")) {
                 routeDirectionModel = (RouteDirectionModel) getArguments().getSerializable("routeDirectionModel");
+            }
 
             routeCursorAdapterSupplier = (CursorAdapterSupplier<RouteDirectionModel>) getArguments().getSerializable("routeCursorAdapterSupplier");
 

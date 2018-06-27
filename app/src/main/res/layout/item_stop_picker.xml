@@ -21,6 +21,6 @@
         android:text="Thorndale"
         android:textColor="@android:color/black"
         android:textSize="20sp"
-        app:font="@string/font_roboto_medium" />
+        app:typeface="@string/font_roboto_medium" />
 
 </LinearLayout>

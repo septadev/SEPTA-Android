@@ -30,7 +30,7 @@
                 android:text="Paoli/Thorndale Status"
                 android:textColor="#144b88"
                 android:textSize="20sp"
-                app:font="@string/font_roboto_bold"
+                app:typeface="@string/font_roboto_bold"
                 tools:drawableTint="@color/line_color_pao" />
 
             <ScrollView
@@ -47,7 +47,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="11dp"
-                        android:background="#ffffff"
+                        android:background="@android:color/white"
                         android:drawableLeft="@drawable/ic_advisory"
                         android:drawablePadding="9dp"
                         android:drawableRight="@drawable/alert_toggle_closed"
@@ -60,23 +60,23 @@
                         android:text="No Service Advisories"
                         android:textColor="#144b88"
                         android:textSize="16sp"
-                        app:font="@string/font_roboto_light" />
+                        app:typeface="@string/font_roboto_light" />
 
                     <org.septa.android.app.view.TextView
                         android:id="@+id/service_advisory_details"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
-                        android:background="#ffffff"
+                        android:background="@android:color/white"
                         android:clickable="true"
                         android:linksClickable="true"
                         android:paddingLeft="15dp"
                         android:paddingRight="15dp"
                         android:text="ADVISORIES Service Advisory Airport"
-                        android:textColor="#000000"
+                        android:textColor="@android:color/black"
                         android:textSize="12sp"
                         android:visibility="gone"
-                        app:font="@string/font_roboto_light"
+                        app:typeface="@string/font_roboto_light"
                         tools:visibility="visible" />
 
                     <org.septa.android.app.view.TextView
@@ -84,7 +84,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="11dp"
-                        android:background="#ffffff"
+                        android:background="@android:color/white"
                         android:drawableLeft="@drawable/ic_alert"
                         android:drawablePadding="9dp"
                         android:drawableRight="@drawable/alert_toggle_closed"
@@ -97,23 +97,23 @@
                         android:text="No Service Alerts"
                         android:textColor="#144b88"
                         android:textSize="16sp"
-                        app:font="@string/font_roboto_light" />
+                        app:typeface="@string/font_roboto_light" />
 
                     <org.septa.android.app.view.TextView
                         android:id="@+id/service_alert_details"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
-                        android:background="#ffffff"
+                        android:background="@android:color/white"
                         android:clickable="true"
                         android:linksClickable="true"
                         android:paddingLeft="15dp"
                         android:paddingRight="15dp"
                         android:text="ADVISORIES Service Advisory Airport"
-                        android:textColor="#000000"
+                        android:textColor="@android:color/black"
                         android:textSize="12sp"
                         android:visibility="gone"
-                        app:font="@string/font_roboto_light"
+                        app:typeface="@string/font_roboto_light"
                         tools:visibility="visible" />
 
                     <org.septa.android.app.view.TextView
@@ -121,7 +121,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="11dp"
-                        android:background="#ffffff"
+                        android:background="@android:color/white"
                         android:drawableLeft="@drawable/ic_detour"
                         android:drawablePadding="9dp"
                         android:drawableRight="@drawable/alert_toggle_closed"
@@ -134,23 +134,23 @@
                         android:text="No Active Detours"
                         android:textColor="#144b88"
                         android:textSize="16sp"
-                        app:font="@string/font_roboto_light" />
+                        app:typeface="@string/font_roboto_light" />
 
                     <org.septa.android.app.view.TextView
                         android:id="@+id/active_detour_details"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
-                        android:background="#ffffff"
+                        android:background="@android:color/white"
                         android:clickable="true"
                         android:linksClickable="true"
                         android:paddingLeft="15dp"
                         android:paddingRight="15dp"
                         android:text="ADVISORIES Service Advisory Airport"
-                        android:textColor="#000000"
+                        android:textColor="@android:color/black"
                         android:textSize="12sp"
                         android:visibility="gone"
-                        app:font="@string/font_roboto_light"
+                        app:typeface="@string/font_roboto_light"
                         tools:visibility="visible" />
 
                     <org.septa.android.app.view.TextView
@@ -158,7 +158,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="11dp"
-                        android:background="#ffffff"
+                        android:background="@android:color/white"
                         android:drawableLeft="@drawable/ic_weather"
                         android:drawablePadding="9dp"
                         android:drawableRight="@drawable/alert_toggle_closed"
@@ -171,23 +171,23 @@
                         android:text="No Weather Alerts"
                         android:textColor="#144b88"
                         android:textSize="16sp"
-                        app:font="@string/font_roboto_light" />
+                        app:typeface="@string/font_roboto_light" />
 
                     <org.septa.android.app.view.TextView
                         android:id="@+id/weather_alerts_details"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
-                        android:background="#ffffff"
+                        android:background="@android:color/white"
                         android:clickable="true"
                         android:linksClickable="true"
                         android:paddingLeft="15dp"
                         android:paddingRight="15dp"
                         android:text="ADVISORIES Service Advisory Airport"
-                        android:textColor="#000000"
+                        android:textColor="@android:color/black"
                         android:textSize="12sp"
                         android:visibility="gone"
-                        app:font="@string/font_roboto_light"
+                        app:typeface="@string/font_roboto_light"
                         tools:visibility="visible" />
 
                 </LinearLayout>

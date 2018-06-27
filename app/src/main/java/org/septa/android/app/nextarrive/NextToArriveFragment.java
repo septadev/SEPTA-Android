@@ -54,12 +54,13 @@ public class NextToArriveFragment extends Fragment {
 
         Activity context = getActivity();
 
-        if (context == null)
+        if (context == null) {
             return null;
+        }
         if (ContextCompat.checkSelfPermission(context,
-                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(context, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
-
+        }
 
         DatabaseManager dbManager = DatabaseManager.getInstance(context);
 

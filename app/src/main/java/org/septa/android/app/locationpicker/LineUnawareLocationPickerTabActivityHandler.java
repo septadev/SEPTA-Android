@@ -46,7 +46,6 @@ public class LineUnawareLocationPickerTabActivityHandler extends BaseTabActivity
         this.buttonText = buttonText;
     }
 
-
     @Override
     public Fragment getFragment() {
         return LineUnawareLocationPickerFragment.newInstance(cursorAdapterSupplier, transitType, targetClass, headerStringName, buttonText);
@@ -177,11 +176,6 @@ public class LineUnawareLocationPickerTabActivityHandler extends BaseTabActivity
                 if (action == MotionEvent.ACTION_UP) {
 
                     FragmentTransaction ft = parent.getFragmentManager().beginTransaction();
-                    Fragment prev = parent.getFragmentManager().findFragmentByTag("dialog");
-                    if (prev != null) {
-                        ft.remove(prev);
-                    }
-                    ft.addToBackStack(null);
 
                     // Create and show the dialog.
                     LocationPickerFragment newFragment = LocationPickerFragment.newInstance(cursorAdapterSupplier, false);

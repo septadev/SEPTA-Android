@@ -15,7 +15,10 @@ import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Alerts;
 import org.septa.android.app.support.AnalyticsManager;
 import org.septa.android.app.support.CrashlyticsManager;
+import org.septa.android.app.support.CursorAdapterSupplier;
 import org.septa.android.app.systemstatus.SystemStatusState;
+
+import java.util.Date;
 
 import io.fabric.sdk.android.Fabric;
 import retrofit2.Call;
@@ -97,6 +100,12 @@ public class MainApplication extends Application implements Runnable {
                 refreshHandler.postDelayed(MainApplication.this, SYSTEM_STATUS_REFRESH_DELAY_SECONDS * 1000);
             }
         });
+
+        Date now = new Date();
+        for (TransitType transitType : TransitType.values()) {
+            CursorAdapterSupplier<Boolean> cursorAdapterSupplier = DatabaseManager.getInstance(this).getHolidayIndicatorCursorAdapterSupplier(transitType);
+            transitType.setHolidayToday(cursorAdapterSupplier.getItemFromId(this, now));
+        }
     }
 
 }

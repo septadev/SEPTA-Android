@@ -18,9 +18,9 @@
             android:layout_marginLeft="17dp"
             android:layout_marginTop="15dp"
             android:text="Office Commute"
-            android:textColor="#ffffff"
+            android:textColor="@android:color/white"
             android:textSize="14sp"
-            app:font="@string/font_roboto_bold" />
+            app:typeface="@string/font_roboto_bold" />
 
         <ImageView
             android:id="@+id/exit"
@@ -42,9 +42,9 @@
         android:layout_marginLeft="17dp"
         android:layout_marginTop="21dp"
         android:text="Edit Favorite Trip"
-        android:textColor="#ffffff"
+        android:textColor="@android:color/white"
         android:textSize="20sp"
-        app:font="@string/font_roboto_bold" />
+        app:typeface="@string/font_roboto_bold" />
 
     <org.septa.android.app.view.TextView
         android:layout_width="match_parent"
@@ -52,9 +52,9 @@
         android:layout_marginLeft="17dp"
         android:layout_marginTop="13dp"
         android:text="Favorite Name"
-        android:textColor="#ffffff"
+        android:textColor="@android:color/white"
         android:textSize="11sp"
-        app:font="@string/font_roboto_regular" />
+        app:typeface="@string/font_roboto_regular" />
 
     <org.septa.android.app.view.EditText
         android:id="@+id/name_edit_text"
@@ -63,16 +63,16 @@
         android:layout_marginLeft="17dp"
         android:layout_marginRight="17dp"
         android:layout_marginTop="6dp"
-        android:background="#ffffff"
+        android:background="@android:color/white"
         android:inputType="text"
         android:paddingBottom="12dp"
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
         android:paddingTop="12dp"
         android:text="Office Commute"
-        android:textColor="#000000"
+        android:textColor="@android:color/black"
         android:textSize="14sp"
-        app:font="@string/font_roboto_regular" />
+        app:typeface="@string/font_roboto_regular" />
 
     <org.septa.android.app.view.TextView
         android:id="@+id/save_button"
@@ -87,9 +87,9 @@
         android:paddingTop="10dp"
         android:text="Save"
         android:textAlignment="center"
-        android:textColor="#ffffff"
+        android:textColor="@android:color/white"
         android:textSize="14sp"
-        app:font="@string/font_roboto_bold" />
+        app:typeface="@string/font_roboto_bold" />
 
     <org.septa.android.app.view.TextView
         android:id="@+id/delete_button"
@@ -99,7 +99,7 @@
         android:layout_marginTop="16dp"
         android:text="Delete Favorite"
         android:textAlignment="center"
-        android:textColor="#ffffff"
+        android:textColor="@android:color/white"
         android:textSize="14sp" />
 
 

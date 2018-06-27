@@ -33,36 +33,36 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
 
     public static final String TAG = ByStopTabActivityHandler.class.getSimpleName();
     final private CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
+    StopPickerTabListener mListener;
     private boolean isLineAware;
 
-    public ByStopTabActivityHandler(String s, CursorAdapterSupplier<StopModel> cursorAdapterSupplier, boolean isLineAware) {
+    public ByStopTabActivityHandler(StopPickerTabListener listener, String s, CursorAdapterSupplier<StopModel> cursorAdapterSupplier, boolean isLineAware) {
         super(s);
+        this.mListener = listener;
         this.cursorAdapterSupplier = cursorAdapterSupplier;
         this.isLineAware = isLineAware;
     }
 
     @Override
     public Fragment getFragment() {
-        ByStopTabActivityHandler.PlaceholderFragment fragment = ByStopTabActivityHandler.PlaceholderFragment.newInstance(cursorAdapterSupplier, isLineAware);
-
+        ByStopTabActivityHandler.PlaceholderFragment fragment = ByStopTabActivityHandler.PlaceholderFragment.newInstance(mListener, cursorAdapterSupplier, isLineAware);
         return fragment;
     }
 
     public static class PlaceholderFragment extends Fragment implements LoadStopsForPicker.LoadStopsForPickerListener {
         private ListView list = null;
         StationNameAdapter2 adapter;
-        private StopModel currentStop;
         private CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
+        StopPickerTabListener mListener;
         View progressView, sortInOrderButton;
         ImageButton sortAlphabeticalButton;
         EditText filterText;
         private boolean isLineAware = false;
         private static final String IS_LINE_AWARE = "IS_LINE_AWARE";
 
-        private static final int URL_LOADER = 0;
-
-        public static ByStopTabActivityHandler.PlaceholderFragment newInstance(CursorAdapterSupplier<StopModel> cursorAdapterSupplier, boolean isLineAware) {
+        public static ByStopTabActivityHandler.PlaceholderFragment newInstance(StopPickerTabListener listener, CursorAdapterSupplier<StopModel> cursorAdapterSupplier, boolean isLineAware) {
             ByStopTabActivityHandler.PlaceholderFragment fragment = new ByStopTabActivityHandler.PlaceholderFragment();
+            fragment.mListener = listener;
             Bundle args = new Bundle();
             args.putSerializable("cursorAdapterSupplier", cursorAdapterSupplier);
             args.putBoolean(IS_LINE_AWARE, isLineAware);
@@ -126,22 +126,6 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
         }
 
         @Override
-        public void onResume() {
-            super.onResume();
-        }
-
-        @Override
-        public void onSaveInstanceState(Bundle outState) {
-            super.onSaveInstanceState(outState);
-            if (currentStop != null) {
-                Log.d(TAG, this.hashCode() + ":Current Stop is:" + currentStop.getStopName());
-            } else {
-                Log.d(TAG, this.hashCode() + ":Current Stop is null");
-            }
-            outState.putSerializable("Station", currentStop);
-        }
-
-        @Override
         public void afterStopsLoaded(final StationNameAdapter2 adapter) {
             this.adapter = adapter;
             list.setAdapter(this.adapter);
@@ -150,10 +134,13 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                     Log.d(TAG, this.hashCode() + "onItemSelected " + i);
 
+                    Intent intent = new Intent();
+                    intent.putExtra(LocationPickerFragment.STOP_MODEL, cursorAdapterSupplier.getItemFromId(getContext(), view.getTag()));
+
                     if (getTargetFragment() != null) {
-                        Intent intent = new Intent();
-                        intent.putExtra(LocationPickerFragment.STOP_MODEL, cursorAdapterSupplier.getItemFromId(getContext(), view.getTag()));
                         getTargetFragment().onActivityResult(getTargetRequestCode(), LocationPickerFragment.SUCCESS, intent);
+                    } else if (mListener != null) {
+                        mListener.onStopSelected(intent);
                     }
                 }
             });
@@ -262,8 +249,8 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
             }
 
             StopModel stop = getItem(position);
-            TextView station_name = (TextView) convertView.findViewById(R.id.station_name);
-            station_name.setText(stop.getStopName());
+            TextView stationName = (TextView) convertView.findViewById(R.id.station_name);
+            stationName.setText(stop.getStopName());
             convertView.setTag(stop.getStopId());
 
             return convertView;

@@ -30,7 +30,7 @@
                     android:text="The Official App of SEPTA"
                     android:textColor="@color/text_primary"
                     android:textSize="18sp"
-                    app:font="@string/font_roboto_bold" />
+                    app:typeface="@string/font_roboto_bold" />
 
                 <ImageView
                     android:id="@+id/septa_logo"
@@ -46,7 +46,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:background="#ffffff"
+                android:background="@android:color/white"
                 android:elevation="@dimen/white_box_elevation"
                 android:orientation="vertical">
 
@@ -62,7 +62,7 @@
                     android:text="App Information"
                     android:textColor="@color/text_primary"
                     android:textSize="18sp"
-                    app:font="@string/font_roboto_bold" />
+                    app:typeface="@string/font_roboto_bold" />
 
                 <org.septa.android.app.view.TextView
                     android:id="@+id/build_info"
@@ -79,7 +79,7 @@ Last App Update: 9/15/2017 04:07 PM
 Last Schedule Update: 9/15/207 04:07 PM"
                     android:textColor="@color/text_primary"
                     android:textSize="14sp"
-                    app:font="@string/font_roboto_light" />
+                    app:typeface="@string/font_roboto_light" />
 
                 <org.septa.android.app.view.TextView
                     android:id="@+id/feedback_button"
@@ -100,7 +100,7 @@ Last Schedule Update: 9/15/207 04:07 PM"
                     android:text="Provide App Feedback"
                     android:textColor="@android:color/white"
                     android:textSize="14sp"
-                    app:font="@string/font_roboto_medium" />
+                    app:typeface="@string/font_roboto_medium" />
 
             </LinearLayout>
 
@@ -114,7 +114,7 @@ Last Schedule Update: 9/15/207 04:07 PM"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="15dp"
-                    android:background="#ffffff"
+                    android:background="@android:color/white"
                     android:elevation="@dimen/white_box_elevation"
                     android:orientation="vertical">
 
@@ -131,7 +131,7 @@ Last Schedule Update: 9/15/207 04:07 PM"
                         android:text="@string/activity_about_attributions"
                         android:textColor="@android:color/black"
                         android:textSize="16sp"
-                        app:font="@string/font_roboto_medium" />
+                        app:typeface="@string/font_roboto_medium" />
 
                     <LinearLayout
                         android:id="@+id/attrib_list"
@@ -155,7 +155,7 @@ Last Schedule Update: 9/15/207 04:07 PM"
                     android:text="@string/activity_about_credits"
                     android:textColor="#2c2c2c"
                     android:textSize="12sp"
-                    app:font="@string/font_roboto_regular" />
+                    app:typeface="@string/font_roboto_regular" />
 
             </LinearLayout>
 

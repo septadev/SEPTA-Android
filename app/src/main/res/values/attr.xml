@@ -2,6 +2,6 @@
 <resources>
     <!-- Custom Fonts -->
     <declare-styleable name="CustomFonts">
-        <attr name="font" format="string" />
+        <attr name="typeface" format="string" />
     </declare-styleable>
 </resources>

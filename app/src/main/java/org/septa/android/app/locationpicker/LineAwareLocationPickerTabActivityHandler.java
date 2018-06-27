@@ -149,7 +149,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
             lineText.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    FragmentTransaction ft = getChildFragmentManager().beginTransaction();
+                    FragmentTransaction ft = getFragmentManager().beginTransaction();
 
                     LinePickerFragment newFragment = LinePickerFragment.newInstance(routeCursorAdapterSupplier, transitType);
                     newFragment.setTargetFragment(PlaceholderFragment.this, LINE_PICKER_ID);
@@ -177,8 +177,9 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                         return;
                     }
 
-                    if (getActivity() == null)
+                    if (getActivity() == null) {
                         return;
+                    }
 
                     Intent intent = new Intent(getActivity(), targetClass);
                     intent.putExtra(Constants.STARTING_STATION, startingStation);
@@ -232,7 +233,8 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
         @Override
         public void onActivityResult(int requestCode, int resultCode, Intent data) {
             super.onActivityResult(requestCode, resultCode, data);
-            //do what ever you want here, and get the result from intent like below
+
+            // route was picked
             if (requestCode == LINE_PICKER_ID && resultCode == LinePickerFragment.SUCCESS) {
                 RouteDirectionModel var1 = (RouteDirectionModel) data.getSerializableExtra(LinePickerFragment.ROUTE_DIRECTION_MODEL);
                 if (var1 != null) {
@@ -241,6 +243,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                 return;
             }
 
+            // start stop was picked
             if (requestCode == START_MODEL_ID && resultCode == LocationPickerFragment.SUCCESS) {
                 StopModel var1 = (StopModel) data.getSerializableExtra(LocationPickerFragment.STOP_MODEL);
                 if (var1 != null) {
@@ -249,6 +252,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                 return;
             }
 
+            // destination stop was picked
             if (requestCode == DEST_MODEL_ID && resultCode == LocationPickerFragment.SUCCESS) {
                 StopModel var1 = (StopModel) data.getSerializableExtra(LocationPickerFragment.STOP_MODEL);
                 if (var1 != null) {
@@ -261,8 +265,9 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
         @Override
         public void setRoute(RouteDirectionModel var1) {
             selectedRoute = var1;
-            if (getContext() == null)
+            if (getContext() == null) {
                 return;
+            }
             //lineText.setText(selectedRoute.getRouteLongName());
             int color;
             try {
@@ -275,8 +280,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
             Drawable bullet = ContextCompat.getDrawable(getContext(), R.drawable.shape_line_marker);
             bullet.setColorFilter(color, PorterDuff.Mode.SRC);
 
-            lineText.setCompoundDrawablesWithIntrinsicBounds(bullet, drawables[1],
-                    drawables[2], drawables[3]);
+            lineText.setCompoundDrawablesWithIntrinsicBounds(bullet, drawables[1], drawables[2], drawables[3]);
 
             if (transitType == TransitType.RAIL) {
                 lineText.setText(selectedRoute.getRouteId() + " " + selectedRoute.getDirectionDescription());
@@ -356,19 +360,16 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
         public boolean onTouch(View view, MotionEvent motionEvent) {
             int action = motionEvent.getActionMasked();
             if (action == MotionEvent.ACTION_UP) {
-                if (userAfter && parent.startingStation == null)
+                if (userAfter && parent.startingStation == null) {
                     return true;
+                }
 
                 FragmentTransaction ft = parent.getFragmentManager().beginTransaction();
-                Fragment prev = parent.getFragmentManager().findFragmentByTag("dialog");
-                if (prev != null) {
-                    ft.remove(prev);
-                }
-                ft.addToBackStack(null);
 
                 String stopId = null;
-                if (parent.startingStation != null)
+                if (parent.startingStation != null) {
                     stopId = parent.startingStation.getStopId();
+                }
                 CursorAdapterSupplier<StopModel> routeSpecificCursorAdapterSupplier =
                         new RouteSpecificCursorAdapterSupplier(cursorAdapterSupplier, parent.selectedRoute.getRouteId(),
                                 parent.selectedRoute.getDirectionCode(), stopId, userAfter);
@@ -404,7 +405,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
         public Cursor getCursor(Context context, List<Criteria> whereClause) {
             StringBuilder whereClauseBuilder = new StringBuilder();
             if (whereClause == null) {
-                whereClause = new ArrayList<Criteria>();
+                whereClause = new ArrayList<>();
             }
             whereClause.add(new Criteria("route_id", Criteria.Operation.EQ, routeId));
             whereClause.add(new Criteria("direction_id", Criteria.Operation.EQ, routeDesc));

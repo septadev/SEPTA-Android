@@ -9,6 +9,6 @@
     android:linksClickable="true"
     android:padding="5dp"
     android:text="OkHttp https://github.com/square/okhttp/blob/master/LICENSE.txt"
-    android:textColor="#000000"
+    android:textColor="@android:color/black"
     android:textSize="12sp"
-    app:font="@string/font_roboto_light" />
+    app:typeface="@string/font_roboto_light" />

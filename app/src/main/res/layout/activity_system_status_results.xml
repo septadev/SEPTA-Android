@@ -31,7 +31,7 @@
                 android:text="Paoli/Thorndale Status"
                 android:textColor="@color/text_primary"
                 android:textSize="20sp"
-                app:font="@string/font_roboto_bold"
+                app:typeface="@string/font_roboto_bold"
                 tools:drawableTint="@color/line_color_pao" />
 
             <ScrollView
@@ -61,7 +61,7 @@
                         android:text="No Service Advisories"
                         android:textColor="@color/text_primary"
                         android:textSize="16sp"
-                        app:font="@string/font_roboto_light" />
+                        app:typeface="@string/font_roboto_light" />
 
                     <org.septa.android.app.view.TextView
                         android:id="@+id/service_advisory_details"
@@ -78,7 +78,7 @@
                         android:textColor="@android:color/black"
                         android:textSize="12sp"
                         android:visibility="gone"
-                        app:font="@string/font_roboto_light"
+                        app:typeface="@string/font_roboto_light"
                         tools:visibility="visible" />
 
                     <org.septa.android.app.view.TextView
@@ -101,7 +101,7 @@
                         android:text="No Service Alerts"
                         android:textColor="@color/text_primary"
                         android:textSize="16sp"
-                        app:font="@string/font_roboto_light" />
+                        app:typeface="@string/font_roboto_light" />
 
                     <org.septa.android.app.view.TextView
                         android:id="@+id/service_alert_details"
@@ -117,7 +117,7 @@
                         android:textColor="@android:color/black"
                         android:textSize="12sp"
                         android:visibility="gone"
-                        app:font="@string/font_roboto_light"
+                        app:typeface="@string/font_roboto_light"
                         tools:visibility="visible" />
 
                     <org.septa.android.app.view.TextView
@@ -140,7 +140,7 @@
                         android:text="No Active Detours"
                         android:textColor="@color/text_primary"
                         android:textSize="16sp"
-                        app:font="@string/font_roboto_light" />
+                        app:typeface="@string/font_roboto_light" />
 
                     <org.septa.android.app.view.TextView
                         android:id="@+id/active_detour_details"
@@ -156,7 +156,7 @@
                         android:textColor="@android:color/black"
                         android:textSize="12sp"
                         android:visibility="gone"
-                        app:font="@string/font_roboto_light"
+                        app:typeface="@string/font_roboto_light"
                         tools:visibility="visible" />
 
                     <org.septa.android.app.view.TextView
@@ -177,7 +177,7 @@
                         android:text="No Weather Alerts"
                         android:textColor="@color/text_primary"
                         android:textSize="16sp"
-                        app:font="@string/font_roboto_light" />
+                        app:typeface="@string/font_roboto_light" />
 
                     <org.septa.android.app.view.TextView
                         android:id="@+id/weather_alerts_details"
@@ -193,7 +193,7 @@
                         android:textColor="@android:color/black"
                         android:textSize="12sp"
                         android:visibility="gone"
-                        app:font="@string/font_roboto_light"
+                        app:typeface="@string/font_roboto_light"
                         tools:visibility="visible" />
 
                 </LinearLayout>

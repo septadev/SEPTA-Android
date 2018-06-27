@@ -53,7 +53,7 @@
                             android:text="#564 to 30th Street Station"
                             android:textColor="@color/text_primary"
                             android:textSize="16sp"
-                            app:font="@string/font_roboto_bold" />
+                            app:typeface="@string/font_roboto_bold" />
 
                     </RelativeLayout>
 
@@ -74,7 +74,7 @@
                             android:text="Next Stop:"
                             android:textColor="@android:color/black"
                             android:textSize="14dp"
-                            app:font="@string/font_roboto_light" />
+                            app:typeface="@string/font_roboto_light" />
 
                         <org.septa.android.app.view.TextView
                             android:id="@+id/next_stop_value"
@@ -85,7 +85,7 @@
                             android:text="Jefferson Station"
                             android:textColor="@android:color/black"
                             android:textSize="14dp"
-                            app:font="@string/font_roboto_bold" />
+                            app:typeface="@string/font_roboto_bold" />
 
                     </LinearLayout>
 
@@ -102,7 +102,7 @@
                         android:textAlignment="center"
                         android:textColor="@color/late_departing"
                         android:textSize="14sp"
-                        app:font="@string/font_roboto_bold" />
+                        app:typeface="@string/font_roboto_bold" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -122,7 +122,7 @@
                                 android:text="Line"
                                 android:textColor="@android:color/black"
                                 android:textSize="14sp"
-                                app:font="@string/font_roboto_light" />
+                                app:typeface="@string/font_roboto_light" />
 
                             <org.septa.android.app.view.TextView
                                 android:id="@+id/line_value"
@@ -133,7 +133,7 @@
                                 android:text="Paoli / Thorndale"
                                 android:textColor="@android:color/black"
                                 android:textSize="14sp"
-                                app:font="@string/font_roboto_bold" />
+                                app:typeface="@string/font_roboto_bold" />
 
                         </RelativeLayout>
 
@@ -152,7 +152,7 @@
                                 android:text="Vehicle Number"
                                 android:textColor="@android:color/black"
                                 android:textSize="14sp"
-                                app:font="@string/font_roboto_light" />
+                                app:typeface="@string/font_roboto_light" />
 
                             <org.septa.android.app.view.TextView
                                 android:id="@+id/vehicle_value"
@@ -163,7 +163,7 @@
                                 android:text="3154"
                                 android:textColor="@android:color/black"
                                 android:textSize="14sp"
-                                app:font="@string/font_roboto_bold" />
+                                app:typeface="@string/font_roboto_bold" />
                         </RelativeLayout>
 
                         <RelativeLayout
@@ -181,7 +181,7 @@
                                 android:text="Block ID"
                                 android:textColor="@android:color/black"
                                 android:textSize="14sp"
-                                app:font="@string/font_roboto_light" />
+                                app:typeface="@string/font_roboto_light" />
 
                             <org.septa.android.app.view.TextView
                                 android:id="@+id/blockid_value"
@@ -192,7 +192,7 @@
                                 android:text="3154"
                                 android:textColor="@android:color/black"
                                 android:textSize="14sp"
-                                app:font="@string/font_roboto_bold" />
+                                app:typeface="@string/font_roboto_bold" />
                         </RelativeLayout>
 
                         <RelativeLayout
@@ -208,7 +208,7 @@
                                 android:text="Origination:"
                                 android:textColor="@android:color/black"
                                 android:textSize="14sp"
-                                app:font="@string/font_roboto_light" />
+                                app:typeface="@string/font_roboto_light" />
 
                             <org.septa.android.app.view.TextView
                                 android:id="@+id/origin_station_value"
@@ -219,7 +219,7 @@
                                 android:text="Temple University"
                                 android:textColor="@android:color/black"
                                 android:textSize="14sp"
-                                app:font="@string/font_roboto_bold" />
+                                app:typeface="@string/font_roboto_bold" />
                         </RelativeLayout>
 
                         <RelativeLayout
@@ -235,7 +235,7 @@
                                 android:text="Destination:"
                                 android:textColor="@android:color/black"
                                 android:textSize="14sp"
-                                app:font="@string/font_roboto_light" />
+                                app:typeface="@string/font_roboto_light" />
 
                             <org.septa.android.app.view.TextView
                                 android:id="@+id/dest_station_value"
@@ -246,7 +246,7 @@
                                 android:text="Thorndale"
                                 android:textColor="@android:color/black"
                                 android:textSize="14sp"
-                                app:font="@string/font_roboto_bold" />
+                                app:typeface="@string/font_roboto_bold" />
                         </RelativeLayout>
 
                         <RelativeLayout
@@ -262,7 +262,7 @@
                                 android:text="# of Train Cars:"
                                 android:textColor="@android:color/black"
                                 android:textSize="14sp"
-                                app:font="@string/font_roboto_light" />
+                                app:typeface="@string/font_roboto_light" />
 
 
                             <org.septa.android.app.view.TextView
@@ -275,7 +275,7 @@
                                 android:text="162, 161, 136, 135"
                                 android:textColor="@android:color/black"
                                 android:textSize="14sp"
-                                app:font="@string/font_roboto_light" />
+                                app:typeface="@string/font_roboto_light" />
 
                             <org.septa.android.app.view.TextView
                                 android:id="@+id/num_trains_value"
@@ -286,7 +286,7 @@
                                 android:text="4 - "
                                 android:textColor="@android:color/black"
                                 android:textSize="14sp"
-                                app:font="@string/font_roboto_bold" />
+                                app:typeface="@string/font_roboto_bold" />
                         </RelativeLayout>
 
                         <RelativeLayout
@@ -302,7 +302,7 @@
                                 android:text="Type:"
                                 android:textColor="@android:color/black"
                                 android:textSize="14sp"
-                                app:font="@string/font_roboto_light" />
+                                app:typeface="@string/font_roboto_light" />
 
 
                             <org.septa.android.app.view.TextView
@@ -313,7 +313,7 @@
                                 android:text="Local"
                                 android:textColor="@android:color/black"
                                 android:textSize="14sp"
-                                app:font="@string/font_roboto_bold" />
+                                app:typeface="@string/font_roboto_bold" />
                         </RelativeLayout>
                     </LinearLayout>
 
@@ -335,7 +335,7 @@
                             android:text="Follow Us!"
                             android:textColor="@color/text_primary"
                             android:textSize="14sp"
-                            app:font="@string/font_roboto_light" />
+                            app:typeface="@string/font_roboto_light" />
 
                         <org.septa.android.app.view.TextView
                             android:id="@+id/twitter_id"
@@ -348,7 +348,7 @@
                             android:text="\@SEPTA_PAO"
                             android:textColor="@color/text_primary"
                             android:textSize="14sp"
-                            app:font="@string/font_roboto_bold" />
+                            app:typeface="@string/font_roboto_bold" />
                     </LinearLayout>
                 </LinearLayout>
             </ScrollView>

@@ -32,7 +32,7 @@
             android:paddingTop="12dp"
             android:textColor="@color/text_primary"
             android:textSize="14sp"
-            app:font="@string/font_roboto_regular" />
+            app:typeface="@string/font_roboto_regular" />
 
         <ListView
             android:id="@+id/stop_list"

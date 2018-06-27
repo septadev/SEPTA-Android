@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.graphics.Canvas;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -65,9 +66,8 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
     private boolean firstPass = true;
 
     // snackbar no connection message
+    private View noFavoritesMessage;
     private boolean isSnackbarShowing = false;
-
-    private ViewGroup mContainer;
 
     public static FavoritesFragment newInstance() {
         FavoritesFragment instance = new FavoritesFragment();
@@ -76,87 +76,27 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
         favoriteStateList = SeptaServiceFactory.getFavoritesService().getFavoriteStates(getContext());
         favoritesMap = SeptaServiceFactory.getFavoritesService().getFavorites(getContext());
         alertMessage = evaluateAndRemoveFavorites(favoritesMap);
 
-        mContainer = container;
-
         initialCount = favoritesMap.size();
-        if (favoritesMap.isEmpty()) {
-            return onCreateViewNoFavorites(inflater, container);
-        } else {
-            return onCreateViewFavorites(inflater, container);
-        }
-    }
 
-    private View onCreateViewFavorites(LayoutInflater inflater, final ViewGroup container) {
-        setHasOptionsMenu(true);
         fragmentView = inflater.inflate(R.layout.fragment_favorites, container, false);
+        noFavoritesMessage = fragmentView.findViewById(R.id.favorites_none_message);
         mRefreshLayout = fragmentView.findViewById(R.id.favorites_swipe_refresh_layout);
         favoritesListView = fragmentView.findViewById(R.id.favorites_list);
 
-        // initialize favoriteStateList with favorites collapsed by default
-        if (favoriteStateList.size() != favoritesMap.size()) {
-            SeptaServiceFactory.getFavoritesService().deleteAllFavoriteStates(getContext());
-            Log.d(TAG, "Reinitializing favorite states now...");
-
-            for (Map.Entry<String, Favorite> entry : favoritesMap.entrySet()) {
-                FavoriteState favoriteState = new FavoriteState(entry.getKey());
-                favoriteStateList.add(favoriteState);
-            }
-
-            SeptaServiceFactory.getFavoritesService().setFavoriteStates(getContext(), favoriteStateList);
+        if (favoritesMap.isEmpty()) {
+            // user has no favorites
+            showNoFavoritesMessage();
+        } else {
+            // user has at least one favorite
+            showFavorites();
         }
-
-        // swipe down to refresh favorites
-        mRefreshLayout.setScrollingView(favoritesListView);
-        mRefreshLayout.setColorSchemeColors(ContextCompat.getColor(getContext(), R.color.colorPrimary));
-        mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                mRefreshLayout.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        mRefreshLayout.setRefreshing(false);
-                        refreshFavorites();
-                    }
-                }, 2000);
-            }
-        });
-
-        // enabled swipe to delete
-        final SwipeController swipeController = new SwipeController(getContext(), FavoritesFragment.this);
-        itemTouchHelper = new ItemTouchHelper(swipeController);
-        itemTouchHelper.attachToRecyclerView(favoritesListView);
-        favoritesListView.addItemDecoration(new RecyclerView.ItemDecoration() {
-            @Override
-            public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
-                swipeController.onDraw(c);
-            }
-        });
-
-        setupListRecyclerView();
-
-        return fragmentView;
-    }
-
-    private View onCreateViewNoFavorites(LayoutInflater inflater, @Nullable ViewGroup container) {
-        setHasOptionsMenu(false);
-        View fragmentView = inflater.inflate(R.layout.fragment_favorites_none, container, false);
-
-        View button = fragmentView.findViewById(R.id.add_favorite_button);
-
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mListener.addNewFavorite();
-            }
-        });
-
         return fragmentView;
     }
 
@@ -366,10 +306,9 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
                                 itemTouchHelper.attachToRecyclerView(null);
                                 itemTouchHelper.attachToRecyclerView(favoritesListView);
 
-                                Log.e(TAG, "Map size: " + favoritesMap.size() + " List size: " + favoriteStateList.size()); // TODO: remove
+                                // show no favorites message if that was the last favorite
                                 if (favoritesMap.isEmpty()) {
-                                    // TODO: why isn't this working
-                                    onCreateViewNoFavorites(getActivity().getLayoutInflater(), mContainer);
+                                    showNoFavoritesMessage();
                                 }
                             }
                         });
@@ -395,6 +334,73 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
 
         // revert UI for swiped row
         favoriteItemAdapter.notifyItemChanged(index);
+    }
+
+    private void showFavorites() {
+        setHasOptionsMenu(true);
+
+        // hide no favorite message and show list of favorites
+        noFavoritesMessage.setVisibility(View.GONE);
+        mRefreshLayout.setVisibility(View.VISIBLE);
+
+        // initialize favoriteStateList with favorites collapsed by default
+        if (favoriteStateList.size() != favoritesMap.size()) {
+            SeptaServiceFactory.getFavoritesService().deleteAllFavoriteStates(getContext());
+            Log.d(TAG, "Reinitializing favorite states now...");
+
+            for (Map.Entry<String, Favorite> entry : favoritesMap.entrySet()) {
+                FavoriteState favoriteState = new FavoriteState(entry.getKey());
+                favoriteStateList.add(favoriteState);
+            }
+
+            SeptaServiceFactory.getFavoritesService().setFavoriteStates(getContext(), favoriteStateList);
+        }
+
+        // swipe down to refresh favorites
+        mRefreshLayout.setScrollingView(favoritesListView);
+        mRefreshLayout.setColorSchemeColors(ContextCompat.getColor(getContext(), R.color.colorPrimary));
+        mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                mRefreshLayout.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mRefreshLayout.setRefreshing(false);
+                        refreshFavorites();
+                    }
+                }, 2000);
+            }
+        });
+
+        // enabled swipe to delete
+        final SwipeController swipeController = new SwipeController(getContext(), FavoritesFragment.this);
+        itemTouchHelper = new ItemTouchHelper(swipeController);
+        itemTouchHelper.attachToRecyclerView(favoritesListView);
+        favoritesListView.addItemDecoration(new RecyclerView.ItemDecoration() {
+            @Override
+            public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
+                swipeController.onDraw(c);
+            }
+        });
+
+        setupListRecyclerView();
+    }
+
+    private void showNoFavoritesMessage() {
+        setHasOptionsMenu(false);
+
+        // show no favorite message and hide list of favorites
+        mRefreshLayout.setVisibility(View.GONE);
+        noFavoritesMessage.setVisibility(View.VISIBLE);
+
+        // add button clickable
+        View addButton = fragmentView.findViewById(R.id.add_favorite_button);
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListener.addNewFavorite();
+            }
+        });
     }
 
     private String evaluateAndRemoveFavorites(Map<String, Favorite> favoritesMap) {
@@ -466,9 +472,13 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
 
     public interface FavoritesFragmentListener {
         void refreshFavoritesInstance();
+
         void addNewFavorite();
+
         void gotoSchedules();
+
         void goToSchedulesForTarget(StopModel start, StopModel destination, TransitType transitType, RouteDirectionModel routeDirectionModel);
+
         void toggleEditFavoritesMode(boolean isInEditMode);
     }
 

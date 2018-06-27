@@ -26,4 +26,6 @@
 
     </org.septa.android.app.favorites.FavoritesSwipeRefreshLayout>
 
+    <include layout="@layout/fragment_favorites_none" />
+
 </FrameLayout>

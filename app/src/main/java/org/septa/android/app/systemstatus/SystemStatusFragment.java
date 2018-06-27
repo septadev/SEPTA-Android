@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
@@ -32,9 +33,8 @@ public class SystemStatusFragment extends Fragment {
             SYSTEM_STATUS_TITLE = "SYSTEM_STATUS_TITLE";
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
-    private ViewPager mViewPager;
     private TabLayout tabLayout;
-    TabActivityHandler tabActivityHandlers[];
+    private TabActivityHandler tabActivityHandlers[];
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -53,15 +53,14 @@ public class SystemStatusFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
         if (getActivity() == null) {
             return null;
         }
 
-        if (ContextCompat.checkSelfPermission(getActivity(),
-                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
         }
 
@@ -79,10 +78,10 @@ public class SystemStatusFragment extends Fragment {
         mSectionsPagerAdapter = new SectionsPagerAdapter(getChildFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) fragmentView.findViewById(R.id.container);
+        ViewPager mViewPager = fragmentView.findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
-        tabLayout = (TabLayout) fragmentView.findViewById(R.id.tabs);
+        tabLayout = fragmentView.findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
         setUpTabs(tabLayout, inflater);
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {

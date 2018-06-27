@@ -20,8 +20,10 @@ public class FavoritesImpl implements Favorites {
 
     public static final String TAG = FavoritesImpl.class.getSimpleName();
 
-    public static final String KEY_FAVORITES = "favorite_json";
-    public static final String KEY_FAVORITES_STATE = "favorite_state_json";
+    private static final String KEY_FAVORITES = "favorite_json";
+    private static final String KEY_FAVORITES_STATE = "favorite_state_json";
+
+    // using commit() instead of apply() so that the values are immediately written to memory
 
     /**
      * fixing some corrupt favorites
@@ -56,7 +58,7 @@ public class FavoritesImpl implements Favorites {
             }.getType());
         } catch (JsonSyntaxException e) {
             Log.e(TAG, e.toString());
-            sharedPreferences.edit().remove(KEY_FAVORITES_STATE).apply();
+            sharedPreferences.edit().remove(KEY_FAVORITES_STATE).commit();
             return new ArrayList<>();
         }
     }
@@ -154,14 +156,14 @@ public class FavoritesImpl implements Favorites {
     @Override
     public void deleteAllFavorites(Context context) {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
-        sharedPreferences.edit().remove(KEY_FAVORITES).apply();
+        sharedPreferences.edit().remove(KEY_FAVORITES).commit();
         deleteAllFavoriteStates(context);
     }
 
     @Override
     public void deleteAllFavoriteStates(Context context) {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
-        sharedPreferences.edit().remove(KEY_FAVORITES_STATE).apply();
+        sharedPreferences.edit().remove(KEY_FAVORITES_STATE).commit();
     }
 
     @Override
@@ -246,7 +248,7 @@ public class FavoritesImpl implements Favorites {
             }.getType());
         } catch (JsonSyntaxException e) {
             Log.e(TAG, e.toString());
-            sharedPreferences.edit().remove(KEY_FAVORITES).apply();
+            sharedPreferences.edit().remove(KEY_FAVORITES).commit();
             return new HashMap<>();
         }
     }
@@ -254,13 +256,13 @@ public class FavoritesImpl implements Favorites {
     private void storeFavorites(SharedPreferences sharedPreferences, Map<String, Favorite> favorites) {
         Gson gson = new Gson();
         String favoritesJson = gson.toJson(favorites);
-        sharedPreferences.edit().putString(KEY_FAVORITES, favoritesJson).apply();
+        sharedPreferences.edit().putString(KEY_FAVORITES, favoritesJson).commit();
     }
 
     private void storeFavoritesState(SharedPreferences sharedPreferences, List<FavoriteState> favoriteStateList) {
         Gson gson = new Gson();
         String favoritesStatesJson = gson.toJson(favoriteStateList);
-        sharedPreferences.edit().putString(KEY_FAVORITES_STATE, favoritesStatesJson).apply();
+        sharedPreferences.edit().putString(KEY_FAVORITES_STATE, favoritesStatesJson).commit();
     }
 
 }

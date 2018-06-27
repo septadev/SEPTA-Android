@@ -8,9 +8,9 @@ import org.septa.android.app.services.apiinterfaces.model.Favorite;
 
 public class SaveFavoritesAsyncTask extends AsyncTask<Favorite, Void, Void> {
 
-    Runnable onCancel;
-    Runnable onPostExecute;
-    Context context;
+    private Runnable onCancel;
+    private Runnable onPostExecute;
+    private Context context;
 
     public SaveFavoritesAsyncTask(Context context, Runnable onCancel, Runnable onPostExecute) {
         this.context = context;

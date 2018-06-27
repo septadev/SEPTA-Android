@@ -237,12 +237,12 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<FavoriteItemAdapter.Favor
 
         FavoriteViewHolder(final View view) {
             super(view);
-            favoriteRow = (LinearLayout) view.findViewById(R.id.favorite_item_row);
-            favoriteHeader = (LinearLayout) view.findViewById(R.id.favorite_item_header);
-            favoriteName = (TextView) view.findViewById(R.id.favorite_title_text);
-            expandCollapseButton = (ImageButton) view.findViewById(R.id.favorite_item_collapse_button);
-            noResultsMsg = (LinearLayout) view.findViewById(R.id.favorite_item_no_results);
-            resultsContainer = (ViewGroup) view.findViewById(R.id.next_to_arrive_trip_details);
+            favoriteRow = view.findViewById(R.id.favorite_item_row);
+            favoriteHeader = view.findViewById(R.id.favorite_item_header);
+            favoriteName = view.findViewById(R.id.favorite_title_text);
+            expandCollapseButton = view.findViewById(R.id.favorite_item_collapse_button);
+            noResultsMsg = view.findViewById(R.id.favorite_item_no_results);
+            resultsContainer = view.findViewById(R.id.next_to_arrive_trip_details);
             progressView = view.findViewById(R.id.progress_view);
             tripView = new NextToArriveTripView(context);
         }

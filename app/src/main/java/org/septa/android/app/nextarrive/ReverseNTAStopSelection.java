@@ -20,16 +20,16 @@ public class ReverseNTAStopSelection extends AsyncTask<Void, Void, Void> {
 
     private static final String TAG = ReverseNTAStopSelection.class.getSimpleName();
 
-    boolean found = false;
+    private boolean found = false;
 
-    Context context;
-    ReverseNTAStopSelectionListener mListener;
-    TransitType transitType;
-    StopModel oldStart, oldDestination, newStart, newDestination;
-    RouteDirectionModel oldRouteDirectionModel, newRouteDirectionModel;
+    private Context context;
+    private ReverseNTAStopSelectionListener mListener;
+    private TransitType transitType;
+    private StopModel oldStart, oldDestination, newStart, newDestination;
+    private RouteDirectionModel oldRouteDirectionModel, newRouteDirectionModel;
 
-    CursorAdapterSupplier<RouteDirectionModel> reverseRouteCursorAdapterSupplier;
-    CursorAdapterSupplier<StopModel> reverseStopCursorAdapterSupplier;
+    private CursorAdapterSupplier<RouteDirectionModel> reverseRouteCursorAdapterSupplier;
+    private CursorAdapterSupplier<StopModel> reverseStopCursorAdapterSupplier;
 
     ReverseNTAStopSelection(Context context, TransitType transitType, RouteDirectionModel routeDirectionModel, StopModel start, StopModel destination) {
         this.context = context;
@@ -100,7 +100,7 @@ public class ReverseNTAStopSelection extends AsyncTask<Void, Void, Void> {
         }
     }
 
-    StopModel getReverseStopID(String stopId, String routeShortName) {
+    private StopModel getReverseStopID(String stopId, String routeShortName) {
         List<Criteria> criteria = new ArrayList<>(2);
         criteria.add(new Criteria("route_short_name", Criteria.Operation.EQ, routeShortName));
         criteria.add(new Criteria("stop_id", Criteria.Operation.EQ, stopId));

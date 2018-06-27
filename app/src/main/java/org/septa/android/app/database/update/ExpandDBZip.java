@@ -23,7 +23,7 @@ public class ExpandDBZip extends AsyncTask<Object, Object, Void> {
     private File zipFile;
     private int version;
 
-    public ExpandDBZip(Context context, ExpandDBZipListener listener, File zipFile, int versionDownloaded) {
+    ExpandDBZip(Context context, ExpandDBZipListener listener, File zipFile, int versionDownloaded) {
         this.context = context;
         this.mListener = listener;
         this.zipFile = zipFile;

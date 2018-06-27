@@ -27,7 +27,7 @@ public class WebViewFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_webview, container, false);
 
-        webView = (WebView) rootView.findViewById(R.id.web_contents);
+        webView = rootView.findViewById(R.id.web_contents);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setSupportZoom(true);
         webView.getSettings().setLoadWithOverviewMode(true);

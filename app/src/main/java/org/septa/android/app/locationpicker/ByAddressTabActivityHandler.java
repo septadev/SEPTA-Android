@@ -47,18 +47,20 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-class ByAddressTabActivityHandler extends BaseTabActivityHandler {
-    final private CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
+public class ByAddressTabActivityHandler extends BaseTabActivityHandler {
+    private final CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
     public static final String TAG = ByAddressTabActivityHandler.class.getSimpleName();
+    private StopPickerTabListener mListener;
 
-    public ByAddressTabActivityHandler(String s, CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
+    ByAddressTabActivityHandler(StopPickerTabListener listener, String s, CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
         super(s);
+        this.mListener = listener;
         this.cursorAdapterSupplier = cursorAdapterSupplier;
     }
 
     @Override
     public Fragment getFragment() {
-        return ByAddressFragment.newInstance(cursorAdapterSupplier);
+        return ByAddressFragment.newInstance(this.mListener, cursorAdapterSupplier);
     }
 
     public static class ByAddressFragment extends Fragment {
@@ -67,9 +69,13 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
         ListView stopsListView;
         AutoCompleteTextView addressEntry;
         View progressView;
+        StopPickerTabListener mListener;
 
-        public static ByAddressFragment newInstance(CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
+        public static ByAddressFragment newInstance(StopPickerTabListener listener, CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
             ByAddressFragment fragment = new ByAddressFragment();
+
+            fragment.mListener = listener;
+
             Bundle args = new Bundle();
             args.putSerializable("cursorAdapterSupplier", cursorAdapterSupplier);
             fragment.setArguments(args);
@@ -87,16 +93,15 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
             }
 
             restoreArgs();
-            stopsListView = (ListView) rootView.findViewById(R.id.stop_list);
+            stopsListView = rootView.findViewById(R.id.stop_list);
             progressView = rootView.findViewById(R.id.progress_view);
 
             final FindClosestStationTask task = new FindClosestStationTask(this);
 
             myLocationClickListener = new MyLocationClickListener(this);
 
-            addressEntry = (AutoCompleteTextView) rootView.findViewById(R.id.address_text);
-            int permissionCheck = ContextCompat.checkSelfPermission(getActivity(),
-                    Manifest.permission.ACCESS_FINE_LOCATION);
+            addressEntry = rootView.findViewById(R.id.address_text);
+            int permissionCheck = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION);
             if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
                 Task<Location> locationTask = LocationServices.getFusedLocationProviderClient(getActivity()).getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
                     @Override
@@ -178,6 +183,7 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
         private void restoreArgs() {
             cursorAdapterSupplier = (CursorAdapterSupplier<StopModel>) getArguments().getSerializable("cursorAdapterSupplier");
         }
+
     }
 
     static class FindClosestStationTask extends AsyncTask<LatLng, Void, List<StopModelWithDistance>> {
@@ -191,12 +197,12 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
         @Override
         protected List<StopModelWithDistance> doInBackground(LatLng... locations) {
             if (fragment.getActivity() == null)
-                return new ArrayList<StopModelWithDistance>(0);
+                return new ArrayList<>(0);
             LatLng location = locations[0];
-            List<StopModelWithDistance> returnList = new ArrayList<StopModelWithDistance>();
+            List<StopModelWithDistance> returnList = new ArrayList<>();
             if (location != null) {
 
-                List<Criteria> criteria = new LinkedList<Criteria>();
+                List<Criteria> criteria = new LinkedList<>();
                 criteria.add(new Criteria("stop_lon", Criteria.Operation.GT, LocationMathHelper.calculateDerivedPosition(location, 5, 270).longitude));
                 criteria.add(new Criteria("stop_lon", Criteria.Operation.LT, LocationMathHelper.calculateDerivedPosition(location, 5, 90).longitude));
                 criteria.add(new Criteria("stop_lat", Criteria.Operation.LT, LocationMathHelper.calculateDerivedPosition(location, 5, 0).latitude));
@@ -213,14 +219,17 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
                             LatLng stopPoint = new LatLng(stop.getLatitude(), stop.getLongitude());
                             double distance = LocationMathHelper.distance(location, stopPoint);
                             returnList.add(new StopModelWithDistance(distance, stop));
-                            if (cursor.moveToNext())
+                            if (cursor.moveToNext()) {
                                 stop = fragment.cursorAdapterSupplier.getCurrentItemFromCursor(cursor);
-                            else stop = null;
+                            } else {
+                                stop = null;
+                            }
                         }
                     }
                 } finally {
-                    if (cursor != null)
+                    if (cursor != null) {
                         cursor.close();
+                    }
                 }
             }
 
@@ -230,18 +239,19 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
 
         @Override
         protected void onPostExecute(final List<StopModelWithDistance> stopModels) {
-            if (fragment.getActivity() == null)
+            if (fragment.getActivity() == null) {
                 return;
+            }
             fragment.stopsListView.setAdapter(new StopListAdapter(fragment.getActivity(), stopModels));
             fragment.stopsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                     Log.d(TAG, this.hashCode() + "onItemSelected " + i);
-                    if (fragment.getTargetFragment() != null) {
-                        Intent intent = new Intent();
-                        intent.putExtra(LocationPickerFragment.STOP_MODEL, stopModels.get(i).getStopModel());
-                        fragment.getTargetFragment().onActivityResult(fragment.getTargetRequestCode(), LocationPickerFragment.SUCCESS, intent);
-                    }
+
+                    Intent intent = new Intent();
+                    intent.putExtra(LocationPickerFragment.STOP_MODEL, stopModels.get(i).getStopModel());
+
+                    fragment.mListener.onStopSelected(intent);
                 }
             });
             fragment.myLocationClickListener.setActive(true);
@@ -265,18 +275,17 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
 
         @Override
         public void onClick(View view) {
-            if (!active)
+            if (!active) {
                 return;
+            }
 
-            if (fragment.getActivity() == null)
+            if (fragment.getActivity() == null) {
                 return;
+            }
 
             active = false;
-            int permissionCheck = ContextCompat.checkSelfPermission(fragment.getActivity(),
-                    Manifest.permission.ACCESS_FINE_LOCATION);
-            if (permissionCheck == PackageManager.PERMISSION_GRANTED)
-
-            {
+            int permissionCheck = ContextCompat.checkSelfPermission(fragment.getActivity(), Manifest.permission.ACCESS_FINE_LOCATION);
+            if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
                 fragment.progressView.setVisibility(View.VISIBLE);
                 fragment.progressView.requestFocus();
                 final FindClosestStationTask task = new FindClosestStationTask(fragment);
@@ -303,8 +312,7 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
 
     static class StopListAdapter extends ArrayAdapter<StopModelWithDistance> {
 
-
-        public StopListAdapter(@NonNull Context context, @NonNull List<StopModelWithDistance> objects) {
+        StopListAdapter(@NonNull Context context, @NonNull List<StopModelWithDistance> objects) {
             super(context, 0, objects);
         }
 
@@ -316,8 +324,8 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
                 convertView = inflater.inflate(R.layout.item_stop_by_address, null);
             }
 
-            TextView stationName = (TextView) convertView.findViewById(R.id.station_name_text);
-            TextView distance = (TextView) convertView.findViewById(R.id.station_distance_text);
+            TextView stationName = convertView.findViewById(R.id.station_name_text);
+            TextView distance = convertView.findViewById(R.id.station_distance_text);
             stationName.setText(this.getItem(position).getStopModel().getStopName());
             DecimalFormat numberFormat = new DecimalFormat("0.0m");
             distance.setText(numberFormat.format(this.getItem(position).getDistance()));
@@ -338,7 +346,7 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
             }
         }
 
-        public FindAddressTask(ByAddressFragment fragment) {
+        FindAddressTask(ByAddressFragment fragment) {
             this.fragment = fragment;
         }
 
@@ -356,7 +364,7 @@ class ByAddressTabActivityHandler extends BaseTabActivityHandler {
         Double distance;
         StopModel stopModel;
 
-        public StopModelWithDistance(Double distance, StopModel stopModel) {
+        StopModelWithDistance(Double distance, StopModel stopModel) {
             this.distance = distance;
             this.stopModel = stopModel;
         }

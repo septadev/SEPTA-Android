@@ -27,7 +27,7 @@
             android:text="1234 Market Street"
             android:textColor="@android:color/black"
             android:textSize="20sp"
-            app:font="@string/font_roboto_medium" />
+            app:typeface="@string/font_roboto_medium" />
 
         <org.septa.android.app.view.TextView
             android:id="@+id/city_state_zip_text"
@@ -39,7 +39,7 @@
             android:text="Philadelphia, PA 19107"
             android:textColor="@color/light_gray"
             android:textSize="15sp"
-            app:font="@string/font_roboto_light" />
+            app:typeface="@string/font_roboto_light" />
 
     </LinearLayout>
 

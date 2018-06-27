@@ -6,10 +6,11 @@
     android:layout_height="65dp"
     android:layout_marginBottom="16dp"
     android:layout_marginTop="18dp"
+    android:drawableLeft="@drawable/rail_active_final"
     android:drawablePadding="6dp"
+    android:drawableStart="@drawable/rail_active_final"
     android:gravity="center"
-    android:textColor="#ffffff"
-    android:textSize="14dp"
-    app:font="@string/font_roboto_bold"
     android:text="Rail"
-    android:drawableLeft="@drawable/rail_active_final"/>
+    android:textColor="@android:color/white"
+    android:textSize="14sp"
+    app:typeface="@string/font_roboto_bold" />

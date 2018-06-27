@@ -19,9 +19,9 @@
             android:layout_marginStart="12dp"
             android:layout_marginTop="12dp"
             android:text="Regional Rail Status"
-            android:textColor="#144b88"
+            android:textColor="@color/text_primary"
             android:textSize="20sp"
-            app:font="@string/font_roboto_bold" />
+            app:typeface="@string/font_roboto_bold" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -42,9 +42,9 @@
                 android:layout_marginLeft="12dp"
                 android:layout_marginTop="12dp"
                 android:text="Select Line to View Status"
-                android:textColor="#000000"
+                android:textColor="@android:color/black"
                 android:textSize="12sp"
-                app:font="@string/font_roboto_regular" />
+                app:typeface="@string/font_roboto_regular" />
 
             <org.septa.android.app.view.TextView
                 android:id="@+id/line_text"
@@ -61,9 +61,9 @@
                 android:paddingRight="13dp"
                 android:paddingTop="15dp"
                 android:text="Select Line"
-                android:textColor="#000000"
+                android:textColor="@android:color/black"
                 android:textSize="14sp"
-                app:font="@string/font_roboto_regular" />
+                app:typeface="@string/font_roboto_regular" />
 
             <Button
                 android:id="@+id/view_status_button"
@@ -102,9 +102,9 @@
                 android:layout_height="match_parent"
                 android:drawableRight="@drawable/alert_toggle_closed"
                 android:text="@string/title_generic_alert"
-                android:textColor="#000000"
+                android:textColor="@android:color/black"
                 android:textSize="16sp"
-                app:font="@string/font_roboto_medium" />
+                app:typeface="@string/font_roboto_medium" />
 
             <ScrollView
                 android:id="@+id/global_alert_scrollview"
@@ -137,9 +137,9 @@
     While this work takes place, ALL trains will board from the INBOUND (toward Center City) platform at Melrose and Elkins Park Stations. Please listen for station announcements for any additional changes to service or boarding locations.
 
     For a complete list of the adjustments to service, please visit the delay night service page."
-                    android:textColor="#000000"
+                    android:textColor="@android:color/black"
                     android:textSize="12sp"
-                    app:font="@string/font_roboto_light" />
+                    app:typeface="@string/font_roboto_light" />
 
             </ScrollView>
 
@@ -166,9 +166,9 @@
                 android:layout_height="wrap_content"
                 android:drawableRight="@drawable/alert_toggle_closed"
                 android:text="@string/title_mobile_app_alert"
-                android:textColor="#000000"
+                android:textColor="@android:color/black"
                 android:textSize="16sp"
-                app:font="@string/font_roboto_medium" />
+                app:typeface="@string/font_roboto_medium" />
 
             <ScrollView
                 android:id="@+id/mobile_alert_scrollview"
@@ -183,9 +183,9 @@
                     android:linksClickable="true"
                     android:paddingTop="20dp"
                     android:text="Test"
-                    android:textColor="#000000"
+                    android:textColor="@android:color/black"
                     android:textSize="12sp"
-                    app:font="@string/font_roboto_light" />
+                    app:typeface="@string/font_roboto_light" />
 
             </ScrollView>
 

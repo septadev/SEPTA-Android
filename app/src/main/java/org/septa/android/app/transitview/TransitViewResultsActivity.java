@@ -369,13 +369,13 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
     }
 
     private void initializeView() {
-        mapContainerView = (FrameLayout) findViewById(R.id.map_container);
+        mapContainerView = findViewById(R.id.map_container);
 //        alertsView = findViewById(R.id.transitview_alerts); TODO: initialize alerts view
         progressView = findViewById(R.id.progress_view);
-        firstRouteLabel = (TextView) findViewById(R.id.first_route_delete);
-        secondRouteLabel = (TextView) findViewById(R.id.second_route_delete);
-        thirdRouteLabel = (TextView) findViewById(R.id.third_route_delete);
-        addLabel = (TextView) findViewById(R.id.header_add_label);
+        firstRouteLabel = findViewById(R.id.first_route_delete);
+        secondRouteLabel = findViewById(R.id.second_route_delete);
+        thirdRouteLabel = findViewById(R.id.third_route_delete);
+        addLabel = findViewById(R.id.header_add_label);
 
         firstRouteLabel.setOnClickListener(new View.OnClickListener() {
             @Override

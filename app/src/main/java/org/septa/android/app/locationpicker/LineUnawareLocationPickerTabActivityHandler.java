@@ -34,8 +34,8 @@ public class LineUnawareLocationPickerTabActivityHandler extends BaseTabActivity
     private CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
     private TransitType transitType;
     private Class targetClass;
-    String headerStringName;
-    String buttonText;
+    private String headerStringName;
+    private String buttonText;
 
     public LineUnawareLocationPickerTabActivityHandler(String title, String headerStringName, String buttonText, TransitType transitType, CursorAdapterSupplier<StopModel> cursorAdapterSupplier, Class targetClass) {
         super(title, transitType.getTabInactiveImageResource(), transitType.getTabActiveImageResource());
@@ -45,7 +45,6 @@ public class LineUnawareLocationPickerTabActivityHandler extends BaseTabActivity
         this.headerStringName = headerStringName;
         this.buttonText = buttonText;
     }
-
 
     @Override
     public Fragment getFragment() {
@@ -98,15 +97,15 @@ public class LineUnawareLocationPickerTabActivityHandler extends BaseTabActivity
             if (getContext() == null) {
                 return rootView;
             }
-            startingStationEditText = (TextView) rootView.findViewById(R.id.starting_stop);
+            startingStationEditText = rootView.findViewById(R.id.starting_stop);
             startingStationEditText.setText(transitType.getString("start_stop_text", getContext()));
 
-            endingStationEditText = (TextView) rootView.findViewById(R.id.destination_stop);
+            endingStationEditText = rootView.findViewById(R.id.destination_stop);
             endingStationEditText.setText(transitType.getString("dest_stop_text", getContext()));
 
-            queryButton = (Button) rootView.findViewById(R.id.view_buses_button);
+            queryButton = rootView.findViewById(R.id.view_buses_button);
 
-            TextView pickerHeaderText = (TextView) rootView.findViewById(R.id.picker_header_text);
+            TextView pickerHeaderText = rootView.findViewById(R.id.picker_header_text);
             pickerHeaderText.setText(transitType.getString(headerStringName, getContext()));
 
             final AsyncTask<Location, Void, StopModel> task = new FinderClosestStopTask(getContext(), cursorAdapterSupplier, new Consumer<StopModel>() {
@@ -177,14 +176,9 @@ public class LineUnawareLocationPickerTabActivityHandler extends BaseTabActivity
                 if (action == MotionEvent.ACTION_UP) {
 
                     FragmentTransaction ft = parent.getFragmentManager().beginTransaction();
-                    Fragment prev = parent.getFragmentManager().findFragmentByTag("dialog");
-                    if (prev != null) {
-                        ft.remove(prev);
-                    }
-                    ft.addToBackStack(null);
 
                     // Create and show the dialog.
-                    LocationPickerFragment newFragment = LocationPickerFragment.newInstance(cursorAdapterSupplier);
+                    LocationPickerFragment newFragment = LocationPickerFragment.newInstance(cursorAdapterSupplier, false);
                     newFragment.setTargetFragment(parent, requestCode);
                     try {
                         newFragment.show(ft, "dialog");
@@ -249,13 +243,16 @@ public class LineUnawareLocationPickerTabActivityHandler extends BaseTabActivity
         }
 
         private void restoreState(Bundle outState) {
-            if (outState == null)
+            if (outState == null) {
                 return;
+            }
 
             StopModel starting = (StopModel) outState.getSerializable("startingStation");
             if (starting != null) {
                 setStartingStation(starting);
-            } else return;
+            } else {
+                return;
+            }
 
             StopModel dest = (StopModel) outState.getSerializable("destinationStation");
             if (dest != null) {

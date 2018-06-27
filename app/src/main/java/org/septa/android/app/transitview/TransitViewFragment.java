@@ -68,9 +68,9 @@ public class TransitViewFragment extends Fragment implements TransitViewLinePick
 
         View rootView = inflater.inflate(R.layout.fragment_transitview, null);
         View resetView = rootView.findViewById(R.id.reset_button);
-        firstRoutePicker = (TextView) rootView.findViewById(R.id.transitview_line_picker_first);
-        secondRoutePicker = (TextView) rootView.findViewById(R.id.transitview_line_picker_second);
-        thirdRoutePicker = (TextView) rootView.findViewById(R.id.transitview_line_picker_third);
+        firstRoutePicker = rootView.findViewById(R.id.transitview_line_picker_first);
+        secondRoutePicker = rootView.findViewById(R.id.transitview_line_picker_second);
+        thirdRoutePicker = rootView.findViewById(R.id.transitview_line_picker_third);
         queryButton = rootView.findViewById(R.id.view_map);
 
         // first route picker
@@ -87,7 +87,7 @@ public class TransitViewFragment extends Fragment implements TransitViewLinePick
                 }
 
                 // pop-up transitview route picker
-                FragmentTransaction ft = getChildFragmentManager().beginTransaction();
+                FragmentTransaction ft = getFragmentManager().beginTransaction();
                 TransitViewLinePickerFragment newFragment = TransitViewLinePickerFragment.newInstance(busRouteCursorAdapterSupplier, trolleyRouteCursorAdapterSupplier, selectedRoutes);
                 newFragment.setTargetFragment(TransitViewFragment.this, 1);
                 newFragment.show(ft, "line_picker");
@@ -108,7 +108,7 @@ public class TransitViewFragment extends Fragment implements TransitViewLinePick
                 }
 
                 // pop-up transitview route picker
-                FragmentTransaction ft = getChildFragmentManager().beginTransaction();
+                FragmentTransaction ft = getFragmentManager().beginTransaction();
                 TransitViewLinePickerFragment newFragment = TransitViewLinePickerFragment.newInstance(busRouteCursorAdapterSupplier, trolleyRouteCursorAdapterSupplier, selectedRoutes);
                 newFragment.setTargetFragment(TransitViewFragment.this, 2);
                 newFragment.show(ft, "line_picker");
@@ -129,7 +129,7 @@ public class TransitViewFragment extends Fragment implements TransitViewLinePick
                 }
 
                 // pop-up transitview route picker
-                FragmentTransaction ft = getChildFragmentManager().beginTransaction();
+                FragmentTransaction ft = getFragmentManager().beginTransaction();
                 TransitViewLinePickerFragment newFragment = TransitViewLinePickerFragment.newInstance(busRouteCursorAdapterSupplier, trolleyRouteCursorAdapterSupplier, selectedRoutes);
                 newFragment.setTargetFragment(TransitViewFragment.this, 3);
                 newFragment.show(ft, "line_picker");

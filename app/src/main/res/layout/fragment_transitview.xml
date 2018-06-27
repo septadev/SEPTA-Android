@@ -23,7 +23,7 @@
             android:text="@string/transitview_heading"
             android:textColor="#144b88"
             android:textSize="20sp"
-            app:font="@string/font_roboto_bold" />
+            app:typeface="@string/font_roboto_bold" />
 
         <LinearLayout
             android:id="@+id/transitview_top"
@@ -54,7 +54,7 @@
                     android:text="Reset"
                     android:textColor="@color/light_gray"
                     android:textSize="12sp"
-                    app:font="@string/font_roboto_regular" />
+                    app:typeface="@string/font_roboto_regular" />
 
             </RelativeLayout>
 

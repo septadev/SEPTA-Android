@@ -6,7 +6,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
@@ -28,6 +27,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.data.kml.KmlLayer;
 
+import org.septa.android.app.BaseActivity;
 import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
@@ -46,15 +46,14 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class NextToArriveTripDetailActivity extends AppCompatActivity implements OnMapReadyCallback, Runnable {
+public class NextToArriveTripDetailActivity extends BaseActivity implements OnMapReadyCallback, Runnable {
+
     public static final String TAG = NextToArriveTripDetailActivity.class.getSimpleName();
     public static final int REFRESH_DELAY_SECONDS = 30;
 
     StopModel start;
     StopModel destination;
     TransitType transitType;
-    //RouteDirectionModel routeDirectionModel;
-    //NextArrivalModelResponse.NextArrivalRecord arrivalRecord;
     String routeDescription;
 
     String tripId;
@@ -63,7 +62,6 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
     Double vehicleLon;
     String appUrl;
     String webUrl;
-
 
     TextView nextStopValue;
     private TextView arrivingValue;
@@ -88,7 +86,6 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
     private boolean mapZoomed = false;
     private String routeName;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -104,7 +101,7 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
         }
 
         if (start != null && destination != null && transitType != null) {
-            TextView tripToLocationText = ((TextView) findViewById(R.id.trip_to_location_text));
+            TextView tripToLocationText = findViewById(R.id.trip_to_location_text);
             tripToLocationText.setText(tripId + " to " + destination.getStopName());
             tripToLocationText.setCompoundDrawablesWithIntrinsicBounds(ContextCompat.getDrawable(this, transitType.getTabInactiveImageResource()), null, null, null);
 
@@ -129,17 +126,17 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
             SeptaServiceFactory.displayWebServiceError(findViewById(R.id.trip_detail_coordinator), this);
         }
 
-        nextStopValue = (TextView) findViewById(R.id.next_stop_value);
-        arrivingValue = (TextView) findViewById(R.id.arriving_value);
-        lineValue = (TextView) findViewById(R.id.line_value);
-        lineLabel = (TextView) findViewById(R.id.line_label);
-        originStationValue = (TextView) findViewById(R.id.origin_station_value);
-        destStationValue = (TextView) findViewById(R.id.dest_station_value);
-        numTrainsValue = (TextView) findViewById(R.id.num_trains_value);
-        trainsIdValue = (TextView) findViewById(R.id.trains_id_value);
-        typeValue = (TextView) findViewById(R.id.type_value);
-        vehicleValue = (TextView) findViewById(R.id.vehicle_value);
-        blockidValue = (TextView) findViewById(R.id.blockid_value);
+        nextStopValue = findViewById(R.id.next_stop_value);
+        arrivingValue = findViewById(R.id.arriving_value);
+        lineValue = findViewById(R.id.line_value);
+        lineLabel = findViewById(R.id.line_label);
+        originStationValue = findViewById(R.id.origin_station_value);
+        destStationValue = findViewById(R.id.dest_station_value);
+        numTrainsValue = findViewById(R.id.num_trains_value);
+        trainsIdValue = findViewById(R.id.trains_id_value);
+        typeValue = findViewById(R.id.type_value);
+        vehicleValue = findViewById(R.id.vehicle_value);
+        blockidValue = findViewById(R.id.blockid_value);
 
         progressView = findViewById(R.id.progress_view);
 
@@ -165,7 +162,7 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
         }
 
 
-        final TextView twitterId = (TextView) findViewById(R.id.twitter_id);
+        final TextView twitterId = findViewById(R.id.twitter_id);
         if (transitType != TransitType.RAIL) {
             twitterId.setText("@SEPTA_SOCIAL");
             webUrl = getString(R.string.twitter_url);
@@ -219,6 +216,18 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        run();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        refreshHandler.removeCallbacks(this);
+    }
+
+    @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putSerializable(Constants.DESTINATION_STATION, destination);
@@ -231,6 +240,47 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
         outState.putSerializable(Constants.ROUTE_DESCRIPTION, routeDescription);
     }
 
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.refresh_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public void run() {
+        refresh(null);
+        refreshHandler.postDelayed(this, REFRESH_DELAY_SECONDS * 1000);
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        this.googleMap = googleMap;
+        //googleMap.getUiSettings().setScrollGesturesEnabled(false);
+        //googleMap.getUiSettings().setZoomControlsEnabled(false);
+        //googleMap.getUiSettings().setZoomGesturesEnabled(false);
+        googleMap.getUiSettings().setAllGesturesEnabled(false);
+        googleMap.getUiSettings().setMapToolbarEnabled(false);
+        googleMap.setOnMarkerClickListener(
+                new GoogleMap.OnMarkerClickListener() {
+                    public boolean onMarkerClick(Marker marker) {
+                        return true;
+                    }
+                });
+
+        MapStyleOptions mapStyle = MapStyleOptions.loadRawResourceStyle(this, R.raw.maps_json_styling);
+        googleMap.setContentDescription("Map displaying selected route between " + start.getStopName() + " and " + destination.getStopName() + " with your vehicle location.");
+
+        googleMap.setMapStyle(mapStyle);
+
+        updateMap();
+    }
+
     private void restoreInstanceState(Bundle bundle) {
         destination = (StopModel) bundle.get(Constants.DESTINATION_STATION);
         start = (StopModel) bundle.get(Constants.STARTING_STATION);
@@ -240,13 +290,6 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
         routeName = bundle.getString(Constants.ROUTE_NAME);
         routeId = bundle.getString(Constants.ROUTE_ID);
         routeDescription = bundle.getString(Constants.ROUTE_DESCRIPTION);
-    }
-
-
-    @Override
-    public void run() {
-        refresh(null);
-        refreshHandler.postDelayed(this, REFRESH_DELAY_SECONDS * 1000);
     }
 
     public void refresh(final MenuItem item) {
@@ -357,29 +400,6 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
         });
     }
 
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        this.googleMap = googleMap;
-        //googleMap.getUiSettings().setScrollGesturesEnabled(false);
-        //googleMap.getUiSettings().setZoomControlsEnabled(false);
-        //googleMap.getUiSettings().setZoomGesturesEnabled(false);
-        googleMap.getUiSettings().setAllGesturesEnabled(false);
-        googleMap.getUiSettings().setMapToolbarEnabled(false);
-        googleMap.setOnMarkerClickListener(
-                new GoogleMap.OnMarkerClickListener() {
-                    public boolean onMarkerClick(Marker marker) {
-                        return true;
-                    }
-                });
-
-        MapStyleOptions mapStyle = MapStyleOptions.loadRawResourceStyle(this, R.raw.maps_json_styling);
-        googleMap.setContentDescription("Map displaying selected route between " + start.getStopName() + " and " + destination.getStopName() + " with your vehicle location.");
-
-        googleMap.setMapStyle(mapStyle);
-
-        updateMap();
-    }
-
     private void updateMap() {
         if (googleMap == null) {
             return;
@@ -439,32 +459,6 @@ public class NextToArriveTripDetailActivity extends AppCompatActivity implements
         }
 
     }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        refreshHandler.removeCallbacks(this);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        run();
-    }
-
-    @Override
-    public boolean onSupportNavigateUp() {
-        onBackPressed();
-        return true;
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.refresh_menu, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-
 }
 
 

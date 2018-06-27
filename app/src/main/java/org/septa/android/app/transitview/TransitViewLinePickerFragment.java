@@ -88,7 +88,7 @@ public class TransitViewLinePickerFragment extends DialogFragment {
         View rootView = inflater.inflate(R.layout.fragment_line_picker, container);
 
         View exitView = rootView.findViewById(R.id.exit);
-        filterText = (EditText) rootView.findViewById(R.id.line_filter_text);
+        filterText = rootView.findViewById(R.id.line_filter_text);
 
         exitView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -97,7 +97,7 @@ public class TransitViewLinePickerFragment extends DialogFragment {
             }
         });
 
-        linesList = (ListView) rootView.findViewById(R.id.line_list);
+        linesList = rootView.findViewById(R.id.line_list);
         linesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -185,9 +185,9 @@ public class TransitViewLinePickerFragment extends DialogFragment {
 
             RouteDirectionModel route = getItem(position);
             if (route != null) {
-                TextView titleText = (TextView) convertView.findViewById(R.id.line_title);
-                TextView descText = (TextView) convertView.findViewById(R.id.line_desc);
-                ImageView lineIcon = (ImageView) convertView.findViewById(R.id.route_icon);
+                TextView titleText = convertView.findViewById(R.id.line_title);
+                TextView descText = convertView.findViewById(R.id.line_desc);
+                ImageView lineIcon = convertView.findViewById(R.id.route_icon);
 
                 // set lineIcon based on whether the route is a bus or trolley
                 TransitType transitType = TransitType.BUS;

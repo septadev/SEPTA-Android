@@ -76,10 +76,10 @@ public class NextToArriveFragment extends Fragment {
         mSectionsPagerAdapter = new SectionsPagerAdapter(getChildFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) fragmentView.findViewById(R.id.container);
+        mViewPager = fragmentView.findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
-        tabLayout = (TabLayout) fragmentView.findViewById(R.id.tabs);
+        tabLayout = fragmentView.findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
         setUpTabs(tabLayout, inflater);
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {

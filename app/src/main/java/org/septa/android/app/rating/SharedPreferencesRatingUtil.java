@@ -13,7 +13,7 @@ public abstract class SharedPreferencesRatingUtil {
     private static final String PREF_RATING_ID = "PREF_RATING_ID";
     private static final String PREF_APP_JUST_CRASHED = "PREF_APP_JUST_CRASHED";
 
-    // using commit() instead of apply() so that the values are immediately written to memory before the restart
+    // using commit() instead of apply() so that the values are immediately written to memory
 
     private static SharedPreferences getSharedPreferences(Context context) {
         return context.getSharedPreferences(SHARED_PREFERENCES_RATING, Context.MODE_PRIVATE);

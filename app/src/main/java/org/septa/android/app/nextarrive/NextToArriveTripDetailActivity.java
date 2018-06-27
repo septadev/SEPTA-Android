@@ -101,7 +101,7 @@ public class NextToArriveTripDetailActivity extends BaseActivity implements OnMa
         }
 
         if (start != null && destination != null && transitType != null) {
-            TextView tripToLocationText = ((TextView) findViewById(R.id.trip_to_location_text));
+            TextView tripToLocationText = findViewById(R.id.trip_to_location_text);
             tripToLocationText.setText(tripId + " to " + destination.getStopName());
             tripToLocationText.setCompoundDrawablesWithIntrinsicBounds(ContextCompat.getDrawable(this, transitType.getTabInactiveImageResource()), null, null, null);
 
@@ -126,17 +126,17 @@ public class NextToArriveTripDetailActivity extends BaseActivity implements OnMa
             SeptaServiceFactory.displayWebServiceError(findViewById(R.id.trip_detail_coordinator), this);
         }
 
-        nextStopValue = (TextView) findViewById(R.id.next_stop_value);
-        arrivingValue = (TextView) findViewById(R.id.arriving_value);
-        lineValue = (TextView) findViewById(R.id.line_value);
-        lineLabel = (TextView) findViewById(R.id.line_label);
-        originStationValue = (TextView) findViewById(R.id.origin_station_value);
-        destStationValue = (TextView) findViewById(R.id.dest_station_value);
-        numTrainsValue = (TextView) findViewById(R.id.num_trains_value);
-        trainsIdValue = (TextView) findViewById(R.id.trains_id_value);
-        typeValue = (TextView) findViewById(R.id.type_value);
-        vehicleValue = (TextView) findViewById(R.id.vehicle_value);
-        blockidValue = (TextView) findViewById(R.id.blockid_value);
+        nextStopValue = findViewById(R.id.next_stop_value);
+        arrivingValue = findViewById(R.id.arriving_value);
+        lineValue = findViewById(R.id.line_value);
+        lineLabel = findViewById(R.id.line_label);
+        originStationValue = findViewById(R.id.origin_station_value);
+        destStationValue = findViewById(R.id.dest_station_value);
+        numTrainsValue = findViewById(R.id.num_trains_value);
+        trainsIdValue = findViewById(R.id.trains_id_value);
+        typeValue = findViewById(R.id.type_value);
+        vehicleValue = findViewById(R.id.vehicle_value);
+        blockidValue = findViewById(R.id.blockid_value);
 
         progressView = findViewById(R.id.progress_view);
 
@@ -162,7 +162,7 @@ public class NextToArriveTripDetailActivity extends BaseActivity implements OnMa
         }
 
 
-        final TextView twitterId = (TextView) findViewById(R.id.twitter_id);
+        final TextView twitterId = findViewById(R.id.twitter_id);
         if (transitType != TransitType.RAIL) {
             twitterId.setText("@SEPTA_SOCIAL");
             webUrl = getString(R.string.twitter_url);

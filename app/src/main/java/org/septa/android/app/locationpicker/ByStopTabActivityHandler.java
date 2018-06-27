@@ -81,9 +81,9 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
             restoreArgs();
             View rootView = inflater.inflate(R.layout.location_picker_by_stop, container, false);
             View sortButtonsContainer = rootView.findViewById(R.id.stop_list_sort_container);
-            list = (ListView) rootView.findViewById(R.id.rail_station_list);
+            list = rootView.findViewById(R.id.rail_station_list);
             progressView = rootView.findViewById(R.id.progress_view);
-            filterText = (EditText) rootView.findViewById(R.id.station_filter);
+            filterText = rootView.findViewById(R.id.station_filter);
 
             progressView.setVisibility(View.VISIBLE);
 
@@ -94,7 +94,7 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
             if (isLineAware) {
                 sortButtonsContainer.setVisibility(View.VISIBLE);
 
-                sortAlphabeticalButton = (ImageButton) rootView.findViewById(R.id.stop_list_sort_alphabetical);
+                sortAlphabeticalButton = rootView.findViewById(R.id.stop_list_sort_alphabetical);
                 sortInOrderButton = rootView.findViewById(R.id.stop_list_sort_in_order);
 
                 sortAlphabeticalButton.setOnClickListener(new View.OnClickListener() {
@@ -249,7 +249,7 @@ public class ByStopTabActivityHandler extends BaseTabActivityHandler {
             }
 
             StopModel stop = getItem(position);
-            TextView stationName = (TextView) convertView.findViewById(R.id.station_name);
+            TextView stationName = convertView.findViewById(R.id.station_name);
             stationName.setText(stop.getStopName());
             convertView.setTag(stop.getStopId());
 

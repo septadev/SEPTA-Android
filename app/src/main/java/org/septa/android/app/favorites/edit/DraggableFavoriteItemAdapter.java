@@ -88,11 +88,11 @@ public class DraggableFavoriteItemAdapter extends DragItemAdapter<Favorite, Drag
 
         DraggableFavoriteViewHolder(final View itemView) {
             super(itemView, mGrabHandleId, mDragOnLongPress);
-            favoriteRow = (ListSwipeItem) itemView.findViewById(R.id.item_favorite_row_draggable);
-            transitTypeIcon = (ImageView) itemView.findViewById(R.id.favorite_title_transit_type_icon);
-            favoriteName = (TextView) itemView.findViewById(R.id.favorite_title_text);
-            dragHandle = (ImageButton) itemView.findViewById(R.id.favorite_item_drag_handle);
-            deleteButton = (ImageButton) itemView.findViewById(R.id.favorite_item_delete_button);
+            favoriteRow = itemView.findViewById(R.id.item_favorite_row_draggable);
+            transitTypeIcon = itemView.findViewById(R.id.favorite_title_transit_type_icon);
+            favoriteName = itemView.findViewById(R.id.favorite_title_text);
+            dragHandle = itemView.findViewById(R.id.favorite_item_drag_handle);
+            deleteButton = itemView.findViewById(R.id.favorite_item_delete_button);
         }
     }
 

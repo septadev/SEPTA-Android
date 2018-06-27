@@ -116,19 +116,19 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
 
             View fragmentView = inflater.inflate(R.layout.fragment_system_status, null);
 
-            TextView pickerHeaderText = (TextView) fragmentView.findViewById(R.id.picker_header_text);
+            TextView pickerHeaderText = fragmentView.findViewById(R.id.picker_header_text);
             pickerHeaderText.setText(transitType.getString("system_status_picker_title", getContext()));
 
             // set global alerts up
             globalAlertScrollview = fragmentView.findViewById(R.id.global_alert_scrollview);
             globalAlertView = fragmentView.findViewById(R.id.global_alert_view);
-            globalAlertText = (org.septa.android.app.view.TextView) fragmentView.findViewById(R.id.global_alert_text);
+            globalAlertText = fragmentView.findViewById(R.id.global_alert_text);
             globalAlertText.setMovementMethod(LinkMovementMethod.getInstance());
 
             // set mobile app alerts up
             mobileAlertScrollview = fragmentView.findViewById(R.id.mobile_alert_scrollview);
             mobileAlertView = fragmentView.findViewById(R.id.mobile_alert_view);
-            mobileAlertText = (org.septa.android.app.view.TextView) fragmentView.findViewById(R.id.mobile_alert_text);
+            mobileAlertText = fragmentView.findViewById(R.id.mobile_alert_text);
             mobileAlertText.setMovementMethod(LinkMovementMethod.getInstance());
 
             queryButton = fragmentView.findViewById(R.id.view_status_button);
@@ -149,7 +149,7 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
 
             queryButton.setClickable(false);
 
-            lineText = (TextView) fragmentView.findViewById(R.id.line_text);
+            lineText = fragmentView.findViewById(R.id.line_text);
 
             if (routeCursorAdapterSupplier == null) {
                 fragmentView.findViewById(R.id.select_line_label).setVisibility(View.GONE);
@@ -170,7 +170,7 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
             }
 
             // global alert expansion handling
-            globalAlertTitle = (TextView) fragmentView.findViewById(R.id.global_alert_title);
+            globalAlertTitle = fragmentView.findViewById(R.id.global_alert_title);
             globalAlertTitle.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -191,7 +191,7 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
             });
 
             // mobile alert expansion handling
-            mobileAlertTitle = (TextView) fragmentView.findViewById(R.id.mobile_alert_title);
+            mobileAlertTitle = fragmentView.findViewById(R.id.mobile_alert_title);
             mobileAlertTitle.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

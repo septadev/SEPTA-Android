@@ -818,7 +818,7 @@ public class NextToArriveResultsActivity extends BaseActivity implements OnMapRe
     public void noReverseStopsFound() {
         Snackbar snackbar = Snackbar.make(containerView, R.string.reverse_not_found, Snackbar.LENGTH_LONG);
         View snackbarView = snackbar.getView();
-        android.widget.TextView tv = (android.widget.TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+        android.widget.TextView tv = snackbarView.findViewById(android.support.design.R.id.snackbar_text);
         tv.setMaxLines(10);
         snackbar.show();
     }

@@ -122,13 +122,13 @@ public class MainActivity extends BaseActivity implements
 
         setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.setItemIconTintList(null);
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -289,7 +289,7 @@ public class MainActivity extends BaseActivity implements
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -304,7 +304,7 @@ public class MainActivity extends BaseActivity implements
         int id = item.getItemId();
         Log.d(TAG, "onNavigationItemSelected Selected:" + item.getTitle());
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
 
         if (id == R.id.nav_next_to_arrive) {
@@ -618,7 +618,7 @@ public class MainActivity extends BaseActivity implements
 
         // make message HTML enabled and allow for anchor links
         View alertView = getLayoutInflater().inflate(R.layout.dialog_alert, null);
-        TextView message = (TextView) alertView.findViewById(R.id.dialog_alert_message);
+        TextView message = alertView.findViewById(R.id.dialog_alert_message);
         final SpannableString s = new SpannableString(alert);
         message.setText(Html.fromHtml(s.toString()));
         message.setMovementMethod(LinkMovementMethod.getInstance());

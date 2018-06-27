@@ -525,7 +525,7 @@ public class ScheduleResultsActivity extends BaseActivity {
                 ScheduleResultsAsyncTask scheduleResultsAsyncTask = new ScheduleResultsAsyncTask(scheduleResultsActivity);
                 scheduleResultsAsyncTask.execute(schedule);
             } else {
-                Snackbar snackbar = Snackbar.make(scheduleResultsActivity.findViewById(R.id.activity_schedule_results_container), R.string.reverse_not_found, Snackbar.LENGTH_INDEFINITE);
+                Snackbar snackbar = Snackbar.make(scheduleResultsActivity.findViewById(R.id.activity_schedule_results_container), R.string.reverse_not_found, Snackbar.LENGTH_LONG);
 
                 View snackbarView = snackbar.getView();
                 android.widget.TextView tv = snackbarView.findViewById(android.support.design.R.id.snackbar_text);

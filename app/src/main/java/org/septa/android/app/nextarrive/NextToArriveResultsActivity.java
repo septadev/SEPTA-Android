@@ -127,26 +127,26 @@ public class NextToArriveResultsActivity extends BaseActivity implements OnMapRe
         rootView = findViewById(R.id.rail_next_to_arrive_results_coordinator);
 
         progressView = findViewById(R.id.progress_view);
-        noResultsMessage = (FrameLayout) findViewById(R.id.nta_empty_results_msg);
+        noResultsMessage = findViewById(R.id.nta_empty_results_msg);
 
         reverseTrip = findViewById(R.id.button_reverse_nta_trip);
 
-        bottomSheetLayout = (ViewGroup) findViewById(R.id.bottomSheetLayout);
+        bottomSheetLayout = findViewById(R.id.bottomSheetLayout);
 
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLayout);
         progressViewBottom = findViewById(R.id.progress_view_bottom);
 
-        noResultsSchedulesButton = (Button) findViewById(R.id.button_view_schedules);
+        noResultsSchedulesButton = findViewById(R.id.button_view_schedules);
 
         // Prevent the bottom sheet from being dragged to be opened.  Force it to use the anchor image.
         //bottomSheetBehavior.setBottomSheetCallback(myBottomSheetBehaviorCallBack);
         anchor = bottomSheetLayout.findViewById(R.id.bottom_sheet_anchor);
         //anchor.setOnClickListener(myBottomSheetBehaviorCallBack);
 
-        mapContainerView = (FrameLayout) findViewById(R.id.map_container);
+        mapContainerView = findViewById(R.id.map_container);
 
-        titleText = (TextView) bottomSheetLayout.findViewById(R.id.title_txt);
-        nextToArriveDetailsView = (NextToArriveTripView) findViewById(R.id.next_to_arrive_trip_details);
+        titleText = bottomSheetLayout.findViewById(R.id.title_txt);
+        nextToArriveDetailsView = findViewById(R.id.next_to_arrive_trip_details);
 
         initializeView(savedInstanceState);
     }
@@ -440,10 +440,10 @@ public class NextToArriveResultsActivity extends BaseActivity implements OnMapRe
             titleText.setText(transitType.getString(NTA_RESULTS_TITLE, this));
             ((TextView) findViewById(R.id.see_later_text)).setText(transitType.getString(NEED_TO_SEE, this));
 
-            final TextView startingStationNameText = (TextView) findViewById(R.id.starting_station_name);
+            final TextView startingStationNameText = findViewById(R.id.starting_station_name);
             startingStationNameText.setText(start.getStopName());
 
-            final TextView destinationStationNameText = (TextView) findViewById(R.id.destination_station_name);
+            final TextView destinationStationNameText = findViewById(R.id.destination_station_name);
             destinationStationNameText.setText(destination.getStopName());
 
             nextToArriveDetailsView.setTransitType(transitType);

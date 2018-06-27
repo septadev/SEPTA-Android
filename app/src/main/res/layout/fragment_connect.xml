@@ -27,13 +27,13 @@
                 android:text="Have a problem, suggestion, question or want to follow us? Connect with us through our channels below."
                 android:textColor="@color/text_primary"
                 android:textSize="16sp"
-                app:font="@string/font_roboto_regular" />
+                app:typeface="@string/font_roboto_regular" />
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="19dp"
-                android:background="#ffffff"
+                android:background="@android:color/white"
                 android:elevation="@dimen/white_box_elevation"
                 android:orientation="vertical"
                 android:paddingBottom="20dp">
@@ -51,7 +51,7 @@
                     android:textAlignment="center"
                     android:textColor="@color/text_primary"
                     android:textSize="20sp"
-                    app:font="@string/font_roboto_bold" />
+                    app:typeface="@string/font_roboto_bold" />
 
                 <org.septa.android.app.view.TextView
                     android:id="@+id/voice_line"
@@ -69,7 +69,7 @@
                     android:textColor="@color/text_primary"
                     android:textColorLink="#09bbff"
                     android:textSize="18sp"
-                    app:font="@string/font_roboto_light" />
+                    app:typeface="@string/font_roboto_light" />
 
                 <org.septa.android.app.view.TextView
                     android:id="@+id/tdd_line"
@@ -87,7 +87,7 @@
                     android:textColor="@color/text_primary"
                     android:textColorLink="#09bbff"
                     android:textSize="18sp"
-                    app:font="@string/font_roboto_light" />
+                    app:typeface="@string/font_roboto_light" />
 
                 <org.septa.android.app.view.TextView
                     android:id="@+id/comment"
@@ -103,7 +103,7 @@
                     android:text="Send us a comment"
                     android:textColor="@color/text_primary"
                     android:textSize="18sp"
-                    app:font="@string/font_roboto_light" />
+                    app:typeface="@string/font_roboto_light" />
 
                 <ImageView
                     android:id="@+id/comment_arrow"
@@ -130,7 +130,7 @@
                     android:text="Live Chat"
                     android:textColor="@color/text_primary"
                     android:textSize="18sp"
-                    app:font="@string/font_roboto_light" />
+                    app:typeface="@string/font_roboto_light" />
 
                 <ImageView
                     android:id="@+id/chat_arrow"
@@ -173,7 +173,7 @@
                     android:text="@string/fragment_connect_rate_app"
                     android:textColor="@color/text_primary"
                     android:textSize="18sp"
-                    app:font="@string/font_roboto_light" />
+                    app:typeface="@string/font_roboto_light" />
 
             </RelativeLayout>
 
@@ -195,7 +195,7 @@
                     android:text="Social Media"
                     android:textColor="@color/text_primary"
                     android:textSize="18sp"
-                    app:font="@string/font_roboto_bold" />
+                    app:typeface="@string/font_roboto_bold" />
 
 
                 <org.septa.android.app.view.TextView
@@ -209,7 +209,7 @@
                     android:text="\@SEPTA_SOCIAL"
                     android:textColor="@color/text_primary"
                     android:textSize="14sp"
-                    app:font="@string/font_roboto_light" />
+                    app:typeface="@string/font_roboto_light" />
 
                 <ImageView
                     android:id="@+id/twitter_arrow"
@@ -232,7 +232,7 @@
                     android:text="SEPTA Facebook"
                     android:textColor="@color/text_primary"
                     android:textSize="14sp"
-                    app:font="@string/font_roboto_light" />
+                    app:typeface="@string/font_roboto_light" />
 
                 <ImageView
                     android:id="@+id/facebook_arrow"

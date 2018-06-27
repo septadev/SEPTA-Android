@@ -37,10 +37,10 @@ public class RenameFavoriteDialogFragment extends DialogFragment {
             }
         });
 
-        TextView nameText = (TextView) rootView.findViewById(R.id.favorite_name);
+        TextView nameText = rootView.findViewById(R.id.favorite_name);
         nameText.setText(favorite.getName());
 
-        final EditText nameEditText = (EditText) rootView.findViewById(R.id.name_edit_text);
+        final EditText nameEditText = rootView.findViewById(R.id.name_edit_text);
         nameEditText.setText(favorite.getName());
 
         View saveButton = rootView.findViewById(R.id.save_button);

@@ -8,8 +8,8 @@ import com.crashlytics.android.Crashlytics;
 import io.fabric.sdk.android.Fabric;
 
 public class CrashlyticsManager {
-    private static boolean initalized = false;
 
+    private static boolean initalized = false;
 
     public static void init(Context context) {
         Fabric.with(context, new Crashlytics());
@@ -33,6 +33,5 @@ public class CrashlyticsManager {
             Crashlytics.logException(e);
         else Log.e(tag, "", e);
     }
-
 
 }

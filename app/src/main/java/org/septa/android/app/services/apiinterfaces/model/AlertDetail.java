@@ -6,26 +6,35 @@ import java.io.Serializable;
 import java.util.List;
 
 public class AlertDetail implements Serializable {
+
     @SerializedName("route")
-    String route;
+    private String route;
+
     @SerializedName("route_name")
-    String routeName;
+    private String routeName;
+
     @SerializedName("results")
-    int results;
+    private int results;
+
     @SerializedName("alerts")
-    List<Detail> alerts;
+    private List<Detail> alerts;
 
     public class Detail implements Serializable {
+
         @SerializedName("message")
-        String message;
+        private String message;
+
         @SerializedName("advisory_message")
-        String advisoryMessage;
+        private String advisoryMessage;
+
         @SerializedName("detour")
-        Detour detour;
+        private Detour detour;
+
         @SerializedName("last_updated")
-        String lastUpdated;
+        private String lastUpdated;
+
         @SerializedName("snow")
-        boolean snow;
+        private boolean snow;
 
         public String getMessage() {
             return message;
@@ -81,14 +90,19 @@ public class AlertDetail implements Serializable {
 
 
     public class Detour implements Serializable {
+
         @SerializedName("message")
         String message;
+
         @SerializedName("start_location")
         String startLocation;
+
         @SerializedName("start_date_time")
         String startDateTime;
+
         @SerializedName("end_date_time")
         String endDateTime;
+
         @SerializedName("reason")
         String reason;
 

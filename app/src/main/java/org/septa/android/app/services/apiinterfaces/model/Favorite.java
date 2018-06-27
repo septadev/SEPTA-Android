@@ -28,7 +28,6 @@ public class Favorite implements Serializable {
     @SerializedName("created_with_version")
     private int createdWithVersion = 0;
 
-
     public Favorite(@NonNull StopModel start, @NonNull StopModel destination, @NonNull TransitType transitType, @Nullable RouteDirectionModel routeDirectionModel) {
         this.start = start;
         this.destination = destination;

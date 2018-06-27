@@ -21,10 +21,10 @@ public class CheckForLatestDB extends AsyncTask<Object, Object, Void> {
     private static final String TAG = CheckForLatestDB.class.getSimpleName();
 
     private CheckForLatestDBListener mListener;
-    Integer latestDBVersion;
-    String latestDBURL, updatedDate;
+    private Integer latestDBVersion;
+    private String latestDBURL, updatedDate;
 
-    public CheckForLatestDB(CheckForLatestDBListener listener) {
+    CheckForLatestDB(CheckForLatestDBListener listener) {
         this.mListener = listener;
     }
 

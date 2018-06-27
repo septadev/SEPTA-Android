@@ -31,11 +31,6 @@ import org.septa.android.app.rating.RatingUtil;
 
 import java.util.List;
 
-/************************************************************************************************************
- * Class: SchedulesFragment
- * Purpose: The Schedule adapter class manages the Transit Schedules Fragment in the application
- */
-
 public class SchedulesFragment extends Fragment {
 
     public static final String TAG = SchedulesFragment.class.getSimpleName(),
@@ -47,7 +42,6 @@ public class SchedulesFragment extends Fragment {
             HOLIDAY_SCHEDULE_URL_RAIL = "https://septa.org/schedules/rail/special/holidays-mobile.html";
 
     private SchedulesFragment.SectionsPagerAdapter mSectionsPagerAdapter;
-    private ViewPager mViewPager;
     private TabLayout tabLayout;
     LineAwareLocationPickerTabActivityHandler tabActivityHandlers[];
     int startingIndex = 0;
@@ -56,8 +50,7 @@ public class SchedulesFragment extends Fragment {
     AlertDialog holidayAlert;
 
     public static SchedulesFragment newInstance() {
-        SchedulesFragment instance = new SchedulesFragment();
-        return instance;
+        return new SchedulesFragment();
     }
 
     @Nullable
@@ -92,10 +85,10 @@ public class SchedulesFragment extends Fragment {
         mSectionsPagerAdapter = new SchedulesFragment.SectionsPagerAdapter(getChildFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) fragmentView.findViewById(R.id.schedule_fragment_container);
+        ViewPager mViewPager = fragmentView.findViewById(R.id.schedule_fragment_container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
-        tabLayout = (TabLayout) fragmentView.findViewById(R.id.schedule_fragment_tabs);
+        tabLayout = fragmentView.findViewById(R.id.schedule_fragment_tabs);
         tabLayout.setupWithViewPager(mViewPager);
         setUpTabs(tabLayout, inflater);
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {

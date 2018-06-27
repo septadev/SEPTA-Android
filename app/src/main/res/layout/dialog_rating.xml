@@ -27,7 +27,7 @@
         android:text="@string/rating_title"
         android:textColor="@android:color/black"
         android:textSize="20sp"
-        app:font="@string/font_roboto_medium"
+        app:typeface="@string/font_roboto_medium"
         app:layout_constraintBottom_toTopOf="@+id/rating_dialog_details"
         app:layout_constraintTop_toBottomOf="@+id/rating_dialog_close" />
 
@@ -40,7 +40,7 @@
         android:text="@string/rating_details"
         android:textColor="#8c8c8c"
         android:textSize="14sp"
-        app:font="@string/font_roboto_regular"
+        app:typeface="@string/font_roboto_regular"
         app:layout_constraintBottom_toTopOf="@+id/rating_buttons"
         app:layout_constraintTop_toBottomOf="@+id/rating_dialog_title" />
 

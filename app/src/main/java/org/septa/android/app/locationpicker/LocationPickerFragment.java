@@ -79,8 +79,8 @@ public class LocationPickerFragment extends DialogFragment implements StopPicker
         tabActivityHandlers[0] = new ByStopTabActivityHandler(LocationPickerFragment.this,"BY STATION", cursorAdapterSupplier, isLineAware);
         tabActivityHandlers[1] = new ByAddressTabActivityHandler(LocationPickerFragment.this,"BY ADDRESS", cursorAdapterSupplier);
 
-        searchByStationTab = (TextView) dialogView.findViewById(R.id.search_by_station_tab);
-        searchByAddressTab = (TextView) dialogView.findViewById(R.id.search_by_address_tab);
+        searchByStationTab = dialogView.findViewById(R.id.search_by_station_tab);
+        searchByAddressTab = dialogView.findViewById(R.id.search_by_address_tab);
 
         if (selected_index == 0) {
             setActive(searchByStationTab, searchByAddressTab);

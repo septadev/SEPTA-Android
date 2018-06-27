@@ -40,8 +40,7 @@ abstract class CursorSuppliers implements Serializable {
 
         @Override
         public Integer getCurrentItemFromCursor(Cursor cursor) {
-            Integer versionNumber = Integer.parseInt(cursor.getString(0));
-            return versionNumber;
+            return Integer.parseInt(cursor.getString(0));
         }
 
         @Override

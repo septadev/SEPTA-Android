@@ -57,8 +57,11 @@ public class SystemStatusResultsActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_system_status_results);
         setTitle("System Status:");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
 
         progressView = findViewById(R.id.progress_view);
         progressView.setVisibility(View.VISIBLE);
@@ -78,7 +81,7 @@ public class SystemStatusResultsActivity extends BaseActivity {
         setTitle(transitType.getString("system_status_results_title", this));
 
 
-        TextView title = (TextView) findViewById(R.id.line_title);
+        TextView title = findViewById(R.id.line_title);
         title.setText(routeName + " Status");
 
         int color;
@@ -95,28 +98,28 @@ public class SystemStatusResultsActivity extends BaseActivity {
         Drawable inactiveToggle = ContextCompat.getDrawable(this, R.drawable.alert_toggle_closed).mutate();
         inactiveToggle.setAlpha(77);
 
-        serviceAdvisory = (TextView) findViewById(R.id.service_advisory);
-        serviceAdvisoryDetails = (TextView) findViewById(R.id.service_advisory_details);
+        serviceAdvisory = findViewById(R.id.service_advisory);
+        serviceAdvisoryDetails = findViewById(R.id.service_advisory_details);
         serviceAdvisoryDetails.setMovementMethod(LinkMovementMethod.getInstance());
         Drawable[] serviceAdvisoryDrawables = serviceAdvisory.getCompoundDrawables();
         serviceAdvisory.
                 setCompoundDrawablesWithIntrinsicBounds(serviceAdvisoryDrawables[0], serviceAdvisoryDrawables[1], inactiveToggle, serviceAdvisoryDrawables[3]);
 
-        serviceAlert = (TextView) findViewById(R.id.service_alert);
-        serviceAlertDetails = (TextView) findViewById(R.id.service_alert_details);
+        serviceAlert = findViewById(R.id.service_alert);
+        serviceAlertDetails = findViewById(R.id.service_alert_details);
         serviceAlertDetails.setMovementMethod(LinkMovementMethod.getInstance());
         Drawable[] serviceAlertDrawables = serviceAlert.getCompoundDrawables();
         serviceAlert.setCompoundDrawablesWithIntrinsicBounds(serviceAlertDrawables[0], serviceAlertDrawables[1], inactiveToggle, serviceAlertDrawables[3]);
 
-        activeDetour = (TextView) findViewById(R.id.active_detour);
-        activeDetourDetails = (TextView) findViewById(R.id.active_detour_details);
+        activeDetour = findViewById(R.id.active_detour);
+        activeDetourDetails = findViewById(R.id.active_detour_details);
         activeDetourDetails.setMovementMethod(LinkMovementMethod.getInstance());
         Drawable[] activeDetourDrawables = activeDetour.getCompoundDrawables();
         activeDetour.setCompoundDrawablesWithIntrinsicBounds(activeDetourDrawables[0], activeDetourDrawables[1], inactiveToggle, activeDetourDrawables[3]);
 
 
-        weatherAlerts = (TextView) findViewById(R.id.weather_alerts);
-        weatherAlertsDetails = (TextView) findViewById(R.id.weather_alerts_details);
+        weatherAlerts = findViewById(R.id.weather_alerts);
+        weatherAlertsDetails = findViewById(R.id.weather_alerts_details);
         weatherAlertsDetails.setMovementMethod(LinkMovementMethod.getInstance());
         Drawable[] weatherDrawables = weatherAlerts.getCompoundDrawables();
         weatherAlerts.setCompoundDrawablesWithIntrinsicBounds(weatherDrawables[0], weatherDrawables[1], inactiveToggle, weatherDrawables[3]);

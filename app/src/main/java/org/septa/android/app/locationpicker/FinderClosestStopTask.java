@@ -17,11 +17,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class FinderClosestStopTask extends AsyncTask<Location, Void, StopModel> {
-    CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
-    Context context;
-    Consumer<StopModel> consumer;
+    private CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
+    private Context context;
+    private Consumer<StopModel> consumer;
 
-    public FinderClosestStopTask(Context context, CursorAdapterSupplier<StopModel> cursorAdapterSupplier, Consumer<StopModel> consumer) {
+    FinderClosestStopTask(Context context, CursorAdapterSupplier<StopModel> cursorAdapterSupplier, Consumer<StopModel> consumer) {
         this.cursorAdapterSupplier = cursorAdapterSupplier;
         this.context = context;
         this.consumer = consumer;
@@ -35,7 +35,7 @@ public class FinderClosestStopTask extends AsyncTask<Location, Void, StopModel> 
         if (location != null) {
             LatLng center = new LatLng(location.getLatitude(), location.getLongitude());
 
-            List<Criteria> criteria = new LinkedList<Criteria>();
+            List<Criteria> criteria = new LinkedList<>();
             criteria.add(new Criteria("stop_lon", Criteria.Operation.GT, LocationMathHelper.calculateDerivedPosition(center, 2, 270).longitude));
             criteria.add(new Criteria("stop_lon", Criteria.Operation.LT, LocationMathHelper.calculateDerivedPosition(center, 2, 90).longitude));
             criteria.add(new Criteria("stop_lat", Criteria.Operation.LT, LocationMathHelper.calculateDerivedPosition(center, 2, 0).latitude));

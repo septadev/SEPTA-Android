@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -28,25 +29,26 @@ import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
 public class AboutFragment extends Fragment {
-    boolean attribExpanded = false;
-    TextView attribTitle;
-    LinearLayout attribListView;
+
+    private boolean attribExpanded = false;
+    private TextView attribTitle;
+    private LinearLayout attribListView;
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
         View fragmentView = inflater.inflate(R.layout.fragment_about, null);
 
-        attribListView = (LinearLayout) fragmentView.findViewById(R.id.attrib_list);
+        attribListView = fragmentView.findViewById(R.id.attrib_list);
         for (String s : getResources().getStringArray(R.array.about_attributions_listview_items_texts)) {
             TextView attribLine = (TextView) inflater.inflate(R.layout.item_about_attribute, null);
             attribLine.setHtml(s);
             attribListView.addView(attribLine);
         }
 
-        attribTitle = (TextView) fragmentView.findViewById(R.id.attrib_title);
+        attribTitle = fragmentView.findViewById(R.id.attrib_title);
         attribTitle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

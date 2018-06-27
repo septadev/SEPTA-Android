@@ -58,13 +58,13 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
     private FavoritesSwipeRefreshLayout mRefreshLayout;
     private ItemTouchHelper itemTouchHelper;
 
-    int initialCount;
-    Handler refreshHandler = null;
-    View fragmentView;
-    String alertMessage;
-    boolean firstPass = true;
+    private int initialCount;
+    private Handler refreshHandler = null;
+    private View fragmentView;
+    private String alertMessage;
+    private boolean firstPass = true;
 
-    ViewGroup mContainer;
+    private ViewGroup mContainer;
 
     public static FavoritesFragment newInstance() {
         FavoritesFragment instance = new FavoritesFragment();
@@ -284,7 +284,7 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
         });
 
         View snackbarView = snackbar.getView();
-        android.widget.TextView tv = (android.widget.TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+        android.widget.TextView tv = snackbarView.findViewById(android.support.design.R.id.snackbar_text);
         tv.setMaxLines(10);
         snackbar.show();
     }

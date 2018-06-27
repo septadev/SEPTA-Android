@@ -30,14 +30,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHandler {
-    CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier;
-    CursorAdapterSupplier<StopModel> stopCursorAdapterSupplier;
-    CursorAdapterSupplier<StopModel> busStopAfterCursorAdapterSupplier;
-    String headerStringName;
-    TransitType transitType;
-    Class targetClass;
-    String buttonText;
-    Bundle prepopulate;
+    private CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier;
+    private CursorAdapterSupplier<StopModel> stopCursorAdapterSupplier;
+    private CursorAdapterSupplier<StopModel> busStopAfterCursorAdapterSupplier;
+    private String headerStringName;
+    private TransitType transitType;
+    private Class targetClass;
+    private String buttonText;
+    private Bundle prepopulate;
 
     private static final int LINE_PICKER_ID = 1;
     private static final int START_MODEL_ID = 2;
@@ -138,14 +138,14 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                 return rootView;
             }
 
-            TextView pickerHeaderText = (TextView) rootView.findViewById(R.id.picker_header_text);
+            TextView pickerHeaderText = rootView.findViewById(R.id.picker_header_text);
             pickerHeaderText.setText(transitType.getString(headerStringName, getContext()));
 
             ((TextView) rootView.findViewById(R.id.line_label)).setText(transitType.getString("line_label", getContext()));
             ((TextView) rootView.findViewById(R.id.line_text)).setText(transitType.getString("line_text", getContext()));
 
 
-            lineText = (TextView) rootView.findViewById(R.id.line_text);
+            lineText = rootView.findViewById(R.id.line_text);
             lineText.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -158,17 +158,16 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
             });
             progressView = rootView.findViewById(R.id.progress_view);
 
-            startingStopEditText = (TextView) rootView.findViewById(R.id.starting_stop);
+            startingStopEditText = rootView.findViewById(R.id.starting_stop);
             startingStopEditText.setText(transitType.getString("start_stop_text", getContext()));
 
-            destinationStopEditText = (TextView) rootView.findViewById(R.id.destination_stop);
+            destinationStopEditText = rootView.findViewById(R.id.destination_stop);
             destinationStopEditText.setText(transitType.getString("dest_stop_text", getContext()));
-
 
             startingStopEditText.setOnTouchListener(new StopPickerOnTouchListener(this, START_MODEL_ID, stopCursorAdapterSupplier, false));
             destinationStopEditText.setOnTouchListener(new StopPickerOnTouchListener(this, DEST_MODEL_ID, stopAfterCursorAdapterSupplier, true));
 
-            queryButton = (Button) rootView.findViewById(R.id.view_buses_button);
+            queryButton = rootView.findViewById(R.id.view_buses_button);
             queryButton.setText(buttonText);
             queryButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -403,7 +402,6 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
 
         @Override
         public Cursor getCursor(Context context, List<Criteria> whereClause) {
-            StringBuilder whereClauseBuilder = new StringBuilder();
             if (whereClause == null) {
                 whereClause = new ArrayList<>();
             }

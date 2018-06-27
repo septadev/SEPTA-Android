@@ -20,16 +20,16 @@ public class ReverseNTAStopSelection extends AsyncTask<Void, Void, Void> {
 
     private static final String TAG = ReverseNTAStopSelection.class.getSimpleName();
 
-    boolean found = false;
+    private boolean found = false;
 
-    Context context;
-    ReverseNTAStopSelectionListener mListener;
-    TransitType transitType;
-    StopModel oldStart, oldDestination, newStart, newDestination;
-    RouteDirectionModel oldRouteDirectionModel, newRouteDirectionModel;
+    private Context context;
+    private ReverseNTAStopSelectionListener mListener;
+    private TransitType transitType;
+    private StopModel oldStart, oldDestination, newStart, newDestination;
+    private RouteDirectionModel oldRouteDirectionModel, newRouteDirectionModel;
 
-    CursorAdapterSupplier<RouteDirectionModel> reverseRouteCursorAdapterSupplier;
-    CursorAdapterSupplier<StopModel> reverseStopCursorAdapterSupplier;
+    private CursorAdapterSupplier<RouteDirectionModel> reverseRouteCursorAdapterSupplier;
+    private CursorAdapterSupplier<StopModel> reverseStopCursorAdapterSupplier;
 
     ReverseNTAStopSelection(Context context, TransitType transitType, RouteDirectionModel routeDirectionModel, StopModel start, StopModel destination) {
         this.context = context;

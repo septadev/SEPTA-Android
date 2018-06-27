@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -36,17 +37,17 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
 
     public static final String TAG = SystemStatusLineTabHandler.class.getSimpleName();
 
-    TransitType transitType;
-    CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier;
-    RouteDirectionModel routeDirectionModel;
+    private TransitType transitType;
+    private CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier;
+    private RouteDirectionModel routeDirectionModel;
 
-    public SystemStatusLineTabHandler(String title, TransitType transitType, CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier) {
+    SystemStatusLineTabHandler(String title, TransitType transitType, CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier) {
         super(title, transitType.getTabInactiveImageResource(), transitType.getTabActiveImageResource());
         this.transitType = transitType;
         this.routeCursorAdapterSupplier = routeCursorAdapterSupplier;
     }
 
-    public SystemStatusLineTabHandler(String title, TransitType transitType, RouteDirectionModel routeDirectionModel) {
+    SystemStatusLineTabHandler(String title, TransitType transitType, RouteDirectionModel routeDirectionModel) {
         super(title, transitType.getTabInactiveImageResource(), transitType.getTabActiveImageResource());
         this.transitType = transitType;
         this.routeDirectionModel = routeDirectionModel;
@@ -109,7 +110,7 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
 
         @Nullable
         @Override
-        public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
             super.onCreateView(inflater, container, savedInstanceState);
             restoreArgs();
 
@@ -225,7 +226,7 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
         }
 
         @Override
-        public void onSaveInstanceState(Bundle outState) {
+        public void onSaveInstanceState(@NonNull Bundle outState) {
             super.onSaveInstanceState(outState);
             outState.putSerializable("routeDirectionModel", routeDirectionModel);
         }

@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +22,7 @@ public class LocationPickerFragment extends DialogFragment implements StopPicker
     public static final int SUCCESS = 0;
     public static final String STOP_MODEL = "stopModel";
     public static final int STOP_MODEL_REQUEST = 1;
+    private static final String IS_LINE_AWARE = "IS_LINE_AWARE";
 
     TabActivityHandler tabActivityHandlers[];
 
@@ -34,6 +34,19 @@ public class LocationPickerFragment extends DialogFragment implements StopPicker
 
     private int selected_index = 0;
     private Fragment currentFragment;
+
+    private boolean isLineAware = false;
+
+    public static LocationPickerFragment newInstance(CursorAdapterSupplier<StopModel> cursorAdapterSupplier, boolean lineAware) {
+        LocationPickerFragment fragment = new LocationPickerFragment();
+
+        Bundle args = new Bundle();
+        args.putSerializable("cursorAdapterSupplier", cursorAdapterSupplier);
+        args.putBoolean(IS_LINE_AWARE, lineAware);
+        fragment.setArguments(args);
+
+        return fragment;
+    }
 
     @Override
     public void onResume() {
@@ -47,7 +60,6 @@ public class LocationPickerFragment extends DialogFragment implements StopPicker
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.d(TAG, "onCreateDialog");
         if (savedInstanceState != null) {
             Integer newIndex = (Integer) savedInstanceState.getSerializable("selected_index");
             if (newIndex != null) {
@@ -64,7 +76,7 @@ public class LocationPickerFragment extends DialogFragment implements StopPicker
         View dialogView = getActivity().getLayoutInflater().inflate(R.layout.by_station, null);
 
         tabActivityHandlers = new TabActivityHandler[2];
-        tabActivityHandlers[0] = new ByStopTabActivityHandler(LocationPickerFragment.this,"BY STATION", cursorAdapterSupplier);
+        tabActivityHandlers[0] = new ByStopTabActivityHandler(LocationPickerFragment.this,"BY STATION", cursorAdapterSupplier, isLineAware);
         tabActivityHandlers[1] = new ByAddressTabActivityHandler(LocationPickerFragment.this,"BY ADDRESS", cursorAdapterSupplier);
 
         searchByStationTab = (TextView) dialogView.findViewById(R.id.search_by_station_tab);
@@ -84,7 +96,6 @@ public class LocationPickerFragment extends DialogFragment implements StopPicker
                 getDialog().dismiss();
             }
         });
-
 
         searchByStationTab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -110,35 +121,6 @@ public class LocationPickerFragment extends DialogFragment implements StopPicker
         return dialogView;
     }
 
-    private void setActive(TextView active, TextView inactive) {
-        active.setBackgroundResource(R.drawable.bg_stop_picker_active);
-        inactive.setBackgroundResource(R.drawable.bg_stop_picker_inactive);
-        active.setTextColor(ContextCompat.getColor(getContext(), R.color.find_station_tab_active_text));
-        inactive.setTextColor(ContextCompat.getColor(getContext(), R.color.find_station_tab_inactive_text));
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        // pass the selected stop back to the picker fragment
-        if (requestCode == STOP_MODEL_REQUEST && resultCode == LocationPickerFragment.SUCCESS) {
-            StopModel var1 = (StopModel) data.getSerializableExtra(LocationPickerFragment.STOP_MODEL);
-            if (locationPickerCallBack != null) {
-                locationPickerCallBack.setLocation(var1);
-            } else if (getTargetFragment() != null) {
-                Intent intent = new Intent();
-                intent.putExtra(STOP_MODEL, var1);
-                getTargetFragment().onActivityResult(getTargetRequestCode(), SUCCESS, intent);
-            }
-            dismiss();
-        }
-    }
-
-    public void onStopSelected(Intent intent) {
-        onActivityResult(STOP_MODEL_REQUEST, SUCCESS, intent);
-    }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -160,23 +142,39 @@ public class LocationPickerFragment extends DialogFragment implements StopPicker
         outState.putSerializable("selected_index", selected_index);
     }
 
-    public static LocationPickerFragment newInstance(CursorAdapterSupplier<StopModel> cursorAdapterSupplier) {
-        LocationPickerFragment fragment = new LocationPickerFragment();
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
-        Bundle args = new Bundle();
-        args.putSerializable("cursorAdapterSupplier", cursorAdapterSupplier);
-        fragment.setArguments(args);
-
-        return fragment;
+        // pass the selected stop back to the picker fragment
+        if (requestCode == STOP_MODEL_REQUEST && resultCode == LocationPickerFragment.SUCCESS) {
+            StopModel var1 = (StopModel) data.getSerializableExtra(LocationPickerFragment.STOP_MODEL);
+            if (locationPickerCallBack != null) {
+                locationPickerCallBack.setLocation(var1);
+            } else if (getTargetFragment() != null) {
+                Intent intent = new Intent();
+                intent.putExtra(STOP_MODEL, var1);
+                getTargetFragment().onActivityResult(getTargetRequestCode(), SUCCESS, intent);
+            }
+            dismiss();
+        }
     }
 
+    @Override
+    public void onStopSelected(Intent intent) {
+        onActivityResult(STOP_MODEL_REQUEST, SUCCESS, intent);
+    }
 
     private void restoreArgs() {
         cursorAdapterSupplier = (CursorAdapterSupplier<StopModel>) getArguments().getSerializable("cursorAdapterSupplier");
+        isLineAware = getArguments().getBoolean(IS_LINE_AWARE);
     }
 
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    private void setActive(TextView active, TextView inactive) {
+        active.setBackgroundResource(R.drawable.bg_stop_picker_active);
+        inactive.setBackgroundResource(R.drawable.bg_stop_picker_inactive);
+        active.setTextColor(ContextCompat.getColor(getContext(), R.color.find_station_tab_active_text));
+        inactive.setTextColor(ContextCompat.getColor(getContext(), R.color.find_station_tab_inactive_text));
     }
 
 }

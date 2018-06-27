@@ -29,11 +29,6 @@ import org.septa.android.app.support.BaseTabActivityHandler;
 import org.septa.android.app.support.Consumer;
 import org.septa.android.app.support.CursorAdapterSupplier;
 
-
-/**
- * Created by jkampf on 7/29/17.
- */
-
 public class LineUnawareLocationPickerTabActivityHandler extends BaseTabActivityHandler {
     private static final String TAG = LineUnawareLocationPickerTabActivityHandler.class.getSimpleName();
     private CursorAdapterSupplier<StopModel> cursorAdapterSupplier;
@@ -183,7 +178,7 @@ public class LineUnawareLocationPickerTabActivityHandler extends BaseTabActivity
                     FragmentTransaction ft = parent.getFragmentManager().beginTransaction();
 
                     // Create and show the dialog.
-                    LocationPickerFragment newFragment = LocationPickerFragment.newInstance(cursorAdapterSupplier);
+                    LocationPickerFragment newFragment = LocationPickerFragment.newInstance(cursorAdapterSupplier, false);
                     newFragment.setTargetFragment(parent, requestCode);
                     try {
                         newFragment.show(ft, "dialog");
@@ -248,13 +243,16 @@ public class LineUnawareLocationPickerTabActivityHandler extends BaseTabActivity
         }
 
         private void restoreState(Bundle outState) {
-            if (outState == null)
+            if (outState == null) {
                 return;
+            }
 
             StopModel starting = (StopModel) outState.getSerializable("startingStation");
             if (starting != null) {
                 setStartingStation(starting);
-            } else return;
+            } else {
+                return;
+            }
 
             StopModel dest = (StopModel) outState.getSerializable("destinationStation");
             if (dest != null) {

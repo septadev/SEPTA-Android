@@ -29,11 +29,6 @@ import org.septa.android.app.support.CursorAdapterSupplier;
 import java.util.ArrayList;
 import java.util.List;
 
-
-/**
- * Created by jkampf on 7/29/17.
- */
-
 public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHandler {
     CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier;
     CursorAdapterSupplier<StopModel> stopCursorAdapterSupplier;
@@ -380,7 +375,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                                 parent.selectedRoute.getDirectionCode(), stopId, userAfter);
 
                 // Create and show the dialog.
-                LocationPickerFragment newFragment = LocationPickerFragment.newInstance(routeSpecificCursorAdapterSupplier);
+                LocationPickerFragment newFragment = LocationPickerFragment.newInstance(routeSpecificCursorAdapterSupplier, true);
                 newFragment.setTargetFragment(parent, requestCode);
                 newFragment.show(ft, "dialog");
 

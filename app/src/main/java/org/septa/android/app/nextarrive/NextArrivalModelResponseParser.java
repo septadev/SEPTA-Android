@@ -13,10 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Created by jkampf on 9/8/17.
- */
-
 public class NextArrivalModelResponseParser {
 
     private Map<LatLng, NextArrivalModelResponse.NextArrivalRecord> origLatLngMap = new HashMap<LatLng, NextArrivalModelResponse.NextArrivalRecord>();

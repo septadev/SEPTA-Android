@@ -32,10 +32,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
- * Created by jkampf on 9/11/17.
- */
-
 public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
 
     public static final String TAG = SystemStatusLineTabHandler.class.getSimpleName();

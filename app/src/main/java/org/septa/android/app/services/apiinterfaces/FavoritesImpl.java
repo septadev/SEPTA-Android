@@ -16,10 +16,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by jkampf on 9/6/17.
- */
-
 public class FavoritesImpl implements Favorites {
 
     public static final String TAG = FavoritesImpl.class.getSimpleName();

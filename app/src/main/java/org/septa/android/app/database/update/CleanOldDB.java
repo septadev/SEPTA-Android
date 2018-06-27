@@ -6,10 +6,6 @@ import android.util.Log;
 
 import java.io.File;
 
-/**
- * Created by mluansing on 9/20/17.
- */
-
 public class CleanOldDB extends AsyncTask<Object, Object, Void> {
 
     // tag for logging purposes

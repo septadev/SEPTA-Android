@@ -66,7 +66,7 @@ public class LinePickerFragment extends DialogFragment {
         View rootView = inflater.inflate(R.layout.fragment_line_picker, container);
 
         View exitView = rootView.findViewById(R.id.exit);
-        filterText = rootView.findViewById(R.id.line_filter_text);
+        filterText = (EditText) rootView.findViewById(R.id.line_filter_text);
 
         exitView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,7 +75,7 @@ public class LinePickerFragment extends DialogFragment {
             }
         });
 
-        linesList = rootView.findViewById(R.id.line_list);
+        linesList = (ListView) rootView.findViewById(R.id.line_list);
         linesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {

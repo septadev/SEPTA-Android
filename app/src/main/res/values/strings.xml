@@ -127,14 +127,12 @@
 
 
     <!-- Vehicle Details on Map -->
-    <string name="heading_vehicle_number">Vehicle Number: %1$s</string>
-    <string name="heading_block_id">Block ID: %1$s</string>
-    <string name="heading_status_on_time">Status: On Time</string>
-    <string name="heading_status_delay">Status: %1$s late.</string>
-
-
-    <string name="heading_rail">Train: %1$s</string>
-    <string name="heading_rail_number_cars"># of Train Cars: %1$d</string>
+    <string name="heading_rail">Train: </string>
+    <string name="heading_vehicle_number">Vehicle Number: </string>
+    <string name="heading_block_id">Block ID: </string>
+    <string name="heading_status">Status: </string>
+    <string name="heading_status_delay">%1$s late.</string>
+    <string name="heading_rail_number_cars"># of Train Cars: </string>
 
 
     <!-- Favorite -->

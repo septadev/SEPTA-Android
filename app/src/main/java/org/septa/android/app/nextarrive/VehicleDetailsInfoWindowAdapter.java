@@ -2,7 +2,6 @@ package org.septa.android.app.nextarrive;
 
 import android.app.Activity;
 import android.content.Context;
-import android.text.SpannableStringBuilder;
 import android.view.LayoutInflater;
 import android.view.View;
 
@@ -16,6 +15,7 @@ import org.septa.android.app.services.apiinterfaces.model.NextArrivalDetails;
 import org.septa.android.app.support.GeneralUtils;
 import org.septa.android.app.view.TextView;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -25,8 +25,6 @@ public class VehicleDetailsInfoWindowAdapter implements GoogleMap.InfoWindowAdap
     private MarkerOptions startMarker, destMarker;
     private TransitType transitType;
     private Map<String, NextArrivalDetails> details;
-
-    private static final String HTML_NEW_LINE = "<br/>";
 
     VehicleDetailsInfoWindowAdapter(Activity context, TransitType transitType, MarkerOptions startMarker, MarkerOptions destMarker, Map<String, NextArrivalDetails> details) {
         this.context = context;
@@ -59,57 +57,89 @@ public class VehicleDetailsInfoWindowAdapter implements GoogleMap.InfoWindowAdap
     }
 
     private void render(Marker marker, View contents) {
-        // TODO: bold info window headings
+        // dynamic vehicle details
+        TextView markerTransitType = contents.findViewById(R.id.vehicle_details_transit_type);
+        TextView routeId = contents.findViewById(R.id.vehicle_details_route_id);
+        TextView direction = contents.findViewById(R.id.vehicle_details_direction);
+        TextView blockId = contents.findViewById(R.id.vehicle_details_block_id);
+        TextView vehicleNumber = contents.findViewById(R.id.vehicle_details_vehicle_number);
+        TextView status = contents.findViewById(R.id.vehicle_details_status);
+        TextView numberRailCars = contents.findViewById(R.id.vehicle_details_rail_number_cars);
 
-        TextView infoWindowText = contents.findViewById(R.id.vehicle_map_details);
+        // static headings
+        TextView blockIdHeading = contents.findViewById(R.id.vehicle_details_block_id_heading);
+        TextView vehicleNumberHeading = contents.findViewById(R.id.vehicle_details_vehicle_number_heading);
+        TextView statusHeading = contents.findViewById(R.id.vehicle_details_status_heading);
+        TextView numberRailCarsHeading = contents.findViewById(R.id.vehicle_details_rail_number_cars_heading);
+
         NextArrivalDetails detail = details.get(marker.getTitle());
 
-        // rail vehicle details
         if (transitType == TransitType.RAIL) {
-            SpannableStringBuilder builder = new SpannableStringBuilder(context.getString(R.string.heading_rail, marker.getTitle()));
-            if (detail != null && detail.getDetails() != null) {
+            // rail vehicle details
+            direction.setVisibility(View.GONE);
+            blockId.setVisibility(View.GONE);
+            blockIdHeading.setVisibility(View.GONE);
+            vehicleNumber.setVisibility(View.GONE);
+            vehicleNumberHeading.setVisibility(View.GONE);
 
+            // train #
+            markerTransitType.setText(context.getString(R.string.heading_rail));
+            routeId.setText(marker.getTitle());
+
+            if (detail != null && detail.getDetails() != null) {
                 // vehicle status
-                builder.append(HTML_NEW_LINE);
                 if (detail.getDetails().getNextStop() != null && detail.getDetails().getNextStop().getLate() > 0) {
-                    builder.append(context.getString(R.string.heading_status_delay, GeneralUtils.getDurationAsLongString(detail.getDetails().getDestination().getDelay(), TimeUnit.MINUTES)));
+                    status.setText(context.getString(R.string.heading_status_delay, GeneralUtils.getDurationAsLongString(detail.getDetails().getDestination().getDelay(), TimeUnit.MINUTES)));
                 } else {
-                    builder.append(context.getString(R.string.heading_status_on_time));
+                    status.setText(context.getString(R.string.nta_on_time));
                 }
 
                 // # of train cars
-                if (detail.getDetails().getConsist() != null) {
-                    int numTrainCars = detail.getDetails().getConsist().size();
+                List<String> consist = detail.getDetails().getConsist();
+                if (consist != null) {
+                    int numTrainCars = consist.size();
                     if (numTrainCars > 0) {
-                        if (!(numTrainCars == 1 && detail.getDetails().getConsist().get(0).trim().isEmpty())) {
-                            builder.append(HTML_NEW_LINE).append(context.getString(R.string.heading_rail_number_cars, numTrainCars));
+                        if (!(numTrainCars == 1 && consist.get(0).trim().isEmpty())) {
+                            numberRailCars.setText(String.valueOf(numTrainCars));
                         }
                     }
+                } else {
+                    numberRailCars.setVisibility(View.GONE);
+                    numberRailCarsHeading.setVisibility(View.GONE);
                 }
+            } else {
+                status.setVisibility(View.GONE);
+                statusHeading.setVisibility(View.GONE);
+                numberRailCars.setVisibility(View.GONE);
+                numberRailCarsHeading.setVisibility(View.GONE);
             }
-            infoWindowText.setHtml(builder.toString());
-
         } else {
             // bus or trolley vehicle details
+            markerTransitType.setVisibility(View.GONE);
+            routeId.setVisibility(View.GONE);
+            direction.setVisibility(View.GONE);
+            numberRailCars.setVisibility(View.GONE);
+            numberRailCarsHeading.setVisibility(View.GONE);
 
             // block ID
-            SpannableStringBuilder builder = new SpannableStringBuilder(context.getString(R.string.heading_block_id, marker.getTitle()));
+            blockId.setText(marker.getTitle());
 
             if (detail != null && detail.getDetails() != null) {
                 // vehicle number
-                builder.append(HTML_NEW_LINE).append(context.getString(R.string.heading_vehicle_number, detail.getDetails().getVehicleId()));
+                vehicleNumber.setText(detail.getDetails().getVehicleId());
 
                 // status
-                builder.append(HTML_NEW_LINE);
                 if (detail.getDetails().getDestination() != null && detail.getDetails().getDestination().getDelay() > 0) {
-                    builder.append(context.getString(R.string.heading_status_delay, GeneralUtils.getDurationAsLongString(detail.getDetails().getDestination().getDelay(), TimeUnit.MINUTES)));
+                    status.setText(context.getString(R.string.heading_status_delay, GeneralUtils.getDurationAsLongString(detail.getDetails().getDestination().getDelay(), TimeUnit.MINUTES)));
                 } else {
-                    builder.append(context.getString(R.string.heading_status_on_time));
+                    status.setText(context.getString(R.string.nta_on_time));
                 }
-
+            } else {
+                vehicleNumber.setVisibility(View.GONE);
+                vehicleNumberHeading.setVisibility(View.GONE);
+                status.setVisibility(View.GONE);
+                statusHeading.setVisibility(View.GONE);
             }
-
-            infoWindowText.setHtml(builder.toString());
         }
     }
 

@@ -1,10 +1,157 @@
 <?xml version="1.0" encoding="utf-8"?>
-<org.septa.android.app.view.TextView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/vehicle_map_details"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:letterSpacing="-0.02"
-    android:textColor="@android:color/black"
-    android:textSize="14sp"
-    app:typeface="@string/font_roboto_regular" />
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <org.septa.android.app.view.TextView
+            android:id="@+id/vehicle_details_transit_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/indent_padding"
+            android:layout_marginRight="@dimen/indent_padding"
+            android:letterSpacing="-0.02"
+            android:textColor="@android:color/black"
+            android:textSize="14sp"
+            app:typeface="@string/font_roboto_bold" />
+
+        <org.septa.android.app.view.TextView
+            android:id="@+id/vehicle_details_route_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:letterSpacing="-0.02"
+            android:textColor="@android:color/black"
+            android:textSize="14sp"
+            app:typeface="@string/font_roboto_regular" />
+
+        <org.septa.android.app.view.TextView
+            android:id="@+id/vehicle_details_direction"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:letterSpacing="-0.02"
+            android:textColor="@android:color/black"
+            android:textSize="14sp"
+            app:typeface="@string/font_roboto_regular" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <org.septa.android.app.view.TextView
+            android:id="@+id/vehicle_details_block_id_heading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/indent_padding"
+            android:layout_marginRight="@dimen/indent_padding"
+            android:letterSpacing="-0.02"
+            android:text="@string/heading_block_id"
+            android:textColor="@android:color/black"
+            android:textSize="14sp"
+            app:typeface="@string/font_roboto_bold" />
+
+        <org.septa.android.app.view.TextView
+            android:id="@+id/vehicle_details_block_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:letterSpacing="-0.02"
+            android:textColor="@android:color/black"
+            android:textSize="14sp"
+            app:typeface="@string/font_roboto_regular" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <org.septa.android.app.view.TextView
+            android:id="@+id/vehicle_details_vehicle_number_heading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/indent_padding"
+            android:layout_marginRight="@dimen/indent_padding"
+            android:letterSpacing="-0.02"
+            android:text="@string/heading_vehicle_number"
+            android:textColor="@android:color/black"
+            android:textSize="14sp"
+            app:typeface="@string/font_roboto_bold" />
+
+        <org.septa.android.app.view.TextView
+            android:id="@+id/vehicle_details_vehicle_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:letterSpacing="-0.02"
+            android:textColor="@android:color/black"
+            android:textSize="14sp"
+            app:typeface="@string/font_roboto_regular" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <org.septa.android.app.view.TextView
+            android:id="@+id/vehicle_details_status_heading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/indent_padding"
+            android:layout_marginRight="@dimen/indent_padding"
+            android:letterSpacing="-0.02"
+            android:text="@string/heading_status"
+            android:textColor="@android:color/black"
+            android:textSize="14sp"
+            app:typeface="@string/font_roboto_bold" />
+
+        <org.septa.android.app.view.TextView
+            android:id="@+id/vehicle_details_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:letterSpacing="-0.02"
+            android:textColor="@android:color/black"
+            android:textSize="14sp"
+            app:typeface="@string/font_roboto_regular" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <org.septa.android.app.view.TextView
+            android:id="@+id/vehicle_details_rail_number_cars_heading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/indent_padding"
+            android:layout_marginRight="@dimen/indent_padding"
+            android:letterSpacing="-0.02"
+            android:text="@string/heading_rail_number_cars"
+            android:textColor="@android:color/black"
+            android:textSize="14sp"
+            app:typeface="@string/font_roboto_bold" />
+
+        <org.septa.android.app.view.TextView
+            android:id="@+id/vehicle_details_rail_number_cars"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:letterSpacing="-0.02"
+            android:textColor="@android:color/black"
+            android:textSize="14sp"
+            app:typeface="@string/font_roboto_regular" />
+
+    </LinearLayout>
+
+</LinearLayout>

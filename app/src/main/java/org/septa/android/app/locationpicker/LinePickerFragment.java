@@ -159,8 +159,7 @@ public class LinePickerFragment extends DialogFragment {
 
         @NonNull
         @Override
-        public View getView(int position, @Nullable View convertView,
-                            @NonNull ViewGroup parent) {
+        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
             if (convertView == null) {
                 LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 convertView = inflater.inflate(R.layout.item_line_picker, null);

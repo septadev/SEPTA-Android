@@ -164,12 +164,14 @@ public class TransitViewLinePickerFragment extends DialogFragment {
 
     static class TransitViewLineArrayAdapter extends ArrayAdapter<RouteDirectionModel> implements Filterable {
 
-        List<RouteDirectionModel> origRoutes;
-        List<RouteDirectionModel> filterRoutes;
-        String[] selectedRoutes;
+        private Context context;
+        private List<RouteDirectionModel> origRoutes;
+        private List<RouteDirectionModel> filterRoutes;
+        private String[] selectedRoutes;
 
-        public TransitViewLineArrayAdapter(Context context, List<RouteDirectionModel> routes, String[] selectedRoutes) {
+        TransitViewLineArrayAdapter(Context context, List<RouteDirectionModel> routes, String[] selectedRoutes) {
             super(context, 0, routes);
+            this.context = context;
             this.origRoutes = routes;
             this.filterRoutes = routes;
             this.selectedRoutes = selectedRoutes;
@@ -178,62 +180,75 @@ public class TransitViewLinePickerFragment extends DialogFragment {
         @NonNull
         @Override
         public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+            LayoutInflater inflater = LayoutInflater.from(context);
             if (convertView == null) {
-                LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 convertView = inflater.inflate(R.layout.item_line_picker, null);
             }
 
             RouteDirectionModel route = getItem(position);
             if (route != null) {
-                TextView titleText = convertView.findViewById(R.id.line_title);
-                TextView descText = convertView.findViewById(R.id.line_desc);
-                ImageView lineIcon = convertView.findViewById(R.id.route_icon);
+                String routeId = route.getRouteId();
 
-                // set lineIcon based on whether the route is a bus or trolley
-                TransitType transitType = TransitType.BUS;
-                String[] trolleyRouteIds = new String[]{"10", "11", "13", "15", "34", "36", "101", "102"};
-                if (Arrays.asList(trolleyRouteIds).contains(route.getRouteId())) {
-                    transitType = TransitType.TROLLEY;
-                }
-                lineIcon.setImageResource(transitType.getIconForLine(route.getRouteId(), getContext()));
+                if (routeId.equals("NHSL")) {
+                    // hide NHSL from route picker, since it is stored in DB as a trolley
+                    convertView = inflater.inflate(R.layout.row_null, null);
+                    convertView.setVisibility(View.GONE);
+                } else {
+                    TextView titleText = convertView.findViewById(R.id.line_title);
+                    TextView descText = convertView.findViewById(R.id.line_desc);
+                    ImageView lineIcon = convertView.findViewById(R.id.route_icon);
 
-                titleText.setText(route.getRouteShortName() + " " + route.getRouteLongName());
+                    if (titleText != null && descText != null && lineIcon != null) {
+                        // set lineIcon based on whether the route is a bus or trolley
+                        TransitType transitType = TransitType.BUS;
+                        String[] trolleyRouteIds = new String[]{"10", "11", "13", "15", "34", "36", "101", "102"};
+                        if (Arrays.asList(trolleyRouteIds).contains(routeId)) {
+                            transitType = TransitType.TROLLEY;
+                        }
+                        lineIcon.setImageResource(transitType.getIconForLine(routeId, context));
 
-                if (route.getDirectionDescription() != null) {
-                    descText.setText("to " + route.getDirectionDescription());
-                    descText.setVisibility(View.VISIBLE);
-                } else {
-                    descText.setText(R.string.empty_string);
-                    descText.setVisibility(View.GONE);
-                }
+                        titleText.setText(route.getRouteShortName() + " " + route.getRouteLongName());
 
-                Alert alert = SystemStatusState.getAlertForLine(transitType, route.getRouteId());
-                if (alert.isAlert()) {
-                    convertView.findViewById(R.id.alert_icon).setVisibility(View.VISIBLE);
-                } else {
-                    convertView.findViewById(R.id.alert_icon).setVisibility(View.GONE);
-                }
-                if (alert.isAdvisory()) {
-                    convertView.findViewById(R.id.advisory_icon).setVisibility(View.VISIBLE);
-                } else {
-                    convertView.findViewById(R.id.advisory_icon).setVisibility(View.GONE);
-                }
-                if (alert.isDetour()) {
-                    convertView.findViewById(R.id.detour_icon).setVisibility(View.VISIBLE);
-                } else {
-                    convertView.findViewById(R.id.detour_icon).setVisibility(View.GONE);
-                }
-                if (alert.isSnow()) {
-                    convertView.findViewById(R.id.weather_icon).setVisibility(View.VISIBLE);
-                } else {
-                    convertView.findViewById(R.id.weather_icon).setVisibility(View.GONE);
-                }
+                        if (route.getDirectionDescription() != null) {
+                            descText.setText("to " + route.getDirectionDescription());
+                            descText.setVisibility(View.VISIBLE);
+                        } else {
+                            descText.setText(R.string.empty_string);
+                            descText.setVisibility(View.GONE);
+                        }
 
-                // disable route from picker if already selected
-                if (route.getRouteId().equals(selectedRoutes[0]) || route.getRouteId().equals(selectedRoutes[1])) {
-                    disableRouteItemView(convertView);
-                } else {
-                    activateRouteItemView(convertView);
+                        Alert alert = SystemStatusState.getAlertForLine(transitType, route.getRouteId());
+                        if (alert.isAlert()) {
+                            convertView.findViewById(R.id.alert_icon).setVisibility(View.VISIBLE);
+                        } else {
+                            convertView.findViewById(R.id.alert_icon).setVisibility(View.GONE);
+                        }
+                        if (alert.isAdvisory()) {
+                            convertView.findViewById(R.id.advisory_icon).setVisibility(View.VISIBLE);
+                        } else {
+                            convertView.findViewById(R.id.advisory_icon).setVisibility(View.GONE);
+                        }
+                        if (alert.isDetour()) {
+                            convertView.findViewById(R.id.detour_icon).setVisibility(View.VISIBLE);
+                        } else {
+                            convertView.findViewById(R.id.detour_icon).setVisibility(View.GONE);
+                        }
+                        if (alert.isSnow()) {
+                            convertView.findViewById(R.id.weather_icon).setVisibility(View.VISIBLE);
+                        } else {
+                            convertView.findViewById(R.id.weather_icon).setVisibility(View.GONE);
+                        }
+
+                        // disable route from picker if already selected
+                        if (routeId.equals(selectedRoutes[0]) || routeId.equals(selectedRoutes[1])) {
+                            disableRouteItemView(convertView);
+                        } else {
+                            activateRouteItemView(convertView);
+                        }
+                    } else {
+                        Log.e(TAG, "Row layout attributes were null");
+
+                    }
                 }
             }
             return convertView;

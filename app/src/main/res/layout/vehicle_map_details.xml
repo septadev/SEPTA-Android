@@ -26,6 +26,8 @@
             android:id="@+id/vehicle_details_route_id"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/indent_padding"
+            android:layout_marginRight="@dimen/indent_padding"
             android:letterSpacing="-0.02"
             android:textColor="@android:color/black"
             android:textSize="14sp"

@@ -128,10 +128,13 @@
 
     <!-- Vehicle Details on Map -->
     <string name="heading_rail">Train: </string>
+    <string name="heading_bus">Bus: </string>
+    <string name="heading_trolley">Trolley: </string>
+    <string name="heading_destination"> to %1$s</string>
     <string name="heading_vehicle_number">Vehicle Number: </string>
     <string name="heading_block_id">Block ID: </string>
     <string name="heading_status">Status: </string>
-    <string name="heading_status_delay">%1$s late.</string>
+    <string name="heading_status_delay">%1$s late</string>
     <string name="heading_rail_number_cars"># of Train Cars: </string>
 
 

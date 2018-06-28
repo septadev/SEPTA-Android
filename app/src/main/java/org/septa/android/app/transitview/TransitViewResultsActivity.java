@@ -30,7 +30,6 @@ import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -43,7 +42,6 @@ import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.TransitViewModelResponse;
 import org.septa.android.app.support.CursorAdapterSupplier;
-import org.septa.android.app.support.GeneralUtils;
 import org.septa.android.app.support.MapUtils;
 import org.septa.android.app.support.RouteModelComparator;
 import org.septa.android.app.view.TextView;
@@ -57,18 +55,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class TransitViewResultsActivity extends AppCompatActivity implements Runnable, TransitViewLinePickerFragment.TransitViewLinePickerListener, OnMapReadyCallback {
+public class TransitViewResultsActivity extends AppCompatActivity implements Runnable, TransitViewLinePickerFragment.TransitViewLinePickerListener, OnMapReadyCallback, TransitViewVehicleDetailsInfoWindowAdapter.TransitViewVehicleDetailsInfoWindowAdapterListener {
 
     private static final String TAG = TransitViewResultsActivity.class.getSimpleName();
 
     private RouteDirectionModel firstRoute, secondRoute, thirdRoute;
-    Set<TransitViewModelResponse.TransitViewRecord> firstRoutesResults, secondRoutesResults, thirdRoutesResults;
+    private Set<TransitViewModelResponse.TransitViewRecord> firstRoutesResults, secondRoutesResults, thirdRoutesResults;
     private String routeIds;
     private boolean isAFavorite = false;
 
@@ -76,18 +73,17 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
     private Handler refreshHandler;
     private static final int REFRESH_DELAY_SECONDS = 30;
     private TransitViewModelResponseParser parser;
-    Map<String, TransitViewModelResponse.TransitViewRecord> details = new HashMap<>();
+    private Map<String, TransitViewModelResponse.TransitViewRecord> details = new HashMap<>();
     private boolean refreshed = false; // used to distinguish refresh from a change in route selection
 
     // layout variables
-    TextView addLabel, firstRouteLabel, secondRouteLabel, thirdRouteLabel;
-    FrameLayout mapContainerView;
-    View progressView;
-    boolean mapSized = false;
-    SupportMapFragment mapFragment;
-    GoogleMap googleMap;
-    private static final String HTML_NEW_LINE = "<br/>";
-    private static final String VEHICLE_MARKER_KEY_DELIM = "_";
+    private TextView addLabel, firstRouteLabel, secondRouteLabel, thirdRouteLabel;
+    private FrameLayout mapContainerView;
+    private View progressView;
+    private boolean mapSized = false;
+    private SupportMapFragment mapFragment;
+    private GoogleMap googleMap;
+    public static final String VEHICLE_MARKER_KEY_DELIM = "_";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -273,52 +269,8 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
                     }
                 }
 
-                googleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
-
-                    @Override
-                    public View getInfoWindow(Marker arg0) {
-                        return null;
-                    }
-
-                    @Override
-                    public View getInfoContents(Marker marker) {
-                        TextView title = (TextView) getLayoutInflater().inflate(R.layout.vehicle_map_details, null);
-
-                        // look up vehicle details
-                        String[] vehicleMarkerKey = marker.getTitle().split(VEHICLE_MARKER_KEY_DELIM);
-                        String routeId = vehicleMarkerKey[0];
-                        TransitViewModelResponse.TransitViewRecord vehicleRecord = details.get(marker.getTitle());
-
-                        // add vehicle details to info window
-                        if (vehicleRecord != null) {
-                            TransitType transitType = TransitType.BUS;
-                            if (isTrolley(routeId)) {
-                                transitType = TransitType.TROLLEY;
-                            }
-
-                            StringBuilder builder = new StringBuilder(transitType + ": " + routeId);
-                            builder.append(HTML_NEW_LINE)
-                                    .append("Vehicle Number: ")
-                                    .append(vehicleRecord.getVehicleId())
-                                    .append(HTML_NEW_LINE)
-                                    .append("Block ID: ")
-                                    .append(vehicleRecord.getBlockId())
-                                    .append(HTML_NEW_LINE)
-                                    .append("Status: ");
-                            if (vehicleRecord.getLate() != null && vehicleRecord.getLate() > 0) {
-                                builder.append(GeneralUtils.getDurationAsLongString(vehicleRecord.getLate(), TimeUnit.MINUTES) + " late.");
-                            } else {
-                                builder.append(getString(R.string.nta_on_time));
-                            }
-
-                            title.setHtml(builder.toString());
-                        } else {
-                            Log.e(TAG, "Could not find vehicle with marker ID: " + marker.getTitle());
-                        }
-
-                        return title;
-                    }
-                });
+                TransitViewVehicleDetailsInfoWindowAdapter adapter = new TransitViewVehicleDetailsInfoWindowAdapter(TransitViewResultsActivity.this);
+                googleMap.setInfoWindowAdapter(adapter);
             }
         });
 
@@ -345,6 +297,17 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
                         }
                     });
         }
+    }
+
+    @Override
+    public boolean isTrolley(String routeId) {
+        String[] trolleyRouteIds = new String[]{"10", "11", "13", "15", "34", "36", "101", "102"};
+        return Arrays.asList(trolleyRouteIds).contains(routeId);
+    }
+
+    @Override
+    public TransitViewModelResponse.TransitViewRecord getVehicleRecord(String vehicleRecordKey) {
+        return details.get(vehicleRecordKey);
     }
 
     private void initializeActivity(@Nullable Bundle savedInstanceState) {
@@ -608,8 +571,4 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
         Log.e(TAG, "No TransitView results found");
     }
 
-    private boolean isTrolley(String routeId) {
-        String[] trolleyRouteIds = new String[]{"10", "11", "13", "15", "34", "36", "101", "102"};
-        return Arrays.asList(trolleyRouteIds).contains(routeId);
-    }
 }

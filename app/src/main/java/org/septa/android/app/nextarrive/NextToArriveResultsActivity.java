@@ -287,7 +287,7 @@ public class NextToArriveResultsActivity extends BaseActivity implements OnMapRe
                     }
                 }
 
-                VehicleDetailsInfoWindowAdapter adapter = new VehicleDetailsInfoWindowAdapter(NextToArriveResultsActivity.this, transitType, startMarker, destMarker, details);
+                NTAVehicleDetailsInfoWindowAdapter adapter = new NTAVehicleDetailsInfoWindowAdapter(NextToArriveResultsActivity.this, transitType, startMarker, destMarker, details);
                 googleMap.setInfoWindowAdapter(adapter);
 
             }

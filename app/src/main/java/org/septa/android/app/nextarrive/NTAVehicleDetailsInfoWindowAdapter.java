@@ -1,8 +1,6 @@
 package org.septa.android.app.nextarrive;
 
 import android.app.Activity;
-import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.View;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -19,14 +17,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-public class VehicleDetailsInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
+public class NTAVehicleDetailsInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
 
     private Activity context;
     private MarkerOptions startMarker, destMarker;
     private TransitType transitType;
     private Map<String, NextArrivalDetails> details;
 
-    VehicleDetailsInfoWindowAdapter(Activity context, TransitType transitType, MarkerOptions startMarker, MarkerOptions destMarker, Map<String, NextArrivalDetails> details) {
+    NTAVehicleDetailsInfoWindowAdapter(Activity context, TransitType transitType, MarkerOptions startMarker, MarkerOptions destMarker, Map<String, NextArrivalDetails> details) {
         this.context = context;
         this.startMarker = startMarker;
         this.destMarker = destMarker;
@@ -48,9 +46,7 @@ public class VehicleDetailsInfoWindowAdapter implements GoogleMap.InfoWindowAdap
         }
 
         // create custom info window with vehicle details
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-//        LayoutInflater inflater = LayoutInflater.from(context);
-        View contents = inflater.inflate(R.layout.vehicle_map_details, null);
+        View contents = context.getLayoutInflater().inflate(R.layout.vehicle_map_details, null);
         render(marker, contents);
 
         return contents;

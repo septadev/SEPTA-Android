@@ -36,7 +36,6 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -61,7 +60,6 @@ import org.septa.android.app.support.Consumer;
 import org.septa.android.app.support.CrashlyticsManager;
 import org.septa.android.app.support.Criteria;
 import org.septa.android.app.support.CursorAdapterSupplier;
-import org.septa.android.app.support.GeneralUtils;
 import org.septa.android.app.support.MapUtils;
 import org.septa.android.app.view.TextView;
 import org.xmlpull.v1.XmlPullParserException;
@@ -84,36 +82,35 @@ public class NextToArriveResultsActivity extends BaseActivity implements OnMapRe
     private static final String EDIT_FAVORITE_DIALOG_KEY = "EDIT_FAVORITE_DIALOG_KEY",
             NTA_RESULTS_TITLE = "nta_results_title",
             NEED_TO_SEE = "need_to_see";
-    private static final String HTML_NEW_LINE = "<br/>";
-    StopModel start;
-    StopModel destination;
-    TransitType transitType;
-    RouteDirectionModel routeDirectionModel;
-    View containerView;
+    private StopModel start;
+    private StopModel destination;
+    private TransitType transitType;
+    private RouteDirectionModel routeDirectionModel;
+    private View containerView;
     private GoogleMap googleMap;
-    boolean mapSized = false;
-    Button noResultsSchedulesButton;
-    FrameLayout mapContainerView;
-    ViewGroup bottomSheetLayout;
-    TextView titleText;
-    View anchor;
-    View rootView;
-    View reverseTrip;
-    View progressView;
-    View progressViewBottom;
-    Favorite currentFavorite = null;
-    NextToArriveTripView nextToArriveDetailsView;
-    boolean editFavoritesFlag = false;
+    private boolean mapSized = false;
+    private Button noResultsSchedulesButton;
+    private FrameLayout mapContainerView;
+    private ViewGroup bottomSheetLayout;
+    private TextView titleText;
+    private View anchor;
+    private View rootView;
+    private View reverseTrip;
+    private View progressView;
+    private View progressViewBottom;
+    private Favorite currentFavorite = null;
+    private NextToArriveTripView nextToArriveDetailsView;
+    private boolean editFavoritesFlag = false;
     private MarkerOptions startMarker;
     private MarkerOptions destMarker;
     private NextArrivalModelResponseParser parser;
     private int peekHeight = 0;
     private BottomSheetBehavior bottomSheetBehavior;
     private Handler refreshHandler;
-    SupportMapFragment mapFragment;
+    private SupportMapFragment mapFragment;
     private FrameLayout noResultsMessage;
 
-    Map<String, NextArrivalDetails> details = new HashMap<>();
+    private Map<String, NextArrivalDetails> details = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -290,60 +287,9 @@ public class NextToArriveResultsActivity extends BaseActivity implements OnMapRe
                     }
                 }
 
-                googleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+                VehicleDetailsInfoWindowAdapter adapter = new VehicleDetailsInfoWindowAdapter(NextToArriveResultsActivity.this, transitType, startMarker, destMarker, details);
+                googleMap.setInfoWindowAdapter(adapter);
 
-                    @Override
-                    public View getInfoWindow(Marker arg0) {
-                        return null;
-                    }
-
-                    @Override
-                    public View getInfoContents(Marker marker) {
-                        if (startMarker.getTitle().equals(marker.getTitle()) || destMarker.getTitle().equals(marker.getTitle()))
-                            return null;
-
-                        TextView title = (TextView) getLayoutInflater().inflate(R.layout.vehicle_map_details, null);
-                        NextArrivalDetails detail = details.get(marker.getTitle());
-
-                        if (transitType == TransitType.RAIL) {
-                            StringBuilder builder = new StringBuilder("Train: " + marker.getTitle());
-                            if (detail != null && detail.getDetails() != null) {
-                                builder.append(HTML_NEW_LINE)
-                                        .append("Status: ");
-                                if (detail.getDetails().getNextStop() != null && detail.getDetails().getNextStop().getLate() > 0) {
-                                    builder.append(GeneralUtils.getDurationAsLongString(detail.getDetails().getNextStop().getLate(), TimeUnit.MINUTES) + " late.");
-                                } else {
-                                    builder.append(getString(R.string.nta_on_time));
-                                }
-                                if (detail.getDetails().getConsist() != null && detail.getDetails().getConsist().size() > 0) {
-                                    if (!(detail.getDetails().getConsist().size() == 1 && detail.getDetails().getConsist().get(0).trim().isEmpty())) {
-                                        builder.append(HTML_NEW_LINE)
-                                                .append("# of Train Cars: ")
-                                                .append(detail.getDetails().getConsist().size());
-                                    }
-                                }
-                            }
-                            title.setHtml(builder.toString());
-                        } else {
-                            StringBuilder builder = new StringBuilder("Block ID: " + marker.getTitle());
-                            if (detail != null && detail.getDetails() != null) {
-                                builder.append(HTML_NEW_LINE)
-                                        .append("Vehicle Number: ")
-                                        .append(detail.getDetails().getVehicleId())
-                                        .append(HTML_NEW_LINE)
-                                        .append("Status: ");
-                                if (detail.getDetails().getDestination() != null && detail.getDetails().getDestination().getDelay() > 0) {
-                                    builder.append(GeneralUtils.getDurationAsLongString(detail.getDetails().getDestination().getDelay(), TimeUnit.MINUTES) + " late.");
-                                } else {
-                                    builder.append(getString(R.string.nta_on_time));
-                                }
-
-                            }
-                            title.setHtml(builder.toString());
-                        }
-                        return title;
-                    }
-                });
             }
         });
 

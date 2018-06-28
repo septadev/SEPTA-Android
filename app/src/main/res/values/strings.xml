@@ -126,6 +126,17 @@
     <string name="nta_refresh">Refresh</string>
 
 
+    <!-- Vehicle Details on Map -->
+    <string name="heading_vehicle_number">Vehicle Number: %1$s</string>
+    <string name="heading_block_id">Block ID: %1$s</string>
+    <string name="heading_status_on_time">Status: On Time</string>
+    <string name="heading_status_delay">Status: %1$s late.</string>
+
+
+    <string name="heading_rail">Train: %1$s</string>
+    <string name="heading_rail_number_cars"># of Train Cars: %1$d</string>
+
+
     <!-- Favorite -->
     <string name="delete_fav_modal_title">Delete Favorite?</string>
     <string name="delete_fav_modal_text">Are you sure you want to remove this trip from your favorites?</string>

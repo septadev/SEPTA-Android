@@ -32,7 +32,7 @@ import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.nextarrive.NextToArriveResultsActivity;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
-import org.septa.android.app.services.apiinterfaces.model.Favorite;
+import org.septa.android.app.services.apiinterfaces.model.NextArrivalFavorite;
 import org.septa.android.app.support.SwipeController;
 
 import java.util.ArrayList;
@@ -53,7 +53,7 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
     // favorites management
     private RecyclerView favoritesListView;
     private List<FavoriteState> favoriteStateList;
-    private Map<String, Favorite> favoritesMap;
+    private Map<String, NextArrivalFavorite> favoritesMap;
     private FavoritesFragmentListener mListener;
     private FavoriteItemAdapter favoriteItemAdapter;
     private FavoritesSwipeRefreshLayout mRefreshLayout;
@@ -256,20 +256,20 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
     }
 
     @Override
-    public void goToSchedulesForTarget(Favorite favorite) {
-        mListener.goToSchedulesForTarget(favorite.getStart(), favorite.getDestination(), favorite.getTransitType(), favorite.getRouteDirectionModel());
+    public void goToSchedulesForTarget(NextArrivalFavorite nextArrivalFavorite) {
+        mListener.goToSchedulesForTarget(nextArrivalFavorite.getStart(), nextArrivalFavorite.getDestination(), nextArrivalFavorite.getTransitType(), nextArrivalFavorite.getRouteDirectionModel());
     }
 
     @Override
-    public void goToNextToArrive(Favorite favorite) {
+    public void goToNextToArrive(NextArrivalFavorite nextArrivalFavorite) {
         if (getActivity() == null) {
             return;
         }
         Intent intent = new Intent(getActivity(), NextToArriveResultsActivity.class);
-        intent.putExtra(Constants.STARTING_STATION, favorite.getStart());
-        intent.putExtra(Constants.DESTINATION_STATION, favorite.getDestination());
-        intent.putExtra(Constants.TRANSIT_TYPE, favorite.getTransitType());
-        intent.putExtra(Constants.ROUTE_DIRECTION_MODEL, favorite.getRouteDirectionModel());
+        intent.putExtra(Constants.STARTING_STATION, nextArrivalFavorite.getStart());
+        intent.putExtra(Constants.DESTINATION_STATION, nextArrivalFavorite.getDestination());
+        intent.putExtra(Constants.TRANSIT_TYPE, nextArrivalFavorite.getTransitType());
+        intent.putExtra(Constants.ROUTE_DIRECTION_MODEL, nextArrivalFavorite.getRouteDirectionModel());
         intent.putExtra(Constants.EDIT_FAVORITES_FLAG, Boolean.TRUE);
 
         getActivity().startActivityForResult(intent, Constants.NTA_REQUEST);
@@ -292,7 +292,7 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
                                 // on unsuccessful deletion
                                 dialog.dismiss();
                                 revertSwipe(favoriteIndex);
-                                Log.e(TAG, "Favorite with key " + favoriteKey + " could not be deleted at this time");
+                                Log.e(TAG, "NextArrivalFavorite with key " + favoriteKey + " could not be deleted at this time");
                             }
                         }, new Runnable() {
                             @Override
@@ -349,7 +349,7 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
             SeptaServiceFactory.getFavoritesService().deleteAllFavoriteStates(getContext());
             Log.d(TAG, "Reinitializing favorite states now...");
 
-            for (Map.Entry<String, Favorite> entry : favoritesMap.entrySet()) {
+            for (Map.Entry<String, NextArrivalFavorite> entry : favoritesMap.entrySet()) {
                 FavoriteState favoriteState = new FavoriteState(entry.getKey());
                 favoriteStateList.add(favoriteState);
             }
@@ -404,7 +404,7 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
         });
     }
 
-    private String evaluateAndRemoveFavorites(Map<String, Favorite> favoritesMap) {
+    private String evaluateAndRemoveFavorites(Map<String, NextArrivalFavorite> favoritesMap) {
         // In Version 268 we fixed some issues with NHSL and Subway.  However users could have created
         // faulty favorites with the version before 268.  We added a created with version number to
         // the favorite record defaulting to 0.  We compare that value to the value 268.  If the
@@ -413,13 +413,13 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
 
         // If need to force remove favorites in new version then change FAVORITES_LAST_UPDATED_VERSION
 
-        Map<String, Favorite> loopMap = new HashMap<>();
+        Map<String, NextArrivalFavorite> loopMap = new HashMap<>();
         loopMap.putAll(favoritesMap);
 
-        List<Favorite> toDelete = new LinkedList<>();
+        List<NextArrivalFavorite> toDelete = new LinkedList<>();
 
         String msg = null;
-        for (Map.Entry<String, Favorite> entry : loopMap.entrySet()) {
+        for (Map.Entry<String, NextArrivalFavorite> entry : loopMap.entrySet()) {
             if ((entry.getValue().getCreatedWithVersion() < FAVORITES_LAST_UPDATED_VERSION) &&
                     ((entry.getValue().getTransitType() == TransitType.NHSL) ||
                             (entry.getValue()).getTransitType() == TransitType.SUBWAY)) {
@@ -434,8 +434,8 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
             return null;
         }
 
-        for (Favorite favorite : toDelete) {
-            SeptaServiceFactory.getFavoritesService().deleteFavorite(activity, favorite.getKey());
+        for (NextArrivalFavorite nextArrivalFavorite : toDelete) {
+            SeptaServiceFactory.getFavoritesService().deleteFavorite(activity, nextArrivalFavorite.getKey());
         }
 
         return msg;
@@ -459,17 +459,17 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
         }
     }
 
-    public List<Favorite> openEditMode() {
+    public List<NextArrivalFavorite> openEditMode() {
         return getFavoritesInOrder();
     }
 
-    public List<Favorite> getFavoritesInOrder() {
-        List<Favorite> favoriteList = new ArrayList<>();
+    public List<NextArrivalFavorite> getFavoritesInOrder() {
+        List<NextArrivalFavorite> nextArrivalFavoriteList = new ArrayList<>();
         for (FavoriteState favoriteState : favoriteStateList) {
-            Favorite currentFavorite = SeptaServiceFactory.getFavoritesService().getFavoriteByKey(getContext(), favoriteState.getFavoriteKey());
-            favoriteList.add(currentFavorite);
+            NextArrivalFavorite currentNextArrivalFavorite = SeptaServiceFactory.getFavoritesService().getFavoriteByKey(getContext(), favoriteState.getFavoriteKey());
+            nextArrivalFavoriteList.add(currentNextArrivalFavorite);
         }
-        return favoriteList;
+        return nextArrivalFavoriteList;
     }
 
     public interface FavoritesFragmentListener {

@@ -14,11 +14,11 @@ import android.widget.TextView;
 import org.septa.android.app.R;
 import org.septa.android.app.draggable.DragItemAdapter;
 import org.septa.android.app.draggable.swipe.ListSwipeItem;
-import org.septa.android.app.services.apiinterfaces.model.Favorite;
+import org.septa.android.app.services.apiinterfaces.model.NextArrivalFavorite;
 
 import java.util.List;
 
-public class DraggableFavoriteItemAdapter extends DragItemAdapter<Favorite, DraggableFavoriteItemAdapter.DraggableFavoriteViewHolder> {
+public class DraggableFavoriteItemAdapter extends DragItemAdapter<NextArrivalFavorite, DraggableFavoriteItemAdapter.DraggableFavoriteViewHolder> {
 
     private static final String TAG = DraggableFavoriteItemAdapter.class.getSimpleName();
 
@@ -28,7 +28,7 @@ public class DraggableFavoriteItemAdapter extends DragItemAdapter<Favorite, Drag
     private boolean mDragOnLongPress;
     private DraggableFavoriteItemListener mListener;
 
-    DraggableFavoriteItemAdapter(Context context, List<Favorite> list, int layoutId, int grabHandleId, boolean dragOnLongPress, DraggableFavoriteItemListener draggableFavoriteItemListener) {
+    DraggableFavoriteItemAdapter(Context context, List<NextArrivalFavorite> list, int layoutId, int grabHandleId, boolean dragOnLongPress, DraggableFavoriteItemListener draggableFavoriteItemListener) {
         this.context = context;
         mLayoutId = layoutId;
         mGrabHandleId = grabHandleId;
@@ -48,13 +48,13 @@ public class DraggableFavoriteItemAdapter extends DragItemAdapter<Favorite, Drag
     public void onBindViewHolder(@NonNull final DraggableFavoriteViewHolder holder, final int position) {
         super.onBindViewHolder(holder, position);
 
-        final Favorite favorite = mItemList.get(position);
+        final NextArrivalFavorite nextArrivalFavorite = mItemList.get(position);
 
-        // favorite name
-        holder.favoriteName.setText(favorite.getName());
+        // nextArrivalFavorite name
+        holder.favoriteName.setText(nextArrivalFavorite.getName());
 
         // transit type icon on left
-        holder.transitTypeIcon.setImageDrawable(ContextCompat.getDrawable(context, favorite.getTransitType().getTabActiveImageResource()));
+        holder.transitTypeIcon.setImageDrawable(ContextCompat.getDrawable(context, nextArrivalFavorite.getTransitType().getTabActiveImageResource()));
 
         // delete button clickable
         holder.deleteButton.setOnClickListener(new View.OnClickListener() {
@@ -73,9 +73,9 @@ public class DraggableFavoriteItemAdapter extends DragItemAdapter<Favorite, Drag
         return (long) mItemList.get(position).hashCode();
     }
 
-    public void updateList(List<Favorite> favoriteList) {
-        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new FavoriteDiffCallback(this.mItemList, favoriteList));
-        this.mItemList = favoriteList;
+    public void updateList(List<NextArrivalFavorite> nextArrivalFavoriteList) {
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new FavoriteDiffCallback(this.mItemList, nextArrivalFavoriteList));
+        this.mItemList = nextArrivalFavoriteList;
 
         // make changes to view
         diffResult.dispatchUpdatesTo(this);

@@ -36,7 +36,7 @@ import org.septa.android.app.favorites.SaveFavoritesAsyncTask;
 import org.septa.android.app.nextarrive.NextToArriveResultsActivity;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Alert;
-import org.septa.android.app.services.apiinterfaces.model.Favorite;
+import org.septa.android.app.services.apiinterfaces.model.NextArrivalFavorite;
 import org.septa.android.app.support.Criteria;
 import org.septa.android.app.support.CursorAdapterSupplier;
 import org.septa.android.app.systemstatus.GoToSystemStatusResultsOnClickListener;
@@ -69,7 +69,7 @@ public class ScheduleResultsActivity extends BaseActivity {
     RouteDirectionModel routeDirectionModel;
     TransitType transitType;
     CursorAdapterSupplier<RouteDirectionModel> reverseRouteCursorAdapterSupplier;
-    Favorite currentFavorite;
+    NextArrivalFavorite currentNextArrivalFavorite;
     Menu menu;
 
     TextView startStationText;
@@ -219,7 +219,7 @@ public class ScheduleResultsActivity extends BaseActivity {
         this.menu = menu;
         getMenuInflater().inflate(R.menu.favorite_menu, menu);
 
-        if (currentFavorite != null) {
+        if (currentNextArrivalFavorite != null) {
             menu.findItem(R.id.create_favorite).setIcon(R.drawable.ic_favorite_made);
             menu.findItem(R.id.create_favorite).setTitle(R.string.schedule_favorite_icon_title_remove);
         } else {
@@ -303,12 +303,12 @@ public class ScheduleResultsActivity extends BaseActivity {
         ImageView transitTypeImageView = findViewById(R.id.transit_type_image);
         transitTypeImageView.setImageResource(transitType.getIconForLine(routeDirectionModel.getRouteId(), this));
 
-        String favKey = Favorite.generateKey(start, destination, transitType, routeDirectionModel);
-        currentFavorite = SeptaServiceFactory.getFavoritesService().getFavoriteByKey(this, favKey);
+        String favKey = NextArrivalFavorite.generateKey(start, destination, transitType, routeDirectionModel);
+        currentNextArrivalFavorite = SeptaServiceFactory.getFavoritesService().getFavoriteByKey(this, favKey);
 
         // check if already a favorite
         if (menu != null) {
-            if (currentFavorite != null) {
+            if (currentNextArrivalFavorite != null) {
                 menu.findItem(R.id.create_favorite).setIcon(R.drawable.ic_favorite_made);
             } else {
                 menu.findItem(R.id.create_favorite).setIcon(R.drawable.ic_favorite_available);
@@ -352,8 +352,8 @@ public class ScheduleResultsActivity extends BaseActivity {
         item.setEnabled(false);
 
         if (start != null && destination != null && transitType != null) {
-            if (currentFavorite == null) {
-                final Favorite favorite = new Favorite(start, destination, transitType, routeDirectionModel);
+            if (currentNextArrivalFavorite == null) {
+                final NextArrivalFavorite nextArrivalFavorite = new NextArrivalFavorite(start, destination, transitType, routeDirectionModel);
                 SaveFavoritesAsyncTask task = new SaveFavoritesAsyncTask(this, new Runnable() {
                     @Override
                     public void run() {
@@ -364,11 +364,11 @@ public class ScheduleResultsActivity extends BaseActivity {
                     public void run() {
                         item.setEnabled(true);
                         item.setIcon(R.drawable.ic_favorite_made);
-                        currentFavorite = favorite;
+                        currentNextArrivalFavorite = nextArrivalFavorite;
                     }
                 });
 
-                task.execute(favorite);
+                task.execute(nextArrivalFavorite);
                 Snackbar snackbar = Snackbar
                         .make(findViewById(R.id.activity_schedule_results_container), R.string.create_fav_snackbar_text, Snackbar.LENGTH_LONG);
 
@@ -389,11 +389,11 @@ public class ScheduleResultsActivity extends BaseActivity {
                                     public void run() {
                                         item.setEnabled(true);
                                         item.setIcon(R.drawable.ic_favorite_available);
-                                        currentFavorite = null;
+                                        currentNextArrivalFavorite = null;
                                     }
                                 });
 
-                                task.execute(currentFavorite.getKey());
+                                task.execute(currentNextArrivalFavorite.getKey());
                             }
                         }).setNegativeButton(R.string.delete_fav_neg_button, new DialogInterface.OnClickListener() {
                     @Override

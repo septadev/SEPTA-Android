@@ -14,11 +14,11 @@ import android.widget.TextView;
 import org.septa.android.app.R;
 import org.septa.android.app.favorites.DeleteFavoritesAsyncTask;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
-import org.septa.android.app.services.apiinterfaces.model.Favorite;
+import org.septa.android.app.services.apiinterfaces.model.NextArrivalFavorite;
 
 public class RenameFavoriteDialogFragment extends DialogFragment {
 
-    private Favorite favorite;
+    private NextArrivalFavorite nextArrivalFavorite;
     private RenameFavoriteCallBack renameFavoriteCallBack;
 
     private static final String KEY_FAVORITE = "KEY_FAVORITE";
@@ -38,19 +38,19 @@ public class RenameFavoriteDialogFragment extends DialogFragment {
         });
 
         TextView nameText = rootView.findViewById(R.id.favorite_name);
-        nameText.setText(favorite.getName());
+        nameText.setText(nextArrivalFavorite.getName());
 
         final EditText nameEditText = rootView.findViewById(R.id.name_edit_text);
-        nameEditText.setText(favorite.getName());
+        nameEditText.setText(nextArrivalFavorite.getName());
 
         View saveButton = rootView.findViewById(R.id.save_button);
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                favorite.setName(nameEditText.getText().toString());
-                SeptaServiceFactory.getFavoritesService().renameFavorite(getContext(), favorite);
+                nextArrivalFavorite.setName(nameEditText.getText().toString());
+                SeptaServiceFactory.getFavoritesService().renameFavorite(getContext(), nextArrivalFavorite);
                 if (renameFavoriteCallBack != null) {
-                    renameFavoriteCallBack.updateFavorite(favorite);
+                    renameFavoriteCallBack.updateFavorite(nextArrivalFavorite);
                 }
                 getDialog().dismiss();
             }
@@ -67,7 +67,7 @@ public class RenameFavoriteDialogFragment extends DialogFragment {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     DeleteFavoritesAsyncTask task = new DeleteFavoritesAsyncTask(getContext());
-                                    task.execute(favorite.getKey());
+                                    task.execute(nextArrivalFavorite.getKey());
                                     getDialog().dismiss();
                                     if (getActivity() == null) {
                                         return;
@@ -98,18 +98,18 @@ public class RenameFavoriteDialogFragment extends DialogFragment {
 
     }
 
-    public static RenameFavoriteDialogFragment getInstance(Favorite favorite) {
+    public static RenameFavoriteDialogFragment getInstance(NextArrivalFavorite nextArrivalFavorite) {
         RenameFavoriteDialogFragment fragment = new RenameFavoriteDialogFragment();
 
         Bundle args = new Bundle();
-        args.putSerializable(KEY_FAVORITE, favorite);
+        args.putSerializable(KEY_FAVORITE, nextArrivalFavorite);
         fragment.setArguments(args);
 
         return fragment;
     }
 
     private void restoreArgs() {
-        favorite = (Favorite) getArguments().getSerializable(KEY_FAVORITE);
+        nextArrivalFavorite = (NextArrivalFavorite) getArguments().getSerializable(KEY_FAVORITE);
     }
 
 

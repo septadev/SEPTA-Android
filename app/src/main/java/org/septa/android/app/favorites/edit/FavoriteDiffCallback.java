@@ -2,37 +2,37 @@ package org.septa.android.app.favorites.edit;
 
 import android.support.v7.util.DiffUtil;
 
-import org.septa.android.app.services.apiinterfaces.model.Favorite;
+import org.septa.android.app.services.apiinterfaces.model.NextArrivalFavorite;
 
 import java.util.List;
 
 class FavoriteDiffCallback extends DiffUtil.Callback {
 
-    private List<Favorite> oldFavorites, newFavorites;
+    private List<NextArrivalFavorite> oldNextArrivalFavorites, newNextArrivalFavorites;
 
-    FavoriteDiffCallback(List<Favorite> mItemList, List<Favorite> favoriteStateList) {
-        this.newFavorites = favoriteStateList;
-        this.oldFavorites = mItemList;
+    FavoriteDiffCallback(List<NextArrivalFavorite> mItemList, List<NextArrivalFavorite> nextArrivalFavoriteStateList) {
+        this.newNextArrivalFavorites = nextArrivalFavoriteStateList;
+        this.oldNextArrivalFavorites = mItemList;
     }
 
     @Override
     public int getOldListSize() {
-        return oldFavorites.size();
+        return oldNextArrivalFavorites.size();
     }
 
     @Override
     public int getNewListSize() {
-        return newFavorites.size();
+        return newNextArrivalFavorites.size();
     }
 
     @Override
     public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-        return oldFavorites.get(oldItemPosition).getKey().equals(newFavorites.get(newItemPosition).getKey());
+        return oldNextArrivalFavorites.get(oldItemPosition).getKey().equals(newNextArrivalFavorites.get(newItemPosition).getKey());
     }
 
     @Override
     public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-        return oldFavorites.get(oldItemPosition).equals(newFavorites.get(newItemPosition));
+        return oldNextArrivalFavorites.get(oldItemPosition).equals(newNextArrivalFavorites.get(newItemPosition));
     }
 
 }

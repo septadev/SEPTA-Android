@@ -17,7 +17,7 @@ import org.septa.android.app.R;
 import org.septa.android.app.nextarrive.NextArrivalModelResponseParser;
 import org.septa.android.app.nextarrive.NextToArriveTripView;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
-import org.septa.android.app.services.apiinterfaces.model.Favorite;
+import org.septa.android.app.services.apiinterfaces.model.NextArrivalFavorite;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalModelResponse;
 
 import java.util.HashMap;
@@ -57,22 +57,22 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<FavoriteItemAdapter.Favor
     public void onBindViewHolder(@NonNull final FavoriteViewHolder holder, final int position) {
         final FavoriteState favoriteState = mItemList.get(position);
         String favoriteKey = favoriteState.getFavoriteKey();
-        Favorite tempFavorite = SeptaServiceFactory.getFavoritesService().getFavoriteByKey(context, favoriteKey);
+        NextArrivalFavorite tempNextArrivalFavorite = SeptaServiceFactory.getFavoritesService().getFavoriteByKey(context, favoriteKey);
 
-        if (tempFavorite == null) {
+        if (tempNextArrivalFavorite == null) {
             SeptaServiceFactory.getFavoritesService().resyncFavoritesMap(context);
-            tempFavorite = SeptaServiceFactory.getFavoritesService().getFavoriteByKey(context, favoriteKey);
+            tempNextArrivalFavorite = SeptaServiceFactory.getFavoritesService().getFavoriteByKey(context, favoriteKey);
         }
 
-        final Favorite favorite = tempFavorite;
+        final NextArrivalFavorite nextArrivalFavorite = tempNextArrivalFavorite;
 
-        // favorite name
-        holder.favoriteName.setText(favorite.getName());
+        // nextArrivalFavorite name
+        holder.favoriteName.setText(nextArrivalFavorite.getName());
 
         // transit type icon on left
         Drawable drawables[] = holder.favoriteName.getCompoundDrawables();
         holder.favoriteName.setCompoundDrawablesWithIntrinsicBounds(ContextCompat.getDrawable(context,
-                favorite.getTransitType().getTabActiveImageResource()),
+                nextArrivalFavorite.getTransitType().getTabActiveImageResource()),
                 drawables[1], drawables[2], drawables[3]);
 
         // progress view
@@ -80,17 +80,17 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<FavoriteItemAdapter.Favor
 
         // NTA results container
         holder.tripView.setMaxResults(3);
-        holder.tripView.setTransitType(favorite.getTransitType());
-        holder.tripView.setStart(favorite.getStart());
-        holder.tripView.setDestination(favorite.getDestination());
-        holder.tripView.setRouteDirectionModel(favorite.getRouteDirectionModel());
+        holder.tripView.setTransitType(nextArrivalFavorite.getTransitType());
+        holder.tripView.setStart(nextArrivalFavorite.getStart());
+        holder.tripView.setDestination(nextArrivalFavorite.getDestination());
+        holder.tripView.setRouteDirectionModel(nextArrivalFavorite.getRouteDirectionModel());
         holder.resultsContainer.removeAllViews();
         holder.resultsContainer.addView(holder.tripView);
 
-        // refresh favorite results
-        refreshFavorite(favorite, holder.favoriteHeader, holder.tripView, holder.progressView, holder.expandCollapseButton, holder.noResultsMsg);
+        // refresh nextArrivalFavorite results
+        refreshFavorite(nextArrivalFavorite, holder.favoriteHeader, holder.tripView, holder.progressView, holder.expandCollapseButton, holder.noResultsMsg);
 
-        // initialize expanded state of favorite
+        // initialize expanded state of nextArrivalFavorite
         if (favoriteState.isExpanded()) {
             expandFavorite(holder.resultsContainer, holder.expandCollapseButton);
         } else {
@@ -101,7 +101,7 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<FavoriteItemAdapter.Favor
         holder.favoriteHeader.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // collapse favorite if already expanded
+                // collapse nextArrivalFavorite if already expanded
                 // save expanded / collapsed state to service
                 if (favoriteState.isExpanded()) {
                     collapseFavorite(holder.resultsContainer, holder.expandCollapseButton);
@@ -119,7 +119,7 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<FavoriteItemAdapter.Favor
         holder.noResultsMsg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mListener.goToSchedulesForTarget(favorite);
+                mListener.goToSchedulesForTarget(nextArrivalFavorite);
             }
         });
 
@@ -127,7 +127,7 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<FavoriteItemAdapter.Favor
         holder.resultsContainer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mListener.goToNextToArrive(favorite);
+                mListener.goToNextToArrive(nextArrivalFavorite);
             }
         });
 
@@ -172,17 +172,17 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<FavoriteItemAdapter.Favor
         notifyDataSetChanged();
     }
 
-    private void refreshFavorite(final Favorite favorite, final LinearLayout favoriteHeader, final NextToArriveTripView tripView, final View progressView, final ImageButton expandCollapseButton, final LinearLayout noResultsMsg) {
+    private void refreshFavorite(final NextArrivalFavorite nextArrivalFavorite, final LinearLayout favoriteHeader, final NextToArriveTripView tripView, final View progressView, final ImageButton expandCollapseButton, final LinearLayout noResultsMsg) {
         progressView.setVisibility(View.VISIBLE);
 
         String routeId = null;
-        if (favorite.getRouteDirectionModel() != null) {
-            routeId = favorite.getRouteDirectionModel().getRouteId();
+        if (nextArrivalFavorite.getRouteDirectionModel() != null) {
+            routeId = nextArrivalFavorite.getRouteDirectionModel().getRouteId();
         }
 
-        Call<NextArrivalModelResponse> results = SeptaServiceFactory.getNextArrivalService().getNextArrival(Integer.parseInt(favorite.getStart().getStopId()),
-                Integer.parseInt(favorite.getDestination().getStopId()),
-                favorite.getTransitType().name(), routeId);
+        Call<NextArrivalModelResponse> results = SeptaServiceFactory.getNextArrivalService().getNextArrival(Integer.parseInt(nextArrivalFavorite.getStart().getStopId()),
+                Integer.parseInt(nextArrivalFavorite.getDestination().getStopId()),
+                nextArrivalFavorite.getTransitType().name(), routeId);
 
         results.enqueue(new Callback<NextArrivalModelResponse>() {
             @Override
@@ -252,7 +252,7 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<FavoriteItemAdapter.Favor
     public interface FavoriteItemListener {
         void showSnackbarNoConnection();
         void autoDismissSnackbar();
-        void goToSchedulesForTarget(Favorite favorite);
-        void goToNextToArrive(Favorite favorite);
+        void goToSchedulesForTarget(NextArrivalFavorite nextArrivalFavorite);
+        void goToNextToArrive(NextArrivalFavorite nextArrivalFavorite);
     }
 }

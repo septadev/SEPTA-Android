@@ -3,22 +3,22 @@ package org.septa.android.app.services.apiinterfaces;
 import android.content.Context;
 
 import org.septa.android.app.favorites.FavoriteState;
-import org.septa.android.app.services.apiinterfaces.model.Favorite;
+import org.septa.android.app.services.apiinterfaces.model.NextArrivalFavorite;
 
 import java.util.List;
 import java.util.Map;
 
-public interface Favorites {
+public interface FavoritesSharedPrefsUtils {
 
-    Map<String, Favorite> getFavorites(Context context);
+    Map<String, NextArrivalFavorite> getFavorites(Context context);
 
     List<FavoriteState> getFavoriteStates(Context context);
 
-    void addFavorites(Context context, Favorite favorite);
+    void addFavorites(Context context, NextArrivalFavorite nextArrivalFavorite);
 
     void addFavoriteState(Context context, FavoriteState favoriteState);
 
-    void setFavorites(Context context, List<Favorite> favoriteList);
+    void setFavorites(Context context, List<NextArrivalFavorite> nextArrivalFavoriteList);
 
     void setFavoriteStates(Context context, List<FavoriteState> favoriteStateList);
 
@@ -30,7 +30,7 @@ public interface Favorites {
 
     void deleteAllFavoriteStates(Context context);
 
-    Favorite getFavoriteByKey(Context context, String key);
+    NextArrivalFavorite getFavoriteByKey(Context context, String key);
 
     FavoriteState getFavoriteStateByKey(Context context, String key);
 
@@ -40,5 +40,5 @@ public interface Favorites {
 
     void resyncFavoritesMap(Context context);
 
-    void renameFavorite(Context context, Favorite favorite);
+    void renameFavorite(Context context, NextArrivalFavorite nextArrivalFavorite);
 }

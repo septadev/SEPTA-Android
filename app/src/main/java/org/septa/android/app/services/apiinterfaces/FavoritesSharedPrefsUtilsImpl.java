@@ -9,16 +9,16 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
 import org.septa.android.app.favorites.FavoriteState;
-import org.septa.android.app.services.apiinterfaces.model.Favorite;
+import org.septa.android.app.services.apiinterfaces.model.NextArrivalFavorite;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class FavoritesImpl implements Favorites {
+public class FavoritesSharedPrefsUtilsImpl implements FavoritesSharedPrefsUtils {
 
-    public static final String TAG = FavoritesImpl.class.getSimpleName();
+    public static final String TAG = FavoritesSharedPrefsUtilsImpl.class.getSimpleName();
 
     private static final String KEY_FAVORITES = "favorite_json";
     private static final String KEY_FAVORITES_STATE = "favorite_state_json";
@@ -31,10 +31,10 @@ public class FavoritesImpl implements Favorites {
      * @return list of valid favorites
      */
     @Override
-    public Map<String, Favorite> getFavorites(Context context) {
+    public Map<String, NextArrivalFavorite> getFavorites(Context context) {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
-        Map<String, Favorite> favorites = getFavorites(sharedPreferences);
-        for (Map.Entry<String, Favorite> entry : favorites.entrySet()){
+        Map<String, NextArrivalFavorite> favorites = getFavorites(sharedPreferences);
+        for (Map.Entry<String, NextArrivalFavorite> entry : favorites.entrySet()){
 
             if (entry.getValue().getStart() == null){
                 deleteAllFavorites(context);
@@ -65,12 +65,12 @@ public class FavoritesImpl implements Favorites {
     }
 
     @Override
-    public void addFavorites(Context context, Favorite favorite) {
+    public void addFavorites(Context context, NextArrivalFavorite nextArrivalFavorite) {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
-        Map<String, Favorite> favorites = getFavorites(sharedPreferences);
+        Map<String, NextArrivalFavorite> favorites = getFavorites(sharedPreferences);
 
-        favorites.put(favorite.getKey(), favorite);
-        addFavoriteState(context, new FavoriteState(favorite.getKey()));
+        favorites.put(nextArrivalFavorite.getKey(), nextArrivalFavorite);
+        addFavoriteState(context, new FavoriteState(nextArrivalFavorite.getKey()));
         storeFavorites(sharedPreferences, favorites);
     }
 
@@ -88,12 +88,12 @@ public class FavoritesImpl implements Favorites {
     }
 
     @Override
-    public void setFavorites(Context context, List<Favorite> favoriteList) {
+    public void setFavorites(Context context, List<NextArrivalFavorite> nextArrivalFavoriteList) {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
 
-        Map<String, Favorite> favoritesMap = new HashMap<>();
-        for (Favorite favorite : favoriteList) {
-            favoritesMap.put(favorite.getKey(), favorite);
+        Map<String, NextArrivalFavorite> favoritesMap = new HashMap<>();
+        for (NextArrivalFavorite nextArrivalFavorite : nextArrivalFavoriteList) {
+            favoritesMap.put(nextArrivalFavorite.getKey(), nextArrivalFavorite);
         }
 
         storeFavorites(sharedPreferences, favoritesMap);
@@ -114,23 +114,23 @@ public class FavoritesImpl implements Favorites {
     }
 
     @Override
-    public void renameFavorite(Context context, Favorite favorite) {
+    public void renameFavorite(Context context, NextArrivalFavorite nextArrivalFavorite) {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
-        Map<String, Favorite> favorites = getFavorites(sharedPreferences);
+        Map<String, NextArrivalFavorite> favorites = getFavorites(sharedPreferences);
 
-        if (favorites.containsKey(favorite.getKey())) {
-            favorites.put(favorite.getKey(), favorite);
+        if (favorites.containsKey(nextArrivalFavorite.getKey())) {
+            favorites.put(nextArrivalFavorite.getKey(), nextArrivalFavorite);
             storeFavorites(sharedPreferences, favorites);
         } else {
-            Log.d(TAG, "Favorite could not be renamed because it did not exist!");
-            addFavorites(context, favorite);
+            Log.d(TAG, "NextArrivalFavorite could not be renamed because it did not exist!");
+            addFavorites(context, nextArrivalFavorite);
         }
     }
 
     @Override
     public void deleteFavorite(Context context, String id) {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
-        Map<String, Favorite> favorites = getFavorites(sharedPreferences);
+        Map<String, NextArrivalFavorite> favorites = getFavorites(sharedPreferences);
         favorites.remove(id);
         deleteFavoriteState(context, id);
         storeFavorites(sharedPreferences, favorites);
@@ -168,9 +168,9 @@ public class FavoritesImpl implements Favorites {
     }
 
     @Override
-    public Favorite getFavoriteByKey(Context context, String key) {
+    public NextArrivalFavorite getFavoriteByKey(Context context, String key) {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
-        Map<String, Favorite> favorites = getFavorites(sharedPreferences);
+        Map<String, NextArrivalFavorite> favorites = getFavorites(sharedPreferences);
         return favorites.get(key);
     }
 
@@ -215,12 +215,12 @@ public class FavoritesImpl implements Favorites {
     public void resyncFavoritesMap(Context context) {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
         List<FavoriteState> favoriteStateList = getFavoriteStates(context);
-        Map<String, Favorite> favoriteMap = getFavorites(context);
+        Map<String, NextArrivalFavorite> favoriteMap = getFavorites(context);
 
         if (favoriteStateList != null && !favoriteStateList.isEmpty() && favoriteMap != null && !favoriteMap.isEmpty()) {
             deleteAllFavorites(context);
 
-            Map<String, Favorite> newFavorites = new HashMap<>();
+            Map<String, NextArrivalFavorite> newFavorites = new HashMap<>();
 
             for (FavoriteState favoriteState: favoriteStateList) {
                 String favoriteKey = favoriteState.getFavoriteKey();
@@ -237,7 +237,7 @@ public class FavoritesImpl implements Favorites {
         return context.getSharedPreferences("PREFERENCE_NAME", Context.MODE_PRIVATE);
     }
 
-    private Map<String, Favorite> getFavorites(SharedPreferences sharedPreferences) {
+    private Map<String, NextArrivalFavorite> getFavorites(SharedPreferences sharedPreferences) {
         String preferencesJson = sharedPreferences.getString(KEY_FAVORITES, null);
 
         if (preferencesJson == null) {
@@ -246,7 +246,7 @@ public class FavoritesImpl implements Favorites {
 
         Gson gson = new Gson();
         try {
-            return gson.fromJson(preferencesJson, new TypeToken<Map<String, Favorite>>() {
+            return gson.fromJson(preferencesJson, new TypeToken<Map<String, NextArrivalFavorite>>() {
             }.getType());
         } catch (JsonSyntaxException e) {
             Log.e(TAG, e.toString());
@@ -255,7 +255,7 @@ public class FavoritesImpl implements Favorites {
         }
     }
 
-    private void storeFavorites(SharedPreferences sharedPreferences, Map<String, Favorite> favorites) {
+    private void storeFavorites(SharedPreferences sharedPreferences, Map<String, NextArrivalFavorite> favorites) {
         Gson gson = new Gson();
         String favoritesJson = gson.toJson(favorites);
         sharedPreferences.edit().putString(KEY_FAVORITES, favoritesJson).commit();

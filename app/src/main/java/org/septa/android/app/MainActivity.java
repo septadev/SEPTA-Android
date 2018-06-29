@@ -47,7 +47,7 @@ import org.septa.android.app.schedules.SchedulesFragment;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Alert;
 import org.septa.android.app.services.apiinterfaces.model.AlertDetail;
-import org.septa.android.app.services.apiinterfaces.model.Favorite;
+import org.septa.android.app.services.apiinterfaces.model.NextArrivalFavorite;
 import org.septa.android.app.support.AnalyticsManager;
 import org.septa.android.app.support.CrashlyticsManager;
 import org.septa.android.app.support.ShakeDetector;
@@ -396,10 +396,10 @@ public class MainActivity extends BaseActivity implements
             getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, activeFragment).commit();
         } else {
             // open edit mode
-            List<Favorite> favoriteList = favoritesFragment.openEditMode();
+            List<NextArrivalFavorite> nextArrivalFavoriteList = favoritesFragment.openEditMode();
 
             // switch to manage favorites fragment
-            manageFavoritesFragment = ManageFavoritesFragment.newInstance(favoriteList);
+            manageFavoritesFragment = ManageFavoritesFragment.newInstance(nextArrivalFavoriteList);
             activeFragment = manageFavoritesFragment;
             getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, activeFragment).commit();
         }

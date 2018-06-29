@@ -13,15 +13,19 @@ import org.septa.android.app.domain.StopModel;
 import java.io.Serializable;
 
 public class Favorite implements Serializable {
+    
     @SerializedName("name")
     private String name;
 
     @SerializedName("start")
     private StopModel start;
+
     @SerializedName("destination")
     private StopModel destination;
+
     @SerializedName("route")
-    RouteDirectionModel routeDirectionModel;
+    private RouteDirectionModel routeDirectionModel;
+
     @SerializedName("transit_type")
     private TransitType transitType;
 
@@ -48,7 +52,7 @@ public class Favorite implements Serializable {
         return generateKey(start, destination, transitType, routeDirectionModel);
     }
 
-    public static String generateKey(TransitType transitType, String startId, String destinationId, String lineId, String directionCode) {
+    private static String generateKey(TransitType transitType, String startId, String destinationId, String lineId, String directionCode) {
         return transitType.name() + "_" + startId + "_" + destinationId + "_" + lineId + "_" + directionCode;
     }
 
@@ -93,30 +97,38 @@ public class Favorite implements Serializable {
         return createdWithVersion;
     }
 
-     @Override
+    @Override
     public String toString() {
 
         StringBuilder builder = new StringBuilder("Favorite{name='").append(name).append('\'');
 
         builder.append(", start=");
-        if (start != null)
+        if (start != null) {
             builder.append(start.toString());
-        else builder.append("NULL");
+        } else {
+            builder.append("NULL");
+        }
 
         builder.append(", destination=");
-        if (destination != null)
+        if (destination != null) {
             builder.append(destination.toString());
-        else builder.append("NULL");
+        } else {
+            builder.append("NULL");
+        }
 
         builder.append(", routeDirectionModel=");
-        if (routeDirectionModel != null)
+        if (routeDirectionModel != null) {
             builder.append(routeDirectionModel.toString());
-        else builder.append("NULL");
+        } else {
+            builder.append("NULL");
+        }
 
         builder.append(", transitType=");
-        if (transitType != null)
+        if (transitType != null) {
             builder.append(transitType.toString());
-        else builder.append("NULL");
+        } else {
+            builder.append("NULL");
+        }
 
         builder.append('}');
 

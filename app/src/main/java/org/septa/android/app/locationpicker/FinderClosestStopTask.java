@@ -55,14 +55,17 @@ public class FinderClosestStopTask extends AsyncTask<Location, Void, StopModel> 
                             closestStop = stop;
                             closestDistance = distance;
                         }
-                        if (cursor.moveToNext())
+                        if (cursor.moveToNext()) {
                             stop = cursorAdapterSupplier.getCurrentItemFromCursor(cursor);
-                        else stop = null;
+                        } else {
+                            stop = null;
+                        }
                     }
                 }
             } finally {
-                if (cursor != null)
+                if (cursor != null) {
                     cursor.close();
+                }
             }
         }
 

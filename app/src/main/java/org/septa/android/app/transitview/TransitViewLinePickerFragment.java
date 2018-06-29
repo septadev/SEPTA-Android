@@ -134,8 +134,9 @@ public class TransitViewLinePickerFragment extends DialogFragment {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if (transitViewLineArrayAdapter != null)
+                if (transitViewLineArrayAdapter != null) {
                     transitViewLineArrayAdapter.getFilter().filter(charSequence.toString());
+                }
             }
 
             @Override

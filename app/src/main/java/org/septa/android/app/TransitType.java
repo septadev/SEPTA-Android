@@ -58,8 +58,9 @@ public enum TransitType implements Serializable {
     public static List<TransitType> transitTypesOnHolidayToday() {
         List<TransitType> holidayTodayList = new ArrayList<TransitType>();
         for (TransitType transitType : values()) {
-            if (transitType.isHolidayToday())
+            if (transitType.isHolidayToday()) {
                 holidayTodayList.add(transitType);
+            }
         }
 
         return holidayTodayList;
@@ -170,8 +171,9 @@ public enum TransitType implements Serializable {
             try {
                 int returnVal = context.getResources().getIdentifier("ic_line_" + lineId.toLowerCase(), "drawable", R.class.getPackage().getName());
                 Log.d(TAG, "IconForLine: " + returnVal + " for " + lineId.toLowerCase());
-                if (returnVal == 0)
+                if (returnVal == 0) {
                     return defaultValue;
+                }
                 return returnVal;
             } catch (Exception e) {
                 Log.e(TAG, e.toString());
@@ -255,18 +257,24 @@ public enum TransitType implements Serializable {
     }
 
     public TransitType getTransitTypeByAlertMode(String mode) {
-        if ("Regional Rail".equals(mode))
+        if ("Regional Rail".equals(mode)) {
             return RAIL;
-        if ("Trolley".equals(mode))
+        }
+        if ("Trolley".equals(mode)) {
             return TROLLEY;
-        if ("Bus".equals(mode))
+        }
+        if ("Bus".equals(mode)) {
             return BUS;
-        if ("Broad Street Line".equals(mode))
+        }
+        if ("Broad Street Line".equals(mode)) {
             return SUBWAY;
-        if ("Market/ Frankford".equals(mode))
+        }
+        if ("Market/ Frankford".equals(mode)) {
             return SUBWAY;
-        if ("Norristown High Speed Line".equals(mode))
+        }
+        if ("Norristown High Speed Line".equals(mode)) {
             return NHSL;
+        }
 
         return null;
     }

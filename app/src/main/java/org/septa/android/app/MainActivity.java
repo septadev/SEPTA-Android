@@ -513,8 +513,9 @@ public class MainActivity extends BaseActivity implements
 
     private void switchToBundle(MenuItem item, Fragment targetFragment, int title, int highlightedIcon) {
         CrashlyticsManager.log(Log.INFO, TAG, "switchToBundle:" + item.getTitle() + ", " + targetFragment.getClass().getCanonicalName());
-        if ((currentMenu != null) && item.getItemId() == currentMenu.getItemId())
+        if ((currentMenu != null) && item.getItemId() == currentMenu.getItemId()) {
             return;
+        }
 
         if (previousIcon != null) {
             currentMenu.setIcon(previousIcon);
@@ -620,8 +621,11 @@ public class MainActivity extends BaseActivity implements
     public void showAlert(String alert, Boolean isGenericAlert) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-        if (isGenericAlert) builder.setTitle(R.string.title_generic_alert);
-        else builder.setTitle(R.string.title_mobile_app_alert);
+        if (isGenericAlert) {
+            builder.setTitle(R.string.title_generic_alert);
+        } else {
+            builder.setTitle(R.string.title_mobile_app_alert);
+        }
 
         // make message HTML enabled and allow for anchor links
         View alertView = getLayoutInflater().inflate(R.layout.dialog_alert, null);

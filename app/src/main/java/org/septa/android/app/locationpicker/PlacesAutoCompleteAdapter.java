@@ -1,6 +1,7 @@
 package org.septa.android.app.locationpicker;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -83,6 +84,7 @@ class PlacesAutoCompleteAdapter extends ArrayAdapter<PlaceAutoComplete> implemen
         return resultList.get(position);
     }
 
+    @NonNull
     @Override
     public Filter getFilter() {
         Filter filter = new Filter() {
@@ -134,8 +136,7 @@ class PlacesAutoCompleteAdapter extends ArrayAdapter<PlaceAutoComplete> implemen
                 List<PlaceAutoComplete> serviceResponses = response.body().getPlaces();
                 List<PlaceAutoComplete> newResults = new ArrayList<>(serviceResponses.size() + 1);
                 newResults.add(null);
-                for (PlaceAutoComplete place : serviceResponses)
-                    newResults.add(place);
+                newResults.addAll(serviceResponses);
 
                 resultList = newResults;
                 notifyDataSetChanged();

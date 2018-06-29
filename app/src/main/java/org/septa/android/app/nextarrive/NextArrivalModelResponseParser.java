@@ -32,7 +32,9 @@ public class NextArrivalModelResponseParser {
             @Override
             public int compare(NextArrivalModelResponse.NextArrivalRecord o1, NextArrivalModelResponse.NextArrivalRecord o2) {
                 int result = o1.getOrigDepartureTime().compareTo(o2.getOrigDepartureTime());
-                if (result != 0) return result;
+                if (result != 0) {
+                    return result;
+                }
                 result = o1.getOrigArrivalTime().compareTo(o2.getOrigArrivalTime());
                 return result;
             }

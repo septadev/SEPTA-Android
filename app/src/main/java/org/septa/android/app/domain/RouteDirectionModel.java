@@ -47,9 +47,11 @@ public class RouteDirectionModel implements Serializable {
     }
 
     public String getReverseDirectionCode() {
-        if ("0".equals(directionCode))
+        if ("0".equals(directionCode)) {
             return "1";
-        else return "0";
+        } else {
+            return "0";
+        }
     }
 
     @Override

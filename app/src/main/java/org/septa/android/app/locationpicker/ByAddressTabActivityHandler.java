@@ -107,8 +107,9 @@ public class ByAddressTabActivityHandler extends BaseTabActivityHandler {
                     @Override
                     public void onSuccess(Location location) {
                         if (location != null) {
-                            if (getActivity() == null)
+                            if (getActivity() == null) {
                                 return;
+                            }
                             PlacesAutoCompleteAdapter placesAutoCompleteAdapter = new PlacesAutoCompleteAdapter(getActivity(), R.layout.item_autocomplete_list, new LatLng(location.getLatitude(), location.getLongitude()));
                             addressEntry.setAdapter(placesAutoCompleteAdapter);
                             addressEntry.addTextChangedListener(placesAutoCompleteAdapter);
@@ -141,8 +142,9 @@ public class ByAddressTabActivityHandler extends BaseTabActivityHandler {
             addressEntry.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    if (getActivity() == null)
+                    if (getActivity() == null) {
                         return;
+                    }
                     getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
                     InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(rootView.getWindowToken(), 0);
@@ -156,8 +158,9 @@ public class ByAddressTabActivityHandler extends BaseTabActivityHandler {
 
             addressEntry.setOnKeyListener(new View.OnKeyListener() {
                 public boolean onKey(View v, int keyCode, KeyEvent event) {
-                    if (getActivity() == null)
+                    if (getActivity() == null) {
                         return false;
+                    }
                     // If the event is a key-down event on the "enter" button
                     if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
                             (keyCode == KeyEvent.KEYCODE_ENTER)) {
@@ -196,8 +199,9 @@ public class ByAddressTabActivityHandler extends BaseTabActivityHandler {
 
         @Override
         protected List<StopModelWithDistance> doInBackground(LatLng... locations) {
-            if (fragment.getActivity() == null)
+            if (fragment.getActivity() == null) {
                 return new ArrayList<>(0);
+            }
             LatLng location = locations[0];
             List<StopModelWithDistance> returnList = new ArrayList<>();
             if (location != null) {

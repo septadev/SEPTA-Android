@@ -49,8 +49,9 @@ public class FavoritesImpl implements Favorites {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
         String preferencesJson = sharedPreferences.getString(KEY_FAVORITES_STATE, null);
 
-        if (preferencesJson == null)
+        if (preferencesJson == null) {
             return new ArrayList<>();
+        }
 
         Gson gson = new Gson();
         try {
@@ -239,8 +240,9 @@ public class FavoritesImpl implements Favorites {
     private Map<String, Favorite> getFavorites(SharedPreferences sharedPreferences) {
         String preferencesJson = sharedPreferences.getString(KEY_FAVORITES, null);
 
-        if (preferencesJson == null)
+        if (preferencesJson == null) {
             return new HashMap<>();
+        }
 
         Gson gson = new Gson();
         try {

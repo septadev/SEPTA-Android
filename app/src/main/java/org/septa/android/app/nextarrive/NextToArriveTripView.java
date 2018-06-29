@@ -96,8 +96,9 @@ public class NextToArriveTripView extends FrameLayout {
         final LinearLayout listView = findViewById(R.id.lines_list_view);
         listView.removeAllViews();
 
-        if (parser == null)
+        if (parser == null) {
             return;
+        }
 
         List<NextArrivalModelResponse.NextArrivalRecord> data = parser.getResults();
 
@@ -105,7 +106,9 @@ public class NextToArriveTripView extends FrameLayout {
             @Override
             public int compare(NextArrivalRecord o1, NextArrivalRecord o2) {
                 int result = o1.getOrigDepartureTime().compareTo(o2.getOrigDepartureTime());
-                if (result != 0) return result;
+                if (result != 0) {
+                    return result;
+                }
                 result = o1.getOrigArrivalTime().compareTo(o2.getOrigArrivalTime());
                 return result;
             }
@@ -253,10 +256,11 @@ public class NextToArriveTripView extends FrameLayout {
         departureCal.add(Calendar.MINUTE, unit.getOrigDelayMinutes());
 
         long origDepartureMillis = departureCal.getTimeInMillis() - System.currentTimeMillis();
-        if (origDepartureMillis >= 1000 * 60)
+        if (origDepartureMillis >= 1000 * 60) {
             origDepartureTime.setText(GeneralUtils.getDurationAsString(origDepartureMillis, TimeUnit.MILLISECONDS));
-        else
+        } else {
             origDepartureTime.setText(R.string.nta_now);
+        }
 
         boolean enableClick = true;
         android.widget.TextView origTardyText = line.findViewById(R.id.orig_tardy_text);
@@ -374,10 +378,11 @@ public class NextToArriveTripView extends FrameLayout {
         departureCal.add(Calendar.MINUTE, item.getOrigDelayMinutes());
 
         long origDepartureMillis = departureCal.getTimeInMillis() - System.currentTimeMillis();
-        if (origDepartureMillis >= 1000 * 60)
+        if (origDepartureMillis >= 1000 * 60) {
             origDepartureTime.setText(GeneralUtils.getDurationAsString(origDepartureMillis, TimeUnit.MILLISECONDS));
-        else
+        } else {
             origDepartureTime.setText(R.string.nta_now);
+        }
 
         boolean enableOrigClick = true;
         View origTripView = convertView.findViewById(R.id.orig_trip_layout);

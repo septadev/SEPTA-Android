@@ -43,8 +43,9 @@ public abstract class GeneralUtils {
             if (minutes > 0) {
                 builder.append(" ").append(minutes).append(" minutes");
             }
-        } else
+        } else {
             builder.append(minutes).append(" mins");
+        }
 
         return builder.toString();
     }

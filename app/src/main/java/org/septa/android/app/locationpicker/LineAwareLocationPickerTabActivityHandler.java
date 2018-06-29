@@ -322,22 +322,28 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
         }
 
         private void restoreSavedState(Bundle outState) {
-            if (outState == null)
+            if (outState == null) {
                 return;
+            }
 
             selectedRoute = (RouteDirectionModel) outState.getSerializable("selectedRoute");
-            if (selectedRoute != null)
+            if (selectedRoute != null) {
                 setRoute(selectedRoute);
-            else return;
+            } else {
+                return;
+            }
 
             startingStation = (StopModel) outState.getSerializable("startingStation");
-            if (startingStation != null)
+            if (startingStation != null) {
                 setStartingStation(startingStation);
-            else return;
+            } else {
+                return;
+            }
 
             destinationStation = (StopModel) outState.getSerializable("destinationStation");
-            if (destinationStation != null)
+            if (destinationStation != null) {
                 setDestinationStop(destinationStation);
+            }
         }
     }
 
@@ -445,8 +451,9 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
             StopModel inDest = (StopModel) params[0].get(Constants.DESTINATION_STATION);
             StopModel inStart = (StopModel) params[0].get(Constants.STARTING_STATION);
             RouteDirectionModel inputRoute = (RouteDirectionModel) params[0].get(Constants.ROUTE_DIRECTION_MODEL);
-            if (inputRoute == null)
+            if (inputRoute == null) {
                 return returnBundle;
+            }
 
             RouteDirectionModel foundRoute = null;
             StopModel foundStart = null;
@@ -462,8 +469,9 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
 
                 } while (routeCursor.moveToNext());
 
-                if (foundRoute == null)
+                if (foundRoute == null) {
                     return new Bundle();
+                }
             }
 
             returnBundle.putSerializable(Constants.ROUTE_DIRECTION_MODEL, foundRoute);
@@ -481,8 +489,9 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                 } while (startCursor.moveToNext());
             }
 
-            if (foundStart == null)
+            if (foundStart == null) {
                 return returnBundle;
+            }
 
             returnBundle.putSerializable(Constants.STARTING_STATION, foundStart);
             RouteSpecificCursorAdapterSupplier cursorAdapterStopAfterSupplier = new RouteSpecificCursorAdapterSupplier(fragment.stopAfterCursorAdapterSupplier, foundRoute.getRouteId(),

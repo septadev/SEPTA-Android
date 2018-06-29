@@ -115,12 +115,15 @@ public class NextToArriveTripDetailActivity extends BaseActivity implements OnMa
 
         } else {
             StringBuilder builder = new StringBuilder("onCreate:");
-            if (start == null)
+            if (start == null) {
                 builder.append("Start is null. ");
-            if (destination == null)
+            }
+            if (destination == null) {
                 builder.append("Destination is null. ");
-            if (transitType == null)
+            }
+            if (transitType == null) {
                 builder.append("Transit type is null. ");
+            }
             CrashlyticsManager.log(Log.ERROR, TAG, builder.toString());
             CrashlyticsManager.logException(TAG, new Exception("Start, Dest or Transit type is null"));
             SeptaServiceFactory.displayWebServiceError(findViewById(R.id.trip_detail_coordinator), this);
@@ -182,10 +185,11 @@ public class NextToArriveTripDetailActivity extends BaseActivity implements OnMa
                 webUrl = "https://twitter.com/SEPTA_" + routeId.toUpperCase();
             }
             int appUrlId = getResources().getIdentifier("twitter_app_url_" + routeId.toLowerCase(), "string", R.class.getPackage().getName());
-            if (appUrlId != 0)
+            if (appUrlId != 0) {
                 appUrl = getString(appUrlId);
-            else
+            } else {
                 appUrl = getString(R.string.twitter_app_url);
+            }
         }
 
         View twitterView = findViewById(R.id.twitter_view);
@@ -307,8 +311,9 @@ public class NextToArriveTripDetailActivity extends BaseActivity implements OnMa
                     AsyncTask<Long, Void, Void> delayTask = new AsyncTask<Long, Void, Void>() {
                         @Override
                         protected void onPostExecute(Void aVoid) {
-                            if (updateView(response))
+                            if (updateView(response)) {
                                 progressView.setVisibility(View.GONE);
+                            }
                         }
 
                         @Override
@@ -324,8 +329,9 @@ public class NextToArriveTripDetailActivity extends BaseActivity implements OnMa
                     }.execute(System.currentTimeMillis() - timestamp);
 
                 } else {
-                    if (updateView(response))
+                    if (updateView(response)) {
                         progressView.setVisibility(View.GONE);
+                    }
                 }
             }
 
@@ -355,17 +361,19 @@ public class NextToArriveTripDetailActivity extends BaseActivity implements OnMa
                         findViewById(R.id.num_train_layout).setVisibility(View.GONE);
                         blockidValue.setText(details.getBlockId());
                     } else {
-                        if (details.getDestination() != null)
+                        if (details.getDestination() != null) {
                             destStationValue.setText(details.getDestination().getStation());
-                        else
+                        } else {
                             destStationValue.setText(R.string.empty_string);
+                        }
                         originStationValue.setText(details.getSource());
 
                         typeValue.setText(details.getService());
-                        if (details.getNextStop() != null)
+                        if (details.getNextStop() != null) {
                             nextStopValue.setText(details.getNextStop().getStation());
-                        else
+                        } else {
                             nextStopValue.setText(R.string.empty_string);
+                        }
 
                         if (details.getConsist() != null && details.getConsist().size() > 0) {
                             if (details.getConsist().size() == 1 && details.getConsist().get(0).trim().isEmpty()) {
@@ -375,7 +383,9 @@ public class NextToArriveTripDetailActivity extends BaseActivity implements OnMa
                                 StringBuilder trainsId = new StringBuilder();
                                 boolean first = true;
                                 for (String trainId : details.getConsist()) {
-                                    if (!first) trainsId.append(", ");
+                                    if (!first) {
+                                        trainsId.append(", ");
+                                    }
                                     first = false;
                                     trainsId.append(trainId);
                                 }
@@ -431,8 +441,9 @@ public class NextToArriveTripDetailActivity extends BaseActivity implements OnMa
         googleMap.addMarker(new MarkerOptions().position(startingStationLatLng).title(start.getStopName()).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
         googleMap.addMarker(new MarkerOptions().position(destinationStationLatLng).title(destination.getStopName()).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
 
-        if (!mapZoomed)
+        if (!mapZoomed) {
             googleMap.moveCamera(CameraUpdateFactory.newLatLng(startingStationLatLng));
+        }
 
         builder.include(startingStationLatLng);
         builder.include(destinationStationLatLng);

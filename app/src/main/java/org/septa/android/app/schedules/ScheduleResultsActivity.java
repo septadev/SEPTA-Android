@@ -304,7 +304,8 @@ public class ScheduleResultsActivity extends BaseActivity {
         transitTypeImageView.setImageResource(transitType.getIconForLine(routeDirectionModel.getRouteId(), this));
 
         String favKey = NextArrivalFavorite.generateKey(start, destination, transitType, routeDirectionModel);
-        currentNextArrivalFavorite = SeptaServiceFactory.getFavoritesService().getFavoriteByKey(this, favKey);
+        // currentNextArrivalFavorite can be null if the current selection is not a favorite
+        currentNextArrivalFavorite = (NextArrivalFavorite) SeptaServiceFactory.getFavoritesService().getFavoriteByKey(this, favKey);
 
         // check if already a favorite
         if (menu != null) {

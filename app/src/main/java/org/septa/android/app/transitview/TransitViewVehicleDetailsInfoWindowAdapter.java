@@ -15,6 +15,8 @@ import org.septa.android.app.view.TextView;
 
 import java.util.concurrent.TimeUnit;
 
+import static org.septa.android.app.transitview.TransitViewUtils.isTrolley;
+
 public class TransitViewVehicleDetailsInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
 
     private static final String TAG = TransitViewVehicleDetailsInfoWindowAdapter.class.getSimpleName();
@@ -74,7 +76,7 @@ public class TransitViewVehicleDetailsInfoWindowAdapter implements GoogleMap.Inf
         numberRailCarsHeading.setVisibility(View.GONE);
 
         // transit type and route id
-        if (mListener.isTrolley(routeId)) {
+        if (isTrolley(routeId)) {
             markerTransitType.setText(context.getString(R.string.heading_trolley));
         } else {
             markerTransitType.setText(context.getString(R.string.heading_bus));
@@ -109,8 +111,6 @@ public class TransitViewVehicleDetailsInfoWindowAdapter implements GoogleMap.Inf
     }
 
     public interface TransitViewVehicleDetailsInfoWindowAdapterListener {
-        boolean isTrolley(String routeId);
-
         TransitViewModelResponse.TransitViewRecord getVehicleRecord(String vehicleRecordKey);
     }
 

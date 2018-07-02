@@ -25,9 +25,10 @@ import org.septa.android.app.support.RouteModelComparator;
 import org.septa.android.app.view.TextView;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import static org.septa.android.app.transitview.TransitViewUtils.isTrolley;
 
 public class TransitViewFragment extends Fragment implements TransitViewLinePickerFragment.TransitViewLinePickerListener {
 
@@ -259,12 +260,8 @@ public class TransitViewFragment extends Fragment implements TransitViewLinePick
         view.setClickable(true);
     }
 
-    private boolean isTrolley(String routeId) {
-        String[] trolleyRouteIds = new String[]{"10", "11", "13", "15", "34", "36", "101", "102"};
-        return Arrays.asList(trolleyRouteIds).contains(routeId);
-    }
-
     private void goToTransitViewResults() {
+        // TODO: sort the routes in TransitViewActivity
         Intent intent = new Intent(getActivity(), TransitViewResultsActivity.class);
 
         // sort the routes and append null routes to the end

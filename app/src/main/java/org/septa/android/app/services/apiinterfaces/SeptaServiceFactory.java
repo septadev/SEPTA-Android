@@ -36,6 +36,8 @@ public class SeptaServiceFactory {
 
     static Retrofit septaAmazonServicesSingleton;
 
+    static Retrofit septaAmazonServicesSingletonTest; // TODO: remove
+
     private static FavoritesSharedPrefsUtils favoritesService = new FavoritesSharedPrefsUtilsImpl();
 
     public static void init() {
@@ -51,6 +53,21 @@ public class SeptaServiceFactory {
             }
         }).build())
                 .baseUrl(septaWebServicesBaseUrl).addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        // TODO: remove
+        septaAmazonServicesSingletonTest = new Retrofit.Builder().client(new OkHttpClient.Builder().connectTimeout(5, TimeUnit.SECONDS).readTimeout(20, TimeUnit.SECONDS).addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)).addInterceptor(new Interceptor() {
+            @Override
+            public Response intercept(Chain chain) throws IOException {
+                Request original = chain.request();
+                Request.Builder requestBuilder = original.newBuilder()
+                        .addHeader("x-api-key", amazonawsApiKey);
+
+                Request request = requestBuilder.build();
+                return chain.proceed(request);
+            }
+        }).build())
+                .baseUrl("http://apitest.septa.org/").addConverterFactory(GsonConverterFactory.create())
                 .build();
 
         googleSingleton = new Retrofit.Builder().client(new OkHttpClient.Builder().addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)).addInterceptor(new Interceptor() {
@@ -87,7 +104,8 @@ public class SeptaServiceFactory {
     }
 
     public static TransitViewService getTransitViewService() {
-        return septaAmazonServicesSingleton.create(TransitViewService.class);
+        return septaAmazonServicesSingletonTest.create(TransitViewService.class);
+//        return septaAmazonServicesSingleton.create(TransitViewService.class); // TODO: replace
     }
 
     public static GooglePlaceAutoCompleteService getAutoCompletePlaceService() {

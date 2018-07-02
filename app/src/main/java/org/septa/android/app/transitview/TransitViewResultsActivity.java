@@ -1,6 +1,8 @@
 package org.septa.android.app.transitview;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Point;
 import android.location.Location;
@@ -8,6 +10,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -39,7 +42,10 @@ import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
 import org.septa.android.app.database.DatabaseManager;
 import org.septa.android.app.domain.RouteDirectionModel;
+import org.septa.android.app.favorites.DeleteFavoritesAsyncTask;
+import org.septa.android.app.favorites.SaveFavoritesAsyncTask;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
+import org.septa.android.app.services.apiinterfaces.model.TransitViewFavorite;
 import org.septa.android.app.services.apiinterfaces.model.TransitViewModelResponse;
 import org.septa.android.app.support.CursorAdapterSupplier;
 import org.septa.android.app.support.MapUtils;
@@ -49,7 +55,6 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -59,6 +64,8 @@ import java.util.Set;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static org.septa.android.app.transitview.TransitViewUtils.isTrolley;
 
 public class TransitViewResultsActivity extends AppCompatActivity implements Runnable, TransitViewLinePickerFragment.TransitViewLinePickerListener, OnMapReadyCallback, TransitViewVehicleDetailsInfoWindowAdapter.TransitViewVehicleDetailsInfoWindowAdapterListener {
 
@@ -110,6 +117,7 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         invalidateOptionsMenu();
+        menu.clear();
 
         getMenuInflater().inflate(R.menu.favorite_menu, menu);
         if (isAFavorite) {
@@ -128,15 +136,14 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.create_favorite:
-                Log.d(TAG, "Favoriting TransitView routes: " + routeIds);
-
-                // TODO: favorite a transitview selection
-//                saveAsFavorite(item);
+                Log.d(TAG, "Creating a favorite for TransitView routes: " + routeIds);
+                saveAsFavorite(item);
                 return true;
             case R.id.refresh_results:
                 refreshed = true;
                 refreshData();
                 return true;
+//                TODO: add logic for editing a favorite
 //            case R.id.edit_favorite:
 //                editFavorite(item);
 //                return true;
@@ -300,12 +307,6 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
     }
 
     @Override
-    public boolean isTrolley(String routeId) {
-        String[] trolleyRouteIds = new String[]{"10", "11", "13", "15", "34", "36", "101", "102"};
-        return Arrays.asList(trolleyRouteIds).contains(routeId);
-    }
-
-    @Override
     public TransitViewModelResponse.TransitViewRecord getVehicleRecord(String vehicleRecordKey) {
         return details.get(vehicleRecordKey);
     }
@@ -323,6 +324,8 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
         } else {
             restoreState(bundle);
         }
+
+        checkIfAFavorite();
     }
 
     private void restoreState(Bundle bundle) {
@@ -398,6 +401,17 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
         });
     }
 
+    private void checkIfAFavorite() {
+        String favoriteKey = TransitViewFavorite.generateKey(firstRoute, secondRoute, thirdRoute);
+        if (SeptaServiceFactory.getFavoritesService().getFavoriteByKey(this, favoriteKey) != null) {
+            isAFavorite = true;
+        } else {
+            isAFavorite = false;
+        }
+        // TODO: refresh menu toolbar
+        supportInvalidateOptionsMenu();
+    }
+
     private void updateRouteLabels(@NonNull RouteDirectionModel first, RouteDirectionModel second, RouteDirectionModel third) {
         this.firstRoute = first;
         this.secondRoute = second;
@@ -433,6 +447,8 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
             activateView(addLabel);
         }
         routeIds = routeIdBuilder.toString();
+
+        checkIfAFavorite();
 
         refreshed = false;
         refreshData();
@@ -569,6 +585,72 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
     private void showNoResultsFoundErrorMessage() {
         // show error message and hide
         Log.e(TAG, "No TransitView results found");
+    }
+
+    private void saveAsFavorite(final MenuItem item) {
+        if (!item.isEnabled()) {
+            return;
+        }
+
+        item.setEnabled(false);
+
+        // favorite a transitview selection
+        if (firstRoute != null) {
+            if (isAFavorite) {
+                // prompt to delete favorite
+                new AlertDialog.Builder(this).setCancelable(true).setTitle(R.string.delete_fav_modal_title)
+                        .setMessage(R.string.delete_fav_modal_text)
+                        .setPositiveButton(R.string.delete_fav_pos_button, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                DeleteFavoritesAsyncTask task = new DeleteFavoritesAsyncTask(TransitViewResultsActivity.this, new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        item.setEnabled(true);
+                                    }
+                                }, new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        item.setEnabled(true);
+                                        item.setIcon(R.drawable.ic_favorite_available);
+                                        isAFavorite = false;
+                                    }
+                                });
+
+                                task.execute(TransitViewFavorite.generateKey(firstRoute, secondRoute, thirdRoute));
+                            }
+                        }).setNegativeButton(R.string.delete_fav_neg_button, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        item.setEnabled(true);
+                    }
+                }).create().show();
+            } else {
+                // save new favorite
+                final TransitViewFavorite favorite = new TransitViewFavorite(firstRoute, secondRoute, thirdRoute);
+                SaveFavoritesAsyncTask task = new SaveFavoritesAsyncTask(this, new Runnable() {
+                    @Override
+                    public void run() {
+                        item.setEnabled(true);
+                    }
+                }, new Runnable() {
+                    @Override
+                    public void run() {
+                        item.setEnabled(true);
+                        item.setIcon(R.drawable.ic_favorite_made);
+                        isAFavorite = true;
+                    }
+                });
+
+                task.execute(favorite);
+
+                Snackbar snackbar = Snackbar.make(findViewById(R.id.activity_transitview_results), R.string.create_transitview_fav_snackbar, Snackbar.LENGTH_LONG);
+                snackbar.show();
+            }
+
+        } else {
+            item.setEnabled(true);
+        }
     }
 
 }

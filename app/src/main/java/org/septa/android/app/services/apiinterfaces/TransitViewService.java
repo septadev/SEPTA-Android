@@ -8,10 +8,12 @@ import retrofit2.http.Query;
 
 public interface TransitViewService {
 
-    @GET("/prod/transitviewall")
+    //    @GET("/prod/transitviewall")
+    @GET("/api/TransitViewAll")
     Call<TransitViewModelResponse> getAllTransitViewResults();
 
-    @GET("/prod/transitviewall")
+    //    @GET("/prod/transitviewall")
+    @GET("/api/TransitViewAll")
     Call<TransitViewModelResponse> getTransitViewResults(@Query("routes") String routeIds);
 
 }

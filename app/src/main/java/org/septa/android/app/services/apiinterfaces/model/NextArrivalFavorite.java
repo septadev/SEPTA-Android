@@ -10,12 +10,7 @@ import org.septa.android.app.TransitType;
 import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.domain.StopModel;
 
-import java.io.Serializable;
-
-public class NextArrivalFavorite implements Serializable {
-
-    @SerializedName("name")
-    private String name;
+public class NextArrivalFavorite extends Favorite {
 
     @SerializedName("start")
     private StopModel start;
@@ -28,9 +23,6 @@ public class NextArrivalFavorite implements Serializable {
 
     @SerializedName("transit_type")
     private TransitType transitType;
-
-    @SerializedName("created_with_version")
-    private int createdWithVersion;
 
     public NextArrivalFavorite(@NonNull StopModel start, @NonNull StopModel destination, @NonNull TransitType transitType, @Nullable RouteDirectionModel routeDirectionModel) {
         this.start = start;
@@ -48,12 +40,18 @@ public class NextArrivalFavorite implements Serializable {
         createdWithVersion = BuildConfig.VERSION_CODE;
     }
 
+    @Override
     public String getKey() {
         return generateKey(start, destination, transitType, routeDirectionModel);
     }
 
     private static String generateKey(TransitType transitType, String startId, String destinationId, String lineId, String directionCode) {
-        return transitType.name() + "_" + startId + "_" + destinationId + "_" + lineId + "_" + directionCode;
+        StringBuilder favoriteKey = new StringBuilder(transitType.name());
+        favoriteKey.append(FAVORITE_KEY_DELIM).append(startId)
+                .append(FAVORITE_KEY_DELIM).append(destinationId)
+                .append(FAVORITE_KEY_DELIM).append(lineId)
+                .append(FAVORITE_KEY_DELIM).append(directionCode);
+        return favoriteKey.toString();
     }
 
     public static String generateKey(@NonNull StopModel start, @NonNull StopModel destination, @NonNull TransitType transitType, @Nullable RouteDirectionModel routeDirectionModel) {
@@ -67,14 +65,6 @@ public class NextArrivalFavorite implements Serializable {
         }
 
         return generateKey(transitType, startId, destinationId, lineId, directionCode);
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public StopModel getStart() {
@@ -91,10 +81,6 @@ public class NextArrivalFavorite implements Serializable {
 
     public RouteDirectionModel getRouteDirectionModel() {
         return routeDirectionModel;
-    }
-
-    public int getCreatedWithVersion() {
-        return createdWithVersion;
     }
 
     @Override

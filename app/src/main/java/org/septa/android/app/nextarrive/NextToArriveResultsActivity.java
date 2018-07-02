@@ -440,9 +440,10 @@ public class NextToArriveResultsActivity extends BaseActivity implements OnMapRe
             nextToArriveDetailsView.setDestination(destination);
             nextToArriveDetailsView.setRouteDirectionModel(routeDirectionModel);
 
-
             String favKey = NextArrivalFavorite.generateKey(start, destination, transitType, routeDirectionModel);
-            currentNextArrivalFavorite = SeptaServiceFactory.getFavoritesService().getFavoriteByKey(this, favKey);
+
+            // currentNextArrivalFavorite can be null if the current selection is not a favorite
+            currentNextArrivalFavorite = (NextArrivalFavorite) SeptaServiceFactory.getFavoritesService().getFavoriteByKey(this, favKey);
 
             findViewById(R.id.view_sched_view).setOnClickListener(new View.OnClickListener() {
                 @Override

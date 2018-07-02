@@ -4,9 +4,9 @@ import android.content.Context;
 import android.os.AsyncTask;
 
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
-import org.septa.android.app.services.apiinterfaces.model.NextArrivalFavorite;
+import org.septa.android.app.services.apiinterfaces.model.Favorite;
 
-public class SaveFavoritesAsyncTask extends AsyncTask<NextArrivalFavorite, Void, Void> {
+public class SaveFavoritesAsyncTask extends AsyncTask<Favorite, Void, Void> {
 
     private Runnable onCancel;
     private Runnable onPostExecute;
@@ -19,7 +19,7 @@ public class SaveFavoritesAsyncTask extends AsyncTask<NextArrivalFavorite, Void,
     }
 
     @Override
-    protected Void doInBackground(NextArrivalFavorite... params) {
+    protected Void doInBackground(Favorite... params) {
         SeptaServiceFactory.getFavoritesService().addFavorites(context, params[0]);
         return null;
     }

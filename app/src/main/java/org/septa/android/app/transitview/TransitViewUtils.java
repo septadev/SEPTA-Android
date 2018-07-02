@@ -12,8 +12,12 @@ import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 
 import org.septa.android.app.R;
+import org.septa.android.app.services.apiinterfaces.model.Favorite;
+import org.septa.android.app.services.apiinterfaces.model.TransitViewFavorite;
 
-public class TransitViewUtils {
+import java.util.Arrays;
+
+public abstract class TransitViewUtils {
 
     public static BitmapDescriptor getDirectionalIconForTransitType(Context context, int transitTypeDrawableId, int angle) {
         // the vehicle direction icon points South by default
@@ -28,7 +32,7 @@ public class TransitViewUtils {
         return BitmapDescriptorFactory.fromBitmap(mergeToPin(finalDirection.getBitmap(), transitType));
     }
 
-    public static Bitmap mergeToPin(Bitmap back, Bitmap front) {
+    private static Bitmap mergeToPin(Bitmap back, Bitmap front) {
         Bitmap result = Bitmap.createBitmap(back.getWidth(), back.getHeight(), back.getConfig());
         Canvas canvas = new Canvas(result);
         int widthBack = back.getWidth();
@@ -39,14 +43,14 @@ public class TransitViewUtils {
         return result;
     }
 
-    public static BitmapDrawable rotateBitmap(Context context, Bitmap source, float angle) {
+    private static BitmapDrawable rotateBitmap(Context context, Bitmap source, float angle) {
         Matrix matrix = new Matrix();
         matrix.postRotate(angle);
         Bitmap bitmap = Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
         return new BitmapDrawable(context.getResources(), bitmap);
     }
 
-    public static Bitmap drawableToBitmap(Drawable drawable) {
+    private static Bitmap drawableToBitmap(Drawable drawable) {
         if (drawable instanceof BitmapDrawable) {
             return ((BitmapDrawable) drawable).getBitmap();
         }
@@ -62,5 +66,14 @@ public class TransitViewUtils {
         drawable.draw(canvas);
 
         return bitmap;
+    }
+
+    public static boolean isTrolley(String routeId) {
+        String[] trolleyRouteIds = new String[]{"10", "11", "13", "15", "34", "36", "101", "102"};
+        return Arrays.asList(trolleyRouteIds).contains(routeId);
+    }
+
+    public static boolean isATransitViewFavorite(String favoriteKey) {
+        return TransitViewFavorite.TRANSITVIEW.equals(favoriteKey.split(Favorite.FAVORITE_KEY_DELIM)[0]);
     }
 }

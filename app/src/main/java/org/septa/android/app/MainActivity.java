@@ -47,7 +47,6 @@ import org.septa.android.app.schedules.SchedulesFragment;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Alert;
 import org.septa.android.app.services.apiinterfaces.model.AlertDetail;
-import org.septa.android.app.services.apiinterfaces.model.NextArrivalFavorite;
 import org.septa.android.app.support.AnalyticsManager;
 import org.septa.android.app.support.CrashlyticsManager;
 import org.septa.android.app.support.ShakeDetector;
@@ -57,8 +56,6 @@ import org.septa.android.app.systemstatus.SystemStatusState;
 import org.septa.android.app.transitview.TransitViewFragment;
 import org.septa.android.app.view.TextView;
 import org.septa.android.app.webview.WebViewFragment;
-
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -117,7 +114,7 @@ public class MainActivity extends BaseActivity implements
     @Override
     public final void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        favoritesFragment = FavoritesFragment.newInstance();
+        favoritesFragment = new FavoritesFragment();
         events = WebViewFragment.getInstance(getResources().getString(R.string.events_url));
         trainview = WebViewFragment.getInstance(getResources().getString(R.string.trainview_url));
         transitview = WebViewFragment.getInstance(getResources().getString(R.string.transitview_url));
@@ -140,7 +137,7 @@ public class MainActivity extends BaseActivity implements
         registerReceiver(onDBDownloadComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
         downloadManager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
         if (savedInstanceState == null) {
-            if (SeptaServiceFactory.getFavoritesService().getFavorites(this).size() > 0) {
+            if (SeptaServiceFactory.getFavoritesService().getNTAFavorites(this).size() > 0) {
                 switchToFavorites();
             } else {
                 addNewFavorite();
@@ -375,7 +372,7 @@ public class MainActivity extends BaseActivity implements
     @Override
     public void refreshFavoritesInstance() {
         CrashlyticsManager.log(Log.INFO, TAG, "refreshFavoritesInstance");
-        favoritesFragment = FavoritesFragment.newInstance();
+        favoritesFragment = new FavoritesFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, favoritesFragment).commit();
     }
 
@@ -391,15 +388,12 @@ public class MainActivity extends BaseActivity implements
 
         if (isInEditMode) {
             // switch to favorites fragment
-            favoritesFragment = FavoritesFragment.newInstance();
+            favoritesFragment = new FavoritesFragment();
             activeFragment = favoritesFragment;
             getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, activeFragment).commit();
         } else {
-            // open edit mode
-            List<NextArrivalFavorite> nextArrivalFavoriteList = favoritesFragment.openEditMode();
-
             // switch to manage favorites fragment
-            manageFavoritesFragment = ManageFavoritesFragment.newInstance(nextArrivalFavoriteList);
+            manageFavoritesFragment = new ManageFavoritesFragment();
             activeFragment = manageFavoritesFragment;
             getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, activeFragment).commit();
         }

@@ -35,20 +35,12 @@ import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Favorite;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalFavorite;
 import org.septa.android.app.services.apiinterfaces.model.TransitViewFavorite;
-import org.septa.android.app.support.RouteModelComparator;
 import org.septa.android.app.support.SwipeController;
-import org.septa.android.app.transitview.TransitViewResultsActivity;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import static org.septa.android.app.transitview.TransitViewFragment.TRANSITVIEW_ROUTE_FIRST;
-import static org.septa.android.app.transitview.TransitViewFragment.TRANSITVIEW_ROUTE_SECOND;
-import static org.septa.android.app.transitview.TransitViewFragment.TRANSITVIEW_ROUTE_THIRD;
 
 public class FavoritesFragment extends Fragment implements Runnable, FavoriteItemAdapter.FavoriteItemListener, SwipeController.SwipeControllerListener {
     private static final String TAG = FavoritesFragment.class.getSimpleName();
@@ -286,27 +278,7 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
 
     @Override
     public void goToTransitView(TransitViewFavorite transitViewFavorite) {
-        // TODO: sort the routes in TransitViewActivity
-        Intent intent = new Intent(getActivity(), TransitViewResultsActivity.class);
-
-        // sort the routes and append null routes to the end
-        List<RouteDirectionModel> selectedRoutes = new ArrayList<>();
-        selectedRoutes.add(transitViewFavorite.getFirstRoute());
-        if (transitViewFavorite.getSecondRoute() != null) {
-            selectedRoutes.add(transitViewFavorite.getSecondRoute());
-        }
-        if (transitViewFavorite.getThirdRoute() != null) {
-            selectedRoutes.add(transitViewFavorite.getThirdRoute());
-        }
-        Collections.sort(selectedRoutes, new RouteModelComparator());
-        while (selectedRoutes.size() < 3) {
-            selectedRoutes.add(null);
-        }
-
-        intent.putExtra(TRANSITVIEW_ROUTE_FIRST, selectedRoutes.get(0));
-        intent.putExtra(TRANSITVIEW_ROUTE_SECOND, selectedRoutes.get(1));
-        intent.putExtra(TRANSITVIEW_ROUTE_THIRD, selectedRoutes.get(2));
-        startActivity(intent);
+        mListener.goToTransitViewResults(transitViewFavorite.getFirstRoute(), transitViewFavorite.getSecondRoute(), transitViewFavorite.getThirdRoute());
     }
 
     @Override
@@ -508,6 +480,8 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
         void gotoSchedules();
 
         void goToSchedulesForTarget(StopModel start, StopModel destination, TransitType transitType, RouteDirectionModel routeDirectionModel);
+
+        void goToTransitViewResults(RouteDirectionModel firstRoute, RouteDirectionModel secondRoute, RouteDirectionModel thirdRoute);
 
         void toggleEditFavoritesMode(boolean isInEditMode);
     }

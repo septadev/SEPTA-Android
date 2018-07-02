@@ -49,24 +49,34 @@ import org.septa.android.app.services.apiinterfaces.model.Alert;
 import org.septa.android.app.services.apiinterfaces.model.AlertDetail;
 import org.septa.android.app.support.AnalyticsManager;
 import org.septa.android.app.support.CrashlyticsManager;
+import org.septa.android.app.support.RouteModelComparator;
 import org.septa.android.app.support.ShakeDetector;
 import org.septa.android.app.systemmap.SystemMapFragment;
 import org.septa.android.app.systemstatus.SystemStatusFragment;
 import org.septa.android.app.systemstatus.SystemStatusState;
 import org.septa.android.app.transitview.TransitViewFragment;
+import org.septa.android.app.transitview.TransitViewResultsActivity;
 import org.septa.android.app.view.TextView;
 import org.septa.android.app.webview.WebViewFragment;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 import static org.septa.android.app.database.update.DatabaseSharedPrefsUtils.DEFAULT_DOWNLOAD_REF_ID;
+import static org.septa.android.app.transitview.TransitViewFragment.TRANSITVIEW_ROUTE_FIRST;
+import static org.septa.android.app.transitview.TransitViewFragment.TRANSITVIEW_ROUTE_SECOND;
+import static org.septa.android.app.transitview.TransitViewFragment.TRANSITVIEW_ROUTE_THIRD;
 
 public class MainActivity extends BaseActivity implements
         NavigationView.OnNavigationItemSelectedListener,
         FavoritesFragment.FavoritesFragmentListener,
         ManageFavoritesFragment.ManageFavoritesFragmentListener,
+        TransitViewFragment.TransitViewFragmentListener,
         SeptaServiceFactory.SeptaServiceFactoryCallBacks,
         CheckForLatestDB.CheckForLatestDBListener,
         DownloadNewDB.DownloadNewDBListener,
@@ -428,6 +438,30 @@ public class MainActivity extends BaseActivity implements
         }
 
         switchToSchedules(bundle);
+    }
+
+    @Override
+    public void goToTransitViewResults(RouteDirectionModel firstRoute, RouteDirectionModel secondRoute, RouteDirectionModel thirdRoute) {
+        Intent intent = new Intent(this, TransitViewResultsActivity.class);
+
+        // sort the routes and append null routes to the end
+        List<RouteDirectionModel> selectedRoutes = new ArrayList<>();
+        selectedRoutes.add(firstRoute);
+        if (secondRoute != null) {
+            selectedRoutes.add(secondRoute);
+        }
+        if (thirdRoute != null) {
+            selectedRoutes.add(thirdRoute);
+        }
+        Collections.sort(selectedRoutes, new RouteModelComparator());
+        while (selectedRoutes.size() < 3) {
+            selectedRoutes.add(null);
+        }
+
+        intent.putExtra(TRANSITVIEW_ROUTE_FIRST, selectedRoutes.get(0));
+        intent.putExtra(TRANSITVIEW_ROUTE_SECOND, selectedRoutes.get(1));
+        intent.putExtra(TRANSITVIEW_ROUTE_THIRD, selectedRoutes.get(2));
+        startActivity(intent);
     }
 
     @Override

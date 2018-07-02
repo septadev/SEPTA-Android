@@ -1,6 +1,7 @@
 package org.septa.android.app.transitview;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
@@ -21,18 +22,15 @@ import org.septa.android.app.TransitType;
 import org.septa.android.app.database.DatabaseManager;
 import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.support.CursorAdapterSupplier;
-import org.septa.android.app.support.RouteModelComparator;
 import org.septa.android.app.view.TextView;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import static org.septa.android.app.transitview.TransitViewUtils.isTrolley;
 
 public class TransitViewFragment extends Fragment implements TransitViewLinePickerFragment.TransitViewLinePickerListener {
 
     private static final String TAG = TransitViewFragment.class.getSimpleName();
+
+    private TransitViewFragmentListener mListener;
 
     private RouteDirectionModel firstRoute, secondRoute, thirdRoute;
     private CursorAdapterSupplier<RouteDirectionModel> busRouteCursorAdapterSupplier, trolleyRouteCursorAdapterSupplier;
@@ -162,11 +160,23 @@ public class TransitViewFragment extends Fragment implements TransitViewLinePick
         queryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                goToTransitViewResults();
+                mListener.goToTransitViewResults(firstRoute, secondRoute, thirdRoute);
             }
         });
 
         return rootView;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        if (!(context instanceof TransitViewFragmentListener)) {
+            throw new RuntimeException("Context must implement FavoritesFragmentListener");
+        } else {
+            mListener = (TransitViewFragmentListener) context;
+        }
+
     }
 
     @Override
@@ -260,28 +270,8 @@ public class TransitViewFragment extends Fragment implements TransitViewLinePick
         view.setClickable(true);
     }
 
-    private void goToTransitViewResults() {
-        // TODO: sort the routes in TransitViewActivity
-        Intent intent = new Intent(getActivity(), TransitViewResultsActivity.class);
-
-        // sort the routes and append null routes to the end
-        List<RouteDirectionModel> selectedRoutes = new ArrayList<>();
-        selectedRoutes.add(firstRoute);
-        if (secondRoute != null) {
-            selectedRoutes.add(secondRoute);
-        }
-        if (thirdRoute != null) {
-            selectedRoutes.add(thirdRoute);
-        }
-        Collections.sort(selectedRoutes, new RouteModelComparator());
-        while (selectedRoutes.size() < 3) {
-            selectedRoutes.add(null);
-        }
-
-        intent.putExtra(TRANSITVIEW_ROUTE_FIRST, selectedRoutes.get(0));
-        intent.putExtra(TRANSITVIEW_ROUTE_SECOND, selectedRoutes.get(1));
-        intent.putExtra(TRANSITVIEW_ROUTE_THIRD, selectedRoutes.get(2));
-        startActivity(intent);
+    public interface TransitViewFragmentListener {
+        void goToTransitViewResults(RouteDirectionModel firstRoute, RouteDirectionModel secondRoute, RouteDirectionModel thirdRoute);
     }
 
 }

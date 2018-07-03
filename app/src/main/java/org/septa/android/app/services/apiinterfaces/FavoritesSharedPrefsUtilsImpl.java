@@ -281,7 +281,6 @@ public class FavoritesSharedPrefsUtilsImpl implements FavoritesSharedPrefsUtils 
 
     @Override
     public void resyncFavoritesMap(Context context) {
-        // TODO: validate that this does not delete existing favorites
         SharedPreferences sharedPreferences = getSharedPreferences(context);
         List<FavoriteState> favoriteStateList = getFavoriteStates(context);
 

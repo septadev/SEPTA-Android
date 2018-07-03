@@ -98,7 +98,7 @@ public class RenameFavoriteDialogFragment extends DialogFragment {
                 }
             }
         });
-        
+
         // disable delete button on favorite creation
         if (isAnOldFavorite) {
             activateView(deleteButton);

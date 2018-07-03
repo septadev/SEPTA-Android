@@ -11,6 +11,8 @@ import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,11 +34,13 @@ import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.domain.ScheduleModel;
 import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.favorites.DeleteFavoritesAsyncTask;
-import org.septa.android.app.favorites.SaveFavoritesAsyncTask;
+import org.septa.android.app.favorites.edit.RenameFavoriteDialogFragment;
 import org.septa.android.app.nextarrive.NextToArriveResultsActivity;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Alert;
+import org.septa.android.app.services.apiinterfaces.model.Favorite;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalFavorite;
+import org.septa.android.app.support.CrashlyticsManager;
 import org.septa.android.app.support.Criteria;
 import org.septa.android.app.support.CursorAdapterSupplier;
 import org.septa.android.app.systemstatus.GoToSystemStatusResultsOnClickListener;
@@ -48,7 +52,11 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ScheduleResultsActivity extends BaseActivity {
+import static org.septa.android.app.favorites.edit.RenameFavoriteDialogFragment.EDIT_FAVORITE_DIALOG_KEY;
+
+public class ScheduleResultsActivity extends BaseActivity implements RenameFavoriteDialogFragment.RenameFavoriteListener {
+
+    private static final String TAG = ScheduleResultsActivity.class.getSimpleName();
 
     private static final int RAIL_MON_THUR = 8;
     private static final int WEEK_DAY = 32;
@@ -69,7 +77,7 @@ public class ScheduleResultsActivity extends BaseActivity {
     RouteDirectionModel routeDirectionModel;
     TransitType transitType;
     CursorAdapterSupplier<RouteDirectionModel> reverseRouteCursorAdapterSupplier;
-    NextArrivalFavorite currentNextArrivalFavorite;
+    NextArrivalFavorite currentFavorite;
     Menu menu;
 
     TextView startStationText;
@@ -215,11 +223,13 @@ public class ScheduleResultsActivity extends BaseActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        invalidateOptionsMenu();
+
         this.menu = menu;
         getMenuInflater().inflate(R.menu.favorite_menu, menu);
 
-        if (currentNextArrivalFavorite != null) {
+        if (currentFavorite != null) {
             menu.findItem(R.id.create_favorite).setIcon(R.drawable.ic_favorite_made);
             menu.findItem(R.id.create_favorite).setTitle(R.string.schedule_favorite_icon_title_remove);
         } else {
@@ -229,7 +239,7 @@ public class ScheduleResultsActivity extends BaseActivity {
         // hide refresh icon -- refresh only needed in NTA Results Activity
         menu.findItem(R.id.refresh_results).setVisible(false);
 
-        return true;
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -247,6 +257,30 @@ public class ScheduleResultsActivity extends BaseActivity {
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return true;
+    }
+
+    @Override
+    public void updateFavorite(Favorite favorite) {
+        if (favorite instanceof NextArrivalFavorite) {
+            currentFavorite = (NextArrivalFavorite) favorite;
+            renameFavorite(currentFavorite);
+
+            Snackbar snackbar = Snackbar.make(findViewById(R.id.activity_schedule_results_container), R.string.create_fav_snackbar_text, Snackbar.LENGTH_LONG);
+            snackbar.show();
+        } else {
+            Log.e(TAG, "Attempted to save invalid Favorite type");
+        }
+    }
+
+    @Override
+    public void renameFavorite(Favorite favorite) {
+        invalidateOptionsMenu();
+    }
+
+    @Override
+    public void favoriteCreationFailed() {
+        Snackbar snackbar = Snackbar.make(findViewById(R.id.activity_schedule_results_container), R.string.create_fav_snackbar_failed, Snackbar.LENGTH_LONG);
+        snackbar.show();
     }
 
     private void restoreState(Bundle bundle) {
@@ -304,12 +338,13 @@ public class ScheduleResultsActivity extends BaseActivity {
         transitTypeImageView.setImageResource(transitType.getIconForLine(routeDirectionModel.getRouteId(), this));
 
         String favKey = NextArrivalFavorite.generateKey(start, destination, transitType, routeDirectionModel);
-        // currentNextArrivalFavorite can be null if the current selection is not a favorite
-        currentNextArrivalFavorite = (NextArrivalFavorite) SeptaServiceFactory.getFavoritesService().getFavoriteByKey(this, favKey);
+        // currentFavorite can be null if the current selection is not a favorite
+        currentFavorite = (NextArrivalFavorite) SeptaServiceFactory.getFavoritesService().getFavoriteByKey(this, favKey);
 
         // check if already a favorite
+        // TODO: invalidateOptionsMenu???
         if (menu != null) {
-            if (currentNextArrivalFavorite != null) {
+            if (currentFavorite != null) {
                 menu.findItem(R.id.create_favorite).setIcon(R.drawable.ic_favorite_made);
             } else {
                 menu.findItem(R.id.create_favorite).setIcon(R.drawable.ic_favorite_available);
@@ -353,27 +388,16 @@ public class ScheduleResultsActivity extends BaseActivity {
         item.setEnabled(false);
 
         if (start != null && destination != null && transitType != null) {
-            if (currentNextArrivalFavorite == null) {
+            if (currentFavorite == null) {
+                // prompt to save favorite
                 final NextArrivalFavorite nextArrivalFavorite = new NextArrivalFavorite(start, destination, transitType, routeDirectionModel);
-                SaveFavoritesAsyncTask task = new SaveFavoritesAsyncTask(this, new Runnable() {
-                    @Override
-                    public void run() {
-                        item.setEnabled(true);
-                    }
-                }, new Runnable() {
-                    @Override
-                    public void run() {
-                        item.setEnabled(true);
-                        item.setIcon(R.drawable.ic_favorite_made);
-                        currentNextArrivalFavorite = nextArrivalFavorite;
-                    }
-                });
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                CrashlyticsManager.log(Log.INFO, TAG, "Creating initial RenameFavoriteDialogFragment for:" + nextArrivalFavorite.toString());
+                RenameFavoriteDialogFragment fragment = RenameFavoriteDialogFragment.newInstance(false, false, nextArrivalFavorite);
+                fragment.show(ft, EDIT_FAVORITE_DIALOG_KEY);
 
-                task.execute(nextArrivalFavorite);
-                Snackbar snackbar = Snackbar
-                        .make(findViewById(R.id.activity_schedule_results_container), R.string.create_fav_snackbar_text, Snackbar.LENGTH_LONG);
+                item.setEnabled(true);
 
-                snackbar.show();
             } else {
                 new AlertDialog.Builder(this).setCancelable(true).setTitle(R.string.delete_fav_modal_title)
                         .setMessage(R.string.delete_fav_modal_text)
@@ -390,11 +414,11 @@ public class ScheduleResultsActivity extends BaseActivity {
                                     public void run() {
                                         item.setEnabled(true);
                                         item.setIcon(R.drawable.ic_favorite_available);
-                                        currentNextArrivalFavorite = null;
+                                        currentFavorite = null;
                                     }
                                 });
 
-                                task.execute(currentNextArrivalFavorite.getKey());
+                                task.execute(currentFavorite.getKey());
                             }
                         }).setNegativeButton(R.string.delete_fav_neg_button, new DialogInterface.OnClickListener() {
                     @Override

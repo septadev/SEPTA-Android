@@ -32,7 +32,6 @@ import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.nextarrive.NextToArriveResultsActivity;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
-import org.septa.android.app.services.apiinterfaces.model.Favorite;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalFavorite;
 import org.septa.android.app.services.apiinterfaces.model.TransitViewFavorite;
 import org.septa.android.app.support.SwipeController;
@@ -298,12 +297,12 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
                                 // on unsuccessful deletion
                                 dialog.dismiss();
                                 revertSwipe(favoriteIndex);
-                                Log.e(TAG, "NextArrivalFavorite with key " + favoriteKey + " could not be deleted at this time");
+                                Log.e(TAG, "Favorite with key " + favoriteKey + " could not be deleted at this time");
                             }
                         }, new Runnable() {
                             @Override
                             public void run() {
-                                deleteFavorite(favoriteIndex, favoriteKey);
+                                deleteFavorite(favoriteIndex);
                             }
                         });
                         task.execute(favoriteKey);
@@ -441,34 +440,20 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
         }
     }
 
-    private void deleteFavorite(int favoriteIndex, String favoriteKey) {
+    private void deleteFavorite(int favoriteIndex) {
         // on successful deletion
         favoriteStateList.remove(favoriteIndex);
 
-        Favorite favoriteToDelete = SeptaServiceFactory.getFavoritesService().getFavoriteByKey(getContext(), favoriteKey);
+        favoriteItemAdapter.notifyItemRemoved(favoriteIndex);
+        favoriteItemAdapter.notifyDataSetChanged();
 
-        if (favoriteToDelete == null) {
-            Log.e(TAG, "Favorite does not exist. Could not delete favorite with key: " + favoriteKey);
-        } else {
-            if (favoriteToDelete instanceof NextArrivalFavorite) {
-                ntaFavoritesMap.remove(favoriteKey);
-            } else if (favoriteToDelete instanceof TransitViewFavorite) {
-                transitViewFavoritesMap.remove(favoriteKey);
-            } else {
-                Log.e(TAG, "Could not remove favorite with key " + favoriteKey + " from local map");
-            }
+        // reattach recyclerview so that deleting last row hides red background
+        itemTouchHelper.attachToRecyclerView(null);
+        itemTouchHelper.attachToRecyclerView(favoritesListView);
 
-            favoriteItemAdapter.notifyItemRemoved(favoriteIndex);
-            favoriteItemAdapter.notifyDataSetChanged();
-
-            // reattach recyclerview so that deleting last row hides red background
-            itemTouchHelper.attachToRecyclerView(null);
-            itemTouchHelper.attachToRecyclerView(favoritesListView);
-
-            // show no favorites message if that was the last favorite
-            if (favoriteStateList.isEmpty()) {
-                showNoFavoritesMessage();
-            }
+        // show no favorites message if that was the last favorite
+        if (favoriteStateList.isEmpty()) {
+            showNoFavoritesMessage();
         }
     }
 

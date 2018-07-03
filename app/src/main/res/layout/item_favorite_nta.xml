@@ -30,9 +30,9 @@
             android:layout_marginRight="8dp"
             android:layout_marginTop="10dp"
             android:layout_weight="5"
-            android:drawableLeft="@drawable/rail_active_final"
+            android:drawableLeft="@drawable/ic_rail_circle"
             android:drawablePadding="8dp"
-            android:drawableStart="@drawable/rail_active_final"
+            android:drawableStart="@drawable/ic_rail_circle"
             android:ellipsize="end"
             android:gravity="center_vertical"
             android:maxLines="1"
@@ -75,7 +75,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="@string/favorites_view_schedules_msg"
-                android:textColor="@color/colorPrimaryDark"
+                android:textColor="@color/text_primary"
                 android:textSize="12dp" />
 
         </LinearLayout>

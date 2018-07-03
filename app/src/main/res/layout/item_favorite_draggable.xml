@@ -32,7 +32,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="8dp"
-            android:src="@drawable/rail_active_final" />
+            android:src="@drawable/ic_rail_circle" />
 
         <org.septa.android.app.view.TextView
             android:id="@+id/favorite_title_text"

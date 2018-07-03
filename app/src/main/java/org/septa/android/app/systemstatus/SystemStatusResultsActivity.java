@@ -151,6 +151,12 @@ public class SystemStatusResultsActivity extends BaseActivity {
         outState.putSerializable(Constants.WEATHER_ALERTS_EXPANDED, weatherAlertsExpanded);
     }
 
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
+
     private void restoreSaveInstanceState(Bundle inState) {
         if (inState.containsKey(Constants.ROUTE_DIRECTION_MODEL) && inState.get(Constants.ROUTE_DIRECTION_MODEL) != null) {
             RouteDirectionModel routeDirectionModel = (RouteDirectionModel) inState.get(Constants.ROUTE_DIRECTION_MODEL);
@@ -306,11 +312,4 @@ public class SystemStatusResultsActivity extends BaseActivity {
             weatherAlertsDetails.setHtml(GeneralUtils.updateUrls(weatherBuilder.toString()));
         }
     }
-
-    @Override
-    public boolean onSupportNavigateUp() {
-        onBackPressed();
-        return true;
-    }
-
 }

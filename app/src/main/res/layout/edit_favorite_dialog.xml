@@ -98,10 +98,11 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="26dp"
         android:layout_marginTop="16dp"
+        android:clickable="true"
+        android:focusable="true"
         android:text="Delete Favorite"
         android:textAlignment="center"
         android:textColor="@android:color/white"
         android:textSize="14sp" />
-
 
 </LinearLayout>

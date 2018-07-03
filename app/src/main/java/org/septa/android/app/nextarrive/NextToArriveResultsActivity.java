@@ -49,7 +49,6 @@ import org.septa.android.app.database.DatabaseManager;
 import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.favorites.DeleteFavoritesAsyncTask;
-import org.septa.android.app.favorites.SaveFavoritesAsyncTask;
 import org.septa.android.app.favorites.edit.RenameFavoriteDialogFragment;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Favorite;
@@ -323,13 +322,28 @@ public class NextToArriveResultsActivity extends BaseActivity implements OnMapRe
     }
 
     @Override
-    public void updateFavorite(Favorite favorite) {
+    public void updateFavorite(final Favorite favorite) {
         if (favorite instanceof NextArrivalFavorite) {
             currentFavorite = (NextArrivalFavorite) favorite;
-            setTitle(currentFavorite.getName());
+            renameFavorite(currentFavorite);
+
+            Snackbar snackbar = Snackbar.make(containerView, R.string.create_fav_snackbar_text, Snackbar.LENGTH_LONG);
+            snackbar.show();
         } else {
             Log.e(TAG, "Attempted to save invalid Favorite type");
         }
+    }
+
+    @Override
+    public void renameFavorite(Favorite favorite) {
+        setTitle(favorite.getName());
+        invalidateOptionsMenu();
+    }
+
+    @Override
+    public void favoriteCreationFailed() {
+        Snackbar snackbar = Snackbar.make(containerView, R.string.create_fav_snackbar_failed, Snackbar.LENGTH_LONG);
+        snackbar.show();
     }
 
     @Override
@@ -739,26 +753,14 @@ public class NextToArriveResultsActivity extends BaseActivity implements OnMapRe
 
         if (start != null && destination != null && transitType != null) {
             if (currentFavorite == null) {
+                // prompt to save favorite
                 final NextArrivalFavorite nextArrivalFavorite = new NextArrivalFavorite(start, destination, transitType, routeDirectionModel);
-                SaveFavoritesAsyncTask task = new SaveFavoritesAsyncTask(this, new Runnable() {
-                    @Override
-                    public void run() {
-                        item.setEnabled(true);
-                    }
-                }, new Runnable() {
-                    @Override
-                    public void run() {
-                        item.setEnabled(true);
-                        item.setIcon(R.drawable.ic_favorite_made);
-                        currentFavorite = nextArrivalFavorite;
-                    }
-                });
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                CrashlyticsManager.log(Log.INFO, TAG, "Creating initial RenameFavoriteDialogFragment for:" + nextArrivalFavorite.toString());
+                RenameFavoriteDialogFragment fragment = RenameFavoriteDialogFragment.newInstance(false, false, nextArrivalFavorite);
+                fragment.show(ft, EDIT_FAVORITE_DIALOG_KEY);
 
-                task.execute(nextArrivalFavorite);
-                Snackbar snackbar = Snackbar
-                        .make(findViewById(R.id.rail_next_to_arrive_results_coordinator), R.string.create_fav_snackbar_text, Snackbar.LENGTH_LONG);
-
-                snackbar.show();
+                item.setEnabled(true);
             } else {
                 new AlertDialog.Builder(this).setCancelable(true).setTitle(R.string.delete_fav_modal_title)
                         .setMessage(R.string.delete_fav_modal_text)
@@ -795,11 +797,9 @@ public class NextToArriveResultsActivity extends BaseActivity implements OnMapRe
     }
 
     public void editFavorite(final MenuItem item) {
-        Log.d(TAG, "edit NextArrivalFavorite.");
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         CrashlyticsManager.log(Log.INFO, TAG, "Creating RenameFavoriteDialogFragment for:" + currentFavorite.toString());
-        RenameFavoriteDialogFragment fragment = RenameFavoriteDialogFragment.newInstance(false, currentFavorite);
-
+        RenameFavoriteDialogFragment fragment = RenameFavoriteDialogFragment.newInstance(false, true, currentFavorite);
         fragment.show(ft, EDIT_FAVORITE_DIALOG_KEY);
     }
 

@@ -144,6 +144,7 @@
     <string name="delete_fav_pos_button">Delete</string>
     <string name="delete_fav_neg_button">Cancel</string>
     <string name="create_fav_snackbar_text">Trip saved to your Favorites</string>
+    <string name="create_fav_snackbar_failed">Trip could not be saved to favorites</string>
     <string name="create_transitview_fav_snackbar">TransitView selection saved to your Favorites</string>
     <string name="nta_favorite_icon_title_remove">Tap to remove this Next To Arrive result as a favorite</string>
     <string name="nta_favorite_icon_title_create">Tap to create a favorite from this Next To Arrive result</string>

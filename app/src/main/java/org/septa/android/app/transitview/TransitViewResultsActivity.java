@@ -43,7 +43,6 @@ import org.septa.android.app.TransitType;
 import org.septa.android.app.database.DatabaseManager;
 import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.favorites.DeleteFavoritesAsyncTask;
-import org.septa.android.app.favorites.SaveFavoritesAsyncTask;
 import org.septa.android.app.favorites.edit.RenameFavoriteDialogFragment;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Favorite;
@@ -314,10 +313,25 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
     public void updateFavorite(Favorite favorite) {
         if (favorite instanceof TransitViewFavorite) {
             currentFavorite = (TransitViewFavorite) favorite;
-            setTitle(currentFavorite.getName());
+            renameFavorite(currentFavorite);
+
+            Snackbar snackbar = Snackbar.make(findViewById(R.id.main_content), R.string.create_fav_snackbar_text, Snackbar.LENGTH_LONG);
+            snackbar.show();
         } else {
             Log.e(TAG, "Attempted to save invalid Favorite type");
         }
+    }
+
+    @Override
+    public void renameFavorite(Favorite favorite) {
+        setTitle(favorite.getName());
+        invalidateOptionsMenu();
+    }
+
+    @Override
+    public void favoriteCreationFailed() {
+        Snackbar snackbar = Snackbar.make(findViewById(R.id.main_content), R.string.create_fav_snackbar_failed, Snackbar.LENGTH_LONG);
+        snackbar.show();
     }
 
     private void initializeActivity(@Nullable Bundle savedInstanceState) {
@@ -639,28 +653,15 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
                     }
                 }).create().show();
             } else {
-                // save new favorite
+                // prompt to save favorite
                 final TransitViewFavorite favorite = new TransitViewFavorite(firstRoute, secondRoute, thirdRoute);
-                SaveFavoritesAsyncTask task = new SaveFavoritesAsyncTask(this, new Runnable() {
-                    @Override
-                    public void run() {
-                        item.setEnabled(true);
-                    }
-                }, new Runnable() {
-                    @Override
-                    public void run() {
-                        item.setEnabled(true);
-                        item.setIcon(R.drawable.ic_favorite_made);
-                        isAFavorite = true;
-                    }
-                });
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                CrashlyticsManager.log(Log.INFO, TAG, "Creating initial RenameFavoriteDialogFragment for:" + favorite.toString());
+                RenameFavoriteDialogFragment fragment = RenameFavoriteDialogFragment.newInstance(true, false, favorite);
+                fragment.show(ft, EDIT_FAVORITE_DIALOG_KEY);
 
-                task.execute(favorite);
-
-                Snackbar snackbar = Snackbar.make(findViewById(R.id.activity_transitview_results), R.string.create_transitview_fav_snackbar, Snackbar.LENGTH_LONG);
-                snackbar.show();
+                item.setEnabled(true);
             }
-
         } else {
             item.setEnabled(true);
         }
@@ -669,7 +670,7 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
     public void editFavorite(final MenuItem item) {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         CrashlyticsManager.log(Log.INFO, TAG, "Creating RenameFavoriteDialogFragment for TransitView favorite: " + routeIds);
-        RenameFavoriteDialogFragment fragment = RenameFavoriteDialogFragment.newInstance(true, currentFavorite);
+        RenameFavoriteDialogFragment fragment = RenameFavoriteDialogFragment.newInstance(true, true, currentFavorite);
 
         fragment.show(ft, EDIT_FAVORITE_DIALOG_KEY);
     }

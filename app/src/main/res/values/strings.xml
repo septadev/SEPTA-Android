@@ -147,6 +147,8 @@
     <string name="create_transitview_fav_snackbar">TransitView selection saved to your Favorites</string>
     <string name="nta_favorite_icon_title_remove">Tap to remove this Next To Arrive result as a favorite</string>
     <string name="nta_favorite_icon_title_create">Tap to create a favorite from this Next To Arrive result</string>
+    <string name="transitview_favorite_icon_title_remove">Tap to remove this TransitView selection from your favorite</string>
+    <string name="transitview_favorite_icon_title_create">Tap to create a favorite from this TransitView selection</string>
     <string name="favorite_more_button_description">Tap for more Next to Arrive details for your favorite, </string>
 
     <string name="schedule_favorite_icon_title_remove">Tap to remove this Schedule result as a favorite</string>
@@ -162,6 +164,8 @@
     <string name="favorites_menu_item_done">Done</string>
     <string name="favorites_add_new">Add a Favorite</string>
     <string name="no_favorites_to_edit">You have no favorites to edit!</string>
+    <string name="rename_favorite_nta">Edit Favorite Trip</string>
+    <string name="rename_favorite_transitview">Edit TransitView Favorite</string>
 
 
     <!-- System Status -->

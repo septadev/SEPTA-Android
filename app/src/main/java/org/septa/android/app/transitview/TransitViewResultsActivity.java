@@ -44,9 +44,12 @@ import org.septa.android.app.database.DatabaseManager;
 import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.favorites.DeleteFavoritesAsyncTask;
 import org.septa.android.app.favorites.SaveFavoritesAsyncTask;
+import org.septa.android.app.favorites.edit.RenameFavoriteDialogFragment;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
+import org.septa.android.app.services.apiinterfaces.model.Favorite;
 import org.septa.android.app.services.apiinterfaces.model.TransitViewFavorite;
 import org.septa.android.app.services.apiinterfaces.model.TransitViewModelResponse;
+import org.septa.android.app.support.CrashlyticsManager;
 import org.septa.android.app.support.CursorAdapterSupplier;
 import org.septa.android.app.support.MapUtils;
 import org.septa.android.app.support.RouteModelComparator;
@@ -65,9 +68,10 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static org.septa.android.app.favorites.edit.RenameFavoriteDialogFragment.EDIT_FAVORITE_DIALOG_KEY;
 import static org.septa.android.app.transitview.TransitViewUtils.isTrolley;
 
-public class TransitViewResultsActivity extends AppCompatActivity implements Runnable, TransitViewLinePickerFragment.TransitViewLinePickerListener, OnMapReadyCallback, TransitViewVehicleDetailsInfoWindowAdapter.TransitViewVehicleDetailsInfoWindowAdapterListener {
+public class TransitViewResultsActivity extends AppCompatActivity implements Runnable, TransitViewLinePickerFragment.TransitViewLinePickerListener, OnMapReadyCallback, TransitViewVehicleDetailsInfoWindowAdapter.TransitViewVehicleDetailsInfoWindowAdapterListener, RenameFavoriteDialogFragment.RenameFavoriteListener {
 
     private static final String TAG = TransitViewResultsActivity.class.getSimpleName();
 
@@ -75,6 +79,7 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
     private Set<TransitViewModelResponse.TransitViewRecord> firstRoutesResults, secondRoutesResults, thirdRoutesResults;
     private String routeIds;
     private boolean isAFavorite = false;
+    private TransitViewFavorite currentFavorite = null;
 
     // data refresh
     private Handler refreshHandler;
@@ -98,7 +103,6 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
 
         initializeActivity(savedInstanceState);
 
-        setTitle(R.string.transit_view);
         setContentView(R.layout.activity_transitview_results);
 
         // initialize view
@@ -119,15 +123,11 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
         invalidateOptionsMenu();
         menu.clear();
 
-        getMenuInflater().inflate(R.menu.favorite_menu, menu);
         if (isAFavorite) {
-            menu.findItem(R.id.create_favorite).setIcon(R.drawable.ic_favorite_made);
-            menu.findItem(R.id.create_favorite).setTitle(R.string.nta_favorite_icon_title_remove);
+            getMenuInflater().inflate(R.menu.edit_favorites_menu, menu);
         } else {
-            menu.findItem(R.id.create_favorite).setTitle(R.string.nta_favorite_icon_title_create);
+            getMenuInflater().inflate(R.menu.favorite_menu, menu);
         }
-
-        // TODO: should there be an "edit" feature for transitview favorites, if so update onOptionsItemSelected
 
         return super.onPrepareOptionsMenu(menu);
     }
@@ -143,10 +143,9 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
                 refreshed = true;
                 refreshData();
                 return true;
-//                TODO: add logic for editing a favorite
-//            case R.id.edit_favorite:
-//                editFavorite(item);
-//                return true;
+            case R.id.edit_favorite:
+                editFavorite(item);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -311,6 +310,16 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
         return details.get(vehicleRecordKey);
     }
 
+    @Override
+    public void updateFavorite(Favorite favorite) {
+        if (favorite instanceof TransitViewFavorite) {
+            currentFavorite = (TransitViewFavorite) favorite;
+            setTitle(currentFavorite.getName());
+        } else {
+            Log.e(TAG, "Attempted to save invalid Favorite type");
+        }
+    }
+
     private void initializeActivity(@Nullable Bundle savedInstanceState) {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -403,12 +412,16 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
 
     private void checkIfAFavorite() {
         String favoriteKey = TransitViewFavorite.generateKey(firstRoute, secondRoute, thirdRoute);
-        if (SeptaServiceFactory.getFavoritesService().getFavoriteByKey(this, favoriteKey) != null) {
+        Favorite favoriteTemp = SeptaServiceFactory.getFavoritesService().getFavoriteByKey(this, favoriteKey);
+        if (favoriteTemp != null && favoriteTemp instanceof TransitViewFavorite) {
             isAFavorite = true;
+            currentFavorite = (TransitViewFavorite) favoriteTemp;
+            setTitle(currentFavorite.getName());
         } else {
             isAFavorite = false;
+            currentFavorite = null;
+            setTitle(R.string.transit_view);
         }
-        // TODO: refresh menu toolbar
         supportInvalidateOptionsMenu();
     }
 
@@ -651,6 +664,14 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
         } else {
             item.setEnabled(true);
         }
+    }
+
+    public void editFavorite(final MenuItem item) {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        CrashlyticsManager.log(Log.INFO, TAG, "Creating RenameFavoriteDialogFragment for TransitView favorite: " + routeIds);
+        RenameFavoriteDialogFragment fragment = RenameFavoriteDialogFragment.newInstance(true, currentFavorite);
+
+        fragment.show(ft, EDIT_FAVORITE_DIALOG_KEY);
     }
 
 }

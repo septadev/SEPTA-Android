@@ -333,7 +333,7 @@ public class FavoritesSharedPrefsUtilsImpl implements FavoritesSharedPrefsUtils 
             storeNTAFavorites(sharedPreferences, newNTAFavorites);
             storeTransitViewFavorites(sharedPreferences, newTransitViewFavorites);
         } else {
-            Log.e(TAG, "Resync of favorites map did not occur. State list size: " + favoriteStateList.size() +
+            Log.d(TAG, "Resync of favorites map did not occur. State list size: " + favoriteStateList.size() +
                     " NTA Map size: " + ntaFavorites.size() + " TransitView map size: " + transitViewFavorites.size());
         }
     }

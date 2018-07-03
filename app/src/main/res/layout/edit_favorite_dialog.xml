@@ -37,11 +37,12 @@
     </RelativeLayout>
 
     <org.septa.android.app.view.TextView
+        android:id="@+id/favorite_type"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="17dp"
         android:layout_marginTop="21dp"
-        android:text="Edit Favorite Trip"
+        android:text="@string/rename_favorite_nta"
         android:textColor="@android:color/white"
         android:textSize="20sp"
         app:typeface="@string/font_roboto_bold" />

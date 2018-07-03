@@ -14,14 +14,30 @@ import android.widget.TextView;
 import org.septa.android.app.R;
 import org.septa.android.app.favorites.DeleteFavoritesAsyncTask;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
+import org.septa.android.app.services.apiinterfaces.model.Favorite;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalFavorite;
+import org.septa.android.app.services.apiinterfaces.model.TransitViewFavorite;
 
 public class RenameFavoriteDialogFragment extends DialogFragment {
 
-    private NextArrivalFavorite nextArrivalFavorite;
-    private RenameFavoriteCallBack renameFavoriteCallBack;
+    private Favorite favorite;
+    private RenameFavoriteListener renameFavoriteListener;
+    private boolean isTransitViewFavorite;
 
-    private static final String KEY_FAVORITE = "KEY_FAVORITE";
+    public static final String EDIT_FAVORITE_DIALOG_KEY = "EDIT_FAVORITE_DIALOG_KEY";
+    private static final String KEY_FAVORITE = "KEY_FAVORITE",
+            KEY_FAVORITE_TYPE = "KEY_FAVORITE_TYPE";
+
+    public static RenameFavoriteDialogFragment newInstance(boolean isTransitViewFavorite, Favorite favorite) {
+        RenameFavoriteDialogFragment fragment = new RenameFavoriteDialogFragment();
+
+        Bundle args = new Bundle();
+        args.putSerializable(KEY_FAVORITE, favorite);
+        args.putBoolean(KEY_FAVORITE_TYPE, isTransitViewFavorite);
+        fragment.setArguments(args);
+
+        return fragment;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -29,7 +45,16 @@ public class RenameFavoriteDialogFragment extends DialogFragment {
 
         View rootView = inflater.inflate(R.layout.edit_favorite_dialog, container);
 
+        TextView nameText = rootView.findViewById(R.id.favorite_name);
         View exit = rootView.findViewById(R.id.exit);
+        TextView favoriteType = rootView.findViewById(R.id.favorite_type);
+        final EditText nameEditText = rootView.findViewById(R.id.name_edit_text);
+        View saveButton = rootView.findViewById(R.id.save_button);
+        View deleteButton = rootView.findViewById(R.id.delete_button);
+
+        nameText.setText(favorite.getName());
+        nameEditText.setText(favorite.getName());
+
         exit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -37,26 +62,6 @@ public class RenameFavoriteDialogFragment extends DialogFragment {
             }
         });
 
-        TextView nameText = rootView.findViewById(R.id.favorite_name);
-        nameText.setText(nextArrivalFavorite.getName());
-
-        final EditText nameEditText = rootView.findViewById(R.id.name_edit_text);
-        nameEditText.setText(nextArrivalFavorite.getName());
-
-        View saveButton = rootView.findViewById(R.id.save_button);
-        saveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                nextArrivalFavorite.setName(nameEditText.getText().toString());
-                SeptaServiceFactory.getFavoritesService().renameFavorite(getContext(), nextArrivalFavorite);
-                if (renameFavoriteCallBack != null) {
-                    renameFavoriteCallBack.updateFavorite(nextArrivalFavorite);
-                }
-                getDialog().dismiss();
-            }
-        });
-
-        View deleteButton = rootView.findViewById(R.id.delete_button);
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -67,7 +72,7 @@ public class RenameFavoriteDialogFragment extends DialogFragment {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     DeleteFavoritesAsyncTask task = new DeleteFavoritesAsyncTask(getContext());
-                                    task.execute(nextArrivalFavorite.getKey());
+                                    task.execute(favorite.getKey());
                                     getDialog().dismiss();
                                     if (getActivity() == null) {
                                         return;
@@ -85,6 +90,40 @@ public class RenameFavoriteDialogFragment extends DialogFragment {
             }
         });
 
+        if (isTransitViewFavorite) {
+            favoriteType.setText(R.string.rename_favorite_transitview);
+
+            final TransitViewFavorite transitViewFavorite = (TransitViewFavorite) favorite;
+
+            saveButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    transitViewFavorite.setName(nameEditText.getText().toString());
+                    SeptaServiceFactory.getFavoritesService().renameFavorite(getContext(), transitViewFavorite);
+                    if (renameFavoriteListener != null) {
+                        renameFavoriteListener.updateFavorite(transitViewFavorite);
+                    }
+                    getDialog().dismiss();
+                }
+            });
+        } else {
+            favoriteType.setText(R.string.rename_favorite_nta);
+
+            final NextArrivalFavorite ntaFavorite = (NextArrivalFavorite) favorite;
+
+            saveButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ntaFavorite.setName(nameEditText.getText().toString());
+                    SeptaServiceFactory.getFavoritesService().renameFavorite(getContext(), ntaFavorite);
+                    if (renameFavoriteListener != null) {
+                        renameFavoriteListener.updateFavorite(ntaFavorite);
+                    }
+                    getDialog().dismiss();
+                }
+            });
+        }
+
         return rootView;
     }
 
@@ -92,25 +131,24 @@ public class RenameFavoriteDialogFragment extends DialogFragment {
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        if ((context instanceof RenameFavoriteCallBack)) {
-            renameFavoriteCallBack = (RenameFavoriteCallBack) context;
+        if ((context instanceof RenameFavoriteListener)) {
+            renameFavoriteListener = (RenameFavoriteListener) context;
         }
 
     }
 
-    public static RenameFavoriteDialogFragment getInstance(NextArrivalFavorite nextArrivalFavorite) {
-        RenameFavoriteDialogFragment fragment = new RenameFavoriteDialogFragment();
-
-        Bundle args = new Bundle();
-        args.putSerializable(KEY_FAVORITE, nextArrivalFavorite);
-        fragment.setArguments(args);
-
-        return fragment;
-    }
-
     private void restoreArgs() {
-        nextArrivalFavorite = (NextArrivalFavorite) getArguments().getSerializable(KEY_FAVORITE);
+        if (getArguments().getBoolean(KEY_FAVORITE_TYPE)) {
+            isTransitViewFavorite = true;
+            favorite = (TransitViewFavorite) getArguments().getSerializable(KEY_FAVORITE);
+        } else {
+            isTransitViewFavorite = false;
+            favorite = (NextArrivalFavorite) getArguments().getSerializable(KEY_FAVORITE);
+        }
     }
 
+    public interface RenameFavoriteListener {
+        void updateFavorite(Favorite favorite);
+    }
 
 }

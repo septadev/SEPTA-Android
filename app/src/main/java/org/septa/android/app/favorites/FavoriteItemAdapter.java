@@ -22,6 +22,7 @@ import org.septa.android.app.nextarrive.NextArrivalModelResponseParser;
 import org.septa.android.app.nextarrive.NextToArriveTripView;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Alert;
+import org.septa.android.app.services.apiinterfaces.model.Alerts;
 import org.septa.android.app.services.apiinterfaces.model.Favorite;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalFavorite;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalModelResponse;
@@ -111,7 +112,7 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             ntaFavoriteViewHolder.resultsContainer.addView(ntaFavoriteViewHolder.tripView);
 
             // refresh nextArrivalFavorite results
-            refreshFavorite(nextArrivalFavorite, ntaFavoriteViewHolder.favoriteHeader, ntaFavoriteViewHolder.tripView, ntaFavoriteViewHolder.progressView, ntaFavoriteViewHolder.expandCollapseButton, ntaFavoriteViewHolder.noResultsMsg);
+            refreshNTAFavoriteView(nextArrivalFavorite, ntaFavoriteViewHolder.favoriteHeader, ntaFavoriteViewHolder.tripView, ntaFavoriteViewHolder.progressView, ntaFavoriteViewHolder.expandCollapseButton, ntaFavoriteViewHolder.noResultsMsg);
 
             // initialize expanded state of nextArrivalFavorite
             if (favoriteState.isExpanded()) {
@@ -167,65 +168,28 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 }
             });
 
-            // show transitview alert icons if any of the 3 lines have that detour
-            boolean advisory, alert, detour, weather;
+            // refresh alerts
+            SeptaServiceFactory.getAlertsService().getAlerts().enqueue(new Callback<Alerts>() {
+                @Override
+                public void onResponse(Call<Alerts> call, Response<Alerts> response) {
+                    SystemStatusState.update(response.body());
 
-            // get check for alerts in first route
-            String routeId = transitViewFavorite.getFirstRoute().getRouteId();
-            TransitType transitType = TransitViewUtils.isTrolley(routeId) ? TransitType.TROLLEY : TransitType.BUS;
-            Alert routeAlerts = SystemStatusState.getAlertForLine(transitType, routeId);
-            advisory = routeAlerts.isAdvisory();
-            alert = routeAlerts.isAlert() || routeAlerts.isSuspended();
-            detour = routeAlerts.isDetour();
-            weather = routeAlerts.isSnow();
-
-            // check if the 2nd route has alerts
-            if (transitViewFavorite.getSecondRoute() != null) {
-                routeId = transitViewFavorite.getSecondRoute().getRouteId();
-                transitType = TransitViewUtils.isTrolley(routeId) ? TransitType.TROLLEY : TransitType.BUS;
-                routeAlerts = SystemStatusState.getAlertForLine(transitType, routeId);
-                advisory = advisory || routeAlerts.isAdvisory();
-                alert = alert || routeAlerts.isAlert() || routeAlerts.isSuspended();
-                detour = detour || routeAlerts.isDetour();
-                weather = weather || routeAlerts.isSnow();
-
-                // check if teh 3rd route has alerts
-                if (transitViewFavorite.getThirdRoute() != null) {
-                    routeId = transitViewFavorite.getThirdRoute().getRouteId();
-                    transitType = TransitViewUtils.isTrolley(routeId) ? TransitType.TROLLEY : TransitType.BUS;
-                    routeAlerts = SystemStatusState.getAlertForLine(transitType, routeId);
-                    advisory = advisory || routeAlerts.isAdvisory();
-                    alert = alert || routeAlerts.isAlert() || routeAlerts.isSuspended();
-                    detour = detour || routeAlerts.isDetour();
-                    weather = weather || routeAlerts.isSnow();
+                    // show alert changes in favorite
+                    refreshTransitViewFavorite(transitViewFavorite, transitViewFavoriteViewHolder);
                 }
-            }
 
-            if (advisory) {
-                transitViewFavoriteViewHolder.advisoryIcon.setVisibility(View.VISIBLE);
-            } else {
-                transitViewFavoriteViewHolder.advisoryIcon.setVisibility(View.GONE);
-            }
+                @Override
+                public void onFailure(Call<Alerts> call, Throwable t) {
+                    t.printStackTrace();
 
-            if (alert) {
-                transitViewFavoriteViewHolder.alertIcon.setVisibility(View.VISIBLE);
-            } else {
-                transitViewFavoriteViewHolder.alertIcon.setVisibility(View.GONE);
-            }
+                    // hide alerts when no connection
+                    transitViewFavoriteViewHolder.advisoryIcon.setVisibility(View.GONE);
+                    transitViewFavoriteViewHolder.alertIcon.setVisibility(View.GONE);
+                    transitViewFavoriteViewHolder.detourIcon.setVisibility(View.GONE);
+                    transitViewFavoriteViewHolder.weatherIcon.setVisibility(View.GONE);
+                }
 
-            if (detour) {
-                transitViewFavoriteViewHolder.detourIcon.setVisibility(View.VISIBLE);
-            } else {
-                transitViewFavoriteViewHolder.detourIcon.setVisibility(View.GONE);
-            }
-
-            if (weather) {
-                transitViewFavoriteViewHolder.weatherIcon.setVisibility(View.VISIBLE);
-            } else {
-                transitViewFavoriteViewHolder.weatherIcon.setVisibility(View.GONE);
-            }
-
-            // TODO: hide alerts when network connection lost
+            });
 
         } else {
             Log.e(TAG, "Invalid Favorite class Type in onBindViewHolder");
@@ -278,7 +242,7 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         notifyDataSetChanged();
     }
 
-    private void refreshFavorite(final NextArrivalFavorite nextArrivalFavorite, final LinearLayout favoriteHeader, final NextToArriveTripView tripView, final View progressView, final ImageButton expandCollapseButton, final LinearLayout noResultsMsg) {
+    private void refreshNTAFavoriteView(final NextArrivalFavorite nextArrivalFavorite, final LinearLayout favoriteHeader, final NextToArriveTripView tripView, final View progressView, final ImageButton expandCollapseButton, final LinearLayout noResultsMsg) {
         progressView.setVisibility(View.VISIBLE);
 
         String routeId = null;
@@ -323,6 +287,66 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 progressView.setVisibility(View.GONE);
             }
         });
+    }
+
+    private void refreshTransitViewFavorite(TransitViewFavorite transitViewFavorite, TransitViewFavoriteViewHolder transitViewFavoriteViewHolder) {
+        // show transitview alert icons if any of the 3 lines have that detour
+        boolean advisory, alert, detour, weather;
+
+        // get check for alerts in first route
+        String routeId = transitViewFavorite.getFirstRoute().getRouteId();
+        TransitType transitType = TransitViewUtils.isTrolley(routeId) ? TransitType.TROLLEY : TransitType.BUS;
+        Alert routeAlerts = SystemStatusState.getAlertForLine(transitType, routeId);
+        advisory = routeAlerts.isAdvisory();
+        alert = routeAlerts.isAlert() || routeAlerts.isSuspended();
+        detour = routeAlerts.isDetour();
+        weather = routeAlerts.isSnow();
+
+        // check if the 2nd route has alerts
+        if (transitViewFavorite.getSecondRoute() != null) {
+            routeId = transitViewFavorite.getSecondRoute().getRouteId();
+            transitType = TransitViewUtils.isTrolley(routeId) ? TransitType.TROLLEY : TransitType.BUS;
+            routeAlerts = SystemStatusState.getAlertForLine(transitType, routeId);
+            advisory = advisory || routeAlerts.isAdvisory();
+            alert = alert || routeAlerts.isAlert() || routeAlerts.isSuspended();
+            detour = detour || routeAlerts.isDetour();
+            weather = weather || routeAlerts.isSnow();
+
+            // check if teh 3rd route has alerts
+            if (transitViewFavorite.getThirdRoute() != null) {
+                routeId = transitViewFavorite.getThirdRoute().getRouteId();
+                transitType = TransitViewUtils.isTrolley(routeId) ? TransitType.TROLLEY : TransitType.BUS;
+                routeAlerts = SystemStatusState.getAlertForLine(transitType, routeId);
+                advisory = advisory || routeAlerts.isAdvisory();
+                alert = alert || routeAlerts.isAlert() || routeAlerts.isSuspended();
+                detour = detour || routeAlerts.isDetour();
+                weather = weather || routeAlerts.isSnow();
+            }
+        }
+
+        if (advisory) {
+            transitViewFavoriteViewHolder.advisoryIcon.setVisibility(View.VISIBLE);
+        } else {
+            transitViewFavoriteViewHolder.advisoryIcon.setVisibility(View.GONE);
+        }
+
+        if (alert) {
+            transitViewFavoriteViewHolder.alertIcon.setVisibility(View.VISIBLE);
+        } else {
+            transitViewFavoriteViewHolder.alertIcon.setVisibility(View.GONE);
+        }
+
+        if (detour) {
+            transitViewFavoriteViewHolder.detourIcon.setVisibility(View.VISIBLE);
+        } else {
+            transitViewFavoriteViewHolder.detourIcon.setVisibility(View.GONE);
+        }
+
+        if (weather) {
+            transitViewFavoriteViewHolder.weatherIcon.setVisibility(View.VISIBLE);
+        } else {
+            transitViewFavoriteViewHolder.weatherIcon.setVisibility(View.GONE);
+        }
     }
 
     public void updateList(List<FavoriteState> favoriteStateList) {

@@ -473,7 +473,7 @@ public class NextToArriveResultsActivity extends BaseActivity implements OnMapRe
 
             refreshHandler = new Handler();
 
-            (findViewById(R.id.header)).getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            (findViewById(R.id.route_cards)).getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
                 public void onGlobalLayout() {
                     startingStationNameText.setRight(reverseTrip.getLeft());

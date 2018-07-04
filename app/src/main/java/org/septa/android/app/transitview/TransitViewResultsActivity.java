@@ -22,6 +22,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.location.LocationServices;
@@ -52,7 +54,6 @@ import org.septa.android.app.support.CrashlyticsManager;
 import org.septa.android.app.support.CursorAdapterSupplier;
 import org.septa.android.app.support.MapUtils;
 import org.septa.android.app.support.RouteModelComparator;
-import org.septa.android.app.view.TextView;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
@@ -70,7 +71,7 @@ import retrofit2.Response;
 import static org.septa.android.app.favorites.edit.RenameFavoriteDialogFragment.EDIT_FAVORITE_DIALOG_KEY;
 import static org.septa.android.app.transitview.TransitViewUtils.isTrolley;
 
-public class TransitViewResultsActivity extends AppCompatActivity implements Runnable, TransitViewLinePickerFragment.TransitViewLinePickerListener, OnMapReadyCallback, TransitViewVehicleDetailsInfoWindowAdapter.TransitViewVehicleDetailsInfoWindowAdapterListener, RenameFavoriteDialogFragment.RenameFavoriteListener {
+public class TransitViewResultsActivity extends AppCompatActivity implements Runnable, TransitViewLinePickerFragment.TransitViewLinePickerListener, OnMapReadyCallback, TransitViewVehicleDetailsInfoWindowAdapter.TransitViewVehicleDetailsInfoWindowAdapterListener, RenameFavoriteDialogFragment.RenameFavoriteListener, TransitViewRouteCard.TransitViewRouteCardListener {
 
     private static final String TAG = TransitViewResultsActivity.class.getSimpleName();
 
@@ -88,7 +89,9 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
     private boolean refreshed = false; // used to distinguish refresh from a change in route selection
 
     // layout variables
-    private TextView addLabel, firstRouteLabel, secondRouteLabel, thirdRouteLabel;
+    private LinearLayout routeCardContainer;
+    private TransitViewRouteCard firstRouteCard, secondRouteCard = null, thirdRouteCard = null;
+    private ImageView addLabel;
     private FrameLayout mapContainerView;
     private View progressView;
     private boolean mapSized = false;
@@ -108,7 +111,7 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
         initializeView();
 
         // initialize route labels
-        updateRouteLabels(firstRoute, secondRoute, thirdRoute);
+        updateRouteCards(firstRoute, secondRoute, thirdRoute);
 
         // set up automatic refresh
         if (firstRoute != null) {
@@ -167,6 +170,38 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
     }
 
     @Override
+    public void removeRoute(int routeToRemove) {
+        switch (routeToRemove) {
+            case 3:
+                // TODO: prompt to delete
+                // delete third route
+                updateRouteCards(firstRoute, secondRoute, null);
+                break;
+            case 2:
+                // TODO: prompt to delete
+                // delete second route
+                updateRouteCards(firstRoute, thirdRoute, null);
+                break;
+            case 1:
+            default:
+                // TODO: prompt to delete
+                if (secondRoute != null || thirdRoute != null) {
+                    // delete first route
+                    updateRouteCards(secondRoute, thirdRoute, null);
+                } else {
+                    // take user back to picker screen
+                    finish();
+                }
+                break;
+        }
+    }
+
+    @Override
+    public void onAlertIconsClicked(String routeId) {
+        // TODO: go to system status for that route
+    }
+
+    @Override
     public void selectFirstRoute(RouteDirectionModel route) {
         Log.e(TAG, "Invalid attempt to select the first route from the TransitViewResultsActivity -- going back to TransitView route picker");
 
@@ -183,7 +218,7 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
         Collections.sort(selectedRoutes, new RouteModelComparator());
         selectedRoutes.add(null);
 
-        updateRouteLabels(selectedRoutes.get(0), selectedRoutes.get(1), selectedRoutes.get(2));
+        updateRouteCards(selectedRoutes.get(0), selectedRoutes.get(1), selectedRoutes.get(2));
     }
 
     @Override
@@ -195,7 +230,7 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
         selectedRoutes.add(route);
         Collections.sort(selectedRoutes, new RouteModelComparator());
 
-        updateRouteLabels(selectedRoutes.get(0), selectedRoutes.get(1), selectedRoutes.get(2));
+        updateRouteCards(selectedRoutes.get(0), selectedRoutes.get(1), selectedRoutes.get(2));
     }
 
     @Override
@@ -359,47 +394,9 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
 
     private void initializeView() {
         mapContainerView = findViewById(R.id.map_container);
-//        alertsView = findViewById(R.id.transitview_alerts); TODO: initialize alerts view
         progressView = findViewById(R.id.progress_view);
-        firstRouteLabel = findViewById(R.id.first_route_delete);
-        secondRouteLabel = findViewById(R.id.second_route_delete);
-        thirdRouteLabel = findViewById(R.id.third_route_delete);
-        addLabel = findViewById(R.id.header_add_label);
-
-        firstRouteLabel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // TODO: prompt to delete
-
-                if (secondRoute != null || thirdRoute != null) {
-                    // delete first route
-                    updateRouteLabels(secondRoute, thirdRoute, null);
-                } else {
-                    // take user back to picker screen
-                    finish();
-                }
-            }
-        });
-
-        secondRouteLabel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // TODO: prompt to delete
-
-                // delete second route
-                updateRouteLabels(firstRoute, thirdRoute, null);
-            }
-        });
-
-        thirdRouteLabel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // TODO: prompt to delete
-
-                // delete third route
-                updateRouteLabels(firstRoute, secondRoute, null);
-            }
-        });
+        addLabel = findViewById(R.id.button_add);
+        routeCardContainer = findViewById(R.id.header_routes_buttons);
 
         addLabel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -439,40 +436,63 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
         supportInvalidateOptionsMenu();
     }
 
-    private void updateRouteLabels(@NonNull RouteDirectionModel first, RouteDirectionModel second, RouteDirectionModel third) {
+    private void updateRouteCards(@NonNull RouteDirectionModel first, RouteDirectionModel second, RouteDirectionModel third) {
+        routeCardContainer.removeAllViews();
+
         this.firstRoute = first;
         this.secondRoute = second;
         this.thirdRoute = third;
 
         StringBuilder routeIdBuilder = new StringBuilder(firstRoute.getRouteId());
 
-        firstRouteLabel.setText(firstRoute.getRouteId());
+        firstRouteCard = new TransitViewRouteCard(this, firstRoute.getRouteId(), 1);
+        firstRouteCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // TODO: activate this route - redraw vehicles, change KML color, change card background
+                // TODO: deactivate other routes
+            }
+        });
+        routeCardContainer.addView(firstRouteCard);
 
         if (secondRoute != null) {
             routeIdBuilder.append(",").append(secondRoute.getRouteId());
-            secondRouteLabel.setText(secondRoute.getRouteId());
-            secondRouteLabel.setVisibility(View.VISIBLE);
+
+            secondRouteCard = new TransitViewRouteCard(this, secondRoute.getRouteId(), 2);
+            secondRouteCard.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // TODO: activate this route
+                    // TODO: deactivate other routes
+                }
+            });
+
+            routeCardContainer.addView(secondRouteCard);
         } else {
-            secondRouteLabel.setText(null);
-            secondRouteLabel.setVisibility(View.GONE);
+            secondRouteCard = null;
         }
 
         if (thirdRoute != null) {
-            // update third route label
             routeIdBuilder.append(",").append(thirdRoute.getRouteId());
-            thirdRouteLabel.setText(thirdRoute.getRouteId());
-            thirdRouteLabel.setVisibility(View.VISIBLE);
+
+            thirdRouteCard = new TransitViewRouteCard(this, thirdRoute.getRouteId(), 3);
+            thirdRouteCard.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // TODO: activate this route
+                    // TODO: deactivate other routes
+                }
+            });
+
+            routeCardContainer.addView(thirdRouteCard);
 
             // disable add button
             disableView(addLabel);
-
         } else {
-            thirdRouteLabel.setText(null);
-            thirdRouteLabel.setVisibility(View.GONE);
-
             // make add button clickable
             activateView(addLabel);
         }
+
         routeIds = routeIdBuilder.toString();
 
         checkIfAFavorite();

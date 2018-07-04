@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/favorite_item_row"
@@ -9,6 +9,7 @@
     android:layout_marginTop="@dimen/favorite_item_margin"
     android:background="@android:color/white"
     android:elevation="@dimen/white_box_elevation"
+    android:gravity="center"
     android:orientation="horizontal">
 
     <ImageView
@@ -16,30 +17,21 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="8dp"
-        android:src="@drawable/ic_transitview_circle"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:src="@drawable/ic_transitview_circle" />
 
     <LinearLayout
         android:id="@+id/favorite_item_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toRightOf="@id/transitview_icon"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_weight="5"
+        android:orientation="vertical">
 
         <org.septa.android.app.view.TextView
             android:id="@+id/favorite_title_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginRight="8dp"
             android:layout_marginTop="10dp"
-            android:layout_weight="5"
             android:ellipsize="end"
-            android:gravity="center_vertical"
             android:maxLines="1"
             android:text="Office Commute"
             android:textColor="@color/colorPrimary"
@@ -49,10 +41,8 @@
         <org.septa.android.app.view.TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
             android:layout_marginBottom="10dp"
             android:layout_weight="5"
-            android:gravity="center_vertical"
             android:maxLines="1"
             android:text="@string/transit_view"
             android:textColor="@android:color/black"
@@ -68,9 +58,6 @@
         android:layout_marginRight="7dp"
         android:src="@drawable/ic_advisory"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/alert_icon"
-        app:layout_constraintTop_toTopOf="parent"
         tools:visibility="visible" />
 
     <ImageView
@@ -80,9 +67,6 @@
         android:layout_marginRight="7dp"
         android:src="@drawable/ic_alert"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/detour_icon"
-        app:layout_constraintTop_toTopOf="parent"
         tools:visibility="visible" />
 
     <ImageView
@@ -92,9 +76,6 @@
         android:layout_marginRight="7dp"
         android:src="@drawable/ic_detour"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/weather_icon"
-        app:layout_constraintTop_toTopOf="parent"
         tools:visibility="visible" />
 
     <ImageView
@@ -104,16 +85,12 @@
         android:layout_marginRight="7dp"
         android:src="@drawable/ic_weather"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/favorite_item_view_results"
-        app:layout_constraintTop_toTopOf="parent"
         tools:visibility="visible" />
 
     <TextView
         android:id="@+id/favorite_item_view_results"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
         android:layout_marginEnd="14dp"
         android:layout_marginRight="14dp"
         android:background="?android:attr/selectableItemBackground"
@@ -121,9 +98,6 @@
         android:focusable="true"
         android:text="@string/favorites_view_transitview"
         android:textColor="@color/text_primary"
-        android:textSize="12dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:textSize="12dp" />
 
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>

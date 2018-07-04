@@ -3,7 +3,6 @@ package org.septa.android.app.favorites;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
@@ -380,7 +379,7 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     public class TransitViewFavoriteViewHolder extends RecyclerView.ViewHolder {
-        ConstraintLayout favoriteRow;
+        LinearLayout favoriteRow;
         TextView favoriteName, viewResults;
         ImageView advisoryIcon, alertIcon, detourIcon, weatherIcon;
 

@@ -186,13 +186,13 @@ public class TransitViewFragment extends Fragment implements TransitViewLinePick
         if (resultCode == TransitViewLinePickerFragment.SUCCESS) {
             switch (requestCode) {
                 case 1:
-                    selectFirstRoute((RouteDirectionModel) data.getSerializableExtra(TransitViewLinePickerFragment.ROUTE_DIRECTION_MODEL));
+                    addFirstRoute((RouteDirectionModel) data.getSerializableExtra(TransitViewLinePickerFragment.ROUTE_DIRECTION_MODEL));
                     break;
                 case 2:
-                    selectSecondRoute((RouteDirectionModel) data.getSerializableExtra(TransitViewLinePickerFragment.ROUTE_DIRECTION_MODEL));
+                    addSecondRoute((RouteDirectionModel) data.getSerializableExtra(TransitViewLinePickerFragment.ROUTE_DIRECTION_MODEL));
                     break;
                 case 3:
-                    selectThirdRoute((RouteDirectionModel) data.getSerializableExtra(TransitViewLinePickerFragment.ROUTE_DIRECTION_MODEL));
+                    addThirdRoute((RouteDirectionModel) data.getSerializableExtra(TransitViewLinePickerFragment.ROUTE_DIRECTION_MODEL));
                     break;
                 default:
                     Log.e(TAG, "Invalid request code returned from TransitViewLinePicker");
@@ -205,7 +205,7 @@ public class TransitViewFragment extends Fragment implements TransitViewLinePick
     }
 
     @Override
-    public void selectFirstRoute(RouteDirectionModel route) {
+    public void addFirstRoute(RouteDirectionModel route) {
         this.firstRoute = route;
         firstRoutePicker.setText(firstRoute.getRouteLongName());
 
@@ -225,7 +225,7 @@ public class TransitViewFragment extends Fragment implements TransitViewLinePick
     }
 
     @Override
-    public void selectSecondRoute(RouteDirectionModel route) {
+    public void addSecondRoute(RouteDirectionModel route) {
         this.secondRoute = route;
         secondRoutePicker.setText(secondRoute.getRouteLongName());
 
@@ -244,7 +244,7 @@ public class TransitViewFragment extends Fragment implements TransitViewLinePick
     }
 
     @Override
-    public void selectThirdRoute(RouteDirectionModel route) {
+    public void addThirdRoute(RouteDirectionModel route) {
         this.thirdRoute = route;
         thirdRoutePicker.setText(thirdRoute.getRouteLongName());
 

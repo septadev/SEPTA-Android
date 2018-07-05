@@ -41,7 +41,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.maps.android.data.kml.KmlLayer;
 
 import org.septa.android.app.R;
-import org.septa.android.app.TransitType;
 import org.septa.android.app.database.DatabaseManager;
 import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.favorites.DeleteFavoritesAsyncTask;
@@ -78,6 +77,7 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
     private RouteDirectionModel firstRoute, secondRoute, thirdRoute;
     private Set<TransitViewModelResponse.TransitViewRecord> firstRoutesResults, secondRoutesResults, thirdRoutesResults;
     private String routeIds;
+    private String activeRouteId;
     private boolean isAFavorite = false;
     private TransitViewFavorite currentFavorite = null;
 
@@ -174,18 +174,24 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
         switch (routeToRemove) {
             case 3:
                 // TODO: prompt to delete
+                activeRouteId = firstRoute.getRouteId();
+
                 // delete third route
                 updateRouteCards(firstRoute, secondRoute, null);
                 break;
             case 2:
                 // TODO: prompt to delete
+                activeRouteId = firstRoute.getRouteId();
+
                 // delete second route
                 updateRouteCards(firstRoute, thirdRoute, null);
                 break;
             case 1:
             default:
                 // TODO: prompt to delete
-                if (secondRoute != null || thirdRoute != null) {
+                if (secondRoute != null) {
+                    activeRouteId = secondRoute.getRouteId();
+
                     // delete first route
                     updateRouteCards(secondRoute, thirdRoute, null);
                 } else {
@@ -197,7 +203,7 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
     }
 
     @Override
-    public void selectFirstRoute(RouteDirectionModel route) {
+    public void addFirstRoute(RouteDirectionModel route) {
         Log.e(TAG, "Invalid attempt to select the first route from the TransitViewResultsActivity -- going back to TransitView route picker");
 
         Toast.makeText(this, R.string.transitview_add_route, Toast.LENGTH_LONG).show();
@@ -205,7 +211,7 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
     }
 
     @Override
-    public void selectSecondRoute(RouteDirectionModel route) {
+    public void addSecondRoute(RouteDirectionModel route) {
         // sort the routes and append a null route to the end
         List<RouteDirectionModel> selectedRoutes = new ArrayList<>();
         selectedRoutes.add(firstRoute);
@@ -213,11 +219,12 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
         Collections.sort(selectedRoutes, new RouteModelComparator());
         selectedRoutes.add(null);
 
+        activeRouteId = route.getRouteId();
         updateRouteCards(selectedRoutes.get(0), selectedRoutes.get(1), selectedRoutes.get(2));
     }
 
     @Override
-    public void selectThirdRoute(RouteDirectionModel route) {
+    public void addThirdRoute(RouteDirectionModel route) {
         // sort the routes
         List<RouteDirectionModel> selectedRoutes = new ArrayList<>();
         selectedRoutes.add(firstRoute);
@@ -225,6 +232,7 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
         selectedRoutes.add(route);
         Collections.sort(selectedRoutes, new RouteModelComparator());
 
+        activeRouteId = route.getRouteId();
         updateRouteCards(selectedRoutes.get(0), selectedRoutes.get(1), selectedRoutes.get(2));
     }
 
@@ -245,15 +253,17 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
         // default map zoom to show KML of all routes using builder.include()
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
 
-        // add to map of vehicle markers
+        // add vehicle details to map of vehicle markers
         details.clear();
         for (String routeId : routeIds.split(",")) {
             for (Map.Entry<TransitViewModelResponse.TransitViewRecord, LatLng> entry : parser.getResultsForRoute(routeId).entrySet()) {
                 String vehicleMarkerKey = new StringBuilder(routeId).append(VEHICLE_MARKER_KEY_DELIM).append(entry.getKey().getVehicleId()).toString();
                 details.put(vehicleMarkerKey, entry.getKey());
 
-                // map must include this vehicle when automatically moving
-                builder.include(entry.getValue());
+                // map must include vehicles on active route when automatically moving camera
+                if (activeRouteId.equalsIgnoreCase(routeId)) {
+                    builder.include(entry.getValue());
+                }
             }
         }
 
@@ -372,6 +382,8 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
         firstRoute = (RouteDirectionModel) bundle.get(TransitViewFragment.TRANSITVIEW_ROUTE_FIRST);
         secondRoute = (RouteDirectionModel) bundle.get(TransitViewFragment.TRANSITVIEW_ROUTE_SECOND);
         thirdRoute = (RouteDirectionModel) bundle.get(TransitViewFragment.TRANSITVIEW_ROUTE_THIRD);
+
+        activeRouteId = firstRoute.getRouteId();
     }
 
     private void initializeView() {
@@ -439,11 +451,19 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
                     thirdRouteCard.deactivateCard();
                 }
 
-                // TODO: activate this route - redraw vehicles, change KML color
+                activeRouteId = firstRoute.getRouteId();
+
+                refreshed = false;
+                refreshData();
             }
         });
-        firstRouteCard.activateCard();
         routeCardContainer.addView(firstRouteCard);
+
+        if (activeRouteId.equalsIgnoreCase(firstRoute.getRouteId())) {
+            firstRouteCard.activateCard();
+        } else {
+            firstRouteCard.deactivateCard();
+        }
 
         if (secondRoute != null) {
             routeIdBuilder.append(",").append(secondRoute.getRouteId());
@@ -458,12 +478,19 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
                         thirdRouteCard.deactivateCard();
                     }
 
-                    // TODO: activate this route - redraw vehicles, change KML color
+                    activeRouteId = secondRoute.getRouteId();
+
+                    refreshed = false;
+                    refreshData();
                 }
             });
-
-            secondRouteCard.deactivateCard();
             routeCardContainer.addView(secondRouteCard);
+
+            if (activeRouteId.equalsIgnoreCase(secondRoute.getRouteId())) {
+                secondRouteCard.activateCard();
+            } else {
+                secondRouteCard.deactivateCard();
+            }
         } else {
             secondRouteCard = null;
         }
@@ -479,12 +506,19 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
                     secondRouteCard.deactivateCard();
                     thirdRouteCard.activateCard();
 
-                    // TODO: activate this route - redraw vehicles, change KML color
+                    activeRouteId = thirdRoute.getRouteId();
+
+                    refreshed = false;
+                    refreshData();
                 }
             });
-
-            thirdRouteCard.deactivateCard();
             routeCardContainer.addView(thirdRouteCard);
+
+            if (activeRouteId.equalsIgnoreCase(thirdRoute.getRouteId())) {
+                thirdRouteCard.activateCard();
+            } else {
+                thirdRouteCard.deactivateCard();
+            }
 
             // disable add button
             disableView(addLabel);
@@ -587,34 +621,37 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
         googleMap.clear();
 
         for (String routeId : routeIds.split(",")) {
-            TransitType transitType = TransitType.BUS;
-            int transitTypeDrawableId = R.drawable.ic_bus_blue_small;
-            if (isTrolley(routeId)) {
-                transitType = TransitType.TROLLEY;
-                transitTypeDrawableId = R.drawable.ic_trolley_blue_small;
-            }
+            // draw active route and vehicles as blue
+            if (routeId.equalsIgnoreCase(activeRouteId)) {
+                // redraw all vehicles
+                redrawAllVehiclesOnRoute(routeId);
 
-            // redraw all vehicles
-            for (Map.Entry<TransitViewModelResponse.TransitViewRecord, LatLng> entry : parser.getResultsForRoute(routeId).entrySet()) {
-                // create directional icon with bus or trolley
-                BitmapDescriptor vehicleBitMap = TransitViewUtils.getDirectionalIconForTransitType(this, transitTypeDrawableId, entry.getKey().getHeading());
-                String vehicleMarkerKey = new StringBuilder(routeId).append(VEHICLE_MARKER_KEY_DELIM).append(entry.getKey().getVehicleId()).toString();
-                googleMap.addMarker(new MarkerOptions()
-                        .position(entry.getValue())
-                        .title(vehicleMarkerKey)
-                        .anchor((float) 0.5, (float) 0.5)
-                        .icon(vehicleBitMap));
-            }
+                // redraw route on map
+                KmlLayer layer = MapUtils.getKMLByLineIdWithColor(TransitViewResultsActivity.this, googleMap, routeId, R.color.transitview_route_active_kml);
+                if (layer != null) {
+                    try {
+                        layer.addLayerToMap();
+                    } catch (IOException e) {
+                        Log.e(TAG, e.toString());
+                    } catch (XmlPullParserException e) {
+                        Log.e(TAG, e.toString());
+                    }
+                }
 
-            // redraw route on map
-            KmlLayer layer = MapUtils.getKMLByLineId(TransitViewResultsActivity.this, googleMap, routeId, transitType);
-            if (layer != null) {
-                try {
-                    layer.addLayerToMap();
-                } catch (IOException e) {
-                    Log.e(TAG, e.toString());
-                } catch (XmlPullParserException e) {
-                    Log.e(TAG, e.toString());
+            } else {
+                // redraw all vehicles
+                redrawAllVehiclesOnRoute(routeId);
+
+                // redraw route on map
+                KmlLayer layer = MapUtils.getKMLByLineIdWithColor(TransitViewResultsActivity.this, googleMap, routeId, R.color.transitview_route_inactive);
+                if (layer != null) {
+                    try {
+                        layer.addLayerToMap();
+                    } catch (IOException e) {
+                        Log.e(TAG, e.toString());
+                    } catch (XmlPullParserException e) {
+                        Log.e(TAG, e.toString());
+                    }
                 }
             }
         }
@@ -622,6 +659,22 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
         // hide error message in case connection regained
         progressView.setVisibility(View.GONE);
         mapContainerView.setVisibility(View.VISIBLE);
+    }
+
+    private void redrawAllVehiclesOnRoute(String routeId) {
+        boolean isTrolley = isTrolley(routeId);
+        boolean isActiveRoute = activeRouteId.equalsIgnoreCase(routeId);
+
+        for (Map.Entry<TransitViewModelResponse.TransitViewRecord, LatLng> entry : parser.getResultsForRoute(routeId).entrySet()) {
+            // create directional icon with bus or trolley
+            BitmapDescriptor vehicleBitMap = TransitViewUtils.getDirectionalIconForTransitType(this, isTrolley, isActiveRoute, entry.getKey().getHeading());
+            String vehicleMarkerKey = new StringBuilder(routeId).append(VEHICLE_MARKER_KEY_DELIM).append(entry.getKey().getVehicleId()).toString();
+            googleMap.addMarker(new MarkerOptions()
+                    .position(entry.getValue())
+                    .title(vehicleMarkerKey)
+                    .anchor((float) 0.5, (float) 0.5)
+                    .icon(vehicleBitMap));
+        }
     }
 
     private void showNoResultsFoundErrorMessage() {

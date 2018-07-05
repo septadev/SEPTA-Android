@@ -19,13 +19,23 @@ import java.util.Arrays;
 
 public abstract class TransitViewUtils {
 
-    public static BitmapDescriptor getDirectionalIconForTransitType(Context context, int transitTypeDrawableId, int angle) {
+    public static BitmapDescriptor getDirectionalIconForTransitType(Context context, boolean isTrolley, boolean isActiveRoute, int angle) {
         // the vehicle direction icon points South by default
         // but the angle is 0 for North, 90 for East, 180 for South, etc.
         final int ANGLE_OFFSET = 180;
 
+        int transitTypeDrawableId, vehicleDirectionDrawableId;
+
+        if (isActiveRoute) {
+            vehicleDirectionDrawableId = R.drawable.ic_vehicle_direction;
+            transitTypeDrawableId = isTrolley ? R.drawable.ic_trolley_blue_small : R.drawable.ic_bus_blue_small;
+        } else {
+            vehicleDirectionDrawableId = R.drawable.ic_vehicle_direction_gray;
+            transitTypeDrawableId = isTrolley ? R.drawable.ic_trolley_gray_small : R.drawable.ic_bus_gray_small;
+        }
+
         Bitmap transitType = drawableToBitmap(ContextCompat.getDrawable(context, transitTypeDrawableId));
-        Bitmap direction = drawableToBitmap(ContextCompat.getDrawable(context, R.drawable.ic_vehicle_direction));
+        Bitmap direction = drawableToBitmap(ContextCompat.getDrawable(context, vehicleDirectionDrawableId));
 
         BitmapDrawable finalDirection = rotateBitmap(context, direction, angle + ANGLE_OFFSET);
 

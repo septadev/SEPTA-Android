@@ -29,6 +29,7 @@ import android.widget.FrameLayout;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
@@ -115,6 +116,9 @@ public class NextToArriveResultsActivity extends BaseActivity implements OnMapRe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // need the next line to initialize BitmapDescriptorFactory
+        MapsInitializer.initialize(getApplicationContext());
 
         setTitle(R.string.next_to_arrive);
         setContentView(R.layout.activity_next_to_arrive_results);
@@ -219,27 +223,26 @@ public class NextToArriveResultsActivity extends BaseActivity implements OnMapRe
 
     @Override
     public void onMapReady(final GoogleMap googleMap) {
-        // hide error message in case connection regained
-        noResultsMessage.setVisibility(View.GONE);
-        mapContainerView.setVisibility(View.VISIBLE);
-        bottomSheetLayout.setVisibility(View.VISIBLE);
-
         this.googleMap = googleMap;
         MapStyleOptions mapStyle = MapStyleOptions.loadRawResourceStyle(this, R.raw.maps_json_styling);
         googleMap.setMapStyle(mapStyle);
+        
+        final View mapContainer = findViewById(R.id.map_container);
 
         // hide navigation options
         googleMap.getUiSettings().setMapToolbarEnabled(false);
 
-        final View mapContainer = findViewById(R.id.map_container);
-
+        // add start and destination pins to map
         final LatLng startingStationLatLng = new LatLng(start.getLatitude(), start.getLongitude());
         final LatLng destinationStationLatLng = new LatLng(destination.getLatitude(), destination.getLongitude());
-        googleMap.addMarker(new MarkerOptions().position(startingStationLatLng).title(start.getStopName()));
-        googleMap.addMarker(new MarkerOptions().position(destinationStationLatLng).title(destination.getStopName()));
+        googleMap.addMarker(new MarkerOptions().position(startingStationLatLng).title(start.getStopName()).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+        googleMap.addMarker(new MarkerOptions().position(destinationStationLatLng).title(destination.getStopName()).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
 
+        // set default map position
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(startingStationLatLng));
+        googleMap.moveCamera(CameraUpdateFactory.zoomTo(13));
 
+        // include start and destination in map camera bounds
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
         builder.include(startingStationLatLng);
         builder.include(destinationStationLatLng);
@@ -293,9 +296,12 @@ public class NextToArriveResultsActivity extends BaseActivity implements OnMapRe
             }
         });
 
-        int permissionCheck = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION);
+        // hide error message in case connection regained
+        noResultsMessage.setVisibility(View.GONE);
+        mapContainerView.setVisibility(View.VISIBLE);
+        bottomSheetLayout.setVisibility(View.VISIBLE);
 
+        int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
         if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
             Log.d(TAG, "Location Permission Granted.");
             Task<Location> locationTask = LocationServices.getFusedLocationProviderClient(this).getLastLocation()
@@ -642,8 +648,8 @@ public class NextToArriveResultsActivity extends BaseActivity implements OnMapRe
                 private void updateView() {
                     LatLng startingStationLatLng = new LatLng(start.getLatitude(), start.getLongitude());
                     LatLng destinationStationLatLng = new LatLng(destination.getLatitude(), destination.getLongitude());
-                    startMarker = new MarkerOptions().position(startingStationLatLng).title(start.getStopName());
-                    destMarker = new MarkerOptions().position(destinationStationLatLng).title(destination.getStopName());
+                    startMarker = new MarkerOptions().position(startingStationLatLng).title(start.getStopName()).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                    destMarker = new MarkerOptions().position(destinationStationLatLng).title(destination.getStopName()).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
 
                     if (getSupportActionBar() != null) {
                         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -693,14 +699,10 @@ public class NextToArriveResultsActivity extends BaseActivity implements OnMapRe
     }
 
     private void updateMap() {
-        // hide error message in case connection regained
-        noResultsMessage.setVisibility(View.GONE);
-        mapContainerView.setVisibility(View.VISIBLE);
-        bottomSheetLayout.setVisibility(View.VISIBLE);
-
         googleMap.clear();
         googleMap.addMarker(startMarker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
         googleMap.addMarker(destMarker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+
         BitmapDescriptor vehicleBitMap = BitmapDescriptorFactory.fromResource(transitType.getMapMarkerResource());
         for (Map.Entry<LatLng, NextArrivalModelResponse.NextArrivalRecord> entry : parser.getOrigLatLngMap().entrySet()) {
             googleMap.addMarker(new MarkerOptions().position(entry.getKey()).title(entry.getValue().getOrigLineTripId()).icon(vehicleBitMap));
@@ -722,6 +724,11 @@ public class NextToArriveResultsActivity extends BaseActivity implements OnMapRe
                 }
             }
         }
+
+        // hide error message in case connection regained
+        noResultsMessage.setVisibility(View.GONE);
+        mapContainerView.setVisibility(View.VISIBLE);
+        bottomSheetLayout.setVisibility(View.VISIBLE);
     }
 
     public void saveAsFavorite(final MenuItem item) {

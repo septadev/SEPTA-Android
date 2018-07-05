@@ -435,7 +435,6 @@ public class NextToArriveTripDetailActivity extends BaseActivity implements OnMa
             builder.include(vehicleLatLng);
         }
 
-
         LatLng startingStationLatLng = new LatLng(start.getLatitude(), start.getLongitude());
         LatLng destinationStationLatLng = new LatLng(destination.getLatitude(), destination.getLongitude());
         googleMap.addMarker(new MarkerOptions().position(startingStationLatLng).title(start.getStopName()).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
@@ -443,6 +442,7 @@ public class NextToArriveTripDetailActivity extends BaseActivity implements OnMa
 
         if (!mapZoomed) {
             googleMap.moveCamera(CameraUpdateFactory.newLatLng(startingStationLatLng));
+            googleMap.moveCamera(CameraUpdateFactory.zoomTo(13));
         }
 
         builder.include(startingStationLatLng);

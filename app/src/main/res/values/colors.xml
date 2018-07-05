@@ -63,6 +63,11 @@
     <color name="no_results_found">#fcbe56</color>
 
 
+    <!-- TransitView -->
+    <color name="transitview_card_inactive_background">#ffffff</color>
+    <color name="transitview_card_active_line">#678ec3</color>
+    <color name="transitview_card_inactive_line">#e0e0e0</color>
+
     <!-- Text -->
     <color name="text_primary">#144b88</color>
 

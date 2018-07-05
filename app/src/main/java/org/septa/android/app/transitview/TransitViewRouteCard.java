@@ -2,6 +2,7 @@ package org.septa.android.app.transitview;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -25,9 +26,10 @@ public class TransitViewRouteCard extends LinearLayout {
     private boolean isAdvisory, isAlert, isDetour, isWeather;
 
     // layout variables
+    LinearLayout rootView;
     private ImageView deleteButton;
     private TextView routeIdText;
-    private View alertIconsContainer;
+    private View line, alertIconsContainer;
     private ImageView advisoryIcon, alertIcon, detourIcon, weatherIcon;
 
     public TransitViewRouteCard(@NonNull Context context, String routeId, int sequence) {
@@ -49,15 +51,19 @@ public class TransitViewRouteCard extends LinearLayout {
     }
 
     private void initializeView() {
-        View rootView = inflate(context, R.layout.item_transitview_route_card, this);
+        rootView = (LinearLayout) inflate(context, R.layout.item_transitview_route_card, this);
 
         deleteButton = rootView.findViewById(R.id.delete_route);
         routeIdText = rootView.findViewById(R.id.transitview_card_route_id);
+        line = rootView.findViewById(R.id.transitview_card_line);
         alertIconsContainer = rootView.findViewById(R.id.route_alert_icons);
         advisoryIcon = rootView.findViewById(R.id.advisory_icon);
         alertIcon = rootView.findViewById(R.id.alert_icon);
         detourIcon = rootView.findViewById(R.id.detour_icon);
         weatherIcon = rootView.findViewById(R.id.weather_icon);
+
+        // shorten BLVDDIR and the LUCY lines
+        shortenRouteNames();
 
         routeIdText.setText(routeId);
         // TODO: set transit type icon
@@ -110,6 +116,44 @@ public class TransitViewRouteCard extends LinearLayout {
             weatherIcon.setVisibility(View.VISIBLE);
         } else {
             weatherIcon.setVisibility(View.GONE);
+        }
+    }
+
+    public void activateCard() {
+        rootView.setBackground(ContextCompat.getDrawable(context, R.drawable.transitview_active_route_border));
+        line.setBackgroundColor(ContextCompat.getColor(context, R.color.transitview_card_active_line));
+        deleteButton.setVisibility(View.VISIBLE);
+
+        // readd margins that were removed when card background was changed
+        LayoutParams params = new LayoutParams(
+                LayoutParams.WRAP_CONTENT,
+                LayoutParams.WRAP_CONTENT
+        );
+        params.setMargins(21, 0, 0, 0);
+        rootView.setLayoutParams(params);
+    }
+
+    public void deactivateCard() {
+        rootView.setBackgroundColor(ContextCompat.getColor(context, R.color.transitview_card_inactive_background));
+        line.setBackgroundColor(ContextCompat.getColor(context, R.color.transitview_card_inactive_line));
+        deleteButton.setVisibility(View.INVISIBLE);
+
+        // readd margins that were removed when card background was changed
+        LayoutParams params = new LayoutParams(
+                LayoutParams.WRAP_CONTENT,
+                LayoutParams.WRAP_CONTENT
+        );
+        params.setMargins(21, 0, 0, 0);
+        rootView.setLayoutParams(params);
+    }
+
+    private void shortenRouteNames() {
+        if ("BLVDDIR".equals(routeId)) {
+            routeId = "BLVD";
+        } else if ("LUCYGO".equals(routeId)) {
+            routeId = "LUGO";
+        } else if ("LUCYGR".equals(routeId)) {
+            routeId = "LUGR";
         }
     }
 

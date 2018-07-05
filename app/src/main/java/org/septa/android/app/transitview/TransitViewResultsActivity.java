@@ -94,7 +94,7 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
     private ImageView addLabel;
     private FrameLayout mapContainerView;
     private View progressView;
-    private boolean mapSized = false;
+    private boolean firstRun = false;
     private SupportMapFragment mapFragment;
     private GoogleMap googleMap;
     public static final String VEHICLE_MARKER_KEY_DELIM = "_";
@@ -277,12 +277,6 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
 
                 try {
                     googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, getResources().getDisplayMetrics())));
-                    // TODO: calculate map height
-//                    ViewGroup.LayoutParams layoutParams =
-//                            bottomSheetLayout.getLayoutParams();
-//                    layoutParams.height = rootView.getHeight() - mapContainerView.getTop();
-//                    bottomSheetLayout.setLayoutParams(layoutParams);
-//                    bottomSheetBehavior.setPeekHeight(peekHeight);
                 } catch (IllegalStateException e) {
                     if (mapContainerView.getViewTreeObserver().isAlive()) {
                         mapContainerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -298,12 +292,6 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
                                     googleMap.moveCamera(CameraUpdateFactory.zoomTo(13));
                                     googleMap.moveCamera(CameraUpdateFactory.newLatLng(cityHall));
                                 }
-                                // TODO: calculate map height
-//                                ViewGroup.LayoutParams layoutParams =
-//                                        bottomSheetLayout.getLayoutParams();
-//                                layoutParams.height = rootView.getHeight() - mapContainerView.getTop();
-//                                bottomSheetLayout.setLayoutParams(layoutParams);
-//                                bottomSheetBehavior.setPeekHeight(peekHeight);
                             }
                         });
                     }
@@ -317,7 +305,6 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
         // hide progress view and show map
         progressView.setVisibility(View.GONE);
         mapContainerView.setVisibility(View.VISIBLE);
-//        alertsView.setVisibility(View.VISIBLE); // TODO: show alerts
 
         int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
         if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
@@ -449,10 +436,18 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
         firstRouteCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO: activate this route - redraw vehicles, change KML color, change card background
-                // TODO: deactivate other routes
+                firstRouteCard.activateCard();
+                if (secondRouteCard != null) {
+                    secondRouteCard.deactivateCard();
+                }
+                if (thirdRouteCard != null) {
+                    thirdRouteCard.deactivateCard();
+                }
+
+                // TODO: activate this route - redraw vehicles, change KML color
             }
         });
+        firstRouteCard.activateCard();
         routeCardContainer.addView(firstRouteCard);
 
         if (secondRoute != null) {
@@ -462,11 +457,17 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
             secondRouteCard.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    // TODO: activate this route
-                    // TODO: deactivate other routes
+                    firstRouteCard.deactivateCard();
+                    secondRouteCard.activateCard();
+                    if (thirdRouteCard != null) {
+                        thirdRouteCard.deactivateCard();
+                    }
+
+                    // TODO: activate this route - redraw vehicles, change KML color
                 }
             });
 
+            secondRouteCard.deactivateCard();
             routeCardContainer.addView(secondRouteCard);
         } else {
             secondRouteCard = null;
@@ -479,11 +480,15 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
             thirdRouteCard.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    // TODO: activate this route
-                    // TODO: deactivate other routes
+                    firstRouteCard.deactivateCard();
+                    secondRouteCard.deactivateCard();
+                    thirdRouteCard.activateCard();
+
+                    // TODO: activate this route - redraw vehicles, change KML color
                 }
             });
 
+            thirdRouteCard.deactivateCard();
             routeCardContainer.addView(thirdRouteCard);
 
             // disable add button
@@ -502,7 +507,7 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
     }
 
     private void disableView(View view) {
-        view.setAlpha((float) .3);
+        view.setAlpha((float) .6);
         view.setClickable(false);
     }
 
@@ -517,7 +522,6 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
         // show progress view and hide everything else
         progressView.setVisibility(View.VISIBLE);
         mapContainerView.setVisibility(View.GONE);
-//        alertsView.setVisibility(View.GONE); // TODO: hide alerts
 
         SeptaServiceFactory.getTransitViewService().getTransitViewResults(routeIds).enqueue(new Callback<TransitViewModelResponse>() {
             @Override
@@ -541,7 +545,7 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
 
                     prepareToDrawMap();
                 } else {
-                    Log.e(TAG, "Null response body when fetching TransitVIew results for: " + routeIds);
+                    Log.e(TAG, "Null response body when fetching TransitView results for: " + routeIds);
                     failure();
                 }
             }
@@ -563,26 +567,23 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
     }
 
     private void prepareToDrawMap() {
-        if (!mapSized) {
-            mapSized = true;
+        if (!firstRun) {
+            firstRun = true;
             mapFragment = SupportMapFragment.newInstance();
-
-            // TODO: calculate map size after drawing alerts
-//                    ViewGroup.LayoutParams mapContainerLayoutParams = mapContainerView.getLayoutParams();
-//                    mapContainerLayoutParams.height = rootView.getHeight() - value - mapContainerView.getTop();
-//                    mapContainerLayoutParams.width = rootView.getWidth();
-//                    mapContainerView.setLayoutParams(mapContainerLayoutParams);
-
             try {
                 getSupportFragmentManager().beginTransaction().add(R.id.map_container, mapFragment).commit();
             } catch (IllegalStateException e) {
                 Log.e(TAG, e.toString());
             }
             mapFragment.getMapAsync(TransitViewResultsActivity.this);
+
         } else if (refreshed) {
+            // refresh map without moving camera
             updateMap();
             refreshed = false;
+
         } else {
+            // refresh data and move camera
             onMapReady(googleMap);
         }
     }
@@ -626,7 +627,6 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
         // hide error message in case connection regained
         progressView.setVisibility(View.GONE);
         mapContainerView.setVisibility(View.VISIBLE);
-//        alertsView.setVisibility(View.VISIBLE); // TODO: show alerts
     }
 
     private void showNoResultsFoundErrorMessage() {

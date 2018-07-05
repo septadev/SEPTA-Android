@@ -21,9 +21,6 @@ import java.util.Map;
 
 public class FavoritesSharedPrefsUtilsImpl implements FavoritesSharedPrefsUtils {
 
-    // TODO: save in 2 locations -- pass in which type of Favorite
-    // TODO: 2 methods to getNTAFavorite(key) or getTransitViewFavorite(key)
-
     public static final String TAG = FavoritesSharedPrefsUtilsImpl.class.getSimpleName();
 
     private static final String KEY_FAVORITES_NTA = "favorite_json";

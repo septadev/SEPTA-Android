@@ -98,7 +98,7 @@ public class TransitViewRouteCard extends LinearLayout {
         refreshAlertsView();
     }
 
-    private void refreshAlertsView() {
+    public void refreshAlertsView() {
         TransitType transitType = TransitViewUtils.isTrolley(route.getRouteId()) ? TransitType.TROLLEY : TransitType.BUS;
         Alert routeAlerts = SystemStatusState.getAlertForLine(transitType, route.getRouteId());
         isAdvisory = routeAlerts.isAdvisory();
@@ -129,6 +129,13 @@ public class TransitViewRouteCard extends LinearLayout {
         } else {
             weatherIcon.setVisibility(View.GONE);
         }
+    }
+
+    public void hideAlertIcons() {
+        advisoryIcon.setVisibility(View.GONE);
+        alertIcon.setVisibility(View.GONE);
+        detourIcon.setVisibility(View.GONE);
+        weatherIcon.setVisibility(View.GONE);
     }
 
     public void activateCard() {

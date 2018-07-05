@@ -187,7 +187,6 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                     transitViewFavoriteViewHolder.detourIcon.setVisibility(View.GONE);
                     transitViewFavoriteViewHolder.weatherIcon.setVisibility(View.GONE);
                 }
-
             });
 
         } else {

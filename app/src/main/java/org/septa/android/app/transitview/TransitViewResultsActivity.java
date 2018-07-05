@@ -46,6 +46,7 @@ import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.favorites.DeleteFavoritesAsyncTask;
 import org.septa.android.app.favorites.edit.RenameFavoriteDialogFragment;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
+import org.septa.android.app.services.apiinterfaces.model.Alerts;
 import org.septa.android.app.services.apiinterfaces.model.Favorite;
 import org.septa.android.app.services.apiinterfaces.model.TransitViewFavorite;
 import org.septa.android.app.services.apiinterfaces.model.TransitViewModelResponse;
@@ -53,6 +54,7 @@ import org.septa.android.app.support.CrashlyticsManager;
 import org.septa.android.app.support.CursorAdapterSupplier;
 import org.septa.android.app.support.MapUtils;
 import org.septa.android.app.support.RouteModelComparator;
+import org.septa.android.app.systemstatus.SystemStatusState;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
@@ -238,6 +240,8 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
 
     @Override
     public void onMapReady(final GoogleMap googleMap) {
+        Log.d(TAG, "OnMapReady");
+
         this.googleMap = googleMap;
         MapStyleOptions mapStyle = MapStyleOptions.loadRawResourceStyle(this, R.raw.maps_json_styling);
         googleMap.setMapStyle(mapStyle);
@@ -247,8 +251,12 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
         googleMap.getUiSettings().setRotateGesturesEnabled(false);
 
         // move camera to city hall to speed up zoom process
-        final LatLng cityHall = new LatLng(39.9517999, -75.1633285);
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(cityHall));
+        if (!firstRun) {
+            final LatLng cityHall = new LatLng(39.9517999, -75.1633285);
+            googleMap.moveCamera(CameraUpdateFactory.newLatLng(cityHall));
+            googleMap.moveCamera(CameraUpdateFactory.zoomTo(13));
+            firstRun = true;
+        }
 
         // default map zoom to show KML of all routes using builder.include()
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
@@ -274,6 +282,8 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
         googleMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
             @Override
             public void onMapLoaded() {
+                Log.d(TAG, "OnMapLoaded");
+
                 Display mdisp = getWindowManager().getDefaultDisplay();
                 Point mdispSize = new Point();
                 mdisp.getSize(mdispSize);
@@ -294,6 +304,8 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
                                     Log.e(TAG, "Failed to move camera, defaulting map zoom to Philadelphia City Hall");
 
                                     // TODO: where should I move map to on default?
+                                    final LatLng cityHall = new LatLng(39.9517999, -75.1633285);
+
                                     googleMap.moveCamera(CameraUpdateFactory.zoomTo(13));
                                     googleMap.moveCamera(CameraUpdateFactory.newLatLng(cityHall));
                                 }
@@ -302,6 +314,7 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
                     }
                 }
 
+                // custom vehicle details info window
                 TransitViewVehicleDetailsInfoWindowAdapter adapter = new TransitViewVehicleDetailsInfoWindowAdapter(TransitViewResultsActivity.this);
                 googleMap.setInfoWindowAdapter(adapter);
             }
@@ -552,6 +565,7 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
         progressView.setVisibility(View.VISIBLE);
         mapContainerView.setVisibility(View.GONE);
 
+        // refresh vehicle data
         SeptaServiceFactory.getTransitViewService().getTransitViewResults(routeIds).enqueue(new Callback<TransitViewModelResponse>() {
             @Override
             public void onResponse(Call<TransitViewModelResponse> call, @NonNull Response<TransitViewModelResponse> response) {
@@ -593,11 +607,43 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
                 showNoResultsFoundErrorMessage(); // TODO: how should this be handled
             }
         });
+
+        // refresh alerts
+        SeptaServiceFactory.getAlertsService().getAlerts().enqueue(new Callback<Alerts>() {
+            @Override
+            public void onResponse(Call<Alerts> call, Response<Alerts> response) {
+                SystemStatusState.update(response.body());
+
+                // show alert changes in route cards
+                firstRouteCard.refreshAlertsView();
+                if (secondRouteCard != null) {
+                    secondRouteCard.refreshAlertsView();
+                    if (thirdRouteCard != null) {
+                        thirdRouteCard.refreshAlertsView();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Alerts> call, Throwable t) {
+                t.printStackTrace();
+
+                Log.e(TAG, "Failed to fetch alert updates for TransitView routes: " + routeIds, t);
+
+                // hide alert icons in route cards
+                firstRouteCard.hideAlertIcons();
+                if (secondRouteCard != null) {
+                    secondRouteCard.hideAlertIcons();
+                    if (thirdRouteCard != null) {
+                        thirdRouteCard.hideAlertIcons();
+                    }
+                }
+            }
+        });
     }
 
     private void prepareToDrawMap() {
         if (!firstRun) {
-            firstRun = true;
             mapFragment = SupportMapFragment.newInstance();
             try {
                 getSupportFragmentManager().beginTransaction().add(R.id.map_container, mapFragment).commit();

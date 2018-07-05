@@ -197,11 +197,6 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
     }
 
     @Override
-    public void onAlertIconsClicked(String routeId) {
-        // TODO: go to system status for that route
-    }
-
-    @Override
     public void selectFirstRoute(RouteDirectionModel route) {
         Log.e(TAG, "Invalid attempt to select the first route from the TransitViewResultsActivity -- going back to TransitView route picker");
 
@@ -432,7 +427,7 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
 
         StringBuilder routeIdBuilder = new StringBuilder(firstRoute.getRouteId());
 
-        firstRouteCard = new TransitViewRouteCard(this, firstRoute.getRouteId(), 1);
+        firstRouteCard = new TransitViewRouteCard(this, firstRoute, 1);
         firstRouteCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -453,7 +448,7 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
         if (secondRoute != null) {
             routeIdBuilder.append(",").append(secondRoute.getRouteId());
 
-            secondRouteCard = new TransitViewRouteCard(this, secondRoute.getRouteId(), 2);
+            secondRouteCard = new TransitViewRouteCard(this, secondRoute, 2);
             secondRouteCard.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -476,7 +471,7 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
         if (thirdRoute != null) {
             routeIdBuilder.append(",").append(thirdRoute.getRouteId());
 
-            thirdRouteCard = new TransitViewRouteCard(this, thirdRoute.getRouteId(), 3);
+            thirdRouteCard = new TransitViewRouteCard(this, thirdRoute, 3);
             thirdRouteCard.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

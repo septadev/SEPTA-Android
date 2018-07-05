@@ -8,10 +8,13 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
+import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.services.apiinterfaces.model.Alert;
 import org.septa.android.app.support.CrashlyticsManager;
+import org.septa.android.app.systemstatus.GoToSystemStatusResultsOnClickListener;
 import org.septa.android.app.systemstatus.SystemStatusState;
 import org.septa.android.app.view.TextView;
 
@@ -21,7 +24,7 @@ public class TransitViewRouteCard extends LinearLayout {
 
     private Context context;
     private TransitViewRouteCardListener mListener;
-    private String routeId;
+    private RouteDirectionModel route;
     private int sequence;
     private boolean isAdvisory, isAlert, isDetour, isWeather;
 
@@ -29,10 +32,10 @@ public class TransitViewRouteCard extends LinearLayout {
     LinearLayout rootView;
     private ImageView deleteButton;
     private TextView routeIdText;
-    private View line, alertIconsContainer;
+    private View line;
     private ImageView advisoryIcon, alertIcon, detourIcon, weatherIcon;
 
-    public TransitViewRouteCard(@NonNull Context context, String routeId, int sequence) {
+    public TransitViewRouteCard(@NonNull Context context, RouteDirectionModel route, int sequence) {
         super(context);
 
         if (context instanceof TransitViewRouteCardListener) {
@@ -44,7 +47,7 @@ public class TransitViewRouteCard extends LinearLayout {
         }
 
         this.context = context;
-        this.routeId = routeId;
+        this.route = route;
         this.sequence = sequence;
 
         initializeView();
@@ -56,7 +59,6 @@ public class TransitViewRouteCard extends LinearLayout {
         deleteButton = rootView.findViewById(R.id.delete_route);
         routeIdText = rootView.findViewById(R.id.transitview_card_route_id);
         line = rootView.findViewById(R.id.transitview_card_line);
-        alertIconsContainer = rootView.findViewById(R.id.route_alert_icons);
         advisoryIcon = rootView.findViewById(R.id.advisory_icon);
         alertIcon = rootView.findViewById(R.id.alert_icon);
         detourIcon = rootView.findViewById(R.id.detour_icon);
@@ -65,9 +67,6 @@ public class TransitViewRouteCard extends LinearLayout {
         // shorten BLVDDIR and the LUCY lines
         shortenRouteNames();
 
-        routeIdText.setText(routeId);
-        // TODO: set transit type icon
-
         deleteButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -75,20 +74,33 @@ public class TransitViewRouteCard extends LinearLayout {
             }
         });
 
-        alertIconsContainer.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mListener.onAlertIconsClicked(routeId);
-            }
-        });
+        TransitType transitType = TransitViewUtils.isTrolley(route.getRouteId()) ? TransitType.TROLLEY : TransitType.BUS;
+        // set transit type icon
+        routeIdText.setCompoundDrawablesWithIntrinsicBounds(ContextCompat.getDrawable(context, transitType.getTabActiveImageResource()), null, null, null);
+
+        // clicking on advisory icon links to system status
+        advisoryIcon.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ADVISORY_EXPANDED, context, transitType, route.getRouteId(), route.getRouteShortName()));
+        advisoryIcon.setContentDescription(R.string.advisory_icon_content_description_prefix + route.getRouteShortName());
+
+        // clicking on alert icon links to system status
+        alertIcon.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ALERT_EXPANDED, context, transitType, route.getRouteId(), route.getRouteShortName()));
+        alertIcon.setContentDescription(R.string.alert_icon_content_description_prefix + route.getRouteShortName());
+
+        // clicking on detour icon links to system status
+        detourIcon.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.ACTIVE_DETOUR_EXPANDED, context, transitType, route.getRouteId(), route.getRouteShortName()));
+        detourIcon.setContentDescription(R.string.detour_icon_content_description_prefix + route.getRouteShortName());
+
+        // clicking on weather icon links to system status
+        weatherIcon.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.WEATHER_ALERTS_EXPANDED, context, transitType, route.getRouteId(), route.getRouteShortName()));
+        weatherIcon.setContentDescription(R.string.weather_icon_content_description_prefix + route.getRouteShortName());
 
         // TODO: fetch new alerts every 30 seconds
         refreshAlertsView();
     }
 
     private void refreshAlertsView() {
-        TransitType transitType = TransitViewUtils.isTrolley(routeId) ? TransitType.TROLLEY : TransitType.BUS;
-        Alert routeAlerts = SystemStatusState.getAlertForLine(transitType, routeId);
+        TransitType transitType = TransitViewUtils.isTrolley(route.getRouteId()) ? TransitType.TROLLEY : TransitType.BUS;
+        Alert routeAlerts = SystemStatusState.getAlertForLine(transitType, route.getRouteId());
         isAdvisory = routeAlerts.isAdvisory();
         isAlert = routeAlerts.isAlert() || routeAlerts.isSuspended();
         isDetour = routeAlerts.isDetour();
@@ -148,6 +160,7 @@ public class TransitViewRouteCard extends LinearLayout {
     }
 
     private void shortenRouteNames() {
+        String routeId = route.getRouteId();
         if ("BLVDDIR".equals(routeId)) {
             routeId = "BLVD";
         } else if ("LUCYGO".equals(routeId)) {
@@ -155,11 +168,10 @@ public class TransitViewRouteCard extends LinearLayout {
         } else if ("LUCYGR".equals(routeId)) {
             routeId = "LUGR";
         }
+        routeIdText.setText(routeId);
     }
 
     public interface TransitViewRouteCardListener {
         void removeRoute(int sequence);
-
-        void onAlertIconsClicked(String routeId);
     }
 }

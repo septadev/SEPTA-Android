@@ -119,9 +119,7 @@ public class LineUnawareLocationPickerTabActivityHandler extends BaseTabActivity
 
             int permissionCheck = ContextCompat.checkSelfPermission(getActivity(),
                     Manifest.permission.ACCESS_FINE_LOCATION);
-            if (permissionCheck == PackageManager.PERMISSION_GRANTED)
-
-            {
+            if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
                 LocationServices.getFusedLocationProviderClient(getActivity()).getLastLocation();
                 Task<Location> locationTask = LocationServices.getFusedLocationProviderClient(getActivity()).getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
                     @Override

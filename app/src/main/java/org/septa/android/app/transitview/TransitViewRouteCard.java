@@ -94,7 +94,6 @@ public class TransitViewRouteCard extends LinearLayout {
         weatherIcon.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.WEATHER_ALERTS_EXPANDED, context, transitType, route.getRouteId(), route.getRouteShortName()));
         weatherIcon.setContentDescription(R.string.weather_icon_content_description_prefix + route.getRouteShortName());
 
-        // TODO: fetch new alerts every 30 seconds
         refreshAlertsView();
     }
 
@@ -150,6 +149,12 @@ public class TransitViewRouteCard extends LinearLayout {
         );
         params.setMargins(21, 0, 0, 0);
         rootView.setLayoutParams(params);
+
+        // make alert icons clickable
+        advisoryIcon.setClickable(true);
+        alertIcon.setClickable(true);
+        detourIcon.setClickable(true);
+        weatherIcon.setClickable(true);
     }
 
     public void deactivateCard() {
@@ -164,6 +169,12 @@ public class TransitViewRouteCard extends LinearLayout {
         );
         params.setMargins(21, 0, 0, 0);
         rootView.setLayoutParams(params);
+
+        // disable alert icons
+        advisoryIcon.setClickable(false);
+        alertIcon.setClickable(false);
+        detourIcon.setClickable(false);
+        weatherIcon.setClickable(false);
     }
 
     private void shortenRouteNames() {

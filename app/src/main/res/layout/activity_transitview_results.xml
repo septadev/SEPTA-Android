@@ -12,6 +12,17 @@
         android:layout_height="match_parent"
         android:background="@android:color/darker_gray" />
 
+    <TextView
+        android:id="@+id/no_results_msg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textAlignment="center"
+        android:gravity="center"
+        android:padding="25dp"
+        android:background="@color/no_results_found"
+        android:text="@string/realtime_failure_message"
+        android:visibility="gone"/>
+
     <LinearLayout
         android:id="@+id/route_cards"
         android:layout_width="match_parent"
@@ -31,8 +42,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="7dp"
-            android:layout_marginTop="7dp"
-            android:layout_marginRight="7dp">
+            android:layout_marginRight="7dp"
+            android:layout_marginTop="7dp">
 
             <LinearLayout
                 android:id="@+id/header_routes_buttons"

@@ -24,6 +24,7 @@ import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.LocationServices;
@@ -98,6 +99,7 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
     private View progressView;
     private boolean firstRun = false;
     private SupportMapFragment mapFragment;
+    private TextView noResultsMsg;
     private GoogleMap googleMap;
     public static final String VEHICLE_MARKER_KEY_DELIM = "_";
 
@@ -321,6 +323,7 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
         });
 
         // hide progress view and show map
+        noResultsMsg.setVisibility(View.GONE);
         progressView.setVisibility(View.GONE);
         mapContainerView.setVisibility(View.VISIBLE);
 
@@ -401,6 +404,7 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
 
     private void initializeView() {
         mapContainerView = findViewById(R.id.map_container);
+        noResultsMsg = findViewById(R.id.no_results_msg);
         progressView = findViewById(R.id.progress_view);
         addLabel = findViewById(R.id.button_add);
         routeCardContainer = findViewById(R.id.header_routes_buttons);
@@ -563,6 +567,7 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
 
         // show progress view and hide everything else
         progressView.setVisibility(View.VISIBLE);
+        noResultsMsg.setVisibility(View.GONE);
         mapContainerView.setVisibility(View.GONE);
 
         // refresh vehicle data
@@ -595,7 +600,7 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
 
             @Override
             public void onFailure(Call<TransitViewModelResponse> call, Throwable t) {
-                Log.e(TAG, "No TransitView results found for the routes: " + routeIds, t);
+                Log.e(TAG, "Failed to find TransitView results found for the routes: " + routeIds, t);
                 failure();
             }
 
@@ -604,7 +609,7 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
                 refreshHandler.removeCallbacks(TransitViewResultsActivity.this);
                 refreshHandler.postDelayed(TransitViewResultsActivity.this, REFRESH_DELAY_SECONDS * 1000);
                 refreshed = false;
-                showNoResultsFoundErrorMessage(); // TODO: how should this be handled
+                showNoResultsFoundErrorMessage();
             }
         });
 
@@ -704,6 +709,7 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
 
         // hide error message in case connection regained
         progressView.setVisibility(View.GONE);
+        noResultsMsg.setVisibility(View.GONE);
         mapContainerView.setVisibility(View.VISIBLE);
     }
 
@@ -724,8 +730,10 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
     }
 
     private void showNoResultsFoundErrorMessage() {
-        // show error message and hide
-        Log.e(TAG, "No TransitView results found");
+        // show error message and hide map and progress view
+        mapContainerView.setVisibility(View.GONE);
+        noResultsMsg.setVisibility(View.VISIBLE);
+        progressView.setVisibility(View.GONE);
     }
 
     private void saveAsFavorite(final MenuItem item) {

@@ -1,6 +1,7 @@
 package org.septa.android.app.transitview;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -30,6 +31,7 @@ public class TransitViewFragment extends Fragment implements TransitViewLinePick
 
     private static final String TAG = TransitViewFragment.class.getSimpleName();
 
+    private Activity activity;
     private TransitViewFragmentListener mListener;
 
     private RouteDirectionModel firstRoute, secondRoute, thirdRoute;
@@ -53,15 +55,16 @@ public class TransitViewFragment extends Fragment implements TransitViewLinePick
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
-        if (getActivity() == null) {
+        activity = getActivity();
+        if (activity == null) {
             return null;
         }
 
-        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
+        if (ContextCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
         }
 
-        DatabaseManager dbManager = DatabaseManager.getInstance(getActivity());
+        DatabaseManager dbManager = DatabaseManager.getInstance(activity);
         busRouteCursorAdapterSupplier = dbManager.getBusNoDirectionRouteCursorAdapterSupplier();
         trolleyRouteCursorAdapterSupplier = dbManager.getTrolleyNoDirectionRouteCursorAdapterSupplier();
 

@@ -352,9 +352,10 @@ public class TransitViewResultsActivity extends BaseActivity implements Runnable
     public void updateFavorite(Favorite favorite) {
         if (favorite instanceof TransitViewFavorite) {
             currentFavorite = (TransitViewFavorite) favorite;
+            isAFavorite = true;
             renameFavorite(currentFavorite);
 
-            Snackbar snackbar = Snackbar.make(findViewById(R.id.main_content), R.string.create_fav_snackbar_text, Snackbar.LENGTH_LONG);
+            Snackbar snackbar = Snackbar.make(findViewById(R.id.activity_transitview_results), R.string.create_fav_snackbar_text, Snackbar.LENGTH_LONG);
             snackbar.show();
         } else {
             Log.e(TAG, "Attempted to save invalid Favorite type");

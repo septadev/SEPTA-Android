@@ -24,6 +24,9 @@ public class TransitViewVehicleDetailsInfoWindowAdapter implements GoogleMap.Inf
     private Activity context;
     private TransitViewVehicleDetailsInfoWindowAdapterListener mListener;
 
+    private String[] vehicleMarkerKey;
+    private String routeId;
+
     TransitViewVehicleDetailsInfoWindowAdapter(Activity context) {
         this.context = context;
         if (context instanceof TransitViewVehicleDetailsInfoWindowAdapterListener) {
@@ -37,6 +40,16 @@ public class TransitViewVehicleDetailsInfoWindowAdapter implements GoogleMap.Inf
 
     @Override
     public View getInfoWindow(Marker marker) {
+        vehicleMarkerKey = marker.getTitle().split(TransitViewResultsActivity.VEHICLE_MARKER_KEY_DELIM);
+        routeId = vehicleMarkerKey[0];
+
+        String activeRouteId = mListener.getActiveRouteId();
+
+        // if vehicle is on inactive route, activate that route
+        if (!activeRouteId.equalsIgnoreCase(routeId)) {
+            mListener.changeActiveRoute(activeRouteId, routeId);
+        }
+
         // returning null will call getInfoContents
         return null;
     }
@@ -67,8 +80,6 @@ public class TransitViewVehicleDetailsInfoWindowAdapter implements GoogleMap.Inf
         TextView numberRailCarsHeading = contents.findViewById(R.id.vehicle_details_rail_number_cars_heading);
         
         // look up vehicle details
-        String[] vehicleMarkerKey = marker.getTitle().split(TransitViewResultsActivity.VEHICLE_MARKER_KEY_DELIM);
-        String routeId = vehicleMarkerKey[0];
         TransitViewModelResponse.TransitViewRecord vehicleRecord = mListener.getVehicleRecord(marker.getTitle());
 
         // hide unused fields
@@ -112,6 +123,10 @@ public class TransitViewVehicleDetailsInfoWindowAdapter implements GoogleMap.Inf
 
     public interface TransitViewVehicleDetailsInfoWindowAdapterListener {
         TransitViewModelResponse.TransitViewRecord getVehicleRecord(String vehicleRecordKey);
+
+        String getActiveRouteId();
+
+        void changeActiveRoute(String oldActiveRoute, String newActiveRoute);
     }
 
 }

@@ -78,7 +78,6 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
     private static final String TAG = TransitViewResultsActivity.class.getSimpleName();
 
     private RouteDirectionModel firstRoute, secondRoute, thirdRoute;
-    private Set<TransitViewModelResponse.TransitViewRecord> firstRoutesResults, secondRoutesResults, thirdRoutesResults;
     private String routeIds;
     private String activeRouteId;
     private boolean isAFavorite = false;
@@ -88,7 +87,7 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
     private Handler refreshHandler;
     private static final int REFRESH_DELAY_SECONDS = 30;
     private TransitViewModelResponseParser parser;
-    private Map<String, TransitViewModelResponse.TransitViewRecord> details = new HashMap<>();
+    private Map<String, TransitViewModelResponse.TransitViewRecord> vehicleDetailsMap = new HashMap<>();
     private boolean refreshed = false; // used to distinguish refresh from a change in route selection
 
     // layout variables
@@ -180,12 +179,16 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
                 // TODO: prompt to delete
                 activeRouteId = firstRoute.getRouteId();
 
+                refreshed = false;
+
                 // delete third route
                 updateRouteCards(firstRoute, secondRoute, null);
                 break;
             case 2:
                 // TODO: prompt to delete
                 activeRouteId = firstRoute.getRouteId();
+
+                refreshed = false;
 
                 // delete second route
                 updateRouteCards(firstRoute, thirdRoute, null);
@@ -195,6 +198,8 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
                 // TODO: prompt to delete
                 if (secondRoute != null) {
                     activeRouteId = secondRoute.getRouteId();
+
+                    refreshed = false;
 
                     // delete first route
                     updateRouteCards(secondRoute, thirdRoute, null);
@@ -224,6 +229,7 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
         selectedRoutes.add(null);
 
         activeRouteId = route.getRouteId();
+        refreshed = false;
         updateRouteCards(selectedRoutes.get(0), selectedRoutes.get(1), selectedRoutes.get(2));
     }
 
@@ -237,6 +243,7 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
         Collections.sort(selectedRoutes, new RouteModelComparator());
 
         activeRouteId = route.getRouteId();
+        refreshed = false;
         updateRouteCards(selectedRoutes.get(0), selectedRoutes.get(1), selectedRoutes.get(2));
     }
 
@@ -263,24 +270,13 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
         // default map zoom to show KML of all routes using builder.include()
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
 
-        // add vehicle details to map of vehicle markers
-        details.clear();
-        for (String routeId : routeIds.split(",")) {
-            for (Map.Entry<TransitViewModelResponse.TransitViewRecord, LatLng> entry : parser.getResultsForRoute(routeId).entrySet()) {
-                String vehicleMarkerKey = new StringBuilder(routeId).append(VEHICLE_MARKER_KEY_DELIM).append(entry.getKey().getVehicleId()).toString();
-                details.put(vehicleMarkerKey, entry.getKey());
-
-                // map must include vehicles on active route when automatically moving camera
-                if (activeRouteId.equalsIgnoreCase(routeId)) {
-                    builder.include(entry.getValue());
-                }
-            }
+        // map must include vehicles on active route when automatically moving camera
+        for (Map.Entry<TransitViewModelResponse.TransitViewRecord, LatLng> entry : parser.getResultsForRoute(activeRouteId).entrySet()) {
+            builder.include(entry.getValue());
         }
-
         final LatLngBounds bounds = builder.build();
 
         googleMap.setContentDescription("Map displaying TransitView routes: " + routeIds);
-
         googleMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
             @Override
             public void onMapLoaded() {
@@ -316,7 +312,7 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
                     }
                 }
 
-                // custom vehicle details info window
+                // custom vehicle vehicleDetailsMap info window
                 TransitViewVehicleDetailsInfoWindowAdapter adapter = new TransitViewVehicleDetailsInfoWindowAdapter(TransitViewResultsActivity.this);
                 googleMap.setInfoWindowAdapter(adapter);
             }
@@ -349,7 +345,7 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
 
     @Override
     public TransitViewModelResponse.TransitViewRecord getVehicleRecord(String vehicleRecordKey) {
-        return details.get(vehicleRecordKey);
+        return vehicleDetailsMap.get(vehicleRecordKey);
     }
 
     @Override
@@ -375,6 +371,20 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
     public void favoriteCreationFailed() {
         Snackbar snackbar = Snackbar.make(findViewById(R.id.main_content), R.string.create_fav_snackbar_failed, Snackbar.LENGTH_LONG);
         snackbar.show();
+    }
+
+    @NonNull
+    @Override
+    public String getActiveRouteId() {
+        return activeRouteId;
+    }
+
+    @Override
+    public void changeActiveRoute(String oldActiveRoute, String newActiveRoute) {
+        activeRouteId = newActiveRoute;
+        refreshed = true; // simply refresh data without moving camera
+
+        updateRouteCards(firstRoute, secondRoute, thirdRoute);
     }
 
     private void initializeActivity(@Nullable Bundle savedInstanceState) {
@@ -548,7 +558,6 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
 
         checkIfAFavorite();
 
-        refreshed = false;
         refreshData();
     }
 
@@ -578,16 +587,16 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
 
                     parser = new TransitViewModelResponseParser(response.body());
 
-                    firstRoutesResults = parser.getResultsForRoute(firstRoute.getRouteId()).keySet();
+                    Set<TransitViewModelResponse.TransitViewRecord> firstRoutesResults = parser.getResultsForRoute(firstRoute.getRouteId()).keySet();
                     Log.d(TAG, firstRoutesResults.toString());
 
                     if (secondRoute != null) {
-                        secondRoutesResults = parser.getResultsForRoute(secondRoute.getRouteId()).keySet();
+                        Set<TransitViewModelResponse.TransitViewRecord> secondRoutesResults = parser.getResultsForRoute(secondRoute.getRouteId()).keySet();
                         Log.d(TAG, secondRoutesResults.toString());
                     }
 
                     if (thirdRoute != null) {
-                        thirdRoutesResults = parser.getResultsForRoute(thirdRoute.getRouteId()).keySet();
+                        Set<TransitViewModelResponse.TransitViewRecord> thirdRoutesResults = parser.getResultsForRoute(thirdRoute.getRouteId()).keySet();
                         Log.d(TAG, thirdRoutesResults.toString());
                     }
 
@@ -670,6 +679,7 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
 
     private void updateMap() {
         googleMap.clear();
+        vehicleDetailsMap.clear();
 
         for (String routeId : routeIds.split(",")) {
             // draw active route and vehicles as blue
@@ -718,9 +728,13 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
         boolean isActiveRoute = activeRouteId.equalsIgnoreCase(routeId);
 
         for (Map.Entry<TransitViewModelResponse.TransitViewRecord, LatLng> entry : parser.getResultsForRoute(routeId).entrySet()) {
+
+            // add to map of vehicle marker details
+            String vehicleMarkerKey = new StringBuilder(routeId).append(VEHICLE_MARKER_KEY_DELIM).append(entry.getKey().getVehicleId()).toString();
+            vehicleDetailsMap.put(vehicleMarkerKey, entry.getKey());
+
             // create directional icon with bus or trolley
             BitmapDescriptor vehicleBitMap = TransitViewUtils.getDirectionalIconForTransitType(this, isTrolley, isActiveRoute, entry.getKey().getHeading());
-            String vehicleMarkerKey = new StringBuilder(routeId).append(VEHICLE_MARKER_KEY_DELIM).append(entry.getKey().getVehicleId()).toString();
             googleMap.addMarker(new MarkerOptions()
                     .position(entry.getValue())
                     .title(vehicleMarkerKey)

@@ -370,7 +370,7 @@ public class TransitViewResultsActivity extends BaseActivity implements Runnable
 
     @Override
     public void favoriteCreationFailed() {
-        Snackbar snackbar = Snackbar.make(findViewById(R.id.main_content), R.string.create_fav_snackbar_failed, Snackbar.LENGTH_LONG);
+        Snackbar snackbar = Snackbar.make(findViewById(R.id.activity_transitview_results), R.string.create_fav_snackbar_failed, Snackbar.LENGTH_LONG);
         snackbar.show();
     }
 

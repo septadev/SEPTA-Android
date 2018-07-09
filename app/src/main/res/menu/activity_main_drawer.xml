@@ -40,6 +40,10 @@
             android:id="@+id/nav_events"
             android:icon="@drawable/ic_calendar_non"
             android:title="@string/events" />
+        <item
+            android:id="@+id/nav_perks"
+            android:icon="@drawable/ic_perks_non"
+            android:title="@string/perks" />
 
     </group>
 

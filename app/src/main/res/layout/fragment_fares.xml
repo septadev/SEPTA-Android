@@ -26,7 +26,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingBottom="12dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -388,94 +389,6 @@
                     android:paddingBottom="12dp"
                     android:paddingTop="12dp"
                     android:text="More About SEPTA Fares"
-                    android:textAlignment="center"
-                    android:textColor="@android:color/white"
-                    android:textSize="14sp"
-                    app:typeface="@string/font_roboto_bold" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:background="@android:color/white"
-                android:elevation="@dimen/white_box_elevation"
-                android:orientation="vertical">
-
-                <RelativeLayout
-                    android:id="@+id/perks_logo_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="93dp"
-                    android:background="@drawable/perks_background"
-                    android:orientation="horizontal">
-
-                    <org.septa.android.app.view.TextView
-                        android:id="@+id/perks_title"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="15dp"
-                        android:layout_marginStart="15dp"
-                        android:layout_marginTop="25dp"
-                        android:letterSpacing="-0.02"
-                        android:text="Perks"
-                        android:textColor="@android:color/white"
-                        android:textSize="24sp"
-                        app:typeface="@string/font_roboto_bold" />
-
-                    <org.septa.android.app.view.TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/perks_title"
-                        android:layout_marginLeft="15dp"
-                        android:layout_marginStart="15dp"
-                        android:text="Perks for all!"
-                        android:textColor="@android:color/white"
-                        android:textSize="14sp"
-                        app:typeface="@string/font_roboto_light_italic" />
-
-                    <ImageView
-                        android:id="@+id/perks_logo"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_alignParentRight="true"
-                        android:layout_marginEnd="10dp"
-                        android:layout_marginRight="10dp"
-                        android:layout_marginTop="14dp"
-                        android:src="@drawable/psst_perks" />
-
-                </RelativeLayout>
-
-                <org.septa.android.app.view.TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
-                    android:paddingEnd="11dp"
-                    android:paddingLeft="15dp"
-                    android:paddingRight="11dp"
-                    android:paddingStart="15dp"
-                    android:text="Did you know your SEPTA Pass, and now your SEPTA Key, gets you discounts on food, drink, museums, sports, shops and more? Use your valid SEPTA Key, TrailPass, TransPass, or One Day Independence Pass and receive discounts to any of our Perks Partners."
-                    android:textColor="@color/light_gray"
-                    android:textSize="12sp"
-                    app:typeface="@string/font_roboto_regular" />
-
-                <org.septa.android.app.view.TextView
-                    android:id="@+id/perks_button"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:layout_marginTop="18dp"
-                    android:background="@drawable/button_gradient_background"
-                    android:gravity="center_horizontal"
-                    android:letterSpacing="-0.02"
-                    android:paddingBottom="12dp"
-                    android:paddingLeft="15dp"
-                    android:paddingRight="15dp"
-                    android:paddingTop="12dp"
-                    android:text="Learn More"
                     android:textAlignment="center"
                     android:textColor="@android:color/white"
                     android:textSize="14sp"

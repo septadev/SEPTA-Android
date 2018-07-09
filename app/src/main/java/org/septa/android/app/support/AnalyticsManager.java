@@ -16,11 +16,13 @@ import io.fabric.sdk.android.Fabric;
  */
 
 public abstract class AnalyticsManager {
+
     public static final String CUSTOM_EVENT_ABOUT = "About";
     public static final String CUSTOM_EVENT_CONNECT = "Connect with SEPTA";
     public static final String CUSTOM_EVENT_FARES_TRANSIT = "Fares and Transit Info";
     public static final String CUSTOM_EVENT_FAVORITES = "Favorites";
     public static final String CUSTOM_EVENT_NEXT_TO_ARRIVE = "Next To Arrive";
+    public static final String CUSTOM_EVENT_PERKS = "Perks";
     public static final String CUSTOM_EVENT_SCHEDULE = "Schedule";
     public static final String CUSTOM_EVENT_SPECIAL_EVENTS = "Special Events";
     public static final String CUSTOM_EVENT_SYSTEM_MAP = "System Map";

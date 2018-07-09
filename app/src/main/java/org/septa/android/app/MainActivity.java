@@ -40,6 +40,7 @@ import org.septa.android.app.database.update.ExpandDBZip;
 import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.fares.FaresFragment;
+import org.septa.android.app.fares.PerksFragment;
 import org.septa.android.app.favorites.FavoritesFragment;
 import org.septa.android.app.favorites.edit.ManageFavoritesFragment;
 import org.septa.android.app.nextarrive.NextToArriveFragment;
@@ -98,6 +99,7 @@ public class MainActivity extends BaseActivity implements
 
     SystemStatusFragment systemStatus = new SystemStatusFragment();
     Fragment faresTransitInfo = new FaresFragment();
+    Fragment perks = new PerksFragment();
     Fragment systemMap = new SystemMapFragment();
     Fragment events = null;
     Fragment trainview = null;
@@ -339,6 +341,11 @@ public class MainActivity extends BaseActivity implements
         if (id == R.id.nav_fares_transit_info) {
             AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_FARES_TRANSIT, null, null);
             switchToBundle(item, faresTransitInfo, R.string.fares_and_transit_info, R.drawable.ic_fares_active);
+        }
+
+        if (id == R.id.nav_perks) {
+            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_PERKS, null, null);
+            switchToBundle(item, perks, R.string.perks, R.drawable.ic_perks_active);
         }
 
         if (id == R.id.nav_system_map) {

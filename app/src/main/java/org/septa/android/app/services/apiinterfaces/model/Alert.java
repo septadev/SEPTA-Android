@@ -2,41 +2,37 @@ package org.septa.android.app.services.apiinterfaces.model;
 
 import com.google.gson.annotations.SerializedName;
 
-/**
- * Created by jkampf on 9/21/17.
- */
-
 public class Alert {
 
     @SerializedName("route_id")
-    String routeId;
+    private String routeId;
 
     @SerializedName("route_name")
-    String routeName;
+    private String routeName;
 
     @SerializedName("mode")
-    String mode;
+    private String mode;
 
     @SerializedName("advisory")
-    boolean advisory;
+    private boolean advisory;
 
     @SerializedName("detour")
-    boolean detour;
+    private boolean detour;
 
     @SerializedName("alert")
-    boolean alert;
+    private boolean alert;
 
     @SerializedName("suppend")
-    boolean suspended;
+    private boolean suspended;
 
     @SerializedName("last_updated")
-    String lastUpdate;
+    private String lastUpdate;
 
     @SerializedName("snow")
-    boolean snow;
+    private boolean snow;
 
     @SerializedName("description")
-    String description;
+    private String description;
 
     public String getRouteId() {
         return routeId;

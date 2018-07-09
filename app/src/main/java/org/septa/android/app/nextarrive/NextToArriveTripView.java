@@ -57,7 +57,7 @@ public class NextToArriveTripView extends FrameLayout {
 
     private Integer maxResults = 10;
 
-    private static Map<Integer, StopModel> connectionStations = new HashMap<Integer, StopModel>();
+    private static Map<Integer, StopModel> connectionStations = new HashMap<>();
 
     static {
         // 90004,'30th Street Station','39.9566667','-75.1816667'
@@ -72,7 +72,6 @@ public class NextToArriveTripView extends FrameLayout {
         //90007,'Temple University','39.9813889','-75.1494444'
         connectionStations.put(90007, new StopModel("90007", "Temple University", 0, true, "39.9813889", "-75.1494444"));
     }
-
 
     public NextToArriveTripView(@NonNull Context context) {
         super(context);
@@ -89,17 +88,17 @@ public class NextToArriveTripView extends FrameLayout {
         init();
     }
 
-
     private void init() {
         inflate(getContext(), R.layout.view_next_to_arrive_trip, this);
     }
 
     public void setNextToArriveData(NextArrivalModelResponseParser parser) {
-        final LinearLayout listView = (LinearLayout) findViewById(R.id.lines_list_view);
+        final LinearLayout listView = findViewById(R.id.lines_list_view);
         listView.removeAllViews();
 
-        if (parser == null)
+        if (parser == null) {
             return;
+        }
 
         List<NextArrivalModelResponse.NextArrivalRecord> data = parser.getResults();
 
@@ -107,7 +106,9 @@ public class NextToArriveTripView extends FrameLayout {
             @Override
             public int compare(NextArrivalRecord o1, NextArrivalRecord o2) {
                 int result = o1.getOrigDepartureTime().compareTo(o2.getOrigDepartureTime());
-                if (result != 0) return result;
+                if (result != 0) {
+                    return result;
+                }
                 result = o1.getOrigArrivalTime().compareTo(o2.getOrigArrivalTime());
                 return result;
             }
@@ -200,7 +201,7 @@ public class NextToArriveTripView extends FrameLayout {
             routeNameForSystemStatus = routeDirectionModel.getRouteShortName();
         }
 
-        android.widget.TextView lineNameText = (android.widget.TextView) convertView.findViewById(R.id.orig_line_name_text);
+        android.widget.TextView lineNameText = convertView.findViewById(R.id.orig_line_name_text);
         lineNameText.setText(lineName);
 
         ((ImageView) convertView.findViewById(R.id.orig_line_marker_left)).setColorFilter(ContextCompat.getColor(getContext(), transitType.getLineColor(lineId, context)));
@@ -242,26 +243,27 @@ public class NextToArriveTripView extends FrameLayout {
 
         DateFormat dateFormat = DateFormat.getTimeInstance(DateFormat.SHORT);
 
-        android.widget.TextView origArrivalTimeText = (android.widget.TextView) line.findViewById(R.id.orig_arrival_time_text);
+        android.widget.TextView origArrivalTimeText = line.findViewById(R.id.orig_arrival_time_text);
         origArrivalTimeText.setText(dateFormat.format(unit.getOrigDepartureTime()) + " - " + dateFormat.format(unit.getOrigArrivalTime()));
         origArrivalTimeText.setContentDescription("departs " + dateFormat.format(unit.getOrigDepartureTime()) + "  arrives " + dateFormat.format(unit.getOrigArrivalTime()));
-        android.widget.TextView origTripNumberText = (android.widget.TextView) line.findViewById(R.id.orig_trip_number_text);
+        android.widget.TextView origTripNumberText = line.findViewById(R.id.orig_trip_number_text);
         origTripNumberText.setText(unit.getOrigLineTripId() + " to " + unit.getOrigLastStopName());
 
-        android.widget.TextView origDepartureTime = (android.widget.TextView) line.findViewById(R.id.orig_depature_time);
+        android.widget.TextView origDepartureTime = line.findViewById(R.id.orig_depature_time);
 
         Calendar departureCal = Calendar.getInstance();
         departureCal.setTime(unit.getOrigDepartureTime());
         departureCal.add(Calendar.MINUTE, unit.getOrigDelayMinutes());
 
         long origDepartureMillis = departureCal.getTimeInMillis() - System.currentTimeMillis();
-        if (origDepartureMillis >= 1000 * 60)
+        if (origDepartureMillis >= 1000 * 60) {
             origDepartureTime.setText(GeneralUtils.getDurationAsString(origDepartureMillis, TimeUnit.MILLISECONDS));
-        else
+        } else {
             origDepartureTime.setText(R.string.nta_now);
+        }
 
         boolean enableClick = true;
-        android.widget.TextView origTardyText = (android.widget.TextView) line.findViewById(R.id.orig_tardy_text);
+        android.widget.TextView origTardyText = line.findViewById(R.id.orig_tardy_text);
         if (unit.getOrigDelayMinutes() > 0) {
             origTardyText.setText(GeneralUtils.getDurationAsString(unit.getOrigDelayMinutes(), TimeUnit.MINUTES) + " late.");
             origTardyText.setContentDescription(GeneralUtils.getDurationAsLongString(unit.getOrigDelayMinutes(), TimeUnit.MINUTES) + " late.");
@@ -324,14 +326,13 @@ public class NextToArriveTripView extends FrameLayout {
         return line;
     }
 
-
     public View getMultistopTripView(final NextArrivalRecord item) {
 
         View convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_next_to_arrive_unit_multistop, this, false);
 
         DateFormat dateFormat = DateFormat.getTimeInstance(DateFormat.SHORT);
 
-        android.widget.TextView origLineNameText = (android.widget.TextView) convertView.findViewById(R.id.orig_line_name_text);
+        android.widget.TextView origLineNameText = convertView.findViewById(R.id.orig_line_name_text);
         origLineNameText.setText(item.getOrigRouteName());
 
         ((ImageView) convertView.findViewById(R.id.orig_line_marker_left)).setColorFilter(ContextCompat.getColor(getContext(), transitType.getLineColor(item.getOrigRouteId(), getContext())));
@@ -363,28 +364,29 @@ public class NextToArriveTripView extends FrameLayout {
         }
 
 
-        android.widget.TextView origArrivalTimeText = (android.widget.TextView) convertView.findViewById(R.id.orig_arrival_time_text);
+        android.widget.TextView origArrivalTimeText = convertView.findViewById(R.id.orig_arrival_time_text);
         origArrivalTimeText.setText(dateFormat.format(item.getOrigDepartureTime()) + " - " + dateFormat.format(item.getOrigArrivalTime()));
         origArrivalTimeText.setContentDescription("departs " + dateFormat.format(item.getOrigDepartureTime()) + "  arrives " + dateFormat.format(item.getOrigArrivalTime()));
 
-        android.widget.TextView origTripNumberText = (android.widget.TextView) convertView.findViewById(R.id.orig_trip_number_text);
+        android.widget.TextView origTripNumberText = convertView.findViewById(R.id.orig_trip_number_text);
         origTripNumberText.setText(item.getOrigLineTripId() + " to " + item.getOrigLastStopName());
 
-        android.widget.TextView origDepartureTime = (android.widget.TextView) convertView.findViewById(R.id.orig_depature_time);
+        android.widget.TextView origDepartureTime = convertView.findViewById(R.id.orig_depature_time);
 
         Calendar departureCal = Calendar.getInstance();
         departureCal.setTime(item.getOrigDepartureTime());
         departureCal.add(Calendar.MINUTE, item.getOrigDelayMinutes());
 
         long origDepartureMillis = departureCal.getTimeInMillis() - System.currentTimeMillis();
-        if (origDepartureMillis >= 1000 * 60)
+        if (origDepartureMillis >= 1000 * 60) {
             origDepartureTime.setText(GeneralUtils.getDurationAsString(origDepartureMillis, TimeUnit.MILLISECONDS));
-        else
+        } else {
             origDepartureTime.setText(R.string.nta_now);
+        }
 
         boolean enableOrigClick = true;
         View origTripView = convertView.findViewById(R.id.orig_trip_layout);
-        android.widget.TextView origTardyText = (android.widget.TextView) convertView.findViewById(R.id.orig_tardy_text);
+        android.widget.TextView origTardyText = convertView.findViewById(R.id.orig_tardy_text);
         if (item.getOrigDelayMinutes() > 0) {
             origTardyText.setText(GeneralUtils.getDurationAsString(item.getOrigDelayMinutes(), TimeUnit.MINUTES) + " late.");
             origTardyText.setContentDescription(GeneralUtils.getDurationAsLongString(item.getOrigDelayMinutes(), TimeUnit.MINUTES) + " late.");
@@ -430,10 +432,10 @@ public class NextToArriveTripView extends FrameLayout {
                     intent.putExtra(Constants.STARTING_STATION, start);
                     intent.putExtra(Constants.TRANSIT_TYPE, transitType);
                     intent.putExtra(Constants.ROUTE_NAME, item.getOrigRouteName());
-                    if (routeDirectionModel != null){
+                    if (routeDirectionModel != null) {
                         CrashlyticsManager.log(Log.INFO, TAG, routeDirectionModel.getDirectionDescription());
-                        intent.putExtra(Constants.ROUTE_ID, routeDirectionModel.getRouteShortName());}
-                    else {
+                        intent.putExtra(Constants.ROUTE_ID, routeDirectionModel.getRouteShortName());
+                    } else {
                         CrashlyticsManager.log(Log.INFO, TAG, item.getOrigRouteId());
                         intent.putExtra(Constants.ROUTE_ID, item.getOrigRouteId());
                     }
@@ -446,10 +448,10 @@ public class NextToArriveTripView extends FrameLayout {
             });
         }
 
-        android.widget.TextView connectionStationText = (android.widget.TextView) convertView.findViewById(R.id.connection_station_name);
+        android.widget.TextView connectionStationText = convertView.findViewById(R.id.connection_station_name);
         connectionStationText.setText("Connect @ " + item.getConnectionStationName());
 
-        android.widget.TextView termLineNameText = (android.widget.TextView) convertView.findViewById(R.id.term_line_name_text);
+        android.widget.TextView termLineNameText = convertView.findViewById(R.id.term_line_name_text);
         termLineNameText.setText(item.getTermRouteName());
 
         ((ImageView) convertView.findViewById(R.id.term_line_marker_left)).setColorFilter(ContextCompat.getColor(getContext(), transitType.getLineColor(item.getTermRouteId(), getContext())));
@@ -480,14 +482,14 @@ public class NextToArriveTripView extends FrameLayout {
             targetView.setContentDescription(R.string.weather_icon_content_description_prefix + item.getTermRouteName());
         }
 
-        android.widget.TextView termArrivalTimeText = (android.widget.TextView) convertView.findViewById(R.id.term_arrival_time_text);
+        android.widget.TextView termArrivalTimeText = convertView.findViewById(R.id.term_arrival_time_text);
         termArrivalTimeText.setText(dateFormat.format(item.getTermDepartureTime()) + " - " + dateFormat.format(item.getTermArrivalTime()));
         termArrivalTimeText.setContentDescription("departs " + dateFormat.format(item.getTermDepartureTime()) + "  arrives " + dateFormat.format(item.getTermArrivalTime()));
 
-        android.widget.TextView termTripNumberText = (android.widget.TextView) convertView.findViewById(R.id.term_trip_number_text);
+        android.widget.TextView termTripNumberText = convertView.findViewById(R.id.term_trip_number_text);
         termTripNumberText.setText(item.getTermLineTripId() + " to " + item.getTermLastStopName());
 
-        android.widget.TextView termDepartureTime = (android.widget.TextView) convertView.findViewById(R.id.term_depature_time);
+        android.widget.TextView termDepartureTime = convertView.findViewById(R.id.term_depature_time);
 
         Calendar termDepartureCal = Calendar.getInstance();
         termDepartureCal.setTime(item.getTermDepartureTime());
@@ -502,7 +504,7 @@ public class NextToArriveTripView extends FrameLayout {
 
         boolean termEnableClick = true;
         View termTripView = convertView.findViewById(R.id.term_trip_layout);
-        android.widget.TextView termTardyText = (android.widget.TextView) convertView.findViewById(R.id.term_tardy_text);
+        android.widget.TextView termTardyText = convertView.findViewById(R.id.term_tardy_text);
         if (item.getTermDelayMinutes() > 0) {
             termTardyText.setText(GeneralUtils.getDurationAsString(item.getTermDelayMinutes(), TimeUnit.MINUTES) + " late.");
             termTardyText.setContentDescription(GeneralUtils.getDurationAsLongString(item.getTermDelayMinutes(), TimeUnit.MINUTES) + " late.");

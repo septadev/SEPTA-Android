@@ -53,7 +53,7 @@ public class SwipeController extends ItemTouchHelper.Callback {
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
         int position = viewHolder.getAdapterPosition();
         if (direction == LEFT) {
-            mListener.deleteFavorite(position);
+            mListener.promptToDeleteFavorite(position);
         } else if (direction == RIGHT) {
             mListener.revertSwipe(position);
         }
@@ -150,7 +150,9 @@ public class SwipeController extends ItemTouchHelper.Callback {
             public boolean onTouch(View v, MotionEvent event) {
                 swipeBack = event.getAction() == MotionEvent.ACTION_CANCEL || event.getAction() == MotionEvent.ACTION_UP;
                 if (swipeBack) {
-                    if (dX < -buttonWidth) buttonShowedState = ButtonsState.RIGHT_VISIBLE;
+                    if (dX < -buttonWidth) {
+                        buttonShowedState = ButtonsState.RIGHT_VISIBLE;
+                    }
 
                     if (buttonShowedState != ButtonsState.GONE) {
                         setTouchDownListener(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
@@ -186,7 +188,7 @@ public class SwipeController extends ItemTouchHelper.Callback {
                     // ask to delete favorite when item dropped
                     if (mListener != null && buttonInstance != null && buttonInstance.contains(event.getX(), event.getY())) {
                         if (buttonShowedState == ButtonsState.RIGHT_VISIBLE) {
-                            mListener.deleteFavorite(viewHolder.getAdapterPosition());
+                            mListener.promptToDeleteFavorite(viewHolder.getAdapterPosition());
                         }
                     }
                     // hide buttons
@@ -209,7 +211,7 @@ public class SwipeController extends ItemTouchHelper.Callback {
     }
 
     public interface SwipeControllerListener {
-        void deleteFavorite(int favoriteIndex);
+        void promptToDeleteFavorite(int favoriteIndex);
         void revertSwipe(int index);
     }
 }

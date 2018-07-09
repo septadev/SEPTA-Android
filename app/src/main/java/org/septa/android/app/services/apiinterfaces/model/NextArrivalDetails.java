@@ -5,29 +5,30 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by jkampf on 10/3/17.
- */
-
 public class NextArrivalDetails {
 
     @SerializedName("tripid")
-    String tripId;
-    @SerializedName("destination")
-    String destination;
-    @SerializedName("results")
-    int results;
-    @SerializedName("details")
-    Details details;
+    private String tripId;
 
+    @SerializedName("destination")
+    private String destination;
+
+    @SerializedName("results")
+    private int results;
+
+    @SerializedName("details")
+    private Details details;
 
     public class NextStop {
+
         @SerializedName("station")
-        String station;
+        private String station;
+
         @SerializedName("arrival_time")
-        String arrivalTime;
+        private String arrivalTime;
+
         @SerializedName("delay")
-        int late;
+        private int late;
 
         public String getStation() {
             return station;
@@ -55,12 +56,15 @@ public class NextArrivalDetails {
     }
 
     public class Destination {
+
         @SerializedName("station")
-        String station;
+        private String station;
+
         @SerializedName("arrival_time")
-        String arrival_time;
+        private String arrival_time;
+
         @SerializedName("delay")
-        int delay;
+        private int delay;
 
         public String getStation() {
             return station;
@@ -88,37 +92,51 @@ public class NextArrivalDetails {
     }
 
     public class Details {
+
         @SerializedName("tripid")
-        String tripId;
+        private String tripId;
+
         @SerializedName("latitude")
-        double latitude;
+        private double latitude;
+
         @SerializedName("longitude")
-        double longitude;
+        private double longitude;
+
         @SerializedName("line")
-        String line;
+        private String line;
+
         @SerializedName("track")
-        String track;
+        private String track;
+
         @SerializedName("trackChange")
-        String trackChange;
+        private String trackChange;
+
         @SerializedName("speed")
-        String speed;
+        private String speed;
+
         @SerializedName("vehicleid")
-        String vehicleId;
+        private String vehicleId;
+
         @SerializedName("blockid")
-        String blockId;
+        private String blockId;
 
         @SerializedName("direction")
-        String direction;
+        private String direction;
+
         @SerializedName("service")
-        String service;
+        private String service;
+
         @SerializedName("source")
-        String source;
+        private String source;
+
         @SerializedName("nextstop")
-        NextStop nextStop;
+        private NextStop nextStop;
+
         @SerializedName("consist")
-        List<String> consist = new ArrayList<>();
+        private List<String> consist = new ArrayList<>();
+
         @SerializedName("destination")
-        Destination destination;
+        private Destination destination;
 
         public String getTripId() {
             return tripId;

@@ -8,6 +8,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -18,7 +20,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.SpannableString;
@@ -39,6 +40,7 @@ import org.septa.android.app.database.update.ExpandDBZip;
 import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.fares.FaresFragment;
+import org.septa.android.app.fares.PerksFragment;
 import org.septa.android.app.favorites.FavoritesFragment;
 import org.septa.android.app.favorites.edit.ManageFavoritesFragment;
 import org.septa.android.app.nextarrive.NextToArriveFragment;
@@ -46,15 +48,20 @@ import org.septa.android.app.schedules.SchedulesFragment;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Alert;
 import org.septa.android.app.services.apiinterfaces.model.AlertDetail;
-import org.septa.android.app.services.apiinterfaces.model.Favorite;
 import org.septa.android.app.support.AnalyticsManager;
 import org.septa.android.app.support.CrashlyticsManager;
+import org.septa.android.app.support.RouteModelComparator;
+import org.septa.android.app.support.ShakeDetector;
 import org.septa.android.app.systemmap.SystemMapFragment;
 import org.septa.android.app.systemstatus.SystemStatusFragment;
 import org.septa.android.app.systemstatus.SystemStatusState;
+import org.septa.android.app.transitview.TransitViewFragment;
+import org.septa.android.app.transitview.TransitViewResultsActivity;
 import org.septa.android.app.view.TextView;
 import org.septa.android.app.webview.WebViewFragment;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import retrofit2.Call;
@@ -62,8 +69,20 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static org.septa.android.app.database.update.DatabaseSharedPrefsUtils.DEFAULT_DOWNLOAD_REF_ID;
+import static org.septa.android.app.transitview.TransitViewFragment.TRANSITVIEW_ROUTE_FIRST;
+import static org.septa.android.app.transitview.TransitViewFragment.TRANSITVIEW_ROUTE_SECOND;
+import static org.septa.android.app.transitview.TransitViewFragment.TRANSITVIEW_ROUTE_THIRD;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, FavoritesFragment.FavoritesFragmentListener, ManageFavoritesFragment.ManageFavoritesFragmentListener, SeptaServiceFactory.SeptaServiceFactoryCallBacks, CheckForLatestDB.CheckForLatestDBListener, DownloadNewDB.DownloadNewDBListener, ExpandDBZip.ExpandDBZipListener, CleanOldDB.CleanOldDBListener {
+public class MainActivity extends BaseActivity implements
+        NavigationView.OnNavigationItemSelectedListener,
+        FavoritesFragment.FavoritesFragmentListener,
+        ManageFavoritesFragment.ManageFavoritesFragmentListener,
+        TransitViewFragment.TransitViewFragmentListener,
+        SeptaServiceFactory.SeptaServiceFactoryCallBacks,
+        CheckForLatestDB.CheckForLatestDBListener,
+        DownloadNewDB.DownloadNewDBListener,
+        ExpandDBZip.ExpandDBZipListener,
+        CleanOldDB.CleanOldDBListener {
 
     public static final String TAG = MainActivity.class.getSimpleName();
     NextToArriveFragment nextToArriveFragment = new NextToArriveFragment();
@@ -80,10 +99,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     SystemStatusFragment systemStatus = new SystemStatusFragment();
     Fragment faresTransitInfo = new FaresFragment();
+    Fragment perks = new PerksFragment();
     Fragment systemMap = new SystemMapFragment();
     Fragment events = null;
     Fragment trainview = null;
     Fragment transitview = null;
+    Fragment transitviewBeta = new TransitViewFragment();
     Fragment connect = new ConnectFragment();
     Fragment about = new AboutFragment();
 
@@ -91,11 +112,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     DownloadManager downloadManager;
     AlertDialog promptDownloadDB, acknowledgeNewDatabaseReady;
 
-    // shake detector used for crashing the app purposefully
-    // TODO: comment out when releasing to production
-//    private SensorManager mSensorManager;
-//    private Sensor mAccelerometer;
-//    private ShakeDetector mShakeDetector;
+    // shake detector used for crashing the app purposefully -- only in debug and alpha
+    private SensorManager mSensorManager;
+    private Sensor mAccelerometer;
+    private ShakeDetector mShakeDetector;
 
     public static final String MOBILE_APP_ALERT_ROUTE_NAME = "Mobile APP",
             MOBILE_APP_ALERT_MODE = "MOBILE",
@@ -106,20 +126,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public final void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        favoritesFragment = FavoritesFragment.newInstance();
+        favoritesFragment = new FavoritesFragment();
         events = WebViewFragment.getInstance(getResources().getString(R.string.events_url));
         trainview = WebViewFragment.getInstance(getResources().getString(R.string.trainview_url));
         transitview = WebViewFragment.getInstance(getResources().getString(R.string.transitview_url));
 
         setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.setItemIconTintList(null);
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -129,33 +149,35 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         registerReceiver(onDBDownloadComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
         downloadManager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
         if (savedInstanceState == null) {
-            if (SeptaServiceFactory.getFavoritesService().getFavorites(this).size() > 0) {
+            if (SeptaServiceFactory.getFavoritesService().getNTAFavorites(this).size() > 0) {
                 switchToFavorites();
             } else {
                 addNewFavorite();
             }
         }
 
-        // TODO: comment out when releasing to production
         // ShakeDetector initialization
-//        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-//        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-//        mShakeDetector = new ShakeDetector();
-//        mShakeDetector.setOnShakeListener(new ShakeDetector.OnShakeListener() {
-//            @Override
-//            public void onShake(int count) {
-//                handleShakeEvent(count);
-//            }
-//        });
+        if (BuildConfig.FORCE_CRASH_ENABLED) {
+            mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+            mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+            mShakeDetector = new ShakeDetector();
+            mShakeDetector.setOnShakeListener(new ShakeDetector.OnShakeListener() {
+                @Override
+                public void onShake(int count) {
+                    handleShakeEvent(count);
+                }
+            });
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        // TODO: comment out when releasing to production
         // re-register the shake detector on resume
-//        mSensorManager.registerListener(mShakeDetector, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
+        if (BuildConfig.FORCE_CRASH_ENABLED) {
+            mSensorManager.registerListener(mShakeDetector, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
+        }
 
         // note that generic alert will show up before mobile app alert bc it was the most recently added
 
@@ -239,9 +261,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onPause() {
         super.onPause();
 
-        // TODO: comment out when releasing to production
         // unregister the shake detector on pause
-//        mSensorManager.unregisterListener(mShakeDetector);
+        if (BuildConfig.FORCE_CRASH_ENABLED) {
+            mSensorManager.unregisterListener(mShakeDetector);
+        }
 
         // prevent stacking alertdialogs
         if (genericAlert != null) {
@@ -277,7 +300,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -292,7 +315,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
         Log.d(TAG, "onNavigationItemSelected Selected:" + item.getTitle());
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
 
         if (id == R.id.nav_next_to_arrive) {
@@ -318,6 +341,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (id == R.id.nav_fares_transit_info) {
             AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_FARES_TRANSIT, null, null);
             switchToBundle(item, faresTransitInfo, R.string.fares_and_transit_info, R.drawable.ic_fares_active);
+        }
+
+        if (id == R.id.nav_perks) {
+            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_PERKS, null, null);
+            switchToBundle(item, perks, R.string.perks, R.drawable.ic_perks_active);
         }
 
         if (id == R.id.nav_system_map) {
@@ -349,13 +377,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_TRANSIT_VIEW, null, null);
             switchToBundle(item, transitview, R.string.transit_view, 0);
         }
+
+        if (id == R.id.nav_transitview_beta) {
+            // TODO: analytics around use of beta transitview
+//            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_TRANSIT_VIEW, null, null);
+            switchToBundle(item, transitviewBeta, R.string.transit_view, R.drawable.ic_transitview_active);
+        }
         return true;
     }
 
     @Override
     public void refreshFavoritesInstance() {
         CrashlyticsManager.log(Log.INFO, TAG, "refreshFavoritesInstance");
-        favoritesFragment = FavoritesFragment.newInstance();
+        favoritesFragment = new FavoritesFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, favoritesFragment).commit();
     }
 
@@ -371,15 +405,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if (isInEditMode) {
             // switch to favorites fragment
-            favoritesFragment = FavoritesFragment.newInstance();
+            favoritesFragment = new FavoritesFragment();
             activeFragment = favoritesFragment;
             getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, activeFragment).commit();
         } else {
-            // open edit mode
-            List<Favorite> favoriteList = favoritesFragment.openEditMode();
-
             // switch to manage favorites fragment
-            manageFavoritesFragment = ManageFavoritesFragment.newInstance(favoriteList);
+            manageFavoritesFragment = new ManageFavoritesFragment();
             activeFragment = manageFavoritesFragment;
             getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, activeFragment).commit();
         }
@@ -400,7 +431,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public void gotoSchedules() {
         switchToSchedules(null);
-        //switchToBundle(navigationView.getMenu().findItem(R.id.nav_schedule), schedules, R.string.schedule, R.drawable.ic_schedule_active);
     }
 
     @Override
@@ -415,6 +445,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
         switchToSchedules(bundle);
+    }
+
+    @Override
+    public void goToTransitViewResults(RouteDirectionModel firstRoute, RouteDirectionModel secondRoute, RouteDirectionModel thirdRoute) {
+        Intent intent = new Intent(this, TransitViewResultsActivity.class);
+
+        // sort the routes and append null routes to the end
+        List<RouteDirectionModel> selectedRoutes = new ArrayList<>();
+        selectedRoutes.add(firstRoute);
+        if (secondRoute != null) {
+            selectedRoutes.add(secondRoute);
+        }
+        if (thirdRoute != null) {
+            selectedRoutes.add(thirdRoute);
+        }
+        Collections.sort(selectedRoutes, new RouteModelComparator());
+        while (selectedRoutes.size() < 3) {
+            selectedRoutes.add(null);
+        }
+
+        intent.putExtra(TRANSITVIEW_ROUTE_FIRST, selectedRoutes.get(0));
+        intent.putExtra(TRANSITVIEW_ROUTE_SECOND, selectedRoutes.get(1));
+        intent.putExtra(TRANSITVIEW_ROUTE_THIRD, selectedRoutes.get(2));
+        startActivity(intent);
     }
 
     @Override
@@ -494,8 +548,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void switchToBundle(MenuItem item, Fragment targetFragment, int title, int highlightedIcon) {
         CrashlyticsManager.log(Log.INFO, TAG, "switchToBundle:" + item.getTitle() + ", " + targetFragment.getClass().getCanonicalName());
-        if ((currentMenu != null) && item.getItemId() == currentMenu.getItemId())
+        if ((currentMenu != null) && item.getItemId() == currentMenu.getItemId()) {
             return;
+        }
 
         if (previousIcon != null) {
             currentMenu.setIcon(previousIcon);
@@ -601,12 +656,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void showAlert(String alert, Boolean isGenericAlert) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-        if (isGenericAlert) builder.setTitle(R.string.title_generic_alert);
-        else builder.setTitle(R.string.title_mobile_app_alert);
+        if (isGenericAlert) {
+            builder.setTitle(R.string.title_generic_alert);
+        } else {
+            builder.setTitle(R.string.title_mobile_app_alert);
+        }
 
         // make message HTML enabled and allow for anchor links
         View alertView = getLayoutInflater().inflate(R.layout.dialog_alert, null);
-        TextView message = (TextView) alertView.findViewById(R.id.dialog_alert_message);
+        TextView message = alertView.findViewById(R.id.dialog_alert_message);
         final SpannableString s = new SpannableString(alert);
         message.setText(Html.fromHtml(s.toString()));
         message.setMovementMethod(LinkMovementMethod.getInstance());

@@ -16,10 +16,11 @@
     <string name="system_status">System Status</string>
     <string name="schedule">Schedule</string>
     <string name="fares_and_transit_info">Fares and Transit Info</string>
+    <string name="perks">Perks</string>
     <string name="connect_with_septa">Connect With SEPTA</string>
     <string name="train_view">TrainView</string>
     <string name="transit_view">TransitView</string>
-
+    <string name="transit_view_beta">TransitView (Beta)</string>
 
     <!-- Transit Type Tab Names -->
     <string name="tab_rail">Rail</string>
@@ -126,14 +127,30 @@
     <string name="nta_refresh">Refresh</string>
 
 
+    <!-- Vehicle Details on Map -->
+    <string name="heading_rail">Train: </string>
+    <string name="heading_bus">Bus: </string>
+    <string name="heading_trolley">Trolley: </string>
+    <string name="heading_destination"> to %1$s</string>
+    <string name="heading_vehicle_number">Vehicle Number: </string>
+    <string name="heading_block_id">Block ID: </string>
+    <string name="heading_status">Status: </string>
+    <string name="heading_status_delay">%1$s late</string>
+    <string name="heading_rail_number_cars"># of Train Cars: </string>
+
+
     <!-- Favorite -->
     <string name="delete_fav_modal_title">Delete Favorite?</string>
-    <string name="delete_fav_modal_text">Are you sure you want to remove this trip from your favorites?</string>
+    <string name="delete_fav_modal_text">Are you sure you want to remove this from your favorites?</string>
     <string name="delete_fav_pos_button">Delete</string>
     <string name="delete_fav_neg_button">Cancel</string>
     <string name="create_fav_snackbar_text">Trip saved to your Favorites</string>
+    <string name="create_fav_snackbar_failed">Trip could not be saved to favorites</string>
+    <string name="create_transitview_fav_snackbar">TransitView selection saved to your Favorites</string>
     <string name="nta_favorite_icon_title_remove">Tap to remove this Next To Arrive result as a favorite</string>
     <string name="nta_favorite_icon_title_create">Tap to create a favorite from this Next To Arrive result</string>
+    <string name="transitview_favorite_icon_title_remove">Tap to remove this TransitView selection from your favorite</string>
+    <string name="transitview_favorite_icon_title_create">Tap to create a favorite from this TransitView selection</string>
     <string name="favorite_more_button_description">Tap for more Next to Arrive details for your favorite, </string>
 
     <string name="schedule_favorite_icon_title_remove">Tap to remove this Schedule result as a favorite</string>
@@ -142,12 +159,15 @@
     <string name="snackbar_no_connection_link_text">Schedules »</string>
     <string name="favorites_empty_results_msg">No Update</string>
     <string name="favorites_view_schedules_msg">View Schedules »</string>
+    <string name="favorites_view_transitview">View »</string>
 
     <string name="favorites_menu_item_add">Add</string>
     <string name="favorites_menu_item_edit">Edit</string>
     <string name="favorites_menu_item_done">Done</string>
     <string name="favorites_add_new">Add a Favorite</string>
     <string name="no_favorites_to_edit">You have no favorites to edit!</string>
+    <string name="rename_favorite_nta">Edit Favorite Trip</string>
+    <string name="rename_favorite_transitview">Edit TransitView Favorite</string>
 
 
     <!-- System Status -->
@@ -163,6 +183,15 @@
     <string name="system_status_results_title_trolley">System Status: Trolley</string>
     <string name="system_status_results_title_nhsl">System Status: NHSL</string>
 
+
+    <!-- TransitView -->
+    <string name="transitview_heading">Select Up to 3 Routes</string>
+    <string name="transitview_query_button_text">View Map</string>
+    <string name="transitview_line_picker_first_text">Select a Bus Route or Trolley Line</string>
+    <string name="transitview_line_picker_second_text">Select a Second Bus Route or Trolley Line</string>
+    <string name="transitview_line_picker_third_text">Select a Third Bus Route or Trolley Line</string>
+
+    <string name="transitview_add_route">You must select a bus or trolley route to view TransitView results!</string>
 
     <!-- Schedules -->
     <string name="schedule_query_button_text">View Schedules</string>
@@ -201,6 +230,8 @@
     <string name="comment_url">http://www3.septa.org/customerservice/VeritasFormMobile</string>
     <string name="tdd_phone_content">TDD/TTY (215)-580-7853</string>
     <string name="voice_line_content">Call (215)-580-7800</string>
+
+    <string name="fragment_connect_rate_app">Rate the SEPTA Transit App</string>
 
     <string name="twitter_app_url_air">twitter://user?user_id=381660241</string>
     <string name="twitter_app_url_che">twitter://user?user_id=381664276</string>
@@ -280,5 +311,10 @@
     <!-- String Resources -->
     <string name="button_ok">Okay</string>
     <string name="empty_string"></string>
+    <string name="rating_title">How are we doing?</string>
+    <string name="rating_rate_button">Rate Now</string>
+    <string name="rating_no_thanks_button">No Thanks</string>
+    <string name="rating_remind_me_later_button">Remind Me Later</string>
+    <string name="rating_details">We\'d love your feedback on the SEPTA app</string>
 
 </resources>

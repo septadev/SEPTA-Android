@@ -15,7 +15,6 @@ import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
@@ -30,6 +29,7 @@ import android.widget.FrameLayout;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
@@ -37,12 +37,12 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.maps.android.data.kml.KmlLayer;
 
+import org.septa.android.app.BaseActivity;
 import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
@@ -50,18 +50,17 @@ import org.septa.android.app.database.DatabaseManager;
 import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.favorites.DeleteFavoritesAsyncTask;
-import org.septa.android.app.favorites.edit.RenameFavoriteCallBack;
 import org.septa.android.app.favorites.edit.RenameFavoriteDialogFragment;
-import org.septa.android.app.favorites.SaveFavoritesAsyncTask;
+import org.septa.android.app.favorites.edit.RenameFavoriteListener;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Favorite;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalDetails;
+import org.septa.android.app.services.apiinterfaces.model.NextArrivalFavorite;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalModelResponse;
 import org.septa.android.app.support.Consumer;
 import org.septa.android.app.support.CrashlyticsManager;
 import org.septa.android.app.support.Criteria;
 import org.septa.android.app.support.CursorAdapterSupplier;
-import org.septa.android.app.support.GeneralUtils;
 import org.septa.android.app.support.MapUtils;
 import org.septa.android.app.view.TextView;
 import org.xmlpull.v1.XmlPullParserException;
@@ -77,84 +76,325 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
- * Created by jkampf on 8/3/17.
- */
+import static org.septa.android.app.favorites.edit.RenameFavoriteDialogFragment.EDIT_FAVORITE_DIALOG_KEY;
 
-public class NextToArriveResultsActivity extends AppCompatActivity implements OnMapReadyCallback, RenameFavoriteCallBack, Runnable {
+public class NextToArriveResultsActivity extends BaseActivity implements OnMapReadyCallback, RenameFavoriteListener, Runnable, ReverseNTAStopSelection.ReverseNTAStopSelectionListener {
     public static final String TAG = NextToArriveResultsActivity.class.getSimpleName();
     public static final int REFRESH_DELAY_SECONDS = 30,
             NTA_RESULTS_FOR_NEXT_HOURS = 5;
-    private static final String EDIT_FAVORITE_DIALOG_KEY = "EDIT_FAVORITE_DIALOG_KEY",
-            NTA_RESULTS_TITLE = "nta_results_title",
+    private static final String NTA_RESULTS_TITLE = "nta_results_title",
             NEED_TO_SEE = "need_to_see";
-    private static final String HTML_NEW_LINE = "<br/>";
-    StopModel start;
-    StopModel destination;
-    TransitType transitType;
-    RouteDirectionModel routeDirectionModel;
+    private StopModel start;
+    private StopModel destination;
+    private TransitType transitType;
+    private RouteDirectionModel routeDirectionModel;
+    private View containerView;
     private GoogleMap googleMap;
-    boolean mapSized = false;
-    Button noResultsSchedulesButton;
-    FrameLayout mapContainerView;
-    ViewGroup bottomSheetLayout;
-    View rootView;
-    View progressView;
-    View progressViewBottom;
-    View refresh;
-    Favorite currentFavorite = null;
-    NextToArriveTripView nextToArriveDetailsView;
-    boolean editFavoritesFlag = false;
+    private boolean mapSized = false;
+    private Button noResultsSchedulesButton;
+    private FrameLayout mapContainerView;
+    private ViewGroup bottomSheetLayout;
+    private TextView titleText;
+    private View anchor;
+    private View rootView;
+    private View reverseTrip;
+    private View progressView;
+    private View progressViewBottom;
+    private NextArrivalFavorite currentFavorite = null;
+    private NextToArriveTripView nextToArriveDetailsView;
+    private boolean editFavoritesFlag = false;
     private MarkerOptions startMarker;
     private MarkerOptions destMarker;
     private NextArrivalModelResponseParser parser;
     private int peekHeight = 0;
     private BottomSheetBehavior bottomSheetBehavior;
     private Handler refreshHandler;
-    SupportMapFragment mapFragment;
+    private SupportMapFragment mapFragment;
     private FrameLayout noResultsMessage;
 
-    Map<String, NextArrivalDetails> details = new HashMap<>();
-
-    public void setDestination(StopModel destination) {
-        this.destination = destination;
-    }
-
-    public void setStart(StopModel start) {
-        this.start = start;
-    }
+    private Map<String, NextArrivalDetails> details = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // need the next line to initialize BitmapDescriptorFactory
+        MapsInitializer.initialize(getApplicationContext());
+
         setTitle(R.string.next_to_arrive);
         setContentView(R.layout.activity_next_to_arrive_results);
+
+        containerView = findViewById(R.id.activity_next_to_arrive_results_container);
 
         rootView = findViewById(R.id.rail_next_to_arrive_results_coordinator);
 
         progressView = findViewById(R.id.progress_view);
-        noResultsMessage = (FrameLayout) findViewById(R.id.nta_empty_results_msg);
+        noResultsMessage = findViewById(R.id.nta_empty_results_msg);
 
-        refresh = findViewById(R.id.refresh_button);
-        refresh.setContentDescription(getString(R.string.nta_refresh));
+        reverseTrip = findViewById(R.id.button_reverse_nta_trip);
 
-        bottomSheetLayout = (ViewGroup) findViewById(R.id.bottomSheetLayout);
+        bottomSheetLayout = findViewById(R.id.bottomSheetLayout);
 
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLayout);
         progressViewBottom = findViewById(R.id.progress_view_bottom);
 
-        noResultsSchedulesButton = (Button) findViewById(R.id.button_view_schedules);
+        noResultsSchedulesButton = findViewById(R.id.button_view_schedules);
 
         // Prevent the bottom sheet from being dragged to be opened.  Force it to use the anchor image.
         //bottomSheetBehavior.setBottomSheetCallback(myBottomSheetBehaviorCallBack);
-        final View anchor = bottomSheetLayout.findViewById(R.id.bottom_sheet_anchor);
+        anchor = bottomSheetLayout.findViewById(R.id.bottom_sheet_anchor);
         //anchor.setOnClickListener(myBottomSheetBehaviorCallBack);
 
-        mapContainerView = (FrameLayout) findViewById(R.id.map_container);
+        mapContainerView = findViewById(R.id.map_container);
 
-        final TextView titleText = (TextView) bottomSheetLayout.findViewById(R.id.title_txt);
-        nextToArriveDetailsView = (NextToArriveTripView) findViewById(R.id.next_to_arrive_trip_details);
+        titleText = bottomSheetLayout.findViewById(R.id.title_txt);
+        nextToArriveDetailsView = findViewById(R.id.next_to_arrive_trip_details);
+
+        initializeView(savedInstanceState);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        invalidateOptionsMenu();
+
+        if (!editFavoritesFlag) {
+            getMenuInflater().inflate(R.menu.favorite_menu, menu);
+            if (currentFavorite != null) {
+                menu.findItem(R.id.create_favorite).setIcon(R.drawable.ic_favorite_made);
+                menu.findItem(R.id.create_favorite).setTitle(R.string.nta_favorite_icon_title_remove);
+            } else {
+                menu.findItem(R.id.create_favorite).setTitle(R.string.nta_favorite_icon_title_create);
+            }
+        } else {
+            getMenuInflater().inflate(R.menu.edit_favorites_menu, menu);
+        }
+
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.create_favorite:
+                saveAsFavorite(item);
+                return true;
+            case R.id.refresh_results:
+                refreshData();
+                return true;
+            case R.id.edit_favorite:
+                editFavorite(item);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        refreshData();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        refreshHandler.removeCallbacks(this);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putSerializable(Constants.DESTINATION_STATION, destination);
+        outState.putSerializable(Constants.STARTING_STATION, start);
+        outState.putSerializable(Constants.TRANSIT_TYPE, transitType);
+        outState.putSerializable(Constants.ROUTE_DIRECTION_MODEL, routeDirectionModel);
+        outState.putSerializable(Constants.EDIT_FAVORITES_FLAG, editFavoritesFlag);
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        try {
+            onBackPressed();
+        } catch (Exception e) {
+            Log.w(TAG, "Exception on Backpress", e);
+        }
+        return true;
+    }
+
+    @Override
+    public void onMapReady(final GoogleMap googleMap) {
+        this.googleMap = googleMap;
+        MapStyleOptions mapStyle = MapStyleOptions.loadRawResourceStyle(this, R.raw.maps_json_styling);
+        googleMap.setMapStyle(mapStyle);
+
+        final View mapContainer = findViewById(R.id.map_container);
+
+        // hide navigation options
+        googleMap.getUiSettings().setMapToolbarEnabled(false);
+
+        // add start and destination pins to map
+        final LatLng startingStationLatLng = new LatLng(start.getLatitude(), start.getLongitude());
+        final LatLng destinationStationLatLng = new LatLng(destination.getLatitude(), destination.getLongitude());
+        googleMap.addMarker(new MarkerOptions().position(startingStationLatLng).title(start.getStopName()).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+        googleMap.addMarker(new MarkerOptions().position(destinationStationLatLng).title(destination.getStopName()).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+
+        // set default map position
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(startingStationLatLng));
+        googleMap.moveCamera(CameraUpdateFactory.zoomTo(13));
+
+        // include start and destination in map camera bounds
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+        builder.include(startingStationLatLng);
+        builder.include(destinationStationLatLng);
+        final LatLngBounds bounds = builder.build();
+
+        googleMap.setContentDescription("Map displaying selected route between " + start.getStopName() + " and " + destination.getStopName() + ".  Next to arrive details below.");
+
+        googleMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
+            @Override
+            public void onMapLoaded() {
+                Display mdisp = getWindowManager().getDefaultDisplay();
+                Point mdispSize = new Point();
+                mdisp.getSize(mdispSize);
+
+                updateMap();
+
+                try {
+                    googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, getResources().getDisplayMetrics())));
+                    ViewGroup.LayoutParams layoutParams =
+                            bottomSheetLayout.getLayoutParams();
+                    layoutParams.height = rootView.getHeight() - mapContainerView.getTop();
+                    bottomSheetLayout.setLayoutParams(layoutParams);
+                    bottomSheetBehavior.setPeekHeight(peekHeight);
+                } catch (IllegalStateException e) {
+                    if (mapContainer.getViewTreeObserver().isAlive()) {
+                        mapContainer.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                            @Override
+                            public void onGlobalLayout() {
+                                mapContainer.getViewTreeObserver()
+                                        .removeOnGlobalLayoutListener(this);
+                                try {
+                                    googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, getResources().getDisplayMetrics())));
+                                } catch (Exception e1) {
+                                    // Enough is enough.  Zoom the map to the starting station.
+                                    googleMap.moveCamera(CameraUpdateFactory.zoomTo(13));
+                                    googleMap.moveCamera(CameraUpdateFactory.newLatLng(startingStationLatLng));
+                                }
+                                ViewGroup.LayoutParams layoutParams =
+                                        bottomSheetLayout.getLayoutParams();
+                                layoutParams.height = rootView.getHeight() - mapContainerView.getTop();
+                                bottomSheetLayout.setLayoutParams(layoutParams);
+                                bottomSheetBehavior.setPeekHeight(peekHeight);
+                            }
+                        });
+                    }
+                }
+
+                NTAVehicleDetailsInfoWindowAdapter adapter = new NTAVehicleDetailsInfoWindowAdapter(NextToArriveResultsActivity.this, transitType, startMarker, destMarker, details);
+                googleMap.setInfoWindowAdapter(adapter);
+
+            }
+        });
+
+        // hide error message in case connection regained
+        noResultsMessage.setVisibility(View.GONE);
+        mapContainerView.setVisibility(View.VISIBLE);
+        bottomSheetLayout.setVisibility(View.VISIBLE);
+
+        int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
+        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+            Log.d(TAG, "Location Permission Granted.");
+            Task<Location> locationTask = LocationServices.getFusedLocationProviderClient(this).getLastLocation()
+                    .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            // Got last known location. In some rare situations this can be null.
+                            if (location != null) {
+                                int permissionCheck = ContextCompat.checkSelfPermission(NextToArriveResultsActivity.this,
+                                        Manifest.permission.ACCESS_FINE_LOCATION);
+                                googleMap.setMyLocationEnabled(true);
+                            } else {
+                                Log.d(TAG, "location was null");
+                            }
+                        }
+                    });
+        }
+
+    }
+
+    @Override
+    public void run() {
+        refreshData();
+    }
+
+    @Override
+    public void updateFavorite(final Favorite favorite) {
+        if (favorite instanceof NextArrivalFavorite) {
+            currentFavorite = (NextArrivalFavorite) favorite;
+            renameFavorite(currentFavorite);
+
+            Snackbar snackbar = Snackbar.make(containerView, R.string.create_fav_snackbar_text, Snackbar.LENGTH_LONG);
+            snackbar.show();
+        } else {
+            Log.e(TAG, "Attempted to save invalid Favorite type");
+        }
+    }
+
+    @Override
+    public void renameFavorite(Favorite favorite) {
+        setTitle(favorite.getName());
+        invalidateOptionsMenu();
+    }
+
+    @Override
+    public void favoriteCreationFailed() {
+        Snackbar snackbar = Snackbar.make(containerView, R.string.create_fav_snackbar_failed, Snackbar.LENGTH_LONG);
+        snackbar.show();
+    }
+
+    @Override
+    public void noReverseStopsFound() {
+        Snackbar snackbar = Snackbar.make(containerView, R.string.reverse_not_found, Snackbar.LENGTH_LONG);
+        View snackbarView = snackbar.getView();
+        android.widget.TextView tv = snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+        tv.setMaxLines(10);
+        snackbar.show();
+    }
+
+    @Override
+    public void reverseTrip(TransitType transitType, RouteDirectionModel newRouteDirectionModel, StopModel newStart, StopModel newDestination) {
+        this.transitType = transitType;
+        this.routeDirectionModel = newRouteDirectionModel;
+        this.start = newStart;
+        this.destination = newDestination;
+
+        // create bundle for reverse trip based on results
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(Constants.DESTINATION_STATION, destination);
+        bundle.putSerializable(Constants.STARTING_STATION, start);
+        bundle.putSerializable(Constants.TRANSIT_TYPE, transitType);
+        bundle.putSerializable(Constants.ROUTE_DIRECTION_MODEL, routeDirectionModel);
+
+        // check if reverse trip is a favorite
+        boolean isAlreadyAFavorite = false;
+        NextArrivalFavorite reverseNextArrivalFavoriteTemp = new NextArrivalFavorite(start, destination, transitType, routeDirectionModel);
+        if (SeptaServiceFactory.getFavoritesService().getFavoriteByKey(NextToArriveResultsActivity.this, reverseNextArrivalFavoriteTemp.getKey()) != null) {
+            isAlreadyAFavorite = true;
+            currentFavorite = reverseNextArrivalFavoriteTemp;
+        }
+        editFavoritesFlag = isAlreadyAFavorite;
+        bundle.putSerializable(Constants.EDIT_FAVORITES_FLAG, editFavoritesFlag);
+
+        // update menu dynamically
+        invalidateOptionsMenu();
+
+        // show the reverse trip results
+        initializeView(bundle);
+        refreshData();
+    }
+
+    private void initializeView(Bundle savedInstanceState) {
         nextToArriveDetailsView.setMaxResults(null);
         nextToArriveDetailsView.setResults(NTA_RESULTS_FOR_NEXT_HOURS, TimeUnit.HOURS);  // if this value changes update UI message nta_empty_results
 
@@ -215,10 +455,10 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
             titleText.setText(transitType.getString(NTA_RESULTS_TITLE, this));
             ((TextView) findViewById(R.id.see_later_text)).setText(transitType.getString(NEED_TO_SEE, this));
 
-            final TextView startingStationNameText = (TextView) findViewById(R.id.starting_station_name);
+            final TextView startingStationNameText = findViewById(R.id.starting_station_name);
             startingStationNameText.setText(start.getStopName());
 
-            final TextView destinationStationNameText = (TextView) findViewById(R.id.destination_station_name);
+            final TextView destinationStationNameText = findViewById(R.id.destination_station_name);
             destinationStationNameText.setText(destination.getStopName());
 
             nextToArriveDetailsView.setTransitType(transitType);
@@ -226,9 +466,10 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
             nextToArriveDetailsView.setDestination(destination);
             nextToArriveDetailsView.setRouteDirectionModel(routeDirectionModel);
 
+            String favKey = NextArrivalFavorite.generateKey(start, destination, transitType, routeDirectionModel);
 
-            String favKey = Favorite.generateKey(start, destination, transitType, routeDirectionModel);
-            currentFavorite = SeptaServiceFactory.getFavoritesService().getFavoriteByKey(this, favKey);
+            // currentFavorite can be null if the current selection is not a favorite
+            currentFavorite = (NextArrivalFavorite) SeptaServiceFactory.getFavoritesService().getFavoriteByKey(this, favKey);
 
             findViewById(R.id.view_sched_view).setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -239,44 +480,41 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
             refreshHandler = new Handler();
 
-            (findViewById(R.id.header)).getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            (findViewById(R.id.route_cards)).getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
                 public void onGlobalLayout() {
-                    View refreshLabel = findViewById(R.id.refresh_label);
-                    startingStationNameText.setRight(refreshLabel.getLeft());
+                    startingStationNameText.setRight(reverseTrip.getLeft());
                     startingStationNameText.setText(startingStationNameText.getText());
-                    destinationStationNameText.setRight(refreshLabel.getLeft());
+                    destinationStationNameText.setRight(reverseTrip.getLeft());
                     destinationStationNameText.setText(destinationStationNameText.getText());
                 }
             });
         }
 
+        // change title if the selection is an existing favorite
         if (currentFavorite != null && editFavoritesFlag) {
             setTitle(currentFavorite.getName());
+        } else {
+            setTitle(R.string.next_to_arrive);
         }
 
-        refreshHandler.postDelayed(this, 30 * 1000);
-
-        refresh.setOnClickListener(new View.OnClickListener() {
+        // reverse trip button clickable
+        reverseTrip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                refreshData();
+                onReverseTripButtonClicked();
             }
         });
 
+        refreshHandler.postDelayed(this, 30 * 1000);
     }
 
-    private void gotoSchedulesForTarget() {
-        Intent intent = new Intent();
-        intent.putExtra(Constants.STARTING_STATION, start);
-        intent.putExtra(Constants.DESTINATION_STATION, destination);
-        intent.putExtra(Constants.TRANSIT_TYPE, transitType);
-        if (routeDirectionModel != null) {
-            intent.putExtra(Constants.ROUTE_DIRECTION_MODEL, routeDirectionModel);
-        }
+    public void setStart(StopModel start) {
+        this.start = start;
+    }
 
-        setResult(Constants.VIEW_SCHEDULE, intent);
-        finish();
+    public void setDestination(StopModel destination) {
+        this.destination = destination;
     }
 
     private void restoreState(Bundle bundle) {
@@ -285,279 +523,6 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
         transitType = (TransitType) bundle.get(Constants.TRANSIT_TYPE);
         routeDirectionModel = (RouteDirectionModel) bundle.get(Constants.ROUTE_DIRECTION_MODEL);
         editFavoritesFlag = bundle.getBoolean(Constants.EDIT_FAVORITES_FLAG, false);
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        outState.putSerializable(Constants.DESTINATION_STATION, destination);
-        outState.putSerializable(Constants.STARTING_STATION, start);
-        outState.putSerializable(Constants.TRANSIT_TYPE, transitType);
-        outState.putSerializable(Constants.ROUTE_DIRECTION_MODEL, routeDirectionModel);
-        outState.putSerializable(Constants.EDIT_FAVORITES_FLAG, editFavoritesFlag);
-    }
-
-    public void saveAsFavorite(final MenuItem item) {
-        if (!item.isEnabled())
-            return;
-
-        item.setEnabled(false);
-
-        if (start != null && destination != null && transitType != null) {
-            if (currentFavorite == null) {
-                final Favorite favorite = new Favorite(start, destination, transitType, routeDirectionModel);
-                SaveFavoritesAsyncTask task = new SaveFavoritesAsyncTask(this, new Runnable() {
-                    @Override
-                    public void run() {
-                        item.setEnabled(true);
-                    }
-                }, new Runnable() {
-                    @Override
-                    public void run() {
-                        item.setEnabled(true);
-                        item.setIcon(R.drawable.ic_favorite_made);
-                        currentFavorite = favorite;
-                    }
-                });
-
-                task.execute(favorite);
-                Snackbar snackbar = Snackbar
-                        .make(findViewById(R.id.rail_next_to_arrive_results_coordinator), R.string.create_fav_snackbar_text, Snackbar.LENGTH_LONG);
-
-                snackbar.show();
-            } else {
-                new AlertDialog.Builder(this).setCancelable(true).setTitle(R.string.delete_fav_modal_title)
-                        .setMessage(R.string.delete_fav_modal_text)
-                        .setPositiveButton(R.string.delete_fav_pos_button, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                DeleteFavoritesAsyncTask task = new DeleteFavoritesAsyncTask(NextToArriveResultsActivity.this, new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        item.setEnabled(true);
-                                    }
-                                }, new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        item.setEnabled(true);
-                                        item.setIcon(R.drawable.ic_favorite_available);
-                                        currentFavorite = null;
-                                    }
-                                });
-
-                                task.execute(currentFavorite.getKey());
-                            }
-                        }).setNegativeButton(R.string.delete_fav_neg_button, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        item.setEnabled(true);
-                    }
-                }).create().show();
-            }
-
-        } else item.setEnabled(true);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-
-        if (!editFavoritesFlag) {
-            getMenuInflater().inflate(R.menu.favorite_menu, menu);
-            if (currentFavorite != null) {
-                menu.findItem(R.id.create_favorite).setIcon(R.drawable.ic_favorite_made);
-                menu.findItem(R.id.create_favorite).setTitle(R.string.nta_favorite_icon_title_remove);
-            } else {
-                menu.findItem(R.id.create_favorite).setTitle(R.string.nta_favorite_icon_title_create);
-            }
-        } else {
-            getMenuInflater().inflate(R.menu.edit_favorites_menu, menu);
-        }
-        return true;
-    }
-
-    public void editFavorite(final MenuItem item) {
-        Log.d(TAG, "edit Favorite.");
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        CrashlyticsManager.log(Log.INFO, TAG, "Creating RenameFavoriteDialogFragment for:" + currentFavorite.toString());
-        RenameFavoriteDialogFragment fragment = RenameFavoriteDialogFragment.getInstance(currentFavorite);
-
-        fragment.show(ft, EDIT_FAVORITE_DIALOG_KEY);
-    }
-
-    @Override
-    public void onMapReady(final GoogleMap googleMap) {
-        // hide error message in case connection regained
-        noResultsMessage.setVisibility(View.GONE);
-        mapContainerView.setVisibility(View.VISIBLE);
-        bottomSheetLayout.setVisibility(View.VISIBLE);
-
-        this.googleMap = googleMap;
-        MapStyleOptions mapStyle = MapStyleOptions.loadRawResourceStyle(this, R.raw.maps_json_styling);
-
-        googleMap.setMapStyle(mapStyle);
-
-        final View mapContainer = findViewById(R.id.map_container);
-
-        final LatLng startingStationLatLng = new LatLng(start.getLatitude(), start.getLongitude());
-        final LatLng destinationStationLatLng = new LatLng(destination.getLatitude(), destination.getLongitude());
-        googleMap.addMarker(new MarkerOptions().position(startingStationLatLng).title(start.getStopName()));
-        googleMap.addMarker(new MarkerOptions().position(destinationStationLatLng).title(destination.getStopName()));
-
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(startingStationLatLng));
-
-        LatLngBounds.Builder builder = new LatLngBounds.Builder();
-        builder.include(startingStationLatLng);
-        builder.include(destinationStationLatLng);
-        final LatLngBounds bounds = builder.build();
-
-        googleMap.setContentDescription("Map displaying selected route between " + start.getStopName() + " and " + destination.getStopName() + ".  Next to arrive details below.");
-
-        googleMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
-            @Override
-            public void onMapLoaded() {
-                Display mdisp = getWindowManager().getDefaultDisplay();
-                Point mdispSize = new Point();
-                mdisp.getSize(mdispSize);
-
-                updateMap();
-
-                try {
-                    googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, getResources().getDisplayMetrics())));
-                    ViewGroup.LayoutParams layoutParams =
-                            bottomSheetLayout.getLayoutParams();
-                    layoutParams.height = rootView.getHeight() - mapContainerView.getTop();
-                    bottomSheetLayout.setLayoutParams(layoutParams);
-                    bottomSheetBehavior.setPeekHeight(peekHeight);
-                } catch (IllegalStateException e) {
-                    if (mapContainer.getViewTreeObserver().isAlive()) {
-                        mapContainer.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                            @Override
-                            public void onGlobalLayout() {
-                                mapContainer.getViewTreeObserver()
-                                        .removeOnGlobalLayoutListener(this);
-                                try {
-                                    googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, getResources().getDisplayMetrics())));
-                                } catch (Exception e1) {
-                                    // Enough is enough.  Zoom the map to the starting station.
-                                    googleMap.moveCamera(CameraUpdateFactory.zoomTo(13));
-                                    googleMap.moveCamera(CameraUpdateFactory.newLatLng(startingStationLatLng));
-                                }
-                                ViewGroup.LayoutParams layoutParams =
-                                        bottomSheetLayout.getLayoutParams();
-                                layoutParams.height = rootView.getHeight() - mapContainerView.getTop();
-                                bottomSheetLayout.setLayoutParams(layoutParams);
-                                bottomSheetBehavior.setPeekHeight(peekHeight);
-                            }
-                        });
-                    }
-                }
-
-                googleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
-
-                    @Override
-                    public View getInfoWindow(Marker arg0) {
-                        return null;
-                    }
-
-                    @Override
-                    public View getInfoContents(Marker marker) {
-                        if (startMarker.getTitle().equals(marker.getTitle()) || destMarker.getTitle().equals(marker.getTitle()))
-                            return null;
-
-                        TextView title = (TextView) getLayoutInflater().inflate(R.layout.vehicle_map_details, null);
-                        NextArrivalDetails detail = details.get(marker.getTitle());
-
-                        if (transitType == TransitType.RAIL) {
-                            StringBuilder builder = new StringBuilder("Train: " + marker.getTitle());
-                            if (detail != null && detail.getDetails() != null) {
-                                builder.append(HTML_NEW_LINE)
-                                        .append("Status: ");
-                                if (detail.getDetails().getNextStop() != null && detail.getDetails().getNextStop().getLate() > 0) {
-                                    builder.append(GeneralUtils.getDurationAsLongString(detail.getDetails().getNextStop().getLate(), TimeUnit.MINUTES) + " late.");
-                                } else {
-                                    builder.append(getString(R.string.nta_on_time));
-                                }
-                                if (detail.getDetails().getConsist() != null && detail.getDetails().getConsist().size() > 0) {
-                                    if (!(detail.getDetails().getConsist().size() == 1 && detail.getDetails().getConsist().get(0).trim().isEmpty())) {
-                                        builder.append(HTML_NEW_LINE)
-                                                .append("# of Train Cars: ")
-                                                .append(detail.getDetails().getConsist().size());
-                                    }
-                                }
-                            }
-                            title.setHtml(builder.toString());
-                        } else {
-                            StringBuilder builder = new StringBuilder("Block ID: " + marker.getTitle());
-                            if (detail != null && detail.getDetails() != null) {
-                                builder.append(HTML_NEW_LINE)
-                                        .append("Vehicle Number: ")
-                                        .append(detail.getDetails().getVehicleId())
-                                        .append(HTML_NEW_LINE)
-                                        .append("Status: ");
-                                if (detail.getDetails().getDestination() != null && detail.getDetails().getDestination().getDelay() > 0) {
-                                    builder.append(GeneralUtils.getDurationAsLongString(detail.getDetails().getDestination().getDelay(), TimeUnit.MINUTES) + " late.");
-                                } else {
-                                    builder.append(getString(R.string.nta_on_time));
-                                }
-
-                            }
-                            title.setHtml(builder.toString());
-                        }
-                        return title;
-                    }
-                });
-            }
-        });
-
-        int permissionCheck = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION);
-
-        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
-            Log.d(TAG, "Location Permission Granted.");
-            Task<Location> locationTask = LocationServices.getFusedLocationProviderClient(this).getLastLocation()
-                    .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                        @Override
-                        public void onSuccess(Location location) {
-                            // Got last known location. In some rare situations this can be null.
-                            if (location != null) {
-                                int permissionCheck = ContextCompat.checkSelfPermission(NextToArriveResultsActivity.this,
-                                        Manifest.permission.ACCESS_FINE_LOCATION);
-                                googleMap.setMyLocationEnabled(true);
-                            } else {
-                                Log.d(TAG, "location was null");
-                            }
-                        }
-                    });
-        }
-
-    }
-
-    @Override
-    public boolean onSupportNavigateUp() {
-        try {
-            onBackPressed();
-        } catch (Exception e) {
-            Log.w(TAG, "Exception on Backpress", e);
-        }
-        return true;
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        refreshHandler.removeCallbacks(this);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        refreshData();
-    }
-
-    @Override
-    public void run() {
-        refreshData();
     }
 
     private void refreshData() {
@@ -704,8 +669,8 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                 private void updateView() {
                     LatLng startingStationLatLng = new LatLng(start.getLatitude(), start.getLongitude());
                     LatLng destinationStationLatLng = new LatLng(destination.getLatitude(), destination.getLongitude());
-                    startMarker = new MarkerOptions().position(startingStationLatLng).title(start.getStopName());
-                    destMarker = new MarkerOptions().position(destinationStationLatLng).title(destination.getStopName());
+                    startMarker = new MarkerOptions().position(startingStationLatLng).title(start.getStopName()).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                    destMarker = new MarkerOptions().position(destinationStationLatLng).title(destination.getStopName()).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
 
                     if (getSupportActionBar() != null) {
                         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -737,6 +702,11 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
 
     }
 
+    private void progressVisibility(int visibility) {
+        progressView.setVisibility(visibility);
+        progressViewBottom.setVisibility(visibility);
+    }
+
     private void showNoResultsFoundErrorMessage() {
         // show error message and hide
         mapContainerView.setVisibility(View.GONE);
@@ -750,14 +720,10 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
     }
 
     private void updateMap() {
-        // hide error message in case connection regained
-        noResultsMessage.setVisibility(View.GONE);
-        mapContainerView.setVisibility(View.VISIBLE);
-        bottomSheetLayout.setVisibility(View.VISIBLE);
-
         googleMap.clear();
         googleMap.addMarker(startMarker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
         googleMap.addMarker(destMarker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+
         BitmapDescriptor vehicleBitMap = BitmapDescriptorFactory.fromResource(transitType.getMapMarkerResource());
         for (Map.Entry<LatLng, NextArrivalModelResponse.NextArrivalRecord> entry : parser.getOrigLatLngMap().entrySet()) {
             googleMap.addMarker(new MarkerOptions().position(entry.getKey()).title(entry.getValue().getOrigLineTripId()).icon(vehicleBitMap));
@@ -779,19 +745,90 @@ public class NextToArriveResultsActivity extends AppCompatActivity implements On
                 }
             }
         }
+
+        // hide error message in case connection regained
+        noResultsMessage.setVisibility(View.GONE);
+        mapContainerView.setVisibility(View.VISIBLE);
+        bottomSheetLayout.setVisibility(View.VISIBLE);
     }
 
-    private void progressVisibility(int visibility) {
-        progressView.setVisibility(visibility);
-        progressViewBottom.setVisibility(visibility);
+    public void saveAsFavorite(final MenuItem item) {
+        if (!item.isEnabled()) {
+            return;
+        }
+
+        item.setEnabled(false);
+
+        if (start != null && destination != null && transitType != null) {
+            if (currentFavorite == null) {
+                // prompt to save favorite
+                final NextArrivalFavorite nextArrivalFavorite = new NextArrivalFavorite(start, destination, transitType, routeDirectionModel);
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                CrashlyticsManager.log(Log.INFO, TAG, "Creating initial RenameFavoriteDialogFragment for:" + nextArrivalFavorite.toString());
+                RenameFavoriteDialogFragment fragment = RenameFavoriteDialogFragment.newInstance(false, false, nextArrivalFavorite);
+                fragment.show(ft, EDIT_FAVORITE_DIALOG_KEY);
+
+                item.setEnabled(true);
+            } else {
+                new AlertDialog.Builder(this).setCancelable(true).setTitle(R.string.delete_fav_modal_title)
+                        .setMessage(R.string.delete_fav_modal_text)
+                        .setPositiveButton(R.string.delete_fav_pos_button, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                DeleteFavoritesAsyncTask task = new DeleteFavoritesAsyncTask(NextToArriveResultsActivity.this, new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        item.setEnabled(true);
+                                    }
+                                }, new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        item.setEnabled(true);
+                                        item.setIcon(R.drawable.ic_favorite_available);
+                                        currentFavorite = null;
+                                    }
+                                });
+
+                                task.execute(currentFavorite.getKey());
+                            }
+                        }).setNegativeButton(R.string.delete_fav_neg_button, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        item.setEnabled(true);
+                    }
+                }).create().show();
+            }
+
+        } else {
+            item.setEnabled(true);
+        }
     }
 
-    @Override
-    public void updateFavorite(Favorite favorite) {
-        currentFavorite = favorite;
-        setTitle(currentFavorite.getName());
+    public void editFavorite(final MenuItem item) {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        CrashlyticsManager.log(Log.INFO, TAG, "Creating RenameFavoriteDialogFragment for:" + currentFavorite.toString());
+        RenameFavoriteDialogFragment fragment = RenameFavoriteDialogFragment.newInstance(false, true, currentFavorite);
+        fragment.show(ft, EDIT_FAVORITE_DIALOG_KEY);
     }
 
+    private void onReverseTripButtonClicked() {
+        // look up reverse stop IDs
+        ReverseNTAStopSelection reverseTripAsyncTask = new ReverseNTAStopSelection(NextToArriveResultsActivity.this, transitType, routeDirectionModel, start, destination);
+        reverseTripAsyncTask.execute();
+    }
+
+    private void gotoSchedulesForTarget() {
+        Intent intent = new Intent();
+        intent.putExtra(Constants.STARTING_STATION, start);
+        intent.putExtra(Constants.DESTINATION_STATION, destination);
+        intent.putExtra(Constants.TRANSIT_TYPE, transitType);
+        if (routeDirectionModel != null) {
+            intent.putExtra(Constants.ROUTE_DIRECTION_MODEL, routeDirectionModel);
+        }
+
+        setResult(Constants.VIEW_SCHEDULE, intent);
+        finish();
+    }
 }
 
 

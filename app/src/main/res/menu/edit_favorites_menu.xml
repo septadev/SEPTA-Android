@@ -3,11 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/refresh_results"
+        android:icon="@drawable/ic_refresh"
+        android:title="Refresh"
+        app:showAsAction="always|withText" />
+
+    <item
         android:id="@+id/edit_favorite"
         android:title="Edit"
-        app:showAsAction="always"
-        android:onClick="editFavorite"/>
-    <!--// set showAsAction always-->
-    <!--// and this should be the only menu item with show as action always-->
+        app:showAsAction="always" />
 
 </menu>

@@ -35,10 +35,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Created by jkampf on 8/30/17.
- */
-
 public class LinePickerFragment extends DialogFragment {
     public static final int SUCCESS = 0;
     public static final String ROUTE_DIRECTION_MODEL = "routeDirectionModel";
@@ -49,14 +45,17 @@ public class LinePickerFragment extends DialogFragment {
     TransitType transitType;
     private LinePickerCallBack linePickerCallBack;
 
-    @Override
-    public void onResume() {
-        ViewGroup.LayoutParams params = getDialog().getWindow().getAttributes();
-        params.width = WindowManager.LayoutParams.MATCH_PARENT;
-        params.height = WindowManager.LayoutParams.MATCH_PARENT;
-        getDialog().getWindow().setAttributes((android.view.WindowManager.LayoutParams) params);
+    public static LinePickerFragment newInstance(CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier, TransitType transitType) {
+        LinePickerFragment fragment;
+        fragment = new LinePickerFragment();
 
-        super.onResume();
+        Bundle args = new Bundle();
+        args.putSerializable("transitType", transitType);
+        args.putSerializable("routeCursorAdapterSupplier", routeCursorAdapterSupplier);
+
+        fragment.setArguments(args);
+
+        return fragment;
     }
 
     @Nullable
@@ -67,7 +66,7 @@ public class LinePickerFragment extends DialogFragment {
         View rootView = inflater.inflate(R.layout.fragment_line_picker, container);
 
         View exitView = rootView.findViewById(R.id.exit);
-        filterText = (EditText) rootView.findViewById(R.id.line_filter_text);
+        filterText = rootView.findViewById(R.id.line_filter_text);
 
         exitView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -76,7 +75,7 @@ public class LinePickerFragment extends DialogFragment {
             }
         });
 
-        linesList = (ListView) rootView.findViewById(R.id.line_list);
+        linesList = rootView.findViewById(R.id.line_list);
         linesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -94,7 +93,6 @@ public class LinePickerFragment extends DialogFragment {
         PopulateRouteListTask task = new PopulateRouteListTask(this);
         task.execute();
 
-
         filterText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -103,8 +101,9 @@ public class LinePickerFragment extends DialogFragment {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if (lineArrayAdapter != null)
+                if (lineArrayAdapter != null) {
                     lineArrayAdapter.getFilter().filter(charSequence.toString());
+                }
             }
 
             @Override
@@ -116,22 +115,15 @@ public class LinePickerFragment extends DialogFragment {
 
     }
 
-    public static LinePickerFragment newInstance(CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier, TransitType transitType) {
-        LinePickerFragment fragment;
-        fragment = new LinePickerFragment();
 
-        Bundle args = new Bundle();
-        args.putSerializable("transitType", transitType);
-        args.putSerializable("routeCursorAdapterSupplier", routeCursorAdapterSupplier);
+    @Override
+    public void onResume() {
+        ViewGroup.LayoutParams params = getDialog().getWindow().getAttributes();
+        params.width = WindowManager.LayoutParams.MATCH_PARENT;
+        params.height = WindowManager.LayoutParams.MATCH_PARENT;
+        getDialog().getWindow().setAttributes((android.view.WindowManager.LayoutParams) params);
 
-        fragment.setArguments(args);
-
-        return fragment;
-    }
-
-    private void restoreArgs() {
-        transitType = (TransitType) getArguments().getSerializable("transitType");
-        routeCursorAdapterSupplier = (CursorAdapterSupplier<RouteDirectionModel>) getArguments().getSerializable("routeCursorAdapterSupplier");
+        super.onResume();
     }
 
     @Override
@@ -141,7 +133,11 @@ public class LinePickerFragment extends DialogFragment {
         if ((context instanceof LinePickerCallBack)) {
             linePickerCallBack = (LinePickerCallBack) context;
         }
+    }
 
+    private void restoreArgs() {
+        transitType = (TransitType) getArguments().getSerializable("transitType");
+        routeCursorAdapterSupplier = (CursorAdapterSupplier<RouteDirectionModel>) getArguments().getSerializable("routeCursorAdapterSupplier");
     }
 
     public void setTransitType(TransitType transitType) {
@@ -163,8 +159,7 @@ public class LinePickerFragment extends DialogFragment {
 
         @NonNull
         @Override
-        public View getView(int position, @Nullable View convertView,
-                            @NonNull ViewGroup parent) {
+        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
             if (convertView == null) {
                 LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 convertView = inflater.inflate(R.layout.item_line_picker, null);
@@ -172,9 +167,9 @@ public class LinePickerFragment extends DialogFragment {
 
             RouteDirectionModel route = getItem(position);
             if (route != null) {
-                TextView titleText = (TextView) convertView.findViewById(R.id.line_title);
-                TextView descText = (TextView) convertView.findViewById(R.id.line_desc);
-                ImageView lineIcon = (ImageView) convertView.findViewById(R.id.route_icon);
+                TextView titleText = convertView.findViewById(R.id.line_title);
+                TextView descText = convertView.findViewById(R.id.line_desc);
+                ImageView lineIcon = convertView.findViewById(R.id.route_icon);
                 lineIcon.setImageResource(transitType.getIconForLine(route.getRouteId(), getContext()));
 
                 if (transitType == TransitType.TROLLEY || transitType == TransitType.BUS) {
@@ -247,7 +242,7 @@ public class LinePickerFragment extends DialogFragment {
                         return filterResults;
                     }
 
-                    ArrayList<RouteDirectionModel> tempList = new ArrayList<RouteDirectionModel>();
+                    ArrayList<RouteDirectionModel> tempList = new ArrayList<>();
 
                     String constraintString = constraint.toString().toLowerCase();
 
@@ -301,17 +296,19 @@ public class LinePickerFragment extends DialogFragment {
         @Override
         protected List<RouteDirectionModel> doInBackground(Void... voids) {
 
-            List<RouteDirectionModel> routes = new ArrayList<RouteDirectionModel>();
-            if (fragment.getActivity() == null)
+            List<RouteDirectionModel> routes = new ArrayList<>();
+            if (fragment.getActivity() == null) {
                 return routes;
+            }
             Cursor cursor = fragment.routeCursorAdapterSupplier.getCursor(fragment.getActivity(), null);
             if (cursor != null) {
                 if (cursor.moveToFirst()) {
 
                     do {
                         RouteDirectionModel route = fragment.routeCursorAdapterSupplier.getCurrentItemFromCursor(cursor);
-                        if (route != null)
+                        if (route != null) {
                             routes.add(fragment.routeCursorAdapterSupplier.getCurrentItemFromCursor(cursor));
+                        }
                     } while (cursor.moveToNext());
                 }
             }

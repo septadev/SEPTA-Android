@@ -1,6 +1,7 @@
 package org.septa.android.app.locationpicker;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -26,28 +27,21 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
- * Created by jkampf on 8/29/17.
- */
-
 class PlacesAutoCompleteAdapter extends ArrayAdapter<PlaceAutoComplete> implements Filterable, TextWatcher {
 
-    List<PlaceAutoComplete> resultList = new ArrayList<PlaceAutoComplete>(0);
+    private List<PlaceAutoComplete> resultList = new ArrayList<>(0);
 
-    Context mContext;
-    int mResource;
-    String locationString;
-    Call<PlacePredictions> activeCall;
+    private Context mContext;
+    private String locationString;
+    private Call<PlacePredictions> activeCall;
 
+    private GooglePlaceAutoCompleteService mPlaceAPI = SeptaServiceFactory.getAutoCompletePlaceService();
 
-    GooglePlaceAutoCompleteService mPlaceAPI = SeptaServiceFactory.getAutoCompletePlaceService();
-
-    public PlacesAutoCompleteAdapter(Context context, int resource, LatLng location) {
+    PlacesAutoCompleteAdapter(Context context, int resource, LatLng location) {
         super(context, resource);
 
         locationString = location.latitude + "," + location.longitude;
         mContext = context;
-        mResource = resource;
     }
 
     @Override
@@ -64,8 +58,8 @@ class PlacesAutoCompleteAdapter extends ArrayAdapter<PlaceAutoComplete> implemen
             convertView = inflater.inflate(R.layout.item_autocomplete_list, null);
         }
 
-        TextView streetText = (TextView) convertView.findViewById(R.id.street_text);
-        TextView cityStateZip = (TextView) convertView.findViewById(R.id.city_state_zip_text);
+        TextView streetText = convertView.findViewById(R.id.street_text);
+        TextView cityStateZip = convertView.findViewById(R.id.city_state_zip_text);
         View entryView = convertView.findViewById(R.id.entry_view);
         View googleLogo = convertView.findViewById(R.id.google_logo);
 
@@ -90,6 +84,7 @@ class PlacesAutoCompleteAdapter extends ArrayAdapter<PlaceAutoComplete> implemen
         return resultList.get(position);
     }
 
+    @NonNull
     @Override
     public Filter getFilter() {
         Filter filter = new Filter() {
@@ -139,10 +134,9 @@ class PlacesAutoCompleteAdapter extends ArrayAdapter<PlaceAutoComplete> implemen
             @Override
             public void onResponse(Call<PlacePredictions> call, Response<PlacePredictions> response) {
                 List<PlaceAutoComplete> serviceResponses = response.body().getPlaces();
-                List<PlaceAutoComplete> newResults = new ArrayList<PlaceAutoComplete>(serviceResponses.size() + 1);
+                List<PlaceAutoComplete> newResults = new ArrayList<>(serviceResponses.size() + 1);
                 newResults.add(null);
-                for (PlaceAutoComplete place : serviceResponses)
-                    newResults.add(place);
+                newResults.addAll(serviceResponses);
 
                 resultList = newResults;
                 notifyDataSetChanged();

@@ -16,15 +16,15 @@ import java.util.Map;
 public enum TransitType implements Serializable {
 
     @SerializedName("RAIL")
-    RAIL(R.drawable.pin_rail, R.drawable.ic_rail, R.drawable.rail_active_final, new RailColorProvider(), new IdLineIconProvider(R.drawable.ic_line_air), new RailAlertIdGenerator()),
+    RAIL(R.drawable.pin_rail, R.drawable.ic_rail, R.drawable.ic_rail_circle, new RailColorProvider(), new IdLineIconProvider(R.drawable.ic_line_air), new RailAlertIdGenerator()),
     @SerializedName("BUS")
-    BUS(R.drawable.pin_bus, R.drawable.ic_bus, R.drawable.bus_active_final, new BasicColorProvider(R.color.line_color_bus), new BasicLineIconProvider(R.drawable.ic_line_bus), new SimpleAlertIdGenerator("bus_route")),
+    BUS(R.drawable.pin_bus, R.drawable.ic_bus, R.drawable.ic_bus_circle, new BasicColorProvider(R.color.line_color_bus), new BasicLineIconProvider(R.drawable.ic_line_bus), new SimpleAlertIdGenerator("bus_route")),
     @SerializedName("TROLLEY")
-    TROLLEY(R.drawable.pin_trolley, R.drawable.ic_trolley, R.drawable.trolley_active_final, new BasicColorProvider(R.color.line_color_trolley), new BasicLineIconProvider(R.drawable.ic_line_trolley), new SimpleAlertIdGenerator("trolley_route")),
+    TROLLEY(R.drawable.pin_trolley, R.drawable.ic_trolley, R.drawable.ic_trolley_circle, new BasicColorProvider(R.color.line_color_trolley), new BasicLineIconProvider(R.drawable.ic_line_trolley), new SimpleAlertIdGenerator("trolley_route")),
     @SerializedName("SUBWAY")
-    SUBWAY(R.drawable.pin_subway, R.drawable.ic_subway, R.drawable.subway_active_final, new RailColorProvider(), new IdLineIconProvider(R.drawable.ic_line_nightowl), new SimpleAlertIdGenerator("rr_route")),
+    SUBWAY(R.drawable.pin_subway, R.drawable.ic_subway, R.drawable.ic_subway_circle, new RailColorProvider(), new IdLineIconProvider(R.drawable.ic_line_nightowl), new SimpleAlertIdGenerator("rr_route")),
     @SerializedName("NHSL")
-    NHSL(R.drawable.pin_nhsl, R.drawable.ic_nhsl, R.drawable.nhsl_active_final, new BasicColorProvider(R.color.line_color_nhsl), new BasicLineIconProvider(R.drawable.ic_line_nhsl), new SimpleAlertIdGenerator("rr_route"));
+    NHSL(R.drawable.pin_nhsl, R.drawable.ic_nhsl, R.drawable.ic_nhsl_circle, new BasicColorProvider(R.color.line_color_nhsl), new BasicLineIconProvider(R.drawable.ic_line_nhsl), new SimpleAlertIdGenerator("rr_route"));
 
     private static final String TAG = TransitType.class.getSimpleName();
     private static final String PREFIX_RR_ROUTE = "rr_route";
@@ -58,8 +58,9 @@ public enum TransitType implements Serializable {
     public static List<TransitType> transitTypesOnHolidayToday() {
         List<TransitType> holidayTodayList = new ArrayList<TransitType>();
         for (TransitType transitType : values()) {
-            if (transitType.isHolidayToday())
+            if (transitType.isHolidayToday()) {
                 holidayTodayList.add(transitType);
+            }
         }
 
         return holidayTodayList;
@@ -170,8 +171,9 @@ public enum TransitType implements Serializable {
             try {
                 int returnVal = context.getResources().getIdentifier("ic_line_" + lineId.toLowerCase(), "drawable", R.class.getPackage().getName());
                 Log.d(TAG, "IconForLine: " + returnVal + " for " + lineId.toLowerCase());
-                if (returnVal == 0)
+                if (returnVal == 0) {
                     return defaultValue;
+                }
                 return returnVal;
             } catch (Exception e) {
                 Log.e(TAG, e.toString());
@@ -255,18 +257,24 @@ public enum TransitType implements Serializable {
     }
 
     public TransitType getTransitTypeByAlertMode(String mode) {
-        if ("Regional Rail".equals(mode))
+        if ("Regional Rail".equals(mode)) {
             return RAIL;
-        if ("Trolley".equals(mode))
+        }
+        if ("Trolley".equals(mode)) {
             return TROLLEY;
-        if ("Bus".equals(mode))
+        }
+        if ("Bus".equals(mode)) {
             return BUS;
-        if ("Broad Street Line".equals(mode))
+        }
+        if ("Broad Street Line".equals(mode)) {
             return SUBWAY;
-        if ("Market/ Frankford".equals(mode))
+        }
+        if ("Market/ Frankford".equals(mode)) {
             return SUBWAY;
-        if ("Norristown High Speed Line".equals(mode))
+        }
+        if ("Norristown High Speed Line".equals(mode)) {
             return NHSL;
+        }
 
         return null;
     }

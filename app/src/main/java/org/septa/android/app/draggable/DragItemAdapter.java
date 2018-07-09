@@ -27,11 +27,11 @@ public abstract class DragItemAdapter<T, VH extends DragItemAdapter.ViewHolder> 
      */
     public abstract long getUniqueItemId(int position);
 
-    public DragItemAdapter() {
+    protected DragItemAdapter() {
         setHasStableIds(true);
     }
 
-    public void setItemList(List<T> itemList) {
+    protected void setItemList(List<T> itemList) {
         mItemList = itemList;
         notifyDataSetChanged();
     }

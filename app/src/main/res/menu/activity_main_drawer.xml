@@ -20,6 +20,11 @@
             app:actionLayout="@layout/menu_badge"
             android:title="@string/system_status" />
         <item
+            android:id="@+id/nav_transitview_beta"
+            android:icon="@drawable/ic_transitview_non"
+            app:actionLayout="@layout/menu_badge"
+            android:title="@string/transit_view_beta" />
+        <item
             android:id="@+id/nav_schedule"
             android:icon="@drawable/ic_schedule_non"
             android:title="@string/schedule" />
@@ -35,6 +40,10 @@
             android:id="@+id/nav_events"
             android:icon="@drawable/ic_calendar_non"
             android:title="@string/events" />
+        <item
+            android:id="@+id/nav_perks"
+            android:icon="@drawable/ic_perks_non"
+            android:title="@string/perks" />
 
     </group>
 
@@ -46,10 +55,10 @@
             android:title="@string/connect_with_septa" />
         <item
             android:id="@+id/nav_transitview"
-            android:title="TransitView" />
+            android:title="@string/transit_view" />
         <item
             android:id="@+id/nav_trainview"
-            android:title="TrainView" />
+            android:title="@string/train_view" />
         <item
             android:id="@+id/nav_about_app"
             android:title="@string/about_the_septa_app" />

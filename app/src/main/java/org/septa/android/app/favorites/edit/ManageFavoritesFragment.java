@@ -12,6 +12,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,8 +25,9 @@ import android.widget.TextView;
 import org.septa.android.app.R;
 import org.septa.android.app.draggable.DragItem;
 import org.septa.android.app.draggable.DragListView;
+import org.septa.android.app.favorites.DeleteFavoritesAsyncTask;
+import org.septa.android.app.favorites.FavoriteState;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
-import org.septa.android.app.services.apiinterfaces.model.Favorite;
 import org.septa.android.app.support.SwipeController;
 
 import java.util.List;
@@ -33,11 +35,10 @@ import java.util.List;
 public class ManageFavoritesFragment extends Fragment implements DraggableFavoriteItemAdapter.DraggableFavoriteItemListener, SwipeController.SwipeControllerListener {
 
     private static final String TAG = ManageFavoritesFragment.class.getSimpleName();
-    private static final String KEY_FAVORITE = "KEY_FAVORITE";
 
     // favorites management
     private DragListView favoritesListView;
-    private List<Favorite> favoriteList;
+    private List<FavoriteState> favoriteStateList;
     private ManageFavoritesFragmentListener mListener;
     private DraggableFavoriteItemAdapter favoriteItemAdapter;
     private ItemTouchHelper itemTouchHelper;
@@ -45,21 +46,18 @@ public class ManageFavoritesFragment extends Fragment implements DraggableFavori
     int initialCount;
     View fragmentView;
 
-    public static ManageFavoritesFragment newInstance(List<Favorite> favoriteList) {
-        ManageFavoritesFragment instance = new ManageFavoritesFragment();
-        instance.favoriteList = favoriteList;
-        return instance;
-    }
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        initialCount = favoriteList.size();
+
+        favoriteStateList = SeptaServiceFactory.getFavoritesService().getFavoriteStates(getContext());
+
+        initialCount = favoriteStateList.size();
 
         setHasOptionsMenu(true);
         fragmentView = inflater.inflate(R.layout.fragment_favorites_manage, container, false);
-        favoritesListView = (DragListView) fragmentView.findViewById(R.id.favorites_list_draggable);
+        favoritesListView = fragmentView.findViewById(R.id.favorites_list_draggable);
 
         // enabled swipe to delete
         final SwipeController swipeController = new SwipeController(getContext(),ManageFavoritesFragment.this);
@@ -71,7 +69,6 @@ public class ManageFavoritesFragment extends Fragment implements DraggableFavori
                 swipeController.onDraw(c);
             }
         });
-
 
         // enable drag to reorder
         favoritesListView.setDragListListener(new DragListView.DragListListenerAdapter() {
@@ -141,27 +138,43 @@ public class ManageFavoritesFragment extends Fragment implements DraggableFavori
     }
 
     @Override
-    public void deleteFavorite(final int favoriteIndex) {
+    public void promptToDeleteFavorite(final int favoriteIndex) {
+        final String favoriteKey = favoriteStateList.get(favoriteIndex).getFavoriteKey();
+
         new AlertDialog.Builder(getContext()).setCancelable(true).setTitle(R.string.delete_fav_modal_title)
                 .setMessage(R.string.delete_fav_modal_text)
 
                 // confirm to delete
                 .setPositiveButton(R.string.delete_fav_pos_button, new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        SeptaServiceFactory.getFavoritesService().deleteFavorite(getContext(), favoriteList.get(favoriteIndex).getKey());
-                        favoriteList.remove(favoriteIndex);
-                        favoriteItemAdapter.notifyItemRemoved(favoriteIndex);
-                        favoriteItemAdapter.notifyDataSetChanged();
+                    public void onClick(final DialogInterface dialog, int which) {
+                        DeleteFavoritesAsyncTask task = new DeleteFavoritesAsyncTask(getContext(), new Runnable() {
+                            @Override
+                            public void run() {
+                                // on unsuccessful deletion
+                                dialog.dismiss();
+                                revertSwipe(favoriteIndex);
+                                Log.e(TAG, "NextArrivalFavorite with key " + favoriteKey + " could not be deleted at this time");
+                            }
+                        }, new Runnable() {
+                            @Override
+                            public void run() {
+                                // on successful deletion
+                                favoriteStateList.remove(favoriteIndex);
+                                favoriteItemAdapter.notifyItemRemoved(favoriteIndex);
+                                favoriteItemAdapter.notifyDataSetChanged();
 
-                        // reattach recyclerview so that deleting last row hides red background
-                        itemTouchHelper.attachToRecyclerView(null);
-                        itemTouchHelper.attachToRecyclerView(favoritesListView.getRecyclerView());
+                                // reattach recyclerview so that deleting last row hides red background
+                                itemTouchHelper.attachToRecyclerView(null);
+                                itemTouchHelper.attachToRecyclerView(favoritesListView.getRecyclerView());
 
-                        // close edit mode if no favorites left
-                        if (favoriteList.isEmpty()) {
-                            mListener.toggleEditFavoritesMode(true);
-                        }
+                                // close edit mode if no favorites left
+                                if (favoriteStateList.isEmpty()) {
+                                    mListener.toggleEditFavoritesMode(true);
+                                }
+                            }
+                        });
+                        task.execute(favoriteKey);
                     }
                 })
 
@@ -187,12 +200,12 @@ public class ManageFavoritesFragment extends Fragment implements DraggableFavori
     private void setupListRecyclerView() {
         favoritesListView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        favoriteItemAdapter = new DraggableFavoriteItemAdapter(getContext(), favoriteList, R.layout.item_favorite_draggable, R.id.favorite_item_drag_handle, false, this);
+        favoriteItemAdapter = new DraggableFavoriteItemAdapter(getContext(), favoriteStateList, R.layout.item_favorite_draggable, R.id.favorite_item_drag_handle, false, this);
         favoritesListView.setAdapter(favoriteItemAdapter, true);
         favoritesListView.setCanDragHorizontally(false);
         favoritesListView.setCustomDragItem(new FavoriteDragItem(getContext(), R.layout.item_favorite_draggable));
 
-        favoriteItemAdapter.updateList(favoriteList);
+        favoriteItemAdapter.updateList(favoriteStateList);
     }
 
     private void reorderFavorite(int fromPosition, int toPosition) {
@@ -208,8 +221,6 @@ public class ManageFavoritesFragment extends Fragment implements DraggableFavori
 
         @Override
         public void onBindDragView(View clickedView, View dragView) {
-
-
             // set favorite name on dragging view
             CharSequence text = ((TextView) clickedView.findViewById(R.id.favorite_title_text)).getText();
             ((TextView) dragView.findViewById(R.id.favorite_title_text)).setText(text);

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/favorite_item_row"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/favorite_item_margin"
+    android:layout_marginTop="@dimen/favorite_item_margin"
+    android:background="@android:color/white"
+    android:elevation="@dimen/white_box_elevation"
+    android:gravity="center"
+    android:orientation="horizontal">
+
+    <ImageView
+        android:id="@+id/transitview_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:src="@drawable/ic_transitview_circle" />
+
+    <LinearLayout
+        android:id="@+id/favorite_item_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="5"
+        android:orientation="vertical">
+
+        <org.septa.android.app.view.TextView
+            android:id="@+id/favorite_title_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="Office Commute"
+            android:textColor="@color/colorPrimary"
+            android:textSize="16sp"
+            app:typeface="@string/font_roboto_bold" />
+
+        <org.septa.android.app.view.TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:maxLines="1"
+            android:text="@string/transit_view"
+            android:textColor="@android:color/black"
+            android:textSize="12sp"
+            app:typeface="@string/font_roboto_light" />
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/advisory_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/indent_padding"
+        android:layout_marginRight="@dimen/indent_padding"
+        android:src="@drawable/ic_advisory"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
+    <ImageView
+        android:id="@+id/alert_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/indent_padding"
+        android:layout_marginRight="@dimen/indent_padding"
+        android:src="@drawable/ic_alert"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
+    <ImageView
+        android:id="@+id/detour_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/indent_padding"
+        android:layout_marginRight="@dimen/indent_padding"
+        android:src="@drawable/ic_detour"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
+    <ImageView
+        android:id="@+id/weather_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/indent_padding"
+        android:layout_marginRight="@dimen/indent_padding"
+        android:src="@drawable/ic_weather"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/favorite_item_view_results"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:text="@string/favorites_view_transitview"
+        android:textColor="@color/text_primary"
+        android:textSize="12dp" />
+
+</LinearLayout>

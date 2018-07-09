@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class NextToArriveModel {
+
     public static final String TAG = NextToArriveModel.class.getName();
 
     private static Map<String, String> rrRouteId = new HashMap<String, String>();
@@ -33,21 +34,41 @@ public class NextToArriveModel {
         rrRouteId.put("West Trenton", "rr_route_wtren");
     }
 
-    @SerializedName("orig_train") private String originalTrain;
-    @SerializedName("orig_line") private String originalLine;
-    @SerializedName("orig_departure_time") private String originalDepartureTime;
-    @SerializedName("orig_arrival_time") private String OriginalArrivalTime;
-    @SerializedName("orig_delay") private String originalDelay;
+    @SerializedName("orig_train")
+    private String originalTrain;
 
-    @SerializedName("term_train") private String terminalTrain;
-    @SerializedName("term_line") private String terminalLine;
-    @SerializedName("term_depart_time") private String terminalDepartureTime;
-    @SerializedName("term_arrival_time") private String terminalArrivalTime;
-    @SerializedName("term_delay") private String terminalDelay;
+    @SerializedName("orig_line")
+    private String originalLine;
 
-    @SerializedName("isdirect") private String isDirect;
+    @SerializedName("orig_departure_time")
+    private String originalDepartureTime;
 
-    @SerializedName("Connection") private String connection;
+    @SerializedName("orig_arrival_time")
+    private String OriginalArrivalTime;
+
+    @SerializedName("orig_delay")
+    private String originalDelay;
+
+    @SerializedName("term_train")
+    private String terminalTrain;
+
+    @SerializedName("term_line")
+    private String terminalLine;
+
+    @SerializedName("term_depart_time")
+    private String terminalDepartureTime;
+
+    @SerializedName("term_arrival_time")
+    private String terminalArrivalTime;
+
+    @SerializedName("term_delay")
+    private String terminalDelay;
+
+    @SerializedName("isdirect")
+    private String isDirect;
+
+    @SerializedName("Connection")
+    private String connection;
 
     public String getOriginalTrain() {
         return originalTrain;

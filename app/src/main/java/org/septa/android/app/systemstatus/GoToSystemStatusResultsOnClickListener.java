@@ -7,19 +7,14 @@ import android.view.View;
 import org.septa.android.app.Constants;
 import org.septa.android.app.TransitType;
 
-/**
- * Created by jkampf on 9/21/17.
- */
-
 public class GoToSystemStatusResultsOnClickListener implements View.OnClickListener {
-    String statusType;
-    Context context;
-    TransitType transitType;
-    String routeId;
-    String routeName;
+    private String statusType;
+    private Context context;
+    private TransitType transitType;
+    private String routeId;
+    private String routeName;
 
-    public GoToSystemStatusResultsOnClickListener(String statusType, Context activity,
-                                                  TransitType transitType, String routeId, String routeName) {
+    public GoToSystemStatusResultsOnClickListener(String statusType, Context activity, TransitType transitType, String routeId, String routeName) {
         this.statusType = statusType;
         this.context = activity;
         this.transitType = transitType;

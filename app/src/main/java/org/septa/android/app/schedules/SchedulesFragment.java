@@ -27,13 +27,9 @@ import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
 import org.septa.android.app.database.DatabaseManager;
 import org.septa.android.app.locationpicker.LineAwareLocationPickerTabActivityHandler;
+import org.septa.android.app.rating.RatingUtil;
 
 import java.util.List;
-
-/************************************************************************************************************
- * Class: SchedulesFragment
- * Purpose: The Schedule adapter class manages the Transit Schedules Fragment in the application
- */
 
 public class SchedulesFragment extends Fragment {
 
@@ -46,7 +42,6 @@ public class SchedulesFragment extends Fragment {
             HOLIDAY_SCHEDULE_URL_RAIL = "https://septa.org/schedules/rail/special/holidays-mobile.html";
 
     private SchedulesFragment.SectionsPagerAdapter mSectionsPagerAdapter;
-    private ViewPager mViewPager;
     private TabLayout tabLayout;
     LineAwareLocationPickerTabActivityHandler tabActivityHandlers[];
     int startingIndex = 0;
@@ -55,8 +50,7 @@ public class SchedulesFragment extends Fragment {
     AlertDialog holidayAlert;
 
     public static SchedulesFragment newInstance() {
-        SchedulesFragment instance = new SchedulesFragment();
-        return instance;
+        return new SchedulesFragment();
     }
 
     @Nullable
@@ -91,10 +85,10 @@ public class SchedulesFragment extends Fragment {
         mSectionsPagerAdapter = new SchedulesFragment.SectionsPagerAdapter(getChildFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) fragmentView.findViewById(R.id.schedule_fragment_container);
+        ViewPager mViewPager = fragmentView.findViewById(R.id.schedule_fragment_container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
-        tabLayout = (TabLayout) fragmentView.findViewById(R.id.schedule_fragment_tabs);
+        tabLayout = fragmentView.findViewById(R.id.schedule_fragment_tabs);
         tabLayout.setupWithViewPager(mViewPager);
         setUpTabs(tabLayout, inflater);
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -116,8 +110,15 @@ public class SchedulesFragment extends Fragment {
 
         tabLayout.getTabAt(startingIndex).select();
 
+        // ask to rate app
+        if (RatingUtil.shouldShowDialog(getContext())) {
+            RatingUtil.showRatingDialog(getContext());
+        }
+
         return fragmentView;
     }
+
+
 
     @Override
     public void onResume() {
@@ -148,7 +149,7 @@ public class SchedulesFragment extends Fragment {
                     }
                 });
 
-                if (holidayTransitTypes.contains(TransitType.BUS) || holidayTransitTypes.contains(TransitType.TROLLEY) || holidayTransitTypes.contains(TransitType.SUBWAY) || holidayTransitTypes.contains(TransitType.NHSL))
+                if (holidayTransitTypes.contains(TransitType.BUS) || holidayTransitTypes.contains(TransitType.TROLLEY) || holidayTransitTypes.contains(TransitType.SUBWAY) || holidayTransitTypes.contains(TransitType.NHSL)) {
                     builder.setPositiveButton(R.string.holiday_alert_button_text, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -159,8 +160,9 @@ public class SchedulesFragment extends Fragment {
                             }
                         }
                     });
+                }
 
-                if (holidayTransitTypes.contains(TransitType.RAIL))
+                if (holidayTransitTypes.contains(TransitType.RAIL)) {
                     builder.setNegativeButton(R.string.holiday_alert_button_text_rail, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -171,6 +173,7 @@ public class SchedulesFragment extends Fragment {
                             }
                         }
                     });
+                }
 
 
                 AlertDialog dialog = builder.create();

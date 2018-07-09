@@ -10,11 +10,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Created by jkampf on 9/19/17.
- */
-
-public class GeneralUtils {
+public abstract class GeneralUtils {
 
     public static String getDurationAsString(long duration, TimeUnit timeUnit) {
         long totalMinutes = TimeUnit.MINUTES.convert(
@@ -28,8 +24,9 @@ public class GeneralUtils {
             if (minutes > 0) {
                 builder.append(" ").append(minutes).append(" m");
             }
-        } else
+        } else {
             builder.append(minutes).append(" m");
+        }
 
         return builder.toString();
     }
@@ -46,15 +43,15 @@ public class GeneralUtils {
             if (minutes > 0) {
                 builder.append(" ").append(minutes).append(" minutes");
             }
-        } else
+        } else {
             builder.append(minutes).append(" mins");
+        }
 
         return builder.toString();
     }
 
-    public static String updateUrls(String inString){
-        String outString = inString.replace("href=\"/", "href=\"http://www.septa.org/");
-        return outString;
+    public static String updateUrls(String inString) {
+        return inString.replace("href=\"/", "href=\"http://www.septa.org/");
     }
 
     public static String readRawTextFile(Context ctx, int resId) {
@@ -64,7 +61,7 @@ public class GeneralUtils {
         String line;
         StringBuilder text = new StringBuilder();
         try {
-            while (( line = buffreader.readLine()) != null) {
+            while ((line = buffreader.readLine()) != null) {
                 text.append(line);
                 text.append("\n");
             }
@@ -88,5 +85,4 @@ public class GeneralUtils {
         }
         return false;
     }
-
 }

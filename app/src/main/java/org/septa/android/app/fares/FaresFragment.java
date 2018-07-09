@@ -3,6 +3,7 @@ package org.septa.android.app.fares;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -16,20 +17,18 @@ import org.septa.android.app.webview.WebViewActivity;
 
 import java.text.MessageFormat;
 
-/**
- * Created by jkampf on 9/29/17.
- */
-
 public class FaresFragment extends Fragment {
 
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    private static final String TOOLBAR_TITLE = "TOOLBAR_TITLE";
+
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
         View rootView = inflater.inflate(R.layout.fragment_fares, container, false);
 
         setHttpIntent(rootView, R.id.septa_key_link, getResources().getString(R.string.septa_key_url), getResources().getString(R.string.septa_key_title));
         setHttpIntent(rootView, R.id.more_about_fares_button, getResources().getString(R.string.about_fares_url), getResources().getString(R.string.about_fares_title));
-        setHttpIntent(rootView, R.id.perks_button, getResources().getString(R.string.about_perks_url), getResources().getString(R.string.about_perks_title));
 
         formatAndSetText(rootView, R.id.cash_text, R.string.cash_text, new Object[]{getResources().getString(R.string.cash_price), getResources().getString(R.string.quick_trip_price)});
         formatAndSetText(rootView, R.id.token_text, R.string.token_text, new Object[]{getResources().getString(R.string.token_each_price), getResources().getString(R.string.token_transfer_price)});
@@ -41,16 +40,32 @@ public class FaresFragment extends Fragment {
         return rootView;
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(TOOLBAR_TITLE, getActivity().getTitle().toString());
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if (savedInstanceState != null) {
+            String title = savedInstanceState.getString(TOOLBAR_TITLE);
+            if (title != null && getActivity() != null) {
+                getActivity().setTitle(title);
+            }
+        }
+    }
+
     private void formatAndSetText(View rootView, int targetViewId, int sourceString, Object[] objects) {
         MessageFormat format = new MessageFormat(getResources().getString(sourceString));
         String content = format.format(objects).toString();
         ((TextView) rootView.findViewById(targetViewId)).setHtml(content);
     }
 
-
     private void setHttpIntent(View rootView, int viewId, final String url, final String title) {
-        View twitterLink = rootView.findViewById(viewId);
-        twitterLink.setOnClickListener(new View.OnClickListener() {
+        View link = rootView.findViewById(viewId);
+        link.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Activity activity = getActivity();
@@ -64,19 +79,4 @@ public class FaresFragment extends Fragment {
         });
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString("title", getActivity().getTitle().toString());
-    }
-
-    @Override
-    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-        super.onViewStateRestored(savedInstanceState);
-        if (savedInstanceState != null) {
-            String title = savedInstanceState.getString("title");
-            if (title != null && getActivity() != null)
-                getActivity().setTitle(title);
-        }
-    }
 }

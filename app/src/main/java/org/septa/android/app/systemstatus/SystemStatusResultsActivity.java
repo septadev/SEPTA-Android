@@ -6,10 +6,10 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
 
+import org.septa.android.app.BaseActivity;
 import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
@@ -25,11 +25,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
- * Created by jkampf on 9/13/17.
- */
-
-public class SystemStatusResultsActivity extends AppCompatActivity {
+public class SystemStatusResultsActivity extends BaseActivity {
 
     private static final String TAG = SystemStatusResultsActivity.class.getSimpleName();
     private TransitType transitType;
@@ -55,14 +51,16 @@ public class SystemStatusResultsActivity extends AppCompatActivity {
 
     View progressView;
 
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_system_status_results);
         setTitle("System Status:");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
 
         progressView = findViewById(R.id.progress_view);
         progressView.setVisibility(View.VISIBLE);
@@ -71,8 +69,9 @@ public class SystemStatusResultsActivity extends AppCompatActivity {
             restoreSaveInstanceState(savedInstanceState);
         } else {
             Intent intent = getIntent();
-            if (intent != null)
+            if (intent != null) {
                 restoreSaveInstanceState(getIntent().getExtras());
+            }
         }
 
         if (transitType == null || routeId == null) {
@@ -81,56 +80,54 @@ public class SystemStatusResultsActivity extends AppCompatActivity {
 
         setTitle(transitType.getString("system_status_results_title", this));
 
-
-        TextView title = (TextView) findViewById(R.id.line_title);
+        TextView title = findViewById(R.id.line_title);
         title.setText(routeName + " Status");
 
+        // add line color bullet
         int color;
         try {
             color = ContextCompat.getColor(this, transitType.getLineColor(routeId, this));
         } catch (Exception e) {
             color = ContextCompat.getColor(this, R.color.default_line_color);
         }
-
         Drawable[] drawables = title.getCompoundDrawables();
         Drawable bullet = drawables[2];
         bullet.setColorFilter(color, PorterDuff.Mode.SRC);
+        title.setCompoundDrawablesWithIntrinsicBounds(null, null, bullet, null);
 
         Drawable inactiveToggle = ContextCompat.getDrawable(this, R.drawable.alert_toggle_closed).mutate();
         inactiveToggle.setAlpha(77);
 
-        serviceAdvisory = (TextView) findViewById(R.id.service_advisory);
-        serviceAdvisoryDetails = (TextView) findViewById(R.id.service_advisory_details);
+        serviceAdvisory = findViewById(R.id.service_advisory);
+        serviceAdvisoryDetails = findViewById(R.id.service_advisory_details);
         serviceAdvisoryDetails.setMovementMethod(LinkMovementMethod.getInstance());
         Drawable[] serviceAdvisoryDrawables = serviceAdvisory.getCompoundDrawables();
-        serviceAdvisory.
-                setCompoundDrawablesWithIntrinsicBounds(serviceAdvisoryDrawables[0], serviceAdvisoryDrawables[1], inactiveToggle, serviceAdvisoryDrawables[3]);
+        serviceAdvisory.setCompoundDrawablesWithIntrinsicBounds(serviceAdvisoryDrawables[0], serviceAdvisoryDrawables[1], inactiveToggle, serviceAdvisoryDrawables[3]);
 
-        serviceAlert = (TextView) findViewById(R.id.service_alert);
-        serviceAlertDetails = (TextView) findViewById(R.id.service_alert_details);
+        serviceAlert = findViewById(R.id.service_alert);
+        serviceAlertDetails = findViewById(R.id.service_alert_details);
         serviceAlertDetails.setMovementMethod(LinkMovementMethod.getInstance());
         Drawable[] serviceAlertDrawables = serviceAlert.getCompoundDrawables();
         serviceAlert.setCompoundDrawablesWithIntrinsicBounds(serviceAlertDrawables[0], serviceAlertDrawables[1], inactiveToggle, serviceAlertDrawables[3]);
 
-        activeDetour = (TextView) findViewById(R.id.active_detour);
-        activeDetourDetails = (TextView) findViewById(R.id.active_detour_details);
+        activeDetour = findViewById(R.id.active_detour);
+        activeDetourDetails = findViewById(R.id.active_detour_details);
         activeDetourDetails.setMovementMethod(LinkMovementMethod.getInstance());
         Drawable[] activeDetourDrawables = activeDetour.getCompoundDrawables();
         activeDetour.setCompoundDrawablesWithIntrinsicBounds(activeDetourDrawables[0], activeDetourDrawables[1], inactiveToggle, activeDetourDrawables[3]);
 
-
-        weatherAlerts = (TextView) findViewById(R.id.weather_alerts);
-        weatherAlertsDetails = (TextView) findViewById(R.id.weather_alerts_details);
+        weatherAlerts = findViewById(R.id.weather_alerts);
+        weatherAlertsDetails = findViewById(R.id.weather_alerts_details);
         weatherAlertsDetails.setMovementMethod(LinkMovementMethod.getInstance());
         Drawable[] weatherDrawables = weatherAlerts.getCompoundDrawables();
         weatherAlerts.setCompoundDrawablesWithIntrinsicBounds(weatherDrawables[0], weatherDrawables[1], inactiveToggle, weatherDrawables[3]);
 
-
         SeptaServiceFactory.getAlertDetailsService().getAlertDetails(transitType.getAlertId(routeId)).enqueue(new Callback<AlertDetail>() {
             @Override
             public void onResponse(Call<AlertDetail> call, Response<AlertDetail> response) {
-                if (response.body() != null)
+                if (response.body() != null) {
                     applyAlerts(response.body());
+                }
             }
 
             @Override
@@ -152,6 +149,12 @@ public class SystemStatusResultsActivity extends AppCompatActivity {
         outState.putSerializable(Constants.SERVICE_ALERT_EXPANDED, serviceAlertExpanded);
         outState.putSerializable(Constants.ACTIVE_DETOUR_EXPANDED, activeDetourExpanded);
         outState.putSerializable(Constants.WEATHER_ALERTS_EXPANDED, weatherAlertsExpanded);
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 
     private void restoreSaveInstanceState(Bundle inState) {
@@ -309,11 +312,4 @@ public class SystemStatusResultsActivity extends AppCompatActivity {
             weatherAlertsDetails.setHtml(GeneralUtils.updateUrls(weatherBuilder.toString()));
         }
     }
-
-    @Override
-    public boolean onSupportNavigateUp() {
-        onBackPressed();
-        return true;
-    }
-
 }

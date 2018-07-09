@@ -17,21 +17,22 @@ import io.fabric.sdk.android.Fabric;
  * will only log events to Crashlytics on a release build of the app
  */
 
-public class AnalyticsManager {
+public abstract class AnalyticsManager {
 
     public static final String CUSTOM_EVENT_ABOUT = "About";
     public static final String CUSTOM_EVENT_CONNECT = "Connect with SEPTA";
     public static final String CUSTOM_EVENT_FARES_TRANSIT = "Fares and Transit Info";
     public static final String CUSTOM_EVENT_FAVORITES = "Favorites";
     public static final String CUSTOM_EVENT_NEXT_TO_ARRIVE = "Next To Arrive";
+    public static final String CUSTOM_EVENT_PERKS = "Perks";
     public static final String CUSTOM_EVENT_SCHEDULE = "Schedule";
     public static final String CUSTOM_EVENT_SPECIAL_EVENTS = "Special Events";
     public static final String CUSTOM_EVENT_SYSTEM_MAP = "System Map";
     public static final String CUSTOM_EVENT_SYSTEM_STATUS = "System Status";
     public static final String CUSTOM_EVENT_TRAIN_VIEW = "TrainView";
     public static final String CUSTOM_EVENT_TRANSIT_VIEW = "TransitView";
-    public static final String CUSTOM_EVENT_SAVE_RENAMED_FAVORITE = "Save a Renamed Favorite";
-    public static final String CUSTOM_EVENT_DELETE_FAVORITE = "Delete a Favorite";
+//    public static final String CUSTOM_EVENT_SAVE_RENAMED_FAVORITE = "Save a Renamed Favorite";
+//    public static final String CUSTOM_EVENT_DELETE_FAVORITE = "Delete a Favorite";
 
     private static boolean initialized = false;
 

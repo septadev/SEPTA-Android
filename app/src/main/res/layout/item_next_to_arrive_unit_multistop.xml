@@ -159,7 +159,7 @@
             android:maxLines="1"
             android:text="9:29 AM - 10:03 AM"
             android:textColor="#000"
-            app:font="@string/font_roboto_bold"
+            app:typeface="@string/font_roboto_bold"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@+id/orig_departing_border"
             app:layout_constraintTop_toTopOf="parent" />
@@ -173,7 +173,7 @@
             android:layout_marginTop="0dp"
             android:text="3 min delay"
             android:textColor="@color/no_delay_minutes"
-            app:font="@string/font_roboto_bold"
+            app:typeface="@string/font_roboto_bold"
             app:layout_constraintLeft_toLeftOf="@+id/orig_arrival_time_text"
             app:layout_constraintTop_toBottomOf="@+id/orig_arrival_time_text" />
 
@@ -189,7 +189,7 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:text="#546 to 30th Street"
-            app:font="@string/font_roboto_light"
+            app:typeface="@string/font_roboto_light"
             app:layout_constraintLeft_toRightOf="@+id/orig_tardy_text"
             app:layout_constraintRight_toLeftOf="@+id/orig_departing_border"
             app:layout_constraintTop_toBottomOf="@+id/orig_arrival_time_text" />
@@ -217,7 +217,7 @@
                 android:text="DEPARTING"
                 android:textAlignment="center"
                 android:textColor="@color/light_gray"
-                app:font="@string/font_roboto_regular" />
+                app:typeface="@string/font_roboto_regular" />
 
             <org.septa.android.app.view.TextView
                 android:id="@+id/orig_depature_time"
@@ -226,7 +226,7 @@
                 android:text="25 min"
                 android:textAlignment="center"
                 android:textColor="@color/on_time_departing"
-                app:font="@string/font_roboto_bold" />
+                app:typeface="@string/font_roboto_bold" />
 
         </LinearLayout>
 
@@ -285,7 +285,7 @@
             android:layout_marginTop="0dp"
             android:text="Connect @ 30th Street Station"
             android:textColor="@color/colorPrimaryDark"
-            app:font="@string/font_roboto_medium_italic"
+            app:typeface="@string/font_roboto_medium_italic"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toRightOf="@+id/imageView2"
             app:layout_constraintRight_toRightOf="parent"
@@ -354,7 +354,7 @@
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:text="Cynwyd / Line"
-                app:font="@string/font_roboto_regular" />
+                app:typeface="@string/font_roboto_regular" />
 
             <ImageView
                 android:id="@+id/term_line_advisory_icon"
@@ -472,7 +472,7 @@
             android:layout_marginTop="0dp"
             android:text="On Time"
             android:textColor="@color/no_delay_minutes"
-            app:font="@string/font_roboto_bold"
+            app:typeface="@string/font_roboto_bold"
             app:layout_constraintLeft_toLeftOf="@+id/term_arrival_time_text"
             app:layout_constraintTop_toBottomOf="@+id/term_arrival_time_text" />
 
@@ -487,7 +487,7 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:text="#1081 to Cynwyd"
-            app:font="@string/font_roboto_light"
+            app:typeface="@string/font_roboto_light"
             app:layout_constraintLeft_toRightOf="@+id/term_tardy_text"
             app:layout_constraintRight_toLeftOf="@+id/term_departing_border"
             app:layout_constraintTop_toBottomOf="@+id/term_arrival_time_text" />
@@ -514,7 +514,7 @@
                 android:text="DEPARTING"
                 android:textAlignment="center"
                 android:textColor="@color/light_gray"
-                app:font="@string/font_roboto_regular" />
+                app:typeface="@string/font_roboto_regular" />
 
             <org.septa.android.app.view.TextView
                 android:id="@+id/term_depature_time"
@@ -523,7 +523,7 @@
                 android:text="42 min"
                 android:textAlignment="center"
                 android:textColor="@color/on_time_departing"
-                app:font="@string/font_roboto_bold" />
+                app:typeface="@string/font_roboto_bold" />
 
         </LinearLayout>
 

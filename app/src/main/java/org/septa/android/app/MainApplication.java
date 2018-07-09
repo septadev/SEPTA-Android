@@ -11,6 +11,8 @@ import com.crashlytics.android.Crashlytics;
 
 import org.septa.android.app.database.DatabaseManager;
 import org.septa.android.app.database.update.DatabaseSharedPrefsUtils;
+import org.septa.android.app.rating.RatingUtil;
+import org.septa.android.app.rating.SharedPreferencesRatingUtil;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Alerts;
 import org.septa.android.app.support.AnalyticsManager;
@@ -80,6 +82,43 @@ public class MainApplication extends Application implements Runnable {
 
         refreshHandler = new Handler();
         refreshHandler.postDelayed(this, 1);
+
+        if (SharedPreferencesRatingUtil.getAppJustCrashed(getApplicationContext())) {
+            SharedPreferencesRatingUtil.setAppJustCrashed(getApplicationContext(), false);
+
+            // require more crash free uses before prompting
+            int numberUses = SharedPreferencesRatingUtil.getNumberOfUses(getApplicationContext());
+            int crashFreeUsesRequired = RatingUtil.MIN_USES_TO_RATE - RatingUtil.MIN_CRASH_FREE_USES_TO_RATE;
+            if (numberUses > crashFreeUsesRequired) {
+                SharedPreferencesRatingUtil.setNumberOfUses(getApplicationContext(), crashFreeUsesRequired);
+            }
+        }
+
+        // handler for uncaught exceptions
+        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+            @Override
+            public void uncaughtException(Thread thread, Throwable e) {
+                handleUncaughtException(thread, e);
+            }
+        });
+    }
+
+    public void handleUncaughtException(Thread thread, Throwable e) {
+        e.printStackTrace(); // not all Android versions will print the stack trace automatically
+
+        SharedPreferencesRatingUtil.setAppJustCrashed(getApplicationContext(), true);
+
+        // require more crash free uses before prompting
+        int numberUses = SharedPreferencesRatingUtil.getNumberOfUses(getApplicationContext());
+        int crashFreeUsesRequired = RatingUtil.MIN_USES_TO_RATE - RatingUtil.MIN_CRASH_FREE_USES_TO_RATE;
+        if (numberUses > crashFreeUsesRequired) {
+            SharedPreferencesRatingUtil.setNumberOfUses(getApplicationContext(), crashFreeUsesRequired);
+        }
+
+        Log.e(TAG, "The SEPTA app just crashed");
+
+        // close app
+        System.exit(1);
     }
 
     @Override

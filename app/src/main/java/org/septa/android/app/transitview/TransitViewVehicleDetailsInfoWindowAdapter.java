@@ -87,7 +87,7 @@ public class TransitViewVehicleDetailsInfoWindowAdapter implements GoogleMap.Inf
         numberRailCarsHeading.setVisibility(View.GONE);
 
         // transit type and route id
-        if (isTrolley(routeId)) {
+        if (isTrolley(context, routeId)) {
             markerTransitType.setText(context.getString(R.string.heading_trolley));
         } else {
             markerTransitType.setText(context.getString(R.string.heading_bus));

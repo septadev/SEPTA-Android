@@ -18,6 +18,8 @@ import org.septa.android.app.systemstatus.GoToSystemStatusResultsOnClickListener
 import org.septa.android.app.systemstatus.SystemStatusState;
 import org.septa.android.app.view.TextView;
 
+import static org.septa.android.app.transitview.TransitViewUtils.isTrolley;
+
 public class TransitViewRouteCard extends LinearLayout {
 
     private static final String TAG = TransitViewRouteCard.class.getSimpleName();
@@ -74,7 +76,7 @@ public class TransitViewRouteCard extends LinearLayout {
             }
         });
 
-        TransitType transitType = TransitViewUtils.isTrolley(route.getRouteId()) ? TransitType.TROLLEY : TransitType.BUS;
+        TransitType transitType = isTrolley(context, route.getRouteId()) ? TransitType.TROLLEY : TransitType.BUS;
         // set transit type icon
         routeIdText.setCompoundDrawablesWithIntrinsicBounds(ContextCompat.getDrawable(context, transitType.getTabActiveImageResource()), null, null, null);
 
@@ -98,7 +100,7 @@ public class TransitViewRouteCard extends LinearLayout {
     }
 
     public void refreshAlertsView() {
-        TransitType transitType = TransitViewUtils.isTrolley(route.getRouteId()) ? TransitType.TROLLEY : TransitType.BUS;
+        TransitType transitType = isTrolley(context, route.getRouteId()) ? TransitType.TROLLEY : TransitType.BUS;
         Alert routeAlerts = SystemStatusState.getAlertForLine(transitType, route.getRouteId());
         isAdvisory = routeAlerts.isAdvisory();
         isAlert = routeAlerts.isAlert() || routeAlerts.isSuspended();

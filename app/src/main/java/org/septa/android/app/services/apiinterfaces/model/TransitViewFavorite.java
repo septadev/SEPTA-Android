@@ -1,5 +1,6 @@
 package org.septa.android.app.services.apiinterfaces.model;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
@@ -24,13 +25,13 @@ public class TransitViewFavorite extends Favorite {
     @SerializedName("third_route")
     private RouteDirectionModel thirdRoute;
 
-    public TransitViewFavorite(@NonNull RouteDirectionModel first, RouteDirectionModel second, RouteDirectionModel third) {
+    public TransitViewFavorite(Context context, @NonNull RouteDirectionModel first, RouteDirectionModel second, RouteDirectionModel third) {
         this.firstRoute = first;
         this.secondRoute = second;
         this.thirdRoute = third;
 
         StringBuilder favoriteName = new StringBuilder(firstRoute.getRouteShortName());
-        if (isTrolley(firstRoute.getRouteId())) {
+        if (isTrolley(context, firstRoute.getRouteId())) {
             favoriteName.append(" Trolley");
         } else {
             favoriteName.append(" Bus");
@@ -39,7 +40,7 @@ public class TransitViewFavorite extends Favorite {
         if (secondRoute != null) {
             favoriteName.append(", ")
                     .append(secondRoute.getRouteShortName());
-            if (isTrolley(secondRoute.getRouteId())) {
+            if (isTrolley(context, secondRoute.getRouteId())) {
                 favoriteName.append(" Trolley");
             } else {
                 favoriteName.append(" Bus");
@@ -48,7 +49,7 @@ public class TransitViewFavorite extends Favorite {
             if (thirdRoute != null) {
                 favoriteName.append(", ")
                         .append(thirdRoute.getRouteShortName());
-                if (isTrolley(thirdRoute.getRouteId())) {
+                if (isTrolley(context, thirdRoute.getRouteId())) {
                     favoriteName.append(" Trolley");
                 } else {
                     favoriteName.append(" Bus");

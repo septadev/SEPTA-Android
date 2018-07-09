@@ -35,6 +35,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static org.septa.android.app.transitview.TransitViewUtils.isTrolley;
+
 class FavoriteItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final String TAG = FavoriteItemAdapter.class.getSimpleName();
@@ -293,7 +295,7 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
         // get check for alerts in first route
         String routeId = transitViewFavorite.getFirstRoute().getRouteId();
-        TransitType transitType = TransitViewUtils.isTrolley(routeId) ? TransitType.TROLLEY : TransitType.BUS;
+        TransitType transitType = isTrolley(context, routeId) ? TransitType.TROLLEY : TransitType.BUS;
         Alert routeAlerts = SystemStatusState.getAlertForLine(transitType, routeId);
         advisory = routeAlerts.isAdvisory();
         alert = routeAlerts.isAlert() || routeAlerts.isSuspended();
@@ -303,7 +305,7 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         // check if the 2nd route has alerts
         if (transitViewFavorite.getSecondRoute() != null) {
             routeId = transitViewFavorite.getSecondRoute().getRouteId();
-            transitType = TransitViewUtils.isTrolley(routeId) ? TransitType.TROLLEY : TransitType.BUS;
+            transitType = isTrolley(context, routeId) ? TransitType.TROLLEY : TransitType.BUS;
             routeAlerts = SystemStatusState.getAlertForLine(transitType, routeId);
             advisory = advisory || routeAlerts.isAdvisory();
             alert = alert || routeAlerts.isAlert() || routeAlerts.isSuspended();
@@ -313,7 +315,7 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             // check if teh 3rd route has alerts
             if (transitViewFavorite.getThirdRoute() != null) {
                 routeId = transitViewFavorite.getThirdRoute().getRouteId();
-                transitType = TransitViewUtils.isTrolley(routeId) ? TransitType.TROLLEY : TransitType.BUS;
+                transitType = isTrolley(context, routeId) ? TransitType.TROLLEY : TransitType.BUS;
                 routeAlerts = SystemStatusState.getAlertForLine(transitType, routeId);
                 advisory = advisory || routeAlerts.isAdvisory();
                 alert = alert || routeAlerts.isAlert() || routeAlerts.isSuspended();

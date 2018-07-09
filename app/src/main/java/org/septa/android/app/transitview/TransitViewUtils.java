@@ -1,23 +1,32 @@
 package org.septa.android.app.transitview;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 
 import org.septa.android.app.R;
+import org.septa.android.app.database.DatabaseManager;
+import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.services.apiinterfaces.model.Favorite;
 import org.septa.android.app.services.apiinterfaces.model.TransitViewFavorite;
+import org.septa.android.app.support.CursorAdapterSupplier;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class TransitViewUtils {
+
+    private static final String TAG = TransitViewUtils.class.getSimpleName();
+    private static List<String> trolleyRouteIds;
 
     public static BitmapDescriptor getDirectionalIconForTransitType(Context context, boolean isTrolley, boolean isActiveRoute, int angle) {
         // the vehicle direction icon points South by default
@@ -78,9 +87,33 @@ public abstract class TransitViewUtils {
         return bitmap;
     }
 
-    public static boolean isTrolley(String routeId) {
-        String[] trolleyRouteIds = new String[]{"10", "11", "13", "15", "34", "36", "101", "102"};
-        return Arrays.asList(trolleyRouteIds).contains(routeId);
+    public static boolean isTrolley(Context context, String routeId) {
+        if (trolleyRouteIds == null) {
+            trolleyRouteIds = new ArrayList<>();
+
+            DatabaseManager dbManager = DatabaseManager.getInstance(context);
+            CursorAdapterSupplier<RouteDirectionModel> trolleyRouteCursorAdapterSupplier = dbManager.getTrolleyNoDirectionRouteCursorAdapterSupplier();
+
+            // populate list of trolley IDs
+            Cursor cursor = trolleyRouteCursorAdapterSupplier.getCursor(context, null);
+            if (cursor != null) {
+                if (cursor.moveToFirst()) {
+                    do {
+                        RouteDirectionModel route = trolleyRouteCursorAdapterSupplier.getCurrentItemFromCursor(cursor);
+                        if (route != null) {
+                            trolleyRouteIds.add(trolleyRouteCursorAdapterSupplier.getCurrentItemFromCursor(cursor).getRouteId());
+                        }
+                    } while (cursor.moveToNext());
+                }
+            }
+
+            // remove NHSL from trolley IDs
+            if (trolleyRouteIds.remove("NHSL")) {
+                Log.d(TAG, "Removed NHSL from list of Trolley IDs");
+            }
+        }
+
+        return trolleyRouteIds.contains(routeId);
     }
 
     public static boolean isATransitViewFavorite(String favoriteKey) {

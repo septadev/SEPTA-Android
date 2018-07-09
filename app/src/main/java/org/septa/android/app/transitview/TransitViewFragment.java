@@ -234,16 +234,19 @@ public class TransitViewFragment extends Fragment implements TransitViewLinePick
     }
 
     private void addColorBulletBesideRoute(RouteDirectionModel route, TextView routePicker) {
-        TransitType transitType = TransitType.BUS;
-        if (isTrolley(route.getRouteId())) {
-            transitType = TransitType.TROLLEY;
-        }
+        Context context = getContext();
+        if (context != null) {
+            TransitType transitType = TransitType.BUS;
+            if (isTrolley(context, route.getRouteId())) {
+                transitType = TransitType.TROLLEY;
+            }
 
-        // add color bullet icon beside route name
-        int color = ContextCompat.getColor(getContext(), transitType.getLineColor(route.getRouteId(), getContext()));
-        Drawable bullet = ContextCompat.getDrawable(getContext(), R.drawable.shape_line_marker);
-        bullet.setColorFilter(color, PorterDuff.Mode.SRC);
-        routePicker.setCompoundDrawablesWithIntrinsicBounds(bullet, null, ContextCompat.getDrawable(getContext(), R.drawable.ic_line_picker), null);
+            // add color bullet icon beside route name
+            int color = ContextCompat.getColor(context, transitType.getLineColor(route.getRouteId(), context));
+            Drawable bullet = ContextCompat.getDrawable(context, R.drawable.shape_line_marker);
+            bullet.setColorFilter(color, PorterDuff.Mode.SRC);
+            routePicker.setCompoundDrawablesWithIntrinsicBounds(bullet, null, ContextCompat.getDrawable(context, R.drawable.ic_line_picker), null);
+        }
     }
 
     private void disableView(View view) {

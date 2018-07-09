@@ -2,6 +2,7 @@ package org.septa.android.app.transitview;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Point;
@@ -725,7 +726,7 @@ public class TransitViewResultsActivity extends BaseActivity implements Runnable
     }
 
     private void redrawAllVehiclesOnRoute(String routeId) {
-        boolean isTrolley = isTrolley(routeId);
+        boolean isTrolley = isTrolley(TransitViewResultsActivity.this, routeId);
         boolean isActiveRoute = activeRouteId.equalsIgnoreCase(routeId);
 
         for (Map.Entry<TransitViewModelResponse.TransitViewRecord, LatLng> entry : parser.getResultsForRoute(routeId).entrySet()) {
@@ -791,7 +792,7 @@ public class TransitViewResultsActivity extends BaseActivity implements Runnable
                 }).create().show();
             } else {
                 // prompt to save favorite
-                final TransitViewFavorite favorite = new TransitViewFavorite(firstRoute, secondRoute, thirdRoute);
+                final TransitViewFavorite favorite = new TransitViewFavorite(TransitViewResultsActivity.this, firstRoute, secondRoute, thirdRoute);
                 FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                 CrashlyticsManager.log(Log.INFO, TAG, "Creating initial RenameFavoriteDialogFragment for:" + favorite.toString());
                 RenameFavoriteDialogFragment fragment = RenameFavoriteDialogFragment.newInstance(true, false, favorite);

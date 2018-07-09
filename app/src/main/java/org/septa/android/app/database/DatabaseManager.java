@@ -169,8 +169,9 @@ public class DatabaseManager {
 
                 boolean first = true;
                 for (Criteria c : whereClause) {
-                    if (!first)
+                    if (!first) {
                         queryString.append(" AND ");
+                    }
                     first = false;
 
                     if ("trainId".equals(c.getFieldName())) {

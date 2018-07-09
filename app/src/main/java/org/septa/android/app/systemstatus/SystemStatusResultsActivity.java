@@ -125,8 +125,9 @@ public class SystemStatusResultsActivity extends BaseActivity {
         SeptaServiceFactory.getAlertDetailsService().getAlertDetails(transitType.getAlertId(routeId)).enqueue(new Callback<AlertDetail>() {
             @Override
             public void onResponse(Call<AlertDetail> call, Response<AlertDetail> response) {
-                if (response.body() != null)
+                if (response.body() != null) {
                     applyAlerts(response.body());
+                }
             }
 
             @Override

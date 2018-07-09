@@ -18,20 +18,24 @@ public class CrashlyticsManager {
 
 
     public static void log(int priority, String tag, String msg) {
-        if (msg == null)
+        if (msg == null) {
             msg = "";
+        }
 
-        if (initalized)
+        if (initalized) {
             Crashlytics.log(priority, tag, msg);
-        else
-            android.util.Log.println(priority, tag, msg);
+        } else {
+            Log.println(priority, tag, msg);
+        }
 
     }
 
     public static void logException(String tag, Throwable e) {
-        if (initalized)
+        if (initalized) {
             Crashlytics.logException(e);
-        else Log.e(tag, "", e);
+        } else {
+            Log.e(tag, "", e);
+        }
     }
 
 }

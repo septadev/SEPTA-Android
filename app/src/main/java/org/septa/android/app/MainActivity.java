@@ -54,6 +54,7 @@ import org.septa.android.app.support.ShakeDetector;
 import org.septa.android.app.systemmap.SystemMapFragment;
 import org.septa.android.app.systemstatus.SystemStatusFragment;
 import org.septa.android.app.systemstatus.SystemStatusState;
+import org.septa.android.app.transitview.TransitViewFragment;
 import org.septa.android.app.view.TextView;
 import org.septa.android.app.webview.WebViewFragment;
 
@@ -94,6 +95,7 @@ public class MainActivity extends BaseActivity implements
     Fragment events = null;
     Fragment trainview = null;
     Fragment transitview = null;
+    Fragment transitviewBeta = new TransitViewFragment();
     Fragment connect = new ConnectFragment();
     Fragment about = new AboutFragment();
 
@@ -361,6 +363,12 @@ public class MainActivity extends BaseActivity implements
             AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_TRANSIT_VIEW, null, null);
             switchToBundle(item, transitview, R.string.transit_view, 0);
         }
+
+        if (id == R.id.nav_transitview_beta) {
+            // TODO: analytics around use of beta transitview
+//            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_TRANSIT_VIEW, null, null);
+            switchToBundle(item, transitviewBeta, R.string.transit_view, R.drawable.ic_transitview_active);
+        }
         return true;
     }
 
@@ -412,7 +420,6 @@ public class MainActivity extends BaseActivity implements
     @Override
     public void gotoSchedules() {
         switchToSchedules(null);
-        //switchToBundle(navigationView.getMenu().findItem(R.id.nav_schedule), schedules, R.string.schedule, R.drawable.ic_schedule_active);
     }
 
     @Override
@@ -506,8 +513,9 @@ public class MainActivity extends BaseActivity implements
 
     private void switchToBundle(MenuItem item, Fragment targetFragment, int title, int highlightedIcon) {
         CrashlyticsManager.log(Log.INFO, TAG, "switchToBundle:" + item.getTitle() + ", " + targetFragment.getClass().getCanonicalName());
-        if ((currentMenu != null) && item.getItemId() == currentMenu.getItemId())
+        if ((currentMenu != null) && item.getItemId() == currentMenu.getItemId()) {
             return;
+        }
 
         if (previousIcon != null) {
             currentMenu.setIcon(previousIcon);
@@ -613,8 +621,11 @@ public class MainActivity extends BaseActivity implements
     public void showAlert(String alert, Boolean isGenericAlert) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-        if (isGenericAlert) builder.setTitle(R.string.title_generic_alert);
-        else builder.setTitle(R.string.title_mobile_app_alert);
+        if (isGenericAlert) {
+            builder.setTitle(R.string.title_generic_alert);
+        } else {
+            builder.setTitle(R.string.title_mobile_app_alert);
+        }
 
         // make message HTML enabled and allow for anchor links
         View alertView = getLayoutInflater().inflate(R.layout.dialog_alert, null);

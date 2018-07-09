@@ -97,8 +97,9 @@ public class ConnectFragment extends Fragment {
         super.onViewStateRestored(savedInstanceState);
         if (savedInstanceState != null) {
             String title = savedInstanceState.getString("title");
-            if (title != null && getActivity() != null)
+            if (title != null && getActivity() != null) {
                 getActivity().setTitle(title);
+            }
         }
     }
 }

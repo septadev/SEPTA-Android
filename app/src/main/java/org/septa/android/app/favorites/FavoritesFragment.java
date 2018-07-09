@@ -168,8 +168,9 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
         super.onViewStateRestored(savedInstanceState);
         if (savedInstanceState != null) {
             String title = savedInstanceState.getString(KEY_TITLE);
-            if (title != null && getActivity() != null)
+            if (title != null && getActivity() != null) {
                 getActivity().setTitle(title);
+            }
         }
     }
 
@@ -429,8 +430,9 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
         }
 
         Activity activity = getActivity();
-        if (activity == null)
+        if (activity == null) {
             return null;
+        }
 
         for (Favorite favorite : toDelete) {
             SeptaServiceFactory.getFavoritesService().deleteFavorite(activity, favorite.getKey());

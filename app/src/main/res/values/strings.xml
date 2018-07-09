@@ -19,7 +19,7 @@
     <string name="connect_with_septa">Connect With SEPTA</string>
     <string name="train_view">TrainView</string>
     <string name="transit_view">TransitView</string>
-
+    <string name="transit_view_beta">TransitView (Beta)</string>
 
     <!-- Transit Type Tab Names -->
     <string name="tab_rail">Rail</string>
@@ -128,10 +128,13 @@
 
     <!-- Vehicle Details on Map -->
     <string name="heading_rail">Train: </string>
+    <string name="heading_bus">Bus: </string>
+    <string name="heading_trolley">Trolley: </string>
+    <string name="heading_destination"> to %1$s</string>
     <string name="heading_vehicle_number">Vehicle Number: </string>
     <string name="heading_block_id">Block ID: </string>
     <string name="heading_status">Status: </string>
-    <string name="heading_status_delay">%1$s late.</string>
+    <string name="heading_status_delay">%1$s late</string>
     <string name="heading_rail_number_cars"># of Train Cars: </string>
 
 
@@ -172,6 +175,15 @@
     <string name="system_status_results_title_trolley">System Status: Trolley</string>
     <string name="system_status_results_title_nhsl">System Status: NHSL</string>
 
+
+    <!-- TransitView -->
+    <string name="transitview_heading">Select Up to 3 Routes</string>
+    <string name="transitview_query_button_text">View Map</string>
+    <string name="transitview_line_picker_first_text">Select a Bus Route or Trolley Line</string>
+    <string name="transitview_line_picker_second_text">Select a Second Bus Route or Trolley Line</string>
+    <string name="transitview_line_picker_third_text">Select a Third Bus Route or Trolley Line</string>
+
+    <string name="transitview_add_route">You must select a bus or trolley route to view TransitView results!</string>
 
     <!-- Schedules -->
     <string name="schedule_query_button_text">View Schedules</string>

@@ -149,7 +149,7 @@ public class SchedulesFragment extends Fragment {
                     }
                 });
 
-                if (holidayTransitTypes.contains(TransitType.BUS) || holidayTransitTypes.contains(TransitType.TROLLEY) || holidayTransitTypes.contains(TransitType.SUBWAY) || holidayTransitTypes.contains(TransitType.NHSL))
+                if (holidayTransitTypes.contains(TransitType.BUS) || holidayTransitTypes.contains(TransitType.TROLLEY) || holidayTransitTypes.contains(TransitType.SUBWAY) || holidayTransitTypes.contains(TransitType.NHSL)) {
                     builder.setPositiveButton(R.string.holiday_alert_button_text, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -160,8 +160,9 @@ public class SchedulesFragment extends Fragment {
                             }
                         }
                     });
+                }
 
-                if (holidayTransitTypes.contains(TransitType.RAIL))
+                if (holidayTransitTypes.contains(TransitType.RAIL)) {
                     builder.setNegativeButton(R.string.holiday_alert_button_text_rail, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -172,6 +173,7 @@ public class SchedulesFragment extends Fragment {
                             }
                         }
                     });
+                }
 
 
                 AlertDialog dialog = builder.create();

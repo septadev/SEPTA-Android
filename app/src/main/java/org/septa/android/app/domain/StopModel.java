@@ -146,19 +146,36 @@ public class StopModel implements Comparable<StopModel>, Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         StopModel stopModel = (StopModel) o;
 
-        if (stopSequence != stopModel.stopSequence) return false;
-        if (wheelchairBoarding != stopModel.wheelchairBoarding) return false;
-        if (Double.compare(stopModel.latitude, latitude) != 0) return false;
-        if (Double.compare(stopModel.longitude, longitude) != 0) return false;
-        if (Float.compare(stopModel.distance, distance) != 0) return false;
-        if (directionId != stopModel.directionId) return false;
-        if (stopId != null ? !stopId.equals(stopModel.stopId) : stopModel.stopId != null)
+        if (stopSequence != stopModel.stopSequence) {
             return false;
+        }
+        if (wheelchairBoarding != stopModel.wheelchairBoarding) {
+            return false;
+        }
+        if (Double.compare(stopModel.latitude, latitude) != 0) {
+            return false;
+        }
+        if (Double.compare(stopModel.longitude, longitude) != 0) {
+            return false;
+        }
+        if (Float.compare(stopModel.distance, distance) != 0) {
+            return false;
+        }
+        if (directionId != stopModel.directionId) {
+            return false;
+        }
+        if (stopId != null ? !stopId.equals(stopModel.stopId) : stopModel.stopId != null) {
+            return false;
+        }
         return stopName != null ? stopName.equals(stopModel.stopName) : stopModel.stopName == null;
 
     }

@@ -86,6 +86,9 @@ public class SeptaServiceFactory {
         return septaAmazonServicesSingleton.create(AlertsService.class);
     }
 
+    public static TransitViewService getTransitViewService() {
+        return septaAmazonServicesSingleton.create(TransitViewService.class);
+    }
 
     public static GooglePlaceAutoCompleteService getAutoCompletePlaceService() {
         return googleSingleton.create(GooglePlaceAutoCompleteService.class);

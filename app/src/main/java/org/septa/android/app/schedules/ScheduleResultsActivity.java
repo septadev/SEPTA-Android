@@ -227,7 +227,7 @@ public class ScheduleResultsActivity extends BaseActivity {
         }
 
         // hide refresh icon -- refresh only needed in NTA Results Activity
-        menu.findItem(R.id.refresh_nta_results).setVisible(false);
+        menu.findItem(R.id.refresh_results).setVisible(false);
 
         return true;
     }
@@ -330,14 +330,16 @@ public class ScheduleResultsActivity extends BaseActivity {
             case R.id.saturday_button:
                 if (transitType == TransitType.RAIL) {
                     return RAIL_SATURDAY;
-                } else
+                } else {
                     return SATURDAY;
+                }
 
             case R.id.sunday_button:
                 if (transitType == TransitType.RAIL) {
                     return RAIL_SUNDAY;
-                } else
+                } else {
                     return SUNDAY;
+                }
         }
         return 0;
     }
@@ -541,7 +543,9 @@ public class ScheduleResultsActivity extends BaseActivity {
             Cursor cursor = scheduleResultsActivity.reverseStopCursorAdapterSupplier.getCursor(scheduleResultsActivity, criteria);
             if (cursor.moveToFirst()) {
                 return scheduleResultsActivity.reverseStopCursorAdapterSupplier.getCurrentItemFromCursor(cursor);
-            } else return null;
+            } else {
+                return null;
+            }
         }
 
     }

@@ -24,8 +24,9 @@ public abstract class GeneralUtils {
             if (minutes > 0) {
                 builder.append(" ").append(minutes).append(" m");
             }
-        } else
+        } else {
             builder.append(minutes).append(" m");
+        }
 
         return builder.toString();
     }
@@ -42,13 +43,14 @@ public abstract class GeneralUtils {
             if (minutes > 0) {
                 builder.append(" ").append(minutes).append(" minutes");
             }
-        } else
+        } else {
             builder.append(minutes).append(" mins");
+        }
 
         return builder.toString();
     }
 
-    public static String updateUrls(String inString){
+    public static String updateUrls(String inString) {
         return inString.replace("href=\"/", "href=\"http://www.septa.org/");
     }
 
@@ -59,7 +61,7 @@ public abstract class GeneralUtils {
         String line;
         StringBuilder text = new StringBuilder();
         try {
-            while (( line = buffreader.readLine()) != null) {
+            while ((line = buffreader.readLine()) != null) {
                 text.append(line);
                 text.append("\n");
             }
@@ -83,5 +85,4 @@ public abstract class GeneralUtils {
         }
         return false;
     }
-
 }

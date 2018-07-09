@@ -10,11 +10,15 @@ public class RouteModelComparator implements Comparator<RouteDirectionModel> {
 
     @Override
     public int compare(RouteDirectionModel x, RouteDirectionModel y) {
-        if (x == y) return 0;
-        if (x == null)
+        if (x == y) {
+            return 0;
+        }
+        if (x == null) {
             return Integer.MIN_VALUE;
-        if (y == null)
+        }
+        if (y == null) {
             return Integer.MAX_VALUE;
+        }
 
         ShortRouteNameParts xPart = getParts(x);
         ShortRouteNameParts yPart = getParts(y);
@@ -31,9 +35,11 @@ public class RouteModelComparator implements Comparator<RouteDirectionModel> {
             numberStringBuilder.append(routeDirectionModel.getRouteShortName().charAt(i++));
         }
 
-        if (i > 0)
+        if (i > 0) {
             returnShortRouteNameParts.number = Double.parseDouble(numberStringBuilder.toString());
-        else returnShortRouteNameParts.number = Double.MAX_VALUE;
+        } else {
+            returnShortRouteNameParts.number = Double.MAX_VALUE;
+        }
 
         returnShortRouteNameParts.text = routeDirectionModel.getRouteShortName().substring(i);
 
@@ -46,8 +52,9 @@ public class RouteModelComparator implements Comparator<RouteDirectionModel> {
 
         @Override
         public int compareTo(@NonNull ShortRouteNameParts shortRouteNameParts) {
-            if (number != shortRouteNameParts.number)
+            if (number != shortRouteNameParts.number) {
                 return (int) (number - shortRouteNameParts.number);
+            }
 
             return text.compareTo(shortRouteNameParts.text);
         }

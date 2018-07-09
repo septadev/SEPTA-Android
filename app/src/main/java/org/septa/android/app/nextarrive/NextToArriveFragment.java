@@ -57,8 +57,8 @@ public class NextToArriveFragment extends Fragment {
         if (context == null) {
             return null;
         }
-        if (ContextCompat.checkSelfPermission(context,
-                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(context, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
         }
 
@@ -114,11 +114,13 @@ public class NextToArriveFragment extends Fragment {
         super.onViewStateRestored(savedInstanceState);
         if (savedInstanceState != null) {
             Parcelable parcelable = savedInstanceState.getParcelable(NTA_KEY_SECTIONS_PAGER_ADAPTER);
-            if (parcelable != null)
+            if (parcelable != null) {
                 mSectionsPagerAdapter.restoreState(parcelable, this.getClass().getClassLoader());
+            }
             String title = savedInstanceState.getString(NTA_ACTIVITY_TITLE);
-            if (title != null && getActivity() != null)
+            if (title != null && getActivity() != null) {
                 getActivity().setTitle(title);
+            }
         }
     }
 

@@ -34,12 +34,14 @@ public class ScheduleModel implements Comparable<ScheduleModel> {
     @Override
     public int compareTo(@NonNull ScheduleModel o) {
         int arrivalCompare = arrivalDate.compareTo(o.arrivalDate);
-        if (arrivalCompare != 0)
+        if (arrivalCompare != 0) {
             return arrivalCompare;
+        }
 
         int departureCompare = departureDate.compareTo(o.departureDate);
-        if (departureCompare != 0)
+        if (departureCompare != 0) {
             return departureCompare;
+        }
 
         return blockId.compareTo(o.blockId);
     }

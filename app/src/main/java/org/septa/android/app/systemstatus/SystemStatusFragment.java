@@ -29,9 +29,18 @@ public class SystemStatusFragment extends Fragment {
 
     public static final String TAG = SystemStatusFragment.class.getSimpleName();
 
+    private static final String SYSTEM_STATUS_SECTIONS_PAGER_ADAPTER_KEY = "SYSTEM_STATUS_SECTIONS_PAGER_ADAPTER_KEY",
+            SYSTEM_STATUS_TITLE = "SYSTEM_STATUS_TITLE";
+
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private TabLayout tabLayout;
     private TabActivityHandler tabActivityHandlers[];
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+    }
 
     @Override
     public void onResume() {
@@ -40,12 +49,6 @@ public class SystemStatusFragment extends Fragment {
         ((TextView) tabLayout.getTabAt(tabLayout.getSelectedTabPosition()).getCustomView())
                 .setCompoundDrawablesWithIntrinsicBounds(tabActivityHandlers[tabLayout.getSelectedTabPosition()]
                         .getActiveDrawableId(), 0, 0, 0);
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setRetainInstance(true);
     }
 
     @Nullable
@@ -104,20 +107,22 @@ public class SystemStatusFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable("org.septa.android.app.nextarrive.NextToArriveFragment.mSectionsPagerAdapter", mSectionsPagerAdapter.saveState());
-        outState.putString("title", getActivity().getTitle().toString());
+        outState.putParcelable(SYSTEM_STATUS_SECTIONS_PAGER_ADAPTER_KEY, mSectionsPagerAdapter.saveState());
+        outState.putString(SYSTEM_STATUS_TITLE, getActivity().getTitle().toString());
     }
 
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
         if (savedInstanceState != null) {
-            Parcelable parcelable = savedInstanceState.getParcelable("org.septa.android.app.nextarrive.NextToArriveFragment.mSectionsPagerAdapter");
-            if (parcelable != null)
+            Parcelable parcelable = savedInstanceState.getParcelable(SYSTEM_STATUS_SECTIONS_PAGER_ADAPTER_KEY);
+            if (parcelable != null) {
                 mSectionsPagerAdapter.restoreState(parcelable, this.getClass().getClassLoader());
-            String title = savedInstanceState.getString("title");
-            if (title != null && getActivity() != null)
+            }
+            String title = savedInstanceState.getString(SYSTEM_STATUS_TITLE);
+            if (title != null && getActivity() != null) {
                 getActivity().setTitle(title);
+            }
         }
     }
 

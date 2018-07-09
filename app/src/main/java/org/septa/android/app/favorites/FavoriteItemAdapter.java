@@ -176,8 +176,9 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<FavoriteItemAdapter.Favor
         progressView.setVisibility(View.VISIBLE);
 
         String routeId = null;
-        if (favorite.getRouteDirectionModel() != null)
+        if (favorite.getRouteDirectionModel() != null) {
             routeId = favorite.getRouteDirectionModel().getRouteId();
+        }
 
         Call<NextArrivalModelResponse> results = SeptaServiceFactory.getNextArrivalService().getNextArrival(Integer.parseInt(favorite.getStart().getStopId()),
                 Integer.parseInt(favorite.getDestination().getStopId()),

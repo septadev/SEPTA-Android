@@ -177,7 +177,7 @@ public class NextToArriveResultsActivity extends BaseActivity implements OnMapRe
             case R.id.create_favorite:
                 saveAsFavorite(item);
                 return true;
-            case R.id.refresh_nta_results:
+            case R.id.refresh_results:
                 refreshData();
                 return true;
             case R.id.edit_favorite:
@@ -225,8 +225,8 @@ public class NextToArriveResultsActivity extends BaseActivity implements OnMapRe
     public void onMapReady(final GoogleMap googleMap) {
         this.googleMap = googleMap;
         MapStyleOptions mapStyle = MapStyleOptions.loadRawResourceStyle(this, R.raw.maps_json_styling);
-
         googleMap.setMapStyle(mapStyle);
+        
         final View mapContainer = findViewById(R.id.map_container);
 
         // hide navigation options
@@ -290,7 +290,7 @@ public class NextToArriveResultsActivity extends BaseActivity implements OnMapRe
                     }
                 }
 
-                VehicleDetailsInfoWindowAdapter adapter = new VehicleDetailsInfoWindowAdapter(NextToArriveResultsActivity.this, transitType, startMarker, destMarker, details);
+                NTAVehicleDetailsInfoWindowAdapter adapter = new NTAVehicleDetailsInfoWindowAdapter(NextToArriveResultsActivity.this, transitType, startMarker, destMarker, details);
                 googleMap.setInfoWindowAdapter(adapter);
 
             }
@@ -323,13 +323,54 @@ public class NextToArriveResultsActivity extends BaseActivity implements OnMapRe
     }
 
     @Override
+    public void run() {
+        refreshData();
+    }
+
+    @Override
     public void updateFavorite(Favorite favorite) {
         currentFavorite = favorite;
         setTitle(currentFavorite.getName());
     }
 
     @Override
-    public void run() {
+    public void noReverseStopsFound() {
+        Snackbar snackbar = Snackbar.make(containerView, R.string.reverse_not_found, Snackbar.LENGTH_LONG);
+        View snackbarView = snackbar.getView();
+        android.widget.TextView tv = snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+        tv.setMaxLines(10);
+        snackbar.show();
+    }
+
+    @Override
+    public void reverseTrip(TransitType transitType, RouteDirectionModel newRouteDirectionModel, StopModel newStart, StopModel newDestination) {
+        this.transitType = transitType;
+        this.routeDirectionModel = newRouteDirectionModel;
+        this.start = newStart;
+        this.destination = newDestination;
+
+        // create bundle for reverse trip based on results
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(Constants.DESTINATION_STATION, destination);
+        bundle.putSerializable(Constants.STARTING_STATION, start);
+        bundle.putSerializable(Constants.TRANSIT_TYPE, transitType);
+        bundle.putSerializable(Constants.ROUTE_DIRECTION_MODEL, routeDirectionModel);
+
+        // check if reverse trip is a favorite
+        boolean isAlreadyAFavorite = false;
+        Favorite reverseFavoriteTemp = new Favorite(start, destination, transitType, routeDirectionModel);
+        if (SeptaServiceFactory.getFavoritesService().getFavoriteByKey(NextToArriveResultsActivity.this, reverseFavoriteTemp.getKey()) != null) {
+            isAlreadyAFavorite = true;
+            currentFavorite = reverseFavoriteTemp;
+        }
+        editFavoritesFlag = isAlreadyAFavorite;
+        bundle.putSerializable(Constants.EDIT_FAVORITES_FLAG, editFavoritesFlag);
+
+        // update menu dynamically
+        invalidateOptionsMenu();
+
+        // show the reverse trip results
+        initializeView(bundle);
         refreshData();
     }
 
@@ -767,47 +808,6 @@ public class NextToArriveResultsActivity extends BaseActivity implements OnMapRe
         // look up reverse stop IDs
         ReverseNTAStopSelection reverseTripAsyncTask = new ReverseNTAStopSelection(NextToArriveResultsActivity.this, transitType, routeDirectionModel, start, destination);
         reverseTripAsyncTask.execute();
-    }
-
-    @Override
-    public void noReverseStopsFound() {
-        Snackbar snackbar = Snackbar.make(containerView, R.string.reverse_not_found, Snackbar.LENGTH_LONG);
-        View snackbarView = snackbar.getView();
-        android.widget.TextView tv = snackbarView.findViewById(android.support.design.R.id.snackbar_text);
-        tv.setMaxLines(10);
-        snackbar.show();
-    }
-
-    @Override
-    public void reverseTrip(TransitType transitType, RouteDirectionModel newRouteDirectionModel, StopModel newStart, StopModel newDestination) {
-        this.transitType = transitType;
-        this.routeDirectionModel = newRouteDirectionModel;
-        this.start = newStart;
-        this.destination = newDestination;
-
-        // create bundle for reverse trip based on results
-        Bundle bundle = new Bundle();
-        bundle.putSerializable(Constants.DESTINATION_STATION, destination);
-        bundle.putSerializable(Constants.STARTING_STATION, start);
-        bundle.putSerializable(Constants.TRANSIT_TYPE, transitType);
-        bundle.putSerializable(Constants.ROUTE_DIRECTION_MODEL, routeDirectionModel);
-
-        // check if reverse trip is a favorite
-        boolean isAlreadyAFavorite = false;
-        Favorite reverseFavoriteTemp = new Favorite(start, destination, transitType, routeDirectionModel);
-        if (SeptaServiceFactory.getFavoritesService().getFavoriteByKey(NextToArriveResultsActivity.this, reverseFavoriteTemp.getKey()) != null) {
-            isAlreadyAFavorite = true;
-            currentFavorite = reverseFavoriteTemp;
-        }
-        editFavoritesFlag = isAlreadyAFavorite;
-        bundle.putSerializable(Constants.EDIT_FAVORITES_FLAG, editFavoritesFlag);
-
-        // update menu dynamically
-        invalidateOptionsMenu();
-
-        // show the reverse trip results
-        initializeView(bundle);
-        refreshData();
     }
 
     private void gotoSchedulesForTarget() {

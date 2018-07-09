@@ -159,8 +159,7 @@ public class LinePickerFragment extends DialogFragment {
 
         @NonNull
         @Override
-        public View getView(int position, @Nullable View convertView,
-                            @NonNull ViewGroup parent) {
+        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
             if (convertView == null) {
                 LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 convertView = inflater.inflate(R.layout.item_line_picker, null);
@@ -298,16 +297,18 @@ public class LinePickerFragment extends DialogFragment {
         protected List<RouteDirectionModel> doInBackground(Void... voids) {
 
             List<RouteDirectionModel> routes = new ArrayList<>();
-            if (fragment.getActivity() == null)
+            if (fragment.getActivity() == null) {
                 return routes;
+            }
             Cursor cursor = fragment.routeCursorAdapterSupplier.getCursor(fragment.getActivity(), null);
             if (cursor != null) {
                 if (cursor.moveToFirst()) {
 
                     do {
                         RouteDirectionModel route = fragment.routeCursorAdapterSupplier.getCurrentItemFromCursor(cursor);
-                        if (route != null)
+                        if (route != null) {
                             routes.add(fragment.routeCursorAdapterSupplier.getCurrentItemFromCursor(cursor));
+                        }
                     } while (cursor.moveToNext());
                 }
             }

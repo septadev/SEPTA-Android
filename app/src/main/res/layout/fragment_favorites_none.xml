@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/favorites_none_message"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/favorites_none_message"
     android:background="@drawable/full_page_gradient_background"
     android:orientation="vertical">
 
@@ -24,10 +24,11 @@
         android:layout_marginLeft="41dp"
         android:layout_marginRight="41dp"
         android:layout_marginTop="29dp"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:weightSum="5">
 
         <org.septa.android.app.view.TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:drawablePadding="4dp"
@@ -39,7 +40,7 @@
             app:typeface="@string/font_roboto_medium" />
 
         <org.septa.android.app.view.TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:drawablePadding="4dp"
@@ -51,7 +52,7 @@
             app:typeface="@string/font_roboto_medium" />
 
         <org.septa.android.app.view.TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:drawablePadding="4dp"
@@ -63,7 +64,7 @@
             app:typeface="@string/font_roboto_medium" />
 
         <org.septa.android.app.view.TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:drawablePadding="4dp"
@@ -75,7 +76,7 @@
             app:typeface="@string/font_roboto_medium" />
 
         <org.septa.android.app.view.TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:drawablePadding="4dp"
@@ -85,6 +86,7 @@
             android:textColor="@color/text_primary"
             android:textSize="12sp"
             app:typeface="@string/font_roboto_medium" />
+
     </LinearLayout>
 
     <org.septa.android.app.view.TextView

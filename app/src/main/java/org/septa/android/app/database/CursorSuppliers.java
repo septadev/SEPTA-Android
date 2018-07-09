@@ -262,7 +262,7 @@ abstract class CursorSuppliers implements Serializable {
         public Cursor getCursor(Context context, List<Criteria> whereClause) {
             StringBuilder queryString = new StringBuilder(SELECT_CLAUSE);
 
-            if (whereClause != null)
+            if (whereClause != null) {
                 for (Criteria c : whereClause) {
                     queryString.append(" AND ");
 
@@ -272,10 +272,13 @@ abstract class CursorSuppliers implements Serializable {
                         continue;
                     } else if ("route_id".equals(c.getFieldName()) || "direction_id".equals(c.getFieldName())) {
                         queryString.append("b.");
-                    } else queryString.append("a.");
+                    } else {
+                        queryString.append("a.");
+                    }
 
                     queryString.append(c.getFieldName()).append(c.getOperation()).append("'").append(c.getValue().toString()).append("'");
                 }
+            }
 
             queryString.append(" ORDER BY stop_name");
 
@@ -323,8 +326,9 @@ abstract class CursorSuppliers implements Serializable {
 
         @Override
         public Cursor getCursor(Context context, List<Criteria> whereClause) {
-            if (whereClause == null)
+            if (whereClause == null) {
                 throw new RuntimeException("Required where clause that includes after_stop_id, route_id and direction_id with Equals Operation");
+            }
 
             StringBuilder queryString = new StringBuilder(SELECT_CLAUSE);
             String afterStopId = null;
@@ -399,9 +403,11 @@ abstract class CursorSuppliers implements Serializable {
                 boolean first = true;
                 queryString.append(" WHERE ");
                 for (Criteria c : whereClause) {
-                    if (!first)
+                    if (!first) {
                         queryString.append(" AND ");
-                    else first = false;
+                    } else {
+                        first = false;
+                    }
                     if ("route_id".equals(c.getFieldName())) {
                         queryString.append("R.");
                     }
@@ -754,7 +760,7 @@ abstract class CursorSuppliers implements Serializable {
         public Cursor getCursor(Context context, List<Criteria> whereClause) {
             StringBuilder queryString = new StringBuilder(SELECT_CLAUSE);
 
-            if (whereClause != null)
+            if (whereClause != null) {
                 for (Criteria c : whereClause) {
                     queryString.append(" AND ");
 
@@ -764,10 +770,13 @@ abstract class CursorSuppliers implements Serializable {
                         continue;
                     } else if ("route_short_name".equals(c.getFieldName()) || "stop_id".equals(c.getFieldName())) {
                         queryString.append("RSS.");
-                    } else queryString.append("s.");
+                    } else {
+                        queryString.append("s.");
+                    }
 
                     queryString.append(c.getFieldName()).append(c.getOperation()).append("'").append(c.getValue().toString()).append("'");
                 }
+            }
 
             Log.d(TAG, "NonRailReverseAdapterSupplier Creating cursor:" + queryString.toString());
 
@@ -904,9 +913,11 @@ abstract class CursorSuppliers implements Serializable {
 
         @Override
         public Boolean getCurrentItemFromCursor(Cursor cursor) {
-            if (cursor.getInt(0) != 0)
+            if (cursor.getInt(0) != 0) {
                 return Boolean.FALSE;
-            else return Boolean.TRUE;
+            } else {
+                return Boolean.TRUE;
+            }
         }
 
         @Override
@@ -922,11 +933,14 @@ abstract class CursorSuppliers implements Serializable {
             Cursor cursor = getDatabase(context).rawQuery(queryString, null);
 
             if (cursor.moveToFirst()) {
-                if (cursor.getInt(0) == 0)
+                if (cursor.getInt(0) == 0) {
                     return Boolean.FALSE;
-                else return Boolean.TRUE;
-            } else
+                } else {
+                    return Boolean.TRUE;
+                }
+            } else {
                 return Boolean.FALSE;
+            }
         }
     }
 }

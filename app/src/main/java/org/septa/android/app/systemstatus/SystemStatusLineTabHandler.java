@@ -64,19 +64,19 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
 
     public static class SystemStatusPickerFragment extends Fragment implements LinePickerCallBack {
         private static final int LINE_PICKER_ID = 1;
-        TransitType transitType;
-        CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier;
+        private TransitType transitType;
+        private CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier;
 
         private static final String GLOBAL_ALERT_ROUTE_ID = "generic", MOBILE_ALERT_ROUTE_ID = "APP";
 
-        TextView globalAlertTitle, mobileAlertTitle;
-        View globalAlertScrollview, mobileAlertScrollview;
-        View globalAlertView, mobileAlertView;
-        View queryButton;
-        TextView lineText;
-        boolean globalAlertsExpanded = false, mobileAlertsExpanded = false;
-        RouteDirectionModel routeDirectionModel;
-        org.septa.android.app.view.TextView globalAlertText, mobileAlertText;
+        private TextView globalAlertTitle, mobileAlertTitle;
+        private View globalAlertScrollview, mobileAlertScrollview;
+        private View globalAlertView, mobileAlertView;
+        private View queryButton;
+        private TextView lineText;
+        private boolean globalAlertsExpanded = false, mobileAlertsExpanded = false;
+        private RouteDirectionModel routeDirectionModel;
+        private org.septa.android.app.view.TextView globalAlertText, mobileAlertText;
 
         public static SystemStatusPickerFragment newInstance(TransitType transitType, CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier) {
             SystemStatusPickerFragment fragment = new SystemStatusPickerFragment();

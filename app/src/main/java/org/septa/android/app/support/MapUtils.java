@@ -110,10 +110,12 @@ public abstract class MapUtils {
         } catch (TransformerException e) {
             Log.e(TAG, e.toString());
         } finally {
-            if (raw != null) try {
-                raw.close();
-            } catch (IOException e) {
-                Log.e(TAG, e.toString());
+            if (raw != null) {
+                try {
+                    raw.close();
+                } catch (IOException e) {
+                    Log.e(TAG, e.toString());
+                }
             }
         }
         return null;

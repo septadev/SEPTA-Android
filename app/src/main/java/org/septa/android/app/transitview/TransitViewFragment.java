@@ -1,6 +1,8 @@
 package org.septa.android.app.transitview;
 
 import android.Manifest;
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
@@ -21,17 +23,16 @@ import org.septa.android.app.TransitType;
 import org.septa.android.app.database.DatabaseManager;
 import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.support.CursorAdapterSupplier;
-import org.septa.android.app.support.RouteModelComparator;
 import org.septa.android.app.view.TextView;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import static org.septa.android.app.transitview.TransitViewUtils.isTrolley;
 
 public class TransitViewFragment extends Fragment implements TransitViewLinePickerFragment.TransitViewLinePickerListener {
 
     private static final String TAG = TransitViewFragment.class.getSimpleName();
+
+    private Activity activity;
+    private TransitViewFragmentListener mListener;
 
     private RouteDirectionModel firstRoute, secondRoute, thirdRoute;
     private CursorAdapterSupplier<RouteDirectionModel> busRouteCursorAdapterSupplier, trolleyRouteCursorAdapterSupplier;
@@ -54,15 +55,16 @@ public class TransitViewFragment extends Fragment implements TransitViewLinePick
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
-        if (getActivity() == null) {
+        activity = getActivity();
+        if (activity == null) {
             return null;
         }
 
-        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
+        if (ContextCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
         }
 
-        DatabaseManager dbManager = DatabaseManager.getInstance(getActivity());
+        DatabaseManager dbManager = DatabaseManager.getInstance(activity);
         busRouteCursorAdapterSupplier = dbManager.getBusNoDirectionRouteCursorAdapterSupplier();
         trolleyRouteCursorAdapterSupplier = dbManager.getTrolleyNoDirectionRouteCursorAdapterSupplier();
 
@@ -161,11 +163,23 @@ public class TransitViewFragment extends Fragment implements TransitViewLinePick
         queryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                goToTransitViewResults();
+                mListener.goToTransitViewResults(firstRoute, secondRoute, thirdRoute);
             }
         });
 
         return rootView;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        if (!(context instanceof TransitViewFragmentListener)) {
+            throw new RuntimeException("Context must implement FavoritesFragmentListener");
+        } else {
+            mListener = (TransitViewFragmentListener) context;
+        }
+
     }
 
     @Override
@@ -175,13 +189,13 @@ public class TransitViewFragment extends Fragment implements TransitViewLinePick
         if (resultCode == TransitViewLinePickerFragment.SUCCESS) {
             switch (requestCode) {
                 case 1:
-                    selectFirstRoute((RouteDirectionModel) data.getSerializableExtra(TransitViewLinePickerFragment.ROUTE_DIRECTION_MODEL));
+                    addFirstRoute((RouteDirectionModel) data.getSerializableExtra(TransitViewLinePickerFragment.ROUTE_DIRECTION_MODEL));
                     break;
                 case 2:
-                    selectSecondRoute((RouteDirectionModel) data.getSerializableExtra(TransitViewLinePickerFragment.ROUTE_DIRECTION_MODEL));
+                    addSecondRoute((RouteDirectionModel) data.getSerializableExtra(TransitViewLinePickerFragment.ROUTE_DIRECTION_MODEL));
                     break;
                 case 3:
-                    selectThirdRoute((RouteDirectionModel) data.getSerializableExtra(TransitViewLinePickerFragment.ROUTE_DIRECTION_MODEL));
+                    addThirdRoute((RouteDirectionModel) data.getSerializableExtra(TransitViewLinePickerFragment.ROUTE_DIRECTION_MODEL));
                     break;
                 default:
                     Log.e(TAG, "Invalid request code returned from TransitViewLinePicker");
@@ -194,59 +208,45 @@ public class TransitViewFragment extends Fragment implements TransitViewLinePick
     }
 
     @Override
-    public void selectFirstRoute(RouteDirectionModel route) {
+    public void addFirstRoute(RouteDirectionModel route) {
         this.firstRoute = route;
         firstRoutePicker.setText(firstRoute.getRouteLongName());
-
-        TransitType transitType = TransitType.BUS;
-        if (isTrolley(firstRoute.getRouteId())) {
-            transitType = TransitType.TROLLEY;
-        }
-
-        // add color bullet icon beside route name
-        int color = ContextCompat.getColor(getContext(), transitType.getLineColor(firstRoute.getRouteId(), getContext()));
-        Drawable bullet = ContextCompat.getDrawable(getContext(), R.drawable.shape_line_marker);
-        bullet.setColorFilter(color, PorterDuff.Mode.SRC);
-        firstRoutePicker.setCompoundDrawablesWithIntrinsicBounds(bullet, null, ContextCompat.getDrawable(getContext(), R.drawable.ic_line_picker), null);
+        addColorBulletBesideRoute(firstRoute, firstRoutePicker);
 
         activateView(secondRoutePicker);
         activateView(queryButton);
     }
 
     @Override
-    public void selectSecondRoute(RouteDirectionModel route) {
+    public void addSecondRoute(RouteDirectionModel route) {
         this.secondRoute = route;
         secondRoutePicker.setText(secondRoute.getRouteLongName());
-
-        TransitType transitType = TransitType.BUS;
-        if (isTrolley(secondRoute.getRouteId())) {
-            transitType = TransitType.TROLLEY;
-        }
-
-        // add color bullet icon beside route name
-        int color = ContextCompat.getColor(getContext(), transitType.getLineColor(secondRoute.getRouteId(), getContext()));
-        Drawable bullet = ContextCompat.getDrawable(getContext(), R.drawable.shape_line_marker);
-        bullet.setColorFilter(color, PorterDuff.Mode.SRC);
-        secondRoutePicker.setCompoundDrawablesWithIntrinsicBounds(bullet, null, ContextCompat.getDrawable(getContext(), R.drawable.ic_line_picker), null);
+        addColorBulletBesideRoute(secondRoute, secondRoutePicker);
 
         activateView(thirdRoutePicker);
     }
 
     @Override
-    public void selectThirdRoute(RouteDirectionModel route) {
+    public void addThirdRoute(RouteDirectionModel route) {
         this.thirdRoute = route;
         thirdRoutePicker.setText(thirdRoute.getRouteLongName());
+        addColorBulletBesideRoute(thirdRoute, thirdRoutePicker);
+    }
 
-        TransitType transitType = TransitType.BUS;
-        if (isTrolley(thirdRoute.getRouteId())) {
-            transitType = TransitType.TROLLEY;
+    private void addColorBulletBesideRoute(RouteDirectionModel route, TextView routePicker) {
+        Context context = getContext();
+        if (context != null) {
+            TransitType transitType = TransitType.BUS;
+            if (isTrolley(context, route.getRouteId())) {
+                transitType = TransitType.TROLLEY;
+            }
+
+            // add color bullet icon beside route name
+            int color = ContextCompat.getColor(context, transitType.getLineColor(route.getRouteId(), context));
+            Drawable bullet = ContextCompat.getDrawable(context, R.drawable.shape_line_marker);
+            bullet.setColorFilter(color, PorterDuff.Mode.SRC);
+            routePicker.setCompoundDrawablesWithIntrinsicBounds(bullet, null, ContextCompat.getDrawable(context, R.drawable.ic_line_picker), null);
         }
-
-        // add color bullet icon beside route name
-        int color = ContextCompat.getColor(getContext(), transitType.getLineColor(thirdRoute.getRouteId(), getContext()));
-        Drawable bullet = ContextCompat.getDrawable(getContext(), R.drawable.shape_line_marker);
-        bullet.setColorFilter(color, PorterDuff.Mode.SRC);
-        thirdRoutePicker.setCompoundDrawablesWithIntrinsicBounds(bullet, null, ContextCompat.getDrawable(getContext(), R.drawable.ic_line_picker), null);
     }
 
     private void disableView(View view) {
@@ -259,32 +259,8 @@ public class TransitViewFragment extends Fragment implements TransitViewLinePick
         view.setClickable(true);
     }
 
-    private boolean isTrolley(String routeId) {
-        String[] trolleyRouteIds = new String[]{"10", "11", "13", "15", "34", "36", "101", "102"};
-        return Arrays.asList(trolleyRouteIds).contains(routeId);
-    }
-
-    private void goToTransitViewResults() {
-        Intent intent = new Intent(getActivity(), TransitViewResultsActivity.class);
-
-        // sort the routes and append null routes to the end
-        List<RouteDirectionModel> selectedRoutes = new ArrayList<>();
-        selectedRoutes.add(firstRoute);
-        if (secondRoute != null) {
-            selectedRoutes.add(secondRoute);
-        }
-        if (thirdRoute != null) {
-            selectedRoutes.add(thirdRoute);
-        }
-        Collections.sort(selectedRoutes, new RouteModelComparator());
-        while (selectedRoutes.size() < 3) {
-            selectedRoutes.add(null);
-        }
-
-        intent.putExtra(TRANSITVIEW_ROUTE_FIRST, selectedRoutes.get(0));
-        intent.putExtra(TRANSITVIEW_ROUTE_SECOND, selectedRoutes.get(1));
-        intent.putExtra(TRANSITVIEW_ROUTE_THIRD, selectedRoutes.get(2));
-        startActivity(intent);
+    public interface TransitViewFragmentListener {
+        void goToTransitViewResults(RouteDirectionModel firstRoute, RouteDirectionModel secondRoute, RouteDirectionModel thirdRoute);
     }
 
 }

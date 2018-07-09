@@ -50,12 +50,11 @@ import org.septa.android.app.database.DatabaseManager;
 import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.favorites.DeleteFavoritesAsyncTask;
-import org.septa.android.app.favorites.SaveFavoritesAsyncTask;
-import org.septa.android.app.favorites.edit.RenameFavoriteCallBack;
 import org.septa.android.app.favorites.edit.RenameFavoriteDialogFragment;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Favorite;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalDetails;
+import org.septa.android.app.services.apiinterfaces.model.NextArrivalFavorite;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalModelResponse;
 import org.septa.android.app.support.Consumer;
 import org.septa.android.app.support.CrashlyticsManager;
@@ -76,12 +75,13 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class NextToArriveResultsActivity extends BaseActivity implements OnMapReadyCallback, RenameFavoriteCallBack, Runnable, ReverseNTAStopSelection.ReverseNTAStopSelectionListener {
+import static org.septa.android.app.favorites.edit.RenameFavoriteDialogFragment.EDIT_FAVORITE_DIALOG_KEY;
+
+public class NextToArriveResultsActivity extends BaseActivity implements OnMapReadyCallback, RenameFavoriteDialogFragment.RenameFavoriteListener, Runnable, ReverseNTAStopSelection.ReverseNTAStopSelectionListener {
     public static final String TAG = NextToArriveResultsActivity.class.getSimpleName();
     public static final int REFRESH_DELAY_SECONDS = 30,
             NTA_RESULTS_FOR_NEXT_HOURS = 5;
-    private static final String EDIT_FAVORITE_DIALOG_KEY = "EDIT_FAVORITE_DIALOG_KEY",
-            NTA_RESULTS_TITLE = "nta_results_title",
+    private static final String NTA_RESULTS_TITLE = "nta_results_title",
             NEED_TO_SEE = "need_to_see";
     private StopModel start;
     private StopModel destination;
@@ -99,7 +99,7 @@ public class NextToArriveResultsActivity extends BaseActivity implements OnMapRe
     private View reverseTrip;
     private View progressView;
     private View progressViewBottom;
-    private Favorite currentFavorite = null;
+    private NextArrivalFavorite currentFavorite = null;
     private NextToArriveTripView nextToArriveDetailsView;
     private boolean editFavoritesFlag = false;
     private MarkerOptions startMarker;
@@ -226,7 +226,7 @@ public class NextToArriveResultsActivity extends BaseActivity implements OnMapRe
         this.googleMap = googleMap;
         MapStyleOptions mapStyle = MapStyleOptions.loadRawResourceStyle(this, R.raw.maps_json_styling);
         googleMap.setMapStyle(mapStyle);
-        
+
         final View mapContainer = findViewById(R.id.map_container);
 
         // hide navigation options
@@ -328,9 +328,28 @@ public class NextToArriveResultsActivity extends BaseActivity implements OnMapRe
     }
 
     @Override
-    public void updateFavorite(Favorite favorite) {
-        currentFavorite = favorite;
-        setTitle(currentFavorite.getName());
+    public void updateFavorite(final Favorite favorite) {
+        if (favorite instanceof NextArrivalFavorite) {
+            currentFavorite = (NextArrivalFavorite) favorite;
+            renameFavorite(currentFavorite);
+
+            Snackbar snackbar = Snackbar.make(containerView, R.string.create_fav_snackbar_text, Snackbar.LENGTH_LONG);
+            snackbar.show();
+        } else {
+            Log.e(TAG, "Attempted to save invalid Favorite type");
+        }
+    }
+
+    @Override
+    public void renameFavorite(Favorite favorite) {
+        setTitle(favorite.getName());
+        invalidateOptionsMenu();
+    }
+
+    @Override
+    public void favoriteCreationFailed() {
+        Snackbar snackbar = Snackbar.make(containerView, R.string.create_fav_snackbar_failed, Snackbar.LENGTH_LONG);
+        snackbar.show();
     }
 
     @Override
@@ -358,10 +377,10 @@ public class NextToArriveResultsActivity extends BaseActivity implements OnMapRe
 
         // check if reverse trip is a favorite
         boolean isAlreadyAFavorite = false;
-        Favorite reverseFavoriteTemp = new Favorite(start, destination, transitType, routeDirectionModel);
-        if (SeptaServiceFactory.getFavoritesService().getFavoriteByKey(NextToArriveResultsActivity.this, reverseFavoriteTemp.getKey()) != null) {
+        NextArrivalFavorite reverseNextArrivalFavoriteTemp = new NextArrivalFavorite(start, destination, transitType, routeDirectionModel);
+        if (SeptaServiceFactory.getFavoritesService().getFavoriteByKey(NextToArriveResultsActivity.this, reverseNextArrivalFavoriteTemp.getKey()) != null) {
             isAlreadyAFavorite = true;
-            currentFavorite = reverseFavoriteTemp;
+            currentFavorite = reverseNextArrivalFavoriteTemp;
         }
         editFavoritesFlag = isAlreadyAFavorite;
         bundle.putSerializable(Constants.EDIT_FAVORITES_FLAG, editFavoritesFlag);
@@ -446,9 +465,10 @@ public class NextToArriveResultsActivity extends BaseActivity implements OnMapRe
             nextToArriveDetailsView.setDestination(destination);
             nextToArriveDetailsView.setRouteDirectionModel(routeDirectionModel);
 
+            String favKey = NextArrivalFavorite.generateKey(start, destination, transitType, routeDirectionModel);
 
-            String favKey = Favorite.generateKey(start, destination, transitType, routeDirectionModel);
-            currentFavorite = SeptaServiceFactory.getFavoritesService().getFavoriteByKey(this, favKey);
+            // currentFavorite can be null if the current selection is not a favorite
+            currentFavorite = (NextArrivalFavorite) SeptaServiceFactory.getFavoritesService().getFavoriteByKey(this, favKey);
 
             findViewById(R.id.view_sched_view).setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -459,7 +479,7 @@ public class NextToArriveResultsActivity extends BaseActivity implements OnMapRe
 
             refreshHandler = new Handler();
 
-            (findViewById(R.id.header)).getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            (findViewById(R.id.route_cards)).getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
                 public void onGlobalLayout() {
                     startingStationNameText.setRight(reverseTrip.getLeft());
@@ -740,26 +760,14 @@ public class NextToArriveResultsActivity extends BaseActivity implements OnMapRe
 
         if (start != null && destination != null && transitType != null) {
             if (currentFavorite == null) {
-                final Favorite favorite = new Favorite(start, destination, transitType, routeDirectionModel);
-                SaveFavoritesAsyncTask task = new SaveFavoritesAsyncTask(this, new Runnable() {
-                    @Override
-                    public void run() {
-                        item.setEnabled(true);
-                    }
-                }, new Runnable() {
-                    @Override
-                    public void run() {
-                        item.setEnabled(true);
-                        item.setIcon(R.drawable.ic_favorite_made);
-                        currentFavorite = favorite;
-                    }
-                });
+                // prompt to save favorite
+                final NextArrivalFavorite nextArrivalFavorite = new NextArrivalFavorite(start, destination, transitType, routeDirectionModel);
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                CrashlyticsManager.log(Log.INFO, TAG, "Creating initial RenameFavoriteDialogFragment for:" + nextArrivalFavorite.toString());
+                RenameFavoriteDialogFragment fragment = RenameFavoriteDialogFragment.newInstance(false, false, nextArrivalFavorite);
+                fragment.show(ft, EDIT_FAVORITE_DIALOG_KEY);
 
-                task.execute(favorite);
-                Snackbar snackbar = Snackbar
-                        .make(findViewById(R.id.rail_next_to_arrive_results_coordinator), R.string.create_fav_snackbar_text, Snackbar.LENGTH_LONG);
-
-                snackbar.show();
+                item.setEnabled(true);
             } else {
                 new AlertDialog.Builder(this).setCancelable(true).setTitle(R.string.delete_fav_modal_title)
                         .setMessage(R.string.delete_fav_modal_text)
@@ -796,11 +804,9 @@ public class NextToArriveResultsActivity extends BaseActivity implements OnMapRe
     }
 
     public void editFavorite(final MenuItem item) {
-        Log.d(TAG, "edit Favorite.");
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         CrashlyticsManager.log(Log.INFO, TAG, "Creating RenameFavoriteDialogFragment for:" + currentFavorite.toString());
-        RenameFavoriteDialogFragment fragment = RenameFavoriteDialogFragment.getInstance(currentFavorite);
-
+        RenameFavoriteDialogFragment fragment = RenameFavoriteDialogFragment.newInstance(false, true, currentFavorite);
         fragment.show(ft, EDIT_FAVORITE_DIALOG_KEY);
     }
 

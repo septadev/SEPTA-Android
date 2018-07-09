@@ -16,15 +16,15 @@ import java.util.Map;
 public enum TransitType implements Serializable {
 
     @SerializedName("RAIL")
-    RAIL(R.drawable.pin_rail, R.drawable.ic_rail, R.drawable.rail_active_final, new RailColorProvider(), new IdLineIconProvider(R.drawable.ic_line_air), new RailAlertIdGenerator()),
+    RAIL(R.drawable.pin_rail, R.drawable.ic_rail, R.drawable.ic_rail_circle, new RailColorProvider(), new IdLineIconProvider(R.drawable.ic_line_air), new RailAlertIdGenerator()),
     @SerializedName("BUS")
-    BUS(R.drawable.pin_bus, R.drawable.ic_bus, R.drawable.bus_active_final, new BasicColorProvider(R.color.line_color_bus), new BasicLineIconProvider(R.drawable.ic_line_bus), new SimpleAlertIdGenerator("bus_route")),
+    BUS(R.drawable.pin_bus, R.drawable.ic_bus, R.drawable.ic_bus_circle, new BasicColorProvider(R.color.line_color_bus), new BasicLineIconProvider(R.drawable.ic_line_bus), new SimpleAlertIdGenerator("bus_route")),
     @SerializedName("TROLLEY")
-    TROLLEY(R.drawable.pin_trolley, R.drawable.ic_trolley, R.drawable.trolley_active_final, new BasicColorProvider(R.color.line_color_trolley), new BasicLineIconProvider(R.drawable.ic_line_trolley), new SimpleAlertIdGenerator("trolley_route")),
+    TROLLEY(R.drawable.pin_trolley, R.drawable.ic_trolley, R.drawable.ic_trolley_circle, new BasicColorProvider(R.color.line_color_trolley), new BasicLineIconProvider(R.drawable.ic_line_trolley), new SimpleAlertIdGenerator("trolley_route")),
     @SerializedName("SUBWAY")
-    SUBWAY(R.drawable.pin_subway, R.drawable.ic_subway, R.drawable.subway_active_final, new RailColorProvider(), new IdLineIconProvider(R.drawable.ic_line_nightowl), new SimpleAlertIdGenerator("rr_route")),
+    SUBWAY(R.drawable.pin_subway, R.drawable.ic_subway, R.drawable.ic_subway_circle, new RailColorProvider(), new IdLineIconProvider(R.drawable.ic_line_nightowl), new SimpleAlertIdGenerator("rr_route")),
     @SerializedName("NHSL")
-    NHSL(R.drawable.pin_nhsl, R.drawable.ic_nhsl, R.drawable.nhsl_active_final, new BasicColorProvider(R.color.line_color_nhsl), new BasicLineIconProvider(R.drawable.ic_line_nhsl), new SimpleAlertIdGenerator("rr_route"));
+    NHSL(R.drawable.pin_nhsl, R.drawable.ic_nhsl, R.drawable.ic_nhsl_circle, new BasicColorProvider(R.color.line_color_nhsl), new BasicLineIconProvider(R.drawable.ic_line_nhsl), new SimpleAlertIdGenerator("rr_route"));
 
     private static final String TAG = TransitType.class.getSimpleName();
     private static final String PREFIX_RR_ROUTE = "rr_route";

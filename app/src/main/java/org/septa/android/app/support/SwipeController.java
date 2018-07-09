@@ -53,7 +53,7 @@ public class SwipeController extends ItemTouchHelper.Callback {
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
         int position = viewHolder.getAdapterPosition();
         if (direction == LEFT) {
-            mListener.deleteFavorite(position);
+            mListener.promptToDeleteFavorite(position);
         } else if (direction == RIGHT) {
             mListener.revertSwipe(position);
         }
@@ -188,7 +188,7 @@ public class SwipeController extends ItemTouchHelper.Callback {
                     // ask to delete favorite when item dropped
                     if (mListener != null && buttonInstance != null && buttonInstance.contains(event.getX(), event.getY())) {
                         if (buttonShowedState == ButtonsState.RIGHT_VISIBLE) {
-                            mListener.deleteFavorite(viewHolder.getAdapterPosition());
+                            mListener.promptToDeleteFavorite(viewHolder.getAdapterPosition());
                         }
                     }
                     // hide buttons
@@ -211,7 +211,7 @@ public class SwipeController extends ItemTouchHelper.Callback {
     }
 
     public interface SwipeControllerListener {
-        void deleteFavorite(int favoriteIndex);
+        void promptToDeleteFavorite(int favoriteIndex);
         void revertSwipe(int index);
     }
 }

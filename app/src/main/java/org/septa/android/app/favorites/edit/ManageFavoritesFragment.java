@@ -26,8 +26,8 @@ import org.septa.android.app.R;
 import org.septa.android.app.draggable.DragItem;
 import org.septa.android.app.draggable.DragListView;
 import org.septa.android.app.favorites.DeleteFavoritesAsyncTask;
+import org.septa.android.app.favorites.FavoriteState;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
-import org.septa.android.app.services.apiinterfaces.model.Favorite;
 import org.septa.android.app.support.SwipeController;
 
 import java.util.List;
@@ -35,11 +35,10 @@ import java.util.List;
 public class ManageFavoritesFragment extends Fragment implements DraggableFavoriteItemAdapter.DraggableFavoriteItemListener, SwipeController.SwipeControllerListener {
 
     private static final String TAG = ManageFavoritesFragment.class.getSimpleName();
-    private static final String KEY_FAVORITE = "KEY_FAVORITE";
 
     // favorites management
     private DragListView favoritesListView;
-    private List<Favorite> favoriteList;
+    private List<FavoriteState> favoriteStateList;
     private ManageFavoritesFragmentListener mListener;
     private DraggableFavoriteItemAdapter favoriteItemAdapter;
     private ItemTouchHelper itemTouchHelper;
@@ -47,17 +46,14 @@ public class ManageFavoritesFragment extends Fragment implements DraggableFavori
     int initialCount;
     View fragmentView;
 
-    public static ManageFavoritesFragment newInstance(List<Favorite> favoriteList) {
-        ManageFavoritesFragment instance = new ManageFavoritesFragment();
-        instance.favoriteList = favoriteList;
-        return instance;
-    }
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        initialCount = favoriteList.size();
+
+        favoriteStateList = SeptaServiceFactory.getFavoritesService().getFavoriteStates(getContext());
+
+        initialCount = favoriteStateList.size();
 
         setHasOptionsMenu(true);
         fragmentView = inflater.inflate(R.layout.fragment_favorites_manage, container, false);
@@ -142,8 +138,8 @@ public class ManageFavoritesFragment extends Fragment implements DraggableFavori
     }
 
     @Override
-    public void deleteFavorite(final int favoriteIndex) {
-        final String favoriteKey = favoriteList.get(favoriteIndex).getKey();
+    public void promptToDeleteFavorite(final int favoriteIndex) {
+        final String favoriteKey = favoriteStateList.get(favoriteIndex).getFavoriteKey();
 
         new AlertDialog.Builder(getContext()).setCancelable(true).setTitle(R.string.delete_fav_modal_title)
                 .setMessage(R.string.delete_fav_modal_text)
@@ -158,13 +154,13 @@ public class ManageFavoritesFragment extends Fragment implements DraggableFavori
                                 // on unsuccessful deletion
                                 dialog.dismiss();
                                 revertSwipe(favoriteIndex);
-                                Log.e(TAG, "Favorite with key " + favoriteKey + " could not be deleted at this time");
+                                Log.e(TAG, "NextArrivalFavorite with key " + favoriteKey + " could not be deleted at this time");
                             }
                         }, new Runnable() {
                             @Override
                             public void run() {
                                 // on successful deletion
-                                favoriteList.remove(favoriteIndex);
+                                favoriteStateList.remove(favoriteIndex);
                                 favoriteItemAdapter.notifyItemRemoved(favoriteIndex);
                                 favoriteItemAdapter.notifyDataSetChanged();
 
@@ -173,7 +169,7 @@ public class ManageFavoritesFragment extends Fragment implements DraggableFavori
                                 itemTouchHelper.attachToRecyclerView(favoritesListView.getRecyclerView());
 
                                 // close edit mode if no favorites left
-                                if (favoriteList.isEmpty()) {
+                                if (favoriteStateList.isEmpty()) {
                                     mListener.toggleEditFavoritesMode(true);
                                 }
                             }
@@ -204,12 +200,12 @@ public class ManageFavoritesFragment extends Fragment implements DraggableFavori
     private void setupListRecyclerView() {
         favoritesListView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        favoriteItemAdapter = new DraggableFavoriteItemAdapter(getContext(), favoriteList, R.layout.item_favorite_draggable, R.id.favorite_item_drag_handle, false, this);
+        favoriteItemAdapter = new DraggableFavoriteItemAdapter(getContext(), favoriteStateList, R.layout.item_favorite_draggable, R.id.favorite_item_drag_handle, false, this);
         favoritesListView.setAdapter(favoriteItemAdapter, true);
         favoritesListView.setCanDragHorizontally(false);
         favoritesListView.setCustomDragItem(new FavoriteDragItem(getContext(), R.layout.item_favorite_draggable));
 
-        favoriteItemAdapter.updateList(favoriteList);
+        favoriteItemAdapter.updateList(favoriteStateList);
     }
 
     private void reorderFavorite(int fromPosition, int toPosition) {

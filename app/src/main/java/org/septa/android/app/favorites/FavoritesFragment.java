@@ -32,10 +32,10 @@ import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.nextarrive.NextToArriveResultsActivity;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
-import org.septa.android.app.services.apiinterfaces.model.Favorite;
+import org.septa.android.app.services.apiinterfaces.model.NextArrivalFavorite;
+import org.septa.android.app.services.apiinterfaces.model.TransitViewFavorite;
 import org.septa.android.app.support.SwipeController;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -53,7 +53,8 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
     // favorites management
     private RecyclerView favoritesListView;
     private List<FavoriteState> favoriteStateList;
-    private Map<String, Favorite> favoritesMap;
+    private Map<String, NextArrivalFavorite> ntaFavoritesMap;
+    private Map<String, TransitViewFavorite> transitViewFavoritesMap;
     private FavoritesFragmentListener mListener;
     private FavoriteItemAdapter favoriteItemAdapter;
     private FavoritesSwipeRefreshLayout mRefreshLayout;
@@ -69,28 +70,26 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
     private View noFavoritesMessage;
     private boolean isSnackbarShowing = false;
 
-    public static FavoritesFragment newInstance() {
-        FavoritesFragment instance = new FavoritesFragment();
-        return instance;
-    }
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
-        favoriteStateList = SeptaServiceFactory.getFavoritesService().getFavoriteStates(getContext());
-        favoritesMap = SeptaServiceFactory.getFavoritesService().getFavorites(getContext());
-        alertMessage = evaluateAndRemoveFavorites(favoritesMap);
+        SeptaServiceFactory.getFavoritesService().resyncFavoritesMap(getContext());
 
-        initialCount = favoritesMap.size();
+        favoriteStateList = SeptaServiceFactory.getFavoritesService().getFavoriteStates(getContext());
+        ntaFavoritesMap = SeptaServiceFactory.getFavoritesService().getNTAFavorites(getContext());
+        transitViewFavoritesMap = SeptaServiceFactory.getFavoritesService().getTransitViewFavorites(getContext());
+        alertMessage = evaluateAndRemoveFavorites(ntaFavoritesMap);
+
+        initialCount = favoriteStateList.size();
 
         fragmentView = inflater.inflate(R.layout.fragment_favorites, container, false);
         noFavoritesMessage = fragmentView.findViewById(R.id.favorites_none_message);
         mRefreshLayout = fragmentView.findViewById(R.id.favorites_swipe_refresh_layout);
         favoritesListView = fragmentView.findViewById(R.id.favorites_list);
 
-        if (favoritesMap.isEmpty()) {
+        if (favoriteStateList.isEmpty()) {
             // user has no favorites
             showNoFavoritesMessage();
         } else {
@@ -106,13 +105,14 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
 
         refreshHandler = new Handler();
         if (!firstPass) {
-            favoritesMap = SeptaServiceFactory.getFavoritesService().getFavorites(getContext());
-            if (initialCount != favoritesMap.size()) {
+            ntaFavoritesMap = SeptaServiceFactory.getFavoritesService().getNTAFavorites(getContext());
+            transitViewFavoritesMap = SeptaServiceFactory.getFavoritesService().getTransitViewFavorites(getContext());
+            if (initialCount != favoriteStateList.size()) {
                 mListener.refreshFavoritesInstance();
                 return;
             }
 
-            if (!favoritesMap.isEmpty()) {
+            if (!favoriteStateList.isEmpty()) {
                 run();
             }
 
@@ -158,7 +158,7 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString(KEY_TITLE, getActivity().getTitle().toString());
     }
@@ -199,7 +199,7 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
 
         } else if (item.getItemId() == R.id.edit_favorites) {
             // do not open edit mode if user has no favorites
-            if (favoritesMap == null || favoritesMap.isEmpty()) {
+            if (favoriteStateList.isEmpty()) {
                 Snackbar snackbar = Snackbar.make(fragmentView, R.string.no_favorites_to_edit, Snackbar.LENGTH_SHORT);
                 snackbar.show();
 
@@ -256,27 +256,32 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
     }
 
     @Override
-    public void goToSchedulesForTarget(Favorite favorite) {
-        mListener.goToSchedulesForTarget(favorite.getStart(), favorite.getDestination(), favorite.getTransitType(), favorite.getRouteDirectionModel());
+    public void goToSchedulesForTarget(NextArrivalFavorite nextArrivalFavorite) {
+        mListener.goToSchedulesForTarget(nextArrivalFavorite.getStart(), nextArrivalFavorite.getDestination(), nextArrivalFavorite.getTransitType(), nextArrivalFavorite.getRouteDirectionModel());
     }
 
     @Override
-    public void goToNextToArrive(Favorite favorite) {
+    public void goToNextToArrive(NextArrivalFavorite nextArrivalFavorite) {
         if (getActivity() == null) {
             return;
         }
         Intent intent = new Intent(getActivity(), NextToArriveResultsActivity.class);
-        intent.putExtra(Constants.STARTING_STATION, favorite.getStart());
-        intent.putExtra(Constants.DESTINATION_STATION, favorite.getDestination());
-        intent.putExtra(Constants.TRANSIT_TYPE, favorite.getTransitType());
-        intent.putExtra(Constants.ROUTE_DIRECTION_MODEL, favorite.getRouteDirectionModel());
+        intent.putExtra(Constants.STARTING_STATION, nextArrivalFavorite.getStart());
+        intent.putExtra(Constants.DESTINATION_STATION, nextArrivalFavorite.getDestination());
+        intent.putExtra(Constants.TRANSIT_TYPE, nextArrivalFavorite.getTransitType());
+        intent.putExtra(Constants.ROUTE_DIRECTION_MODEL, nextArrivalFavorite.getRouteDirectionModel());
         intent.putExtra(Constants.EDIT_FAVORITES_FLAG, Boolean.TRUE);
 
         getActivity().startActivityForResult(intent, Constants.NTA_REQUEST);
     }
 
     @Override
-    public void deleteFavorite(final int favoriteIndex) {
+    public void goToTransitView(TransitViewFavorite transitViewFavorite) {
+        mListener.goToTransitViewResults(transitViewFavorite.getFirstRoute(), transitViewFavorite.getSecondRoute(), transitViewFavorite.getThirdRoute());
+    }
+
+    @Override
+    public void promptToDeleteFavorite(final int favoriteIndex) {
         final String favoriteKey = favoriteStateList.get(favoriteIndex).getFavoriteKey();
 
         new AlertDialog.Builder(getContext()).setCancelable(true).setTitle(R.string.delete_fav_modal_title)
@@ -297,20 +302,7 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
                         }, new Runnable() {
                             @Override
                             public void run() {
-                                // on successful deletion
-                                favoriteStateList.remove(favoriteIndex);
-                                favoritesMap.remove(favoriteKey);
-                                favoriteItemAdapter.notifyItemRemoved(favoriteIndex);
-                                favoriteItemAdapter.notifyDataSetChanged();
-
-                                // reattach recyclerview so that deleting last row hides red background
-                                itemTouchHelper.attachToRecyclerView(null);
-                                itemTouchHelper.attachToRecyclerView(favoritesListView);
-
-                                // show no favorites message if that was the last favorite
-                                if (favoritesMap.isEmpty()) {
-                                    showNoFavoritesMessage();
-                                }
+                                deleteFavorite(favoriteIndex);
                             }
                         });
                         task.execute(favoriteKey);
@@ -343,19 +335,6 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
         // hide no favorite message and show list of favorites
         noFavoritesMessage.setVisibility(View.GONE);
         mRefreshLayout.setVisibility(View.VISIBLE);
-
-        // initialize favoriteStateList with favorites collapsed by default
-        if (favoriteStateList.size() != favoritesMap.size()) {
-            SeptaServiceFactory.getFavoritesService().deleteAllFavoriteStates(getContext());
-            Log.d(TAG, "Reinitializing favorite states now...");
-
-            for (Map.Entry<String, Favorite> entry : favoritesMap.entrySet()) {
-                FavoriteState favoriteState = new FavoriteState(entry.getKey());
-                favoriteStateList.add(favoriteState);
-            }
-
-            SeptaServiceFactory.getFavoritesService().setFavoriteStates(getContext(), favoriteStateList);
-        }
 
         // swipe down to refresh favorites
         mRefreshLayout.setScrollingView(favoritesListView);
@@ -404,7 +383,7 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
         });
     }
 
-    private String evaluateAndRemoveFavorites(Map<String, Favorite> favoritesMap) {
+    private String evaluateAndRemoveFavorites(Map<String, NextArrivalFavorite> favoritesMap) {
         // In Version 268 we fixed some issues with NHSL and Subway.  However users could have created
         // faulty favorites with the version before 268.  We added a created with version number to
         // the favorite record defaulting to 0.  We compare that value to the value 268.  If the
@@ -413,18 +392,20 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
 
         // If need to force remove favorites in new version then change FAVORITES_LAST_UPDATED_VERSION
 
-        Map<String, Favorite> loopMap = new HashMap<>();
+        Map<String, NextArrivalFavorite> loopMap = new HashMap<>();
         loopMap.putAll(favoritesMap);
 
-        List<Favorite> toDelete = new LinkedList<>();
+        List<NextArrivalFavorite> toDelete = new LinkedList<>();
 
         String msg = null;
-        for (Map.Entry<String, Favorite> entry : loopMap.entrySet()) {
-            if ((entry.getValue().getCreatedWithVersion() < FAVORITES_LAST_UPDATED_VERSION) &&
-                    ((entry.getValue().getTransitType() == TransitType.NHSL) ||
-                            (entry.getValue()).getTransitType() == TransitType.SUBWAY)) {
-                favoritesMap.remove(entry.getKey());
-                toDelete.add(entry.getValue());
+        for (Map.Entry<String, NextArrivalFavorite> entry : loopMap.entrySet()) {
+
+            NextArrivalFavorite nextArrivalFavorite = entry.getValue();
+            if (nextArrivalFavorite.getCreatedWithVersion() < FAVORITES_LAST_UPDATED_VERSION &&
+                    ((nextArrivalFavorite.getTransitType() == TransitType.NHSL) ||
+                            nextArrivalFavorite.getTransitType() == TransitType.SUBWAY)) {
+                ntaFavoritesMap.remove(entry.getKey());
+                toDelete.add(nextArrivalFavorite);
                 msg = getString(R.string.force_delete_nhsl_subway_favorite);
             }
         }
@@ -434,8 +415,8 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
             return null;
         }
 
-        for (Favorite favorite : toDelete) {
-            SeptaServiceFactory.getFavoritesService().deleteFavorite(activity, favorite.getKey());
+        for (NextArrivalFavorite nextArrivalFavorite : toDelete) {
+            SeptaServiceFactory.getFavoritesService().deleteFavorite(activity, nextArrivalFavorite.getKey());
         }
 
         return msg;
@@ -443,7 +424,7 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
 
     private void setupListRecyclerView() {
         favoritesListView.setLayoutManager(new LinearLayoutManager(getContext()));
-        favoriteItemAdapter = new FavoriteItemAdapter(getContext(), favoriteStateList, R.layout.item_favorite, this);
+        favoriteItemAdapter = new FavoriteItemAdapter(getContext(), favoriteStateList, this);
         favoritesListView.setAdapter(favoriteItemAdapter);
         favoriteItemAdapter.updateList(favoriteStateList);
     }
@@ -459,17 +440,21 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
         }
     }
 
-    public List<Favorite> openEditMode() {
-        return getFavoritesInOrder();
-    }
+    private void deleteFavorite(int favoriteIndex) {
+        // on successful deletion
+        favoriteStateList.remove(favoriteIndex);
 
-    public List<Favorite> getFavoritesInOrder() {
-        List<Favorite> favoriteList = new ArrayList<>();
-        for (FavoriteState favoriteState : favoriteStateList) {
-            Favorite currentFavorite = SeptaServiceFactory.getFavoritesService().getFavoriteByKey(getContext(), favoriteState.getFavoriteKey());
-            favoriteList.add(currentFavorite);
+        favoriteItemAdapter.notifyItemRemoved(favoriteIndex);
+        favoriteItemAdapter.notifyDataSetChanged();
+
+        // reattach recyclerview so that deleting last row hides red background
+        itemTouchHelper.attachToRecyclerView(null);
+        itemTouchHelper.attachToRecyclerView(favoritesListView);
+
+        // show no favorites message if that was the last favorite
+        if (favoriteStateList.isEmpty()) {
+            showNoFavoritesMessage();
         }
-        return favoriteList;
     }
 
     public interface FavoritesFragmentListener {
@@ -480,6 +465,8 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
         void gotoSchedules();
 
         void goToSchedulesForTarget(StopModel start, StopModel destination, TransitType transitType, RouteDirectionModel routeDirectionModel);
+
+        void goToTransitViewResults(RouteDirectionModel firstRoute, RouteDirectionModel secondRoute, RouteDirectionModel thirdRoute);
 
         void toggleEditFavoritesMode(boolean isInEditMode);
     }

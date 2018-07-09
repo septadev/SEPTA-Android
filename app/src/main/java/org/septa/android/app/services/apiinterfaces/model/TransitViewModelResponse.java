@@ -34,10 +34,10 @@ public class TransitViewModelResponse implements Serializable {
         private String label;
 
         @SerializedName("VehicleID")
-        private String vehicleId; // TODO: int?
+        private String vehicleId;
 
         @SerializedName("BlockID")
-        private String blockId; // TODO: int?
+        private String blockId;
 
         @SerializedName("Direction")
         private String direction;

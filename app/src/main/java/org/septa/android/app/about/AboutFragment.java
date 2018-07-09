@@ -30,6 +30,8 @@ import java.util.TimeZone;
 
 public class AboutFragment extends Fragment {
 
+    private Activity activity;
+
     private boolean attribExpanded = false;
     private TextView attribTitle;
     private LinearLayout attribListView;
@@ -95,13 +97,13 @@ public class AboutFragment extends Fragment {
         SimpleDateFormat formatter = (SimpleDateFormat) SimpleDateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
         formatter.setTimeZone(TimeZone.getTimeZone("gmt"));
 
-
-        if (getActivity() == null) {
+        activity = getActivity();
+        if (activity == null) {
             return fragmentView;
         }
 
         try {
-            ApplicationInfo ai = getActivity().getPackageManager().getApplicationInfo(getActivity().getPackageName(), 0);
+            ApplicationInfo ai = activity.getPackageManager().getApplicationInfo(activity.getPackageName(), 0);
 
             long time = new File(ai.sourceDir).lastModified();
             String s = formatter.format(new java.util.Date(time));
@@ -125,12 +127,28 @@ public class AboutFragment extends Fragment {
         return fragmentView;
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("title", activity.getTitle().toString());
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if (savedInstanceState != null) {
+            String title = savedInstanceState.getString("title");
+            if (title != null && activity != null) {
+                activity.setTitle(title);
+            }
+        }
+    }
+
     private void setHttpIntent(View rootView, int viewId, final String url, final String title) {
         View twitterLink = rootView.findViewById(viewId);
         twitterLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Activity activity = getActivity();
                 if (activity != null) {
                     Intent intent = new Intent(activity, WebViewActivity.class);
                     intent.putExtra(Constants.TARGET_URL, url);
@@ -141,20 +159,4 @@ public class AboutFragment extends Fragment {
         });
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString("title", getActivity().getTitle().toString());
-    }
-
-    @Override
-    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-        super.onViewStateRestored(savedInstanceState);
-        if (savedInstanceState != null) {
-            String title = savedInstanceState.getString("title");
-            if (title != null && getActivity() != null) {
-                getActivity().setTitle(title);
-            }
-        }
-    }
 }

@@ -15,12 +15,17 @@ import org.septa.android.app.view.TextView;
 
 import java.util.concurrent.TimeUnit;
 
+import static org.septa.android.app.transitview.TransitViewUtils.isTrolley;
+
 public class TransitViewVehicleDetailsInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
 
     private static final String TAG = TransitViewVehicleDetailsInfoWindowAdapter.class.getSimpleName();
 
     private Activity context;
     private TransitViewVehicleDetailsInfoWindowAdapterListener mListener;
+
+    private String[] vehicleMarkerKey;
+    private String routeId;
 
     TransitViewVehicleDetailsInfoWindowAdapter(Activity context) {
         this.context = context;
@@ -35,6 +40,16 @@ public class TransitViewVehicleDetailsInfoWindowAdapter implements GoogleMap.Inf
 
     @Override
     public View getInfoWindow(Marker marker) {
+        vehicleMarkerKey = marker.getTitle().split(TransitViewResultsActivity.VEHICLE_MARKER_KEY_DELIM);
+        routeId = vehicleMarkerKey[0];
+
+        String activeRouteId = mListener.getActiveRouteId();
+
+        // if vehicle is on inactive route, activate that route
+        if (!activeRouteId.equalsIgnoreCase(routeId)) {
+            mListener.changeActiveRoute(activeRouteId, routeId);
+        }
+
         // returning null will call getInfoContents
         return null;
     }
@@ -65,8 +80,6 @@ public class TransitViewVehicleDetailsInfoWindowAdapter implements GoogleMap.Inf
         TextView numberRailCarsHeading = contents.findViewById(R.id.vehicle_details_rail_number_cars_heading);
         
         // look up vehicle details
-        String[] vehicleMarkerKey = marker.getTitle().split(TransitViewResultsActivity.VEHICLE_MARKER_KEY_DELIM);
-        String routeId = vehicleMarkerKey[0];
         TransitViewModelResponse.TransitViewRecord vehicleRecord = mListener.getVehicleRecord(marker.getTitle());
 
         // hide unused fields
@@ -74,7 +87,7 @@ public class TransitViewVehicleDetailsInfoWindowAdapter implements GoogleMap.Inf
         numberRailCarsHeading.setVisibility(View.GONE);
 
         // transit type and route id
-        if (mListener.isTrolley(routeId)) {
+        if (isTrolley(context, routeId)) {
             markerTransitType.setText(context.getString(R.string.heading_trolley));
         } else {
             markerTransitType.setText(context.getString(R.string.heading_bus));
@@ -109,9 +122,11 @@ public class TransitViewVehicleDetailsInfoWindowAdapter implements GoogleMap.Inf
     }
 
     public interface TransitViewVehicleDetailsInfoWindowAdapterListener {
-        boolean isTrolley(String routeId);
-
         TransitViewModelResponse.TransitViewRecord getVehicleRecord(String vehicleRecordKey);
+
+        String getActiveRouteId();
+
+        void changeActiveRoute(String oldActiveRoute, String newActiveRoute);
     }
 
 }

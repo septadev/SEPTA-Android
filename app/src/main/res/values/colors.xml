@@ -60,8 +60,16 @@
 
 
     <!-- Favorites -->
-    <color name="no_results_found">#fcbe56</color>
+    <color name="no_results_found">#fff6f4</color>
 
+    <!-- TransitView -->
+    <color name="transitview_card_inactive_background">#ffffff</color>
+    <color name="transitview_card_active_line">#678ec3</color>
+    <color name="transitview_card_inactive_line">#e0e0e0</color>
+
+    <!-- the active KML line color is flipped b/c of some issue with hex conversion -->
+    <color name="transitview_route_active_kml">#844620</color>
+    <color name="transitview_route_inactive">#979797</color>
 
     <!-- Text -->
     <color name="text_primary">#144b88</color>

@@ -112,9 +112,9 @@ public class TransitViewLinePickerFragment extends DialogFragment {
 
                     // one route must already be selected to add a route from TransitViewResultsActivity
                     if (selectedRoutes[1] == null) {
-                        mListener.selectSecondRoute(transitViewLineArrayAdapter.getItem(i));
+                        mListener.addSecondRoute(transitViewLineArrayAdapter.getItem(i));
                     } else {
-                        mListener.selectThirdRoute(transitViewLineArrayAdapter.getItem(i));
+                        mListener.addThirdRoute(transitViewLineArrayAdapter.getItem(i));
                     }
                 } else {
                     Log.e(TAG, "Could not pass back RouteDirectionModel result");
@@ -190,7 +190,7 @@ public class TransitViewLinePickerFragment extends DialogFragment {
             if (route != null) {
                 String routeId = route.getRouteId();
 
-                if (routeId.equals("NHSL")) {
+                if (routeId.equalsIgnoreCase("NHSL")) {
                     // hide NHSL from route picker, since it is stored in DB as a trolley
                     convertView = inflater.inflate(R.layout.row_null, null);
                     convertView.setVisibility(View.GONE);
@@ -241,7 +241,7 @@ public class TransitViewLinePickerFragment extends DialogFragment {
                         }
 
                         // disable route from picker if already selected
-                        if (routeId.equals(selectedRoutes[0]) || routeId.equals(selectedRoutes[1])) {
+                        if (routeId.equalsIgnoreCase(selectedRoutes[0]) || routeId.equalsIgnoreCase(selectedRoutes[1])) {
                             disableRouteItemView(convertView);
                         } else {
                             activateRouteItemView(convertView);
@@ -392,10 +392,10 @@ public class TransitViewLinePickerFragment extends DialogFragment {
     }
 
     public interface TransitViewLinePickerListener {
-        void selectFirstRoute(RouteDirectionModel route);
+        void addFirstRoute(RouteDirectionModel route);
 
-        void selectSecondRoute(RouteDirectionModel route);
+        void addSecondRoute(RouteDirectionModel route);
 
-        void selectThirdRoute(RouteDirectionModel route);
+        void addThirdRoute(RouteDirectionModel route);
     }
 }

@@ -1,6 +1,9 @@
 package org.septa.android.app.transitview;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Point;
 import android.location.Location;
@@ -8,9 +11,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
@@ -19,6 +22,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.LocationServices;
@@ -35,21 +41,26 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.maps.android.data.kml.KmlLayer;
 
+import org.septa.android.app.BaseActivity;
 import org.septa.android.app.R;
-import org.septa.android.app.TransitType;
 import org.septa.android.app.database.DatabaseManager;
 import org.septa.android.app.domain.RouteDirectionModel;
+import org.septa.android.app.favorites.DeleteFavoritesAsyncTask;
+import org.septa.android.app.favorites.edit.RenameFavoriteDialogFragment;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
+import org.septa.android.app.services.apiinterfaces.model.Alerts;
+import org.septa.android.app.services.apiinterfaces.model.Favorite;
+import org.septa.android.app.services.apiinterfaces.model.TransitViewFavorite;
 import org.septa.android.app.services.apiinterfaces.model.TransitViewModelResponse;
+import org.septa.android.app.support.CrashlyticsManager;
 import org.septa.android.app.support.CursorAdapterSupplier;
 import org.septa.android.app.support.MapUtils;
 import org.septa.android.app.support.RouteModelComparator;
-import org.septa.android.app.view.TextView;
+import org.septa.android.app.systemstatus.SystemStatusState;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -60,28 +71,35 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class TransitViewResultsActivity extends AppCompatActivity implements Runnable, TransitViewLinePickerFragment.TransitViewLinePickerListener, OnMapReadyCallback, TransitViewVehicleDetailsInfoWindowAdapter.TransitViewVehicleDetailsInfoWindowAdapterListener {
+import static org.septa.android.app.favorites.edit.RenameFavoriteDialogFragment.EDIT_FAVORITE_DIALOG_KEY;
+import static org.septa.android.app.transitview.TransitViewUtils.isTrolley;
+
+public class TransitViewResultsActivity extends BaseActivity implements Runnable, TransitViewLinePickerFragment.TransitViewLinePickerListener, OnMapReadyCallback, TransitViewVehicleDetailsInfoWindowAdapter.TransitViewVehicleDetailsInfoWindowAdapterListener, RenameFavoriteDialogFragment.RenameFavoriteListener, TransitViewRouteCard.TransitViewRouteCardListener {
 
     private static final String TAG = TransitViewResultsActivity.class.getSimpleName();
 
     private RouteDirectionModel firstRoute, secondRoute, thirdRoute;
-    private Set<TransitViewModelResponse.TransitViewRecord> firstRoutesResults, secondRoutesResults, thirdRoutesResults;
     private String routeIds;
+    private String activeRouteId;
     private boolean isAFavorite = false;
+    private TransitViewFavorite currentFavorite = null;
 
     // data refresh
     private Handler refreshHandler;
     private static final int REFRESH_DELAY_SECONDS = 30;
     private TransitViewModelResponseParser parser;
-    private Map<String, TransitViewModelResponse.TransitViewRecord> details = new HashMap<>();
+    private Map<String, TransitViewModelResponse.TransitViewRecord> vehicleDetailsMap = new HashMap<>();
     private boolean refreshed = false; // used to distinguish refresh from a change in route selection
 
     // layout variables
-    private TextView addLabel, firstRouteLabel, secondRouteLabel, thirdRouteLabel;
+    private LinearLayout routeCardContainer;
+    private TransitViewRouteCard firstRouteCard, secondRouteCard = null, thirdRouteCard = null;
+    private ImageView addLabel;
     private FrameLayout mapContainerView;
     private View progressView;
-    private boolean mapSized = false;
+    private boolean firstRun = false;
     private SupportMapFragment mapFragment;
+    private TextView noResultsMsg;
     private GoogleMap googleMap;
     public static final String VEHICLE_MARKER_KEY_DELIM = "_";
 
@@ -91,14 +109,13 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
 
         initializeActivity(savedInstanceState);
 
-        setTitle(R.string.transit_view);
         setContentView(R.layout.activity_transitview_results);
 
         // initialize view
         initializeView();
 
         // initialize route labels
-        updateRouteLabels(firstRoute, secondRoute, thirdRoute);
+        updateRouteCards(firstRoute, secondRoute, thirdRoute);
 
         // set up automatic refresh
         if (firstRoute != null) {
@@ -110,16 +127,13 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         invalidateOptionsMenu();
+        menu.clear();
 
-        getMenuInflater().inflate(R.menu.favorite_menu, menu);
         if (isAFavorite) {
-            menu.findItem(R.id.create_favorite).setIcon(R.drawable.ic_favorite_made);
-            menu.findItem(R.id.create_favorite).setTitle(R.string.nta_favorite_icon_title_remove);
+            getMenuInflater().inflate(R.menu.edit_favorites_menu, menu);
         } else {
-            menu.findItem(R.id.create_favorite).setTitle(R.string.nta_favorite_icon_title_create);
+            getMenuInflater().inflate(R.menu.favorite_menu, menu);
         }
-
-        // TODO: should there be an "edit" feature for transitview favorites, if so update onOptionsItemSelected
 
         return super.onPrepareOptionsMenu(menu);
     }
@@ -128,18 +142,16 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.create_favorite:
-                Log.d(TAG, "Favoriting TransitView routes: " + routeIds);
-
-                // TODO: favorite a transitview selection
-//                saveAsFavorite(item);
+                Log.d(TAG, "Creating a favorite for TransitView routes: " + routeIds);
+                saveAsFavorite(item);
                 return true;
             case R.id.refresh_results:
                 refreshed = true;
                 refreshData();
                 return true;
-//            case R.id.edit_favorite:
-//                editFavorite(item);
-//                return true;
+            case R.id.edit_favorite:
+                editFavorite(item);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -162,7 +174,46 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
     }
 
     @Override
-    public void selectFirstRoute(RouteDirectionModel route) {
+    public void removeRoute(int routeToRemove) {
+        switch (routeToRemove) {
+            case 3:
+                // TODO: prompt to delete
+                activeRouteId = firstRoute.getRouteId();
+
+                refreshed = false;
+
+                // delete third route
+                updateRouteCards(firstRoute, secondRoute, null);
+                break;
+            case 2:
+                // TODO: prompt to delete
+                activeRouteId = firstRoute.getRouteId();
+
+                refreshed = false;
+
+                // delete second route
+                updateRouteCards(firstRoute, thirdRoute, null);
+                break;
+            case 1:
+            default:
+                // TODO: prompt to delete
+                if (secondRoute != null) {
+                    activeRouteId = secondRoute.getRouteId();
+
+                    refreshed = false;
+
+                    // delete first route
+                    updateRouteCards(secondRoute, thirdRoute, null);
+                } else {
+                    // take user back to picker screen
+                    finish();
+                }
+                break;
+        }
+    }
+
+    @Override
+    public void addFirstRoute(RouteDirectionModel route) {
         Log.e(TAG, "Invalid attempt to select the first route from the TransitViewResultsActivity -- going back to TransitView route picker");
 
         Toast.makeText(this, R.string.transitview_add_route, Toast.LENGTH_LONG).show();
@@ -170,7 +221,7 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
     }
 
     @Override
-    public void selectSecondRoute(RouteDirectionModel route) {
+    public void addSecondRoute(RouteDirectionModel route) {
         // sort the routes and append a null route to the end
         List<RouteDirectionModel> selectedRoutes = new ArrayList<>();
         selectedRoutes.add(firstRoute);
@@ -178,11 +229,13 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
         Collections.sort(selectedRoutes, new RouteModelComparator());
         selectedRoutes.add(null);
 
-        updateRouteLabels(selectedRoutes.get(0), selectedRoutes.get(1), selectedRoutes.get(2));
+        activeRouteId = route.getRouteId();
+        refreshed = false;
+        updateRouteCards(selectedRoutes.get(0), selectedRoutes.get(1), selectedRoutes.get(2));
     }
 
     @Override
-    public void selectThirdRoute(RouteDirectionModel route) {
+    public void addThirdRoute(RouteDirectionModel route) {
         // sort the routes
         List<RouteDirectionModel> selectedRoutes = new ArrayList<>();
         selectedRoutes.add(firstRoute);
@@ -190,11 +243,15 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
         selectedRoutes.add(route);
         Collections.sort(selectedRoutes, new RouteModelComparator());
 
-        updateRouteLabels(selectedRoutes.get(0), selectedRoutes.get(1), selectedRoutes.get(2));
+        activeRouteId = route.getRouteId();
+        refreshed = false;
+        updateRouteCards(selectedRoutes.get(0), selectedRoutes.get(1), selectedRoutes.get(2));
     }
 
     @Override
     public void onMapReady(final GoogleMap googleMap) {
+        Log.d(TAG, "OnMapReady");
+
         this.googleMap = googleMap;
         MapStyleOptions mapStyle = MapStyleOptions.loadRawResourceStyle(this, R.raw.maps_json_styling);
         googleMap.setMapStyle(mapStyle);
@@ -204,31 +261,28 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
         googleMap.getUiSettings().setRotateGesturesEnabled(false);
 
         // move camera to city hall to speed up zoom process
-        final LatLng cityHall = new LatLng(39.9517999, -75.1633285);
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(cityHall));
+        if (!firstRun) {
+            final LatLng cityHall = new LatLng(39.9517999, -75.1633285);
+            googleMap.moveCamera(CameraUpdateFactory.newLatLng(cityHall));
+            googleMap.moveCamera(CameraUpdateFactory.zoomTo(13));
+            firstRun = true;
+        }
 
         // default map zoom to show KML of all routes using builder.include()
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
 
-        // add to map of vehicle markers
-        details.clear();
-        for (String routeId : routeIds.split(",")) {
-            for (Map.Entry<TransitViewModelResponse.TransitViewRecord, LatLng> entry : parser.getResultsForRoute(routeId).entrySet()) {
-                String vehicleMarkerKey = new StringBuilder(routeId).append(VEHICLE_MARKER_KEY_DELIM).append(entry.getKey().getVehicleId()).toString();
-                details.put(vehicleMarkerKey, entry.getKey());
-
-                // map must include this vehicle when automatically moving
-                builder.include(entry.getValue());
-            }
+        // map must include vehicles on active route when automatically moving camera
+        for (Map.Entry<TransitViewModelResponse.TransitViewRecord, LatLng> entry : parser.getResultsForRoute(activeRouteId).entrySet()) {
+            builder.include(entry.getValue());
         }
-
         final LatLngBounds bounds = builder.build();
 
         googleMap.setContentDescription("Map displaying TransitView routes: " + routeIds);
-
         googleMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
             @Override
             public void onMapLoaded() {
+                Log.d(TAG, "OnMapLoaded");
+
                 Display mdisp = getWindowManager().getDefaultDisplay();
                 Point mdispSize = new Point();
                 mdisp.getSize(mdispSize);
@@ -237,12 +291,6 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
 
                 try {
                     googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, getResources().getDisplayMetrics())));
-                    // TODO: calculate map height
-//                    ViewGroup.LayoutParams layoutParams =
-//                            bottomSheetLayout.getLayoutParams();
-//                    layoutParams.height = rootView.getHeight() - mapContainerView.getTop();
-//                    bottomSheetLayout.setLayoutParams(layoutParams);
-//                    bottomSheetBehavior.setPeekHeight(peekHeight);
                 } catch (IllegalStateException e) {
                     if (mapContainerView.getViewTreeObserver().isAlive()) {
                         mapContainerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -255,29 +303,26 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
                                     Log.e(TAG, "Failed to move camera, defaulting map zoom to Philadelphia City Hall");
 
                                     // TODO: where should I move map to on default?
+                                    final LatLng cityHall = new LatLng(39.9517999, -75.1633285);
+
                                     googleMap.moveCamera(CameraUpdateFactory.zoomTo(13));
                                     googleMap.moveCamera(CameraUpdateFactory.newLatLng(cityHall));
                                 }
-                                // TODO: calculate map height
-//                                ViewGroup.LayoutParams layoutParams =
-//                                        bottomSheetLayout.getLayoutParams();
-//                                layoutParams.height = rootView.getHeight() - mapContainerView.getTop();
-//                                bottomSheetLayout.setLayoutParams(layoutParams);
-//                                bottomSheetBehavior.setPeekHeight(peekHeight);
                             }
                         });
                     }
                 }
 
+                // custom vehicle vehicleDetailsMap info window
                 TransitViewVehicleDetailsInfoWindowAdapter adapter = new TransitViewVehicleDetailsInfoWindowAdapter(TransitViewResultsActivity.this);
                 googleMap.setInfoWindowAdapter(adapter);
             }
         });
 
         // hide progress view and show map
+        noResultsMsg.setVisibility(View.GONE);
         progressView.setVisibility(View.GONE);
         mapContainerView.setVisibility(View.VISIBLE);
-//        alertsView.setVisibility(View.VISIBLE); // TODO: show alerts
 
         int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
         if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
@@ -300,14 +345,48 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
     }
 
     @Override
-    public boolean isTrolley(String routeId) {
-        String[] trolleyRouteIds = new String[]{"10", "11", "13", "15", "34", "36", "101", "102"};
-        return Arrays.asList(trolleyRouteIds).contains(routeId);
+    public TransitViewModelResponse.TransitViewRecord getVehicleRecord(String vehicleRecordKey) {
+        return vehicleDetailsMap.get(vehicleRecordKey);
     }
 
     @Override
-    public TransitViewModelResponse.TransitViewRecord getVehicleRecord(String vehicleRecordKey) {
-        return details.get(vehicleRecordKey);
+    public void updateFavorite(Favorite favorite) {
+        if (favorite instanceof TransitViewFavorite) {
+            currentFavorite = (TransitViewFavorite) favorite;
+            isAFavorite = true;
+            renameFavorite(currentFavorite);
+
+            Snackbar snackbar = Snackbar.make(findViewById(R.id.activity_transitview_results), R.string.create_fav_snackbar_text, Snackbar.LENGTH_LONG);
+            snackbar.show();
+        } else {
+            Log.e(TAG, "Attempted to save invalid Favorite type");
+        }
+    }
+
+    @Override
+    public void renameFavorite(Favorite favorite) {
+        setTitle(favorite.getName());
+        invalidateOptionsMenu();
+    }
+
+    @Override
+    public void favoriteCreationFailed() {
+        Snackbar snackbar = Snackbar.make(findViewById(R.id.activity_transitview_results), R.string.create_fav_snackbar_failed, Snackbar.LENGTH_LONG);
+        snackbar.show();
+    }
+
+    @NonNull
+    @Override
+    public String getActiveRouteId() {
+        return activeRouteId;
+    }
+
+    @Override
+    public void changeActiveRoute(String oldActiveRoute, String newActiveRoute) {
+        activeRouteId = newActiveRoute;
+        refreshed = true; // simply refresh data without moving camera
+
+        updateRouteCards(firstRoute, secondRoute, thirdRoute);
     }
 
     private void initializeActivity(@Nullable Bundle savedInstanceState) {
@@ -323,57 +402,24 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
         } else {
             restoreState(bundle);
         }
+
+        checkIfAFavorite();
     }
 
     private void restoreState(Bundle bundle) {
         firstRoute = (RouteDirectionModel) bundle.get(TransitViewFragment.TRANSITVIEW_ROUTE_FIRST);
         secondRoute = (RouteDirectionModel) bundle.get(TransitViewFragment.TRANSITVIEW_ROUTE_SECOND);
         thirdRoute = (RouteDirectionModel) bundle.get(TransitViewFragment.TRANSITVIEW_ROUTE_THIRD);
+
+        activeRouteId = firstRoute.getRouteId();
     }
 
     private void initializeView() {
         mapContainerView = findViewById(R.id.map_container);
-//        alertsView = findViewById(R.id.transitview_alerts); TODO: initialize alerts view
+        noResultsMsg = findViewById(R.id.no_results_msg);
         progressView = findViewById(R.id.progress_view);
-        firstRouteLabel = findViewById(R.id.first_route_delete);
-        secondRouteLabel = findViewById(R.id.second_route_delete);
-        thirdRouteLabel = findViewById(R.id.third_route_delete);
-        addLabel = findViewById(R.id.header_add_label);
-
-        firstRouteLabel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // TODO: prompt to delete
-
-                if (secondRoute != null || thirdRoute != null) {
-                    // delete first route
-                    updateRouteLabels(secondRoute, thirdRoute, null);
-                } else {
-                    // take user back to picker screen
-                    finish();
-                }
-            }
-        });
-
-        secondRouteLabel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // TODO: prompt to delete
-
-                // delete second route
-                updateRouteLabels(firstRoute, thirdRoute, null);
-            }
-        });
-
-        thirdRouteLabel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // TODO: prompt to delete
-
-                // delete third route
-                updateRouteLabels(firstRoute, secondRoute, null);
-            }
-        });
+        addLabel = findViewById(R.id.button_add);
+        routeCardContainer = findViewById(R.id.header_routes_buttons);
 
         addLabel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -398,48 +444,127 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
         });
     }
 
-    private void updateRouteLabels(@NonNull RouteDirectionModel first, RouteDirectionModel second, RouteDirectionModel third) {
+    private void checkIfAFavorite() {
+        String favoriteKey = TransitViewFavorite.generateKey(firstRoute, secondRoute, thirdRoute);
+        Favorite favoriteTemp = SeptaServiceFactory.getFavoritesService().getFavoriteByKey(this, favoriteKey);
+        if (favoriteTemp != null && favoriteTemp instanceof TransitViewFavorite) {
+            isAFavorite = true;
+            currentFavorite = (TransitViewFavorite) favoriteTemp;
+            setTitle(currentFavorite.getName());
+        } else {
+            isAFavorite = false;
+            currentFavorite = null;
+            setTitle(R.string.transit_view);
+        }
+        supportInvalidateOptionsMenu();
+    }
+
+    private void updateRouteCards(@NonNull RouteDirectionModel first, RouteDirectionModel second, RouteDirectionModel third) {
+        routeCardContainer.removeAllViews();
+
         this.firstRoute = first;
         this.secondRoute = second;
         this.thirdRoute = third;
 
         StringBuilder routeIdBuilder = new StringBuilder(firstRoute.getRouteId());
 
-        firstRouteLabel.setText(firstRoute.getRouteId());
+        firstRouteCard = new TransitViewRouteCard(this, firstRoute, 1);
+        firstRouteCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                firstRouteCard.activateCard();
+                if (secondRouteCard != null) {
+                    secondRouteCard.deactivateCard();
+                }
+                if (thirdRouteCard != null) {
+                    thirdRouteCard.deactivateCard();
+                }
+
+                activeRouteId = firstRoute.getRouteId();
+
+                refreshed = false;
+                refreshData();
+            }
+        });
+        routeCardContainer.addView(firstRouteCard);
+
+        if (activeRouteId.equalsIgnoreCase(firstRoute.getRouteId())) {
+            firstRouteCard.activateCard();
+        } else {
+            firstRouteCard.deactivateCard();
+        }
 
         if (secondRoute != null) {
             routeIdBuilder.append(",").append(secondRoute.getRouteId());
-            secondRouteLabel.setText(secondRoute.getRouteId());
-            secondRouteLabel.setVisibility(View.VISIBLE);
+
+            secondRouteCard = new TransitViewRouteCard(this, secondRoute, 2);
+            secondRouteCard.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    firstRouteCard.deactivateCard();
+                    secondRouteCard.activateCard();
+                    if (thirdRouteCard != null) {
+                        thirdRouteCard.deactivateCard();
+                    }
+
+                    activeRouteId = secondRoute.getRouteId();
+
+                    refreshed = false;
+                    refreshData();
+                }
+            });
+            routeCardContainer.addView(secondRouteCard);
+
+            if (activeRouteId.equalsIgnoreCase(secondRoute.getRouteId())) {
+                secondRouteCard.activateCard();
+            } else {
+                secondRouteCard.deactivateCard();
+            }
         } else {
-            secondRouteLabel.setText(null);
-            secondRouteLabel.setVisibility(View.GONE);
+            secondRouteCard = null;
         }
 
         if (thirdRoute != null) {
-            // update third route label
             routeIdBuilder.append(",").append(thirdRoute.getRouteId());
-            thirdRouteLabel.setText(thirdRoute.getRouteId());
-            thirdRouteLabel.setVisibility(View.VISIBLE);
+
+            thirdRouteCard = new TransitViewRouteCard(this, thirdRoute, 3);
+            thirdRouteCard.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    firstRouteCard.deactivateCard();
+                    secondRouteCard.deactivateCard();
+                    thirdRouteCard.activateCard();
+
+                    activeRouteId = thirdRoute.getRouteId();
+
+                    refreshed = false;
+                    refreshData();
+                }
+            });
+            routeCardContainer.addView(thirdRouteCard);
+
+            if (activeRouteId.equalsIgnoreCase(thirdRoute.getRouteId())) {
+                thirdRouteCard.activateCard();
+            } else {
+                thirdRouteCard.deactivateCard();
+            }
 
             // disable add button
             disableView(addLabel);
-
         } else {
-            thirdRouteLabel.setText(null);
-            thirdRouteLabel.setVisibility(View.GONE);
-
             // make add button clickable
             activateView(addLabel);
         }
+
         routeIds = routeIdBuilder.toString();
 
-        refreshed = false;
+        checkIfAFavorite();
+
         refreshData();
     }
 
     private void disableView(View view) {
-        view.setAlpha((float) .3);
+        view.setAlpha((float) .6);
         view.setClickable(false);
     }
 
@@ -453,9 +578,10 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
 
         // show progress view and hide everything else
         progressView.setVisibility(View.VISIBLE);
+        noResultsMsg.setVisibility(View.GONE);
         mapContainerView.setVisibility(View.GONE);
-//        alertsView.setVisibility(View.GONE); // TODO: hide alerts
 
+        // refresh vehicle data
         SeptaServiceFactory.getTransitViewService().getTransitViewResults(routeIds).enqueue(new Callback<TransitViewModelResponse>() {
             @Override
             public void onResponse(Call<TransitViewModelResponse> call, @NonNull Response<TransitViewModelResponse> response) {
@@ -463,29 +589,29 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
 
                     parser = new TransitViewModelResponseParser(response.body());
 
-                    firstRoutesResults = parser.getResultsForRoute(firstRoute.getRouteId()).keySet();
+                    Set<TransitViewModelResponse.TransitViewRecord> firstRoutesResults = parser.getResultsForRoute(firstRoute.getRouteId()).keySet();
                     Log.d(TAG, firstRoutesResults.toString());
 
                     if (secondRoute != null) {
-                        secondRoutesResults = parser.getResultsForRoute(secondRoute.getRouteId()).keySet();
+                        Set<TransitViewModelResponse.TransitViewRecord> secondRoutesResults = parser.getResultsForRoute(secondRoute.getRouteId()).keySet();
                         Log.d(TAG, secondRoutesResults.toString());
                     }
 
                     if (thirdRoute != null) {
-                        thirdRoutesResults = parser.getResultsForRoute(thirdRoute.getRouteId()).keySet();
+                        Set<TransitViewModelResponse.TransitViewRecord> thirdRoutesResults = parser.getResultsForRoute(thirdRoute.getRouteId()).keySet();
                         Log.d(TAG, thirdRoutesResults.toString());
                     }
 
                     prepareToDrawMap();
                 } else {
-                    Log.e(TAG, "Null response body when fetching TransitVIew results for: " + routeIds);
+                    Log.e(TAG, "Null response body when fetching TransitView results for: " + routeIds);
                     failure();
                 }
             }
 
             @Override
             public void onFailure(Call<TransitViewModelResponse> call, Throwable t) {
-                Log.e(TAG, "No TransitView results found for the routes: " + routeIds, t);
+                Log.e(TAG, "Failed to find TransitView results found for the routes: " + routeIds, t);
                 failure();
             }
 
@@ -494,81 +620,197 @@ public class TransitViewResultsActivity extends AppCompatActivity implements Run
                 refreshHandler.removeCallbacks(TransitViewResultsActivity.this);
                 refreshHandler.postDelayed(TransitViewResultsActivity.this, REFRESH_DELAY_SECONDS * 1000);
                 refreshed = false;
-                showNoResultsFoundErrorMessage(); // TODO: how should this be handled
+                showNoResultsFoundErrorMessage();
+            }
+        });
+
+        // refresh alerts
+        SeptaServiceFactory.getAlertsService().getAlerts().enqueue(new Callback<Alerts>() {
+            @Override
+            public void onResponse(Call<Alerts> call, Response<Alerts> response) {
+                SystemStatusState.update(response.body());
+
+                // show alert changes in route cards
+                firstRouteCard.refreshAlertsView();
+                if (secondRouteCard != null) {
+                    secondRouteCard.refreshAlertsView();
+                    if (thirdRouteCard != null) {
+                        thirdRouteCard.refreshAlertsView();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Alerts> call, Throwable t) {
+                t.printStackTrace();
+
+                Log.e(TAG, "Failed to fetch alert updates for TransitView routes: " + routeIds, t);
+
+                // hide alert icons in route cards
+                firstRouteCard.hideAlertIcons();
+                if (secondRouteCard != null) {
+                    secondRouteCard.hideAlertIcons();
+                    if (thirdRouteCard != null) {
+                        thirdRouteCard.hideAlertIcons();
+                    }
+                }
             }
         });
     }
 
     private void prepareToDrawMap() {
-        if (!mapSized) {
-            mapSized = true;
+        if (!firstRun) {
             mapFragment = SupportMapFragment.newInstance();
-
-            // TODO: calculate map size after drawing alerts
-//                    ViewGroup.LayoutParams mapContainerLayoutParams = mapContainerView.getLayoutParams();
-//                    mapContainerLayoutParams.height = rootView.getHeight() - value - mapContainerView.getTop();
-//                    mapContainerLayoutParams.width = rootView.getWidth();
-//                    mapContainerView.setLayoutParams(mapContainerLayoutParams);
-
             try {
                 getSupportFragmentManager().beginTransaction().add(R.id.map_container, mapFragment).commit();
             } catch (IllegalStateException e) {
                 Log.e(TAG, e.toString());
             }
             mapFragment.getMapAsync(TransitViewResultsActivity.this);
+
         } else if (refreshed) {
+            // refresh map without moving camera
             updateMap();
             refreshed = false;
+
         } else {
+            // refresh data and move camera
             onMapReady(googleMap);
         }
     }
 
     private void updateMap() {
         googleMap.clear();
+        vehicleDetailsMap.clear();
 
         for (String routeId : routeIds.split(",")) {
-            TransitType transitType = TransitType.BUS;
-            int transitTypeDrawableId = R.drawable.ic_bus_blue_small;
-            if (isTrolley(routeId)) {
-                transitType = TransitType.TROLLEY;
-                transitTypeDrawableId = R.drawable.ic_trolley_blue_small;
-            }
+            // draw active route and vehicles as blue
+            if (routeId.equalsIgnoreCase(activeRouteId)) {
+                // redraw all vehicles
+                redrawAllVehiclesOnRoute(routeId);
 
-            // redraw all vehicles
-            for (Map.Entry<TransitViewModelResponse.TransitViewRecord, LatLng> entry : parser.getResultsForRoute(routeId).entrySet()) {
-                // create directional icon with bus or trolley
-                BitmapDescriptor vehicleBitMap = TransitViewUtils.getDirectionalIconForTransitType(this, transitTypeDrawableId, entry.getKey().getHeading());
-                String vehicleMarkerKey = new StringBuilder(routeId).append(VEHICLE_MARKER_KEY_DELIM).append(entry.getKey().getVehicleId()).toString();
-                googleMap.addMarker(new MarkerOptions()
-                        .position(entry.getValue())
-                        .title(vehicleMarkerKey)
-                        .anchor((float) 0.5, (float) 0.5)
-                        .icon(vehicleBitMap));
-            }
+                // redraw route on map
+                KmlLayer layer = MapUtils.getKMLByLineIdWithColor(TransitViewResultsActivity.this, googleMap, routeId, R.color.transitview_route_active_kml);
+                if (layer != null) {
+                    try {
+                        layer.addLayerToMap();
+                    } catch (IOException e) {
+                        Log.e(TAG, e.toString());
+                    } catch (XmlPullParserException e) {
+                        Log.e(TAG, e.toString());
+                    }
+                }
 
-            // redraw route on map
-            KmlLayer layer = MapUtils.getKMLByLineId(TransitViewResultsActivity.this, googleMap, routeId, transitType);
-            if (layer != null) {
-                try {
-                    layer.addLayerToMap();
-                } catch (IOException e) {
-                    Log.e(TAG, e.toString());
-                } catch (XmlPullParserException e) {
-                    Log.e(TAG, e.toString());
+            } else {
+                // redraw all vehicles
+                redrawAllVehiclesOnRoute(routeId);
+
+                // redraw route on map
+                KmlLayer layer = MapUtils.getKMLByLineIdWithColor(TransitViewResultsActivity.this, googleMap, routeId, R.color.transitview_route_inactive);
+                if (layer != null) {
+                    try {
+                        layer.addLayerToMap();
+                    } catch (IOException e) {
+                        Log.e(TAG, e.toString());
+                    } catch (XmlPullParserException e) {
+                        Log.e(TAG, e.toString());
+                    }
                 }
             }
         }
 
         // hide error message in case connection regained
         progressView.setVisibility(View.GONE);
+        noResultsMsg.setVisibility(View.GONE);
         mapContainerView.setVisibility(View.VISIBLE);
-//        alertsView.setVisibility(View.VISIBLE); // TODO: show alerts
+    }
+
+    private void redrawAllVehiclesOnRoute(String routeId) {
+        boolean isTrolley = isTrolley(TransitViewResultsActivity.this, routeId);
+        boolean isActiveRoute = activeRouteId.equalsIgnoreCase(routeId);
+
+        for (Map.Entry<TransitViewModelResponse.TransitViewRecord, LatLng> entry : parser.getResultsForRoute(routeId).entrySet()) {
+
+            // add to map of vehicle marker details
+            String vehicleMarkerKey = new StringBuilder(routeId).append(VEHICLE_MARKER_KEY_DELIM).append(entry.getKey().getVehicleId()).toString();
+            vehicleDetailsMap.put(vehicleMarkerKey, entry.getKey());
+
+            // create directional icon with bus or trolley
+            BitmapDescriptor vehicleBitMap = TransitViewUtils.getDirectionalIconForTransitType(this, isTrolley, isActiveRoute, entry.getKey().getHeading());
+            googleMap.addMarker(new MarkerOptions()
+                    .position(entry.getValue())
+                    .title(vehicleMarkerKey)
+                    .anchor((float) 0.5, (float) 0.5)
+                    .icon(vehicleBitMap));
+        }
     }
 
     private void showNoResultsFoundErrorMessage() {
-        // show error message and hide
-        Log.e(TAG, "No TransitView results found");
+        // show error message and hide map and progress view
+        mapContainerView.setVisibility(View.GONE);
+        noResultsMsg.setVisibility(View.VISIBLE);
+        progressView.setVisibility(View.GONE);
+    }
+
+    private void saveAsFavorite(final MenuItem item) {
+        if (!item.isEnabled()) {
+            return;
+        }
+
+        item.setEnabled(false);
+
+        // favorite a transitview selection
+        if (firstRoute != null) {
+            if (isAFavorite) {
+                // prompt to delete favorite
+                new AlertDialog.Builder(this).setCancelable(true).setTitle(R.string.delete_fav_modal_title)
+                        .setMessage(R.string.delete_fav_modal_text)
+                        .setPositiveButton(R.string.delete_fav_pos_button, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                DeleteFavoritesAsyncTask task = new DeleteFavoritesAsyncTask(TransitViewResultsActivity.this, new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        item.setEnabled(true);
+                                    }
+                                }, new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        item.setEnabled(true);
+                                        item.setIcon(R.drawable.ic_favorite_available);
+                                        isAFavorite = false;
+                                    }
+                                });
+
+                                task.execute(TransitViewFavorite.generateKey(firstRoute, secondRoute, thirdRoute));
+                            }
+                        }).setNegativeButton(R.string.delete_fav_neg_button, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        item.setEnabled(true);
+                    }
+                }).create().show();
+            } else {
+                // prompt to save favorite
+                final TransitViewFavorite favorite = new TransitViewFavorite(TransitViewResultsActivity.this, firstRoute, secondRoute, thirdRoute);
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                CrashlyticsManager.log(Log.INFO, TAG, "Creating initial RenameFavoriteDialogFragment for:" + favorite.toString());
+                RenameFavoriteDialogFragment fragment = RenameFavoriteDialogFragment.newInstance(true, false, favorite);
+                fragment.show(ft, EDIT_FAVORITE_DIALOG_KEY);
+
+                item.setEnabled(true);
+            }
+        } else {
+            item.setEnabled(true);
+        }
+    }
+
+    public void editFavorite(final MenuItem item) {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        CrashlyticsManager.log(Log.INFO, TAG, "Creating RenameFavoriteDialogFragment for TransitView favorite: " + routeIds);
+        RenameFavoriteDialogFragment fragment = RenameFavoriteDialogFragment.newInstance(true, true, currentFavorite);
+
+        fragment.show(ft, EDIT_FAVORITE_DIALOG_KEY);
     }
 
 }

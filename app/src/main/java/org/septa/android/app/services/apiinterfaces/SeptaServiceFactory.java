@@ -36,7 +36,7 @@ public class SeptaServiceFactory {
 
     static Retrofit septaAmazonServicesSingleton;
 
-    private static Favorites favoritesService = new FavoritesImpl();
+    private static FavoritesSharedPrefsUtils favoritesService = new FavoritesSharedPrefsUtilsImpl();
 
     public static void init() {
         septaAmazonServicesSingleton = new Retrofit.Builder().client(new OkHttpClient.Builder().connectTimeout(5, TimeUnit.SECONDS).readTimeout(20, TimeUnit.SECONDS).addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)).addInterceptor(new Interceptor() {
@@ -94,7 +94,7 @@ public class SeptaServiceFactory {
         return googleSingleton.create(GooglePlaceAutoCompleteService.class);
     }
 
-    public static Favorites getFavoritesService() {
+    public static FavoritesSharedPrefsUtils getFavoritesService() {
         return favoritesService;
     }
 

@@ -50,5 +50,4 @@ public class SystemStatusState {
         return map.get(MOBILE_APP_ALERT_ROUTE_ID);
     }
 
-
 }

@@ -205,6 +205,7 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
                 snackbar.show();
 
             } else {
+                AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_EDIT_FAVORITES_BUTTON, AnalyticsManager.CUSTOM_EVENT_ID_FAVORITES_MANAGEMENT, null);
                 mListener.toggleEditFavoritesMode(false);
             }
         }
@@ -310,6 +311,9 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
                                 deleteFavorite(favoriteIndex);
                             }
                         });
+
+                        AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_DELETE_FAVORITE, AnalyticsManager.CUSTOM_EVENT_ID_FAVORITES_MANAGEMENT, null);
+
                         task.execute(favoriteKey);
                     }
                 })

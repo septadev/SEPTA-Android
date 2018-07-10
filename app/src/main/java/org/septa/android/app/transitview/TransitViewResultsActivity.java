@@ -52,6 +52,7 @@ import org.septa.android.app.services.apiinterfaces.model.Alerts;
 import org.septa.android.app.services.apiinterfaces.model.Favorite;
 import org.septa.android.app.services.apiinterfaces.model.TransitViewFavorite;
 import org.septa.android.app.services.apiinterfaces.model.TransitViewModelResponse;
+import org.septa.android.app.support.AnalyticsManager;
 import org.septa.android.app.support.CrashlyticsManager;
 import org.septa.android.app.support.CursorAdapterSupplier;
 import org.septa.android.app.support.MapUtils;
@@ -782,6 +783,8 @@ public class TransitViewResultsActivity extends BaseActivity implements Runnable
                                     }
                                 });
 
+                                AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_DELETE_FAVORITE, AnalyticsManager.CUSTOM_EVENT_ID_FAVORITES_MANAGEMENT, null);
+
                                 task.execute(TransitViewFavorite.generateKey(firstRoute, secondRoute, thirdRoute));
                             }
                         }).setNegativeButton(R.string.delete_fav_neg_button, new DialogInterface.OnClickListener() {
@@ -809,7 +812,6 @@ public class TransitViewResultsActivity extends BaseActivity implements Runnable
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         CrashlyticsManager.log(Log.INFO, TAG, "Creating RenameFavoriteDialogFragment for TransitView favorite: " + routeIds);
         RenameFavoriteDialogFragment fragment = RenameFavoriteDialogFragment.newInstance(true, true, currentFavorite);
-
         fragment.show(ft, EDIT_FAVORITE_DIALOG_KEY);
     }
 

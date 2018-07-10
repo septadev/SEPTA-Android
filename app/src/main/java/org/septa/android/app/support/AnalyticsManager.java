@@ -77,9 +77,15 @@ public abstract class AnalyticsManager {
     public static final String CUSTOM_EVENT_FARES_MORE = "More About Fares";
     public static final String CUSTOM_EVENT_PERKS_MORE = "More About Perks";
 
-    // TODO: move interactions into a different event for tracking
-//    public static final String CUSTOM_EVENT_SAVE_RENAMED_FAVORITE = "Save a Renamed Favorite";
-//    public static final String CUSTOM_EVENT_DELETE_FAVORITE = "Delete a Favorite";
+    // favorites actions
+    public static final String CUSTOM_EVENT_ID_FAVORITES_MANAGEMENT = "Favorites Management";
+    public static final String CUSTOM_EVENT_ADD_FAVORITE_BUTTON = "Tap 'Add' Favorite Button";
+    public static final String CUSTOM_EVENT_EDIT_FAVORITES_BUTTON = "Tap 'Edit' Button to Switch to Edit Favorites Mode";
+    public static final String CUSTOM_EVENT_CREATE_FAVORITE_NTA = "Create New NTA Favorite";
+    public static final String CUSTOM_EVENT_CREATE_FAVORITE_TRANSITVIEW = "Create New TransitView Favorite";
+    public static final String CUSTOM_EVENT_RENAME_FAVORITE_NTA = "Rename NTA Favorite";
+    public static final String CUSTOM_EVENT_RENAME_FAVORITE_TRANSITVIEW = "Rename TransitViewFavorite";
+    public static final String CUSTOM_EVENT_DELETE_FAVORITE = "Delete a Favorite";
 
     private static boolean initialized = false;
 

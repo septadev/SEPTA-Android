@@ -796,6 +796,8 @@ public class NextToArriveResultsActivity extends BaseActivity implements OnMapRe
                                     }
                                 });
 
+                                AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_DELETE_FAVORITE, AnalyticsManager.CUSTOM_EVENT_ID_FAVORITES_MANAGEMENT, null);
+
                                 task.execute(currentFavorite.getKey());
                             }
                         }).setNegativeButton(R.string.delete_fav_neg_button, new DialogInterface.OnClickListener() {

@@ -394,7 +394,8 @@ public class MainActivity extends BaseActivity implements
 
     @Override
     public void addNewFavorite() {
-        CrashlyticsManager.log(Log.INFO, TAG, "addNewFavorite");
+        AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_ADD_FAVORITE_BUTTON, AnalyticsManager.CUSTOM_EVENT_ID_FAVORITES_MANAGEMENT, null);
+
         switchToNextToArrive();
     }
 

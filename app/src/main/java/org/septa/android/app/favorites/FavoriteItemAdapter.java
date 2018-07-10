@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.septa.android.app.ActivityClass;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
 import org.septa.android.app.nextarrive.NextArrivalModelResponseParser;
@@ -380,6 +381,7 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             resultsContainer = view.findViewById(R.id.next_to_arrive_trip_details);
             progressView = view.findViewById(R.id.progress_view);
             tripView = new NextToArriveTripView(context);
+            tripView.setOriginClass(ActivityClass.MAIN);
         }
     }
 

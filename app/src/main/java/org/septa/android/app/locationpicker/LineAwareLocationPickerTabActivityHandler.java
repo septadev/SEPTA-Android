@@ -18,13 +18,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import org.septa.android.app.ActivityClass;
 import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
 import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.domain.StopModel;
-import org.septa.android.app.nextarrive.NextToArriveResultsActivity;
-import org.septa.android.app.schedules.ScheduleResultsActivity;
 import org.septa.android.app.support.AnalyticsManager;
 import org.septa.android.app.support.BaseTabActivityHandler;
 import org.septa.android.app.support.Criteria;
@@ -43,6 +42,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
     private String headerStringName;
     private TransitType transitType;
     private Class targetClass;
+    private ActivityClass target;
     private String buttonText;
     private Bundle prepopulate;
 
@@ -50,7 +50,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
     private static final int START_MODEL_ID = 2;
     private static final int DEST_MODEL_ID = 3;
 
-    public LineAwareLocationPickerTabActivityHandler(String title, String headerStringName, String buttonText, TransitType transitType, CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier, CursorAdapterSupplier<StopModel> busStopCursorAdapterSupplier, CursorAdapterSupplier<StopModel> busStopAfterCursorAdapterSupplier, Class targetClass) {
+    public LineAwareLocationPickerTabActivityHandler(String title, String headerStringName, String buttonText, TransitType transitType, CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier, CursorAdapterSupplier<StopModel> busStopCursorAdapterSupplier, CursorAdapterSupplier<StopModel> busStopAfterCursorAdapterSupplier, Class targetClass, ActivityClass target) {
         super(title, transitType.getTabInactiveImageResource(), transitType.getTabActiveImageResource());
         this.routeCursorAdapterSupplier = routeCursorAdapterSupplier;
         this.stopCursorAdapterSupplier = busStopCursorAdapterSupplier;
@@ -59,11 +59,12 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
         this.targetClass = targetClass;
         this.headerStringName = headerStringName;
         this.buttonText = buttonText;
+        this.target = target;
     }
 
     @Override
     public Fragment getFragment() {
-        LineAwareLocationPickerTabActivityHandler.PlaceholderFragment fragment = LineAwareLocationPickerTabActivityHandler.PlaceholderFragment.newInstance(headerStringName, buttonText, transitType, routeCursorAdapterSupplier, stopCursorAdapterSupplier, busStopAfterCursorAdapterSupplier, targetClass, prepopulate);
+        LineAwareLocationPickerTabActivityHandler.PlaceholderFragment fragment = LineAwareLocationPickerTabActivityHandler.PlaceholderFragment.newInstance(headerStringName, buttonText, transitType, routeCursorAdapterSupplier, stopCursorAdapterSupplier, busStopAfterCursorAdapterSupplier, targetClass, prepopulate, target);
         return fragment;
     }
 
@@ -77,6 +78,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
         CursorAdapterSupplier<StopModel> stopAfterCursorAdapterSupplier;
         TransitType transitType;
         Class targetClass;
+        ActivityClass target;
         String headerStringName;
         String buttonText;
 
@@ -92,7 +94,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
 
         boolean prePopulated = false;
 
-        public static PlaceholderFragment newInstance(String headerStringName, String buttonText, TransitType transitType, CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier, CursorAdapterSupplier<StopModel> busStopCursorAdapterSupplier, CursorAdapterSupplier<StopModel> busStopAfterCursorAdapterSupplier, Class targetClass, Bundle prepopulate) {
+        public static PlaceholderFragment newInstance(String headerStringName, String buttonText, TransitType transitType, CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier, CursorAdapterSupplier<StopModel> busStopCursorAdapterSupplier, CursorAdapterSupplier<StopModel> busStopAfterCursorAdapterSupplier, Class targetClass, Bundle prepopulate, ActivityClass target) {
             PlaceholderFragment fragment = new PlaceholderFragment();
             Bundle args;
             if (prepopulate == null) {
@@ -105,6 +107,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
 
             args.putSerializable("transitType", transitType);
             args.putSerializable("targetClass", targetClass);
+            args.putSerializable("target", target);
             args.putString("headerStringName", headerStringName);
             args.putString("buttonText", buttonText);
 
@@ -121,6 +124,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
         private void restoreArguments() {
             transitType = (TransitType) getArguments().getSerializable("transitType");
             targetClass = (Class) getArguments().getSerializable("targetClass");
+            target = (ActivityClass) getArguments().getSerializable("target");
             headerStringName = getArguments().getString("headerStringName");
             buttonText = getArguments().getString("buttonText");
 
@@ -192,12 +196,12 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                     intent.putExtra(Constants.TRANSIT_TYPE, transitType);
                     intent.putExtra(Constants.ROUTE_DIRECTION_MODEL, selectedRoute);
 
-                    if (NextToArriveResultsActivity.class.equals(targetClass)) {
+                    if (ActivityClass.NEXT_TO_ARRIVE.equals(target)) {
                         AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_NTA_FROM_PICKER, AnalyticsManager.CONTENT_ID_NEXT_TO_ARRIVE, null);
-                    } else if (ScheduleResultsActivity.class.equals(targetClass)) {
+                    } else if (ActivityClass.SCHEDULES.equals(target)) {
                         AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_SCHEDULE_FROM_PICKER, AnalyticsManager.CONTENT_ID_SCHEDULE, null);
                     } else {
-                        Log.e(TAG, String.format("Could not track event analytics for target class: %s", targetClass));
+                        Log.e(TAG, String.format("Could not track event analytics for target class: %s", target));
                     }
 
                     getActivity().startActivityForResult(intent, Constants.NTA_REQUEST);

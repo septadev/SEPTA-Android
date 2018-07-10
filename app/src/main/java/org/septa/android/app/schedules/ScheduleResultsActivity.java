@@ -25,6 +25,7 @@ import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
+import org.septa.android.app.ActivityClass;
 import org.septa.android.app.BaseActivity;
 import org.septa.android.app.Constants;
 import org.septa.android.app.R;
@@ -60,6 +61,7 @@ public class ScheduleResultsActivity extends BaseActivity implements RenameFavor
 
     private static final String TAG = ScheduleResultsActivity.class.getSimpleName();
 
+    private ActivityClass originClass = ActivityClass.SCHEDULES;
     private static final int RAIL_MON_THUR = 8;
     private static final int WEEK_DAY = 32;
     private static final int RAIL_FRIDAY = 2;
@@ -162,7 +164,7 @@ public class ScheduleResultsActivity extends BaseActivity implements RenameFavor
         View alertView = findViewById(R.id.service_alert);
         if (alert.isAlert()) {
             alertView.setVisibility(View.VISIBLE);
-            alertView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ALERT_EXPANDED, this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName()));
+            alertView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ALERT_EXPANDED, this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName(), originClass));
             displayAlerts = true;
         } else {
             LinearLayout.LayoutParams loparams = (LinearLayout.LayoutParams) alertView.getLayoutParams();
@@ -174,7 +176,7 @@ public class ScheduleResultsActivity extends BaseActivity implements RenameFavor
         View advisoryView = findViewById(R.id.service_advisory);
         if (alert.isAdvisory()) {
             advisoryView.setVisibility(View.VISIBLE);
-            advisoryView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ADVISORY_EXPANDED, this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName()));
+            advisoryView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ADVISORY_EXPANDED, this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName(), originClass));
             displayAlerts = true;
         } else {
             LinearLayout.LayoutParams loparams = (LinearLayout.LayoutParams) advisoryView.getLayoutParams();
@@ -186,7 +188,7 @@ public class ScheduleResultsActivity extends BaseActivity implements RenameFavor
         View detourView = findViewById(R.id.active_detour);
         if (alert.isDetour()) {
             advisoryView.setVisibility(View.VISIBLE);
-            detourView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.ACTIVE_DETOUR_EXPANDED, this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName()));
+            detourView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.ACTIVE_DETOUR_EXPANDED, this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName(), originClass));
             displayAlerts = true;
         } else {
             LinearLayout.LayoutParams loparams = (LinearLayout.LayoutParams) detourView.getLayoutParams();
@@ -198,7 +200,7 @@ public class ScheduleResultsActivity extends BaseActivity implements RenameFavor
         View weatherView = findViewById(R.id.weather_alerts);
         if (alert.isSnow()) {
             weatherView.setVisibility(View.VISIBLE);
-            weatherView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.WEATHER_ALERTS_EXPANDED, this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName()));
+            weatherView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.WEATHER_ALERTS_EXPANDED, this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName(), originClass));
             displayAlerts = true;
         } else {
             LinearLayout.LayoutParams loparams = (LinearLayout.LayoutParams) weatherView.getLayoutParams();

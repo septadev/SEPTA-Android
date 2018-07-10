@@ -5,12 +5,10 @@ import android.content.Intent;
 import android.util.Log;
 import android.view.View;
 
+import org.septa.android.app.ActivityClass;
 import org.septa.android.app.Constants;
-import org.septa.android.app.MainActivity;
 import org.septa.android.app.TransitType;
-import org.septa.android.app.nextarrive.NextToArriveResultsActivity;
 import org.septa.android.app.support.AnalyticsManager;
-import org.septa.android.app.transitview.TransitViewResultsActivity;
 
 public class GoToSystemStatusResultsOnClickListener implements View.OnClickListener {
 
@@ -21,13 +19,15 @@ public class GoToSystemStatusResultsOnClickListener implements View.OnClickListe
     private TransitType transitType;
     private String routeId;
     private String routeName;
+    private ActivityClass origin;
 
-    public GoToSystemStatusResultsOnClickListener(String statusType, Context activity, TransitType transitType, String routeId, String routeName) {
+    public GoToSystemStatusResultsOnClickListener(String statusType, Context activity, TransitType transitType, String routeId, String routeName, ActivityClass origin) {
         this.statusType = statusType;
         this.context = activity;
         this.transitType = transitType;
         this.routeId = routeId;
         this.routeName = routeName;
+        this.origin = origin;
     }
 
     @Override
@@ -40,14 +40,14 @@ public class GoToSystemStatusResultsOnClickListener implements View.OnClickListe
             intent.putExtra(statusType, Boolean.TRUE);
 
             // track analytics about user origin
-            if (NextToArriveResultsActivity.class.equals(context.getClass())) {
+            if (ActivityClass.NEXT_TO_ARRIVE.equals(origin)) {
                 AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_SYSTEM_STATUS_FROM_NTA, AnalyticsManager.CONTENT_ID_SYSTEM_STATUS, null);
-            } else if (TransitViewResultsActivity.class.equals(context.getClass())) {
+            } else if (ActivityClass.TRANSITVIEW.equals(origin)) {
                 AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_SYSTEM_STATUS_FROM_TRANSITVIEW, AnalyticsManager.CONTENT_ID_SYSTEM_STATUS, null);
-            } else if (MainActivity.class.equals(context.getClass())) {
+            } else if (ActivityClass.MAIN.equals(origin)) {
                 AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_SYSTEM_STATUS_FROM_FAVORITES, AnalyticsManager.CONTENT_ID_SYSTEM_STATUS, null);
             } else {
-                Log.e(TAG, String.format("Could not track event analytics for target class: %s", context.getClass()));
+                Log.e(TAG, String.format("Could not track event analytics for target class: %s", origin));
             }
 
             context.startActivity(intent);

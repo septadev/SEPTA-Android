@@ -42,6 +42,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.maps.android.data.kml.KmlLayer;
 
+import org.septa.android.app.ActivityClass;
 import org.septa.android.app.BaseActivity;
 import org.septa.android.app.Constants;
 import org.septa.android.app.R;
@@ -155,6 +156,7 @@ public class NextToArriveResultsActivity extends BaseActivity implements OnMapRe
 
         titleText = bottomSheetLayout.findViewById(R.id.title_txt);
         nextToArriveDetailsView = findViewById(R.id.next_to_arrive_trip_details);
+        nextToArriveDetailsView.setOriginClass(ActivityClass.NEXT_TO_ARRIVE);
 
         initializeView(savedInstanceState);
     }

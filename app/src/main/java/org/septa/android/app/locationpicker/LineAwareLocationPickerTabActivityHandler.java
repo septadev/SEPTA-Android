@@ -193,9 +193,9 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                     intent.putExtra(Constants.ROUTE_DIRECTION_MODEL, selectedRoute);
 
                     if (NextToArriveResultsActivity.class.equals(targetClass)) {
-                        AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CUSTOM_EVENT_NTA_FROM_PICKER, AnalyticsManager.CUSTOM_EVENT_ID_NEXT_TO_ARRIVE, null);
+                        AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_NTA_FROM_PICKER, AnalyticsManager.CONTENT_ID_NEXT_TO_ARRIVE, null);
                     } else if (ScheduleResultsActivity.class.equals(targetClass)) {
-                        AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CUSTOM_EVENT_SCHEDULE_FROM_PICKER, AnalyticsManager.CUSTOM_EVENT_ID_SCHEDULE, null);
+                        AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_SCHEDULE_FROM_PICKER, AnalyticsManager.CONTENT_ID_SCHEDULE, null);
                     } else {
                         Log.e(TAG, String.format("Could not track event analytics for target class: %s", targetClass));
                     }

@@ -150,7 +150,7 @@ public class LineUnawareLocationPickerTabActivityHandler extends BaseTabActivity
                     intent.putExtra(Constants.TRANSIT_TYPE, transitType);
 
                     if (NextToArriveResultsActivity.class.equals(targetClass)) {
-                        AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CUSTOM_EVENT_NTA_FROM_PICKER, AnalyticsManager.CUSTOM_EVENT_ID_NEXT_TO_ARRIVE, null);
+                        AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_NTA_FROM_PICKER, AnalyticsManager.CONTENT_ID_NEXT_TO_ARRIVE, null);
                     } else {
                         Log.e(TAG, String.format("Could not track event analytics for target class: %s", targetClass));
                     }

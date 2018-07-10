@@ -168,7 +168,7 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             transitViewFavoriteViewHolder.viewResults.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CUSTOM_EVENT_TRANSITVIEW_FROM_FAVORITES, AnalyticsManager.CUSTOM_EVENT_ID_TRANSITVIEW, null);
+                    AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_TRANSITVIEW_FROM_FAVORITES, AnalyticsManager.CONTENT_ID_TRANSITVIEW, null);
                     mListener.goToTransitView(transitViewFavorite);
                 }
             });

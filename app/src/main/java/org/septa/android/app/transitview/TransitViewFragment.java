@@ -164,7 +164,7 @@ public class TransitViewFragment extends Fragment implements TransitViewLinePick
         queryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CUSTOM_EVENT_TRANSITVIEW_FROM_PICKER, AnalyticsManager.CUSTOM_EVENT_ID_TRANSITVIEW, null);
+                AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_TRANSITVIEW_FROM_PICKER, AnalyticsManager.CONTENT_ID_TRANSITVIEW, null);
                 mListener.goToTransitViewResults(firstRoute, secondRoute, thirdRoute);
             }
         });

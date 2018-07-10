@@ -58,7 +58,7 @@ public class PerksFragment extends Fragment {
                     intent.putExtra(Constants.TARGET_URL, url);
                     intent.putExtra(Constants.TITLE, title);
 
-                    AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CUSTOM_EVENT_PERKS_MORE, AnalyticsManager.CUSTOM_EVENT_ID_PERKS, null);
+                    AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_PERKS_MORE, AnalyticsManager.CUSTOM_EVENT_ID_EXTERNAL_LINK, null);
                     startActivity(intent);
                 }
             }

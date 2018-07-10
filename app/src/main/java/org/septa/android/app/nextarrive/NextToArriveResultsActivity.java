@@ -480,7 +480,7 @@ public class NextToArriveResultsActivity extends BaseActivity implements OnMapRe
             findViewById(R.id.view_sched_view).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CUSTOM_EVENT_SCHEDULE_FROM_NTA, AnalyticsManager.CUSTOM_EVENT_ID_SCHEDULE, null);
+                    AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_SCHEDULE_FROM_NTA, AnalyticsManager.CONTENT_ID_SCHEDULE, null);
                     gotoSchedulesForTarget();
                 }
             });

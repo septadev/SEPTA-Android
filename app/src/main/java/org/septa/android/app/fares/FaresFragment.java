@@ -78,9 +78,9 @@ public class FaresFragment extends Fragment {
 
                     // analytics
                     if (viewId == R.id.septa_key_link) {
-                        AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CUSTOM_EVENT_KEY_MORE, AnalyticsManager.CUSTOM_EVENT_ID_FARES_TRANSIT, null);
+                        AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_KEY_MORE, AnalyticsManager.CUSTOM_EVENT_ID_EXTERNAL_LINK, null);
                     } else if (viewId == R.id.more_about_fares_button) {
-                        AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CUSTOM_EVENT_FARES_MORE, AnalyticsManager.CUSTOM_EVENT_ID_FARES_TRANSIT, null);
+                        AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_FARES_MORE, AnalyticsManager.CUSTOM_EVENT_ID_EXTERNAL_LINK, null);
                     } else {
                         Log.e(TAG, String.format("Could not track event analytics for url: %s", url));
                     }

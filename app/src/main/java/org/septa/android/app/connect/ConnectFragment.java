@@ -84,9 +84,9 @@ public class ConnectFragment extends Fragment {
 
                     // analytics
                     if (viewId == R.id.facebook_arrow) {
-                        AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CUSTOM_EVENT_FACEBOOK, AnalyticsManager.CUSTOM_EVENT_ID_CONNECT, null);
+                        AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_FACEBOOK, AnalyticsManager.CUSTOM_EVENT_ID_EXTERNAL_LINK, null);
                     } else if (viewId == R.id.twitter_arrow) {
-                        AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CUSTOM_EVENT_TWITTER, AnalyticsManager.CUSTOM_EVENT_ID_CONNECT, null);
+                        AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_TWITTER, AnalyticsManager.CUSTOM_EVENT_ID_EXTERNAL_LINK, null);
                     } else {
                         Log.e(TAG, String.format("Could not track event analytics for url: %s", url));
                     }
@@ -110,9 +110,9 @@ public class ConnectFragment extends Fragment {
 
                     // analytics
                     if (viewId == R.id.chat_arrow) {
-                        AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CUSTOM_EVENT_LIVE_CHAT, AnalyticsManager.CUSTOM_EVENT_ID_CONNECT, null);
+                        AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_LIVE_CHAT, AnalyticsManager.CUSTOM_EVENT_ID_EXTERNAL_LINK, null);
                     } else if (viewId == R.id.comment_arrow) {
-                        AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CUSTOM_EVENT_SEND_COMMENT, AnalyticsManager.CUSTOM_EVENT_ID_CONNECT, null);
+                        AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_SEND_COMMENT, AnalyticsManager.CUSTOM_EVENT_ID_EXTERNAL_LINK, null);
                     } else {
                         Log.e(TAG, String.format("Could not track event analytics for url: %s", url));
                     }

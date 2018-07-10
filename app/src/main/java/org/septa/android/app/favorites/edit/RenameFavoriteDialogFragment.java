@@ -83,7 +83,7 @@ public class RenameFavoriteDialogFragment extends DialogFragment {
                                     DeleteFavoritesAsyncTask task = new DeleteFavoritesAsyncTask(getContext());
 
                                     // TODO: count number of times users delete favorites
-//                                    AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_DELETE_FAVORITE, null, null);
+//                                    AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CUSTOM_EVENT_DELETE_FAVORITE, null, null);
 
                                     task.execute(favorite.getKey());
                                     getDialog().dismiss();

@@ -156,7 +156,7 @@ public class AboutFragment extends Fragment {
                     intent.putExtra(Constants.TARGET_URL, url);
                     intent.putExtra(Constants.TITLE, title);
 
-                    AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_APP_FEEDBACK, AnalyticsManager.CUSTOM_EVENT_ID_ABOUT, null);
+                    AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CUSTOM_EVENT_APP_FEEDBACK, AnalyticsManager.CUSTOM_EVENT_ID_ABOUT, null);
                     startActivity(intent);
                 }
             }

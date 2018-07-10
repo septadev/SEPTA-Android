@@ -87,7 +87,7 @@ public abstract class AnalyticsManager {
         initialized = true;
     }
 
-    public static void logContentType(String tag, String contentName, String contentId, String contentType) {
+    public static void logContentViewEvent(String tag, String contentName, String contentId, String contentType) {
         Log.d(TAG, String.format("Tag: %s Name: %s ID: %s Type: %s", tag, contentName, contentId, contentType));
 
         if (initialized) {

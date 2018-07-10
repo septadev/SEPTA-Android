@@ -150,7 +150,7 @@ public class ScheduleResultsActivity extends BaseActivity implements RenameFavor
                 intent.putExtra(Constants.TRANSIT_TYPE, transitType);
                 intent.putExtra(Constants.ROUTE_DIRECTION_MODEL, routeDirectionModel);
 
-                AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_NTA_FROM_SCHEDULE, AnalyticsManager.CUSTOM_EVENT_ID_NEXT_TO_ARRIVE, null);
+                AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CUSTOM_EVENT_NTA_FROM_SCHEDULE, AnalyticsManager.CUSTOM_EVENT_ID_NEXT_TO_ARRIVE, null);
                 startActivityForResult(intent, Constants.NTA_REQUEST);
             }
         });

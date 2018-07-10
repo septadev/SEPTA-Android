@@ -178,37 +178,76 @@ public class TransitViewResultsActivity extends BaseActivity implements Runnable
     public void removeRoute(int routeToRemove) {
         switch (routeToRemove) {
             case 3:
-                // TODO: prompt to delete
-                activeRouteId = firstRoute.getRouteId();
+                // prompt to remove route
+                new AlertDialog.Builder(this).setCancelable(true)
+                        .setTitle(getString(R.string.transitview_remove_route_title, thirdRoute.getRouteId()))
+                        .setMessage(R.string.transitview_remove_route_text)
+                        .setPositiveButton(R.string.transitview_remove_route_pos_button, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                activeRouteId = firstRoute.getRouteId();
 
-                refreshed = false;
+                                refreshed = false;
 
-                // delete third route
-                updateRouteCards(firstRoute, secondRoute, null);
+                                // delete third route
+                                updateRouteCards(firstRoute, secondRoute, null);
+                            }
+                        })
+                        .setNegativeButton(R.string.transitview_remove_route_neg_button, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        }).create().show();
                 break;
             case 2:
-                // TODO: prompt to delete
-                activeRouteId = firstRoute.getRouteId();
+                // prompt to remove route
+                new AlertDialog.Builder(this).setCancelable(true)
+                        .setTitle(getString(R.string.transitview_remove_route_title, secondRoute.getRouteId()))
+                        .setMessage(R.string.transitview_remove_route_text)
+                        .setPositiveButton(R.string.transitview_remove_route_pos_button, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                activeRouteId = firstRoute.getRouteId();
 
-                refreshed = false;
+                                refreshed = false;
 
-                // delete second route
-                updateRouteCards(firstRoute, thirdRoute, null);
+                                // delete second route
+                                updateRouteCards(firstRoute, thirdRoute, null);
+                            }
+                        })
+                        .setNegativeButton(R.string.transitview_remove_route_neg_button, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        }).create().show();
                 break;
             case 1:
             default:
-                // TODO: prompt to delete
-                if (secondRoute != null) {
-                    activeRouteId = secondRoute.getRouteId();
+                // prompt to remove route
+                new AlertDialog.Builder(this).setCancelable(true)
+                        .setTitle(getString(R.string.transitview_remove_route_title, firstRoute.getRouteId()))
+                        .setMessage(R.string.transitview_remove_route_text)
+                        .setPositiveButton(R.string.transitview_remove_route_pos_button, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                if (secondRoute != null) {
+                                    activeRouteId = secondRoute.getRouteId();
 
-                    refreshed = false;
+                                    refreshed = false;
 
-                    // delete first route
-                    updateRouteCards(secondRoute, thirdRoute, null);
-                } else {
-                    // take user back to picker screen
-                    finish();
-                }
+                                    // delete first route
+                                    updateRouteCards(secondRoute, thirdRoute, null);
+                                } else {
+                                    // take user back to picker screen
+                                    finish();
+                                }
+                            }
+                        })
+                        .setNegativeButton(R.string.transitview_remove_route_neg_button, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        }).create().show();
                 break;
         }
     }

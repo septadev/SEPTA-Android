@@ -26,6 +26,7 @@ import org.septa.android.app.services.apiinterfaces.model.Favorite;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalFavorite;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalModelResponse;
 import org.septa.android.app.services.apiinterfaces.model.TransitViewFavorite;
+import org.septa.android.app.support.AnalyticsManager;
 import org.septa.android.app.systemstatus.SystemStatusState;
 import org.septa.android.app.transitview.TransitViewUtils;
 
@@ -160,11 +161,14 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             final TransitViewFavorite transitViewFavorite = (TransitViewFavorite) tempFavorite;
             final TransitViewFavoriteViewHolder transitViewFavoriteViewHolder = (TransitViewFavoriteViewHolder) holder;
 
+            // favorite name
             transitViewFavoriteViewHolder.favoriteName.setText(transitViewFavorite.getName());
 
+            // clicking on link opens TransitView results
             transitViewFavoriteViewHolder.viewResults.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_TRANSITVIEW_FROM_FAVORITES, AnalyticsManager.CUSTOM_EVENT_ID_TRANSITVIEW, null);
                     mListener.goToTransitView(transitViewFavorite);
                 }
             });

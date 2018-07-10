@@ -240,7 +240,6 @@ public class NextToArriveTripView extends FrameLayout {
 
         View line = LayoutInflater.from(getContext()).inflate(R.layout.item_next_to_arrive_unit, this, false);
 
-
         DateFormat dateFormat = DateFormat.getTimeInstance(DateFormat.SHORT);
 
         android.widget.TextView origArrivalTimeText = line.findViewById(R.id.orig_arrival_time_text);
@@ -304,7 +303,6 @@ public class NextToArriveTripView extends FrameLayout {
                     CrashlyticsManager.log(Log.INFO, TAG, unit.getOrigRouteId());
                     CrashlyticsManager.log(Log.INFO, TAG, unit.getOrigLineTripId());
                     CrashlyticsManager.log(Log.INFO, TAG, unit.getOrigVehicleId());
-
 
                     intent.putExtra(Constants.DESTINATION_STATION, destination);
                     intent.putExtra(Constants.STARTING_STATION, start);

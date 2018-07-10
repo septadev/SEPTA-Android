@@ -19,18 +19,54 @@ import io.fabric.sdk.android.Fabric;
 
 public abstract class AnalyticsManager {
 
-    public static final String CUSTOM_EVENT_ABOUT = "About";
-    public static final String CUSTOM_EVENT_CONNECT = "Connect with SEPTA";
-    public static final String CUSTOM_EVENT_FARES_TRANSIT = "Fares and Transit Info";
-    public static final String CUSTOM_EVENT_FAVORITES = "Favorites";
-    public static final String CUSTOM_EVENT_NEXT_TO_ARRIVE = "Next To Arrive";
-    public static final String CUSTOM_EVENT_PERKS = "Perks";
-    public static final String CUSTOM_EVENT_SCHEDULE = "Schedule";
-    public static final String CUSTOM_EVENT_SPECIAL_EVENTS = "Special Events";
-    public static final String CUSTOM_EVENT_SYSTEM_MAP = "System Map";
-    public static final String CUSTOM_EVENT_SYSTEM_STATUS = "System Status";
-    public static final String CUSTOM_EVENT_TRAIN_VIEW = "TrainView";
-    public static final String CUSTOM_EVENT_TRANSIT_VIEW = "TransitView";
+    private static final String TAG = AnalyticsManager.class.getSimpleName();
+
+    // content ids
+    public static final String CUSTOM_EVENT_ID_NEXT_TO_ARRIVE = "Next To Arrive";
+    public static final String CUSTOM_EVENT_ID_FAVORITES = "Favorites";
+    public static final String CUSTOM_EVENT_ID_SYSTEM_STATUS = "System Status";
+    public static final String CUSTOM_EVENT_ID_SCHEDULE = "Schedule";
+    public static final String CUSTOM_EVENT_ID_FARES_TRANSIT = "Fares and Transit Info";
+    public static final String CUSTOM_EVENT_ID_SYSTEM_MAP = "System Map";
+    public static final String CUSTOM_EVENT_ID_SPECIAL_EVENTS = "Special Events";
+    public static final String CUSTOM_EVENT_ID_CONNECT = "Connect with SEPTA";
+    public static final String CUSTOM_EVENT_ID_PERKS = "Perks";
+    public static final String CUSTOM_EVENT_ID_TRANSITVIEW = "TransitView";
+    public static final String CUSTOM_EVENT_ID_TRAINVIEW = "TrainView";
+    public static final String CUSTOM_EVENT_ID_ABOUT = "About";
+
+    // menu item click event names
+    public static final String CUSTOM_EVENT_MENU_NEXT_TO_ARRIVE = "Next To Arrive Picker";
+    public static final String CUSTOM_EVENT_MENU_FAVORITES = "Favorites";
+    public static final String CUSTOM_EVENT_MENU_SYSTEM_STATUS = "System Status Picker";
+    public static final String CUSTOM_EVENT_MENU_SCHEDULE = "Schedule Picker";
+    public static final String CUSTOM_EVENT_MENU_FARES = "Fares and Transit Info";
+    public static final String CUSTOM_EVENT_MENU_SYSTEM_MAP = "System Map";
+    public static final String CUSTOM_EVENT_MENU_SPECIAL_EVENTS = "Special Events";
+    public static final String CUSTOM_EVENT_MENU_CONNECT = "Connect with SEPTA";
+    public static final String CUSTOM_EVENT_MENU_PERKS = "Perks";
+    public static final String CUSTOM_EVENT_MENU_TRANSITVIEW = "TransitView Picker";
+    public static final String CUSTOM_EVENT_MENU_TRAINVIEW = "TrainView";
+    public static final String CUSTOM_EVENT_MENU_ABOUT = "About";
+
+    // navigating from one screen to another events
+    public static final String CUSTOM_EVENT_NTA_FROM_PICKER = "Next To Arrive Results (from Picker)";
+    public static final String CUSTOM_EVENT_NTA_FROM_FAVORITES = "Next To Arrive Results (from Favorites)";
+    public static final String CUSTOM_EVENT_NTA_FROM_SCHEDULE = "Next To Arrive Results (from Schedule Results)";
+
+    public static final String CUSTOM_EVENT_SYSTEM_STATUS_FROM_PICKER = "System Status Results (from Picker)";
+    public static final String CUSTOM_EVENT_SYSTEM_STATUS_FROM_FAVORITES = "System Status Results (from Favorites)";
+    public static final String CUSTOM_EVENT_SYSTEM_STATUS_FROM_NTA = "System Status Results (from Next To Arrive Results)";
+    public static final String CUSTOM_EVENT_SYSTEM_STATUS_FROM_TRANSITVIEW = "System Status Results (from TransitView Results)"; // TODO
+
+    public static final String CUSTOM_EVENT_SCHEDULE_FROM_PICKER = "Schedule Results (from Picker)";
+    public static final String CUSTOM_EVENT_SCHEDULE_FROM_FAVORITES = "Schedule Picker (from Favorites)";
+    public static final String CUSTOM_EVENT_SCHEDULE_FROM_NTA = "Schedule Picker (from Next To Arrive Results)";
+
+    public static final String CUSTOM_EVENT_TRANSITVIEW_FROM_PICKER = "TransitView Results (from Picker)";
+    public static final String CUSTOM_EVENT_TRANSITVIEW_FROM_FAVORITES = "TransitView Results (from Favorites)";
+
+    // TODO: move interactions into a different event for tracking
 //    public static final String CUSTOM_EVENT_SAVE_RENAMED_FAVORITE = "Save a Renamed Favorite";
 //    public static final String CUSTOM_EVENT_DELETE_FAVORITE = "Delete a Favorite";
 
@@ -42,6 +78,8 @@ public abstract class AnalyticsManager {
     }
 
     public static void logContentType(String tag, String contentName, String contentId, String contentType) {
+        Log.d(TAG, String.format("Tag: %s Name: %s ID: %s Type: %s", tag, contentName, contentId, contentType));
+
         if (initialized) {
             ContentViewEvent contentViewEvent = new ContentViewEvent();
 

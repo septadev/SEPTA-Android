@@ -25,6 +25,8 @@ import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
 import org.septa.android.app.domain.StopModel;
+import org.septa.android.app.nextarrive.NextToArriveResultsActivity;
+import org.septa.android.app.support.AnalyticsManager;
 import org.septa.android.app.support.BaseTabActivityHandler;
 import org.septa.android.app.support.Consumer;
 import org.septa.android.app.support.CursorAdapterSupplier;
@@ -146,6 +148,12 @@ public class LineUnawareLocationPickerTabActivityHandler extends BaseTabActivity
                     intent.putExtra(Constants.STARTING_STATION, startingStation);
                     intent.putExtra(Constants.DESTINATION_STATION, destinationStation);
                     intent.putExtra(Constants.TRANSIT_TYPE, transitType);
+
+                    if (NextToArriveResultsActivity.class.equals(targetClass)) {
+                        AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_NTA_FROM_PICKER, AnalyticsManager.CUSTOM_EVENT_ID_NEXT_TO_ARRIVE, null);
+                    } else {
+                        Log.e(TAG, String.format("Could not track event analytics for target class: %s", targetClass));
+                    }
 
                     getActivity().startActivityForResult(intent, Constants.NTA_REQUEST);
                 }

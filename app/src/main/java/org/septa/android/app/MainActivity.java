@@ -319,68 +319,67 @@ public class MainActivity extends BaseActivity implements
         drawer.closeDrawer(GravityCompat.START);
 
         if (id == R.id.nav_next_to_arrive) {
-            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_NEXT_TO_ARRIVE, null, null);
+            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_MENU_NEXT_TO_ARRIVE, AnalyticsManager.CUSTOM_EVENT_ID_NEXT_TO_ARRIVE, null);
             switchToBundle(item, nextToArriveFragment, R.string.next_to_arrive, R.drawable.ic_nta_active);
         }
 
         if (id == R.id.nav_schedule) {
-            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_SCHEDULE, null, null);
+            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_MENU_SCHEDULE, AnalyticsManager.CUSTOM_EVENT_ID_SCHEDULE, null);
             switchToBundle(item, schedules, R.string.schedule, R.drawable.ic_schedule_active);
         }
 
         if (id == R.id.nav_favorites) {
-            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_FAVORITES, null, null);
+            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_MENU_FAVORITES, AnalyticsManager.CUSTOM_EVENT_ID_FAVORITES, null);
             switchToBundle(item, favoritesFragment, R.string.favorites, R.drawable.ic_favorites_active);
         }
 
         if (id == R.id.nav_system_status) {
-            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_SYSTEM_STATUS, null, null);
+            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_MENU_SYSTEM_STATUS, AnalyticsManager.CUSTOM_EVENT_ID_SYSTEM_STATUS, null);
             switchToBundle(item, systemStatus, R.string.system_status, R.drawable.ic_status_active);
         }
 
         if (id == R.id.nav_fares_transit_info) {
-            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_FARES_TRANSIT, null, null);
+            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_MENU_FARES, AnalyticsManager.CUSTOM_EVENT_ID_FARES_TRANSIT, null);
             switchToBundle(item, faresTransitInfo, R.string.fares_and_transit_info, R.drawable.ic_fares_active);
         }
 
         if (id == R.id.nav_perks) {
-            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_PERKS, null, null);
+            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_MENU_PERKS, AnalyticsManager.CUSTOM_EVENT_ID_PERKS, null);
             switchToBundle(item, perks, R.string.perks, R.drawable.ic_perks_active);
         }
 
         if (id == R.id.nav_system_map) {
-            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_SYSTEM_MAP, null, null);
+            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_MENU_SYSTEM_MAP, AnalyticsManager.CUSTOM_EVENT_ID_SYSTEM_MAP, null);
             switchToBundle(item, systemMap, R.string.system_map, R.drawable.ic_map_active);
         }
 
         if (id == R.id.nav_events) {
-            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_SPECIAL_EVENTS, null, null);
+            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_MENU_SPECIAL_EVENTS, AnalyticsManager.CUSTOM_EVENT_ID_SPECIAL_EVENTS, null);
             switchToBundle(item, events, R.string.events, R.drawable.ic_calendar_active);
         }
 
         if (id == R.id.nav_connect) {
-            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_CONNECT, null, null);
+            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_MENU_CONNECT, AnalyticsManager.CUSTOM_EVENT_ID_CONNECT, null);
             switchToBundle(item, connect, R.string.connect_with_septa, 0);
         }
 
         if (id == R.id.nav_about_app) {
-            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_ABOUT, null, null);
+            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_MENU_ABOUT, AnalyticsManager.CUSTOM_EVENT_ID_ABOUT, null);
             switchToBundle(item, about, R.string.about_the_septa_app, 0);
         }
 
         if (id == R.id.nav_trainview) {
-            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_TRAIN_VIEW, null, null);
+            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_MENU_TRAINVIEW, AnalyticsManager.CUSTOM_EVENT_ID_TRAINVIEW, null);
             switchToBundle(item, trainview, R.string.train_view, 0);
         }
 
         if (id == R.id.nav_transitview) {
-            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_TRANSIT_VIEW, null, null);
+            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_MENU_TRANSITVIEW, AnalyticsManager.CUSTOM_EVENT_ID_TRANSITVIEW, null);
             switchToBundle(item, transitview, R.string.transit_view, 0);
         }
 
         if (id == R.id.nav_transitview_beta) {
-            // TODO: analytics around use of beta transitview
-//            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_TRANSIT_VIEW, null, null);
+            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_MENU_TRANSITVIEW, AnalyticsManager.CUSTOM_EVENT_ID_TRANSITVIEW, null);
             switchToBundle(item, transitviewBeta, R.string.transit_view, R.drawable.ic_transitview_active);
         }
         return true;

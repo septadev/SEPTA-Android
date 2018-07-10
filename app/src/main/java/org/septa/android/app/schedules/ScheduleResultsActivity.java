@@ -41,6 +41,7 @@ import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Alert;
 import org.septa.android.app.services.apiinterfaces.model.Favorite;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalFavorite;
+import org.septa.android.app.support.AnalyticsManager;
 import org.septa.android.app.support.CrashlyticsManager;
 import org.septa.android.app.support.Criteria;
 import org.septa.android.app.support.CursorAdapterSupplier;
@@ -149,6 +150,7 @@ public class ScheduleResultsActivity extends BaseActivity implements RenameFavor
                 intent.putExtra(Constants.TRANSIT_TYPE, transitType);
                 intent.putExtra(Constants.ROUTE_DIRECTION_MODEL, routeDirectionModel);
 
+                AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_NTA_FROM_SCHEDULE, AnalyticsManager.CUSTOM_EVENT_ID_NEXT_TO_ARRIVE, null);
                 startActivityForResult(intent, Constants.NTA_REQUEST);
             }
         });
@@ -343,7 +345,6 @@ public class ScheduleResultsActivity extends BaseActivity implements RenameFavor
         currentFavorite = (NextArrivalFavorite) SeptaServiceFactory.getFavoritesService().getFavoriteByKey(this, favKey);
 
         // check if already a favorite
-        // TODO: invalidateOptionsMenu???
         if (menu != null) {
             if (currentFavorite != null) {
                 menu.findItem(R.id.create_favorite).setIcon(R.drawable.ic_favorite_made);

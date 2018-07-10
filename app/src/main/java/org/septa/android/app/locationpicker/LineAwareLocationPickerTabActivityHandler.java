@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -22,6 +23,9 @@ import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
 import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.domain.StopModel;
+import org.septa.android.app.nextarrive.NextToArriveResultsActivity;
+import org.septa.android.app.schedules.ScheduleResultsActivity;
+import org.septa.android.app.support.AnalyticsManager;
 import org.septa.android.app.support.BaseTabActivityHandler;
 import org.septa.android.app.support.Criteria;
 import org.septa.android.app.support.CursorAdapterSupplier;
@@ -30,6 +34,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHandler {
+
+    private static final String TAG = LineAwareLocationPickerTabActivityHandler.class.getSimpleName();
+
     private CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier;
     private CursorAdapterSupplier<StopModel> stopCursorAdapterSupplier;
     private CursorAdapterSupplier<StopModel> busStopAfterCursorAdapterSupplier;
@@ -128,8 +135,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
         }
 
         @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             restoreArguments();
 
             View rootView = inflater.inflate(R.layout.line_aware_next_to_arrive_search, container, false);
@@ -185,6 +191,14 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                     intent.putExtra(Constants.DESTINATION_STATION, destinationStation);
                     intent.putExtra(Constants.TRANSIT_TYPE, transitType);
                     intent.putExtra(Constants.ROUTE_DIRECTION_MODEL, selectedRoute);
+
+                    if (NextToArriveResultsActivity.class.equals(targetClass)) {
+                        AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_NTA_FROM_PICKER, AnalyticsManager.CUSTOM_EVENT_ID_NEXT_TO_ARRIVE, null);
+                    } else if (ScheduleResultsActivity.class.equals(targetClass)) {
+                        AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_SCHEDULE_FROM_PICKER, AnalyticsManager.CUSTOM_EVENT_ID_SCHEDULE, null);
+                    } else {
+                        Log.e(TAG, String.format("Could not track event analytics for target class: %s", targetClass));
+                    }
 
                     getActivity().startActivityForResult(intent, Constants.NTA_REQUEST);
                 }

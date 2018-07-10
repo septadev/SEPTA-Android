@@ -57,6 +57,7 @@ import org.septa.android.app.services.apiinterfaces.model.Favorite;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalDetails;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalFavorite;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalModelResponse;
+import org.septa.android.app.support.AnalyticsManager;
 import org.septa.android.app.support.Consumer;
 import org.septa.android.app.support.CrashlyticsManager;
 import org.septa.android.app.support.Criteria;
@@ -79,18 +80,26 @@ import retrofit2.Response;
 import static org.septa.android.app.favorites.edit.RenameFavoriteDialogFragment.EDIT_FAVORITE_DIALOG_KEY;
 
 public class NextToArriveResultsActivity extends BaseActivity implements OnMapReadyCallback, RenameFavoriteListener, Runnable, ReverseNTAStopSelection.ReverseNTAStopSelectionListener {
+
     public static final String TAG = NextToArriveResultsActivity.class.getSimpleName();
     public static final int REFRESH_DELAY_SECONDS = 30,
             NTA_RESULTS_FOR_NEXT_HOURS = 5;
+
     private static final String NTA_RESULTS_TITLE = "nta_results_title",
             NEED_TO_SEE = "need_to_see";
+
     private StopModel start;
     private StopModel destination;
     private TransitType transitType;
     private RouteDirectionModel routeDirectionModel;
+    private NextArrivalModelResponseParser parser;
+    private boolean mapSized = false;
+    private Handler refreshHandler;
+    private boolean editFavoritesFlag = false;
+
+    // layout variables
     private View containerView;
     private GoogleMap googleMap;
-    private boolean mapSized = false;
     private Button noResultsSchedulesButton;
     private FrameLayout mapContainerView;
     private ViewGroup bottomSheetLayout;
@@ -102,13 +111,10 @@ public class NextToArriveResultsActivity extends BaseActivity implements OnMapRe
     private View progressViewBottom;
     private NextArrivalFavorite currentFavorite = null;
     private NextToArriveTripView nextToArriveDetailsView;
-    private boolean editFavoritesFlag = false;
     private MarkerOptions startMarker;
     private MarkerOptions destMarker;
-    private NextArrivalModelResponseParser parser;
     private int peekHeight = 0;
     private BottomSheetBehavior bottomSheetBehavior;
-    private Handler refreshHandler;
     private SupportMapFragment mapFragment;
     private FrameLayout noResultsMessage;
 
@@ -474,6 +480,7 @@ public class NextToArriveResultsActivity extends BaseActivity implements OnMapRe
             findViewById(R.id.view_sched_view).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_SCHEDULE_FROM_NTA, AnalyticsManager.CUSTOM_EVENT_ID_SCHEDULE, null);
                     gotoSchedulesForTarget();
                 }
             });

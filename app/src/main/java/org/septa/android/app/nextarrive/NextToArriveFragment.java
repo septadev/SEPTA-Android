@@ -29,7 +29,7 @@ import org.septa.android.app.support.TabActivityHandler;
 public class NextToArriveFragment extends Fragment {
 
     public static final String TAG = NextToArriveFragment.class.getSimpleName(),
-        NTA_KEY_SECTIONS_PAGER_ADAPTER = "NTA_KEY_SECTIONS_PAGER_ADAPTER",
+            NTA_KEY_SECTIONS_PAGER_ADAPTER = "NTA_KEY_SECTIONS_PAGER_ADAPTER",
             NTA_ACTIVITY_TITLE = "NTA_ACTIVITY_TITLE";
 
     private static final String TAB_HEADER_STRING_NAME = "nta_picker_title";
@@ -58,7 +58,8 @@ public class NextToArriveFragment extends Fragment {
             return null;
         }
 
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(context,
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(context, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
         }
 

@@ -20,6 +20,7 @@ import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.database.DatabaseManager;
 import org.septa.android.app.rating.SharedPreferencesRatingUtil;
+import org.septa.android.app.support.AnalyticsManager;
 import org.septa.android.app.view.TextView;
 import org.septa.android.app.webview.WebViewActivity;
 
@@ -30,6 +31,7 @@ import java.util.TimeZone;
 
 public class AboutFragment extends Fragment {
 
+    private static final String TAG = AboutFragment.class.getSimpleName();
     private Activity activity;
 
     private boolean attribExpanded = false;
@@ -145,14 +147,16 @@ public class AboutFragment extends Fragment {
     }
 
     private void setHttpIntent(View rootView, int viewId, final String url, final String title) {
-        View twitterLink = rootView.findViewById(viewId);
-        twitterLink.setOnClickListener(new View.OnClickListener() {
+        View link = rootView.findViewById(viewId);
+        link.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (activity != null) {
                     Intent intent = new Intent(activity, WebViewActivity.class);
                     intent.putExtra(Constants.TARGET_URL, url);
                     intent.putExtra(Constants.TITLE, title);
+
+                    AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_APP_FEEDBACK, AnalyticsManager.CUSTOM_EVENT_ID_ABOUT, null);
                     startActivity(intent);
                 }
             }

@@ -57,7 +57,7 @@ public abstract class AnalyticsManager {
     public static final String CUSTOM_EVENT_SYSTEM_STATUS_FROM_PICKER = "System Status Results (from Picker)";
     public static final String CUSTOM_EVENT_SYSTEM_STATUS_FROM_FAVORITES = "System Status Results (from Favorites)";
     public static final String CUSTOM_EVENT_SYSTEM_STATUS_FROM_NTA = "System Status Results (from Next To Arrive Results)";
-    public static final String CUSTOM_EVENT_SYSTEM_STATUS_FROM_TRANSITVIEW = "System Status Results (from TransitView Results)"; // TODO
+    public static final String CUSTOM_EVENT_SYSTEM_STATUS_FROM_TRANSITVIEW = "System Status Results (from TransitView Results)";
 
     public static final String CUSTOM_EVENT_SCHEDULE_FROM_PICKER = "Schedule Results (from Picker)";
     public static final String CUSTOM_EVENT_SCHEDULE_FROM_FAVORITES = "Schedule Picker (from Favorites)";
@@ -65,6 +65,13 @@ public abstract class AnalyticsManager {
 
     public static final String CUSTOM_EVENT_TRANSITVIEW_FROM_PICKER = "TransitView Results (from Picker)";
     public static final String CUSTOM_EVENT_TRANSITVIEW_FROM_FAVORITES = "TransitView Results (from Favorites)";
+
+    // tapping on links in "Connect" or "Provide App Feedback"
+    public static final String CUSTOM_EVENT_APP_FEEDBACK = "Provide App Feedback";
+    public static final String CUSTOM_EVENT_SEND_COMMENT = "Send Us a Comment";
+    public static final String CUSTOM_EVENT_LIVE_CHAT = "Live Chat";
+    public static final String CUSTOM_EVENT_TWITTER = "Twitter";
+    public static final String CUSTOM_EVENT_FACEBOOK = "Facebook";
 
     // TODO: move interactions into a different event for tracking
 //    public static final String CUSTOM_EVENT_SAVE_RENAMED_FAVORITE = "Save a Renamed Favorite";

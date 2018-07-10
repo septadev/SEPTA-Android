@@ -100,7 +100,7 @@
                     android:drawableLeft="@drawable/comment_icon"
                     android:drawablePadding="@dimen/icon_padding"
                     android:linksClickable="true"
-                    android:text="Send us a comment"
+                    android:text="@string/comment_title"
                     android:textColor="@color/text_primary"
                     android:textSize="18sp"
                     app:typeface="@string/font_roboto_light" />

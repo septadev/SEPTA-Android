@@ -65,7 +65,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="23dp" />
+
             </LinearLayout>
+
         </android.support.v4.widget.NestedScrollView>
 
         <RelativeLayout
@@ -119,6 +121,7 @@
                 android:src="@drawable/schedules_orange" />
 
         </RelativeLayout>
+
     </LinearLayout>
 
     <FrameLayout
@@ -136,5 +139,7 @@
             android:layout_gravity="center"
             android:indeterminate="true"
             android:indeterminateDrawable="@drawable/basic_progress" />
+
     </FrameLayout>
+
 </FrameLayout>

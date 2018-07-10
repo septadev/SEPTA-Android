@@ -12,11 +12,12 @@ import android.view.ViewGroup;
 
 import org.septa.android.app.Constants;
 import org.septa.android.app.R;
+import org.septa.android.app.support.AnalyticsManager;
 import org.septa.android.app.webview.WebViewActivity;
 
 public class PerksFragment extends Fragment {
 
-    private static final String TOOLBAR_TITLE = "TOOLBAR_TITLE";
+    private static final String TAG = PerksFragment.class.getSimpleName(), TOOLBAR_TITLE = "TOOLBAR_TITLE";
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -56,6 +57,8 @@ public class PerksFragment extends Fragment {
                     Intent intent = new Intent(activity, WebViewActivity.class);
                     intent.putExtra(Constants.TARGET_URL, url);
                     intent.putExtra(Constants.TITLE, title);
+
+                    AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_PERKS_MORE, AnalyticsManager.CUSTOM_EVENT_ID_EXTERNAL_LINK, null);
                     startActivity(intent);
                 }
             }

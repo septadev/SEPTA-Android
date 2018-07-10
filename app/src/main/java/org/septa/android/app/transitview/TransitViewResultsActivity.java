@@ -46,11 +46,13 @@ import org.septa.android.app.database.DatabaseManager;
 import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.favorites.DeleteFavoritesAsyncTask;
 import org.septa.android.app.favorites.edit.RenameFavoriteDialogFragment;
+import org.septa.android.app.favorites.edit.RenameFavoriteListener;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Alerts;
 import org.septa.android.app.services.apiinterfaces.model.Favorite;
 import org.septa.android.app.services.apiinterfaces.model.TransitViewFavorite;
 import org.septa.android.app.services.apiinterfaces.model.TransitViewModelResponse;
+import org.septa.android.app.support.AnalyticsManager;
 import org.septa.android.app.support.CrashlyticsManager;
 import org.septa.android.app.support.CursorAdapterSupplier;
 import org.septa.android.app.support.MapUtils;
@@ -73,7 +75,7 @@ import retrofit2.Response;
 import static org.septa.android.app.favorites.edit.RenameFavoriteDialogFragment.EDIT_FAVORITE_DIALOG_KEY;
 import static org.septa.android.app.transitview.TransitViewUtils.isTrolley;
 
-public class TransitViewResultsActivity extends BaseActivity implements Runnable, TransitViewLinePickerFragment.TransitViewLinePickerListener, OnMapReadyCallback, TransitViewVehicleDetailsInfoWindowAdapter.TransitViewVehicleDetailsInfoWindowAdapterListener, RenameFavoriteDialogFragment.RenameFavoriteListener, TransitViewRouteCard.TransitViewRouteCardListener {
+public class TransitViewResultsActivity extends BaseActivity implements Runnable, TransitViewLinePickerFragment.TransitViewLinePickerListener, OnMapReadyCallback, TransitViewVehicleDetailsInfoWindowAdapter.TransitViewVehicleDetailsInfoWindowAdapterListener, RenameFavoriteListener, TransitViewRouteCard.TransitViewRouteCardListener {
 
     private static final String TAG = TransitViewResultsActivity.class.getSimpleName();
 
@@ -820,6 +822,8 @@ public class TransitViewResultsActivity extends BaseActivity implements Runnable
                                     }
                                 });
 
+                                AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_DELETE_FAVORITE, AnalyticsManager.CUSTOM_EVENT_ID_FAVORITES_MANAGEMENT, null);
+
                                 task.execute(TransitViewFavorite.generateKey(firstRoute, secondRoute, thirdRoute));
                             }
                         }).setNegativeButton(R.string.delete_fav_neg_button, new DialogInterface.OnClickListener() {
@@ -847,7 +851,6 @@ public class TransitViewResultsActivity extends BaseActivity implements Runnable
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         CrashlyticsManager.log(Log.INFO, TAG, "Creating RenameFavoriteDialogFragment for TransitView favorite: " + routeIds);
         RenameFavoriteDialogFragment fragment = RenameFavoriteDialogFragment.newInstance(true, true, currentFavorite);
-
         fragment.show(ft, EDIT_FAVORITE_DIALOG_KEY);
     }
 

@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import org.septa.android.app.ActivityClass;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
 import org.septa.android.app.database.DatabaseManager;
@@ -29,10 +30,11 @@ import org.septa.android.app.support.TabActivityHandler;
 public class NextToArriveFragment extends Fragment {
 
     public static final String TAG = NextToArriveFragment.class.getSimpleName(),
-        NTA_KEY_SECTIONS_PAGER_ADAPTER = "NTA_KEY_SECTIONS_PAGER_ADAPTER",
+            NTA_KEY_SECTIONS_PAGER_ADAPTER = "NTA_KEY_SECTIONS_PAGER_ADAPTER",
             NTA_ACTIVITY_TITLE = "NTA_ACTIVITY_TITLE";
 
     private static final String TAB_HEADER_STRING_NAME = "nta_picker_title";
+    private ActivityClass target = ActivityClass.NEXT_TO_ARRIVE;
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
     private TabLayout tabLayout;
@@ -58,18 +60,19 @@ public class NextToArriveFragment extends Fragment {
             return null;
         }
 
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(context,
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(context, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
         }
 
         DatabaseManager dbManager = DatabaseManager.getInstance(context);
 
         tabActivityHandlers = new TabActivityHandler[5];
-        tabActivityHandlers[1] = new LineUnawareLocationPickerTabActivityHandler(getString(R.string.tab_rail), TAB_HEADER_STRING_NAME, getString(R.string.nta_query_button_text), TransitType.RAIL, dbManager.getRailStopCursorAdapterSupplier(), NextToArriveResultsActivity.class);
-        tabActivityHandlers[0] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_bus), TAB_HEADER_STRING_NAME, getString(R.string.nta_query_button_text), TransitType.BUS, dbManager.getBusRouteCursorAdapterSupplier(), dbManager.getBusStopCursorAdapterSupplier(), dbManager.getBusStopAfterCursorAdapterSupplier(), NextToArriveResultsActivity.class);
-        tabActivityHandlers[3] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_trolley), TAB_HEADER_STRING_NAME, getString(R.string.nta_query_button_text), TransitType.TROLLEY, dbManager.getTrolleyRouteCursorAdapterSupplier(), dbManager.getTrolleyStopCursorAdapterSupplier(), dbManager.getTrolleyStopAfterCursorAdapterSupplier(), NextToArriveResultsActivity.class);
-        tabActivityHandlers[2] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_subway), TAB_HEADER_STRING_NAME, getString(R.string.nta_query_button_text), TransitType.SUBWAY, dbManager.getSubwayRouteCursorAdapterSupplier(), dbManager.getSubwayStopCursorAdapterSupplier(), dbManager.getSubwayStopAfterCursorAdapterSupplier(), NextToArriveResultsActivity.class);
-        tabActivityHandlers[4] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_nhsl), TAB_HEADER_STRING_NAME, getString(R.string.nta_query_button_text), TransitType.NHSL, dbManager.getNHSLRouteCursorAdapterSupplier(), dbManager.getBusStopCursorAdapterSupplier(), dbManager.getBusStopAfterCursorAdapterSupplier(), NextToArriveResultsActivity.class);
+        tabActivityHandlers[1] = new LineUnawareLocationPickerTabActivityHandler(getString(R.string.tab_rail), TAB_HEADER_STRING_NAME, getString(R.string.nta_query_button_text), TransitType.RAIL, dbManager.getRailStopCursorAdapterSupplier(), NextToArriveResultsActivity.class, target);
+        tabActivityHandlers[0] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_bus), TAB_HEADER_STRING_NAME, getString(R.string.nta_query_button_text), TransitType.BUS, dbManager.getBusRouteCursorAdapterSupplier(), dbManager.getBusStopCursorAdapterSupplier(), dbManager.getBusStopAfterCursorAdapterSupplier(), NextToArriveResultsActivity.class, target);
+        tabActivityHandlers[3] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_trolley), TAB_HEADER_STRING_NAME, getString(R.string.nta_query_button_text), TransitType.TROLLEY, dbManager.getTrolleyRouteCursorAdapterSupplier(), dbManager.getTrolleyStopCursorAdapterSupplier(), dbManager.getTrolleyStopAfterCursorAdapterSupplier(), NextToArriveResultsActivity.class, target);
+        tabActivityHandlers[2] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_subway), TAB_HEADER_STRING_NAME, getString(R.string.nta_query_button_text), TransitType.SUBWAY, dbManager.getSubwayRouteCursorAdapterSupplier(), dbManager.getSubwayStopCursorAdapterSupplier(), dbManager.getSubwayStopAfterCursorAdapterSupplier(), NextToArriveResultsActivity.class, target);
+        tabActivityHandlers[4] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_nhsl), TAB_HEADER_STRING_NAME, getString(R.string.nta_query_button_text), TransitType.NHSL, dbManager.getNHSLRouteCursorAdapterSupplier(), dbManager.getBusStopCursorAdapterSupplier(), dbManager.getBusStopAfterCursorAdapterSupplier(), NextToArriveResultsActivity.class, target);
 
         View fragmentView = inflater.inflate(R.layout.fragment_next_to_arrive, null);
 

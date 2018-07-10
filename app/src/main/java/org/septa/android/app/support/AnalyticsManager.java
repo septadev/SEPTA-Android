@@ -138,14 +138,13 @@ public abstract class AnalyticsManager {
             Answers.getInstance().logCustom(customEvent);
         } else {
             Log.i(tag, "-----------------------------------------");
-            Log.i(tag, String.format("Event: %s", eventName));
+            Log.i(tag, String.format("Event ID: %s", eventId));
 
             if (customAttributes != null && !customAttributes.isEmpty()) {
                 for (String attributeKey : customAttributes.keySet()) {
                     Log.i(tag, String.format("%s: %s", attributeKey, customAttributes.get(attributeKey)));
                 }
             }
-
             Log.i(tag, "-----------------------------------------");
         }
     }

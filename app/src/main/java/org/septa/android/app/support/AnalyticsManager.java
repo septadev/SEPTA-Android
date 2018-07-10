@@ -72,6 +72,9 @@ public abstract class AnalyticsManager {
     public static final String CUSTOM_EVENT_LIVE_CHAT = "Live Chat";
     public static final String CUSTOM_EVENT_TWITTER = "Twitter";
     public static final String CUSTOM_EVENT_FACEBOOK = "Facebook";
+    public static final String CUSTOM_EVENT_KEY_MORE = "More About SEPTA Key";
+    public static final String CUSTOM_EVENT_FARES_MORE = "More About Fares";
+    public static final String CUSTOM_EVENT_PERKS_MORE = "More About Perks";
 
     // TODO: move interactions into a different event for tracking
 //    public static final String CUSTOM_EVENT_SAVE_RENAMED_FAVORITE = "Save a Renamed Favorite";

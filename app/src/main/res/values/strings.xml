@@ -192,6 +192,11 @@
     <string name="transitview_line_picker_third_text">Select a Third Bus Route or Trolley Line</string>
 
     <string name="transitview_add_route">You must select a bus or trolley route to view TransitView results!</string>
+    <string name="transitview_remove_route_title">Remove Route %1$s?</string>
+    <string name="transitview_remove_route_text">Would you like to remove this route from your current TransitView selection?</string>
+    <string name="transitview_remove_route_pos_button">Remove</string>
+    <string name="transitview_remove_route_neg_button">Cancel</string>
+
 
     <!-- Schedules -->
     <string name="schedule_query_button_text">View Schedules</string>

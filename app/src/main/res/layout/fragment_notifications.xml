@@ -111,13 +111,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@android:color/white"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:layout_marginBottom="1dp">
 
                 <org.septa.android.app.view.TextView
                     android:id="@+id/system_notification_settings"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="1dp"
                     android:background="?android:attr/selectableItemBackground"
                     android:drawableEnd="@drawable/ic_right_chevron"
                     android:drawablePadding="5dp"

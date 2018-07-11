@@ -1,7 +1,11 @@
 package org.septa.android.app.notifications;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -32,8 +36,7 @@ public class NotificationsManagementFragment extends Fragment {
         systemSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO: make do something
-                Toast.makeText(context, "System Settings", Toast.LENGTH_SHORT).show();
+                openSystemNotificationSettings(context);
             }
         });
 
@@ -41,7 +44,7 @@ public class NotificationsManagementFragment extends Fragment {
         myNotifs.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO: make do something
+                // TODO: open MyNotificationsActivity
                 Toast.makeText(context, "My Notifications", Toast.LENGTH_SHORT).show();
             }
         });
@@ -50,7 +53,7 @@ public class NotificationsManagementFragment extends Fragment {
         notifsSchedule.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO: make do something
+                // TODO: open NotificationsScheduleActivity
                 Toast.makeText(context, "Notification Schedule", Toast.LENGTH_SHORT).show();
             }
         });
@@ -74,4 +77,29 @@ public class NotificationsManagementFragment extends Fragment {
             }
         }
     }
+
+    private void openSystemNotificationSettings(Context context) {
+        Intent intent = new Intent();
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            // open notification settings for SEPTA app if on 26+
+            intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+            intent.putExtra(Settings.EXTRA_APP_PACKAGE, context.getPackageName());
+
+        } else if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            // notification settings for 21+
+            intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
+            intent.putExtra("app_package", context.getPackageName());
+            intent.putExtra("app_uid", context.getApplicationInfo().uid);
+
+        } else {
+            // notification settings for <20
+            intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+            intent.addCategory(Intent.CATEGORY_DEFAULT);
+            intent.setData(Uri.parse("package:" + context.getPackageName()));
+        }
+
+        context.startActivity(intent);
+    }
+
 }

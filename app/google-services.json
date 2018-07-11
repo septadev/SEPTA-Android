@@ -1,0 +1,59 @@
+{
+  "project_info": {
+    "project_number": "610978848814",
+    "firebase_url": "https://septa-mobile-apps.firebaseio.com",
+    "project_id": "septa-mobile-apps",
+    "storage_bucket": "septa-mobile-apps.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:610978848814:android:81c2b9c055b8bd1d",
+        "android_client_info": {
+          "package_name": "org.septa.android.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "610978848814-rrbj6l3a2784vlvlqbinuv668rr1bli2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.septa.android.app",
+            "certificate_hash": "c6f41826336bcebeef8989f8364a269ef0b90a05"
+          }
+        },
+        {
+          "client_id": "610978848814-kb4u4a6lse9v1l2cpj202j3v3vo1tgfj.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "610978848814-kb4u4a6lse9v1l2cpj202j3v3vo1tgfj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDhasbUkEkxTMd5dXGjd3tg5AQMs3Yabfs"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "610978848814-kb4u4a6lse9v1l2cpj202j3v3vo1tgfj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

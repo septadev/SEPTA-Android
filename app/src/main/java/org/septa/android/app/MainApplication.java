@@ -11,6 +11,7 @@ import com.crashlytics.android.Crashlytics;
 import com.google.firebase.FirebaseApp;
 
 import org.septa.android.app.database.DatabaseManager;
+import org.septa.android.app.database.SEPTADatabase;
 import org.septa.android.app.database.update.DatabaseSharedPrefsUtils;
 import org.septa.android.app.rating.RatingUtil;
 import org.septa.android.app.rating.SharedPreferencesRatingUtil;
@@ -35,6 +36,7 @@ public class MainApplication extends Application implements Runnable {
     public void onCreate() {
         super.onCreate();
 
+        SEPTADatabase.setShippedDatabase(this);
         // update database version if manually incremented
         int currentDBVersion = DatabaseManager.getDatabase(getApplicationContext()).getVersion();
         if (currentDBVersion > DatabaseSharedPrefsUtils.getVersionInstalled(MainApplication.this)) {

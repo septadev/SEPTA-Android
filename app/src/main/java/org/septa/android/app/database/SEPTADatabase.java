@@ -10,6 +10,8 @@ import org.septa.android.app.R;
 import org.septa.android.app.support.CrashlyticsManager;
 import org.septa.android.app.support.GeneralUtils;
 
+import java.util.Properties;
+
 public class SEPTADatabase extends SQLiteAssetHelper {
     private static String TAG = SEPTADatabase.class.getSimpleName();
 
@@ -19,13 +21,11 @@ public class SEPTADatabase extends SQLiteAssetHelper {
     private static final String LATEST_DATABASE_API_URL = "https://s3.amazonaws.com/mobiledb.septa.org/latest/latestDb.json";
 
     // these are left in case the user does not have the most up to date version of the database
-    // modify databaseVersion and databaseFileName when pushing out a new release with a new DB
-    private static int databaseVersion = 1;
-    private static String databaseFileName = "SEPTA_1.sqlite";
+    private static int databaseVersion;
+    private static String databaseFileName;
 
     public SEPTADatabase(Context context, int databaseVersion, String databaseFileName) {
         super(context, databaseFileName, null, databaseVersion);
-
         setDatabaseVersion(databaseVersion);
 
         CrashlyticsManager.log(Log.INFO, TAG, "Initializing DB: " + databaseVersion);
@@ -56,6 +56,22 @@ public class SEPTADatabase extends SQLiteAssetHelper {
 
         String newDatabaseFilename = new StringBuilder("SEPTA_").append(databaseVersion).append(".sqlite").toString();
         setDatabaseFileName(newDatabaseFilename);
+    }
+
+    /**
+     *
+     *  This method needs to be run before the constructor can be executed successfully.
+     *
+     * */
+    public static void setShippedDatabase(Context context) {
+        try {
+            Properties properties = new Properties();
+            properties.load(context.getAssets().open("databases/database_version.properties"));
+            databaseVersion = Integer.parseInt(properties.getProperty("databaseVersion"));
+            databaseFileName = properties.getProperty("databaseFileName");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static String getDatabaseFileName() {

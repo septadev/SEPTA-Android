@@ -91,7 +91,7 @@
         </activity>
 
         <!-- Firebase Messaging Class Service -->
-        <service android:name=".services.apiinterfaces.SEPTAFirebaseMessagingService">
+        <service android:name=".services.apiinterfaces.PushNotificationService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>

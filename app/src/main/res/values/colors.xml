@@ -67,6 +67,10 @@
     <color name="transitview_card_active_line">#678ec3</color>
     <color name="transitview_card_inactive_line">#e0e0e0</color>
 
+    <!-- Notifications -->
+    <color name="manage_notifications_border">#efeff4</color>
+    <color name="notification_heading_text_color">#6d6d6d</color>
+
     <!-- the active KML line color is flipped b/c of some issue with hex conversion -->
     <color name="transitview_route_active_kml">#844620</color>
     <color name="transitview_route_inactive">#979797</color>

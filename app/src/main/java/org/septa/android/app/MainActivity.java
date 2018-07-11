@@ -44,6 +44,7 @@ import org.septa.android.app.fares.PerksFragment;
 import org.septa.android.app.favorites.FavoritesFragment;
 import org.septa.android.app.favorites.edit.ManageFavoritesFragment;
 import org.septa.android.app.nextarrive.NextToArriveFragment;
+import org.septa.android.app.notifications.NotificationsManagementFragment;
 import org.septa.android.app.schedules.SchedulesFragment;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Alert;
@@ -105,6 +106,7 @@ public class MainActivity extends BaseActivity implements
     Fragment trainview = null;
     Fragment transitview = null;
     Fragment transitviewBeta = new TransitViewFragment();
+    Fragment notifications = new NotificationsManagementFragment();
     Fragment connect = new ConnectFragment();
     Fragment about = new AboutFragment();
 
@@ -356,6 +358,11 @@ public class MainActivity extends BaseActivity implements
         if (id == R.id.nav_events) {
             AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_MENU_SPECIAL_EVENTS, AnalyticsManager.CONTENT_ID_SPECIAL_EVENTS, null);
             switchToBundle(item, events, R.string.events, R.drawable.ic_calendar_active);
+        }
+
+        if (id == R.id.nav_notifications) {
+            AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_MENU_NOTIFICATIONS, AnalyticsManager.CONTENT_ID_NOTIFICATIONS, null);
+            switchToBundle(item, notifications, R.string.notifications, R.drawable.ic_notifications_active);
         }
 
         if (id == R.id.nav_connect) {

@@ -313,6 +313,25 @@
     <string name="title_mobile_app_alert">Mobile App Alert</string>
 
 
+    <!-- Push Notifications -->
+    <string name="notifications">Manage Notifications</string>
+
+    <string name="global_notifications_settings_heading">Global Settings</string>
+    <string name="enable_notifications">Enable Notifications</string>
+    <string name="enable_notifications_hint">Always show notifications from this app</string>
+    <string name="special_announcements">Special SEPTA Announcements</string>
+    <string name="special_announcements_hint">Get notified about major disruptions in service, weather alerts, and special events</string>
+    <string name="system_notification_settings">System Notification Settings</string>
+    <string name="treat_as_priority">Treat as Priority</string>
+    <string name="treat_as_priority_hint">Let this app\'s notifications be heard when Do Not Disturb is set to \'Priority Only\'</string>
+
+    <string name="my_notifications_heading">My Notifications</string>
+    <string name="my_notifications">My Custom Notifications</string>
+
+    <string name="notifications_schedule_heading">Schedule</string>
+    <string name="notifications_schedule">Set Notifications Schedule</string>
+
+
     <!-- String Resources -->
     <string name="button_ok">Okay</string>
     <string name="empty_string"></string>

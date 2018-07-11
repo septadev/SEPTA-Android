@@ -29,6 +29,7 @@ public abstract class AnalyticsManager {
     public static final String CONTENT_ID_FARES_TRANSIT = "Fares and Transit Info";
     public static final String CONTENT_ID_SYSTEM_MAP = "System Map";
     public static final String CONTENT_ID_SPECIAL_EVENTS = "Special Events";
+    public static final String CONTENT_ID_NOTIFICATIONS = "Push Notifications";
     public static final String CONTENT_ID_CONNECT = "Connect with SEPTA";
     public static final String CONTENT_ID_PERKS = "Perks";
     public static final String CONTENT_ID_TRANSITVIEW = "TransitView";
@@ -43,6 +44,7 @@ public abstract class AnalyticsManager {
     public static final String CONTENT_VIEW_EVENT_MENU_FARES = "Fares and Transit Info";
     public static final String CONTENT_VIEW_EVENT_MENU_SYSTEM_MAP = "System Map";
     public static final String CONTENT_VIEW_EVENT_MENU_SPECIAL_EVENTS = "Special Events";
+    public static final String CONTENT_VIEW_EVENT_MENU_NOTIFICATIONS = "Notification Management";
     public static final String CONTENT_VIEW_EVENT_MENU_CONNECT = "Connect with SEPTA";
     public static final String CONTENT_VIEW_EVENT_MENU_PERKS = "Perks";
     public static final String CONTENT_VIEW_EVENT_MENU_TRANSITVIEW = "TransitView Picker";

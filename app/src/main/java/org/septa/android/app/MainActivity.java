@@ -103,8 +103,7 @@ public class MainActivity extends BaseActivity implements
     Fragment systemMap = new SystemMapFragment();
     Fragment events = null;
     Fragment trainview = null;
-    Fragment transitview = null;
-    Fragment transitviewBeta = new TransitViewFragment();
+    Fragment transitView = new TransitViewFragment();
     Fragment connect = new ConnectFragment();
     Fragment about = new AboutFragment();
 
@@ -129,7 +128,6 @@ public class MainActivity extends BaseActivity implements
         favoritesFragment = new FavoritesFragment();
         events = WebViewFragment.getInstance(getResources().getString(R.string.events_url));
         trainview = WebViewFragment.getInstance(getResources().getString(R.string.trainview_url));
-        transitview = WebViewFragment.getInstance(getResources().getString(R.string.transitview_url));
 
         setContentView(R.layout.activity_main);
 
@@ -375,12 +373,7 @@ public class MainActivity extends BaseActivity implements
 
         if (id == R.id.nav_transitview) {
             AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_MENU_TRANSITVIEW, AnalyticsManager.CONTENT_ID_TRANSITVIEW, null);
-            switchToBundle(item, transitview, R.string.transit_view, 0);
-        }
-
-        if (id == R.id.nav_transitview_beta) {
-            AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_MENU_TRANSITVIEW, AnalyticsManager.CONTENT_ID_TRANSITVIEW, null);
-            switchToBundle(item, transitviewBeta, R.string.transit_view, R.drawable.ic_transitview_active);
+            switchToBundle(item, transitView, R.string.transit_view, R.drawable.ic_transitview_active);
         }
         return true;
     }

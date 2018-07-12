@@ -351,11 +351,6 @@ public class MainActivity extends BaseActivity implements
             switchToBundle(item, systemMap, R.string.system_map, R.drawable.ic_map_active);
         }
 
-        if (id == R.id.nav_events) {
-            AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_MENU_SPECIAL_EVENTS, AnalyticsManager.CONTENT_ID_SPECIAL_EVENTS, null);
-            switchToBundle(item, events, R.string.events, R.drawable.ic_calendar_active);
-        }
-
         if (id == R.id.nav_connect) {
             AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_MENU_CONNECT, AnalyticsManager.CONTENT_ID_CONNECT, null);
             switchToBundle(item, connect, R.string.connect_with_septa, 0);

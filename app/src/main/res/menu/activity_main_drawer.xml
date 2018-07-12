@@ -33,9 +33,6 @@
             android:icon="@drawable/ic_map_non"
             android:title="@string/system_map" />
         <item
-            android:id="@+id/nav_events"
-            android:icon="@drawable/ic_calendar_non"
-            android:title="@string/events" />
             android:id="@+id/nav_fares_transit_info"
             android:icon="@drawable/ic_fares_non"
             android:title="@string/fares_and_transit_info" />

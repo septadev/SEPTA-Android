@@ -42,8 +42,8 @@ pipeline {
                         writeFile file: 'code/app/src/main/assets/databases/database_version.properties', text: output
                         dir('code') {
                             sshagent(credentials: ["${env.SEPTA_KEY_CREDENTIALS_ID}"]) {
-                                sh "git add code/app/src/main/assets/databases/SEPTA_${currentVersion}_sqlite.zip"
-                                sh 'git commit -a -m \"Updated embeded database to version ${currentVersion}.\"'
+                                sh "git add app/src/main/assets/databases/SEPTA_${currentVersion}_sqlite.zip"
+                                sh "git commit -a -m \"Updated embeded database to version ${currentVersion}.\""
                                 sh 'git push '
                             }
                         }
@@ -74,14 +74,29 @@ pipeline {
 
         stage('Notification') {
             steps {
+                script {
+                    if (fileExists('last_success_commit.txt')) {
+                        def last_success_commit = readFile 'last_success_commit.txt'
 
-                def accessUrl = "https://s3.amazonaws.com/mobile-dev-distribution/septa-app_${env.BUILD_NUMBER}.apk"
-                emailext(
-                        mimeType: 'text/html',
-                        subject: "New SEPTA Android APK Available SUCCESSFUL [${env.BUILD_NUMBER}]'",
-                        body: '''${SCRIPT, template="code/devops/distribution_email_groovy.template"}''',
-                        to: 'joseph.kampf@gmail.com'
-                )
+                        dir('code') {
+                            def git_log = sh "git log --pretty=format:'%h %ad %s (%an)' --date=short  ${last_success_commit}..HEAD"
+                        }
+                    }
+
+                    dir('code') {
+                        def next_commit = sh 'git rev-parse HEAD'
+                    }
+                    writeFile file: 'last_success_commit.txt', text: next_commit
+
+
+                    def accessUrl = "https://s3.amazonaws.com/mobile-dev-distribution/septa-app_${env.BUILD_NUMBER}.apk"
+                    emailext(
+                            mimeType: 'text/html',
+                            subject: "New SEPTA Android APK Available SUCCESSFUL [${env.BUILD_NUMBER}]'",
+                            body: '''${SCRIPT, template="code/devops/distribution_email_groovy.template"}''',
+                            to: 'joseph.kampf@gmail.com'
+                    )
+                }
             }
         }
     }

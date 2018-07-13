@@ -21,6 +21,7 @@ public class SEPTADatabase extends SQLiteAssetHelper {
     private static final String LATEST_DATABASE_API_URL = "https://s3.amazonaws.com/mobiledb.septa.org/latest/latestDb.json";
 
     // these are left in case the user does not have the most up to date version of the database
+    // they should be set by using the method setShippedDatabase() before an instance of this class is constructed.
     private static int databaseVersion;
     private static String databaseFileName;
 

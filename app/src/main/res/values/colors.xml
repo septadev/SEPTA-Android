@@ -2,7 +2,7 @@
 <resources>
     <color name="colorPrimary">#215291</color>
     <color name="colorPrimaryDark">#063468</color>
-    <color name="colorAccent">#09bbff</color>
+    <color name="colorAccent">#2d83c8</color>
 
     <color name="options_menu_tint">#ffffff</color>
 
@@ -68,8 +68,8 @@
     <color name="transitview_card_inactive_line">#e0e0e0</color>
 
     <!-- Notifications -->
-    <color name="manage_notifications_border">#efeff4</color>
-    <color name="notification_heading_text_color">#6d6d6d</color>
+    <color name="manage_notifications_border">#c6c6c6</color>
+    <color name="notification_heading_text_color">#9b9b9b</color>
 
     <!-- the active KML line color is flipped b/c of some issue with hex conversion -->
     <color name="transitview_route_active_kml">#844620</color>

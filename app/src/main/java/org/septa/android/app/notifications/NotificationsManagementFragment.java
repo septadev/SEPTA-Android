@@ -9,9 +9,11 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.SwitchCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.Toast;
 
 import org.septa.android.app.R;
@@ -20,6 +22,10 @@ import org.septa.android.app.view.TextView;
 public class NotificationsManagementFragment extends Fragment {
 
     private static final String TAG = NotificationsManagementFragment.class.getSimpleName(), TOOLBAR_TITLE = "TOOLBAR_TITLE";
+
+    // layout variables
+    TextView systemSettings, myNotifs, notifsSchedule;
+    SwitchCompat enableNotifs, specialAnnouncements, priority;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -32,7 +38,21 @@ public class NotificationsManagementFragment extends Fragment {
             return rootView;
         }
 
-        TextView systemSettings = rootView.findViewById(R.id.system_notification_settings);
+        initializeView(rootView);
+
+        enableNotifs.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    // TODO: check system permissions for receiving notifications from the app
+                    // TODO: if permissions not granted show pop up saying to enable in settings
+                    // TODO: give button to link to notification settings
+                } else {
+                    // TODO: disable other switches but do not lose their value?
+                }
+            }
+        });
+
         systemSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -40,7 +60,6 @@ public class NotificationsManagementFragment extends Fragment {
             }
         });
 
-        TextView myNotifs = rootView.findViewById(R.id.my_notifications);
         myNotifs.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -49,7 +68,6 @@ public class NotificationsManagementFragment extends Fragment {
             }
         });
 
-        TextView notifsSchedule = rootView.findViewById(R.id.notifications_schedule);
         notifsSchedule.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -76,6 +94,15 @@ public class NotificationsManagementFragment extends Fragment {
                 getActivity().setTitle(title);
             }
         }
+    }
+
+    private void initializeView(View rootView) {
+        systemSettings = rootView.findViewById(R.id.system_notification_settings);
+        myNotifs = rootView.findViewById(R.id.my_notifications);
+        notifsSchedule = rootView.findViewById(R.id.notifications_schedule);
+        enableNotifs = rootView.findViewById(R.id.enable_notifications_switch);
+        specialAnnouncements = rootView.findViewById(R.id.special_announcements_switch);
+        priority = rootView.findViewById(R.id.priority_switch);
     }
 
     private void openSystemNotificationSettings(Context context) {

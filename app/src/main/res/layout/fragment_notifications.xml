@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/manage_notifications_border"
+    android:layout_marginLeft="4dp"
     android:orientation="vertical">
 
     <LinearLayout
@@ -14,105 +15,145 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             android:orientation="vertical">
-
-            <org.septa.android.app.view.TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="10dp"
-                android:text="@string/global_notifications_settings_heading"
-                android:textAllCaps="true"
-                android:textColor="@color/notification_heading_text_color"
-                app:typeface="@string/font_roboto_regular" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="1dp"
-                android:background="@android:color/white"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <org.septa.android.app.view.TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:letterSpacing="0.15"
+                    android:lineSpacingExtra="14sp"
+                    android:padding="10dp"
+                    android:text="@string/global_notifications_settings_heading"
+                    android:textAllCaps="true"
+                    android:textColor="@color/notification_heading_text_color"
+                    android:textSize="10sp"
+                    app:typeface="@string/font_roboto_bold" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/manage_notifications_border" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-18dp"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:padding="10dp"
-                android:weightSum="6">
+                android:padding="18dp"
+                android:weightSum="7">
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="5"
+                    android:layout_weight="6"
                     android:orientation="vertical">
 
                     <org.septa.android.app.view.TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:letterSpacing="0.01"
+                        android:lineSpacingExtra="10sp"
                         android:text="@string/enable_notifications"
                         android:textColor="@android:color/black"
-                        app:typeface="@string/font_roboto_bold" />
+                        android:textSize="14sp"
+                        app:typeface="@string/font_roboto_regular" />
 
                     <org.septa.android.app.view.TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:letterSpacing="0.02"
+                        android:lineSpacingExtra="8sp"
                         android:text="@string/enable_notifications_hint"
+                        android:textSize="12sp"
                         app:typeface="@string/font_roboto_regular" />
 
                 </LinearLayout>
 
-                <Switch
+                <android.support.v7.widget.SwitchCompat
                     android:id="@+id/enable_notifications_switch"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:layout_marginStart="10dp"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:theme="@style/AppTheme"
+                    tools:checked="true" />
 
             </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginLeft="18dp"
+                android:background="@color/manage_notifications_border" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="1dp"
-                android:background="@android:color/white"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:padding="10dp"
-                android:weightSum="6">
+                android:padding="18dp"
+                android:weightSum="7">
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="5"
+                    android:layout_weight="6"
                     android:orientation="vertical">
 
                     <org.septa.android.app.view.TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:letterSpacing="0.01"
+                        android:lineSpacingExtra="10sp"
                         android:text="@string/special_announcements"
                         android:textColor="@android:color/black"
-                        app:typeface="@string/font_roboto_bold" />
+                        android:textSize="14sp"
+                        app:typeface="@string/font_roboto_regular" />
 
                     <org.septa.android.app.view.TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:letterSpacing="0.02"
+                        android:lineSpacingExtra="8sp"
                         android:text="@string/special_announcements_hint"
+                        android:textSize="12sp"
                         app:typeface="@string/font_roboto_regular" />
 
                 </LinearLayout>
 
-                <Switch
+                <android.support.v7.widget.SwitchCompat
                     android:id="@+id/special_announcements_switch"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:layout_marginStart="10dp"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:theme="@style/AppTheme" />
 
             </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginLeft="18dp"
+                android:background="@color/manage_notifications_border" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@android:color/white"
-                android:orientation="vertical"
-                android:layout_marginBottom="1dp">
+                android:orientation="vertical">
 
                 <org.septa.android.app.view.TextView
                     android:id="@+id/system_notification_settings"
@@ -122,50 +163,65 @@
                     android:drawableEnd="@drawable/ic_right_chevron"
                     android:drawablePadding="5dp"
                     android:drawableRight="@drawable/ic_right_chevron"
-                    android:padding="10dp"
+                    android:letterSpacing="0.01"
+                    android:lineSpacingExtra="10sp"
+                    android:padding="18dp"
                     android:text="@string/system_notification_settings"
                     android:textColor="@android:color/black"
-                    app:typeface="@string/font_roboto_bold" />
+                    android:textSize="14sp"
+                    app:typeface="@string/font_roboto_regular" />
 
             </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginLeft="18dp"
+                android:background="@color/manage_notifications_border" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@android:color/white"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:padding="10dp"
-                android:weightSum="6">
+                android:padding="18dp"
+                android:weightSum="7">
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="5"
+                    android:layout_weight="6"
                     android:orientation="vertical">
 
                     <org.septa.android.app.view.TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:letterSpacing="0.01"
+                        android:lineSpacingExtra="10sp"
                         android:text="@string/treat_as_priority"
                         android:textColor="@android:color/black"
-                        app:typeface="@string/font_roboto_bold" />
+                        android:textSize="14sp"
+                        app:typeface="@string/font_roboto_regular" />
 
                     <org.septa.android.app.view.TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:letterSpacing="0.02"
+                        android:lineSpacingExtra="8sp"
                         android:text="@string/treat_as_priority_hint"
+                        android:textSize="12sp"
                         app:typeface="@string/font_roboto_regular" />
 
                 </LinearLayout>
 
-                <Switch
+                <android.support.v7.widget.SwitchCompat
                     android:id="@+id/priority_switch"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:layout_marginStart="10dp"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:theme="@style/AppTheme" />
 
             </LinearLayout>
 
@@ -174,22 +230,39 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             android:orientation="vertical">
-
-            <org.septa.android.app.view.TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/manage_notifications_border"
-                android:padding="10dp"
-                android:text="@string/my_notifications_heading"
-                android:textAllCaps="true"
-                android:textColor="@color/notification_heading_text_color"
-                app:typeface="@string/font_roboto_regular" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@android:color/white"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <org.septa.android.app.view.TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:letterSpacing="0.15"
+                    android:lineSpacingExtra="14sp"
+                    android:padding="10dp"
+                    android:text="@string/my_notifications_heading"
+                    android:textAllCaps="true"
+                    android:textColor="@color/notification_heading_text_color"
+                    android:textSize="10sp"
+                    app:typeface="@string/font_roboto_bold" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/manage_notifications_border" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-18dp"
                 android:orientation="vertical">
 
                 <org.septa.android.app.view.TextView
@@ -200,10 +273,13 @@
                     android:drawableEnd="@drawable/ic_right_chevron"
                     android:drawablePadding="5dp"
                     android:drawableRight="@drawable/ic_right_chevron"
-                    android:padding="10dp"
+                    android:letterSpacing="0.01"
+                    android:lineSpacingExtra="10sp"
+                    android:padding="18dp"
                     android:text="@string/my_notifications"
                     android:textColor="@android:color/black"
-                    app:typeface="@string/font_roboto_bold" />
+                    android:textSize="14sp"
+                    app:typeface="@string/font_roboto_regular" />
 
             </LinearLayout>
 
@@ -212,22 +288,39 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             android:orientation="vertical">
-
-            <org.septa.android.app.view.TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/manage_notifications_border"
-                android:padding="10dp"
-                android:text="@string/notifications_schedule_heading"
-                android:textAllCaps="true"
-                android:textColor="@color/notification_heading_text_color"
-                app:typeface="@string/font_roboto_regular" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@android:color/white"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <org.septa.android.app.view.TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:letterSpacing="0.15"
+                    android:lineSpacingExtra="14sp"
+                    android:padding="10dp"
+                    android:text="@string/notifications_schedule_heading"
+                    android:textAllCaps="true"
+                    android:textColor="@color/notification_heading_text_color"
+                    android:textSize="10sp"
+                    app:typeface="@string/font_roboto_bold" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/manage_notifications_border" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-18dp"
                 android:orientation="vertical">
 
                 <org.septa.android.app.view.TextView
@@ -238,10 +331,13 @@
                     android:drawableEnd="@drawable/ic_right_chevron"
                     android:drawablePadding="5dp"
                     android:drawableRight="@drawable/ic_right_chevron"
-                    android:padding="10dp"
+                    android:letterSpacing="0.01"
+                    android:lineSpacingExtra="10sp"
+                    android:padding="18dp"
                     android:text="@string/notifications_schedule"
                     android:textColor="@android:color/black"
-                    app:typeface="@string/font_roboto_bold" />
+                    android:textSize="14sp"
+                    app:typeface="@string/font_roboto_regular" />
 
             </LinearLayout>
 

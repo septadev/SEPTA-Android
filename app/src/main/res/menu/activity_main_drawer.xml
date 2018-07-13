@@ -11,6 +11,11 @@
             android:icon="@drawable/ic_nta"
             android:title="@string/next_to_arrive" />
         <item
+            android:id="@+id/nav_transitview"
+            android:icon="@drawable/ic_transitview_non"
+            app:actionLayout="@layout/menu_badge"
+            android:title="@string/transit_view" />
+        <item
             android:id="@+id/nav_favorites"
             android:icon="@drawable/ic_favorites_non"
             android:title="@string/favorites" />
@@ -20,27 +25,21 @@
             app:actionLayout="@layout/menu_badge"
             android:title="@string/system_status" />
         <item
-            android:id="@+id/nav_transitview_beta"
-            android:icon="@drawable/ic_transitview_non"
-            app:actionLayout="@layout/menu_badge"
-            android:title="@string/transit_view_beta" />
-        <item
             android:id="@+id/nav_schedule"
             android:icon="@drawable/ic_schedule_non"
             android:title="@string/schedule" />
-        <item
-            android:id="@+id/nav_fares_transit_info"
-            android:icon="@drawable/ic_fares_non"
-            android:title="@string/fares_and_transit_info" />
         <item
             android:id="@+id/nav_system_map"
             android:icon="@drawable/ic_map_non"
             android:title="@string/system_map" />
         <item
-            android:id="@+id/nav_events"
-            android:icon="@drawable/ic_calendar_non"
-            android:title="@string/events" />
-
+            android:id="@+id/nav_fares_transit_info"
+            android:icon="@drawable/ic_fares_non"
+            android:title="@string/fares_and_transit_info" />
+        <item
+            android:id="@+id/nav_perks"
+            android:icon="@drawable/ic_perks_non"
+            android:title="@string/perks" />
     </group>
 
     <group
@@ -49,9 +48,6 @@
         <item
             android:id="@+id/nav_connect"
             android:title="@string/connect_with_septa" />
-        <item
-            android:id="@+id/nav_transitview"
-            android:title="@string/transit_view" />
         <item
             android:id="@+id/nav_trainview"
             android:title="@string/train_view" />

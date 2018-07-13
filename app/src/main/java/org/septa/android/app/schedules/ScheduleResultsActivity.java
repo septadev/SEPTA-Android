@@ -25,6 +25,7 @@ import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
+import org.septa.android.app.ActivityClass;
 import org.septa.android.app.BaseActivity;
 import org.septa.android.app.Constants;
 import org.septa.android.app.R;
@@ -35,11 +36,13 @@ import org.septa.android.app.domain.ScheduleModel;
 import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.favorites.DeleteFavoritesAsyncTask;
 import org.septa.android.app.favorites.edit.RenameFavoriteDialogFragment;
+import org.septa.android.app.favorites.edit.RenameFavoriteListener;
 import org.septa.android.app.nextarrive.NextToArriveResultsActivity;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Alert;
 import org.septa.android.app.services.apiinterfaces.model.Favorite;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalFavorite;
+import org.septa.android.app.support.AnalyticsManager;
 import org.septa.android.app.support.CrashlyticsManager;
 import org.septa.android.app.support.Criteria;
 import org.septa.android.app.support.CursorAdapterSupplier;
@@ -54,10 +57,11 @@ import java.util.List;
 
 import static org.septa.android.app.favorites.edit.RenameFavoriteDialogFragment.EDIT_FAVORITE_DIALOG_KEY;
 
-public class ScheduleResultsActivity extends BaseActivity implements RenameFavoriteDialogFragment.RenameFavoriteListener {
+public class ScheduleResultsActivity extends BaseActivity implements RenameFavoriteListener {
 
     private static final String TAG = ScheduleResultsActivity.class.getSimpleName();
 
+    private ActivityClass originClass = ActivityClass.SCHEDULES;
     private static final int RAIL_MON_THUR = 8;
     private static final int WEEK_DAY = 32;
     private static final int RAIL_FRIDAY = 2;
@@ -148,6 +152,7 @@ public class ScheduleResultsActivity extends BaseActivity implements RenameFavor
                 intent.putExtra(Constants.TRANSIT_TYPE, transitType);
                 intent.putExtra(Constants.ROUTE_DIRECTION_MODEL, routeDirectionModel);
 
+                AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_NTA_FROM_SCHEDULE, AnalyticsManager.CONTENT_ID_NEXT_TO_ARRIVE, null);
                 startActivityForResult(intent, Constants.NTA_REQUEST);
             }
         });
@@ -159,7 +164,7 @@ public class ScheduleResultsActivity extends BaseActivity implements RenameFavor
         View alertView = findViewById(R.id.service_alert);
         if (alert.isAlert()) {
             alertView.setVisibility(View.VISIBLE);
-            alertView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ALERT_EXPANDED, this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName()));
+            alertView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ALERT_EXPANDED, this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName(), originClass));
             displayAlerts = true;
         } else {
             LinearLayout.LayoutParams loparams = (LinearLayout.LayoutParams) alertView.getLayoutParams();
@@ -171,7 +176,7 @@ public class ScheduleResultsActivity extends BaseActivity implements RenameFavor
         View advisoryView = findViewById(R.id.service_advisory);
         if (alert.isAdvisory()) {
             advisoryView.setVisibility(View.VISIBLE);
-            advisoryView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ADVISORY_EXPANDED, this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName()));
+            advisoryView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ADVISORY_EXPANDED, this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName(), originClass));
             displayAlerts = true;
         } else {
             LinearLayout.LayoutParams loparams = (LinearLayout.LayoutParams) advisoryView.getLayoutParams();
@@ -183,7 +188,7 @@ public class ScheduleResultsActivity extends BaseActivity implements RenameFavor
         View detourView = findViewById(R.id.active_detour);
         if (alert.isDetour()) {
             advisoryView.setVisibility(View.VISIBLE);
-            detourView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.ACTIVE_DETOUR_EXPANDED, this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName()));
+            detourView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.ACTIVE_DETOUR_EXPANDED, this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName(), originClass));
             displayAlerts = true;
         } else {
             LinearLayout.LayoutParams loparams = (LinearLayout.LayoutParams) detourView.getLayoutParams();
@@ -195,7 +200,7 @@ public class ScheduleResultsActivity extends BaseActivity implements RenameFavor
         View weatherView = findViewById(R.id.weather_alerts);
         if (alert.isSnow()) {
             weatherView.setVisibility(View.VISIBLE);
-            weatherView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.WEATHER_ALERTS_EXPANDED, this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName()));
+            weatherView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.WEATHER_ALERTS_EXPANDED, this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName(), originClass));
             displayAlerts = true;
         } else {
             LinearLayout.LayoutParams loparams = (LinearLayout.LayoutParams) weatherView.getLayoutParams();
@@ -342,7 +347,6 @@ public class ScheduleResultsActivity extends BaseActivity implements RenameFavor
         currentFavorite = (NextArrivalFavorite) SeptaServiceFactory.getFavoritesService().getFavoriteByKey(this, favKey);
 
         // check if already a favorite
-        // TODO: invalidateOptionsMenu???
         if (menu != null) {
             if (currentFavorite != null) {
                 menu.findItem(R.id.create_favorite).setIcon(R.drawable.ic_favorite_made);
@@ -417,6 +421,8 @@ public class ScheduleResultsActivity extends BaseActivity implements RenameFavor
                                         currentFavorite = null;
                                     }
                                 });
+
+                                AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_DELETE_FAVORITE, AnalyticsManager.CUSTOM_EVENT_ID_FAVORITES_MANAGEMENT, null);
 
                                 task.execute(currentFavorite.getKey());
                             }

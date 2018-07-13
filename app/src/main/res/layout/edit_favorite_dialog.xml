@@ -34,6 +34,7 @@
             android:contentDescription="Close"
             android:src="@drawable/ic_exit"
             android:tint="#ffffff" />
+
     </RelativeLayout>
 
     <org.septa.android.app.view.TextView

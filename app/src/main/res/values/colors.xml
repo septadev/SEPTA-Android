@@ -68,7 +68,7 @@
     <color name="transitview_card_inactive_line">#e0e0e0</color>
 
     <!-- the active KML line color is flipped b/c of some issue with hex conversion -->
-    <color name="transitview_route_active_kml">#844620</color>
+    <color name="transitview_route_active_kml">#f48e4e</color>
     <color name="transitview_route_inactive">#979797</color>
 
     <!-- Text -->

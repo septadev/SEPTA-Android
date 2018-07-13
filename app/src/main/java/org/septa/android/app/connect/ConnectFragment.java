@@ -15,12 +15,14 @@ import android.view.ViewGroup;
 import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.rating.RatingUtil;
+import org.septa.android.app.support.AnalyticsManager;
 import org.septa.android.app.webview.WebViewActivity;
 
 public class ConnectFragment extends Fragment {
 
     private static final String TAG = ConnectFragment.class.getSimpleName();
 
+    @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
@@ -45,47 +47,6 @@ public class ConnectFragment extends Fragment {
         return rootView;
     }
 
-    private void setAppIntent(View rootView, int viewId, final String url, final String appUrl) {
-        View twitterLink = rootView.findViewById(viewId);
-        twitterLink.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Activity activity = getActivity();
-                if (activity != null) {
-                    Uri app = Uri.parse(appUrl);
-                    Intent intent = new Intent(Intent.ACTION_VIEW, app);
-                    if (intent.resolveActivity(getActivity().getPackageManager()) == null) {
-                        Uri webpage = Uri.parse(url);
-                        intent = new Intent(Intent.ACTION_VIEW, webpage);
-                        if (intent.resolveActivity(getActivity().getPackageManager()) == null) {
-                            Log.e(TAG, "Unable to resolve app and website Intent URLs:" + appUrl + " and: " + url);
-                            return;
-                        }
-                    }
-
-                    startActivity(intent);
-                }
-            }
-        });
-    }
-
-
-    private void setHttpIntent(View rootView, int viewId, final String url, final String title) {
-        View twitterLink = rootView.findViewById(viewId);
-        twitterLink.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Activity activity = getActivity();
-                if (activity != null) {
-                    Intent intent = new Intent(activity, WebViewActivity.class);
-                    intent.putExtra(Constants.TARGET_URL, url);
-                    intent.putExtra(Constants.TITLE, title);
-                    startActivity(intent);
-                }
-            }
-        });
-    }
-
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -102,4 +63,64 @@ public class ConnectFragment extends Fragment {
             }
         }
     }
+
+    private void setAppIntent(View rootView, final int viewId, final String url, final String appUrl) {
+        View link = rootView.findViewById(viewId);
+        link.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Activity activity = getActivity();
+                if (activity != null) {
+                    Uri app = Uri.parse(appUrl);
+                    Intent intent = new Intent(Intent.ACTION_VIEW, app);
+                    if (intent.resolveActivity(getActivity().getPackageManager()) == null) {
+                        Uri webpage = Uri.parse(url);
+                        intent = new Intent(Intent.ACTION_VIEW, webpage);
+                        if (intent.resolveActivity(getActivity().getPackageManager()) == null) {
+                            Log.e(TAG, "Unable to resolve app and website Intent URLs:" + appUrl + " and: " + url);
+                            return;
+                        }
+                    }
+
+                    // analytics
+                    if (viewId == R.id.facebook_arrow) {
+                        AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_FACEBOOK, AnalyticsManager.CUSTOM_EVENT_ID_EXTERNAL_LINK, null);
+                    } else if (viewId == R.id.twitter_arrow) {
+                        AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_TWITTER, AnalyticsManager.CUSTOM_EVENT_ID_EXTERNAL_LINK, null);
+                    } else {
+                        Log.e(TAG, String.format("Could not track event analytics for url: %s", url));
+                    }
+
+                    startActivity(intent);
+                }
+            }
+        });
+    }
+
+    private void setHttpIntent(View rootView, final int viewId, final String url, final String title) {
+        View link = rootView.findViewById(viewId);
+        link.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Activity activity = getActivity();
+                if (activity != null) {
+                    Intent intent = new Intent(activity, WebViewActivity.class);
+                    intent.putExtra(Constants.TARGET_URL, url);
+                    intent.putExtra(Constants.TITLE, title);
+
+                    // analytics
+                    if (viewId == R.id.chat_arrow) {
+                        AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_LIVE_CHAT, AnalyticsManager.CUSTOM_EVENT_ID_EXTERNAL_LINK, null);
+                    } else if (viewId == R.id.comment_arrow) {
+                        AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_SEND_COMMENT, AnalyticsManager.CUSTOM_EVENT_ID_EXTERNAL_LINK, null);
+                    } else {
+                        Log.e(TAG, String.format("Could not track event analytics for url: %s", url));
+                    }
+
+                    startActivity(intent);
+                }
+            }
+        });
+    }
+
 }

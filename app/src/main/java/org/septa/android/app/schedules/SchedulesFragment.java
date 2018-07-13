@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import org.septa.android.app.ActivityClass;
 import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
@@ -41,6 +42,7 @@ public class SchedulesFragment extends Fragment {
             HOLIDAY_SCHEDULE_URL = "https://www.septa.org/schedules/modified-mobile",
             HOLIDAY_SCHEDULE_URL_RAIL = "https://septa.org/schedules/rail/special/holidays-mobile.html";
 
+    private ActivityClass target = ActivityClass.SCHEDULES;
     private SchedulesFragment.SectionsPagerAdapter mSectionsPagerAdapter;
     private TabLayout tabLayout;
     LineAwareLocationPickerTabActivityHandler tabActivityHandlers[];
@@ -65,11 +67,11 @@ public class SchedulesFragment extends Fragment {
         DatabaseManager dbManager = DatabaseManager.getInstance(getActivity());
 
         tabActivityHandlers = new LineAwareLocationPickerTabActivityHandler[5];
-        tabActivityHandlers[1] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_rail), TAB_HEADER_STRING_NAME, getString(R.string.schedule_query_button_text), TransitType.RAIL, dbManager.getRailRouteCursorAdapterSupplier(), dbManager.getLineAwareRailStopCursorAdapterSupplier(), dbManager.getLineAwareRailStopAfterCursorAdapterSupplier(), ScheduleResultsActivity.class);
-        tabActivityHandlers[0] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_bus), TAB_HEADER_STRING_NAME, getString(R.string.schedule_query_button_text), TransitType.BUS, dbManager.getBusRouteCursorAdapterSupplier(), dbManager.getBusStopCursorAdapterSupplier(), dbManager.getBusStopAfterCursorAdapterSupplier(), ScheduleResultsActivity.class);
-        tabActivityHandlers[3] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_trolley), TAB_HEADER_STRING_NAME, getString(R.string.schedule_query_button_text), TransitType.TROLLEY, dbManager.getTrolleyRouteCursorAdapterSupplier(), dbManager.getTrolleyStopCursorAdapterSupplier(), dbManager.getTrolleyStopAfterCursorAdapterSupplier(), ScheduleResultsActivity.class);
-        tabActivityHandlers[2] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_subway), TAB_HEADER_STRING_NAME, getString(R.string.schedule_query_button_text), TransitType.SUBWAY, dbManager.getSubwayRouteCursorAdapterSupplier(), dbManager.getSubwayStopCursorAdapterSupplier(), dbManager.getSubwayStopAfterCursorAdapterSupplier(), ScheduleResultsActivity.class);
-        tabActivityHandlers[4] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_nhsl), TAB_HEADER_STRING_NAME, getString(R.string.schedule_query_button_text), TransitType.NHSL, dbManager.getNHSLRouteCursorAdapterSupplier(), dbManager.getBusStopCursorAdapterSupplier(), dbManager.getBusStopAfterCursorAdapterSupplier(), ScheduleResultsActivity.class);
+        tabActivityHandlers[1] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_rail), TAB_HEADER_STRING_NAME, getString(R.string.schedule_query_button_text), TransitType.RAIL, dbManager.getRailRouteCursorAdapterSupplier(), dbManager.getLineAwareRailStopCursorAdapterSupplier(), dbManager.getLineAwareRailStopAfterCursorAdapterSupplier(), ScheduleResultsActivity.class, target);
+        tabActivityHandlers[0] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_bus), TAB_HEADER_STRING_NAME, getString(R.string.schedule_query_button_text), TransitType.BUS, dbManager.getBusRouteCursorAdapterSupplier(), dbManager.getBusStopCursorAdapterSupplier(), dbManager.getBusStopAfterCursorAdapterSupplier(), ScheduleResultsActivity.class, target);
+        tabActivityHandlers[3] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_trolley), TAB_HEADER_STRING_NAME, getString(R.string.schedule_query_button_text), TransitType.TROLLEY, dbManager.getTrolleyRouteCursorAdapterSupplier(), dbManager.getTrolleyStopCursorAdapterSupplier(), dbManager.getTrolleyStopAfterCursorAdapterSupplier(), ScheduleResultsActivity.class, target);
+        tabActivityHandlers[2] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_subway), TAB_HEADER_STRING_NAME, getString(R.string.schedule_query_button_text), TransitType.SUBWAY, dbManager.getSubwayRouteCursorAdapterSupplier(), dbManager.getSubwayStopCursorAdapterSupplier(), dbManager.getSubwayStopAfterCursorAdapterSupplier(), ScheduleResultsActivity.class, target);
+        tabActivityHandlers[4] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_nhsl), TAB_HEADER_STRING_NAME, getString(R.string.schedule_query_button_text), TransitType.NHSL, dbManager.getNHSLRouteCursorAdapterSupplier(), dbManager.getBusStopCursorAdapterSupplier(), dbManager.getBusStopAfterCursorAdapterSupplier(), ScheduleResultsActivity.class, target);
 
         if (prePopulated != null) {
             tabActivityHandlers[startingIndex].setPrepopulate(prePopulated);

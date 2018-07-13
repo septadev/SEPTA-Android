@@ -34,6 +34,7 @@ import org.septa.android.app.nextarrive.NextToArriveResultsActivity;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalFavorite;
 import org.septa.android.app.services.apiinterfaces.model.TransitViewFavorite;
+import org.septa.android.app.support.AnalyticsManager;
 import org.septa.android.app.support.SwipeController;
 
 import java.util.HashMap;
@@ -204,6 +205,7 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
                 snackbar.show();
 
             } else {
+                AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_EDIT_FAVORITES_BUTTON, AnalyticsManager.CUSTOM_EVENT_ID_FAVORITES_MANAGEMENT, null);
                 mListener.toggleEditFavoritesMode(false);
             }
         }
@@ -223,6 +225,7 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
         snackbar.setAction(R.string.snackbar_no_connection_link_text, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_SCHEDULE_FROM_FAVORITES, AnalyticsManager.CONTENT_ID_SCHEDULE, null);
                 mListener.gotoSchedules();
             }
         });
@@ -258,6 +261,7 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
     @Override
     public void goToSchedulesForTarget(NextArrivalFavorite nextArrivalFavorite) {
         mListener.goToSchedulesForTarget(nextArrivalFavorite.getStart(), nextArrivalFavorite.getDestination(), nextArrivalFavorite.getTransitType(), nextArrivalFavorite.getRouteDirectionModel());
+        AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_SCHEDULE_FROM_FAVORITES, AnalyticsManager.CONTENT_ID_SCHEDULE, null);
     }
 
     @Override
@@ -271,6 +275,8 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
         intent.putExtra(Constants.TRANSIT_TYPE, nextArrivalFavorite.getTransitType());
         intent.putExtra(Constants.ROUTE_DIRECTION_MODEL, nextArrivalFavorite.getRouteDirectionModel());
         intent.putExtra(Constants.EDIT_FAVORITES_FLAG, Boolean.TRUE);
+
+        AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_NTA_FROM_FAVORITES, AnalyticsManager.CONTENT_ID_NEXT_TO_ARRIVE, null);
 
         getActivity().startActivityForResult(intent, Constants.NTA_REQUEST);
     }
@@ -305,6 +311,9 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
                                 deleteFavorite(favoriteIndex);
                             }
                         });
+
+                        AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_DELETE_FAVORITE, AnalyticsManager.CUSTOM_EVENT_ID_FAVORITES_MANAGEMENT, null);
+
                         task.execute(favoriteKey);
                     }
                 })

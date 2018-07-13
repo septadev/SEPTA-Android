@@ -22,6 +22,7 @@ import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
 import org.septa.android.app.database.DatabaseManager;
 import org.septa.android.app.domain.RouteDirectionModel;
+import org.septa.android.app.support.AnalyticsManager;
 import org.septa.android.app.support.CursorAdapterSupplier;
 import org.septa.android.app.view.TextView;
 
@@ -163,6 +164,7 @@ public class TransitViewFragment extends Fragment implements TransitViewLinePick
         queryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_TRANSITVIEW_FROM_PICKER, AnalyticsManager.CONTENT_ID_TRANSITVIEW, null);
                 mListener.goToTransitViewResults(firstRoute, secondRoute, thirdRoute);
             }
         });

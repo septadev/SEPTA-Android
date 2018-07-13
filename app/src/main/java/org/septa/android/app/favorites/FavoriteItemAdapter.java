@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.septa.android.app.ActivityClass;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
 import org.septa.android.app.nextarrive.NextArrivalModelResponseParser;
@@ -26,6 +27,7 @@ import org.septa.android.app.services.apiinterfaces.model.Favorite;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalFavorite;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalModelResponse;
 import org.septa.android.app.services.apiinterfaces.model.TransitViewFavorite;
+import org.septa.android.app.support.AnalyticsManager;
 import org.septa.android.app.systemstatus.SystemStatusState;
 import org.septa.android.app.transitview.TransitViewUtils;
 
@@ -160,11 +162,14 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             final TransitViewFavorite transitViewFavorite = (TransitViewFavorite) tempFavorite;
             final TransitViewFavoriteViewHolder transitViewFavoriteViewHolder = (TransitViewFavoriteViewHolder) holder;
 
+            // favorite name
             transitViewFavoriteViewHolder.favoriteName.setText(transitViewFavorite.getName());
 
+            // clicking on link opens TransitView results
             transitViewFavoriteViewHolder.viewResults.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_TRANSITVIEW_FROM_FAVORITES, AnalyticsManager.CONTENT_ID_TRANSITVIEW, null);
                     mListener.goToTransitView(transitViewFavorite);
                 }
             });
@@ -376,6 +381,7 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             resultsContainer = view.findViewById(R.id.next_to_arrive_trip_details);
             progressView = view.findViewById(R.id.progress_view);
             tripView = new NextToArriveTripView(context);
+            tripView.setOriginClass(ActivityClass.MAIN);
         }
     }
 

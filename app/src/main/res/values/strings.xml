@@ -16,6 +16,7 @@
     <string name="system_status">System Status</string>
     <string name="schedule">Schedule</string>
     <string name="fares_and_transit_info">Fares and Transit Info</string>
+    <string name="perks">Perks</string>
     <string name="connect_with_septa">Connect With SEPTA</string>
     <string name="train_view">TrainView</string>
     <string name="transit_view">TransitView</string>
@@ -49,7 +50,6 @@
 
 
     <string name="system_map">System Map</string>
-    <string name="events">Special Events</string>
 
 
     <!-- Line Picker -->

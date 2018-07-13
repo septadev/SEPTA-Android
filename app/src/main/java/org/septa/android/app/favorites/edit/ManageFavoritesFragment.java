@@ -28,6 +28,7 @@ import org.septa.android.app.draggable.DragListView;
 import org.septa.android.app.favorites.DeleteFavoritesAsyncTask;
 import org.septa.android.app.favorites.FavoriteState;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
+import org.septa.android.app.support.AnalyticsManager;
 import org.septa.android.app.support.SwipeController;
 
 import java.util.List;
@@ -125,10 +126,9 @@ public class ManageFavoritesFragment extends Fragment implements DraggableFavori
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         if (item.getItemId() == R.id.add_favorite) {
+            Log.e(TAG, "User is able to access 'Add' favorite button from ManageFavoritesFragment");
             mListener.addNewFavorite();
-
         } else if (item.getItemId() == R.id.edit_favorites) {
             // close edit mode and save new order
             mListener.toggleEditFavoritesMode(true);
@@ -174,6 +174,9 @@ public class ManageFavoritesFragment extends Fragment implements DraggableFavori
                                 }
                             }
                         });
+
+                        AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_DELETE_FAVORITE, AnalyticsManager.CUSTOM_EVENT_ID_FAVORITES_MANAGEMENT, null);
+
                         task.execute(favoriteKey);
                     }
                 })

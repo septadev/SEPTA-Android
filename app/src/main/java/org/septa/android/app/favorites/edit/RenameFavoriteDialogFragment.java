@@ -19,6 +19,7 @@ import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Favorite;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalFavorite;
 import org.septa.android.app.services.apiinterfaces.model.TransitViewFavorite;
+import org.septa.android.app.support.AnalyticsManager;
 import org.septa.android.app.support.CrashlyticsManager;
 
 public class RenameFavoriteDialogFragment extends DialogFragment {
@@ -81,6 +82,9 @@ public class RenameFavoriteDialogFragment extends DialogFragment {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     DeleteFavoritesAsyncTask task = new DeleteFavoritesAsyncTask(getContext());
+
+                                    AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_DELETE_FAVORITE, AnalyticsManager.CUSTOM_EVENT_ID_FAVORITES_MANAGEMENT, null);
+
                                     task.execute(favorite.getKey());
                                     getDialog().dismiss();
                                     if (getActivity() == null) {
@@ -165,6 +169,8 @@ public class RenameFavoriteDialogFragment extends DialogFragment {
         final NextArrivalFavorite ntaFavorite = (NextArrivalFavorite) favorite;
 
         if (isAnOldFavorite) {
+            AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_RENAME_FAVORITE_NTA, AnalyticsManager.CUSTOM_EVENT_ID_FAVORITES_MANAGEMENT, null);
+
             // rename existing favorite
             SeptaServiceFactory.getFavoritesService().renameFavorite(getContext(), ntaFavorite);
 
@@ -182,6 +188,8 @@ public class RenameFavoriteDialogFragment extends DialogFragment {
             }, new Runnable() {
                 @Override
                 public void run() {
+                    AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_CREATE_FAVORITE_NTA, AnalyticsManager.CUSTOM_EVENT_ID_FAVORITES_MANAGEMENT, null);
+
                     // update menu
                     mListener.updateFavorite(ntaFavorite);
                 }
@@ -195,6 +203,8 @@ public class RenameFavoriteDialogFragment extends DialogFragment {
         final TransitViewFavorite transitViewFavorite = (TransitViewFavorite) favorite;
 
         if (isAnOldFavorite) {
+            AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_RENAME_FAVORITE_TRANSITVIEW, AnalyticsManager.CUSTOM_EVENT_ID_FAVORITES_MANAGEMENT, null);
+
             // rename existing favorite
             SeptaServiceFactory.getFavoritesService().renameFavorite(getContext(), transitViewFavorite);
 
@@ -212,6 +222,8 @@ public class RenameFavoriteDialogFragment extends DialogFragment {
             }, new Runnable() {
                 @Override
                 public void run() {
+                    AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_CREATE_FAVORITE_TRANSITVIEW, AnalyticsManager.CUSTOM_EVENT_ID_FAVORITES_MANAGEMENT, null);
+
                     // update menu
                     mListener.updateFavorite(transitViewFavorite);
                 }
@@ -219,13 +231,4 @@ public class RenameFavoriteDialogFragment extends DialogFragment {
             task.execute(transitViewFavorite);
         }
     }
-
-    public interface RenameFavoriteListener {
-        void updateFavorite(Favorite favorite);
-
-        void renameFavorite(Favorite favorite);
-
-        void favoriteCreationFailed();
-    }
-
 }

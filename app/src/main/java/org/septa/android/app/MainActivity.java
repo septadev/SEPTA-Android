@@ -40,6 +40,7 @@ import org.septa.android.app.database.update.ExpandDBZip;
 import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.fares.FaresFragment;
+import org.septa.android.app.fares.PerksFragment;
 import org.septa.android.app.favorites.FavoritesFragment;
 import org.septa.android.app.favorites.edit.ManageFavoritesFragment;
 import org.septa.android.app.nextarrive.NextToArriveFragment;
@@ -98,11 +99,11 @@ public class MainActivity extends BaseActivity implements
 
     SystemStatusFragment systemStatus = new SystemStatusFragment();
     Fragment faresTransitInfo = new FaresFragment();
+    Fragment perks = new PerksFragment();
     Fragment systemMap = new SystemMapFragment();
     Fragment events = null;
     Fragment trainview = null;
-    Fragment transitview = null;
-    Fragment transitviewBeta = new TransitViewFragment();
+    Fragment transitView = new TransitViewFragment();
     Fragment connect = new ConnectFragment();
     Fragment about = new AboutFragment();
 
@@ -127,7 +128,6 @@ public class MainActivity extends BaseActivity implements
         favoritesFragment = new FavoritesFragment();
         events = WebViewFragment.getInstance(getResources().getString(R.string.events_url));
         trainview = WebViewFragment.getInstance(getResources().getString(R.string.trainview_url));
-        transitview = WebViewFragment.getInstance(getResources().getString(R.string.transitview_url));
 
         setContentView(R.layout.activity_main);
 
@@ -317,64 +317,58 @@ public class MainActivity extends BaseActivity implements
         drawer.closeDrawer(GravityCompat.START);
 
         if (id == R.id.nav_next_to_arrive) {
-            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_NEXT_TO_ARRIVE, null, null);
+            AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_MENU_NEXT_TO_ARRIVE, AnalyticsManager.CONTENT_ID_NEXT_TO_ARRIVE, null);
             switchToBundle(item, nextToArriveFragment, R.string.next_to_arrive, R.drawable.ic_nta_active);
         }
 
         if (id == R.id.nav_schedule) {
-            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_SCHEDULE, null, null);
+            AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_MENU_SCHEDULE, AnalyticsManager.CONTENT_ID_SCHEDULE, null);
             switchToBundle(item, schedules, R.string.schedule, R.drawable.ic_schedule_active);
         }
 
         if (id == R.id.nav_favorites) {
-            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_FAVORITES, null, null);
+            AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_MENU_FAVORITES, AnalyticsManager.CONTENT_ID_FAVORITES, null);
             switchToBundle(item, favoritesFragment, R.string.favorites, R.drawable.ic_favorites_active);
         }
 
         if (id == R.id.nav_system_status) {
-            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_SYSTEM_STATUS, null, null);
+            AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_MENU_SYSTEM_STATUS, AnalyticsManager.CONTENT_ID_SYSTEM_STATUS, null);
             switchToBundle(item, systemStatus, R.string.system_status, R.drawable.ic_status_active);
         }
 
         if (id == R.id.nav_fares_transit_info) {
-            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_FARES_TRANSIT, null, null);
+            AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_MENU_FARES, AnalyticsManager.CONTENT_ID_FARES_TRANSIT, null);
             switchToBundle(item, faresTransitInfo, R.string.fares_and_transit_info, R.drawable.ic_fares_active);
         }
 
+        if (id == R.id.nav_perks) {
+            AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_MENU_PERKS, AnalyticsManager.CONTENT_ID_PERKS, null);
+            switchToBundle(item, perks, R.string.perks, R.drawable.ic_perks_active);
+        }
+
         if (id == R.id.nav_system_map) {
-            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_SYSTEM_MAP, null, null);
+            AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_MENU_SYSTEM_MAP, AnalyticsManager.CONTENT_ID_SYSTEM_MAP, null);
             switchToBundle(item, systemMap, R.string.system_map, R.drawable.ic_map_active);
         }
 
-        if (id == R.id.nav_events) {
-            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_SPECIAL_EVENTS, null, null);
-            switchToBundle(item, events, R.string.events, R.drawable.ic_calendar_active);
-        }
-
         if (id == R.id.nav_connect) {
-            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_CONNECT, null, null);
+            AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_MENU_CONNECT, AnalyticsManager.CONTENT_ID_CONNECT, null);
             switchToBundle(item, connect, R.string.connect_with_septa, 0);
         }
 
         if (id == R.id.nav_about_app) {
-            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_ABOUT, null, null);
+            AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_MENU_ABOUT, AnalyticsManager.CONTENT_ID_ABOUT, null);
             switchToBundle(item, about, R.string.about_the_septa_app, 0);
         }
 
         if (id == R.id.nav_trainview) {
-            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_TRAIN_VIEW, null, null);
+            AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_MENU_TRAINVIEW, AnalyticsManager.CONTENT_ID_TRAINVIEW, null);
             switchToBundle(item, trainview, R.string.train_view, 0);
         }
 
         if (id == R.id.nav_transitview) {
-            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_TRANSIT_VIEW, null, null);
-            switchToBundle(item, transitview, R.string.transit_view, 0);
-        }
-
-        if (id == R.id.nav_transitview_beta) {
-            // TODO: analytics around use of beta transitview
-//            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_TRANSIT_VIEW, null, null);
-            switchToBundle(item, transitviewBeta, R.string.transit_view, R.drawable.ic_transitview_active);
+            AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_MENU_TRANSITVIEW, AnalyticsManager.CONTENT_ID_TRANSITVIEW, null);
+            switchToBundle(item, transitView, R.string.transit_view, R.drawable.ic_transitview_active);
         }
         return true;
     }
@@ -388,7 +382,8 @@ public class MainActivity extends BaseActivity implements
 
     @Override
     public void addNewFavorite() {
-        CrashlyticsManager.log(Log.INFO, TAG, "addNewFavorite");
+        AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_ADD_FAVORITE_BUTTON, AnalyticsManager.CUSTOM_EVENT_ID_FAVORITES_MANAGEMENT, null);
+
         switchToNextToArrive();
     }
 

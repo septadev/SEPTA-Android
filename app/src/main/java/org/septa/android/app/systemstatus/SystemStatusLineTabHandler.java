@@ -25,6 +25,7 @@ import org.septa.android.app.locationpicker.LinePickerCallBack;
 import org.septa.android.app.locationpicker.LinePickerFragment;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.AlertDetail;
+import org.septa.android.app.support.AnalyticsManager;
 import org.septa.android.app.support.BaseTabActivityHandler;
 import org.septa.android.app.support.CursorAdapterSupplier;
 import org.septa.android.app.support.GeneralUtils;
@@ -142,6 +143,8 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
                     Intent intent = new Intent(getActivity(), SystemStatusResultsActivity.class);
                     intent.putExtra(Constants.ROUTE_DIRECTION_MODEL, routeDirectionModel);
                     intent.putExtra(Constants.TRANSIT_TYPE, transitType);
+
+                    AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_SYSTEM_STATUS_FROM_PICKER, AnalyticsManager.CONTENT_ID_SYSTEM_STATUS, null);
 
                     startActivity(intent);
                 }

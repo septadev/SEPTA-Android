@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import org.septa.android.app.ActivityClass;
 import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
@@ -29,6 +30,7 @@ public class TransitViewRouteCard extends LinearLayout {
     private RouteDirectionModel route;
     private int sequence;
     private boolean isAdvisory, isAlert, isDetour, isWeather;
+    private ActivityClass originClass = ActivityClass.TRANSITVIEW;
 
     // layout variables
     LinearLayout rootView;
@@ -81,19 +83,19 @@ public class TransitViewRouteCard extends LinearLayout {
         routeIdText.setCompoundDrawablesWithIntrinsicBounds(ContextCompat.getDrawable(context, transitType.getTabActiveImageResource()), null, null, null);
 
         // clicking on advisory icon links to system status
-        advisoryIcon.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ADVISORY_EXPANDED, context, transitType, route.getRouteId(), route.getRouteShortName()));
+        advisoryIcon.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ADVISORY_EXPANDED, context, transitType, route.getRouteId(), route.getRouteShortName(), originClass));
         advisoryIcon.setContentDescription(R.string.advisory_icon_content_description_prefix + route.getRouteShortName());
 
         // clicking on alert icon links to system status
-        alertIcon.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ALERT_EXPANDED, context, transitType, route.getRouteId(), route.getRouteShortName()));
+        alertIcon.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ALERT_EXPANDED, context, transitType, route.getRouteId(), route.getRouteShortName(), originClass));
         alertIcon.setContentDescription(R.string.alert_icon_content_description_prefix + route.getRouteShortName());
 
         // clicking on detour icon links to system status
-        detourIcon.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.ACTIVE_DETOUR_EXPANDED, context, transitType, route.getRouteId(), route.getRouteShortName()));
+        detourIcon.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.ACTIVE_DETOUR_EXPANDED, context, transitType, route.getRouteId(), route.getRouteShortName(), originClass));
         detourIcon.setContentDescription(R.string.detour_icon_content_description_prefix + route.getRouteShortName());
 
         // clicking on weather icon links to system status
-        weatherIcon.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.WEATHER_ALERTS_EXPANDED, context, transitType, route.getRouteId(), route.getRouteShortName()));
+        weatherIcon.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.WEATHER_ALERTS_EXPANDED, context, transitType, route.getRouteId(), route.getRouteShortName(), originClass));
         weatherIcon.setContentDescription(R.string.weather_icon_content_description_prefix + route.getRouteShortName());
 
         refreshAlertsView();

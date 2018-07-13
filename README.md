@@ -26,7 +26,6 @@ This file is read by Android Studio upon startup
 2. In this file, create one line, which will look like below:
 
 	SEPTA.signing = /Users/&lt;username&gt;/.signing/SEPTASigning
-	android.enableAapt2 = false
 		
 3. Create a directory titled <code>.signing</code>.
 4. Create a file titled <code>SEPTASigning.gradle</code>.

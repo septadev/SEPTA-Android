@@ -104,11 +104,9 @@ public class MainActivity extends BaseActivity implements
     Fragment faresTransitInfo = new FaresFragment();
     Fragment perks = new PerksFragment();
     Fragment systemMap = new SystemMapFragment();
-    Fragment events = null;
     Fragment trainview = null;
-    Fragment transitview = null;
-    Fragment transitviewBeta = new TransitViewFragment();
     Fragment notifications = new NotificationsManagementFragment();
+    Fragment transitView = new TransitViewFragment();
     Fragment connect = new ConnectFragment();
     Fragment about = new AboutFragment();
 
@@ -131,9 +129,7 @@ public class MainActivity extends BaseActivity implements
     public final void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         favoritesFragment = new FavoritesFragment();
-        events = WebViewFragment.getInstance(getResources().getString(R.string.events_url));
         trainview = WebViewFragment.getInstance(getResources().getString(R.string.trainview_url));
-        transitview = WebViewFragment.getInstance(getResources().getString(R.string.transitview_url));
 
         setContentView(R.layout.activity_main);
 
@@ -360,11 +356,6 @@ public class MainActivity extends BaseActivity implements
             switchToBundle(item, systemMap, R.string.system_map, R.drawable.ic_map_active);
         }
 
-        if (id == R.id.nav_events) {
-            AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_MENU_SPECIAL_EVENTS, AnalyticsManager.CONTENT_ID_SPECIAL_EVENTS, null);
-            switchToBundle(item, events, R.string.events, R.drawable.ic_calendar_active);
-        }
-
         if (id == R.id.nav_notifications) {
             AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_MENU_NOTIFICATIONS, AnalyticsManager.CONTENT_ID_NOTIFICATIONS, null);
             switchToBundle(item, notifications, R.string.notifications, R.drawable.ic_notifications_active);
@@ -387,12 +378,7 @@ public class MainActivity extends BaseActivity implements
 
         if (id == R.id.nav_transitview) {
             AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_MENU_TRANSITVIEW, AnalyticsManager.CONTENT_ID_TRANSITVIEW, null);
-            switchToBundle(item, transitview, R.string.transit_view, 0);
-        }
-
-        if (id == R.id.nav_transitview_beta) {
-            AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_MENU_TRANSITVIEW, AnalyticsManager.CONTENT_ID_TRANSITVIEW, null);
-            switchToBundle(item, transitviewBeta, R.string.transit_view, R.drawable.ic_transitview_active);
+            switchToBundle(item, transitView, R.string.transit_view, R.drawable.ic_transitview_active);
         }
         return true;
     }

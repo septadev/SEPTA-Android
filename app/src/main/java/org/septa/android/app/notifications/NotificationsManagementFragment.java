@@ -17,11 +17,14 @@ import android.widget.CompoundButton;
 import android.widget.Toast;
 
 import org.septa.android.app.R;
+import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.view.TextView;
 
 public class NotificationsManagementFragment extends Fragment {
 
     private static final String TAG = NotificationsManagementFragment.class.getSimpleName(), TOOLBAR_TITLE = "TOOLBAR_TITLE";
+
+    private Context context;
 
     // layout variables
     TextView systemSettings, myNotifs, notifsSchedule;
@@ -33,30 +36,56 @@ public class NotificationsManagementFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_notifications, container, false);
 
-        final Context context = getContext();
+        context = getContext();
         if (context == null) {
             return rootView;
         }
 
         initializeView(rootView);
 
+        // enable or disable push notifications
         enableNotifs.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                // disable other switches but remember their value
+                specialAnnouncements.setEnabled(isChecked);
+                priority.setEnabled(isChecked);
+
                 if (isChecked) {
-                    // TODO: check system permissions for receiving notifications from the app
-                    // TODO: if permissions not granted show pop up saying to enable in settings
-                    // TODO: give button to link to notification settings
+                    PushNotificationManager.getInstance(context).resubscribeToTopics();
                 } else {
-                    // TODO: disable other switches but do not lose their value?
+                    PushNotificationManager.getInstance(context).unsubscribeFromAllTopics();
                 }
             }
         });
 
+        // enable or disable special announcements
+        specialAnnouncements.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    PushNotificationManager.getInstance(context).subscribeToSpecialAnnouncements();
+                } else {
+                    PushNotificationManager.getInstance(context).unsubscribeFromSpecialAnnouncements();
+                }
+            }
+        });
+
+        // link to system settings
         systemSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openSystemNotificationSettings(context);
+                openSystemNotificationSettings();
+            }
+        });
+
+        // treat as priority
+        priority.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                SeptaServiceFactory.getNotificationsService().setTreatAsPriority(context, isChecked);
+
+                // TODO: treat this app's notifications as priority
             }
         });
 
@@ -64,7 +93,9 @@ public class NotificationsManagementFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // TODO: open MyNotificationsActivity
-                Toast.makeText(context, "My Notifications", Toast.LENGTH_SHORT).show();
+                String topicsList = SeptaServiceFactory.getNotificationsService().getTopicsSubscribedTo(context).toString();
+
+                Toast.makeText(context, topicsList, Toast.LENGTH_SHORT).show(); // TODO: remove
             }
         });
 
@@ -72,7 +103,7 @@ public class NotificationsManagementFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // TODO: open NotificationsScheduleActivity
-                Toast.makeText(context, "Notification Schedule", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Notification Schedule", Toast.LENGTH_SHORT).show(); // TODO: remove
             }
         });
 
@@ -103,9 +134,20 @@ public class NotificationsManagementFragment extends Fragment {
         enableNotifs = rootView.findViewById(R.id.enable_notifications_switch);
         specialAnnouncements = rootView.findViewById(R.id.special_announcements_switch);
         priority = rootView.findViewById(R.id.priority_switch);
+
+        // set initial checked state of toggles based on shared preferences
+        if (SeptaServiceFactory.getNotificationsService().areNotificationsEnabled(context)) {
+            enableNotifs.setChecked(true);
+        }
+        if (SeptaServiceFactory.getNotificationsService().areSpecialAnnouncementsEnabled(context)) {
+            specialAnnouncements.setChecked(true);
+        }
+        if (SeptaServiceFactory.getNotificationsService().shouldTreatAsPriority(context)) {
+            priority.setChecked(true);
+        }
     }
 
-    private void openSystemNotificationSettings(Context context) {
+    private void openSystemNotificationSettings() {
         Intent intent = new Intent();
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {

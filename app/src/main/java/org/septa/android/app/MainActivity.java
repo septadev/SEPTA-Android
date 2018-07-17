@@ -29,8 +29,6 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.google.firebase.messaging.FirebaseMessaging;
-
 import org.septa.android.app.about.AboutFragment;
 import org.septa.android.app.connect.ConnectFragment;
 import org.septa.android.app.database.update.CheckForLatestDB;
@@ -168,9 +166,6 @@ public class MainActivity extends BaseActivity implements
                 }
             });
         }
-
-        // TODO: subscribe to test push notifications
-        FirebaseMessaging.getInstance().subscribeToTopic("notifications");
     }
 
     @Override

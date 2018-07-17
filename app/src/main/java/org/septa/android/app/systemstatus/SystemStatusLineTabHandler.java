@@ -1,5 +1,6 @@
 package org.septa.android.app.systemstatus;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -255,23 +256,30 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
 
         @Override
         public void setRoute(RouteDirectionModel routeDirectionModel) {
-            this.routeDirectionModel = routeDirectionModel;
-            lineText.setText(routeDirectionModel.getRouteLongName());
+            Context context = getContext();
 
-            int color;
-            try {
-                color = ContextCompat.getColor(getContext(), transitType.getLineColor(routeDirectionModel.getRouteId(), getContext()));
-            } catch (Exception e) {
-                color = ContextCompat.getColor(getContext(), R.color.default_line_color);
+            this.routeDirectionModel = routeDirectionModel;
+            lineText.setText(getString(R.string.line_picker_selection, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteLongName()));
+
+            if (context != null) {
+                int color;
+                try {
+                    color = ContextCompat.getColor(context, transitType.getLineColor(routeDirectionModel.getRouteId(), getContext()));
+                } catch (Exception e) {
+                    color = ContextCompat.getColor(context, R.color.default_line_color);
+                }
+
+
+                Drawable[] drawables = lineText.getCompoundDrawables();
+                Drawable bullet = ContextCompat.getDrawable(context, R.drawable.shape_line_marker);
+                bullet.setColorFilter(color, PorterDuff.Mode.SRC);
+
+                lineText.setCompoundDrawablesWithIntrinsicBounds(bullet, drawables[1], drawables[2], drawables[3]);
             }
 
-            Drawable[] drawables = lineText.getCompoundDrawables();
-            Drawable bullet = ContextCompat.getDrawable(getContext(), R.drawable.shape_line_marker);
-            bullet.setColorFilter(color, PorterDuff.Mode.SRC);
-
-            lineText.setCompoundDrawablesWithIntrinsicBounds(bullet, drawables[1], drawables[2], drawables[3]);
             queryButton.setAlpha(1);
             queryButton.setClickable(true);
+
         }
 
         private class GlobalStatusCallBack implements Callback<AlertDetail> {

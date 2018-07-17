@@ -285,7 +285,6 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
             if (getContext() == null) {
                 return;
             }
-            //lineText.setText(selectedRoute.getRouteLongName());
             int color;
             try {
                 color = ContextCompat.getColor(getContext(), transitType.getLineColor(var1.getRouteId(), getContext()));
@@ -300,9 +299,9 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
             lineText.setCompoundDrawablesWithIntrinsicBounds(bullet, drawables[1], drawables[2], drawables[3]);
 
             if (transitType == TransitType.RAIL) {
-                lineText.setText(selectedRoute.getRouteId() + " " + selectedRoute.getDirectionDescription());
+                lineText.setText(getString(R.string.line_picker_selection, selectedRoute.getRouteId(), selectedRoute.getDirectionDescription()));
             } else {
-                lineText.setText(selectedRoute.getRouteShortName() + ": to " + selectedRoute.getDirectionDescription());
+                lineText.setText(getString(R.string.line_picker_selection_direction, selectedRoute.getRouteShortName(), selectedRoute.getDirectionDescription()));
             }
             startingStation = null;
             activateView(startingStopEditText);

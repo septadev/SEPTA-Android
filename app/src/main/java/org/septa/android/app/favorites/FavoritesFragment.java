@@ -288,45 +288,47 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
 
     @Override
     public void promptToDeleteFavorite(final int favoriteIndex) {
-        final String favoriteKey = favoriteStateList.get(favoriteIndex).getFavoriteKey();
+        if (favoriteIndex >= 0 && favoriteIndex < favoriteStateList.size()) {
+            final String favoriteKey = favoriteStateList.get(favoriteIndex).getFavoriteKey();
 
-        new AlertDialog.Builder(getContext()).setCancelable(true).setTitle(R.string.delete_fav_modal_title)
-                .setMessage(R.string.delete_fav_modal_text)
+            new AlertDialog.Builder(getContext()).setCancelable(true).setTitle(R.string.delete_fav_modal_title)
+                    .setMessage(R.string.delete_fav_modal_text)
 
-                // confirm to delete
-                .setPositiveButton(R.string.delete_fav_pos_button, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(final DialogInterface dialog, int which) {
-                        DeleteFavoritesAsyncTask task = new DeleteFavoritesAsyncTask(getContext(), new Runnable() {
-                            @Override
-                            public void run() {
-                                // on unsuccessful deletion
-                                dialog.dismiss();
-                                revertSwipe(favoriteIndex);
-                                Log.e(TAG, "Favorite with key " + favoriteKey + " could not be deleted at this time");
-                            }
-                        }, new Runnable() {
-                            @Override
-                            public void run() {
-                                deleteFavorite(favoriteIndex);
-                            }
-                        });
+                    // confirm to delete
+                    .setPositiveButton(R.string.delete_fav_pos_button, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(final DialogInterface dialog, int which) {
+                            DeleteFavoritesAsyncTask task = new DeleteFavoritesAsyncTask(getContext(), new Runnable() {
+                                @Override
+                                public void run() {
+                                    // on unsuccessful deletion
+                                    dialog.dismiss();
+                                    revertSwipe(favoriteIndex);
+                                    Log.e(TAG, "Favorite with key " + favoriteKey + " could not be deleted at this time");
+                                }
+                            }, new Runnable() {
+                                @Override
+                                public void run() {
+                                    deleteFavorite(favoriteIndex);
+                                }
+                            });
 
-                        AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_DELETE_FAVORITE, AnalyticsManager.CUSTOM_EVENT_ID_FAVORITES_MANAGEMENT, null);
+                            AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_DELETE_FAVORITE, AnalyticsManager.CUSTOM_EVENT_ID_FAVORITES_MANAGEMENT, null);
 
-                        task.execute(favoriteKey);
-                    }
-                })
+                            task.execute(favoriteKey);
+                        }
+                    })
 
-                // cancel deletion
-                .setNegativeButton(R.string.delete_fav_neg_button, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        revertSwipe(favoriteIndex);
-                    }
-                })
-                .create().show();
+                    // cancel deletion
+                    .setNegativeButton(R.string.delete_fav_neg_button, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                            revertSwipe(favoriteIndex);
+                        }
+                    })
+                    .create().show();
+        }
     }
 
     @Override

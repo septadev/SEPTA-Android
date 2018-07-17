@@ -330,6 +330,8 @@
     <string name="notifications_schedule_heading">Schedule</string>
     <string name="notifications_schedule">Set Notifications Schedule</string>
 
+    <string name="notifications_permission_required">You must allow notifications from the SEPTA app in \'System Notification Settings\'</string>
+
 
     <!-- In-App Ratings-->
     <string name="rating_title">How are we doing?</string>

@@ -8,7 +8,9 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.widget.SwitchCompat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,17 +45,42 @@ public class NotificationsManagementFragment extends Fragment {
 
         initializeView(rootView);
 
+        final View containerView = rootView;
+
         // enable or disable push notifications
         enableNotifs.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                // disable other switches but remember their value
-                specialAnnouncements.setEnabled(isChecked);
+                // check for device permission to send notifications about the app before enabling
+                boolean notifsAllowed = NotificationManagerCompat.from(context).areNotificationsEnabled();
 
-                if (isChecked) {
-                    PushNotificationManager.getInstance(context).resubscribeToTopics();
+                if (!notifsAllowed && isChecked) {
+                    // user cannot enable notifs without permissions
+                    enableNotifs.setChecked(false);
+                    toggleNotifications(false);
+
+                    // show message that device permissions must be enabled
+                    Snackbar snackbar = Snackbar.make(containerView, R.string.notifications_permission_required, Snackbar.LENGTH_LONG);
+                    snackbar.setAction("Settings", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            // link to system notification settings
+                            openSystemNotificationSettings();
+                        }
+                    });
+
+                    View snackbarView = snackbar.getView();
+                    android.widget.TextView tv = snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+                    tv.setMaxLines(10);
+                    snackbar.show();
+
+                } else if (notifsAllowed && isChecked) {
+                    // turn on notifications
+                    toggleNotifications(true);
+
                 } else {
-                    PushNotificationManager.getInstance(context).unsubscribeFromAllTopics();
+                    // turn off notifications
+                    toggleNotifications(false);
                 }
             }
         });
@@ -92,6 +119,16 @@ public class NotificationsManagementFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+
+        // recheck device permissions and only enable switch if allowed
+        boolean notifsEnabled = SeptaServiceFactory.getNotificationsService().areNotificationsEnabled(context),
+                notifsAllowed = NotificationManagerCompat.from(context).areNotificationsEnabled();
+        enableNotifs.setChecked(notifsEnabled && notifsAllowed);
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString(TOOLBAR_TITLE, getActivity().getTitle().toString());
@@ -114,13 +151,8 @@ public class NotificationsManagementFragment extends Fragment {
         enableNotifs = rootView.findViewById(R.id.enable_notifications_switch);
         specialAnnouncements = rootView.findViewById(R.id.special_announcements_switch);
 
-        // set initial checked state of toggles based on shared preferences
-        if (SeptaServiceFactory.getNotificationsService().areNotificationsEnabled(context)) {
-            enableNotifs.setChecked(true);
-        }
-        if (SeptaServiceFactory.getNotificationsService().areSpecialAnnouncementsEnabled(context)) {
-            specialAnnouncements.setChecked(true);
-        }
+        // set initial checked state of special announcements based on shared preferences
+        specialAnnouncements.setChecked(SeptaServiceFactory.getNotificationsService().areSpecialAnnouncementsEnabled(context));
     }
 
     private void openSystemNotificationSettings() {
@@ -143,7 +175,17 @@ public class NotificationsManagementFragment extends Fragment {
             intent.addCategory(Intent.CATEGORY_DEFAULT);
             intent.setData(Uri.parse("package:" + context.getPackageName()));
         }
-
         context.startActivity(intent);
+    }
+
+    private void toggleNotifications(boolean isChecked) {
+        // disable other switches but remember their value
+        specialAnnouncements.setEnabled(isChecked);
+
+        if (isChecked) {
+            PushNotificationManager.getInstance(context).resubscribeToTopics();
+        } else {
+            PushNotificationManager.getInstance(context).unsubscribeFromAllTopics();
+        }
     }
 }

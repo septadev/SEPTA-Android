@@ -113,10 +113,6 @@ public class PushNotificationManager {
     public void resubscribeToTopics() {
         SeptaServiceFactory.getNotificationsService().setNotificationsEnabled(context, true);
 
-        // TODO: check system permissions for receiving notifications from the app
-        // TODO: if permissions not granted show pop up saying to enable in settings
-        // TODO: give button to link to notification settings
-
         Toast.makeText(context, "Resubscribing to Push Notifs", Toast.LENGTH_SHORT).show(); // TODO: remove
 
         // resubscribe user to their previously saved topics

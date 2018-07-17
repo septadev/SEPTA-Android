@@ -212,7 +212,7 @@ public class TransitViewFragment extends Fragment implements TransitViewLinePick
     @Override
     public void addFirstRoute(RouteDirectionModel route) {
         this.firstRoute = route;
-        firstRoutePicker.setText(firstRoute.getRouteLongName());
+        firstRoutePicker.setText(getString(R.string.line_picker_selection, firstRoute.getRouteId(), firstRoute.getRouteLongName()));
         addColorBulletBesideRoute(firstRoute, firstRoutePicker);
 
         activateView(secondRoutePicker);
@@ -222,7 +222,7 @@ public class TransitViewFragment extends Fragment implements TransitViewLinePick
     @Override
     public void addSecondRoute(RouteDirectionModel route) {
         this.secondRoute = route;
-        secondRoutePicker.setText(secondRoute.getRouteLongName());
+        secondRoutePicker.setText(getString(R.string.line_picker_selection, secondRoute.getRouteId(), secondRoute.getRouteLongName()));
         addColorBulletBesideRoute(secondRoute, secondRoutePicker);
 
         activateView(thirdRoutePicker);
@@ -231,7 +231,7 @@ public class TransitViewFragment extends Fragment implements TransitViewLinePick
     @Override
     public void addThirdRoute(RouteDirectionModel route) {
         this.thirdRoute = route;
-        thirdRoutePicker.setText(thirdRoute.getRouteLongName());
+        thirdRoutePicker.setText(getString(R.string.line_picker_selection, thirdRoute.getRouteId(), thirdRoute.getRouteLongName()));
         addColorBulletBesideRoute(thirdRoute, thirdRoutePicker);
     }
 

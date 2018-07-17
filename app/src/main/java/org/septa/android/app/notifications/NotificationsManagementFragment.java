@@ -1,7 +1,5 @@
 package org.septa.android.app.notifications;
 
-import android.app.Activity;
-import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -12,7 +10,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.SwitchCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,8 +27,7 @@ public class NotificationsManagementFragment extends Fragment {
     private Context context;
 
     // layout variables
-    TextView systemSettings, myNotifs, notifsSchedule;
-    View priority;
+    TextView systemSettings, myNotifs;
     SwitchCompat enableNotifs, specialAnnouncements;
 
     @Override
@@ -82,14 +78,6 @@ public class NotificationsManagementFragment extends Fragment {
             }
         });
 
-        // link to priority settings
-        priority.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openPrioritySettings();
-            }
-        });
-
         myNotifs.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -97,14 +85,6 @@ public class NotificationsManagementFragment extends Fragment {
                 String topicsList = SeptaServiceFactory.getNotificationsService().getTopicsSubscribedTo(context).toString();
 
                 Toast.makeText(context, topicsList, Toast.LENGTH_SHORT).show(); // TODO: remove
-            }
-        });
-
-        notifsSchedule.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // TODO: open NotificationsScheduleActivity
-                Toast.makeText(context, "Notification Schedule", Toast.LENGTH_SHORT).show(); // TODO: remove
             }
         });
 
@@ -131,10 +111,8 @@ public class NotificationsManagementFragment extends Fragment {
     private void initializeView(View rootView) {
         systemSettings = rootView.findViewById(R.id.system_notification_settings);
         myNotifs = rootView.findViewById(R.id.my_notifications);
-        notifsSchedule = rootView.findViewById(R.id.notifications_schedule);
         enableNotifs = rootView.findViewById(R.id.enable_notifications_switch);
         specialAnnouncements = rootView.findViewById(R.id.special_announcements_switch);
-        priority = rootView.findViewById(R.id.priority_settings);
 
         // set initial checked state of toggles based on shared preferences
         if (SeptaServiceFactory.getNotificationsService().areNotificationsEnabled(context)) {
@@ -142,12 +120,6 @@ public class NotificationsManagementFragment extends Fragment {
         }
         if (SeptaServiceFactory.getNotificationsService().areSpecialAnnouncementsEnabled(context)) {
             specialAnnouncements.setChecked(true);
-        }
-
-        // hide priority view in android versions <26 since cannot specify apps to override DND
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            priority.setVisibility(View.GONE);
-            rootView.findViewById(R.id.priority_border).setVisibility(View.GONE);
         }
     }
 
@@ -173,37 +145,5 @@ public class NotificationsManagementFragment extends Fragment {
         }
 
         context.startActivity(intent);
-    }
-
-    private void openPrioritySettings() {
-        Activity activity = getActivity();
-        if (activity != null) {
-
-            NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            if (mNotificationManager != null) {
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    Intent intent = new Intent();
-
-                    // set to custom priority app notifications
-                    if (mNotificationManager.isNotificationPolicyAccessGranted()) {
-                        mNotificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_PRIORITY);
-                    }
-
-                    // open priority notification settings for SEPTA app if on 23+
-                    intent.setAction(Settings.ACTION_ZEN_MODE_PRIORITY_SETTINGS);
-
-                    activity.startActivity(intent);
-                } else {
-                    // notify user that they must manually override priority app notifications in device settings
-                    Toast.makeText(context, "You must enable SEPTA under Priority App Notifications in order to hear this app's notifications when Do Not Disturb is on", Toast.LENGTH_LONG).show();
-
-                }
-            } else {
-                Log.e(TAG, "Notification Manager is null");
-            }
-        } else {
-            Log.e(TAG, "Activity is null");
-        }
     }
 }

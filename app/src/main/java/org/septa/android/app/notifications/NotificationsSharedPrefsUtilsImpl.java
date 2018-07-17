@@ -19,7 +19,6 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
     private static final String SHARED_PREFERENCES_NOTIFICATIONS = "SHARED_PREFERENCES_NOTIFICATIONS";
     private static final String NOTIFICATIONS_ENABlED = "NOTIFICATIONS_ENABlED"; // TODO: is this needed or should we just check device permissions each time
     private static final String SPECIAL_ANNOUNCEMENTS = "SPECIAL_ANNOUNCEMENTS";
-    private static final String TREAT_AS_PRIORITY = "TREfAT_AS_PRIORITY";
     private static final String ROUTE_TOPICS_SUBSCRIPTION = "ROUTE_TOPICS_SUBSCRIPTION";
     private static final String NOTIFICATIONS_SCHEDULE = "NOTIFICATIONS_SCHEDULE";
 
@@ -41,16 +40,6 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
     @Override
     public void setSpecialAnnouncementsEnabled(Context context, boolean subscribed) {
         getSharedPreferences(context).edit().putBoolean(SPECIAL_ANNOUNCEMENTS, subscribed).apply();
-    }
-
-    @Override
-    public boolean shouldTreatAsPriority(Context context) {
-        return getSharedPreferences(context).getBoolean(TREAT_AS_PRIORITY, false);
-    }
-
-    @Override
-    public void setTreatAsPriority(Context context, boolean priority) {
-        getSharedPreferences(context).edit().putBoolean(TREAT_AS_PRIORITY, priority).apply();
     }
 
     @Override

@@ -14,10 +14,6 @@ public interface NotificationsSharedPrefsUtils {
 
     void setSpecialAnnouncementsEnabled(Context context, boolean subscribed);
 
-    boolean shouldTreatAsPriority(Context context);
-
-    void setTreatAsPriority(Context context, boolean priority);
-
     List<String> getNotificationsSchedule(Context context);
 
     List<String> getTopicsSubscribedTo(Context context);

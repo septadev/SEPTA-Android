@@ -19,8 +19,6 @@ import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import java.util.List;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
-import static android.support.v4.app.NotificationCompat.PRIORITY_DEFAULT;
-import static android.support.v4.app.NotificationCompat.PRIORITY_MAX;
 
 public class PushNotificationManager {
 
@@ -82,14 +80,6 @@ public class PushNotificationManager {
 
         // add sound / vibrate based on current user settings
         mBuilder.setDefaults(Notification.DEFAULT_ALL);
-
-        // set priority
-        boolean priority = SeptaServiceFactory.getNotificationsService().shouldTreatAsPriority(context);
-        if (priority) {
-            mBuilder.setPriority(PRIORITY_MAX);
-        } else {
-            mBuilder.setPriority(PRIORITY_DEFAULT);
-        }
 
         NotificationManager mNotifyMgr = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
 
@@ -206,13 +196,5 @@ public class PushNotificationManager {
 
         // add topic to shared preferences
         SeptaServiceFactory.getNotificationsService().addTopicSubscription(context, topicId);
-    }
-
-    public void treatAsPriority() {
-        SeptaServiceFactory.getNotificationsService().setTreatAsPriority(context, true);
-    }
-
-    public void removeAppFromPriority() {
-        SeptaServiceFactory.getNotificationsService().setTreatAsPriority(context, false);
     }
 }

@@ -108,10 +108,7 @@ public class NotificationsManagementFragment extends Fragment {
         myNotifs.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO: open MyNotificationsActivity
-                String topicsList = SeptaServiceFactory.getNotificationsService().getTopicsSubscribedTo(context).toString();
-
-                Toast.makeText(context, topicsList, Toast.LENGTH_SHORT).show(); // TODO: remove
+                openMyNotifications();
             }
         });
 
@@ -147,12 +144,23 @@ public class NotificationsManagementFragment extends Fragment {
 
     private void initializeView(View rootView) {
         systemSettings = rootView.findViewById(R.id.system_notification_settings);
-        myNotifs = rootView.findViewById(R.id.my_notifications);
+        myNotifs = rootView.findViewById(R.id.my_notifications_link);
         enableNotifs = rootView.findViewById(R.id.enable_notifications_switch);
         specialAnnouncements = rootView.findViewById(R.id.special_announcements_switch);
 
         // set initial checked state of special announcements based on shared preferences
         specialAnnouncements.setChecked(SeptaServiceFactory.getNotificationsService().areSpecialAnnouncementsEnabled(context));
+    }
+
+    private void toggleNotifications(boolean isChecked) {
+        // disable other switches but remember their value
+        specialAnnouncements.setEnabled(isChecked);
+
+        if (isChecked) {
+            PushNotificationManager.getInstance(context).resubscribeToTopics();
+        } else {
+            PushNotificationManager.getInstance(context).unsubscribeFromAllTopics();
+        }
     }
 
     private void openSystemNotificationSettings() {
@@ -178,14 +186,12 @@ public class NotificationsManagementFragment extends Fragment {
         context.startActivity(intent);
     }
 
-    private void toggleNotifications(boolean isChecked) {
-        // disable other switches but remember their value
-        specialAnnouncements.setEnabled(isChecked);
+    private void openMyNotifications() {
+        String topicsList = SeptaServiceFactory.getNotificationsService().getTopicsSubscribedTo(context).toString();
 
-        if (isChecked) {
-            PushNotificationManager.getInstance(context).resubscribeToTopics();
-        } else {
-            PushNotificationManager.getInstance(context).unsubscribeFromAllTopics();
-        }
+        Toast.makeText(context, topicsList, Toast.LENGTH_SHORT).show(); // TODO: remove
+
+        Intent intent = new Intent(context, MyNotificationsActivity.class);
+        startActivity(intent);
     }
 }

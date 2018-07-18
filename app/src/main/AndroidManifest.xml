@@ -46,6 +46,12 @@
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
+            android:name=".notifications.MyNotificationsActivity"
+            android:label="@string/septa"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
+
+        <activity
             android:name=".nextarrive.NextToArriveResultsActivity"
             android:label="@string/septa"
             android:screenOrientation="portrait"

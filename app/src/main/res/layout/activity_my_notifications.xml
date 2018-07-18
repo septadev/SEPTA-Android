@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/activity_my_notifications"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/notification_schedule"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <org.septa.android.app.view.TextView
+            android:id="@+id/notification_schedule_heading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="36dp"
+            android:layout_marginRight="36dp"
+            android:letterSpacing="0.01"
+            android:lineSpacingExtra="6sp"
+            android:paddingTop="21dp"
+            android:text="@string/notifications_schedule_heading"
+            android:textAlignment="center"
+            android:textColor="@android:color/black"
+            android:textSize="14sp"
+            app:typeface="@string/font_roboto_regular" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_margin="19dp"
+            android:background="@color/manage_notifications_border" />
+
+        <LinearLayout
+            android:id="@+id/days_of_week_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/button_sunday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="6dp"
+                android:src="@drawable/ic_sunday_disabled" />
+
+            <ImageView
+                android:id="@+id/button_monday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="6dp"
+                android:src="@drawable/ic_monday_disabled" />
+
+            <ImageView
+                android:id="@+id/button_tuesday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="6dp"
+                android:src="@drawable/ic_tuesday_disabled" />
+
+            <ImageView
+                android:id="@+id/button_wednesday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="6dp"
+                android:src="@drawable/ic_wednesday_disabled" />
+
+            <ImageView
+                android:id="@+id/button_thursday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="6dp"
+                android:src="@drawable/ic_thursday_disabled" />
+
+            <ImageView
+                android:id="@+id/button_friday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="6dp"
+                android:src="@drawable/ic_friday_disabled" />
+
+            <ImageView
+                android:id="@+id/button_saturday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="6dp"
+                android:src="@drawable/ic_saturday_disabled" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_margin="19dp"
+            android:background="@color/manage_notifications_border" />
+
+        <LinearLayout
+            android:id="@+id/notification_time_picker_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="60dp"
+            android:layout_marginRight="60dp"
+            android:orientation="horizontal"
+            android:weightSum="4">
+
+            <org.septa.android.app.view.TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:letterSpacing="0.01"
+                android:lineSpacingExtra="10sp"
+                android:text="Start:"
+                android:textAlignment="center"
+                android:textColor="@android:color/black"
+                android:textSize="14sp"
+                app:typeface="@string/font_roboto_regular" />
+
+            <EditText
+                android:id="@+id/notification_schedule_start_picker"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:inputType="time" />
+
+            <org.septa.android.app.view.TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:letterSpacing="0.01"
+                android:lineSpacingExtra="10sp"
+                android:text="Until:"
+                android:textAlignment="center"
+                android:textColor="@android:color/black"
+                android:textSize="14sp"
+                app:typeface="@string/font_roboto_regular" />
+
+            <EditText
+                android:id="@+id/notification_schedule_end_picker"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:inputType="time" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="15dp"
+            android:weightSum="18">
+
+            <org.septa.android.app.view.TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="7"
+                android:letterSpacing="0.15"
+                android:padding="5dp"
+                android:text="@string/my_notifications_heading"
+                android:textAllCaps="true"
+                android:textColor="@color/notification_heading_text_color"
+                android:textSize="10sp"
+                app:typeface="@string/font_roboto_bold" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="5"
+                android:background="@color/manage_notifications_border" />
+
+            <org.septa.android.app.view.TextView
+                android:id="@+id/add_notifications"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:padding="5dp"
+                android:text="@string/notifications_add"
+                android:textAlignment="center"
+                android:textColor="@color/text_primary"
+                android:textSize="15sp"
+                android:textStyle="normal"
+                app:typeface="@string/font_roboto_regular" />
+
+            <org.septa.android.app.view.TextView
+                android:id="@+id/edit_notifications"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:padding="5dp"
+                android:text="@string/notifications_edit"
+                android:textAlignment="center"
+                android:textColor="@color/text_primary"
+                android:textSize="15sp"
+                android:textStyle="normal"
+                app:typeface="@string/font_roboto_regular" />
+
+        </LinearLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/notification_recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        </android.support.v7.widget.RecyclerView>
+
+    </LinearLayout>
+
+</LinearLayout>

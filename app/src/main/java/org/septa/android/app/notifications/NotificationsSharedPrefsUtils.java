@@ -14,7 +14,19 @@ public interface NotificationsSharedPrefsUtils {
 
     void setSpecialAnnouncementsEnabled(Context context, boolean subscribed);
 
-    List<String> getNotificationsSchedule(Context context);
+    List<Integer> getNotificationsSchedule(Context context);
+
+    void addDayOfWeekToSchedule(Context context, int dayToAdd);
+
+    void removeDayOfWeekFromSchedule(Context context, int dayToRemove);
+
+    String getNotificationStartTime(Context context);
+
+    void storeNotificationsStartTime(Context context, String startTime);
+
+    String getNotificationEndTime(Context context);
+
+    void storeNotificationsEndTime(Context context, String endTime);
 
     List<String> getTopicsSubscribedTo(Context context);
 

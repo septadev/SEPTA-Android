@@ -325,12 +325,15 @@
     <string name="system_notification_settings">System Notification Settings</string>
 
     <string name="my_notifications_heading">My Notifications</string>
-    <string name="my_notifications">My Custom Notifications</string>
+    <string name="my_custom_notifications">My Custom Notifications</string>
 
-    <string name="notifications_schedule_heading">Schedule</string>
-    <string name="notifications_schedule">Set Notifications Schedule</string>
+    <string name="notifications_schedule_heading">Set Notifications Days and Times for All Transportation Modes</string>
 
     <string name="notifications_permission_required">You must allow notifications from the SEPTA app in \'System Notification Settings\'</string>
+
+    <string name="notifications_add">Add</string>
+    <string name="notifications_edit">Edit</string>
+    <string name="notifications_done">Done</string>
 
 
     <!-- In-App Ratings-->

@@ -20,7 +20,9 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
     private static final String NOTIFICATIONS_ENABlED = "NOTIFICATIONS_ENABlED"; // TODO: is this needed or should we just check device permissions each time
     private static final String SPECIAL_ANNOUNCEMENTS = "SPECIAL_ANNOUNCEMENTS";
     private static final String ROUTE_TOPICS_SUBSCRIPTION = "ROUTE_TOPICS_SUBSCRIPTION";
-    private static final String NOTIFICATIONS_SCHEDULE = "NOTIFICATIONS_SCHEDULE";
+    private static final String NOTIFICATIONS_SCHEDULE_DAYS_OF_WEEK = "NOTIFICATIONS_SCHEDULE_DAYS_OF_WEEK";
+    private static final String NOTIFICATIONS_START_TIME = "NOTIFICATIONS_START_TIME";
+    private static final String NOTIFICATIONS_END_TIME = "NOTIFICATIONS_END_TIME";
 
     @Override
     public boolean areNotificationsEnabled(Context context) {
@@ -43,9 +45,9 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
     }
 
     @Override
-    public List<String> getNotificationsSchedule(Context context) {
+    public List<Integer> getNotificationsSchedule(Context context) {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
-        String preferencesJson = sharedPreferences.getString(NOTIFICATIONS_SCHEDULE, null);
+        String preferencesJson = sharedPreferences.getString(NOTIFICATIONS_SCHEDULE_DAYS_OF_WEEK, null);
 
         if (preferencesJson == null) {
             return new ArrayList<>();
@@ -53,19 +55,69 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
 
         Gson gson = new Gson();
         try {
-            return gson.fromJson(preferencesJson, new TypeToken<List<String>>() {
+            return gson.fromJson(preferencesJson, new TypeToken<List<Integer>>() {
             }.getType());
         } catch (JsonSyntaxException e) {
             Log.e(TAG, e.toString());
-            sharedPreferences.edit().remove(NOTIFICATIONS_SCHEDULE).apply();
+            sharedPreferences.edit().remove(NOTIFICATIONS_SCHEDULE_DAYS_OF_WEEK).apply();
             return new ArrayList<>();
         }
     }
 
-    private void storeNotificationsSchedule(SharedPreferences sharedPreferences, List<String> schedule) {
+    @Override
+    public void addDayOfWeekToSchedule(Context context, int dayToAdd) {
+        List<Integer> daysOfWeek = getNotificationsSchedule(context);
+        if (!daysOfWeek.contains(dayToAdd)) {
+            daysOfWeek.add(dayToAdd);
+            storeNotificationsSchedule(context, daysOfWeek);
+        } else {
+            Log.e(TAG, "Notifications are already enabled for " + dayToAdd);
+        }
+    }
+
+    @Override
+    public void removeDayOfWeekFromSchedule(Context context, int dayToRemove) {
+        List<Integer> daysOfWeek = getNotificationsSchedule(context);
+        int indexToRemove = -1;
+        for (int i = 0; i < daysOfWeek.size(); i++) {
+            if (dayToRemove == daysOfWeek.get(i)) {
+                indexToRemove = i;
+                break;
+            }
+        }
+        if (indexToRemove != -1) {
+            daysOfWeek.remove(indexToRemove);
+        } else {
+            Log.e(TAG, "Notifications are already disabled for " + dayToRemove);
+        }
+        storeNotificationsSchedule(context, daysOfWeek);
+    }
+
+    private void storeNotificationsSchedule(Context context, List<Integer> schedule) {
+        SharedPreferences sharedPreferences = getSharedPreferences(context);
         Gson gson = new Gson();
         String scheduleJson = gson.toJson(schedule);
-        sharedPreferences.edit().putString(NOTIFICATIONS_SCHEDULE, scheduleJson).apply();
+        sharedPreferences.edit().putString(NOTIFICATIONS_SCHEDULE_DAYS_OF_WEEK, scheduleJson).apply();
+    }
+
+    @Override
+    public String getNotificationStartTime(Context context) {
+        return getSharedPreferences(context).getString(NOTIFICATIONS_START_TIME, "9:00 am"); // TODO: default value?
+    }
+
+    @Override
+    public void storeNotificationsStartTime(Context context, String startTime) {
+        getSharedPreferences(context).edit().putString(NOTIFICATIONS_START_TIME, startTime).apply();
+    }
+
+    @Override
+    public String getNotificationEndTime(Context context) {
+        return getSharedPreferences(context).getString(NOTIFICATIONS_END_TIME, "5:00 pm"); // TODO: default value?
+    }
+
+    @Override
+    public void storeNotificationsEndTime(Context context, String endTime) {
+        getSharedPreferences(context).edit().putString(NOTIFICATIONS_END_TIME, endTime).apply();
     }
 
     @Override

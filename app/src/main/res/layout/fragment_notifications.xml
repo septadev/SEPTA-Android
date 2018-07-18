@@ -214,7 +214,7 @@
                 android:orientation="vertical">
 
                 <org.septa.android.app.view.TextView
-                    android:id="@+id/my_notifications"
+                    android:id="@+id/my_notifications_link"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="?android:attr/selectableItemBackground"
@@ -224,7 +224,7 @@
                     android:letterSpacing="0.01"
                     android:lineSpacingExtra="10sp"
                     android:padding="18dp"
-                    android:text="@string/my_notifications"
+                    android:text="@string/my_custom_notifications"
                     android:textColor="@android:color/black"
                     android:textSize="14sp"
                     app:typeface="@string/font_roboto_regular" />

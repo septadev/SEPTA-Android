@@ -20,7 +20,7 @@ pipeline {
             }
 
         }
- 
+
         stage('Get Database') {
             steps {
                 script {
@@ -79,8 +79,8 @@ pipeline {
             steps {
                 script {
                     def git_log = "<table border=\"1\"><tr><td>Date</td><td>Author</td><td>Commit Message</td>"
-                    if (fileExists('last_success_commit.txt')) {
-                        def last_success_commit = readFile 'last_success_commit.txt'
+                    if (fileExists(env.LAST_SUCCESS_COMMIT_FILE)) {
+                        def last_success_commit = readFile env.LAST_SUCCESS_COMMIT_FILE
                         last_success_commit = last_success_commit.trim()
                         echo last_success_commit
                         dir('code') {
@@ -89,7 +89,7 @@ pipeline {
                             git_log += sh script: cmd, returnStdout: true
                             git_log += "</table>"
                             echo git_log
-                            sh "git rev-parse HEAD > ../last_success_commit.txt"
+                            sh "git rev-parse HEAD > ${env.LAST_SUCCESS_COMMIT_FILE}"
                         }
                     }
 

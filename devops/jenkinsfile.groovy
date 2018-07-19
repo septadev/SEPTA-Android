@@ -8,7 +8,7 @@ pipeline {
 
     parameters {
         choice(choices: 'Alpha\nBeta\nRelease\nDebug', description: 'What type of build?', name: 'buildType')
-        string(defaultValue: "jenkins_test2", description: 'Which Branch?', name: 'branch')
+        string(defaultValue: "develop", description: 'Which Branch?', name: 'branch')
     }
 
     stages {

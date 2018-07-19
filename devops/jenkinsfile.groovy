@@ -5,7 +5,7 @@ def gradle(command) {
 
 pipeline {
     agent any
-
+  
     parameters {
         choice(choices: 'Alpha\nBeta\nRelease\nDebug', description: 'What type of build?', name: 'buildType')
         string(defaultValue: "develop", description: 'Which Branch?', name: 'branch')

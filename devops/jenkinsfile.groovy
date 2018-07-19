@@ -14,8 +14,12 @@ pipeline {
     stages {
         stage('Clone sources') {
             steps {
-                checkout([$class: 'GitSCM', branches: [[name: "${params.branch}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'code']], submoduleCfg: [], userRemoteConfigs: [[credentialsId: "${env.SEPTA_KEY_CREDENTIALS_ID}", url: 'git@github.com:septadev/SEPTA-Android.git']]])
+                sshagent(credentials: ["${env.SEPTA_KEY_CREDENTIALS_ID}"]) {
+                    sh 'rm -rf *'
+                    sh "git clone --single-branch -b ${params.branch} git@github.com:septadev/SEPTA-Android.git code"
+                }
             }
+
         }
 
         stage('Get Database') {
@@ -75,21 +79,21 @@ pipeline {
         stage('Notification') {
             steps {
                 script {
+                    def git_log
                     if (fileExists('last_success_commit.txt')) {
                         def last_success_commit = readFile 'last_success_commit.txt'
-
+                        last_success_commit = last_success_commit.trim()
+                        echo last_success_commit
                         dir('code') {
-                            def git_log = sh "git log --pretty=format:'%h %ad %s (%an)' --date=short  ${last_success_commit}..HEAD"
+                            def cmd = "git log --pretty=format:'%h %ad %s (%an)' --date=short  ${last_success_commit}..HEAD"
+                            echo cmd
+                            git_log = sh script: cmd, returnStdout: true
+                            echo git_log
+                            sh "git rev-parse HEAD > ../last_success_commit.txt"
                         }
                     }
 
-                    dir('code') {
-                        def next_commit = sh 'git rev-parse HEAD'
-                    }
-                    writeFile file: 'last_success_commit.txt', text: next_commit
-
-
-                    def accessUrl = "https://s3.amazonaws.com/mobile-dev-distribution/septa-app_${env.BUILD_NUMBER}.apk"
+                    accessUrl = "https://s3.amazonaws.com/mobile-dev-distribution/septa-app_${env.BUILD_NUMBER}.apk"
                     emailext(
                             mimeType: 'text/html',
                             subject: "New SEPTA Android APK Available SUCCESSFUL [${env.BUILD_NUMBER}]'",

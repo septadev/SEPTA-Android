@@ -20,7 +20,7 @@ pipeline {
             }
 
         }
-
+ 
         stage('Get Database') {
             steps {
                 script {

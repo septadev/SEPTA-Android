@@ -14,7 +14,7 @@ pipeline {
     stages {
         stage('Clone sources') {
             steps {
-                dir('code') {  
+                dir('code') {
                     git poll: true, url: 'git@github.com:septadev/SEPTA-Android.git', branch: params.branch, credentialsId: env.SEPTA_KEY_CREDENTIALS_ID
                 }
             }
@@ -79,19 +79,23 @@ pipeline {
             steps {
                 script {
                     def git_log = "<table border=\"1\"><tr><td>Date</td><td>Author</td><td>Commit Message</td>"
-                    if (fileExists(env.LAST_SUCCESS_COMMIT_FILE)) {
-                        def last_success_commit = readFile env.LAST_SUCCESS_COMMIT_FILE
-                        last_success_commit = last_success_commit.trim()
-                        echo last_success_commit
-                        dir('code') {
-                            def cmd = "git log --pretty=format:'<tr><td>%ad</td><td>%an</td><td>%s</td></tr>' --date=short  ${last_success_commit}..HEAD"
-                            echo cmd
-                            git_log += sh script: cmd, returnStdout: true
-                            git_log += "</table>"
-                            echo git_log
-                            sh "git rev-parse HEAD > ${env.LAST_SUCCESS_COMMIT_FILE}"
-                        }
+
+                    sh "cp ${env.LAST_SUCCESS_COMMIT_FILE} last_success_commit.txt"
+                    def last_success_commit = readFile 'last_success_commit.txt'
+                    last_success_commit = last_success_commit.trim()
+                    echo last_success_commit
+                    dir('code') {
+                        def cmd = "git log --pretty=format:'<tr><td>%ad</td><td>%an</td><td>%s</td></tr>' --date=short  ${last_success_commit}..HEAD"
+                        echo cmd
+                        git_log += sh script: cmd, returnStdout: true
+                        echo git_log
                     }
+
+
+                    dir('code') {
+                        sh "git rev-parse HEAD > ${env.LAST_SUCCESS_COMMIT_FILE}"
+                    }
+                    git_log += "</table>"
 
                     accessUrl = "https://s3.amazonaws.com/mobile-dev-distribution/septa-app_${env.BUILD_NUMBER}.apk"
                     withEnv(["accessUrl=${accessUrl}", "git_log=${git_log}"]) {

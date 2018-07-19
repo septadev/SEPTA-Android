@@ -99,13 +99,15 @@ pipeline {
                         body = sh script: 'code/devops/distribution_email_body.sh', returnStdout: true
                     }
 
-                    readFile 'code/devops/'
+                    distroText = readFile 'code/devops/email_distro.txt'
+                    distroAddresses = distroText.split("\n").join(',')
+
 
                     emailext(
                             mimeType: 'text/html',
                             subject: "New SEPTA Android APK Available SUCCESSFUL [${env.BUILD_NUMBER}]'",
                             body: body,
-                            to: 'joseph.kampf@gmail.com'
+                            to: distroAddresses
                     )
                 }
             }

@@ -94,6 +94,8 @@ pipeline {
                     }
 
                     accessUrl = "https://s3.amazonaws.com/mobile-dev-distribution/septa-app_${env.BUILD_NUMBER}.apk"
+
+
                     emailext(
                             mimeType: 'text/html',
                             subject: "New SEPTA Android APK Available SUCCESSFUL [${env.BUILD_NUMBER}]'",

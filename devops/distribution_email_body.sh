@@ -1,3 +1,4 @@
+#!/bin/sh
 echo "<html> \
 <body> \
 A new SEPTA Android APK is available.<p> \

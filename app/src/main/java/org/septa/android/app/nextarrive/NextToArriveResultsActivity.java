@@ -2,15 +2,18 @@ package org.septa.android.app.nextarrive;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Point;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
@@ -39,7 +42,6 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.maps.android.data.kml.KmlLayer;
 
 import org.septa.android.app.ActivityClass;
@@ -248,8 +250,7 @@ public class NextToArriveResultsActivity extends BaseActivity implements OnMapRe
         googleMap.addMarker(new MarkerOptions().position(destinationStationLatLng).title(destination.getStopName()).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
 
         // set default map position
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(startingStationLatLng));
-        googleMap.moveCamera(CameraUpdateFactory.zoomTo(13));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(startingStationLatLng, 13));
 
         // include start and destination in map camera bounds
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
@@ -286,8 +287,7 @@ public class NextToArriveResultsActivity extends BaseActivity implements OnMapRe
                                     googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, getResources().getDisplayMetrics())));
                                 } catch (Exception e1) {
                                     // Enough is enough.  Zoom the map to the starting station.
-                                    googleMap.moveCamera(CameraUpdateFactory.zoomTo(13));
-                                    googleMap.moveCamera(CameraUpdateFactory.newLatLng(startingStationLatLng));
+                                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(startingStationLatLng, 13));
                                 }
                                 ViewGroup.LayoutParams layoutParams =
                                         bottomSheetLayout.getLayoutParams();
@@ -309,25 +309,6 @@ public class NextToArriveResultsActivity extends BaseActivity implements OnMapRe
         noResultsMessage.setVisibility(View.GONE);
         mapContainerView.setVisibility(View.VISIBLE);
         bottomSheetLayout.setVisibility(View.VISIBLE);
-
-        int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
-        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
-            Log.d(TAG, "Location Permission Granted.");
-            Task<Location> locationTask = LocationServices.getFusedLocationProviderClient(this).getLastLocation()
-                    .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                        @Override
-                        public void onSuccess(Location location) {
-                            // Got last known location. In some rare situations this can be null.
-                            if (location != null) {
-                                int permissionCheck = ContextCompat.checkSelfPermission(NextToArriveResultsActivity.this,
-                                        Manifest.permission.ACCESS_FINE_LOCATION);
-                                googleMap.setMyLocationEnabled(true);
-                            } else {
-                                Log.d(TAG, "location was null");
-                            }
-                        }
-                    });
-        }
 
     }
 
@@ -755,10 +736,57 @@ public class NextToArriveResultsActivity extends BaseActivity implements OnMapRe
             }
         }
 
+        // show my location button if permission granted
+        checkForLocationEnabled(googleMap);
+
         // hide error message in case connection regained
         noResultsMessage.setVisibility(View.GONE);
         mapContainerView.setVisibility(View.VISIBLE);
         bottomSheetLayout.setVisibility(View.VISIBLE);
+    }
+
+    private void checkForLocationEnabled(final GoogleMap googleMap) {
+        int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
+        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+            Log.d(TAG, "Location Permission Granted.");
+            LocationServices.getFusedLocationProviderClient(this).getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    // Go to last known location. In some rare situations this can be null.
+                    if (location != null) {
+                        ContextCompat.checkSelfPermission(NextToArriveResultsActivity.this, Manifest.permission.ACCESS_FINE_LOCATION);
+                        googleMap.setMyLocationEnabled(true);
+                        googleMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
+                            @Override
+                            public boolean onMyLocationButtonClick() {
+                                ContextCompat.checkSelfPermission(NextToArriveResultsActivity.this, Manifest.permission.ACCESS_FINE_LOCATION);
+
+                                // move camera to user
+                                LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                                if (locationManager != null) {
+                                    android.location.Criteria criteria = new android.location.Criteria();
+                                    Location location = locationManager.getLastKnownLocation(locationManager.getBestProvider(criteria, false));
+                                    if (location != null) {
+                                        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 15));
+                                    }
+                                }
+                                return false;
+                            }
+                        });
+                        googleMap.setOnMyLocationClickListener(new GoogleMap.OnMyLocationClickListener() {
+                            @Override
+                            public void onMyLocationClick(@NonNull Location location) {
+                                // move camera to user
+                                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 15));
+                            }
+                        });
+                    } else {
+                        Log.d(TAG, "Location was null");
+                        googleMap.setMyLocationEnabled(false);
+                    }
+                }
+            });
+        }
     }
 
     public void saveAsFavorite(final MenuItem item) {

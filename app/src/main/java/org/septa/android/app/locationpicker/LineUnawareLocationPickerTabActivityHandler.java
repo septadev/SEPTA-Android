@@ -19,7 +19,6 @@ import android.widget.TextView;
 
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 
 import org.septa.android.app.ActivityClass;
 import org.septa.android.app.Constants;
@@ -129,7 +128,7 @@ public class LineUnawareLocationPickerTabActivityHandler extends BaseTabActivity
                     Manifest.permission.ACCESS_FINE_LOCATION);
             if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
                 LocationServices.getFusedLocationProviderClient(getActivity()).getLastLocation();
-                Task<Location> locationTask = LocationServices.getFusedLocationProviderClient(getActivity()).getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+                LocationServices.getFusedLocationProviderClient(getActivity()).getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
                     @Override
                     public void onSuccess(Location location) {
                         task.execute(location);

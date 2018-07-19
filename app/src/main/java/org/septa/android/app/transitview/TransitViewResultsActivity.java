@@ -2,10 +2,12 @@ package org.septa.android.app.transitview;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Point;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -37,7 +39,6 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.maps.android.data.kml.KmlLayer;
 
 import org.septa.android.app.BaseActivity;
@@ -364,24 +365,6 @@ public class TransitViewResultsActivity extends BaseActivity implements Runnable
         progressView.setVisibility(View.GONE);
         mapContainerView.setVisibility(View.VISIBLE);
 
-        int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
-        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
-            Log.d(TAG, "Location Permission Granted.");
-            Task<Location> locationTask = LocationServices.getFusedLocationProviderClient(this).getLastLocation()
-                    .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                        @Override
-                        public void onSuccess(Location location) {
-                            // Got last known location. In some rare situations this can be null.
-                            if (location != null) {
-                                int permissionCheck = ContextCompat.checkSelfPermission(TransitViewResultsActivity.this,
-                                        Manifest.permission.ACCESS_FINE_LOCATION);
-                                googleMap.setMyLocationEnabled(true);
-                            } else {
-                                Log.d(TAG, "location was null");
-                            }
-                        }
-                    });
-        }
     }
 
     @Override
@@ -759,10 +742,58 @@ public class TransitViewResultsActivity extends BaseActivity implements Runnable
             }
         }
 
+        // show my location button if permission granted
+        checkForLocationEnabled(googleMap);
+
         // hide error message in case connection regained
         progressView.setVisibility(View.GONE);
         noResultsMsg.setVisibility(View.GONE);
         mapContainerView.setVisibility(View.VISIBLE);
+    }
+
+    private void checkForLocationEnabled(final GoogleMap googleMap) {
+        int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
+        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+            Log.d(TAG, "Location Permission Granted.");
+            LocationServices.getFusedLocationProviderClient(this).getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    // Go to last known location. In some rare situations this can be null.
+                    if (location != null) {
+                        ContextCompat.checkSelfPermission(TransitViewResultsActivity.this, Manifest.permission.ACCESS_FINE_LOCATION);
+                        googleMap.setMyLocationEnabled(true);
+                        googleMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
+                            @Override
+                            public boolean onMyLocationButtonClick() {
+                                ContextCompat.checkSelfPermission(TransitViewResultsActivity.this, Manifest.permission.ACCESS_FINE_LOCATION);
+
+                                // move camera to user
+                                LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                                if (locationManager != null) {
+                                    android.location.Criteria criteria = new android.location.Criteria();
+                                    Location location = locationManager.getLastKnownLocation(locationManager.getBestProvider(criteria, false));
+                                    if (location != null) {
+                                        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 15));
+                                    }
+                                }
+                                return false;
+                            }
+                        });
+                        googleMap.setOnMyLocationClickListener(new GoogleMap.OnMyLocationClickListener() {
+                            @Override
+                            public void onMyLocationClick(@NonNull Location location) {
+                                // move camera to user
+                                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 15));
+                            }
+                        });
+                    } else {
+                        Log.d(TAG, "Location was null");
+                        googleMap.setMyLocationEnabled(false);
+                    }
+                }
+            });
+        }
+
     }
 
     private void redrawAllVehiclesOnRoute(String routeId) {

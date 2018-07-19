@@ -5,18 +5,17 @@ def gradle(command) {
 
 pipeline {
     agent any
-  
+
     parameters {
         choice(choices: 'Alpha\nBeta\nRelease\nDebug', description: 'What type of build?', name: 'buildType')
         string(defaultValue: "develop", description: 'Which Branch?', name: 'branch')
     }
-
+  
     stages {
         stage('Clone sources') {
             steps {
-                sshagent(credentials: ["${env.SEPTA_KEY_CREDENTIALS_ID}"]) {
-                    sh 'rm -rf code'
-                    sh "git clone --single-branch -b ${params.branch} git@github.com:septadev/SEPTA-Android.git code"
+                dir('code') {
+                    git poll: true, url: 'git@github.com:septadev/SEPTA-Android.git', branch: params.branch, credentialsId: env.SEPTA_KEY_CREDENTIALS_ID
                 }
             }
 

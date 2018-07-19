@@ -33,63 +33,71 @@
             android:layout_margin="19dp"
             android:background="@color/manage_notifications_border" />
 
-        <LinearLayout
-            android:id="@+id/days_of_week_container"
+        <HorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center">
+            android:layout_marginBottom="-10dp"
+            android:layout_marginTop="-10dp">
 
-            <ImageView
-                android:id="@+id/button_sunday"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/days_of_week_container"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="6dp"
-                android:src="@drawable/ic_sunday_disabled" />
+                android:layout_gravity="center"
+                android:orientation="horizontal">
 
-            <ImageView
-                android:id="@+id/button_monday"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="6dp"
-                android:src="@drawable/ic_monday_disabled" />
+                <ImageView
+                    android:id="@+id/button_sunday"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="6dp"
+                    android:src="@drawable/ic_sunday_disabled" />
 
-            <ImageView
-                android:id="@+id/button_tuesday"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="6dp"
-                android:src="@drawable/ic_tuesday_disabled" />
+                <ImageView
+                    android:id="@+id/button_monday"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="6dp"
+                    android:src="@drawable/ic_monday_disabled" />
 
-            <ImageView
-                android:id="@+id/button_wednesday"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="6dp"
-                android:src="@drawable/ic_wednesday_disabled" />
+                <ImageView
+                    android:id="@+id/button_tuesday"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="6dp"
+                    android:src="@drawable/ic_tuesday_disabled" />
 
-            <ImageView
-                android:id="@+id/button_thursday"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="6dp"
-                android:src="@drawable/ic_thursday_disabled" />
+                <ImageView
+                    android:id="@+id/button_wednesday"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="6dp"
+                    android:src="@drawable/ic_wednesday_disabled" />
 
-            <ImageView
-                android:id="@+id/button_friday"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="6dp"
-                android:src="@drawable/ic_friday_disabled" />
+                <ImageView
+                    android:id="@+id/button_thursday"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="6dp"
+                    android:src="@drawable/ic_thursday_disabled" />
 
-            <ImageView
-                android:id="@+id/button_saturday"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="6dp"
-                android:src="@drawable/ic_saturday_disabled" />
+                <ImageView
+                    android:id="@+id/button_friday"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="6dp"
+                    android:src="@drawable/ic_friday_disabled" />
 
-        </LinearLayout>
+                <ImageView
+                    android:id="@+id/button_saturday"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="6dp"
+                    android:src="@drawable/ic_saturday_disabled" />
+
+            </LinearLayout>
+
+        </HorizontalScrollView>
 
         <View
             android:layout_width="match_parent"

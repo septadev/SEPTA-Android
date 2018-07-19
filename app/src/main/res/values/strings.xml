@@ -80,6 +80,8 @@
     <string name="location_picker_by_address_hint">Type address and select</string>
     <string name="location_picker_by_stop_hint">Type stop name or select</string>
     <string name="line_picker_hint">Type line name or select</string>
+    <string name="line_picker_selection_direction">%1$s: to %2$s</string>
+    <string name="line_picker_selection">%1$s: %2$s</string>
 
 
     <!-- Next to Arrive String by Transit Type -->
@@ -312,14 +314,18 @@
     <string name="title_mobile_app_alert">Mobile App Alert</string>
 
 
-    <!-- String Resources -->
-    <string name="button_ok">Okay</string>
-    <string name="empty_string"></string>
+    <!-- In-App Ratings-->
     <string name="rating_title">How are we doing?</string>
     <string name="rating_rate_button">Rate Now</string>
     <string name="rating_no_thanks_button">No Thanks</string>
     <string name="rating_remind_me_later_button">Remind Me Later</string>
     <string name="rating_details">We\'d love your feedback on the SEPTA app</string>
     <string name="elerts">Transit Watch</string>
+
+
+    <!-- String Resources -->
+    <string name="button_ok">Okay</string>
+    <string name="empty_string"></string>
+
 
 </resources>

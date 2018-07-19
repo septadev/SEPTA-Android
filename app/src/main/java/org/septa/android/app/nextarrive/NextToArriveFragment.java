@@ -137,7 +137,6 @@ public class NextToArriveFragment extends Fragment {
         }
     }
 
-
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.

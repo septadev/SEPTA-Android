@@ -10,11 +10,11 @@ pipeline {
         choice(choices: 'Alpha\nBeta\nRelease\nDebug', description: 'What type of build?', name: 'buildType')
         string(defaultValue: "develop", description: 'Which Branch?', name: 'branch')
     }
-  
+
     stages {
         stage('Clone sources') {
             steps {
-                dir('code') {
+                dir('code') {  
                     git poll: true, url: 'git@github.com:septadev/SEPTA-Android.git', branch: params.branch, credentialsId: env.SEPTA_KEY_CREDENTIALS_ID
                 }
             }

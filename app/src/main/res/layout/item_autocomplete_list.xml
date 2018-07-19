@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/entry_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:orientation="vertical">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/route_stop_picker_item_border" />
+
+        <org.septa.android.app.view.TextView
+            android:id="@+id/street_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/line_stop_picker_name_padding"
+            android:layout_marginStart="@dimen/line_stop_picker_name_padding"
+            android:layout_marginTop="@dimen/line_stop_picker_name_padding"
+            android:text="1234 Market Street"
+            android:textColor="@android:color/black"
+            android:textSize="20sp"
+            app:font="@string/font_roboto_medium" />
+
+        <org.septa.android.app.view.TextView
+            android:id="@+id/city_state_zip_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/line_stop_picker_name_padding"
+            android:layout_marginLeft="@dimen/line_stop_picker_name_padding"
+            android:layout_marginStart="@dimen/line_stop_picker_name_padding"
+            android:text="Philadelphia, PA 19107"
+            android:textColor="@color/light_gray"
+            android:textSize="15sp"
+            app:font="@string/font_roboto_light" />
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/google_logo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/powered_by_google_light"
+        android:visibility="gone"
+        tools:visibility="gone" />
+
+</FrameLayout>

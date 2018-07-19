@@ -11,25 +11,19 @@ import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 
 import org.septa.android.app.BuildConfig;
 import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.database.DatabaseManager;
-import org.septa.android.app.database.SEPTADatabase;
 import org.septa.android.app.view.TextView;
 import org.septa.android.app.webview.WebViewActivity;
-import org.w3c.dom.Text;
 
 import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 /**
  * Created by jkampf on 9/5/17.
@@ -45,11 +39,11 @@ public class AboutFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
-        View fragmentView = inflater.inflate(R.layout.about_main, null);
+        View fragmentView = inflater.inflate(R.layout.fragment_about, null);
 
         attribListView = (LinearLayout) fragmentView.findViewById(R.id.attrib_list);
         for (String s : getResources().getStringArray(R.array.about_attributions_listview_items_texts)) {
-            TextView attribLine = (TextView) inflater.inflate(R.layout.about_attrib_list_item, null);
+            TextView attribLine = (TextView) inflater.inflate(R.layout.item_about_attribute, null);
             attribLine.setHtml(s);
             attribListView.addView(attribLine);
 

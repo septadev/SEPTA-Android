@@ -1,5 +1,4 @@
 <resources>
-
     <!-- Declare custom theme attributes that allow changing which styles are
          used for button bars depending on the API level.
          ?android:attr/buttonBarStyle is new as of API 11 so this is
@@ -9,4 +8,10 @@
         <attr name="metaButtonBarButtonStyle" format="reference" />
     </declare-styleable>
 
+    <!-- Allows for drag and drop ListView -->
+    <declare-styleable name="ListSwipeItem">
+        <attr name="swipeViewId" format="integer"/>
+        <attr name="leftViewId" format="integer"/>
+        <attr name="rightViewId" format="integer"/>
+    </declare-styleable>
 </resources>

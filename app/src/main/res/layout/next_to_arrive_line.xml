@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingBottom="16dp">
+    android:paddingBottom="8dp">
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
@@ -53,7 +53,7 @@
                 android:layout_weight="5"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:text="Paoli / Throndale"
+                android:text="Paoli / Thorndale"
                 app:font="@string/font_roboto_regular" />
 
             <ImageView

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?android:attr/selectableItemBackground"
+    android:orientation="vertical">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/route_stop_picker_item_border" />
+
+    <org.septa.android.app.view.TextView
+        android:id="@+id/station_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:padding="@dimen/line_stop_picker_name_padding"
+        android:clickable="false"
+        android:text="Thorndale"
+        android:textColor="@android:color/black"
+        android:textSize="20sp"
+        app:font="@string/font_roboto_medium" />
+
+</LinearLayout>

@@ -16,6 +16,9 @@ import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
@@ -36,6 +39,8 @@ public class PushNotificationManager {
     private static final String RAIL_DELAY_SUFFIX = "_DELAY";
     private static final String DETOUR_SUFFIX = "_DETOUR";
 
+    private static final DateFormat timeFormat = new SimpleDateFormat("HHmm");
+
     private PushNotificationManager(Context context) {
         this.context = context;
     }
@@ -45,6 +50,23 @@ public class PushNotificationManager {
             mInstance = new PushNotificationManager(context);
         }
         return mInstance;
+    }
+
+    public static boolean isWithinNotificationWindow(Context context) {
+        List<Integer> daysEnabled = SeptaServiceFactory.getNotificationsService().getNotificationsSchedule(context);
+        int startTime = SeptaServiceFactory.getNotificationsService().getNotificationStartTime(context);
+        int endTime = SeptaServiceFactory.getNotificationsService().getNotificationEndTime(context);
+
+        Calendar calendar = Calendar.getInstance();
+        int day = calendar.get(Calendar.DAY_OF_WEEK);
+
+        if (daysEnabled.contains(day)) {
+            // get current time in 24H format
+            int currentTime = Integer.parseInt(timeFormat.format(calendar.getTime()));
+            return currentTime >= startTime && currentTime <= endTime;
+        }
+
+        return false;
     }
 
     public void displayNotification(String title, String body) {

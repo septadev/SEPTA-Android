@@ -42,6 +42,8 @@ public class PushNotificationService extends FirebaseMessagingService {
         });
     }
 
+
+
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
@@ -53,27 +55,32 @@ public class PushNotificationService extends FirebaseMessagingService {
         //we can read it easily
 
         if (remoteMessage.getData().size() > 0) {
-            //handle the data message here
+            // TODO: handle the data message here
         }
 
         // get notification title / body
         final String title = remoteMessage.getNotification().getTitle();
         final String body = remoteMessage.getNotification().getBody();
 
-        // display notification
-        if (isAppInForeground(getPackageName())) {
-            // show toast if app open
-            Handler handler = new Handler(Looper.getMainLooper());
-            handler.post(new Runnable() {
-                public void run() {
-                    Toast.makeText(getApplicationContext(), "Notification: " + body, Toast.LENGTH_LONG).show();
-                }
-            });
-        } else {
-            // send notification if app backgrounded
-            PushNotificationManager.getInstance(getApplicationContext()).displayNotification(title, body);
+        // check notification subscription window
+        if (PushNotificationManager.isWithinNotificationWindow(getApplicationContext())) {
 
+            // display notification
+            if (isAppInForeground(getPackageName())) {
+                // show toast if app open
+                Handler handler = new Handler(Looper.getMainLooper());
+                handler.post(new Runnable() {
+                    public void run() {
+                        Toast.makeText(getApplicationContext(), "Notification: " + body, Toast.LENGTH_LONG).show();
+                    }
+                });
+            } else {
+                // send notification if app backgrounded
+                PushNotificationManager.getInstance(getApplicationContext()).displayNotification(title, body);
+
+            }
         }
+
     }
 
     public boolean isAppInForeground(String packageName) {

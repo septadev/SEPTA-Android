@@ -101,23 +101,23 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
     }
 
     @Override
-    public String getNotificationStartTime(Context context) {
-        return getSharedPreferences(context).getString(NOTIFICATIONS_START_TIME, "9:00 am"); // TODO: default value?
+    public Integer getNotificationStartTime(Context context) {
+        return getSharedPreferences(context).getInt(NOTIFICATIONS_START_TIME, 900);
     }
 
     @Override
-    public void setNotificationsStartTime(Context context, String startTime) {
-        getSharedPreferences(context).edit().putString(NOTIFICATIONS_START_TIME, startTime).apply();
+    public void setNotificationsStartTime(Context context, Integer startTime) {
+        getSharedPreferences(context).edit().putInt(NOTIFICATIONS_START_TIME, startTime).apply();
     }
 
     @Override
-    public String getNotificationEndTime(Context context) {
-        return getSharedPreferences(context).getString(NOTIFICATIONS_END_TIME, "5:00 pm"); // TODO: default value?
+    public Integer getNotificationEndTime(Context context) {
+        return getSharedPreferences(context).getInt(NOTIFICATIONS_END_TIME, 1700);
     }
 
     @Override
-    public void setNotificationsEndTime(Context context, String endTime) {
-        getSharedPreferences(context).edit().putString(NOTIFICATIONS_END_TIME, endTime).apply();
+    public void setNotificationsEndTime(Context context, Integer endTime) {
+        getSharedPreferences(context).edit().putInt(NOTIFICATIONS_END_TIME, endTime).apply();
     }
 
     @Override

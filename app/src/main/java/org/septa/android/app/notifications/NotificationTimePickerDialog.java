@@ -27,7 +27,7 @@ public class NotificationTimePickerDialog extends TimePickerDialog {
     private boolean mIgnoreEvent = false;
 
     NotificationTimePickerDialog(Context context, NotificationTimePickerDialogListener listener, int hourOfDay, int minute, boolean is24HourView, boolean isStartTime) {
-        super(context, TimePickerDialog.THEME_HOLO_LIGHT, null, hourOfDay, minute / TIME_PICKER_INTERVAL, is24HourView);
+        super(context, TimePickerDialog.THEME_HOLO_LIGHT, null, hourOfDay, GeneralUtils.roundUpToNearestInterval(minute, TIME_PICKER_INTERVAL), is24HourView);
         mListener = listener;
         this.isStartTime = isStartTime;
     }

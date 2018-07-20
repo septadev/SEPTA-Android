@@ -20,13 +20,13 @@ public interface NotificationsSharedPrefsUtils {
 
     void removeDayOfWeekFromSchedule(Context context, int dayToRemove);
 
-    String getNotificationStartTime(Context context);
+    Integer getNotificationStartTime(Context context);
 
-    void setNotificationsStartTime(Context context, String startTime);
+    void setNotificationsStartTime(Context context, Integer startTime);
 
-    String getNotificationEndTime(Context context);
+    Integer getNotificationEndTime(Context context);
 
-    void setNotificationsEndTime(Context context, String endTime);
+    void setNotificationsEndTime(Context context, Integer endTime);
 
     List<String> getTopicsSubscribedTo(Context context);
 

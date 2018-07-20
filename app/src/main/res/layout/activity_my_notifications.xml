@@ -112,12 +112,12 @@
             android:layout_marginLeft="40dp"
             android:layout_marginRight="40dp"
             android:orientation="horizontal"
-            android:weightSum="4">
+            android:weightSum="10">
 
             <org.septa.android.app.view.TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="2"
                 android:letterSpacing="0.01"
                 android:lineSpacingExtra="10sp"
                 android:text="Start:"
@@ -130,10 +130,10 @@
                 android:id="@+id/notification_schedule_start_picker"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="3"
                 android:padding="3dp"
                 android:textAlignment="center"
-                android:text="9:00 am"
+                android:text="12:00 am"
                 android:textColor="@color/text_primary"
                 android:textSize="14sp"
                 app:typeface="@string/font_roboto_bold" />
@@ -141,7 +141,7 @@
             <org.septa.android.app.view.TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="2"
                 android:letterSpacing="0.01"
                 android:lineSpacingExtra="10sp"
                 android:text="Until:"
@@ -154,9 +154,9 @@
                 android:id="@+id/notification_schedule_end_picker"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="3"
                 android:padding="3dp"
-                android:text="5:00 pm"
+                android:text="12:30 pm"
                 android:textAlignment="center"
                 android:textColor="@color/text_primary"
                 android:textSize="14sp"

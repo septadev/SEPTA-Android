@@ -90,13 +90,36 @@ public abstract class GeneralUtils {
         return false;
     }
 
+    /**
+     * get 12H am / pm time from 24H time
+     * @param time
+     */
+    @NonNull
+    public static String getTimeFromInt(int time) {
+        int hour = time / 100;
+        int minute = time % 100;
+        return getTimeFromInt(hour, minute);
+    }
+
+    /**
+     * get 12H am / pm time from 24H time
+     * @param hourOfDay
+     * @param minute
+     * @return
+     */
     @NonNull
     public static String getTimeFromInt(int hourOfDay, int minute) {
-        // get 12H am / pm time from 24H time
         String amPm = TIME_AM;
         if (hourOfDay > 12) {
             hourOfDay -= 12;
             amPm = TIME_PM;
+        } else if (hourOfDay == 12) {
+            // 1230 --> 12:30 pm
+            amPm = TIME_PM;
+        } else if (hourOfDay == 0) {
+            // 0015 --> 12:15 am
+            hourOfDay = 12;
+            amPm = TIME_AM;
         }
         StringBuilder time = new StringBuilder(String.valueOf(hourOfDay));
         time.append(":")

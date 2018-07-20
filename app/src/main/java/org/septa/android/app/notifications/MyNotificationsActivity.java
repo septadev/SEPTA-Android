@@ -3,10 +3,12 @@ package org.septa.android.app.notifications;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import org.septa.android.app.BaseActivity;
 import org.septa.android.app.R;
@@ -17,17 +19,17 @@ import org.septa.android.app.view.TextView;
 import java.util.Calendar;
 import java.util.List;
 
-import static org.septa.android.app.notifications.NotificationTimePickerDialog.TIME_PICKER_INTERVAL;
-
 public class MyNotificationsActivity extends BaseActivity implements NotificationTimePickerDialog.NotificationTimePickerDialogListener {
 
     private static final String TAG = MyNotificationsActivity.class.getSimpleName();
 
+    private boolean[] daysOfWeekEnabled = new boolean[]{false, false, false, false, false, false, false};
+    private int startTime, endTime;
+
     // layout variables
-    TextView startTime, endTime, addButton, editButton;
-    SparseArray<ImageView> daysOfWeekButtons;
-    boolean[] daysOfWeekEnabled;
-    RecyclerView notificationRecyclerView;
+    private TextView startTimePicker, endTimePicker, addButton, editButton;
+    private SparseArray<ImageView> daysOfWeekButtons;
+    private RecyclerView notificationRecyclerView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -67,21 +69,11 @@ public class MyNotificationsActivity extends BaseActivity implements Notificatio
         }
 
         // start time picker
-        startTime.setOnClickListener(new View.OnClickListener() {
+        startTimePicker.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String[] strTime = startTime.getText().toString().split("[: ]");
-
-                // parse 12H time to 24H time
-                int hour = Integer.parseInt(strTime[0]);
-                String amPm = strTime[2];
-                if (GeneralUtils.TIME_PM.equalsIgnoreCase(amPm)) {
-                    hour += 12;
-                }
-
-                // round up to nearest minute interval
-                int minute = Integer.parseInt(strTime[1]);
-                minute = GeneralUtils.roundUpToNearestInterval(minute, TIME_PICKER_INTERVAL);
+                int hour = startTime / 100;
+                int minute = startTime % 100;
 
                 NotificationTimePickerDialog timePickerDialog = new NotificationTimePickerDialog(MyNotificationsActivity.this, MyNotificationsActivity.this, hour, minute, false, true);
                 timePickerDialog.show();
@@ -89,21 +81,11 @@ public class MyNotificationsActivity extends BaseActivity implements Notificatio
         });
 
         // end time picker
-        endTime.setOnClickListener(new View.OnClickListener() {
+        endTimePicker.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String[] strTime = endTime.getText().toString().split("[: ]");
-
-                // parse 12H time to 24H time
-                int hour = Integer.parseInt(strTime[0]);
-                String amPm = strTime[2];
-                if (GeneralUtils.TIME_PM.equalsIgnoreCase(amPm)) {
-                    hour += 12;
-                }
-
-                // round up to nearest minute interval
-                int minute = Integer.parseInt(strTime[1]);
-                minute = GeneralUtils.roundUpToNearestInterval(minute, TIME_PICKER_INTERVAL);
+                int hour = endTime / 100;
+                int minute = endTime % 100;
 
                 NotificationTimePickerDialog timePickerDialog = new NotificationTimePickerDialog(MyNotificationsActivity.this, MyNotificationsActivity.this, hour, minute, false, false);
                 timePickerDialog.show();
@@ -112,27 +94,48 @@ public class MyNotificationsActivity extends BaseActivity implements Notificatio
     }
 
     @Override
-    public void onStartTimeSet(TimePicker view, int hourOfDay, int minute) {
-        String newStartTime = GeneralUtils.getTimeFromInt(hourOfDay, minute);
-        startTime.setText(newStartTime);
+    public boolean onSupportNavigateUp() {
+        try {
+            onBackPressed();
+        } catch (Exception e) {
+            Log.w(TAG, "Exception on Backpress", e);
+        }
+        return true;
+    }
 
-        // save start time
-        SeptaServiceFactory.getNotificationsService().setNotificationsStartTime(this, newStartTime);
+    @Override
+    public void onStartTimeSet(TimePicker view, int hourOfDay, int minute) {
+        int newStartTime = hourOfDay * 100 + minute;
+
+        // start time must be before end time
+        if (newStartTime < endTime) {
+            startTime = newStartTime;
+            startTimePicker.setText(GeneralUtils.getTimeFromInt(hourOfDay, minute));
+
+            // save start time
+            SeptaServiceFactory.getNotificationsService().setNotificationsStartTime(this, startTime);
+        } else {
+            Toast.makeText(this, R.string.notifications_start_time_requirement, Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
     public void onEndTimeSet(TimePicker view, int hourOfDay, int minute) {
-        // TODO: end time must be > start time
+        int newEndTime = hourOfDay * 100 + minute;
 
-        String newEndTime = GeneralUtils.getTimeFromInt(hourOfDay, minute);
-        endTime.setText(newEndTime);
+        // end time must be after start time
+        if (newEndTime > startTime) {
+            endTime = newEndTime;
+            endTimePicker.setText(GeneralUtils.getTimeFromInt(hourOfDay, minute));
 
-        // save end time
-        SeptaServiceFactory.getNotificationsService().setNotificationsEndTime(this, newEndTime);
+            // save end time
+            SeptaServiceFactory.getNotificationsService().setNotificationsEndTime(this, endTime);
+        } else {
+            Toast.makeText(this, R.string.notifications_end_time_requirement, Toast.LENGTH_LONG).show();
+        }
     }
 
     private void initializeActivity(@Nullable Bundle savedInstanceState) {
-        // TODO: back button doesn't work
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -145,6 +148,9 @@ public class MyNotificationsActivity extends BaseActivity implements Notificatio
         } else {
             restoreState(bundle);
         }
+
+        startTime = SeptaServiceFactory.getNotificationsService().getNotificationStartTime(this);
+        endTime = SeptaServiceFactory.getNotificationsService().getNotificationEndTime(this);
     }
 
     private void restoreState(Bundle bundle) {
@@ -153,8 +159,8 @@ public class MyNotificationsActivity extends BaseActivity implements Notificatio
     }
 
     private void initializeView() {
-        startTime = findViewById(R.id.notification_schedule_start_picker);
-        endTime = findViewById(R.id.notification_schedule_end_picker);
+        startTimePicker = findViewById(R.id.notification_schedule_start_picker);
+        endTimePicker = findViewById(R.id.notification_schedule_end_picker);
         addButton = findViewById(R.id.add_notifications);
         editButton = findViewById(R.id.edit_notifications);
 
@@ -168,7 +174,6 @@ public class MyNotificationsActivity extends BaseActivity implements Notificatio
         daysOfWeekButtons.put(Calendar.SATURDAY, (ImageView) findViewById(R.id.button_saturday));
 
         // enable button if that day is saved
-        daysOfWeekEnabled = new boolean[]{false, false, false, false, false, false, false};
         List<Integer> daysEnabled = SeptaServiceFactory.getNotificationsService().getNotificationsSchedule(this);
         for (Integer dayofWeek : daysEnabled) {
             daysOfWeekEnabled[dayofWeek - 1] = true;
@@ -176,8 +181,8 @@ public class MyNotificationsActivity extends BaseActivity implements Notificatio
         }
 
         // set initial start and end time
-        startTime.setText(SeptaServiceFactory.getNotificationsService().getNotificationStartTime(this));
-        endTime.setText(SeptaServiceFactory.getNotificationsService().getNotificationEndTime(this));
+        startTimePicker.setText(GeneralUtils.getTimeFromInt(startTime));
+        endTimePicker.setText(GeneralUtils.getTimeFromInt(endTime));
 
         // TODO: recyclerview of notifications
         notificationRecyclerView = findViewById(R.id.notification_recyclerview);

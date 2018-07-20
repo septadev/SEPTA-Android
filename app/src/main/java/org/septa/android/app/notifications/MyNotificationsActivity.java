@@ -5,22 +5,26 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseArray;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TimePicker;
 
 import org.septa.android.app.BaseActivity;
 import org.septa.android.app.R;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
+import org.septa.android.app.support.GeneralUtils;
 import org.septa.android.app.view.TextView;
 
 import java.util.Calendar;
 import java.util.List;
 
-public class MyNotificationsActivity extends BaseActivity {
+import static org.septa.android.app.notifications.NotificationTimePickerDialog.TIME_PICKER_INTERVAL;
+
+public class MyNotificationsActivity extends BaseActivity implements NotificationTimePickerDialog.NotificationTimePickerDialogListener {
+
+    private static final String TAG = MyNotificationsActivity.class.getSimpleName();
 
     // layout variables
-    EditText startTime, endTime;
-    TextView addButton, editButton;
+    TextView startTime, endTime, addButton, editButton;
     SparseArray<ImageView> daysOfWeekButtons;
     boolean[] daysOfWeekEnabled;
     RecyclerView notificationRecyclerView;
@@ -35,6 +39,96 @@ public class MyNotificationsActivity extends BaseActivity {
         setTitle(R.string.my_notifications_heading);
 
         initializeView();
+
+        // day of week buttons are clickable
+        for (int i = Calendar.SUNDAY; i <= Calendar.SATURDAY; i++) {
+            final ImageView button = daysOfWeekButtons.get(i);
+
+            final int dayOfWeek = i;
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    boolean isEnabled = daysOfWeekEnabled[dayOfWeek - 1];
+
+                    // toggle icon
+                    button.setImageResource(getDayOfWeekImageResId(dayOfWeek, !isEnabled));
+
+                    if (isEnabled) {
+                        // disable notifications for that day
+                        SeptaServiceFactory.getNotificationsService().removeDayOfWeekFromSchedule(MyNotificationsActivity.this, dayOfWeek);
+                    } else {
+                        // enable notifications for that day
+                        SeptaServiceFactory.getNotificationsService().addDayOfWeekToSchedule(MyNotificationsActivity.this, dayOfWeek);
+                    }
+
+                    daysOfWeekEnabled[dayOfWeek - 1] = !isEnabled;
+                }
+            });
+        }
+
+        // start time picker
+        startTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String[] strTime = startTime.getText().toString().split("[: ]");
+
+                // parse 12H time to 24H time
+                int hour = Integer.parseInt(strTime[0]);
+                String amPm = strTime[2];
+                if (GeneralUtils.TIME_PM.equalsIgnoreCase(amPm)) {
+                    hour += 12;
+                }
+
+                // round up to nearest minute interval
+                int minute = Integer.parseInt(strTime[1]);
+                minute = GeneralUtils.roundUpToNearestInterval(minute, TIME_PICKER_INTERVAL);
+
+                NotificationTimePickerDialog timePickerDialog = new NotificationTimePickerDialog(MyNotificationsActivity.this, MyNotificationsActivity.this, hour, minute, false, true);
+                timePickerDialog.show();
+            }
+        });
+
+        // end time picker
+        endTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String[] strTime = endTime.getText().toString().split("[: ]");
+
+                // parse 12H time to 24H time
+                int hour = Integer.parseInt(strTime[0]);
+                String amPm = strTime[2];
+                if (GeneralUtils.TIME_PM.equalsIgnoreCase(amPm)) {
+                    hour += 12;
+                }
+
+                // round up to nearest minute interval
+                int minute = Integer.parseInt(strTime[1]);
+                minute = GeneralUtils.roundUpToNearestInterval(minute, TIME_PICKER_INTERVAL);
+
+                NotificationTimePickerDialog timePickerDialog = new NotificationTimePickerDialog(MyNotificationsActivity.this, MyNotificationsActivity.this, hour, minute, false, false);
+                timePickerDialog.show();
+            }
+        });
+    }
+
+    @Override
+    public void onStartTimeSet(TimePicker view, int hourOfDay, int minute) {
+        String newStartTime = GeneralUtils.getTimeFromInt(hourOfDay, minute);
+        startTime.setText(newStartTime);
+
+        // save start time
+        SeptaServiceFactory.getNotificationsService().setNotificationsStartTime(this, newStartTime);
+    }
+
+    @Override
+    public void onEndTimeSet(TimePicker view, int hourOfDay, int minute) {
+        // TODO: end time must be > start time
+
+        String newEndTime = GeneralUtils.getTimeFromInt(hourOfDay, minute);
+        endTime.setText(newEndTime);
+
+        // save end time
+        SeptaServiceFactory.getNotificationsService().setNotificationsEndTime(this, newEndTime);
     }
 
     private void initializeActivity(@Nullable Bundle savedInstanceState) {
@@ -73,32 +167,6 @@ public class MyNotificationsActivity extends BaseActivity {
         daysOfWeekButtons.put(Calendar.FRIDAY, (ImageView) findViewById(R.id.button_friday));
         daysOfWeekButtons.put(Calendar.SATURDAY, (ImageView) findViewById(R.id.button_saturday));
 
-        // day of week buttons are clickable
-        for (int i = Calendar.SUNDAY; i <= Calendar.SATURDAY; i++) {
-            final ImageView button = daysOfWeekButtons.get(i);
-
-            final int dayOfWeek = i;
-            button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    boolean isEnabled = daysOfWeekEnabled[dayOfWeek - 1];
-
-                    // toggle icon
-                    button.setImageResource(getDayOfWeekImageResId(dayOfWeek, !isEnabled));
-
-                    if (isEnabled) {
-                        // disable notifications for that day
-                        SeptaServiceFactory.getNotificationsService().removeDayOfWeekFromSchedule(MyNotificationsActivity.this, dayOfWeek);
-                    } else {
-                        // enable notifications for that day
-                        SeptaServiceFactory.getNotificationsService().addDayOfWeekToSchedule(MyNotificationsActivity.this, dayOfWeek);
-                    }
-
-                    daysOfWeekEnabled[dayOfWeek - 1] = !isEnabled;
-                }
-            });
-        }
-
         // enable button if that day is saved
         daysOfWeekEnabled = new boolean[]{false, false, false, false, false, false, false};
         List<Integer> daysEnabled = SeptaServiceFactory.getNotificationsService().getNotificationsSchedule(this);
@@ -107,6 +175,11 @@ public class MyNotificationsActivity extends BaseActivity {
             daysOfWeekButtons.get(dayofWeek).setImageResource(getDayOfWeekImageResId(dayofWeek, true));
         }
 
+        // set initial start and end time
+        startTime.setText(SeptaServiceFactory.getNotificationsService().getNotificationStartTime(this));
+        endTime.setText(SeptaServiceFactory.getNotificationsService().getNotificationEndTime(this));
+
+        // TODO: recyclerview of notifications
         notificationRecyclerView = findViewById(R.id.notification_recyclerview);
     }
 

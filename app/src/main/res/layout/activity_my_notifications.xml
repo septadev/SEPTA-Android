@@ -109,8 +109,8 @@
             android:id="@+id/notification_time_picker_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="60dp"
-            android:layout_marginRight="60dp"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
             android:orientation="horizontal"
             android:weightSum="4">
 
@@ -126,13 +126,17 @@
                 android:textSize="14sp"
                 app:typeface="@string/font_roboto_regular" />
 
-            <EditText
+            <org.septa.android.app.view.TextView
                 android:id="@+id/notification_schedule_start_picker"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:ems="10"
-                android:inputType="time" />
+                android:padding="3dp"
+                android:textAlignment="center"
+                android:text="9:00 am"
+                android:textColor="@color/text_primary"
+                android:textSize="14sp"
+                app:typeface="@string/font_roboto_bold" />
 
             <org.septa.android.app.view.TextView
                 android:layout_width="0dp"
@@ -146,13 +150,17 @@
                 android:textSize="14sp"
                 app:typeface="@string/font_roboto_regular" />
 
-            <EditText
+            <org.septa.android.app.view.TextView
                 android:id="@+id/notification_schedule_end_picker"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:ems="10"
-                android:inputType="time" />
+                android:padding="3dp"
+                android:text="5:00 pm"
+                android:textAlignment="center"
+                android:textColor="@color/text_primary"
+                android:textSize="14sp"
+                app:typeface="@string/font_roboto_bold" />
 
         </LinearLayout>
 
@@ -170,12 +178,12 @@
             android:gravity="center"
             android:orientation="horizontal"
             android:padding="15dp"
-            android:weightSum="18">
+            android:weightSum="19">
 
             <org.septa.android.app.view.TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="7"
+                android:layout_weight="8"
                 android:letterSpacing="0.15"
                 android:padding="5dp"
                 android:text="@string/my_notifications_heading"

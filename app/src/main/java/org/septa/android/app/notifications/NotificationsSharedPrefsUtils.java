@@ -22,11 +22,11 @@ public interface NotificationsSharedPrefsUtils {
 
     String getNotificationStartTime(Context context);
 
-    void storeNotificationsStartTime(Context context, String startTime);
+    void setNotificationsStartTime(Context context, String startTime);
 
     String getNotificationEndTime(Context context);
 
-    void storeNotificationsEndTime(Context context, String endTime);
+    void setNotificationsEndTime(Context context, String endTime);
 
     List<String> getTopicsSubscribedTo(Context context);
 

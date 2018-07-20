@@ -106,7 +106,7 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
     }
 
     @Override
-    public void storeNotificationsStartTime(Context context, String startTime) {
+    public void setNotificationsStartTime(Context context, String startTime) {
         getSharedPreferences(context).edit().putString(NOTIFICATIONS_START_TIME, startTime).apply();
     }
 
@@ -116,7 +116,7 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
     }
 
     @Override
-    public void storeNotificationsEndTime(Context context, String endTime) {
+    public void setNotificationsEndTime(Context context, String endTime) {
         getSharedPreferences(context).edit().putString(NOTIFICATIONS_END_TIME, endTime).apply();
     }
 

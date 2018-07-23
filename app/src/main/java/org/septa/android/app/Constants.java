@@ -13,6 +13,9 @@ public interface Constants {
     int NTA_REQUEST = 1;
     int VIEW_SCHEDULE = 1;
 
+    int NOTIFICATIONS_REQUEST = 2;
+    int VIEW_SYSTEM_STATUS_PICKER = 2;
+
     String SERVICE_ADVISORY_EXPANDED = "service_advisory_expanded";
     String SERVICE_ALERT_EXPANDED = "service_alert_expanded";
     String ACTIVE_DETOUR_EXPANDED = "active_detour_expanded";

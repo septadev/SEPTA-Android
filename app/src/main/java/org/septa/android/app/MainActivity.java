@@ -418,6 +418,10 @@ public class MainActivity extends BaseActivity implements
                 message.setData(data.getExtras());
                 jumpToSchedulesHandler.sendMessage(message);
             }
+        } else if (unmaskedRequestCode == Constants.NOTIFICATIONS_REQUEST) {
+            if (resultCode == Constants.VIEW_SYSTEM_STATUS_PICKER) {
+                jumpToSystemStatusHandler.sendMessage(jumpToSystemStatusHandler.obtainMessage());
+            }
         }
     }
 
@@ -589,6 +593,20 @@ public class MainActivity extends BaseActivity implements
         }
     }
 
+    public void switchToSystemStatus() {
+        if (currentMenu == null || currentMenu.getItemId() != R.id.nav_system_status) {
+            if (currentMenu != null) {
+                currentMenu.setIcon(previousIcon);
+            }
+            navigationView.setCheckedItem(R.id.nav_system_status);
+            currentMenu = navigationView.getMenu().findItem(R.id.nav_system_status);
+            previousIcon = currentMenu.getIcon();
+            currentMenu.setIcon(R.drawable.ic_status_active);
+            getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, systemStatus).commit(); // TODO: this crashes -- why?
+            setTitle(R.string.system_status);
+        }
+    }
+
     public void switchToSchedules(Bundle data) {
         CrashlyticsManager.log(Log.INFO, TAG, "switchToSchedules");
 
@@ -620,6 +638,13 @@ public class MainActivity extends BaseActivity implements
         @Override
         public void handleMessage(Message msg) {
             switchToSchedules(msg.getData());
+        }
+    };
+
+    private Handler jumpToSystemStatusHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switchToSystemStatus();
         }
     };
 

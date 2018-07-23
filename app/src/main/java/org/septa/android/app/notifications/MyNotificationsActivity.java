@@ -1,5 +1,6 @@
 package org.septa.android.app.notifications;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
@@ -11,6 +12,7 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import org.septa.android.app.BaseActivity;
+import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.support.GeneralUtils;
@@ -89,6 +91,22 @@ public class MyNotificationsActivity extends BaseActivity implements Notificatio
 
                 NotificationTimePickerDialog timePickerDialog = new NotificationTimePickerDialog(MyNotificationsActivity.this, MyNotificationsActivity.this, hour, minute, false, false);
                 timePickerDialog.show();
+            }
+        });
+
+        // add button links to system status picker
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goToSystemStatusPicker();
+            }
+        });
+
+        // open edit notifications mode
+        editButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO: edit notifications mode
             }
         });
     }
@@ -186,6 +204,11 @@ public class MyNotificationsActivity extends BaseActivity implements Notificatio
 
         // TODO: recyclerview of notifications
         notificationRecyclerView = findViewById(R.id.notification_recyclerview);
+    }
+
+    private void goToSystemStatusPicker() {
+        setResult(Constants.VIEW_SYSTEM_STATUS_PICKER, new Intent());
+        finish();
     }
 
     private int getDayOfWeekImageResId(int dayOfWeek, boolean enabled) {

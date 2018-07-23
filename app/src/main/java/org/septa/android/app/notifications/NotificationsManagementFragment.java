@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.Toast;
 
+import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.view.TextView;
@@ -197,6 +198,6 @@ public class NotificationsManagementFragment extends Fragment {
         Toast.makeText(context, topicsList, Toast.LENGTH_SHORT).show(); // TODO: remove
 
         Intent intent = new Intent(context, MyNotificationsActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, Constants.NOTIFICATIONS_REQUEST);
     }
 }

@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.firebase.messaging.FirebaseMessaging;
 
@@ -118,8 +117,6 @@ public class PushNotificationManager {
     public void unsubscribeFromAllTopics() {
         SeptaServiceFactory.getNotificationsService().setNotificationsEnabled(context, false);
 
-        Toast.makeText(context, "Unsubscribing from Push Notifs", Toast.LENGTH_SHORT).show(); // TODO: remove
-
         // unsubscribe from all topics
         List<String> topicsToUnsubscribeFrom = SeptaServiceFactory.getNotificationsService().getTopicsSubscribedTo(context);
         for (String topicId : topicsToUnsubscribeFrom) {
@@ -135,8 +132,6 @@ public class PushNotificationManager {
     public void resubscribeToTopics() {
         SeptaServiceFactory.getNotificationsService().setNotificationsEnabled(context, true);
 
-        Toast.makeText(context, "Resubscribing to Push Notifs", Toast.LENGTH_SHORT).show(); // TODO: remove
-
         // resubscribe user to their previously saved topics
         List<String> topicsToSubscribeTo = SeptaServiceFactory.getNotificationsService().getTopicsSubscribedTo(context);
         for (String topicId : topicsToSubscribeTo) {
@@ -145,7 +140,6 @@ public class PushNotificationManager {
 
         // subscribe to test push notifications // TODO: remove
         FirebaseMessaging.getInstance().subscribeToTopic("notifications");
-
     }
 
     public void subscribeToSpecialAnnouncements() {

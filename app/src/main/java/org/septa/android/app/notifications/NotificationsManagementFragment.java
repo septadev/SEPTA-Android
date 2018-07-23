@@ -123,6 +123,11 @@ public class NotificationsManagementFragment extends Fragment {
         boolean notifsEnabled = SeptaServiceFactory.getNotificationsService().areNotificationsEnabled(context),
                 notifsAllowed = NotificationManagerCompat.from(context).areNotificationsEnabled();
         enableNotifs.setChecked(notifsEnabled && notifsAllowed);
+
+        // disable special announcements toggle if notifs disabled
+        if (!enableNotifs.isChecked()) {
+            toggleNotifications(false);
+        }
     }
 
     @Override

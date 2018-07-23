@@ -2,10 +2,7 @@ package org.septa.android.app.services.apiinterfaces;
 
 import android.app.ActivityManager;
 import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -62,21 +59,8 @@ public class PushNotificationService extends FirebaseMessagingService {
             // check notification subscription window
             if (PushNotificationManager.isWithinNotificationWindow(getApplicationContext())) {
 
-                // display notification
-                if (isAppInForeground(getApplicationContext())) {
-
-                    // show toast if app open
-                    Handler handler = new Handler(Looper.getMainLooper());
-                    handler.post(new Runnable() {
-                        public void run() {
-                            Toast.makeText(getApplicationContext(), "Notification: " + body, Toast.LENGTH_LONG).show();
-                        }
-                    });
-                } else {
-                    // send notification if app backgrounded
-                    PushNotificationManager.getInstance(getApplicationContext()).displayNotification(title, body);
-
-                }
+                // send notification
+                PushNotificationManager.getInstance(getApplicationContext()).displayNotification(title, body);
             }
         }
     }

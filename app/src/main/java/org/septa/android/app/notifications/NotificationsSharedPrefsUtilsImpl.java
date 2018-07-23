@@ -9,6 +9,7 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPrefsUtils {
@@ -17,7 +18,7 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
 
     // database shared preferences
     private static final String SHARED_PREFERENCES_NOTIFICATIONS = "SHARED_PREFERENCES_NOTIFICATIONS";
-    private static final String NOTIFICATIONS_ENABlED = "NOTIFICATIONS_ENABlED"; // TODO: is this needed or should we just check device permissions each time
+    private static final String NOTIFICATIONS_ENABlED = "NOTIFICATIONS_ENABlED";
     private static final String SPECIAL_ANNOUNCEMENTS = "SPECIAL_ANNOUNCEMENTS";
     private static final String ROUTE_TOPICS_SUBSCRIPTION = "ROUTE_TOPICS_SUBSCRIPTION";
     private static final String NOTIFICATIONS_SCHEDULE_DAYS_OF_WEEK = "NOTIFICATIONS_SCHEDULE_DAYS_OF_WEEK";
@@ -50,7 +51,13 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
         String preferencesJson = sharedPreferences.getString(NOTIFICATIONS_SCHEDULE_DAYS_OF_WEEK, null);
 
         if (preferencesJson == null) {
-            return new ArrayList<>();
+            List<Integer> defaultSchedule = new ArrayList<>();
+            defaultSchedule.add(Calendar.MONDAY);
+            defaultSchedule.add(Calendar.TUESDAY);
+            defaultSchedule.add(Calendar.WEDNESDAY);
+            defaultSchedule.add(Calendar.THURSDAY);
+            defaultSchedule.add(Calendar.FRIDAY);
+            return defaultSchedule;
         }
 
         Gson gson = new Gson();

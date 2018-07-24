@@ -19,29 +19,32 @@ import android.widget.TextView;
 
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
+import org.septa.android.app.notifications.edit.NotificationDiffCallback;
 import org.septa.android.app.services.apiinterfaces.model.RouteNotificationSubscription;
 import org.septa.android.app.support.CrashlyticsManager;
 
 import java.util.List;
 
-class NotificationItemAdapter extends RecyclerView.Adapter<NotificationItemAdapter.NotificationViewHolder> {
+public class NotificationItemAdapter extends RecyclerView.Adapter<NotificationItemAdapter.NotificationViewHolder> {
 
     private static final String TAG = NotificationItemAdapter.class.getSimpleName();
 
     private Activity activity;
     private NotificationItemListener mListener;
     private List<RouteNotificationSubscription> mRoutesList;
+    private boolean isInEditMode;
 
-    NotificationItemAdapter(Activity activity, List<RouteNotificationSubscription> routesList) {
+    public NotificationItemAdapter(Activity activity, List<RouteNotificationSubscription> routesList, boolean isInEditMode) {
         this.activity = activity;
         if (activity instanceof NotificationItemListener) {
-            mListener = (NotificationItemListener) activity;
+            this.mListener = (NotificationItemListener) activity;
         } else {
             IllegalArgumentException iae = new IllegalArgumentException("Context Must Implement NotificationItemListener");
             CrashlyticsManager.log(Log.ERROR, TAG, iae.toString());
             throw iae;
         }
-        mRoutesList = routesList;
+        this.mRoutesList = routesList;
+        this.isInEditMode = isInEditMode;
     }
 
     @NonNull
@@ -70,30 +73,38 @@ class NotificationItemAdapter extends RecyclerView.Adapter<NotificationItemAdapt
         // place transit type icon on left and color bullet on right
         holder.routeNameText.setCompoundDrawablesWithIntrinsicBounds(ContextCompat.getDrawable(activity, transitType.getTabActiveImageResource()), null, bullet, null);
 
-        // initial switch position
-        holder.notifSwitch.setChecked(isEnabled);
+        if (isInEditMode) {
+            // hide switch
+            holder.notifSwitch.setVisibility(View.GONE);
 
-        // toggle notifications for this route
-        holder.notifSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    // enable notifs for route
-                    PushNotificationManager.getInstance(activity).createNotificationForRoute(routeId, routeName, transitType);
-                } else {
-                    // disable notifs for route
-                    PushNotificationManager.getInstance(activity).removeNotificationForRoute(routeId, transitType);
+            // delete button
+            holder.deleteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mListener.promptToDeleteNotification(holder.getAdapterPosition(), routeId, transitType);
                 }
-            }
-        });
+            });
+        } else {
+            // hide delete button
+            holder.deleteButton.setVisibility(View.GONE);
 
-        // delete button
-        holder.deleteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mListener.promptToDeleteNotification(holder.getAdapterPosition(), routeId, transitType);
-            }
-        });
+            // initial switch position
+            holder.notifSwitch.setChecked(isEnabled);
+
+            // toggle notifications for this route
+            holder.notifSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (isChecked) {
+                        // enable notifs for route
+                        PushNotificationManager.getInstance(activity).createNotificationForRoute(routeId, routeName, transitType);
+                    } else {
+                        // disable notifs for route
+                        PushNotificationManager.getInstance(activity).removeNotificationForRoute(routeId, transitType);
+                    }
+                }
+            });
+        }
     }
 
     @Override
@@ -124,7 +135,7 @@ class NotificationItemAdapter extends RecyclerView.Adapter<NotificationItemAdapt
         }
     }
 
-    interface NotificationItemListener {
+    public interface NotificationItemListener {
         void promptToDeleteNotification(int position, String routeName, TransitType transitType);
     }
 }

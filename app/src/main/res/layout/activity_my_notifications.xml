@@ -132,8 +132,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="3"
                 android:padding="3dp"
-                android:textAlignment="center"
                 android:text="12:00 am"
+                android:textAlignment="center"
                 android:textColor="@color/text_primary"
                 android:textSize="14sp"
                 app:typeface="@string/font_roboto_bold" />
@@ -226,13 +226,10 @@
 
         </LinearLayout>
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/notification_recyclerview"
+        <FrameLayout
+            android:id="@+id/my_notifications_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="-15dp">
-
-        </android.support.v7.widget.RecyclerView>
+            android:layout_height="wrap_content" />
 
     </LinearLayout>
 

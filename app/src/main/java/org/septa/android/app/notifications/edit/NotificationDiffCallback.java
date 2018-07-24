@@ -1,4 +1,4 @@
-package org.septa.android.app.notifications;
+package org.septa.android.app.notifications.edit;
 
 import android.support.v7.util.DiffUtil;
 
@@ -6,11 +6,11 @@ import org.septa.android.app.services.apiinterfaces.model.RouteNotificationSubsc
 
 import java.util.List;
 
-class NotificationDiffCallback extends DiffUtil.Callback {
+public class NotificationDiffCallback extends DiffUtil.Callback {
 
     private List<RouteNotificationSubscription> oldRoutes, newRoutes;
 
-    NotificationDiffCallback(List<RouteNotificationSubscription> oldRoutes, List<RouteNotificationSubscription> newRoutes) {
+    public NotificationDiffCallback(List<RouteNotificationSubscription> oldRoutes, List<RouteNotificationSubscription> newRoutes) {
         this.oldRoutes = oldRoutes;
         this.newRoutes = newRoutes;
     }

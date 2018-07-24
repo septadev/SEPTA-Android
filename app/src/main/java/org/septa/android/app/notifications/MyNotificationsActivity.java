@@ -3,8 +3,6 @@ package org.septa.android.app.notifications;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
@@ -16,27 +14,26 @@ import org.septa.android.app.BaseActivity;
 import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
+import org.septa.android.app.notifications.edit.EditNotificationsFragment;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
-import org.septa.android.app.services.apiinterfaces.model.RouteNotificationSubscription;
 import org.septa.android.app.support.GeneralUtils;
 import org.septa.android.app.view.TextView;
 
 import java.util.Calendar;
 import java.util.List;
 
-public class MyNotificationsActivity extends BaseActivity implements NotificationTimePickerDialog.NotificationTimePickerDialogListener, NotificationItemAdapter.NotificationItemListener {
+public class MyNotificationsActivity extends BaseActivity implements NotificationTimePickerDialog.NotificationTimePickerDialogListener, EditNotificationsFragment.EditNotificationsFragmentListener, NotificationItemAdapter.NotificationItemListener {
 
     private static final String TAG = MyNotificationsActivity.class.getSimpleName();
 
     private boolean[] daysOfWeekEnabled = new boolean[]{false, false, false, false, false, false, false};
     private int startTime, endTime;
-    private List<RouteNotificationSubscription> routesList;
+    boolean isInEditMode;
 
     // layout variables
     private TextView startTimePicker, endTimePicker, addButton, editButton;
     private SparseArray<ImageView> daysOfWeekButtons;
-    private RecyclerView notificationRecyclerView;
-    private NotificationItemAdapter notificationItemAdapter;
+    private android.support.v4.app.Fragment activeFragment;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -111,7 +108,13 @@ public class MyNotificationsActivity extends BaseActivity implements Notificatio
         editButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO: edit notifications mode
+                if (isInEditMode) {
+                    closeEditMode();
+                    editButton.setText(R.string.notifications_edit);
+                } else {
+                    openEditMode();
+                    editButton.setText(R.string.notifications_done);
+                }
             }
         });
     }
@@ -160,18 +163,31 @@ public class MyNotificationsActivity extends BaseActivity implements Notificatio
 
     @Override
     public void promptToDeleteNotification(int position, String routeId, TransitType transitType) {
-        // TODO: prompt to confirm deletion
-        PushNotificationManager.getInstance(MyNotificationsActivity.this).deleteNotificationForRoute(routeId, transitType);
+        if (isInEditMode) {
+            // TODO: prompt to confirm deletion
+            PushNotificationManager.getInstance(MyNotificationsActivity.this).deleteNotificationForRoute(routeId, transitType);
 
-        // on successful deletion
-        routesList.remove(position);
-        notificationItemAdapter.notifyItemRemoved(position);
-        notificationItemAdapter.notifyDataSetChanged();
-
-        // close edit mode if no favorites left
-        if (routesList.isEmpty()) {
-//            closeEditMode(); // TODO
+            // update view
+            EditNotificationsFragment editFragment = (EditNotificationsFragment) activeFragment;
+            editFragment.deleteNotificationAtPosition(position);
+        } else {
+            Log.e(TAG, "Invalid attempt to delete a notification subscription");
         }
+    }
+
+    @Override
+    public void closeEditMode() {
+        // switch to viewing fragment
+        activeFragment = new ViewNotificationsFragment();
+        isInEditMode = false;
+        getSupportFragmentManager().beginTransaction().replace(R.id.my_notifications_container, activeFragment).commit();
+    }
+
+    public void openEditMode() {
+        // switch to editing notifications fragment
+        activeFragment = new EditNotificationsFragment();
+        isInEditMode = true;
+        getSupportFragmentManager().beginTransaction().replace(R.id.my_notifications_container, activeFragment).commit();
     }
 
     private void initializeActivity(@Nullable Bundle savedInstanceState) {
@@ -180,11 +196,8 @@ public class MyNotificationsActivity extends BaseActivity implements Notificatio
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
-        Bundle bundle = getIntent().getExtras();
-
         startTime = SeptaServiceFactory.getNotificationsService().getNotificationStartTime(this);
         endTime = SeptaServiceFactory.getNotificationsService().getNotificationEndTime(this);
-        routesList = SeptaServiceFactory.getNotificationsService().getRoutesSubscribedTo(MyNotificationsActivity.this);
     }
 
     private void initializeView() {
@@ -213,12 +226,10 @@ public class MyNotificationsActivity extends BaseActivity implements Notificatio
         startTimePicker.setText(GeneralUtils.getTimeFromInt(startTime));
         endTimePicker.setText(GeneralUtils.getTimeFromInt(endTime));
 
-        // TODO: recyclerview of notifications
-        notificationRecyclerView = findViewById(R.id.notification_recyclerview);
-        notificationRecyclerView.setLayoutManager(new LinearLayoutManager(MyNotificationsActivity.this));
-        notificationItemAdapter = new NotificationItemAdapter(MyNotificationsActivity.this, routesList);
-        notificationRecyclerView.setAdapter(notificationItemAdapter);
-        notificationItemAdapter.updateList(routesList);
+        // default to viewing fragment
+        activeFragment = new ViewNotificationsFragment();
+        isInEditMode = false;
+        getSupportFragmentManager().beginTransaction().replace(R.id.my_notifications_container, activeFragment).commit();
     }
 
     private void goToSystemStatusPicker() {

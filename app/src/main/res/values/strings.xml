@@ -344,6 +344,7 @@
 
     <string name="subscribe_long_description">Subscribe to Notifications for this Route</string>
     <string name="view_notification_preferences">View Notification Preferences »</string>
+    <string name="subscribe_switch">Subscribe</string>
 
 
     <!-- In-App Ratings-->

@@ -49,7 +49,7 @@
             android:layout_marginTop="15dp"
             android:src="@drawable/ic_line_air" />
 
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        <LinearLayout
             android:id="@+id/results_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -63,7 +63,6 @@
                 android:id="@+id/line_station_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-
 
                 <ImageView
                     android:id="@+id/circle"
@@ -160,109 +159,104 @@
 
             </LinearLayout>
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="15dp"
+                android:background="@color/notification_subscribe_border" />
+
             <LinearLayout
                 android:id="@+id/alert_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/bg_alerts_in_schedule"
-                android:orientation="vertical"
-                android:paddingBottom="12dp"
-                android:visibility="gone"
-                tools:visibility="visible">
+                android:layout_margin="10dp"
+                android:orientation="vertical">
 
-                <org.septa.android.app.view.TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:letterSpacing="-0.02"
-                    android:text="Line Status"
-                    android:textColor="@android:color/black"
-                    android:textSize="12sp"
-                    app:typeface="@string/font_roboto_bold" />
-
-                <LinearLayout
-                    android:id="@+id/status_layout"
+                <HorizontalScrollView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp">
+                    android:scrollbars="none">
 
-                    <org.septa.android.app.view.TextView
-                        android:id="@+id/service_advisory"
+                    <LinearLayout
+                        android:id="@+id/status_layout"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_weight="1"
-                        android:drawableLeft="@drawable/ic_advisory"
-                        android:drawablePadding="7dp"
-                        android:drawableStart="@drawable/ic_advisory"
-                        android:letterSpacing="-0.02"
-                        android:text="Advisory"
-                        android:textColor="@android:color/black"
-                        android:textSize="12sp"
-                        android:visibility="gone"
-                        app:typeface="@string/font_roboto_light"
-                        tools:visibility="visible" />
+                        android:layout_gravity="center"
+                        android:orientation="horizontal">
 
-                    <org.septa.android.app.view.TextView
-                        android:id="@+id/service_alert"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:drawableLeft="@drawable/ic_alert"
-                        android:drawablePadding="7dp"
-                        android:gravity="center_vertical"
-                        android:letterSpacing="-0.02"
-                        android:text="Alert"
-                        android:textColor="@android:color/black"
-                        android:textSize="12sp"
-                        android:visibility="gone"
-                        app:typeface="@string/font_roboto_light" />
+                        <org.septa.android.app.view.TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:letterSpacing="-0.02"
+                            android:padding="5dp"
+                            android:text="Status Alerts"
+                            android:textColor="@android:color/black"
+                            android:textSize="12sp"
+                            app:typeface="@string/font_roboto_bold" />
 
-                    <org.septa.android.app.view.TextView
-                        android:id="@+id/active_detour"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:drawableLeft="@drawable/ic_detour"
-                        android:drawablePadding="7dp"
-                        android:gravity="center_vertical"
-                        android:letterSpacing="-0.02"
-                        android:text="Detour"
-                        android:textColor="@android:color/black"
-                        android:textSize="12sp"
-                        android:visibility="gone"
-                        app:typeface="@string/font_roboto_light" />
+                        <ImageView
+                            android:id="@+id/advisory_icon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="5dp"
+                            android:src="@drawable/ic_advisory" />
 
-                    <org.septa.android.app.view.TextView
-                        android:id="@+id/weather_alerts"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:drawableLeft="@drawable/ic_weather"
-                        android:drawablePadding="7dp"
-                        android:drawableStart="@drawable/ic_weather"
-                        android:gravity="center_vertical"
-                        android:letterSpacing="-0.02"
-                        android:text="Weather"
-                        android:textColor="@android:color/black"
-                        android:textSize="12sp"
-                        android:visibility="gone"
-                        app:typeface="@string/font_roboto_light" />
+                        <ImageView
+                            android:id="@+id/alert_icon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="5dp"
+                            android:src="@drawable/ic_alert" />
 
-                </LinearLayout>
+                        <ImageView
+                            android:id="@+id/detour_icon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="5dp"
+                            android:src="@drawable/ic_detour" />
+
+                        <ImageView
+                            android:id="@+id/weather_icon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="5dp"
+                            android:src="@drawable/ic_weather" />
+
+                        <org.septa.android.app.view.TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:letterSpacing="-0.02"
+                            android:text="@string/subscribe_switch"
+                            android:textAllCaps="true"
+                            android:textColor="@color/light_gray"
+                            android:textSize="10sp"
+                            app:typeface="@string/font_roboto_regular" />
+
+                        <android.support.v7.widget.SwitchCompat
+                            android:id="@+id/notification_route_switch"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="5dp"
+                            android:theme="@style/AppTheme"
+                            tools:checked="true" />
+
+                    </LinearLayout>
+
+                </HorizontalScrollView>
 
             </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/notification_subscribe_border" />
 
             <RadioGroup
                 android:id="@+id/day_of_week_button_group"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginTop="14dp"
-
+                android:layout_margin="10dp"
                 android:orientation="horizontal">
 
                 <org.septa.android.app.view.RadioButton
@@ -346,6 +340,7 @@
                     android:textColor="@drawable/radio_btn_font_color_selector"
                     android:textSize="13sp"
                     app:typeface="@string/font_roboto_regular" />
+
             </RadioGroup>
 
             <LinearLayout

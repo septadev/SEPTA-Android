@@ -12,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,8 +20,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ArrayAdapter;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -38,6 +39,7 @@ import org.septa.android.app.favorites.DeleteFavoritesAsyncTask;
 import org.septa.android.app.favorites.edit.RenameFavoriteDialogFragment;
 import org.septa.android.app.favorites.edit.RenameFavoriteListener;
 import org.septa.android.app.nextarrive.NextToArriveResultsActivity;
+import org.septa.android.app.notifications.PushNotificationManager;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Alert;
 import org.septa.android.app.services.apiinterfaces.model.Favorite;
@@ -157,63 +159,7 @@ public class ScheduleResultsActivity extends BaseActivity implements RenameFavor
             }
         });
 
-        Alert alert = SystemStatusState.getAlertForLine(transitType, routeDirectionModel.getRouteId());
-
-        boolean displayAlerts = false;
-
-        View alertView = findViewById(R.id.service_alert);
-        if (alert.isAlert()) {
-            alertView.setVisibility(View.VISIBLE);
-            alertView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ALERT_EXPANDED, ScheduleResultsActivity.this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName(), originClass));
-            displayAlerts = true;
-        } else {
-            LinearLayout.LayoutParams loparams = (LinearLayout.LayoutParams) alertView.getLayoutParams();
-            loparams.height = 0;
-            loparams.weight = 1;
-            alertView.setLayoutParams(loparams);
-        }
-
-        View advisoryView = findViewById(R.id.service_advisory);
-        if (alert.isAdvisory()) {
-            advisoryView.setVisibility(View.VISIBLE);
-            advisoryView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ADVISORY_EXPANDED, ScheduleResultsActivity.this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName(), originClass));
-            displayAlerts = true;
-        } else {
-            LinearLayout.LayoutParams loparams = (LinearLayout.LayoutParams) advisoryView.getLayoutParams();
-            loparams.height = 0;
-            loparams.weight = 1;
-            advisoryView.setLayoutParams(loparams);
-        }
-
-        View detourView = findViewById(R.id.active_detour);
-        if (alert.isDetour()) {
-            advisoryView.setVisibility(View.VISIBLE);
-            detourView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.ACTIVE_DETOUR_EXPANDED, ScheduleResultsActivity.this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName(), originClass));
-            displayAlerts = true;
-        } else {
-            LinearLayout.LayoutParams loparams = (LinearLayout.LayoutParams) detourView.getLayoutParams();
-            loparams.height = 0;
-            loparams.weight = 1;
-            detourView.setLayoutParams(loparams);
-        }
-
-        View weatherView = findViewById(R.id.weather_alerts);
-        if (alert.isSnow()) {
-            weatherView.setVisibility(View.VISIBLE);
-            weatherView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.WEATHER_ALERTS_EXPANDED, ScheduleResultsActivity.this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName(), originClass));
-            displayAlerts = true;
-        } else {
-            LinearLayout.LayoutParams loparams = (LinearLayout.LayoutParams) weatherView.getLayoutParams();
-            loparams.height = 0;
-            loparams.weight = 1;
-            weatherView.setLayoutParams(loparams);
-        }
-
-        if (displayAlerts) {
-            findViewById(R.id.alert_view).setVisibility(View.VISIBLE);
-        }
-
-
+        setUpAlertsView();
     }
 
     @Override
@@ -447,6 +393,61 @@ public class ScheduleResultsActivity extends BaseActivity implements RenameFavor
         } else {
             item.setEnabled(true);
         }
+    }
+
+    private void setUpAlertsView() {
+        Alert alert = SystemStatusState.getAlertForLine(transitType, routeDirectionModel.getRouteId());
+
+        ImageView alertView = findViewById(R.id.alert_icon);
+        ImageView advisoryView = findViewById(R.id.advisory_icon);
+        ImageView detourView = findViewById(R.id.detour_icon);
+        ImageView weatherView = findViewById(R.id.weather_icon);
+        SwitchCompat notifsSwitch = findViewById(R.id.notification_route_switch);
+
+        if (alert.isAdvisory()) {
+            advisoryView.setImageResource(R.drawable.ic_advisory);
+            advisoryView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ADVISORY_EXPANDED, ScheduleResultsActivity.this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName(), originClass));
+        } else {
+            advisoryView.setImageResource(R.drawable.ic_advisory_inactive);
+        }
+
+        if (alert.isAlert()) {
+            alertView.setImageResource(R.drawable.ic_alert);
+            alertView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ALERT_EXPANDED, ScheduleResultsActivity.this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName(), originClass));
+        } else {
+            alertView.setImageResource(R.drawable.ic_alert_inactive);
+        }
+
+        if (alert.isDetour()) {
+            detourView.setImageResource(R.drawable.ic_detour);
+            detourView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.ACTIVE_DETOUR_EXPANDED, ScheduleResultsActivity.this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName(), originClass));
+        } else {
+            detourView.setImageResource(R.drawable.ic_detour_inactive);
+        }
+
+        if (alert.isSnow()) {
+            weatherView.setImageResource(R.drawable.ic_weather);
+            weatherView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.WEATHER_ALERTS_EXPANDED, ScheduleResultsActivity.this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName(), originClass));
+        } else {
+            weatherView.setImageResource(R.drawable.ic_weather_inactive);
+        }
+
+        // set intial checked state of switch
+        notifsSwitch.setChecked(SeptaServiceFactory.getNotificationsService().isSubscribedToRoute(ScheduleResultsActivity.this, routeDirectionModel.getRouteId()));
+
+        // switch to create / enable notification for this route
+        notifsSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    // enable notifs for route
+                    PushNotificationManager.getInstance(ScheduleResultsActivity.this).createNotificationForRoute(routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName(), transitType);
+                } else {
+                    // disable notifs for route
+                    PushNotificationManager.getInstance(ScheduleResultsActivity.this).removeNotificationForRoute(routeDirectionModel.getRouteId(), transitType);
+                }
+            }
+        });
     }
 
     private void goToNotificationsManagement() {

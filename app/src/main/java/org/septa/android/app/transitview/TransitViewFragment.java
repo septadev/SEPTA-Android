@@ -169,6 +169,19 @@ public class TransitViewFragment extends Fragment implements TransitViewLinePick
             }
         });
 
+        // remember initial routes
+        if (firstRoute != null) {
+            addFirstRoute(firstRoute);
+
+            if (secondRoute != null) {
+                addSecondRoute(secondRoute);
+
+                if (thirdRoute != null) {
+                    addSecondRoute(thirdRoute);
+                }
+            }
+        }
+
         return rootView;
     }
 

@@ -30,7 +30,6 @@ import android.widget.TextView;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 
 import org.septa.android.app.R;
 import org.septa.android.app.domain.StopModel;
@@ -103,7 +102,7 @@ public class ByAddressTabActivityHandler extends BaseTabActivityHandler {
             addressEntry = rootView.findViewById(R.id.address_text);
             int permissionCheck = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION);
             if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
-                Task<Location> locationTask = LocationServices.getFusedLocationProviderClient(getActivity()).getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+                LocationServices.getFusedLocationProviderClient(getActivity()).getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
                     @Override
                     public void onSuccess(Location location) {
                         if (location != null) {
@@ -294,7 +293,7 @@ public class ByAddressTabActivityHandler extends BaseTabActivityHandler {
                 fragment.progressView.requestFocus();
                 final FindClosestStationTask task = new FindClosestStationTask(fragment);
 
-                Task<Location> locationTask = LocationServices.getFusedLocationProviderClient(fragment.getActivity()).getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+                LocationServices.getFusedLocationProviderClient(fragment.getActivity()).getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
                     @Override
                     public void onSuccess(Location location) {
                         if (location == null) {

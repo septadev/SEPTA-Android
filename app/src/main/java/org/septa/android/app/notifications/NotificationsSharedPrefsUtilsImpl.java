@@ -12,6 +12,7 @@ import org.septa.android.app.services.apiinterfaces.model.RouteNotificationSubsc
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 
 public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPrefsUtils {
@@ -176,6 +177,7 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
 
         if (!found) {
             routeList.add(routeToAdd);
+            Collections.sort(routeList);
             storeRoutesSubscribedTo(sharedPreferences, routeList);
         }
     }

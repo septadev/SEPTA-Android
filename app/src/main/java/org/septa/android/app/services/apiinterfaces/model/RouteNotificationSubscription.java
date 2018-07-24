@@ -1,10 +1,12 @@
 package org.septa.android.app.services.apiinterfaces.model;
 
+import android.support.annotation.NonNull;
+
 import org.septa.android.app.TransitType;
 
 import java.io.Serializable;
 
-public class RouteNotificationSubscription implements Serializable {
+public class RouteNotificationSubscription implements Serializable, Comparable<RouteNotificationSubscription> {
 
     private String routeId;
 
@@ -90,4 +92,26 @@ public class RouteNotificationSubscription implements Serializable {
                 ", isEnabled=" + isEnabled +
                 '}';
     }
+
+    /**
+     * sort by transit type and then route ID
+     * @param other
+     * @return
+     */
+    @Override
+    public int compareTo(@NonNull RouteNotificationSubscription other) {
+        int i = this.transitType.compareTo(other.transitType);
+        if (i != 0) {
+            return i;
+        }
+
+        i = this.routeId.compareTo(other.routeId);
+        if (i != 0) {
+            return i;
+        }
+
+        i = this.routeName.compareTo(other.routeName);
+        return i;
+    }
+
 }

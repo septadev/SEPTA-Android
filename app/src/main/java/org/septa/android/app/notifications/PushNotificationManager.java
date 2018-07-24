@@ -208,6 +208,11 @@ public class PushNotificationManager {
     }
 
     public void createNotificationForRoute(String routeId, String routeName, TransitType transitType) {
+        // make NHSL chosen from trolley picker have NHSL transittype
+        if ("NHSL".equalsIgnoreCase(routeId)) {
+            transitType = TransitType.NHSL;
+        }
+
         // add route to subscription list
         List<RouteNotificationSubscription> notificationSubscriptions = SeptaServiceFactory.getNotificationsService().getRoutesSubscribedTo(context);
         RouteNotificationSubscription routeToSubscribeTo = new RouteNotificationSubscription(routeId, routeName, transitType);
@@ -225,6 +230,11 @@ public class PushNotificationManager {
     }
 
     public void removeNotificationForRoute(String routeId, TransitType transitType) {
+        // make NHSL chosen from trolley picker have NHSL transittype
+        if ("NHSL".equalsIgnoreCase(routeId)) {
+            transitType = TransitType.NHSL;
+        }
+
         // remember route but toggle notifications off
         SeptaServiceFactory.getNotificationsService().toggleRouteSubscription(context, routeId, false);
 
@@ -232,6 +242,11 @@ public class PushNotificationManager {
     }
 
     public void deleteNotificationForRoute(String routeId, TransitType transitType) {
+        // make NHSL chosen from trolley picker have NHSL transittype
+        if ("NHSL".equalsIgnoreCase(routeId)) {
+            transitType = TransitType.NHSL;
+        }
+
         // delete notification
         SeptaServiceFactory.getNotificationsService().removeRouteSubscription(context, routeId);
 

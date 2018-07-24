@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,9 +21,12 @@ import java.util.List;
 
 public class EditNotificationsFragment extends android.support.v4.app.Fragment {
 
+    private static final String TAG = EditNotificationsFragment.class.getSimpleName();
+
     private EditNotificationsFragmentListener mListener;
     private List<RouteNotificationSubscription> routesList;
 
+    // layout variables
     private RecyclerView notificationRecyclerView;
     private NotificationItemAdapter notificationItemAdapter;
 
@@ -60,13 +64,17 @@ public class EditNotificationsFragment extends android.support.v4.app.Fragment {
     }
 
     public void deleteNotificationAtPosition(int position) {
-        routesList.remove(position);
-        notificationItemAdapter.notifyItemRemoved(position);
-        notificationItemAdapter.notifyDataSetChanged();
+        if (position >= 0 && position < routesList.size()) {
+            routesList.remove(position);
+            notificationItemAdapter.notifyItemRemoved(position);
+            notificationItemAdapter.notifyDataSetChanged();
 
-        // close edit mode if no favorites left
-        if (routesList.isEmpty()) {
-            mListener.closeEditMode();
+            // close edit mode if no favorites left
+            if (routesList.isEmpty()) {
+                mListener.closeEditMode();
+            }
+        } else {
+            Log.e(TAG, "Invalid attempt to delete notification at position " + position + " but list size is " + routesList.size());
         }
     }
 

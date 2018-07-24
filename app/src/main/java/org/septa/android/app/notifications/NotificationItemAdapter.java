@@ -81,7 +81,7 @@ public class NotificationItemAdapter extends RecyclerView.Adapter<NotificationIt
             holder.deleteButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mListener.promptToDeleteNotification(holder.getAdapterPosition(), routeId, transitType);
+                    mListener.promptToDeleteNotification(holder.getAdapterPosition(), routeId, routeName, transitType);
                 }
             });
         } else {
@@ -136,6 +136,6 @@ public class NotificationItemAdapter extends RecyclerView.Adapter<NotificationIt
     }
 
     public interface NotificationItemListener {
-        void promptToDeleteNotification(int position, String routeName, TransitType transitType);
+        void promptToDeleteNotification(int position, String routeId, String routeName, TransitType transitType);
     }
 }

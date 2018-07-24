@@ -337,6 +337,11 @@
     <string name="notifications_edit">Edit</string>
     <string name="notifications_done">Done</string>
 
+    <string name="delete_notif_title">Delete Notification?</string>
+    <string name="delete_notif_text">Are you sure you want to remove the %1$s from your notifications subscriptions?</string>
+    <string name="delete_notif_pos_button">Delete</string>
+    <string name="delete_notif_neg_button">Cancel</string>
+
     <string name="subscribe_long_description">Subscribe to Notifications for this Route</string>
     <string name="view_notification_preferences">View Notification Preferences »</string>
 

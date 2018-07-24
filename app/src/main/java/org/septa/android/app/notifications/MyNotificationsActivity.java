@@ -1,5 +1,7 @@
 package org.septa.android.app.notifications;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -162,14 +164,28 @@ public class MyNotificationsActivity extends BaseActivity implements Notificatio
     }
 
     @Override
-    public void promptToDeleteNotification(int position, String routeId, TransitType transitType) {
+    public void promptToDeleteNotification(final int position, final String routeId, final String routeName, final TransitType transitType) {
         if (isInEditMode) {
-            // TODO: prompt to confirm deletion
-            PushNotificationManager.getInstance(MyNotificationsActivity.this).deleteNotificationForRoute(routeId, transitType);
+            // prompt to confirm deletion
+            new AlertDialog.Builder(MyNotificationsActivity.this).setCancelable(true).setTitle(R.string.delete_notif_title)
+                    .setMessage(getString(R.string.delete_notif_text, routeName))
 
-            // update view
-            EditNotificationsFragment editFragment = (EditNotificationsFragment) activeFragment;
-            editFragment.deleteNotificationAtPosition(position);
+                    // confirm to delete
+                    .setPositiveButton(R.string.delete_fav_pos_button, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(final DialogInterface dialog, int which) {
+                            deleteNotificationForRoute(position, routeId, transitType);
+                        }
+                    })
+
+                    // cancel deletion
+                    .setNegativeButton(R.string.delete_fav_neg_button, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .create().show();
         } else {
             Log.e(TAG, "Invalid attempt to delete a notification subscription");
         }
@@ -235,6 +251,14 @@ public class MyNotificationsActivity extends BaseActivity implements Notificatio
     private void goToSystemStatusPicker() {
         setResult(Constants.VIEW_SYSTEM_STATUS_PICKER, new Intent());
         finish();
+    }
+
+    private void deleteNotificationForRoute(int position, String routeId, TransitType transitType) {
+        PushNotificationManager.getInstance(MyNotificationsActivity.this).deleteNotificationForRoute(routeId, transitType);
+
+        // update view
+        EditNotificationsFragment editFragment = (EditNotificationsFragment) activeFragment;
+        editFragment.deleteNotificationAtPosition(position);
     }
 
     private int getDayOfWeekImageResId(int dayOfWeek, boolean enabled) {

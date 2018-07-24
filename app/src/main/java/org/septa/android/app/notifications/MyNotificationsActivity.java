@@ -159,9 +159,9 @@ public class MyNotificationsActivity extends BaseActivity implements Notificatio
     }
 
     @Override
-    public void promptToDeleteNotification(int position, String routeName, TransitType transitType) {
+    public void promptToDeleteNotification(int position, String routeId, TransitType transitType) {
         // TODO: prompt to confirm deletion
-        PushNotificationManager.getInstance(MyNotificationsActivity.this).deleteNotificationForRoute(routeName, transitType);
+        PushNotificationManager.getInstance(MyNotificationsActivity.this).deleteNotificationForRoute(routeId, transitType);
 
         // on successful deletion
         routesList.remove(position);

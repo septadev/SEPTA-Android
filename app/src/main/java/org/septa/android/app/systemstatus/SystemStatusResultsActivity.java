@@ -161,7 +161,7 @@ public class SystemStatusResultsActivity extends BaseActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     // enable notifs for route
-                    PushNotificationManager.getInstance(SystemStatusResultsActivity.this).createNotificationForRoute(routeId, transitType);
+                    PushNotificationManager.getInstance(SystemStatusResultsActivity.this).createNotificationForRoute(routeId, routeName, transitType);
                 } else {
                     // disable notifs for route
                     PushNotificationManager.getInstance(SystemStatusResultsActivity.this).removeNotificationForRoute(routeId, transitType);

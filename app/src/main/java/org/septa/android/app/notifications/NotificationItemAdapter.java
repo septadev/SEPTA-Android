@@ -55,11 +55,12 @@ class NotificationItemAdapter extends RecyclerView.Adapter<NotificationItemAdapt
     public void onBindViewHolder(@NonNull final NotificationViewHolder holder, int position) {
         final RouteNotificationSubscription route = mRoutesList.get(position);
         final String routeId = route.getRouteId();
+        final String routeName = route.getRouteName();
         final TransitType transitType = route.getTransitType();
         boolean isEnabled = route.isEnabled();
 
         // set route ID name
-        holder.routeIdText.setText(routeId);
+        holder.routeNameText.setText(routeName);
 
         // create color bullet
         int color = ContextCompat.getColor(activity, transitType.getLineColor(routeId, activity));
@@ -67,7 +68,7 @@ class NotificationItemAdapter extends RecyclerView.Adapter<NotificationItemAdapt
         bullet.setColorFilter(color, PorterDuff.Mode.SRC);
 
         // place transit type icon on left and color bullet on right
-        holder.routeIdText.setCompoundDrawablesWithIntrinsicBounds(ContextCompat.getDrawable(activity, transitType.getTabActiveImageResource()), null, bullet, null);
+        holder.routeNameText.setCompoundDrawablesWithIntrinsicBounds(ContextCompat.getDrawable(activity, transitType.getTabActiveImageResource()), null, bullet, null);
 
         // initial switch position
         holder.notifSwitch.setChecked(isEnabled);
@@ -78,7 +79,7 @@ class NotificationItemAdapter extends RecyclerView.Adapter<NotificationItemAdapt
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     // enable notifs for route
-                    PushNotificationManager.getInstance(activity).createNotificationForRoute(routeId, transitType);
+                    PushNotificationManager.getInstance(activity).createNotificationForRoute(routeId, routeName, transitType);
                 } else {
                     // disable notifs for route
                     PushNotificationManager.getInstance(activity).removeNotificationForRoute(routeId, transitType);
@@ -110,14 +111,14 @@ class NotificationItemAdapter extends RecyclerView.Adapter<NotificationItemAdapt
 
     class NotificationViewHolder extends RecyclerView.ViewHolder {
         LinearLayout notificationContainer;
-        TextView routeIdText;
+        TextView routeNameText;
         SwitchCompat notifSwitch;
         ImageButton deleteButton;
 
         NotificationViewHolder(final View view) {
             super(view);
             notificationContainer = view.findViewById(R.id.notification_item_row);
-            routeIdText = view.findViewById(R.id.notification_route_id);
+            routeNameText = view.findViewById(R.id.notification_route_id);
             notifSwitch = view.findViewById(R.id.notification_route_switch);
             deleteButton = view.findViewById(R.id.notification_delete_button);
         }

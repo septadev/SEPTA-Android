@@ -8,20 +8,17 @@ public class RouteNotificationSubscription implements Serializable {
 
     private String routeId;
 
+    private String routeName;
+
     private TransitType transitType;
 
     private boolean isEnabled;
 
-    public RouteNotificationSubscription(String routeId, TransitType transitType) {
+    public RouteNotificationSubscription(String routeId, String routeName, TransitType transitType) {
         this.routeId = routeId;
+        this.routeName = routeName;
         this.transitType = transitType;
         this.isEnabled = true;
-    }
-
-    public RouteNotificationSubscription(String routeId, TransitType transitType, boolean isEnabled) {
-        this.routeId = routeId;
-        this.transitType = transitType;
-        this.isEnabled = isEnabled;
     }
 
     public String getRouteId() {
@@ -30,6 +27,14 @@ public class RouteNotificationSubscription implements Serializable {
 
     public void setRouteId(String routeId) {
         this.routeId = routeId;
+    }
+
+    public String getRouteName() {
+        return routeName;
+    }
+
+    public void setRouteName(String routeName) {
+        this.routeName = routeName;
     }
 
     public TransitType getTransitType() {
@@ -48,11 +53,6 @@ public class RouteNotificationSubscription implements Serializable {
         isEnabled = enabled;
     }
 
-    /**
-     * ignores the value of isEnabled
-     * @param o
-     * @return
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -67,14 +67,17 @@ public class RouteNotificationSubscription implements Serializable {
         if (!routeId.equals(that.routeId)) {
             return false;
         }
+        if (!routeName.equals(that.routeName)) {
+            return false;
+        }
         return transitType == that.transitType;
     }
 
     @Override
     public int hashCode() {
         int result = routeId.hashCode();
+        result = 31 * result + routeName.hashCode();
         result = 31 * result + transitType.hashCode();
-        result = 31 * result + (isEnabled ? 1 : 0);
         return result;
     }
 
@@ -82,6 +85,7 @@ public class RouteNotificationSubscription implements Serializable {
     public String toString() {
         return "RouteNotificationSubscription{" +
                 "routeId='" + routeId + '\'' +
+                ", routeName='" + routeName + '\'' +
                 ", transitType=" + transitType +
                 ", isEnabled=" + isEnabled +
                 '}';

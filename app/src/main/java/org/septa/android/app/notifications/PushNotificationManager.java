@@ -121,7 +121,7 @@ public class PushNotificationManager {
         // unsubscribe from all topics
         List<RouteNotificationSubscription> routesToUnsubscribeFrom = SeptaServiceFactory.getNotificationsService().getRoutesSubscribedTo(context);
         for (RouteNotificationSubscription route : routesToUnsubscribeFrom) {
-            unsubscribeFromRoute(route.getRouteId(), route.getTransitType());
+            unsubscribeFromRoute(route.getRouteName(), route.getTransitType());
         }
 
         // topics subscribed to are still remembered because shared preferences untouched
@@ -207,10 +207,10 @@ public class PushNotificationManager {
         FirebaseMessaging.getInstance().subscribeToTopic(topicId);
     }
 
-    public void createNotificationForRoute(String routeId, TransitType transitType) {
+    public void createNotificationForRoute(String routeId, String routeName, TransitType transitType) {
         // add route to subscription list
         List<RouteNotificationSubscription> notificationSubscriptions = SeptaServiceFactory.getNotificationsService().getRoutesSubscribedTo(context);
-        RouteNotificationSubscription routeToSubscribeTo = new RouteNotificationSubscription(routeId, transitType);
+        RouteNotificationSubscription routeToSubscribeTo = new RouteNotificationSubscription(routeId, routeName, transitType);
 
         if (notificationSubscriptions.contains(routeToSubscribeTo)) {
             // turn notifications on for that route

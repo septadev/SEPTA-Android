@@ -14,6 +14,7 @@ import org.septa.android.app.MainActivity;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
+import org.septa.android.app.services.apiinterfaces.model.RouteNotificationSubscription;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -118,9 +119,9 @@ public class PushNotificationManager {
         SeptaServiceFactory.getNotificationsService().setNotificationsEnabled(context, false);
 
         // unsubscribe from all topics
-        List<String> topicsToUnsubscribeFrom = SeptaServiceFactory.getNotificationsService().getTopicsSubscribedTo(context);
-        for (String topicId : topicsToUnsubscribeFrom) {
-            FirebaseMessaging.getInstance().unsubscribeFromTopic(topicId);
+        List<RouteNotificationSubscription> routesToUnsubscribeFrom = SeptaServiceFactory.getNotificationsService().getRoutesSubscribedTo(context);
+        for (RouteNotificationSubscription route : routesToUnsubscribeFrom) {
+            unsubscribeFromRoute(route.getRouteId(), route.getTransitType());
         }
 
         // topics subscribed to are still remembered because shared preferences untouched
@@ -133,9 +134,11 @@ public class PushNotificationManager {
         SeptaServiceFactory.getNotificationsService().setNotificationsEnabled(context, true);
 
         // resubscribe user to their previously saved topics
-        List<String> topicsToSubscribeTo = SeptaServiceFactory.getNotificationsService().getTopicsSubscribedTo(context);
-        for (String topicId : topicsToSubscribeTo) {
-            FirebaseMessaging.getInstance().subscribeToTopic(topicId);
+        List<RouteNotificationSubscription> routesSubscribedTo = SeptaServiceFactory.getNotificationsService().getRoutesSubscribedTo(context);
+        for (RouteNotificationSubscription route : routesSubscribedTo) {
+            if (route.isEnabled()) {
+                subscribeToRoute(route.getRouteId(), route.getTransitType());
+            }
         }
 
         // subscribe to test push notifications // TODO: remove
@@ -154,7 +157,7 @@ public class PushNotificationManager {
         SeptaServiceFactory.getNotificationsService().setSpecialAnnouncementsEnabled(context, false);
     }
 
-    public void subscribeToRoute(String routeId, TransitType transitType) {
+    private void subscribeToRoute(String routeId, TransitType transitType) {
         routeId = routeId.toUpperCase();
         Log.d(TAG, "Subscribing to alerts for route: " + routeId);
 
@@ -174,7 +177,7 @@ public class PushNotificationManager {
         subscribeToTopic(serviceAlertTopicId);
     }
 
-    public void unsubscribeFromRoute(String routeId, TransitType transitType) {
+    private void unsubscribeFromRoute(String routeId, TransitType transitType) {
         routeId = routeId.toUpperCase();
         Log.d(TAG, "Unsubscribing from alerts for route: " + routeId);
 
@@ -197,16 +200,42 @@ public class PushNotificationManager {
     private void unsubscribeFromTopic(String topicId) {
         // unsubscribe from Firebase topic
         FirebaseMessaging.getInstance().unsubscribeFromTopic(topicId);
-
-        // remove topic from shared preferences
-        SeptaServiceFactory.getNotificationsService().removeTopicSubscription(context, topicId);
     }
 
     private void subscribeToTopic(String topicId) {
         // subscribe to firebase topic
         FirebaseMessaging.getInstance().subscribeToTopic(topicId);
-
-        // add topic to shared preferences
-        SeptaServiceFactory.getNotificationsService().addTopicSubscription(context, topicId);
     }
+
+    public void createNotificationForRoute(String routeId, TransitType transitType) {
+        // add route to subscription list
+        List<RouteNotificationSubscription> notificationSubscriptions = SeptaServiceFactory.getNotificationsService().getRoutesSubscribedTo(context);
+        RouteNotificationSubscription routeToSubscribeTo = new RouteNotificationSubscription(routeId, transitType);
+
+        if (notificationSubscriptions.contains(routeToSubscribeTo)) {
+            // turn notifications on for that route
+            SeptaServiceFactory.getNotificationsService().toggleRouteSubscription(context, routeId, true);
+
+        } else {
+            // create new route subscription
+            SeptaServiceFactory.getNotificationsService().addRouteSubscription(context, routeToSubscribeTo);
+        }
+
+        subscribeToRoute(routeId, transitType);
+    }
+
+    public void removeNotificationForRoute(String routeId, TransitType transitType) {
+        // remember route but toggle notifications off
+        SeptaServiceFactory.getNotificationsService().toggleRouteSubscription(context, routeId, false);
+
+        unsubscribeFromRoute(routeId, transitType);
+    }
+
+    public void deleteNotificationForRoute(String routeId, TransitType transitType) {
+        // delete notification
+        SeptaServiceFactory.getNotificationsService().removeRouteSubscription(context, routeId);
+
+        unsubscribeFromRoute(routeId, transitType);
+    }
+
 }

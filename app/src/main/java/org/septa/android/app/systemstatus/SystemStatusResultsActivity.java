@@ -16,6 +16,7 @@ import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
 import org.septa.android.app.domain.RouteDirectionModel;
+import org.septa.android.app.notifications.PushNotificationManager;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.AlertDetail;
 import org.septa.android.app.support.GeneralUtils;
@@ -150,17 +151,20 @@ public class SystemStatusResultsActivity extends BaseActivity {
             }
         });
 
-        // switch to create / enable notification for this route
+        // set initial checked state of switch
         notifsSubscribeSwitch = findViewById(R.id.subscribe_notifications_switch);
+        notifsSubscribeSwitch.setChecked(SeptaServiceFactory.getNotificationsService().isSubscribedToRoute(SystemStatusResultsActivity.this, routeId));
+
+        // switch to create / enable notification for this route
         notifsSubscribeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    // TODO: enable notifs for route
-//                    PushNotificationManager.getInstance(SystemStatusResultsActivity.this).enableNotificationsForRoute(routeId);
+                    // enable notifs for route
+                    PushNotificationManager.getInstance(SystemStatusResultsActivity.this).createNotificationForRoute(routeId, transitType);
                 } else {
-                    // TODO: disable notifs for route
-//                    PushNotificationManager.getInstance(SystemStatusResultsActivity.this).disableNotificationsForRoute(routeId);
+                    // disable notifs for route
+                    PushNotificationManager.getInstance(SystemStatusResultsActivity.this).removeNotificationForRoute(routeId, transitType);
                 }
             }
         });

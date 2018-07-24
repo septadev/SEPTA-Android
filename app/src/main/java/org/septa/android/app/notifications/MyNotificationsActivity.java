@@ -3,6 +3,7 @@ package org.septa.android.app.notifications;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.SparseArray;
@@ -14,24 +15,28 @@ import android.widget.Toast;
 import org.septa.android.app.BaseActivity;
 import org.septa.android.app.Constants;
 import org.septa.android.app.R;
+import org.septa.android.app.TransitType;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
+import org.septa.android.app.services.apiinterfaces.model.RouteNotificationSubscription;
 import org.septa.android.app.support.GeneralUtils;
 import org.septa.android.app.view.TextView;
 
 import java.util.Calendar;
 import java.util.List;
 
-public class MyNotificationsActivity extends BaseActivity implements NotificationTimePickerDialog.NotificationTimePickerDialogListener {
+public class MyNotificationsActivity extends BaseActivity implements NotificationTimePickerDialog.NotificationTimePickerDialogListener, NotificationItemAdapter.NotificationItemListener {
 
     private static final String TAG = MyNotificationsActivity.class.getSimpleName();
 
     private boolean[] daysOfWeekEnabled = new boolean[]{false, false, false, false, false, false, false};
     private int startTime, endTime;
+    private List<RouteNotificationSubscription> routesList;
 
     // layout variables
     private TextView startTimePicker, endTimePicker, addButton, editButton;
     private SparseArray<ImageView> daysOfWeekButtons;
     private RecyclerView notificationRecyclerView;
+    private NotificationItemAdapter notificationItemAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -153,6 +158,22 @@ public class MyNotificationsActivity extends BaseActivity implements Notificatio
         }
     }
 
+    @Override
+    public void promptToDeleteNotification(int position, String routeName, TransitType transitType) {
+        // TODO: prompt to confirm deletion
+        PushNotificationManager.getInstance(MyNotificationsActivity.this).deleteNotificationForRoute(routeName, transitType);
+
+        // on successful deletion
+        routesList.remove(position);
+        notificationItemAdapter.notifyItemRemoved(position);
+        notificationItemAdapter.notifyDataSetChanged();
+
+        // close edit mode if no favorites left
+        if (routesList.isEmpty()) {
+//            closeEditMode(); // TODO
+        }
+    }
+
     private void initializeActivity(@Nullable Bundle savedInstanceState) {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -161,19 +182,9 @@ public class MyNotificationsActivity extends BaseActivity implements Notificatio
 
         Bundle bundle = getIntent().getExtras();
 
-        if (savedInstanceState != null) {
-            restoreState(savedInstanceState);
-        } else {
-            restoreState(bundle);
-        }
-
         startTime = SeptaServiceFactory.getNotificationsService().getNotificationStartTime(this);
         endTime = SeptaServiceFactory.getNotificationsService().getNotificationEndTime(this);
-    }
-
-    private void restoreState(Bundle bundle) {
-        // TODO: restore any variables needed
-//        firstRoute = (RouteDirectionModel) bundle.get(TransitViewFragment.TRANSITVIEW_ROUTE_FIRST);
+        routesList = SeptaServiceFactory.getNotificationsService().getRoutesSubscribedTo(MyNotificationsActivity.this);
     }
 
     private void initializeView() {
@@ -204,6 +215,10 @@ public class MyNotificationsActivity extends BaseActivity implements Notificatio
 
         // TODO: recyclerview of notifications
         notificationRecyclerView = findViewById(R.id.notification_recyclerview);
+        notificationRecyclerView.setLayoutManager(new LinearLayoutManager(MyNotificationsActivity.this));
+        notificationItemAdapter = new NotificationItemAdapter(MyNotificationsActivity.this, routesList);
+        notificationRecyclerView.setAdapter(notificationItemAdapter);
+        notificationItemAdapter.updateList(routesList);
     }
 
     private void goToSystemStatusPicker() {

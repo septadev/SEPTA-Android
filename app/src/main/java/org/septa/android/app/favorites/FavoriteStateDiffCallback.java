@@ -25,7 +25,7 @@ class FavoriteStateDiffCallback extends DiffUtil.Callback {
 
     @Override
     public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-        return oldFavoriteStates.get(oldItemPosition).getFavoriteKey() == newFavoriteStates.get(newItemPosition).getFavoriteKey();
+        return oldFavoriteStates.get(oldItemPosition).getFavoriteKey().equalsIgnoreCase(newFavoriteStates.get(newItemPosition).getFavoriteKey());
     }
 
     @Override

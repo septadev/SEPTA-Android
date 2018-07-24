@@ -2,6 +2,8 @@ package org.septa.android.app.notifications;
 
 import android.content.Context;
 
+import org.septa.android.app.services.apiinterfaces.model.RouteNotificationSubscription;
+
 import java.util.List;
 
 public interface NotificationsSharedPrefsUtils {
@@ -28,10 +30,14 @@ public interface NotificationsSharedPrefsUtils {
 
     void setNotificationsEndTime(Context context, Integer endTime);
 
-    List<String> getTopicsSubscribedTo(Context context);
+    List<RouteNotificationSubscription> getRoutesSubscribedTo(Context context);
 
-    void addTopicSubscription(Context context, String topicId);
+    boolean isSubscribedToRoute(Context context, String routeId);
 
-    void removeTopicSubscription(Context context, String topicId);
+    void addRouteSubscription(Context context, RouteNotificationSubscription route);
+
+    void toggleRouteSubscription(Context context, String routeId, boolean isEnabled);
+
+    void removeRouteSubscription(Context context, String routeId);
 
 }

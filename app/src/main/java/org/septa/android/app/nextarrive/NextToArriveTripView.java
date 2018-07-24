@@ -1,5 +1,6 @@
 package org.septa.android.app.nextarrive;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.AttrRes;
@@ -94,7 +95,7 @@ public class NextToArriveTripView extends FrameLayout {
         inflate(getContext(), R.layout.view_next_to_arrive_trip, this);
     }
 
-    public void setNextToArriveData(NextArrivalModelResponseParser parser) {
+    public void setNextToArriveData(@NonNull Activity activity, NextArrivalModelResponseParser parser) {
         final LinearLayout listView = findViewById(R.id.lines_list_view);
         listView.removeAllViews();
 
@@ -136,7 +137,7 @@ public class NextToArriveTripView extends FrameLayout {
         for (NextArrivalModelResponse.NextArrivalRecord item : data) {
             if (item.getConnectionStationId() != null) {
                 currentLine = null;
-                final View multiView = getMultistopTripView(item);
+                final View multiView = getMultistopTripView(activity, item);
                 if (firstPos && onFirstElementHeight != null) {
                     View peakView = multiView.findViewById(R.id.orig_trip_layout);
                     peakViews.add(peakView);
@@ -159,7 +160,7 @@ public class NextToArriveTripView extends FrameLayout {
             } else {
                 if (currentLine == null || !currentLine.equals(item.getOrigRouteId())) {
                     currentLine = item.getOrigRouteId();
-                    View headerView = getLineHeader(currentLine, item.getOrigRouteName());
+                    View headerView = getLineHeader(activity, currentLine, item.getOrigRouteName());
                     if (firstPos) {
                         peakViews.add(headerView);
                     }
@@ -192,7 +193,7 @@ public class NextToArriveTripView extends FrameLayout {
 
     }
 
-    private View getLineHeader(String lineId, String lineName) {
+    private View getLineHeader(@NonNull Activity activity, String lineId, String lineName) {
         Context context = getContext();
         View convertView = LayoutInflater.from(context).inflate(R.layout.next_to_arrive_line, this, false);
 
@@ -213,25 +214,25 @@ public class NextToArriveTripView extends FrameLayout {
         if (alert.isAlert()) {
             View targetView = convertView.findViewById(R.id.orig_line_alert_icon);
             targetView.setVisibility(VISIBLE);
-            targetView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ALERT_EXPANDED, context, transitType, lineId, routeNameForSystemStatus, originClass));
+            targetView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ALERT_EXPANDED, activity, transitType, lineId, routeNameForSystemStatus, originClass));
             targetView.setContentDescription(R.string.alert_icon_content_description_prefix + routeNameForSystemStatus);
         }
         if (alert.isAdvisory()) {
             View targetView = convertView.findViewById(R.id.orig_line_advisory_icon);
             targetView.setVisibility(VISIBLE);
-            targetView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ADVISORY_EXPANDED, context, transitType, lineId, routeNameForSystemStatus, originClass));
+            targetView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ADVISORY_EXPANDED, activity, transitType, lineId, routeNameForSystemStatus, originClass));
             targetView.setContentDescription(R.string.advisory_icon_content_description_prefix + routeNameForSystemStatus);
         }
         if (alert.isDetour()) {
             View targetView = convertView.findViewById(R.id.orig_line_detour_icon);
             targetView.setVisibility(VISIBLE);
-            targetView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.ACTIVE_DETOUR_EXPANDED, context, transitType, lineId, routeNameForSystemStatus, originClass));
+            targetView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.ACTIVE_DETOUR_EXPANDED, activity, transitType, lineId, routeNameForSystemStatus, originClass));
             targetView.setContentDescription(R.string.detour_icon_content_description_prefix + routeNameForSystemStatus);
         }
         if (alert.isSnow()) {
             View targetView = convertView.findViewById(R.id.orig_line_weather_icon);
             targetView.setVisibility(VISIBLE);
-            targetView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.WEATHER_ALERTS_EXPANDED, context, transitType, lineId, routeNameForSystemStatus, originClass));
+            targetView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.WEATHER_ALERTS_EXPANDED, activity, transitType, lineId, routeNameForSystemStatus, originClass));
             targetView.setContentDescription(R.string.weather_icon_content_description_prefix + routeNameForSystemStatus);
         }
 
@@ -326,7 +327,7 @@ public class NextToArriveTripView extends FrameLayout {
         return line;
     }
 
-    public View getMultistopTripView(final NextArrivalRecord item) {
+    public View getMultistopTripView(@NonNull Activity activity, final NextArrivalRecord item) {
 
         View convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_next_to_arrive_unit_multistop, this, false);
 
@@ -341,25 +342,25 @@ public class NextToArriveTripView extends FrameLayout {
         if (orig_alert.isAlert()) {
             View targetView = convertView.findViewById(R.id.orig_line_alert_icon);
             targetView.setVisibility(VISIBLE);
-            targetView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ALERT_EXPANDED, getContext(), transitType, item.getOrigRouteId(), item.getOrigRouteName(), originClass));
+            targetView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ALERT_EXPANDED, activity, transitType, item.getOrigRouteId(), item.getOrigRouteName(), originClass));
             targetView.setContentDescription(R.string.alert_icon_content_description_prefix + item.getOrigRouteName());
         }
         if (orig_alert.isAdvisory()) {
             View targetView = convertView.findViewById(R.id.orig_line_advisory_icon);
             targetView.setVisibility(VISIBLE);
-            targetView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ADVISORY_EXPANDED, getContext(), transitType, item.getOrigRouteId(), item.getOrigRouteName(), originClass));
+            targetView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ADVISORY_EXPANDED, activity, transitType, item.getOrigRouteId(), item.getOrigRouteName(), originClass));
             targetView.setContentDescription(R.string.advisory_icon_content_description_prefix + item.getOrigRouteName());
         }
         if (orig_alert.isDetour()) {
             View targetView = convertView.findViewById(R.id.orig_line_detour_icon);
             targetView.setVisibility(VISIBLE);
-            targetView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.ACTIVE_DETOUR_EXPANDED, getContext(), transitType, item.getOrigRouteId(), item.getOrigRouteName(), originClass));
+            targetView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.ACTIVE_DETOUR_EXPANDED, activity, transitType, item.getOrigRouteId(), item.getOrigRouteName(), originClass));
             targetView.setContentDescription(R.string.detour_icon_content_description_prefix + item.getOrigRouteName());
         }
         if (orig_alert.isSnow()) {
             View targetView = convertView.findViewById(R.id.orig_line_weather_icon);
             targetView.setVisibility(VISIBLE);
-            targetView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.WEATHER_ALERTS_EXPANDED, getContext(), transitType, item.getOrigRouteId(), item.getOrigRouteName(), originClass));
+            targetView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.WEATHER_ALERTS_EXPANDED, activity, transitType, item.getOrigRouteId(), item.getOrigRouteName(), originClass));
             targetView.setContentDescription(R.string.weather_icon_content_description_prefix + item.getOrigRouteName());
         }
 
@@ -460,25 +461,25 @@ public class NextToArriveTripView extends FrameLayout {
         if (alert.isAlert()) {
             View targetView = convertView.findViewById(R.id.term_line_alert_icon);
             targetView.setVisibility(VISIBLE);
-            targetView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ALERT_EXPANDED, getContext(), transitType, item.getTermRouteId(), item.getTermRouteName(), originClass));
+            targetView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ALERT_EXPANDED, activity, transitType, item.getTermRouteId(), item.getTermRouteName(), originClass));
             targetView.setContentDescription(R.string.alert_icon_content_description_prefix + item.getTermRouteName());
         }
         if (alert.isAdvisory()) {
             View targetView = convertView.findViewById(R.id.term_line_advisory_icon);
             targetView.setVisibility(VISIBLE);
-            targetView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ADVISORY_EXPANDED, getContext(), transitType, item.getTermRouteId(), item.getTermRouteName(), originClass));
+            targetView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ADVISORY_EXPANDED, activity, transitType, item.getTermRouteId(), item.getTermRouteName(), originClass));
             targetView.setContentDescription(R.string.advisory_icon_content_description_prefix + item.getTermRouteName());
         }
         if (alert.isDetour()) {
             View targetView = convertView.findViewById(R.id.term_line_detour_icon);
             targetView.setVisibility(VISIBLE);
-            targetView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.ACTIVE_DETOUR_EXPANDED, getContext(), transitType, item.getTermRouteId(), item.getTermRouteName(), originClass));
+            targetView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.ACTIVE_DETOUR_EXPANDED, activity, transitType, item.getTermRouteId(), item.getTermRouteName(), originClass));
             targetView.setContentDescription(R.string.detour_icon_content_description_prefix + item.getTermRouteName());
         }
         if (alert.isSnow()) {
             View targetView = convertView.findViewById(R.id.term_line_weather_icon);
             targetView.setVisibility(VISIBLE);
-            targetView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.WEATHER_ALERTS_EXPANDED, getContext(), transitType, item.getTermRouteId(), item.getTermRouteName(), originClass));
+            targetView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.WEATHER_ALERTS_EXPANDED, activity, transitType, item.getTermRouteId(), item.getTermRouteName(), originClass));
             targetView.setContentDescription(R.string.weather_icon_content_description_prefix + item.getTermRouteName());
         }
 

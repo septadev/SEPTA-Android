@@ -164,7 +164,7 @@ public class ScheduleResultsActivity extends BaseActivity implements RenameFavor
         View alertView = findViewById(R.id.service_alert);
         if (alert.isAlert()) {
             alertView.setVisibility(View.VISIBLE);
-            alertView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ALERT_EXPANDED, this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName(), originClass));
+            alertView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ALERT_EXPANDED, ScheduleResultsActivity.this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName(), originClass));
             displayAlerts = true;
         } else {
             LinearLayout.LayoutParams loparams = (LinearLayout.LayoutParams) alertView.getLayoutParams();
@@ -176,7 +176,7 @@ public class ScheduleResultsActivity extends BaseActivity implements RenameFavor
         View advisoryView = findViewById(R.id.service_advisory);
         if (alert.isAdvisory()) {
             advisoryView.setVisibility(View.VISIBLE);
-            advisoryView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ADVISORY_EXPANDED, this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName(), originClass));
+            advisoryView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ADVISORY_EXPANDED, ScheduleResultsActivity.this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName(), originClass));
             displayAlerts = true;
         } else {
             LinearLayout.LayoutParams loparams = (LinearLayout.LayoutParams) advisoryView.getLayoutParams();
@@ -188,7 +188,7 @@ public class ScheduleResultsActivity extends BaseActivity implements RenameFavor
         View detourView = findViewById(R.id.active_detour);
         if (alert.isDetour()) {
             advisoryView.setVisibility(View.VISIBLE);
-            detourView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.ACTIVE_DETOUR_EXPANDED, this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName(), originClass));
+            detourView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.ACTIVE_DETOUR_EXPANDED, ScheduleResultsActivity.this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName(), originClass));
             displayAlerts = true;
         } else {
             LinearLayout.LayoutParams loparams = (LinearLayout.LayoutParams) detourView.getLayoutParams();
@@ -200,7 +200,7 @@ public class ScheduleResultsActivity extends BaseActivity implements RenameFavor
         View weatherView = findViewById(R.id.weather_alerts);
         if (alert.isSnow()) {
             weatherView.setVisibility(View.VISIBLE);
-            weatherView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.WEATHER_ALERTS_EXPANDED, this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName(), originClass));
+            weatherView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.WEATHER_ALERTS_EXPANDED, ScheduleResultsActivity.this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName(), originClass));
             displayAlerts = true;
         } else {
             LinearLayout.LayoutParams loparams = (LinearLayout.LayoutParams) weatherView.getLayoutParams();
@@ -262,6 +262,16 @@ public class ScheduleResultsActivity extends BaseActivity implements RenameFavor
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        int unmaskedRequestCode = requestCode & 0x0000ffff;
+        if (unmaskedRequestCode == Constants.NTA_REQUEST || unmaskedRequestCode == Constants.SYSTEM_STATUS_REQUEST) {
+            if (resultCode == Constants.VIEW_NOTIFICATION_MANAGEMENT) {
+                goToNotificationsManagement();
+            }
+        }
     }
 
     @Override
@@ -437,6 +447,11 @@ public class ScheduleResultsActivity extends BaseActivity implements RenameFavor
         } else {
             item.setEnabled(true);
         }
+    }
+
+    private void goToNotificationsManagement() {
+        setResult(Constants.VIEW_NOTIFICATION_MANAGEMENT, new Intent());
+        finish();
     }
 
     class ScheduleResultsAsyncTask extends AsyncTask<Integer, Void, List<ScheduleModel>> {

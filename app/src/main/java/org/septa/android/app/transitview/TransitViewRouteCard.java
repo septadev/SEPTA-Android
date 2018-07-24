@@ -1,6 +1,6 @@
 package org.septa.android.app.transitview;
 
-import android.content.Context;
+import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -25,7 +25,7 @@ public class TransitViewRouteCard extends LinearLayout {
 
     private static final String TAG = TransitViewRouteCard.class.getSimpleName();
 
-    private Context context;
+    private Activity activity;
     private TransitViewRouteCardListener mListener;
     private RouteDirectionModel route;
     private int sequence;
@@ -39,18 +39,18 @@ public class TransitViewRouteCard extends LinearLayout {
     private View line;
     private ImageView advisoryIcon, alertIcon, detourIcon, weatherIcon;
 
-    public TransitViewRouteCard(@NonNull Context context, RouteDirectionModel route, int sequence) {
-        super(context);
+    public TransitViewRouteCard(@NonNull Activity activity, RouteDirectionModel route, int sequence) {
+        super(activity);
 
-        if (context instanceof TransitViewRouteCardListener) {
-            mListener = (TransitViewRouteCardListener) context;
+        if (activity instanceof TransitViewRouteCardListener) {
+            mListener = (TransitViewRouteCardListener) activity;
         } else {
             IllegalArgumentException iae = new IllegalArgumentException("Context Must Implement TransitViewRouteCardListener");
             CrashlyticsManager.log(Log.ERROR, TAG, iae.toString());
             throw iae;
         }
 
-        this.context = context;
+        this.activity = activity;
         this.route = route;
         this.sequence = sequence;
 
@@ -58,7 +58,7 @@ public class TransitViewRouteCard extends LinearLayout {
     }
 
     private void initializeView() {
-        rootView = (LinearLayout) inflate(context, R.layout.item_transitview_route_card, this);
+        rootView = (LinearLayout) inflate(activity, R.layout.item_transitview_route_card, this);
 
         deleteButton = rootView.findViewById(R.id.delete_route);
         routeIdText = rootView.findViewById(R.id.transitview_card_route_id);
@@ -78,31 +78,31 @@ public class TransitViewRouteCard extends LinearLayout {
             }
         });
 
-        TransitType transitType = isTrolley(context, route.getRouteId()) ? TransitType.TROLLEY : TransitType.BUS;
+        TransitType transitType = isTrolley(activity, route.getRouteId()) ? TransitType.TROLLEY : TransitType.BUS;
         // set transit type icon
-        routeIdText.setCompoundDrawablesWithIntrinsicBounds(ContextCompat.getDrawable(context, transitType.getTabActiveImageResource()), null, null, null);
+        routeIdText.setCompoundDrawablesWithIntrinsicBounds(ContextCompat.getDrawable(activity, transitType.getTabActiveImageResource()), null, null, null);
 
         // clicking on advisory icon links to system status
-        advisoryIcon.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ADVISORY_EXPANDED, context, transitType, route.getRouteId(), route.getRouteShortName(), originClass));
+        advisoryIcon.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ADVISORY_EXPANDED, activity, transitType, route.getRouteId(), route.getRouteShortName(), originClass));
         advisoryIcon.setContentDescription(R.string.advisory_icon_content_description_prefix + route.getRouteShortName());
 
         // clicking on alert icon links to system status
-        alertIcon.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ALERT_EXPANDED, context, transitType, route.getRouteId(), route.getRouteShortName(), originClass));
+        alertIcon.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ALERT_EXPANDED, activity, transitType, route.getRouteId(), route.getRouteShortName(), originClass));
         alertIcon.setContentDescription(R.string.alert_icon_content_description_prefix + route.getRouteShortName());
 
         // clicking on detour icon links to system status
-        detourIcon.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.ACTIVE_DETOUR_EXPANDED, context, transitType, route.getRouteId(), route.getRouteShortName(), originClass));
+        detourIcon.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.ACTIVE_DETOUR_EXPANDED, activity, transitType, route.getRouteId(), route.getRouteShortName(), originClass));
         detourIcon.setContentDescription(R.string.detour_icon_content_description_prefix + route.getRouteShortName());
 
         // clicking on weather icon links to system status
-        weatherIcon.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.WEATHER_ALERTS_EXPANDED, context, transitType, route.getRouteId(), route.getRouteShortName(), originClass));
+        weatherIcon.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.WEATHER_ALERTS_EXPANDED, activity, transitType, route.getRouteId(), route.getRouteShortName(), originClass));
         weatherIcon.setContentDescription(R.string.weather_icon_content_description_prefix + route.getRouteShortName());
 
         refreshAlertsView();
     }
 
     public void refreshAlertsView() {
-        TransitType transitType = isTrolley(context, route.getRouteId()) ? TransitType.TROLLEY : TransitType.BUS;
+        TransitType transitType = isTrolley(activity, route.getRouteId()) ? TransitType.TROLLEY : TransitType.BUS;
         Alert routeAlerts = SystemStatusState.getAlertForLine(transitType, route.getRouteId());
         isAdvisory = routeAlerts.isAdvisory();
         isAlert = routeAlerts.isAlert() || routeAlerts.isSuspended();
@@ -142,8 +142,8 @@ public class TransitViewRouteCard extends LinearLayout {
     }
 
     public void activateCard() {
-        rootView.setBackground(ContextCompat.getDrawable(context, R.drawable.transitview_active_route_border));
-        line.setBackgroundColor(ContextCompat.getColor(context, R.color.transitview_card_active_line));
+        rootView.setBackground(ContextCompat.getDrawable(activity, R.drawable.transitview_active_route_border));
+        line.setBackgroundColor(ContextCompat.getColor(activity, R.color.transitview_card_active_line));
         deleteButton.setVisibility(View.VISIBLE);
 
         // readd margins that were removed when card background was changed
@@ -162,8 +162,8 @@ public class TransitViewRouteCard extends LinearLayout {
     }
 
     public void deactivateCard() {
-        rootView.setBackgroundColor(ContextCompat.getColor(context, R.color.transitview_card_inactive_background));
-        line.setBackgroundColor(ContextCompat.getColor(context, R.color.transitview_card_inactive_line));
+        rootView.setBackgroundColor(ContextCompat.getColor(activity, R.color.transitview_card_inactive_background));
+        line.setBackgroundColor(ContextCompat.getColor(activity, R.color.transitview_card_inactive_line));
         deleteButton.setVisibility(View.INVISIBLE);
 
         // readd margins that were removed when card background was changed

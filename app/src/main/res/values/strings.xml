@@ -337,6 +337,9 @@
     <string name="notifications_edit">Edit</string>
     <string name="notifications_done">Done</string>
 
+    <string name="subscribe_long_description">Subscribe to Notifications for this Route</string>
+    <string name="view_notification_preferences">View Notification Preferences »</string>
+
 
     <!-- In-App Ratings-->
     <string name="rating_title">How are we doing?</string>

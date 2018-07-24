@@ -147,7 +147,7 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
 
                     AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_SYSTEM_STATUS_FROM_PICKER, AnalyticsManager.CONTENT_ID_SYSTEM_STATUS, null);
 
-                    startActivity(intent);
+                    startActivityForResult(intent, Constants.SYSTEM_STATUS_REQUEST);
                 }
             });
 

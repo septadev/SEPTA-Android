@@ -6,8 +6,10 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.SwitchCompat;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
+import android.widget.CompoundButton;
 
 import org.septa.android.app.BaseActivity;
 import org.septa.android.app.Constants;
@@ -48,6 +50,9 @@ public class SystemStatusResultsActivity extends BaseActivity {
 
     String routeId;
     String routeName;
+
+    View notificationPreferences;
+    SwitchCompat notifsSubscribeSwitch;
 
     View progressView;
 
@@ -136,6 +141,29 @@ public class SystemStatusResultsActivity extends BaseActivity {
             }
         });
 
+        // link to notification settings
+        notificationPreferences = findViewById(R.id.notification_preferences);
+        notificationPreferences.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goToNotificationsManagement();
+            }
+        });
+
+        // switch to create / enable notification for this route
+        notifsSubscribeSwitch = findViewById(R.id.subscribe_notifications_switch);
+        notifsSubscribeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    // TODO: enable notifs for route
+//                    PushNotificationManager.getInstance(SystemStatusResultsActivity.this).enableNotificationsForRoute(routeId);
+                } else {
+                    // TODO: disable notifs for route
+//                    PushNotificationManager.getInstance(SystemStatusResultsActivity.this).disableNotificationsForRoute(routeId);
+                }
+            }
+        });
     }
 
     @Override
@@ -311,5 +339,10 @@ public class SystemStatusResultsActivity extends BaseActivity {
 
             weatherAlertsDetails.setHtml(GeneralUtils.updateUrls(weatherBuilder.toString()));
         }
+    }
+
+    private void goToNotificationsManagement() {
+        setResult(Constants.VIEW_NOTIFICATION_MANAGEMENT, new Intent());
+        finish();
     }
 }

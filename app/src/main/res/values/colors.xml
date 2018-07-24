@@ -70,6 +70,7 @@
     <!-- Notifications -->
     <color name="manage_notifications_border">#c6c6c6</color>
     <color name="notification_heading_text_color">#9b9b9b</color>
+    <color name="notification_subscribe_border">#878787</color>
 
     <!-- the active KML line color is flipped b/c of some issue with hex conversion -->
     <color name="transitview_route_active_kml">#f48e4e</color>

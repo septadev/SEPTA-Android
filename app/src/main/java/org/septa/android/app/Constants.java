@@ -10,11 +10,17 @@ public interface Constants {
     String TRIP_ID = "trip_id";
     String EDIT_FAVORITES_FLAG = "edit_favorites_flag";
 
+    // request codes used to pass data back between activities
     int NTA_REQUEST = 1;
-    int VIEW_SCHEDULE = 1;
-
     int NOTIFICATIONS_REQUEST = 2;
+    int SYSTEM_STATUS_REQUEST = 3;
+    int SCHEDULES_REQUEST = 4;
+    int TRANSITVIEW_REQUEST = 5;
+
+    // result codes to access MainActivity's fragments
+    int VIEW_SCHEDULE = 1;
     int VIEW_SYSTEM_STATUS_PICKER = 2;
+    int VIEW_NOTIFICATION_MANAGEMENT = 3;
 
     String SERVICE_ADVISORY_EXPANDED = "service_advisory_expanded";
     String SERVICE_ALERT_EXPANDED = "service_alert_expanded";

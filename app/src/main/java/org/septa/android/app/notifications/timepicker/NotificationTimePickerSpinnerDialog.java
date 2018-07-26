@@ -1,4 +1,4 @@
-package org.septa.android.app.notifications;
+package org.septa.android.app.notifications.timepicker;
 
 import android.app.TimePickerDialog;
 import android.content.Context;
@@ -6,29 +6,28 @@ import android.content.DialogInterface;
 import android.widget.NumberPicker;
 import android.widget.TimePicker;
 
-import org.septa.android.app.support.GeneralUtils;
-
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NotificationTimePickerDialog extends TimePickerDialog {
+/**
+ * Android's TimePickerDialog has timePickerMode spinner before sdkLevel L
+ */
+public class NotificationTimePickerSpinnerDialog extends TimePickerDialog {
 
-    private static final String TAG = NotificationTimePickerDialog.class.getSimpleName();
+    private static final String TAG = NotificationTimePickerSpinnerDialog.class.getSimpleName();
 
-    final static int TIME_PICKER_INTERVAL = 15;
+    private final static int TIME_PICKER_INTERVAL = 15;
     private TimePicker mTimePicker;
     private final NotificationTimePickerDialogListener mListener;
     private boolean isStartTime;
 
     private static final DecimalFormat FORMATTER = new DecimalFormat("00");
 
-    private boolean mIgnoreEvent = false;
-
-    NotificationTimePickerDialog(Context context, NotificationTimePickerDialogListener listener, int hourOfDay, int minute, boolean is24HourView, boolean isStartTime) {
-        super(context, TimePickerDialog.THEME_HOLO_LIGHT, null, hourOfDay, GeneralUtils.roundUpToNearestInterval(minute, TIME_PICKER_INTERVAL), is24HourView);
-        mListener = listener;
+    public NotificationTimePickerSpinnerDialog(Context context, NotificationTimePickerDialogListener listener, int hourOfDay, int minute, boolean is24HourView, boolean isStartTime) {
+        super(context, TimePickerDialog.THEME_HOLO_LIGHT, null, hourOfDay, minute / TIME_PICKER_INTERVAL, is24HourView);
+        this.mListener = listener;
         this.isStartTime = isStartTime;
     }
 
@@ -39,29 +38,14 @@ public class NotificationTimePickerDialog extends TimePickerDialog {
     }
 
     @Override
-    public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
-        super.onTimeChanged(view, hourOfDay, minute);
-
-        if (mIgnoreEvent) {
-            return;
-        }
-        if (minute % TIME_PICKER_INTERVAL != 0) {
-            minute = GeneralUtils.roundUpToNearestInterval(minute, TIME_PICKER_INTERVAL);
-            mIgnoreEvent = true;
-            view.setCurrentMinute(minute);
-            mIgnoreEvent = false;
-        }
-    }
-
-    @Override
     public void onClick(DialogInterface dialog, int which) {
         switch (which) {
             case BUTTON_POSITIVE:
                 if (mListener != null) {
                     if (isStartTime) {
-                        mListener.onStartTimeSet(mTimePicker, mTimePicker.getCurrentHour(), mTimePicker.getCurrentMinute());
+                        mListener.onStartTimeSet(mTimePicker, mTimePicker.getCurrentHour(), mTimePicker.getCurrentMinute() * TIME_PICKER_INTERVAL);
                     } else {
-                        mListener.onEndTimeSet(mTimePicker, mTimePicker.getCurrentHour(), mTimePicker.getCurrentMinute());
+                        mListener.onEndTimeSet(mTimePicker, mTimePicker.getCurrentHour(), mTimePicker.getCurrentMinute() * TIME_PICKER_INTERVAL);
                     }
                 }
                 break;
@@ -92,11 +76,5 @@ public class NotificationTimePickerDialog extends TimePickerDialog {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public interface NotificationTimePickerDialogListener {
-        void onStartTimeSet(TimePicker view, int hourOfDay, int minute);
-
-        void onEndTimeSet(TimePicker view, int hourOfDay, int minute);
     }
 }

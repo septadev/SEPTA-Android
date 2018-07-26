@@ -1,8 +1,10 @@
 package org.septa.android.app.notifications;
 
 import android.app.AlertDialog;
+import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -17,6 +19,9 @@ import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
 import org.septa.android.app.notifications.edit.EditNotificationsFragment;
+import org.septa.android.app.notifications.timepicker.NotificationTimePickerClockDialog;
+import org.septa.android.app.notifications.timepicker.NotificationTimePickerDialogListener;
+import org.septa.android.app.notifications.timepicker.NotificationTimePickerSpinnerDialog;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.support.GeneralUtils;
 import org.septa.android.app.view.TextView;
@@ -24,7 +29,7 @@ import org.septa.android.app.view.TextView;
 import java.util.Calendar;
 import java.util.List;
 
-public class MyNotificationsActivity extends BaseActivity implements NotificationTimePickerDialog.NotificationTimePickerDialogListener, EditNotificationsFragment.EditNotificationsFragmentListener, NotificationItemAdapter.NotificationItemListener {
+public class MyNotificationsActivity extends BaseActivity implements NotificationTimePickerDialogListener, EditNotificationsFragment.EditNotificationsFragmentListener, NotificationItemAdapter.NotificationItemListener {
 
     private static final String TAG = MyNotificationsActivity.class.getSimpleName();
 
@@ -81,7 +86,12 @@ public class MyNotificationsActivity extends BaseActivity implements Notificatio
                 int hour = startTime / 100;
                 int minute = startTime % 100;
 
-                NotificationTimePickerDialog timePickerDialog = new NotificationTimePickerDialog(MyNotificationsActivity.this, MyNotificationsActivity.this, hour, minute, false, true);
+                TimePickerDialog timePickerDialog;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) { // android:timePickerMode spinner and clock began in Lollipop
+                    timePickerDialog = new NotificationTimePickerClockDialog(MyNotificationsActivity.this, MyNotificationsActivity.this, hour, minute, false, true);
+                } else {
+                    timePickerDialog = new NotificationTimePickerSpinnerDialog(MyNotificationsActivity.this, MyNotificationsActivity.this, hour, minute, false, true);
+                }
                 timePickerDialog.show();
             }
         });
@@ -93,7 +103,12 @@ public class MyNotificationsActivity extends BaseActivity implements Notificatio
                 int hour = endTime / 100;
                 int minute = endTime % 100;
 
-                NotificationTimePickerDialog timePickerDialog = new NotificationTimePickerDialog(MyNotificationsActivity.this, MyNotificationsActivity.this, hour, minute, false, false);
+                TimePickerDialog timePickerDialog;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) { // android:timePickerMode spinner and clock began in Lollipop
+                    timePickerDialog = new NotificationTimePickerClockDialog(MyNotificationsActivity.this, MyNotificationsActivity.this, hour, minute, false, false);
+                } else {
+                    timePickerDialog = new NotificationTimePickerSpinnerDialog(MyNotificationsActivity.this, MyNotificationsActivity.this, hour, minute, false, false);
+                }
                 timePickerDialog.show();
             }
         });

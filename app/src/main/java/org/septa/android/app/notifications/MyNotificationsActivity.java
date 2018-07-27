@@ -25,6 +25,8 @@ import org.septa.android.app.view.TextView;
 import java.util.Calendar;
 import java.util.List;
 
+import static org.septa.android.app.notifications.NotificationsSharedPrefsUtilsImpl.MAX_TIMEFRAMES;
+
 public class MyNotificationsActivity extends BaseActivity implements EditNotificationsFragment.EditNotificationsFragmentListener, NotificationItemAdapter.NotificationItemListener, TimeFrameItemAdapter.TimeFrameItemListener {
 
     private static final String TAG = MyNotificationsActivity.class.getSimpleName();
@@ -81,6 +83,13 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
             @Override
             public void onClick(View v) {
                 List<String> timeFramesList = SeptaServiceFactory.getNotificationsService().addNotificationTimeFrame(MyNotificationsActivity.this);
+
+                // only show add timeframe button if not at max
+                if (timeFramesList.size() < MAX_TIMEFRAMES) {
+                    addTimeFramesButton.setVisibility(View.VISIBLE);
+                } else {
+                    addTimeFramesButton.setVisibility(View.GONE);
+                }
                 timeFrameItemAdapter.updateList(timeFramesList);
             }
         });
@@ -120,6 +129,20 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
             Log.w(TAG, "Exception on Backpress", e);
         }
         return true;
+    }
+
+    @Override
+    public List<String> deleteTimeFrame(int position) {
+        List<String> timeFramesList = SeptaServiceFactory.getNotificationsService().removeNotificationTimeFrame(MyNotificationsActivity.this, position);
+
+        // only show add timeframe button if not at max
+        if (timeFramesList.size() < MAX_TIMEFRAMES) {
+            addTimeFramesButton.setVisibility(View.VISIBLE);
+        } else {
+            addTimeFramesButton.setVisibility(View.GONE);
+        }
+
+        return timeFramesList;
     }
 
     @Override
@@ -200,8 +223,16 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
         isInEditMode = false;
         getSupportFragmentManager().beginTransaction().replace(R.id.my_notifications_container, activeFragment).commit();
 
-        // initialize recyclerview of timeframes
         List<String> timeFramesList = SeptaServiceFactory.getNotificationsService().getNotificationTimeFrames(MyNotificationsActivity.this);
+
+        // only show add timeframe button if not at max
+        if (timeFramesList.size() < MAX_TIMEFRAMES) {
+            addTimeFramesButton.setVisibility(View.VISIBLE);
+        } else {
+            addTimeFramesButton.setVisibility(View.GONE);
+        }
+
+        // initialize recyclerview of timeframes
         timeFramesRecyclerView = findViewById(R.id.notification_timeframes_recyclerview);
         timeFramesRecyclerView.setLayoutManager(new LinearLayoutManager(MyNotificationsActivity.this));
         timeFrameItemAdapter = new TimeFrameItemAdapter(MyNotificationsActivity.this, timeFramesList);

@@ -132,7 +132,7 @@ public class PushNotificationManager {
         // unsubscribe from all topics
         List<RouteNotificationSubscription> routesToUnsubscribeFrom = SeptaServiceFactory.getNotificationsService().getRoutesSubscribedTo(context);
         for (RouteNotificationSubscription route : routesToUnsubscribeFrom) {
-            unsubscribeFromRoute(route.getRouteName(), route.getTransitType());
+            unsubscribeFromRoute(route.getRouteId(), route.getTransitType());
         }
 
         // topics subscribed to are still remembered because shared preferences untouched

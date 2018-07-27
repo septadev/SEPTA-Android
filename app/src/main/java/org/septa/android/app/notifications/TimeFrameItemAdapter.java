@@ -1,6 +1,8 @@
 package org.septa.android.app.notifications;
 
 import android.app.Activity;
+import android.app.TimePickerDialog;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -14,7 +16,9 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import org.septa.android.app.R;
+import org.septa.android.app.notifications.timepicker.NotificationTimePickerClockDialog;
 import org.septa.android.app.notifications.timepicker.NotificationTimePickerDialogListener;
+import org.septa.android.app.notifications.timepicker.NotificationTimePickerSpinnerDialog;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.support.CrashlyticsManager;
 import org.septa.android.app.support.GeneralUtils;
@@ -31,9 +35,6 @@ public class TimeFrameItemAdapter extends RecyclerView.Adapter<TimeFrameItemAdap
     private List<String> timeFrames;
 
     private static final DecimalFormat FORMATTER = new DecimalFormat("0000");
-
-    // TODO:
-    private static final int MAX_TIMEFRAMES = 4;
 
     TimeFrameItemAdapter(Activity activity, List<String> timeFrames) {
         this.activity = activity;
@@ -73,16 +74,16 @@ public class TimeFrameItemAdapter extends RecyclerView.Adapter<TimeFrameItemAdap
             @Override
             public void onClick(View v) {
                 // TODO:
-//                int hour = startTime / 100;
-//                int minute = startTime % 100;
-//
-//                TimePickerDialog timePickerDialog;
-//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) { // android:timePickerMode spinner and clock began in Lollipop
-//                    timePickerDialog = new NotificationTimePickerClockDialog(activity, TimeFrameItemAdapter.this, hour, minute, false, true, holder.getAdapterPosition());
-//                } else {
-//                    timePickerDialog = new NotificationTimePickerSpinnerDialog(activity, TimeFrameItemAdapter.this, hour, minute, false, true, holder.getAdapterPosition());
-//                }
-//                timePickerDialog.show();
+                int hour = startTime / 100;
+                int minute = startTime % 100;
+
+                TimePickerDialog timePickerDialog;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) { // android:timePickerMode spinner and clock began in Lollipop
+                    timePickerDialog = new NotificationTimePickerClockDialog(activity, TimeFrameItemAdapter.this, hour, minute, false, true, holder.getAdapterPosition());
+                } else {
+                    timePickerDialog = new NotificationTimePickerSpinnerDialog(activity, TimeFrameItemAdapter.this, hour, minute, false, true, holder.getAdapterPosition());
+                }
+                timePickerDialog.show();
             }
         });
 
@@ -90,28 +91,33 @@ public class TimeFrameItemAdapter extends RecyclerView.Adapter<TimeFrameItemAdap
         holder.endTimePicker.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO:
-//                int hour = endTime / 100;
-//                int minute = endTime % 100;
-//
-//                TimePickerDialog timePickerDialog;
-//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) { // android:timePickerMode spinner and clock began in Lollipop
-//                    timePickerDialog = new NotificationTimePickerClockDialog(activity, TimeFrameItemAdapter.this, hour, minute, false, false, holder.getAdapterPosition());
-//                } else {
-//                    timePickerDialog = new NotificationTimePickerSpinnerDialog(activity, TimeFrameItemAdapter.this, hour, minute, false, false, holder.getAdapterPosition());
-//                }
-//                timePickerDialog.show();
+                int hour = endTime / 100;
+                int minute = endTime % 100;
+
+                TimePickerDialog timePickerDialog;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) { // android:timePickerMode spinner and clock began in Lollipop
+                    timePickerDialog = new NotificationTimePickerClockDialog(activity, TimeFrameItemAdapter.this, hour, minute, false, false, holder.getAdapterPosition());
+                } else {
+                    timePickerDialog = new NotificationTimePickerSpinnerDialog(activity, TimeFrameItemAdapter.this, hour, minute, false, false, holder.getAdapterPosition());
+                }
+                timePickerDialog.show();
             }
         });
 
-        holder.deleteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // delete time frame
-                List<String> timeFramesList = SeptaServiceFactory.getNotificationsService().removeNotificationTimeFrame(activity, holder.getAdapterPosition());
-                updateList(timeFramesList);
-            }
-        });
+        // delete button if 1+ time frames
+        if (timeFrames.size() == 1) {
+            holder.deleteButton.setVisibility(View.GONE);
+        } else {
+            holder.deleteButton.setVisibility(View.VISIBLE);
+            holder.deleteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // delete time frame
+                    List<String> timeFramesList = mListener.deleteTimeFrame(holder.getAdapterPosition());
+                    updateList(timeFramesList);
+                }
+            });
+        }
     }
 
     @Override
@@ -178,7 +184,7 @@ public class TimeFrameItemAdapter extends RecyclerView.Adapter<TimeFrameItemAdap
     interface TimeFrameItemListener {
         // TODO: set start time
         // TODO: set end time
-        // TODO: delete time frame
+        List<String> deleteTimeFrame(int position);
     }
 
 }

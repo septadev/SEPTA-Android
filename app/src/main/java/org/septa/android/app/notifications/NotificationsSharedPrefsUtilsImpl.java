@@ -30,6 +30,8 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
     // parsing time frames
     public static final String START_END_TIME_DELIM = ",", DEFAULT_TIME_FRAME = "0900,1700";
 
+    public static final int MAX_TIMEFRAMES = 2;
+
     @Override
     public boolean areNotificationsEnabled(Context context) {
         return getSharedPreferences(context).getBoolean(NOTIFICATIONS_ENABlED, false);
@@ -125,12 +127,20 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
 
         Gson gson = new Gson();
         try {
-            return gson.fromJson(preferencesJson, new TypeToken<List<String>>() {
+            List<String> timeFramesList = gson.fromJson(preferencesJson, new TypeToken<List<String>>() {
             }.getType());
+
+            // drop extra time frames if there are too many
+            while (timeFramesList.size() > MAX_TIMEFRAMES) {
+                timeFramesList.remove(timeFramesList.size() - 1);
+            }
+            return timeFramesList;
         } catch (JsonSyntaxException e) {
             Log.e(TAG, e.toString());
             sharedPreferences.edit().remove(NOTIFICATIONS_TIME_FRAME).apply();
-            return new ArrayList<>();
+            List<String> defaultTimeFrame = new ArrayList<>();
+            defaultTimeFrame.add(DEFAULT_TIME_FRAME);
+            return defaultTimeFrame;
         }
     }
 
@@ -167,7 +177,7 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
             String currentTimeWindow = timeFramesList.get(windowNumber);
 
             if (isStartTime) {
-                currentTimeWindow = newTime + currentTimeWindow.substring(5);
+                currentTimeWindow = newTime + currentTimeWindow.substring(4);
             } else {
                 currentTimeWindow = currentTimeWindow.substring(0, 5) + newTime;
             }

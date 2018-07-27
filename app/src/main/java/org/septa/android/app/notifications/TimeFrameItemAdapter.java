@@ -60,7 +60,7 @@ public class TimeFrameItemAdapter extends RecyclerView.Adapter<TimeFrameItemAdap
         final String[] timeFrame = timeFrames.get(position).split(NotificationsSharedPrefsUtilsImpl.START_END_TIME_DELIM);
 
         // set timeframe number
-        holder.timeFrameNumber.setText(activity.getString(R.string.notification_timeframe_number, position));
+        holder.timeFrameNumber.setText(activity.getString(R.string.notification_timeframe_number, position + 1));
 
         final int startTime = Integer.parseInt(timeFrame[0]);
         final int endTime = Integer.parseInt(timeFrame[1]);
@@ -73,7 +73,6 @@ public class TimeFrameItemAdapter extends RecyclerView.Adapter<TimeFrameItemAdap
         holder.startTimePicker.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO:
                 int hour = startTime / 100;
                 int minute = startTime % 100;
 

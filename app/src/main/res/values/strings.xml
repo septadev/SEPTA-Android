@@ -337,6 +337,7 @@
     <string name="notifications_edit">Edit</string>
     <string name="notifications_done">Done</string>
 
+    <string name="no_notifications_to_edit">You have no notification subscriptions to edit!</string>
     <string name="delete_notif_title">Delete Notification?</string>
     <string name="delete_notif_text">Are you sure you want to remove the %1$s from your notifications subscriptions?</string>
     <string name="delete_notif_pos_button">Delete</string>

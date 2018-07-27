@@ -23,6 +23,7 @@ import org.septa.android.app.notifications.timepicker.NotificationTimePickerCloc
 import org.septa.android.app.notifications.timepicker.NotificationTimePickerDialogListener;
 import org.septa.android.app.notifications.timepicker.NotificationTimePickerSpinnerDialog;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
+import org.septa.android.app.services.apiinterfaces.model.RouteNotificationSubscription;
 import org.septa.android.app.support.GeneralUtils;
 import org.septa.android.app.view.TextView;
 
@@ -127,10 +128,14 @@ public class MyNotificationsActivity extends BaseActivity implements Notificatio
             public void onClick(View v) {
                 if (isInEditMode) {
                     closeEditMode();
-                    editButton.setText(R.string.notifications_edit);
                 } else {
-                    openEditMode();
-                    editButton.setText(R.string.notifications_done);
+                    List<RouteNotificationSubscription> routesList = SeptaServiceFactory.getNotificationsService().getRoutesSubscribedTo(MyNotificationsActivity.this);
+                    if (routesList.isEmpty()) {
+                        // user must have some notifications in order to switch to edit mode
+                        Toast.makeText(MyNotificationsActivity.this, R.string.no_notifications_to_edit, Toast.LENGTH_SHORT).show();
+                    } else {
+                        openEditMode();
+                    }
                 }
             }
         });
@@ -212,6 +217,7 @@ public class MyNotificationsActivity extends BaseActivity implements Notificatio
         activeFragment = new ViewNotificationsFragment();
         isInEditMode = false;
         getSupportFragmentManager().beginTransaction().replace(R.id.my_notifications_container, activeFragment).commit();
+        editButton.setText(R.string.notifications_edit);
     }
 
     public void openEditMode() {
@@ -219,6 +225,7 @@ public class MyNotificationsActivity extends BaseActivity implements Notificatio
         activeFragment = new EditNotificationsFragment();
         isInEditMode = true;
         getSupportFragmentManager().beginTransaction().replace(R.id.my_notifications_container, activeFragment).commit();
+        editButton.setText(R.string.notifications_done);
     }
 
     private void initializeActivity(@Nullable Bundle savedInstanceState) {

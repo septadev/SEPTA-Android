@@ -1,17 +1,16 @@
 package org.septa.android.app.notifications;
 
 import android.app.AlertDialog;
-import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import org.septa.android.app.BaseActivity;
@@ -19,28 +18,25 @@ import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
 import org.septa.android.app.notifications.edit.EditNotificationsFragment;
-import org.septa.android.app.notifications.timepicker.NotificationTimePickerClockDialog;
-import org.septa.android.app.notifications.timepicker.NotificationTimePickerDialogListener;
-import org.septa.android.app.notifications.timepicker.NotificationTimePickerSpinnerDialog;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.RouteNotificationSubscription;
-import org.septa.android.app.support.GeneralUtils;
 import org.septa.android.app.view.TextView;
 
 import java.util.Calendar;
 import java.util.List;
 
-public class MyNotificationsActivity extends BaseActivity implements NotificationTimePickerDialogListener, EditNotificationsFragment.EditNotificationsFragmentListener, NotificationItemAdapter.NotificationItemListener {
+public class MyNotificationsActivity extends BaseActivity implements EditNotificationsFragment.EditNotificationsFragmentListener, NotificationItemAdapter.NotificationItemListener, TimeFrameItemAdapter.TimeFrameItemListener {
 
     private static final String TAG = MyNotificationsActivity.class.getSimpleName();
 
     private boolean[] daysOfWeekEnabled = new boolean[]{false, false, false, false, false, false, false};
-    private int startTime, endTime;
     boolean isInEditMode;
 
     // layout variables
-    private TextView startTimePicker, endTimePicker, addButton, editButton;
+    private TextView addTimeFramesButton, addNotifsButton, editButton;
     private SparseArray<ImageView> daysOfWeekButtons;
+    private RecyclerView timeFramesRecyclerView;
+    private TimeFrameItemAdapter timeFrameItemAdapter;
     private android.support.v4.app.Fragment activeFragment;
 
     @Override
@@ -80,42 +76,17 @@ public class MyNotificationsActivity extends BaseActivity implements Notificatio
             });
         }
 
-        // start time picker
-        startTimePicker.setOnClickListener(new View.OnClickListener() {
+        // add time frames
+        addTimeFramesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int hour = startTime / 100;
-                int minute = startTime % 100;
-
-                TimePickerDialog timePickerDialog;
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) { // android:timePickerMode spinner and clock began in Lollipop
-                    timePickerDialog = new NotificationTimePickerClockDialog(MyNotificationsActivity.this, MyNotificationsActivity.this, hour, minute, false, true);
-                } else {
-                    timePickerDialog = new NotificationTimePickerSpinnerDialog(MyNotificationsActivity.this, MyNotificationsActivity.this, hour, minute, false, true);
-                }
-                timePickerDialog.show();
-            }
-        });
-
-        // end time picker
-        endTimePicker.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int hour = endTime / 100;
-                int minute = endTime % 100;
-
-                TimePickerDialog timePickerDialog;
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) { // android:timePickerMode spinner and clock began in Lollipop
-                    timePickerDialog = new NotificationTimePickerClockDialog(MyNotificationsActivity.this, MyNotificationsActivity.this, hour, minute, false, false);
-                } else {
-                    timePickerDialog = new NotificationTimePickerSpinnerDialog(MyNotificationsActivity.this, MyNotificationsActivity.this, hour, minute, false, false);
-                }
-                timePickerDialog.show();
+                List<String> timeFramesList = SeptaServiceFactory.getNotificationsService().addNotificationTimeFrame(MyNotificationsActivity.this);
+                timeFrameItemAdapter.updateList(timeFramesList);
             }
         });
 
         // add button links to system status picker
-        addButton.setOnClickListener(new View.OnClickListener() {
+        addNotifsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 goToSystemStatusPicker();
@@ -149,38 +120,6 @@ public class MyNotificationsActivity extends BaseActivity implements Notificatio
             Log.w(TAG, "Exception on Backpress", e);
         }
         return true;
-    }
-
-    @Override
-    public void onStartTimeSet(TimePicker view, int hourOfDay, int minute) {
-        int newStartTime = hourOfDay * 100 + minute;
-
-        // start time must be before end time
-        if (newStartTime < endTime) {
-            startTime = newStartTime;
-            startTimePicker.setText(GeneralUtils.getTimeFromInt(hourOfDay, minute));
-
-            // save start time
-            SeptaServiceFactory.getNotificationsService().setNotificationsStartTime(this, startTime);
-        } else {
-            Toast.makeText(this, R.string.notifications_start_time_requirement, Toast.LENGTH_LONG).show();
-        }
-    }
-
-    @Override
-    public void onEndTimeSet(TimePicker view, int hourOfDay, int minute) {
-        int newEndTime = hourOfDay * 100 + minute;
-
-        // end time must be after start time
-        if (newEndTime > startTime) {
-            endTime = newEndTime;
-            endTimePicker.setText(GeneralUtils.getTimeFromInt(hourOfDay, minute));
-
-            // save end time
-            SeptaServiceFactory.getNotificationsService().setNotificationsEndTime(this, endTime);
-        } else {
-            Toast.makeText(this, R.string.notifications_end_time_requirement, Toast.LENGTH_LONG).show();
-        }
     }
 
     @Override
@@ -233,15 +172,11 @@ public class MyNotificationsActivity extends BaseActivity implements Notificatio
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
-
-        startTime = SeptaServiceFactory.getNotificationsService().getNotificationStartTime(this);
-        endTime = SeptaServiceFactory.getNotificationsService().getNotificationEndTime(this);
     }
 
     private void initializeView() {
-        startTimePicker = findViewById(R.id.notification_schedule_start_picker);
-        endTimePicker = findViewById(R.id.notification_schedule_end_picker);
-        addButton = findViewById(R.id.add_notifications);
+        addTimeFramesButton = findViewById(R.id.add_timeframe_button);
+        addNotifsButton = findViewById(R.id.add_notifications);
         editButton = findViewById(R.id.edit_notifications);
 
         daysOfWeekButtons = new SparseArray<>();
@@ -260,14 +195,18 @@ public class MyNotificationsActivity extends BaseActivity implements Notificatio
             daysOfWeekButtons.get(dayofWeek).setImageResource(getDayOfWeekImageResId(dayofWeek, true));
         }
 
-        // set initial start and end time
-        startTimePicker.setText(GeneralUtils.getTimeFromInt(startTime));
-        endTimePicker.setText(GeneralUtils.getTimeFromInt(endTime));
-
         // default to viewing fragment
         activeFragment = new ViewNotificationsFragment();
         isInEditMode = false;
         getSupportFragmentManager().beginTransaction().replace(R.id.my_notifications_container, activeFragment).commit();
+
+        // initialize recyclerview of timeframes
+        List<String> timeFramesList = SeptaServiceFactory.getNotificationsService().getNotificationTimeFrames(MyNotificationsActivity.this);
+        timeFramesRecyclerView = findViewById(R.id.notification_timeframes_recyclerview);
+        timeFramesRecyclerView.setLayoutManager(new LinearLayoutManager(MyNotificationsActivity.this));
+        timeFrameItemAdapter = new TimeFrameItemAdapter(MyNotificationsActivity.this, timeFramesList);
+        timeFramesRecyclerView.setAdapter(timeFrameItemAdapter);
+        timeFrameItemAdapter.updateList(timeFramesList);
     }
 
     private void goToSystemStatusPicker() {

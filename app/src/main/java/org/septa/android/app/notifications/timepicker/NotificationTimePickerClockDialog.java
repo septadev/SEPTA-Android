@@ -25,16 +25,18 @@ public class NotificationTimePickerClockDialog extends TimePickerDialog {
     private TimePicker mTimePicker;
     private final NotificationTimePickerDialogListener mListener;
     private boolean isStartTime;
+    private int position;
 
     private static final DecimalFormat FORMATTER = new DecimalFormat("00");
 
     private boolean mIgnoreEvent = false;
 
-    public NotificationTimePickerClockDialog(Context context, NotificationTimePickerDialogListener listener, int hourOfDay, int minute, boolean is24HourView, boolean isStartTime) {
+    public NotificationTimePickerClockDialog(Context context, NotificationTimePickerDialogListener listener, int hourOfDay, int minute, boolean is24HourView, boolean isStartTime, int position) {
         super(context, TimePickerDialog.THEME_HOLO_LIGHT, null, hourOfDay, minute, is24HourView);
         this.context = context;
         this.mListener = listener;
         this.isStartTime = isStartTime;
+        this.position = position;
     }
 
     @Override
@@ -65,9 +67,9 @@ public class NotificationTimePickerClockDialog extends TimePickerDialog {
             case BUTTON_POSITIVE:
                 if (mListener != null) {
                     if (isStartTime) {
-                        mListener.onStartTimeSet(mTimePicker, mTimePicker.getCurrentHour(), mTimePicker.getCurrentMinute());
+                        mListener.onStartTimeSet(mTimePicker, mTimePicker.getCurrentHour(), mTimePicker.getCurrentMinute(), position);
                     } else {
-                        mListener.onEndTimeSet(mTimePicker, mTimePicker.getCurrentHour(), mTimePicker.getCurrentMinute());
+                        mListener.onEndTimeSet(mTimePicker, mTimePicker.getCurrentHour(), mTimePicker.getCurrentMinute(), position);
                     }
                 }
                 break;

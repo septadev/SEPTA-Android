@@ -54,16 +54,27 @@ public class PushNotificationManager {
 
     public static boolean isWithinNotificationWindow(Context context) {
         List<Integer> daysEnabled = SeptaServiceFactory.getNotificationsService().getNotificationsSchedule(context);
-        int startTime = SeptaServiceFactory.getNotificationsService().getNotificationStartTime(context);
-        int endTime = SeptaServiceFactory.getNotificationsService().getNotificationEndTime(context);
 
+        // check day of week
         Calendar calendar = Calendar.getInstance();
         int day = calendar.get(Calendar.DAY_OF_WEEK);
-
         if (daysEnabled.contains(day)) {
-            // get current time in 24H format
-            int currentTime = Integer.parseInt(timeFormat.format(calendar.getTime()));
-            return currentTime >= startTime && currentTime <= endTime;
+
+            // parse multiple timeframes
+            List<String> timeFrames = SeptaServiceFactory.getNotificationsService().getNotificationTimeFrames(context);
+
+            // check against time frames
+            for (String window : timeFrames) {
+                String[] startEndTimes = window.split(NotificationsSharedPrefsUtilsImpl.START_END_TIME_DELIM);
+                int startTime = Integer.parseInt(startEndTimes[0]);
+                int endTime = Integer.parseInt(startEndTimes[1]);
+
+                // get current time in 24H format
+                int currentTime = Integer.parseInt(timeFormat.format(calendar.getTime()));
+                if (currentTime >= startTime && currentTime <= endTime) {
+                    return true;
+                }
+            }
         }
 
         return false;

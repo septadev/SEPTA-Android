@@ -22,13 +22,15 @@ public class NotificationTimePickerSpinnerDialog extends TimePickerDialog {
     private TimePicker mTimePicker;
     private final NotificationTimePickerDialogListener mListener;
     private boolean isStartTime;
+    private int position;
 
     private static final DecimalFormat FORMATTER = new DecimalFormat("00");
 
-    public NotificationTimePickerSpinnerDialog(Context context, NotificationTimePickerDialogListener listener, int hourOfDay, int minute, boolean is24HourView, boolean isStartTime) {
+    public NotificationTimePickerSpinnerDialog(Context context, NotificationTimePickerDialogListener listener, int hourOfDay, int minute, boolean is24HourView, boolean isStartTime, int position) {
         super(context, TimePickerDialog.THEME_HOLO_LIGHT, null, hourOfDay, minute / TIME_PICKER_INTERVAL, is24HourView);
         this.mListener = listener;
         this.isStartTime = isStartTime;
+        this.position = position;
     }
 
     @Override
@@ -43,9 +45,9 @@ public class NotificationTimePickerSpinnerDialog extends TimePickerDialog {
             case BUTTON_POSITIVE:
                 if (mListener != null) {
                     if (isStartTime) {
-                        mListener.onStartTimeSet(mTimePicker, mTimePicker.getCurrentHour(), mTimePicker.getCurrentMinute() * TIME_PICKER_INTERVAL);
+                        mListener.onStartTimeSet(mTimePicker, mTimePicker.getCurrentHour(), mTimePicker.getCurrentMinute() * TIME_PICKER_INTERVAL, position);
                     } else {
-                        mListener.onEndTimeSet(mTimePicker, mTimePicker.getCurrentHour(), mTimePicker.getCurrentMinute() * TIME_PICKER_INTERVAL);
+                        mListener.onEndTimeSet(mTimePicker, mTimePicker.getCurrentHour(), mTimePicker.getCurrentMinute() * TIME_PICKER_INTERVAL, position);
                     }
                 }
                 break;

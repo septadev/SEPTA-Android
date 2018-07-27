@@ -22,13 +22,15 @@ public interface NotificationsSharedPrefsUtils {
 
     void removeDayOfWeekFromSchedule(Context context, int dayToRemove);
 
-    Integer getNotificationStartTime(Context context);
+    List<String> getNotificationTimeFrames(Context context);
 
-    void setNotificationsStartTime(Context context, Integer startTime);
+    String getNotificationTimeFrame(Context context, int windowNumber, boolean isStartTime);
 
-    Integer getNotificationEndTime(Context context);
+    void changeNotificationTimeFrame(Context context, int windowNumber, boolean isStartTime, String time);
 
-    void setNotificationsEndTime(Context context, Integer endTime);
+    List<String> addNotificationTimeFrame(Context context);
+
+    List<String> removeNotificationTimeFrame(Context context, int windowToDelete);
 
     List<RouteNotificationSubscription> getRoutesSubscribedTo(Context context);
 

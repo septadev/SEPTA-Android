@@ -25,8 +25,10 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
     private static final String SPECIAL_ANNOUNCEMENTS = "SPECIAL_ANNOUNCEMENTS";
     private static final String ROUTE_NOTIFICATION_SUBSCRIPTION = "ROUTE_NOTIFICATION_SUBSCRIPTION";
     private static final String NOTIFICATIONS_SCHEDULE_DAYS_OF_WEEK = "NOTIFICATIONS_SCHEDULE_DAYS_OF_WEEK";
-    private static final String NOTIFICATIONS_START_TIME = "NOTIFICATIONS_START_TIME";
-    private static final String NOTIFICATIONS_END_TIME = "NOTIFICATIONS_END_TIME";
+    private static final String NOTIFICATIONS_TIME_FRAME = "NOTIFICATIONS_TIME_FRAME";
+
+    // parsing time frames
+    public static final String START_END_TIME_DELIM = ",", DEFAULT_TIME_FRAME = "0900,1700";
 
     @Override
     public boolean areNotificationsEnabled(Context context) {
@@ -111,23 +113,94 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
     }
 
     @Override
-    public Integer getNotificationStartTime(Context context) {
-        return getSharedPreferences(context).getInt(NOTIFICATIONS_START_TIME, 900);
+    public List<String> getNotificationTimeFrames(Context context) {
+        SharedPreferences sharedPreferences = getSharedPreferences(context);
+        String preferencesJson = sharedPreferences.getString(NOTIFICATIONS_TIME_FRAME, null);
+
+        if (preferencesJson == null) {
+            List<String> defaultTimeFrame = new ArrayList<>();
+            defaultTimeFrame.add(DEFAULT_TIME_FRAME);
+            return defaultTimeFrame;
+        }
+
+        Gson gson = new Gson();
+        try {
+            return gson.fromJson(preferencesJson, new TypeToken<List<String>>() {
+            }.getType());
+        } catch (JsonSyntaxException e) {
+            Log.e(TAG, e.toString());
+            sharedPreferences.edit().remove(NOTIFICATIONS_TIME_FRAME).apply();
+            return new ArrayList<>();
+        }
+    }
+
+    private void storeNotificationTimeFrames(SharedPreferences sharedPreferences, List<String> timeFrames) {
+        Gson gson = new Gson();
+        String timeFramesListJson = gson.toJson(timeFrames);
+        sharedPreferences.edit().putString(NOTIFICATIONS_TIME_FRAME, timeFramesListJson).apply();
     }
 
     @Override
-    public void setNotificationsStartTime(Context context, Integer startTime) {
-        getSharedPreferences(context).edit().putInt(NOTIFICATIONS_START_TIME, startTime).apply();
+    public String getNotificationTimeFrame(Context context, int windowNumber, boolean isStartTime) {
+        List<String> timeFramesList = getNotificationTimeFrames(context);
+        if (windowNumber >= 0 && windowNumber < timeFramesList.size()) {
+            String[] timeWindow = timeFramesList.get(windowNumber).split(START_END_TIME_DELIM);
+
+            if (isStartTime) {
+                return timeWindow[0];
+            } else {
+                return timeWindow[1];
+            }
+        } else {
+            Log.e(TAG, "Invalid attempt to get time frame #" + windowNumber + " but timeFrames size is only " + timeFramesList.size());
+        }
+        return null;
     }
 
     @Override
-    public Integer getNotificationEndTime(Context context) {
-        return getSharedPreferences(context).getInt(NOTIFICATIONS_END_TIME, 1700);
+    public void changeNotificationTimeFrame(Context context, int windowNumber, boolean isStartTime, String newTime) {
+        SharedPreferences sharedPreferences = getSharedPreferences(context);
+        List<String> timeFramesList = getNotificationTimeFrames(context);
+
+        // change notification for time frame
+        if (windowNumber >= 0 && windowNumber < timeFramesList.size()) {
+            String currentTimeWindow = timeFramesList.get(windowNumber);
+
+            if (isStartTime) {
+                currentTimeWindow = newTime + currentTimeWindow.substring(5);
+            } else {
+                currentTimeWindow = currentTimeWindow.substring(0, 5) + newTime;
+            }
+
+            timeFramesList.set(windowNumber, currentTimeWindow);
+        } else {
+            Log.e(TAG, "Invalid attempt to change notification time frame at " + windowNumber + " but timeFrames size is only " + timeFramesList.size());
+        }
+
+        storeNotificationTimeFrames(sharedPreferences, timeFramesList);
     }
 
     @Override
-    public void setNotificationsEndTime(Context context, Integer endTime) {
-        getSharedPreferences(context).edit().putInt(NOTIFICATIONS_END_TIME, endTime).apply();
+    public List<String> addNotificationTimeFrame(Context context) {
+        SharedPreferences sharedPreferences = getSharedPreferences(context);
+        List<String> timeFrames = getNotificationTimeFrames(context);
+        timeFrames.add(DEFAULT_TIME_FRAME);
+        storeNotificationTimeFrames(sharedPreferences, timeFrames);
+        return timeFrames;
+    }
+
+    @Override
+    public List<String> removeNotificationTimeFrame(Context context, int windowToDelete) {
+        SharedPreferences sharedPreferences = getSharedPreferences(context);
+        List<String> timeFrames = getNotificationTimeFrames(context);
+
+        if (windowToDelete >= 0 && windowToDelete < timeFrames.size()) {
+            timeFrames.remove(windowToDelete);
+            storeNotificationTimeFrames(sharedPreferences, timeFrames);
+        } else {
+            Log.e(TAG, "Could not remove notification timeframe #" + windowToDelete);
+        }
+        return timeFrames;
     }
 
     @Override

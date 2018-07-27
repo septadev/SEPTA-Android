@@ -30,13 +30,13 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_margin="19dp"
+            android:layout_margin="15dp"
             android:background="@color/manage_notifications_border" />
 
         <HorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="-10dp"
+            android:layout_marginBottom="-5dp"
             android:layout_marginTop="-10dp">
 
             <LinearLayout
@@ -99,77 +99,33 @@
 
         </HorizontalScrollView>
 
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/notification_timeframes_recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_margin="19dp"
+            android:layout_margin="15dp"
             android:background="@color/manage_notifications_border" />
 
-        <LinearLayout
-            android:id="@+id/notification_time_picker_container"
+        <org.septa.android.app.view.TextView
+            android:id="@+id/add_timeframe_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="40dp"
-            android:layout_marginRight="40dp"
-            android:orientation="horizontal"
-            android:weightSum="10">
-
-            <org.septa.android.app.view.TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:letterSpacing="0.01"
-                android:lineSpacingExtra="10sp"
-                android:text="Start:"
-                android:textAlignment="center"
-                android:textColor="@android:color/black"
-                android:textSize="14sp"
-                app:typeface="@string/font_roboto_regular" />
-
-            <org.septa.android.app.view.TextView
-                android:id="@+id/notification_schedule_start_picker"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="3"
-                android:padding="3dp"
-                android:text="12:00 am"
-                android:textAlignment="center"
-                android:textColor="@color/text_primary"
-                android:textSize="14sp"
-                app:typeface="@string/font_roboto_bold" />
-
-            <org.septa.android.app.view.TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:letterSpacing="0.01"
-                android:lineSpacingExtra="10sp"
-                android:text="Until:"
-                android:textAlignment="center"
-                android:textColor="@android:color/black"
-                android:textSize="14sp"
-                app:typeface="@string/font_roboto_regular" />
-
-            <org.septa.android.app.view.TextView
-                android:id="@+id/notification_schedule_end_picker"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="3"
-                android:padding="3dp"
-                android:text="12:30 pm"
-                android:textAlignment="center"
-                android:textColor="@color/text_primary"
-                android:textSize="14sp"
-                app:typeface="@string/font_roboto_bold" />
-
-        </LinearLayout>
+            android:text="@string/notification_add_timeframe"
+            android:textAlignment="center"
+            android:textColor="@color/text_primary"
+            android:textSize="15sp"
+            app:typeface="@string/font_roboto_regular" />
 
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="15dp"
         android:orientation="vertical">
 
         <LinearLayout

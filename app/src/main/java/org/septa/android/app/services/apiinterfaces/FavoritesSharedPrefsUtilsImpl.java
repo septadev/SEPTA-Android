@@ -240,28 +240,6 @@ public class FavoritesSharedPrefsUtilsImpl implements FavoritesSharedPrefsUtils 
     }
 
     @Override
-    public FavoriteState getFavoriteStateByKey(Context context, String key) {
-        List<FavoriteState> favoriteStates = getFavoriteStates(context);
-        for (FavoriteState favoriteState : favoriteStates) {
-            if (key.equals(favoriteState.getFavoriteKey())) {
-                return favoriteState;
-            }
-        }
-        Log.e(TAG, "FavoriteState with key " + key + " does not exist");
-        return null;
-    }
-
-    @Override
-    public FavoriteState getFavoriteStateByIndex(Context context, int index) {
-        List<FavoriteState> favoriteStates = getFavoriteStates(context);
-        if (favoriteStates.size() > index) {
-            return favoriteStates.get(index);
-        }
-        Log.e(TAG, "FavoriteState at index " + index + " does not exist");
-        return null;
-    }
-
-    @Override
     public void moveFavoriteStateToIndex(Context context, int fromPosition, int toPosition) {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
         List<FavoriteState> favoriteStateList = getFavoriteStates(context);

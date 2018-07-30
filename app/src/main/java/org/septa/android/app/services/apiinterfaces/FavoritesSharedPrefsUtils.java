@@ -34,12 +34,6 @@ public interface FavoritesSharedPrefsUtils {
 
     Favorite getFavoriteByKey(Context context, String key);
 
-    // TODO: remove if unused
-    FavoriteState getFavoriteStateByKey(Context context, String key);
-
-    // TODO: remove if unused
-    FavoriteState getFavoriteStateByIndex(Context context, int index);
-
     void moveFavoriteStateToIndex(Context context, int fromPosition, int toPosition);
 
     void resyncFavoritesMap(Context context);

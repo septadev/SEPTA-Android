@@ -343,7 +343,6 @@ public class TransitViewResultsActivity extends BaseActivity implements Runnable
                                 } catch (Exception e1) {
                                     Log.e(TAG, "Failed to move camera, defaulting map zoom to Philadelphia City Hall");
 
-                                    // TODO: where should I move map to on default?
                                     final LatLng cityHall = new LatLng(39.9517999, -75.1633285);
 
                                     googleMap.moveCamera(CameraUpdateFactory.zoomTo(13));

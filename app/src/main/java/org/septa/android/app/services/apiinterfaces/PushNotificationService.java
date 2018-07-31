@@ -11,7 +11,7 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 import org.septa.android.app.TransitType;
-import org.septa.android.app.notifications.AlertType;
+import org.septa.android.app.notifications.NotificationType;
 import org.septa.android.app.notifications.PushNotificationManager;
 
 import java.util.List;
@@ -21,7 +21,7 @@ public class PushNotificationService extends FirebaseMessagingService {
 
     private static final String TAG = PushNotificationService.class.getSimpleName();
 
-    private static final String NOTIFICATION_KEY_ALERT_TYPE = "alertType",
+    private static final String NOTIFICATION_KEY_TYPE = "notificationType",
             NOTIFICATION_KEY_ROUTE_ID = "routeId",
             NOTIFICATION_KEY_TRANSIT_TYPE = "transitType",
             NOTIFICATION_KEY_MESSAGE = "message";
@@ -53,27 +53,27 @@ public class PushNotificationService extends FirebaseMessagingService {
 
         Log.d(TAG, remoteMessage.toString());
 
-        if (remoteMessage.getData().size() > 0) {
-            Map<String, String> data = remoteMessage.getData();
+        // check notification subscription window
+        if (PushNotificationManager.isWithinNotificationWindow(getApplicationContext())) {
 
-            // get notification title / body
-            final AlertType alertType = AlertType.valueOf(data.get(NOTIFICATION_KEY_ALERT_TYPE));
-            final String message = data.get(NOTIFICATION_KEY_MESSAGE);
-            final String routeId = data.get(NOTIFICATION_KEY_ROUTE_ID);
+            if (remoteMessage.getData().size() > 0) {
+                Map<String, String> data = remoteMessage.getData();
 
-            TransitType transitType = null;
-            if (alertType == AlertType.DELAY) {
-                transitType = TransitType.RAIL;
-            } else if (alertType == AlertType.ALERT || alertType == AlertType.DETOUR) {
-                transitType = TransitType.valueOf(data.get(NOTIFICATION_KEY_TRANSIT_TYPE));
-            }
-            // TODO: handle the data message here
+                // get notification title / body
+                final NotificationType notificationType = NotificationType.valueOf(data.get(NOTIFICATION_KEY_TYPE));
+                final String message = data.get(NOTIFICATION_KEY_MESSAGE);
+                final String routeId = data.get(NOTIFICATION_KEY_ROUTE_ID);
 
-            // check notification subscription window
-            if (PushNotificationManager.isWithinNotificationWindow(getApplicationContext())) {
+                TransitType transitType = null;
+                if (notificationType == NotificationType.DELAY) {
+                    transitType = TransitType.RAIL;
+                } else if (notificationType == NotificationType.ALERT || notificationType == NotificationType.DETOUR) {
+                    transitType = TransitType.valueOf(data.get(NOTIFICATION_KEY_TRANSIT_TYPE));
+                }
+                // TODO: handle the data message here
 
                 // send notification
-                PushNotificationManager.getInstance(getApplicationContext()).displayNotification(getApplicationContext(), alertType, transitType, message, routeId);
+                PushNotificationManager.getInstance(getApplicationContext()).displayNotification(getApplicationContext(), notificationType, transitType, message, routeId);
             }
         }
     }

@@ -82,7 +82,7 @@ public class PushNotificationManager {
         return false;
     }
 
-    public void displayNotification(Context context, AlertType alertType, TransitType transitType, String message, String routeId) {
+    public void displayNotification(Context context, NotificationType notificationType, TransitType transitType, String message, String routeId) {
         /*
          *  Clicking on the notification will take us to this intent
          *  Right now we are using the MainActivity as this is the only activity we have in our application
@@ -92,10 +92,10 @@ public class PushNotificationManager {
         Intent resultIntent = new Intent(context, MainActivity.class);
         int requestCode = 0;
 
-        // TODO: set click action based on alertType
+        // TODO: set click action based on notificationType
         // TODO: fix request code
         String title = null;
-        switch (alertType) {
+        switch (notificationType) {
             case SPECIAL_ANNOUNCEMENT:
                 title = context.getString(R.string.push_notif_special_announcement_title);
                 break;
@@ -140,7 +140,7 @@ public class PushNotificationManager {
                 .setContentText(message);
 
         // tapping special announcements doesn't open app
-        if (alertType != AlertType.SPECIAL_ANNOUNCEMENT) {
+        if (notificationType != NotificationType.SPECIAL_ANNOUNCEMENT) {
             /*
              *  Now we will create a pending intent
              *  The method getActivity is taking 4 parameters

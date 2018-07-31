@@ -97,8 +97,10 @@ public class PushNotificationManager {
          * */
 
         Intent resultIntent = new Intent(context, MainActivity.class);
+        int requestCode = 0;
 
         // TODO: set click action based on alertType
+        // TODO: fix request code
         String title = null;
         switch (alertType) {
             case SPECIAL_ANNOUNCEMENT:
@@ -119,6 +121,7 @@ public class PushNotificationManager {
                 resultIntent.putExtra(Constants.ROUTE_ID, routeId);
                 resultIntent.putExtra(Constants.TRANSIT_TYPE, transitType);
                 resultIntent.putExtra(Constants.SERVICE_ALERT_EXPANDED, Boolean.TRUE);
+                requestCode = Constants.SYSTEM_STATUS_REQUEST;
                 break;
 
             case DELAY:
@@ -134,43 +137,45 @@ public class PushNotificationManager {
                 resultIntent.putExtra(Constants.ROUTE_ID, routeId);
                 resultIntent.putExtra(Constants.TRANSIT_TYPE, transitType);
                 resultIntent.putExtra(Constants.ACTIVE_DETOUR_EXPANDED, Boolean.TRUE);
+                requestCode = Constants.SYSTEM_STATUS_REQUEST;
                 break;
         }
 
-        NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(context, CHANNEL_ID)
-                        .setSmallIcon(R.drawable.ic_launcher)
-                        .setContentTitle(title)
-                        .setContentText(message);
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_launcher)
+                .setContentTitle(title)
+                .setContentText(message);
 
-        /*
-         *  Now we will create a pending intent
-         *  The method getActivity is taking 4 parameters
-         *  All paramters are describing themselves
-         *  0 is the request code (the second parameter)
-         *  We can detect this code in the activity that will open by this we can get
-         *  Which notification opened the activity
-         * */
+        // tapping special announcements doesn't open app
+        if (alertType != AlertType.SPECIAL_ANNOUNCEMENT) {
+            /*
+             *  Now we will create a pending intent
+             *  The method getActivity is taking 4 parameters
+             *  All paramters are describing themselves
+             *  0 is the request code (the second parameter)
+             *  We can detect this code in the activity that will open by this we can get
+             *  Which notification opened the activity
+             * */
 
-        // TODO: build back stack
-        // Construct the PendingIntent for your Notification
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-        // This uses android:parentActivityName and
-        // android.support.PARENT_ACTIVITY meta-data by default
-        stackBuilder.addNextIntentWithParentStack(resultIntent);
+            // build back stack
+            TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+            // This uses android:parentActivityName and
+            // android.support.PARENT_ACTIVITY meta-data by default
+            stackBuilder.addNextIntentWithParentStack(resultIntent);
 
-        PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-//        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent pendingIntent = stackBuilder.getPendingIntent(requestCode, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        /*
-         *  Setting the pending intent to notification builder
-         */
-        mBuilder.setContentIntent(pendingIntent);
+            /*
+             *  Setting the pending intent to notification builder
+             */
+            mBuilder.setContentIntent(pendingIntent);
+        }
+
+        // dismiss notification on click
+        mBuilder.setAutoCancel(true);
 
         // add sound / vibrate based on current user settings
         mBuilder.setDefaults(Notification.DEFAULT_ALL);
-
-        NotificationManager mNotifyMgr = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
 
         // use timestamp to create unique notif ID
         int notifId = (int) System.currentTimeMillis();
@@ -180,6 +185,7 @@ public class PushNotificationManager {
          * better don't give a literal here (right now we are giving a int literal)
          * because using this id we can modify it later
          * */
+        NotificationManager mNotifyMgr = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
         if (mNotifyMgr != null) {
             mNotifyMgr.notify(notifId, mBuilder.build());
         }

@@ -1,5 +1,7 @@
 package org.septa.android.app.transitview;
 
+import android.support.annotation.NonNull;
+
 import com.google.android.gms.maps.model.LatLng;
 
 import org.septa.android.app.services.apiinterfaces.model.TransitViewModelResponse;
@@ -12,7 +14,7 @@ public class TransitViewModelResponseParser {
 
     private Map<String, Map<TransitViewModelResponse.TransitViewRecord, LatLng>> results;
 
-    public TransitViewModelResponseParser(TransitViewModelResponse response) {
+    TransitViewModelResponseParser(@NonNull TransitViewModelResponse response) {
         results = new HashMap<>();
 
         Map<String, List<TransitViewModelResponse.TransitViewRecord>> routesMap = response.getResults().get(0);

@@ -799,19 +799,23 @@ public class TransitViewResultsActivity extends BaseActivity implements Runnable
         boolean isTrolley = isTrolley(TransitViewResultsActivity.this, routeId);
         boolean isActiveRoute = activeRouteId.equalsIgnoreCase(routeId);
 
-        for (Map.Entry<TransitViewModelResponse.TransitViewRecord, LatLng> entry : parser.getResultsForRoute(routeId).entrySet()) {
+        Map<TransitViewModelResponse.TransitViewRecord, LatLng> results = parser.getResultsForRoute(routeId);
 
-            // add to map of vehicle marker details
-            String vehicleMarkerKey = new StringBuilder(routeId).append(VEHICLE_MARKER_KEY_DELIM).append(entry.getKey().getVehicleId()).toString();
-            vehicleDetailsMap.put(vehicleMarkerKey, entry.getKey());
+        if (results != null) {
+            for (Map.Entry<TransitViewModelResponse.TransitViewRecord, LatLng> entry : results.entrySet()) {
 
-            // create directional icon with bus or trolley
-            BitmapDescriptor vehicleBitMap = TransitViewUtils.getDirectionalIconForTransitType(this, isTrolley, isActiveRoute, entry.getKey().getHeading());
-            googleMap.addMarker(new MarkerOptions()
-                    .position(entry.getValue())
-                    .title(vehicleMarkerKey)
-                    .anchor((float) 0.5, (float) 0.5)
-                    .icon(vehicleBitMap));
+                // add to map of vehicle marker details
+                String vehicleMarkerKey = new StringBuilder(routeId).append(VEHICLE_MARKER_KEY_DELIM).append(entry.getKey().getVehicleId()).toString();
+                vehicleDetailsMap.put(vehicleMarkerKey, entry.getKey());
+
+                // create directional icon with bus or trolley
+                BitmapDescriptor vehicleBitMap = TransitViewUtils.getDirectionalIconForTransitType(this, isTrolley, isActiveRoute, entry.getKey().getHeading());
+                googleMap.addMarker(new MarkerOptions()
+                        .position(entry.getValue())
+                        .title(vehicleMarkerKey)
+                        .anchor((float) 0.5, (float) 0.5)
+                        .icon(vehicleBitMap));
+            }
         }
     }
 

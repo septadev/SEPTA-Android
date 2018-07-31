@@ -22,7 +22,7 @@ public class PushNotificationService extends FirebaseMessagingService {
     private static final String TAG = PushNotificationService.class.getSimpleName();
 
     private static final String NOTIFICATION_KEY_ALERT_TYPE = "alertType",
-            NOTIFICATION_KEY_ROUTE_ALERT_ID = "routeId",
+            NOTIFICATION_KEY_ROUTE_ID = "routeId",
             NOTIFICATION_KEY_TRANSIT_TYPE = "transitType",
             NOTIFICATION_KEY_MESSAGE = "message";
 
@@ -59,7 +59,7 @@ public class PushNotificationService extends FirebaseMessagingService {
             // get notification title / body
             final AlertType alertType = AlertType.valueOf(data.get(NOTIFICATION_KEY_ALERT_TYPE));
             final String message = data.get(NOTIFICATION_KEY_MESSAGE);
-            final String routeAlertId = data.get(NOTIFICATION_KEY_ROUTE_ALERT_ID);
+            final String routeId = data.get(NOTIFICATION_KEY_ROUTE_ID);
 
             TransitType transitType = null;
             if (alertType == AlertType.DELAY) {
@@ -73,7 +73,7 @@ public class PushNotificationService extends FirebaseMessagingService {
             if (PushNotificationManager.isWithinNotificationWindow(getApplicationContext())) {
 
                 // send notification
-                PushNotificationManager.getInstance(getApplicationContext()).displayNotification(getApplicationContext(), alertType, transitType, message, routeAlertId);
+                PushNotificationManager.getInstance(getApplicationContext()).displayNotification(getApplicationContext(), alertType, transitType, message, routeId);
             }
         }
     }

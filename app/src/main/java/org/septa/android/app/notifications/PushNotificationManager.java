@@ -82,14 +82,7 @@ public class PushNotificationManager {
         return false;
     }
 
-    public void displayNotification(Context context, AlertType alertType, TransitType transitType, String message, String routeAlertId) {
-        String routeId = "";
-
-        if (alertType != AlertType.SPECIAL_ANNOUNCEMENT) {
-            // parse out plaintext route ID
-            routeId = transitType.getLineIdFromAlertId(routeAlertId).toUpperCase();
-        }
-
+    public void displayNotification(Context context, AlertType alertType, TransitType transitType, String message, String routeId) {
         /*
          *  Clicking on the notification will take us to this intent
          *  Right now we are using the MainActivity as this is the only activity we have in our application
@@ -235,7 +228,6 @@ public class PushNotificationManager {
 
     private void subscribeToRoute(String routeId, TransitType transitType) {
         routeId = routeId.toUpperCase();
-        routeId = transitType.getAlertId(routeId);
         Log.d(TAG, "Subscribing to alerts for route: " + routeId);
 
         if (transitType == TransitType.RAIL) {
@@ -256,7 +248,6 @@ public class PushNotificationManager {
 
     private void unsubscribeFromRoute(String routeId, TransitType transitType) {
         routeId = routeId.toUpperCase();
-        routeId = transitType.getAlertId(routeId);
         Log.d(TAG, "Unsubscribing from alerts for route: " + routeId);
 
         if (transitType == TransitType.RAIL) {

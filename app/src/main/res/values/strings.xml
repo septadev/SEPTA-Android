@@ -347,6 +347,11 @@
     <string name="view_notification_preferences">View Notification Preferences »</string>
     <string name="subscribe_switch">Subscribe</string>
 
+    <string name="push_notif_special_announcement_title">Special Announcement</string>
+    <string name="push_notif_alert_title">Service Alert for Route %1$s</string>
+    <string name="push_notif_detour_title">Detour on Route %1$s</string>
+    <string name="push_notif_rail_delay_title">Train Delay on %1$s</string>
+
 
     <!-- In-App Ratings-->
     <string name="rating_title">How are we doing?</string>

@@ -3,6 +3,7 @@ package org.septa.android.app.notifications;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
@@ -10,11 +11,13 @@ import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessaging;
 
+import org.septa.android.app.Constants;
 import org.septa.android.app.MainActivity;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.RouteNotificationSubscription;
+import org.septa.android.app.systemstatus.SystemStatusResultsActivity;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -32,7 +35,6 @@ public class PushNotificationManager {
 
     private static final String CHANNEL_ID = "SEPTA_PUSH_NOTIFICATIONS";
     private static final String TOPIC_PREFIX = "TOPIC_";
-    private static final String TOPIC_DELIM = "_";
 
     private static final String SPECIAL_ANNOUNCEMENTS = "SPECIAL_ANNOUNCEMENTS";
     private static final String SERVICE_ALERT_SUFFIX = "_ALERT";
@@ -80,13 +82,13 @@ public class PushNotificationManager {
         return false;
     }
 
-    public void displayNotification(String title, String body) {
+    public void displayNotification(Context context, AlertType alertType, TransitType transitType, String message, String routeAlertId) {
+        String routeId = "";
 
-        NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(context, CHANNEL_ID)
-                        .setSmallIcon(R.drawable.ic_launcher)
-                        .setContentTitle(title)
-                        .setContentText(body);
+        if (alertType != AlertType.SPECIAL_ANNOUNCEMENT) {
+            // parse out plaintext route ID
+            routeId = transitType.getLineIdFromAlertId(routeAlertId).toUpperCase();
+        }
 
         /*
          *  Clicking on the notification will take us to this intent
@@ -96,6 +98,51 @@ public class PushNotificationManager {
 
         Intent resultIntent = new Intent(context, MainActivity.class);
 
+        // TODO: set click action based on alertType
+        String title = null;
+        switch (alertType) {
+            case SPECIAL_ANNOUNCEMENT:
+                title = context.getString(R.string.push_notif_special_announcement_title);
+                break;
+
+            case ALERT:
+                title = context.getString(R.string.push_notif_alert_title, routeId);
+
+                String routeName = routeId;
+                if (transitType == TransitType.RAIL) {
+                    // TODO: look up line name for rail
+                }
+
+                // tapping on service alert will open system status page
+                resultIntent = new Intent(context, SystemStatusResultsActivity.class);
+                resultIntent.putExtra(Constants.ROUTE_NAME, routeName);
+                resultIntent.putExtra(Constants.ROUTE_ID, routeId);
+                resultIntent.putExtra(Constants.TRANSIT_TYPE, transitType);
+                resultIntent.putExtra(Constants.SERVICE_ALERT_EXPANDED, Boolean.TRUE);
+                break;
+
+            case DELAY:
+                title = context.getString(R.string.push_notif_rail_delay_title, routeId);
+                break;
+
+            case DETOUR:
+                title = context.getString(R.string.push_notif_detour_title, routeId);
+
+                // tapping on service alert will open system status page
+                resultIntent = new Intent(context, SystemStatusResultsActivity.class);
+                resultIntent.putExtra(Constants.ROUTE_NAME, routeId);
+                resultIntent.putExtra(Constants.ROUTE_ID, routeId);
+                resultIntent.putExtra(Constants.TRANSIT_TYPE, transitType);
+                resultIntent.putExtra(Constants.ACTIVE_DETOUR_EXPANDED, Boolean.TRUE);
+                break;
+        }
+
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(context, CHANNEL_ID)
+                        .setSmallIcon(R.drawable.ic_launcher)
+                        .setContentTitle(title)
+                        .setContentText(message);
+
         /*
          *  Now we will create a pending intent
          *  The method getActivity is taking 4 parameters
@@ -104,7 +151,16 @@ public class PushNotificationManager {
          *  We can detect this code in the activity that will open by this we can get
          *  Which notification opened the activity
          * */
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        // TODO: build back stack
+        // Construct the PendingIntent for your Notification
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+        // This uses android:parentActivityName and
+        // android.support.PARENT_ACTIVITY meta-data by default
+        stackBuilder.addNextIntentWithParentStack(resultIntent);
+
+        PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+//        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         /*
          *  Setting the pending intent to notification builder
@@ -116,13 +172,16 @@ public class PushNotificationManager {
 
         NotificationManager mNotifyMgr = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
 
+        // use timestamp to create unique notif ID
+        int notifId = (int) System.currentTimeMillis();
+
         /*
          * The first parameter is the notification id
          * better don't give a literal here (right now we are giving a int literal)
          * because using this id we can modify it later
          * */
         if (mNotifyMgr != null) {
-            mNotifyMgr.notify(1, mBuilder.build());
+            mNotifyMgr.notify(notifId, mBuilder.build());
         }
     }
 
@@ -170,6 +229,7 @@ public class PushNotificationManager {
 
     private void subscribeToRoute(String routeId, TransitType transitType) {
         routeId = routeId.toUpperCase();
+        routeId = transitType.getAlertId(routeId);
         Log.d(TAG, "Subscribing to alerts for route: " + routeId);
 
         if (transitType == TransitType.RAIL) {
@@ -190,6 +250,7 @@ public class PushNotificationManager {
 
     private void unsubscribeFromRoute(String routeId, TransitType transitType) {
         routeId = routeId.toUpperCase();
+        routeId = transitType.getAlertId(routeId);
         Log.d(TAG, "Unsubscribing from alerts for route: " + routeId);
 
         if (transitType == TransitType.RAIL) {

@@ -102,7 +102,6 @@ public enum TransitType implements Serializable {
         return context.getString(resId);
     }
 
-
     public String getAlertId(String id) {
         return alertIdGenerator.getAlertId(id);
     }
@@ -221,8 +220,8 @@ public enum TransitType implements Serializable {
 
     protected static class RailAlertIdGenerator implements AlertIdGenerator {
 
-        Map<String, String> idMap = new HashMap<String, String>();
-        Map<String, String> revIdMap = new HashMap<String, String>();
+        Map<String, String> idMap = new HashMap<>();
+        Map<String, String> revIdMap = new HashMap<>();
 
         protected RailAlertIdGenerator() {
             idMap.put("air", PREFIX_RR_ROUTE + "_apt");

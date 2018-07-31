@@ -10,6 +10,8 @@ import com.google.firebase.iid.InstanceIdResult;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import org.septa.android.app.TransitType;
+import org.septa.android.app.notifications.AlertType;
 import org.septa.android.app.notifications.PushNotificationManager;
 
 import java.util.List;
@@ -19,7 +21,10 @@ public class PushNotificationService extends FirebaseMessagingService {
 
     private static final String TAG = PushNotificationService.class.getSimpleName();
 
-    private static final String NOTIFICATION_KEY_TITLE = "TITLE", NOTIFICATION_KEY_BODY = "BODY";
+    private static final String NOTIFICATION_KEY_ALERT_TYPE = "alertType",
+            NOTIFICATION_KEY_ROUTE_ALERT_ID = "routeId",
+            NOTIFICATION_KEY_TRANSIT_TYPE = "transitType",
+            NOTIFICATION_KEY_MESSAGE = "message";
 
     @Override
     public void onNewToken(String s) {
@@ -52,15 +57,23 @@ public class PushNotificationService extends FirebaseMessagingService {
             Map<String, String> data = remoteMessage.getData();
 
             // get notification title / body
-            final String title = data.get(NOTIFICATION_KEY_TITLE);
-            final String body = data.get(NOTIFICATION_KEY_BODY);
+            final AlertType alertType = AlertType.valueOf(data.get(NOTIFICATION_KEY_ALERT_TYPE));
+            final String message = data.get(NOTIFICATION_KEY_MESSAGE);
+            final String routeAlertId = data.get(NOTIFICATION_KEY_ROUTE_ALERT_ID);
+
+            TransitType transitType = null;
+            if (alertType == AlertType.DELAY) {
+                transitType = TransitType.RAIL;
+            } else if (alertType == AlertType.ALERT || alertType == AlertType.DETOUR) {
+                transitType = TransitType.valueOf(data.get(NOTIFICATION_KEY_TRANSIT_TYPE));
+            }
             // TODO: handle the data message here
 
             // check notification subscription window
             if (PushNotificationManager.isWithinNotificationWindow(getApplicationContext())) {
 
                 // send notification
-                PushNotificationManager.getInstance(getApplicationContext()).displayNotification(title, body);
+                PushNotificationManager.getInstance(getApplicationContext()).displayNotification(getApplicationContext(), alertType, transitType, message, routeAlertId);
             }
         }
     }

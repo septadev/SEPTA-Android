@@ -313,8 +313,18 @@ public class TransitViewResultsActivity extends BaseActivity implements Runnable
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
 
         // map must include vehicles on active route when automatically moving camera
-        for (Map.Entry<TransitViewModelResponse.TransitViewRecord, LatLng> entry : parser.getResultsForRoute(activeRouteId).entrySet()) {
-            builder.include(entry.getValue());
+        Map<TransitViewModelResponse.TransitViewRecord, LatLng> results = parser.getResultsForRoute(activeRouteId);
+        if (results != null) {
+            for (Map.Entry<TransitViewModelResponse.TransitViewRecord, LatLng> entry : results.entrySet()) {
+                builder.include(entry.getValue());
+            }
+        } else {
+            CrashlyticsManager.log(Log.ERROR, TAG, "Could not get results for active route: " + activeRouteId);
+            Log.e(TAG, "Could not get results for active route: " + activeRouteId + ". Moving camera to default location over Philly");
+            final LatLng northPhilly = new LatLng(39.979822, -75.157954);
+            final LatLng southPhilly = new LatLng(39.925151, -75.170484);
+            builder.include(northPhilly);
+            builder.include(southPhilly);
         }
         final LatLngBounds bounds = builder.build();
 
@@ -611,21 +621,43 @@ public class TransitViewResultsActivity extends BaseActivity implements Runnable
 
                     parser = new TransitViewModelResponseParser(response.body());
 
-                    Set<TransitViewModelResponse.TransitViewRecord> firstRoutesResults = parser.getResultsForRoute(firstRoute.getRouteId()).keySet();
-                    Log.d(TAG, firstRoutesResults.toString());
+                    Map<TransitViewModelResponse.TransitViewRecord, LatLng> results = parser.getResultsForRoute(firstRoute.getRouteId());
+                    if (results != null) {
+                        Set<TransitViewModelResponse.TransitViewRecord> firstRoutesResults = results.keySet();
+                        Log.d(TAG, firstRoutesResults.toString());
+                    } else {
+                        CrashlyticsManager.log(Log.ERROR, TAG, "Could not get results from parser for first route " + firstRoute.getRouteId());
+                        CrashlyticsManager.log(Log.ERROR, TAG, "TransitView Response Body: " + response.body().toString());
+                        Log.e(TAG, "Could not get results from parser for first route " + firstRoute.getRouteId());
+                    }
 
                     if (secondRoute != null) {
-                        Set<TransitViewModelResponse.TransitViewRecord> secondRoutesResults = parser.getResultsForRoute(secondRoute.getRouteId()).keySet();
-                        Log.d(TAG, secondRoutesResults.toString());
+                        results = parser.getResultsForRoute(secondRoute.getRouteId());
+                        if (results != null) {
+                            Set<TransitViewModelResponse.TransitViewRecord> secondRoutesResults = results.keySet();
+                            Log.d(TAG, secondRoutesResults.toString());
+                        } else {
+                            CrashlyticsManager.log(Log.ERROR, TAG, "Could not get results from parser for second route " + secondRoute.getRouteId());
+                            CrashlyticsManager.log(Log.ERROR, TAG, "TransitView Response Body: " + response.body().toString());
+                            Log.e(TAG, "Could not get results from parser for second route " + secondRoute.getRouteId());
+                        }
                     }
 
                     if (thirdRoute != null) {
-                        Set<TransitViewModelResponse.TransitViewRecord> thirdRoutesResults = parser.getResultsForRoute(thirdRoute.getRouteId()).keySet();
-                        Log.d(TAG, thirdRoutesResults.toString());
+                        results = parser.getResultsForRoute(thirdRoute.getRouteId());
+                        if (results != null) {
+                            Set<TransitViewModelResponse.TransitViewRecord> thirdRoutesResults = results.keySet();
+                            Log.d(TAG, thirdRoutesResults.toString());
+                        } else {
+                            CrashlyticsManager.log(Log.ERROR, TAG, "Could not get results from parser for third route " + thirdRoute.getRouteId());
+                            CrashlyticsManager.log(Log.ERROR, TAG, "TransitView Response Body: " + response.body().toString());
+                            Log.e(TAG, "Could not get results from parser for third route " + thirdRoute.getRouteId());
+                        }
                     }
 
                     prepareToDrawMap();
                 } else {
+                    CrashlyticsManager.log(Log.ERROR, TAG, "Null response body when fetching TransitView results for: " + routeIds);
                     Log.e(TAG, "Null response body when fetching TransitView results for: " + routeIds);
                     failure();
                 }
@@ -799,19 +831,23 @@ public class TransitViewResultsActivity extends BaseActivity implements Runnable
         boolean isTrolley = isTrolley(TransitViewResultsActivity.this, routeId);
         boolean isActiveRoute = activeRouteId.equalsIgnoreCase(routeId);
 
-        for (Map.Entry<TransitViewModelResponse.TransitViewRecord, LatLng> entry : parser.getResultsForRoute(routeId).entrySet()) {
+        Map<TransitViewModelResponse.TransitViewRecord, LatLng> results = parser.getResultsForRoute(routeId);
 
-            // add to map of vehicle marker details
-            String vehicleMarkerKey = new StringBuilder(routeId).append(VEHICLE_MARKER_KEY_DELIM).append(entry.getKey().getVehicleId()).toString();
-            vehicleDetailsMap.put(vehicleMarkerKey, entry.getKey());
+        if (results != null) {
+            for (Map.Entry<TransitViewModelResponse.TransitViewRecord, LatLng> entry : results.entrySet()) {
 
-            // create directional icon with bus or trolley
-            BitmapDescriptor vehicleBitMap = TransitViewUtils.getDirectionalIconForTransitType(this, isTrolley, isActiveRoute, entry.getKey().getHeading());
-            googleMap.addMarker(new MarkerOptions()
-                    .position(entry.getValue())
-                    .title(vehicleMarkerKey)
-                    .anchor((float) 0.5, (float) 0.5)
-                    .icon(vehicleBitMap));
+                // add to map of vehicle marker details
+                String vehicleMarkerKey = new StringBuilder(routeId).append(VEHICLE_MARKER_KEY_DELIM).append(entry.getKey().getVehicleId()).toString();
+                vehicleDetailsMap.put(vehicleMarkerKey, entry.getKey());
+
+                // create directional icon with bus or trolley
+                BitmapDescriptor vehicleBitMap = TransitViewUtils.getDirectionalIconForTransitType(this, isTrolley, isActiveRoute, entry.getKey().getHeading());
+                googleMap.addMarker(new MarkerOptions()
+                        .position(entry.getValue())
+                        .title(vehicleMarkerKey)
+                        .anchor((float) 0.5, (float) 0.5)
+                        .icon(vehicleBitMap));
+            }
         }
     }
 

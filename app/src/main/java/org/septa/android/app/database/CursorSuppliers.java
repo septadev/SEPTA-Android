@@ -662,6 +662,7 @@ abstract class CursorSuppliers implements Serializable {
             String service_id = null;
             String direction_id = null;
             String end_stop_id = null;
+            String route_id = null;
 
             if (whereClause != null) {
                 for (Criteria c : whereClause) {
@@ -673,13 +674,15 @@ abstract class CursorSuppliers implements Serializable {
                         direction_id = c.getValue().toString();
                     } else if ("end_stop_id".equals(c.getFieldName())) {
                         end_stop_id = c.getValue().toString();
+                    } else if ("route_id".equals(c.getFieldName())){
+                        route_id = c.getValue().toString();
                     }
                 }
 
                 String tableSuffix = "bus";
 
                 MessageFormat form = new MessageFormat(queryString);
-                String query = form.format(new Object[]{start_stop_id, service_id, direction_id, end_stop_id, tableSuffix});
+                String query = form.format(new Object[]{start_stop_id, service_id, direction_id, end_stop_id, tableSuffix, route_id});
                 Log.d(TAG, "Creating cursor:" + query);
 
                 return getDatabase(context).rawQuery(query, null);

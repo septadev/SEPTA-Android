@@ -39,7 +39,7 @@ public abstract class RatingUtil {
                 @Override
                 public void onClick(View view) {
                     // tapping the close button force crashes the app for debug / alpha
-                    if (BuildConfig.FORCE_CRASH_ENABLED) {
+                    if (BuildConfig.IS_NONPROD_BUILD) {
                         // force crash the app
                         throw new RuntimeException("This is a forced crash");
 

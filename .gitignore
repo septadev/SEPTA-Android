@@ -45,5 +45,8 @@ app/src/main/assets/crashlytics-build.properties
 .hprof
 app/src/main/res/values/com_crashlytics_export_strings.xml
 app/src/main/res/values/crashlytics_local.xml
+app/src/debug/
+app/src/alpha/
+app/src/release
 
 captures/**

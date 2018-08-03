@@ -66,6 +66,7 @@ import org.septa.android.app.webview.WebViewFragment;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import retrofit2.Call;
@@ -398,35 +399,42 @@ public class MainActivity extends BaseActivity implements
             Bundle bundle = intent.getExtras();
             final StopModel destStop = (StopModel) bundle.get(Constants.DESTINATION_STATION);
             final TransitType transitType = (TransitType) bundle.get(Constants.TRANSIT_TYPE);
+            Date expirationTimestamp = (Date) bundle.get(Constants.EXPIRATION_TIMESTAMP);
 
-            // to get train details, don't pass route ID to the API call
-            SeptaServiceFactory.getNextArrivalService().getNextArrivalDetails(destinationStopId, null, vehicleId).enqueue(new Callback<NextArrivalDetails>() {
-                @Override
-                public void onResponse(Call<NextArrivalDetails> call, Response<NextArrivalDetails> response) {
-                    NextArrivalDetails responseBody = response.body();
+            // show notification expired message
+            if (new Date().after(expirationTimestamp)) {
+                showNotificationExpiredMessage();
 
-                    if (responseBody != null) {
-                        Intent intent = new Intent(MainActivity.this, NextToArriveTripDetailActivity.class);
+            } else {
+                // to get train details, don't pass route ID to the API call
+                SeptaServiceFactory.getNextArrivalService().getNextArrivalDetails(destinationStopId, null, vehicleId).enqueue(new Callback<NextArrivalDetails>() {
+                    @Override
+                    public void onResponse(Call<NextArrivalDetails> call, Response<NextArrivalDetails> response) {
+                        NextArrivalDetails responseBody = response.body();
 
-                        intent.putExtra(Constants.DESTINATION_STATION, destStop);
-                        intent.putExtra(Constants.TRANSIT_TYPE, transitType);
-                        intent.putExtra(Constants.ROUTE_NAME, routeName);
-                        intent.putExtra(Constants.ROUTE_ID, routeId);
-                        intent.putExtra(Constants.TRIP_ID, vehicleId);
-                        // startingStation, vehicle ID, routeDescription will be null coming from a rail delay push notification
+                        if (responseBody != null) {
+                            Intent intent = new Intent(MainActivity.this, NextToArriveTripDetailActivity.class);
 
-                        startActivity(intent);
-                    } else {
-                        Log.e(TAG, "Null response body when attempting to jump to train details from push notification");
+                            intent.putExtra(Constants.DESTINATION_STATION, destStop);
+                            intent.putExtra(Constants.TRANSIT_TYPE, transitType);
+                            intent.putExtra(Constants.ROUTE_NAME, routeName);
+                            intent.putExtra(Constants.ROUTE_ID, routeId);
+                            intent.putExtra(Constants.TRIP_ID, vehicleId);
+                            // startingStation, vehicle ID, routeDescription will be null coming from a rail delay push notification
+
+                            startActivity(intent);
+                        } else {
+                            Log.e(TAG, "Null response body when attempting to jump to train details from push notification");
+                            showNotificationExpiredMessage();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<NextArrivalDetails> call, Throwable t) {
                         showNotificationExpiredMessage();
                     }
-                }
-
-                @Override
-                public void onFailure(Call<NextArrivalDetails> call, Throwable t) {
-                     showNotificationExpiredMessage();
-                }
-            });
+                });
+            }
 
         }
     }

@@ -38,5 +38,6 @@ public interface Constants {
     // push notification intent
     int RAIL_DELAY_PUSH_NOTIF_REQUEST = 6;
     String DESTINATION_STOP_ID = "destination_stop_id";
+    String EXPIRATION_TIMESTAMP = "expiration_timestamp";
 
 }

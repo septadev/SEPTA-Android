@@ -15,7 +15,12 @@ import org.septa.android.app.notifications.DelayNotificationType;
 import org.septa.android.app.notifications.NotificationType;
 import org.septa.android.app.notifications.PushNotificationManager;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class PushNotificationService extends FirebaseMessagingService {
@@ -81,10 +86,22 @@ public class PushNotificationService extends FirebaseMessagingService {
                         // handle the data message
                         final String vehicleId = data.get(NOTIFICATION_KEY_VEHICLE_ID);
                         final String destinationStopId = data.get(NOTIFICATION_KEY_DESTINATION_STOP_ID);
-                        final String expires = data.get(NOTIFICATION_KEY_EXPIRES); // TODO: format expires timestamp
                         final DelayNotificationType delayType = DelayNotificationType.valueOf(data.get(NOTIFICATION_KEY_DELAY_TYPE));
 
-                        PushNotificationManager.getInstance(getApplicationContext()).buildDelayNotification(getApplicationContext(), message, routeId, vehicleId, destinationStopId, delayType, expires);
+                        // default expiration date 3 hours from now
+                        Date expirationTimeStamp = addHoursToDate(new Date(), 3);
+
+                        // parse expiration date
+                        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSXXX", Locale.US);
+                        try {
+                            String expires = data.get(NOTIFICATION_KEY_EXPIRES);
+                            expirationTimeStamp = df.parse(expires);
+                            Log.d(TAG, "Parsing Expiration Time Stamp: " + expirationTimeStamp);
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+
+                        PushNotificationManager.getInstance(getApplicationContext()).buildDelayNotification(getApplicationContext(), message, routeId, vehicleId, destinationStopId, delayType, expirationTimeStamp);
                     }
 
                     // get transit type
@@ -114,5 +131,12 @@ public class PushNotificationService extends FirebaseMessagingService {
             }
         }
         return false;
+    }
+
+    private Date addHoursToDate(Date date, int hours) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.HOUR_OF_DAY, hours);
+        return calendar.getTime();
     }
 }

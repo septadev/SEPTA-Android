@@ -181,8 +181,6 @@ public class TimeFrameItemAdapter extends RecyclerView.Adapter<TimeFrameItemAdap
     }
 
     interface TimeFrameItemListener {
-        // TODO: set start time
-        // TODO: set end time
         List<String> deleteTimeFrame(int position);
     }
 

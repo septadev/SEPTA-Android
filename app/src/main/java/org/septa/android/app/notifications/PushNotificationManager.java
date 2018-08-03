@@ -29,6 +29,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
@@ -43,7 +44,7 @@ public class PushNotificationManager {
     private static final String CHANNEL_ID = "SEPTA_PUSH_NOTIFICATIONS";
     private static final String TOPIC_PREFIX = "TOPIC_";
 
-    private static final String SPECIAL_ANNOUNCEMENTS = "SEPTA_ANNOUNCEMENTS";
+    private static final String SEPTA_ANNOUNCEMENTS = "SEPTA_ANNOUNCEMENTS";
     private static final String SERVICE_ALERT_SUFFIX = "_ALERT";
     private static final String RAIL_DELAY_SUFFIX = "_DELAY";
     private static final String DETOUR_SUFFIX = "_DETOUR";
@@ -158,7 +159,7 @@ public class PushNotificationManager {
         displayNotification(context, mBuilder);
     }
 
-    public void buildDelayNotification(final Context context, String message, final String routeId, final String vehicleId, String destinationStopId, DelayNotificationType delayType, String expires) {
+    public void buildDelayNotification(final Context context, String message, final String routeId, final String vehicleId, String destinationStopId, DelayNotificationType delayType, Date expirationTimeStamp) {
         final TransitType transitType = TransitType.RAIL;
 
         String title = context.getString(R.string.push_notif_rail_delay_title, routeId);
@@ -188,7 +189,7 @@ public class PushNotificationManager {
             resultIntent.putExtra(Constants.ROUTE_ID, routeId);
             resultIntent.putExtra(Constants.ROUTE_NAME, routeName);
             resultIntent.putExtra(Constants.TRANSIT_TYPE, transitType);
-            // TODO: add expiration timestamp
+            resultIntent.putExtra(Constants.EXPIRATION_TIMESTAMP, expirationTimeStamp);
 
             // build back stack
             TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
@@ -231,9 +232,6 @@ public class PushNotificationManager {
         }
 
         // topics subscribed to are still remembered because shared preferences untouched
-
-        // unsubscribe from test push notifications // TODO: remove
-        FirebaseMessaging.getInstance().unsubscribeFromTopic("notifications");
     }
 
     public void resubscribeToTopics() {
@@ -246,20 +244,17 @@ public class PushNotificationManager {
                 subscribeToRoute(route.getRouteId(), route.getTransitType());
             }
         }
-
-        // subscribe to test push notifications // TODO: remove
-        FirebaseMessaging.getInstance().subscribeToTopic("notifications");
     }
 
     public void subscribeToSpecialAnnouncements() {
         Log.d(TAG, "Subscribing to SEPTA Special Announcements");
-        FirebaseMessaging.getInstance().subscribeToTopic(TOPIC_PREFIX + SPECIAL_ANNOUNCEMENTS);
+        FirebaseMessaging.getInstance().subscribeToTopic(TOPIC_PREFIX + SEPTA_ANNOUNCEMENTS);
         SeptaServiceFactory.getNotificationsService().setSpecialAnnouncementsEnabled(context, true);
     }
 
     public void unsubscribeFromSpecialAnnouncements() {
         Log.d(TAG, "Unsubscribing from SEPTA Special Announcements");
-        FirebaseMessaging.getInstance().unsubscribeFromTopic(TOPIC_PREFIX + SPECIAL_ANNOUNCEMENTS);
+        FirebaseMessaging.getInstance().unsubscribeFromTopic(TOPIC_PREFIX + SEPTA_ANNOUNCEMENTS);
         SeptaServiceFactory.getNotificationsService().setSpecialAnnouncementsEnabled(context, false);
     }
 

@@ -14,7 +14,7 @@ public class TransitViewModelResponseParser {
 
     private Map<String, Map<TransitViewModelResponse.TransitViewRecord, LatLng>> results;
 
-    public TransitViewModelResponseParser(@NonNull TransitViewModelResponse response) {
+    TransitViewModelResponseParser(@NonNull TransitViewModelResponse response) {
         results = new HashMap<>();
 
         Map<String, List<TransitViewModelResponse.TransitViewRecord>> routesMap = response.getResults().get(0);

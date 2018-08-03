@@ -47,6 +47,6 @@ app/src/main/res/values/com_crashlytics_export_strings.xml
 app/src/main/res/values/crashlytics_local.xml
 app/src/debug/
 app/src/alpha/
-app/src/release
+app/src/release/
 
 captures/**

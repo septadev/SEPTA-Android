@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -15,12 +16,18 @@ import org.septa.android.app.Constants;
 import org.septa.android.app.MainActivity;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
+import org.septa.android.app.database.DatabaseManager;
+import org.septa.android.app.domain.RouteDirectionModel;
+import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.RouteNotificationSubscription;
+import org.septa.android.app.support.Criteria;
+import org.septa.android.app.support.CursorAdapterSupplier;
 import org.septa.android.app.systemstatus.SystemStatusResultsActivity;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -82,88 +89,118 @@ public class PushNotificationManager {
         return false;
     }
 
-    public void displayNotification(Context context, NotificationType notificationType, TransitType transitType, String message, String routeId) {
-        /*
-         *  Clicking on the notification will take us to this intent
-         *  Right now we are using the MainActivity as this is the only activity we have in our application
-         *  But for your project you can customize it as you want
-         * */
-
-        Intent resultIntent = new Intent(context, MainActivity.class);
-        int requestCode = 0;
-
-        // TODO: set click action based on notificationType
-        // TODO: fix request code
-        String title = null;
-        switch (notificationType) {
-            case SPECIAL_ANNOUNCEMENT:
-                title = context.getString(R.string.push_notif_special_announcement_title);
-                break;
-
-            case ALERT:
-                title = context.getString(R.string.push_notif_alert_title, routeId);
-
-                String routeName = routeId;
-                if (transitType == TransitType.RAIL) {
-                    // TODO: look up line name for rail
-                }
-
-                // tapping on service alert will open system status page
-                resultIntent = new Intent(context, SystemStatusResultsActivity.class);
-                resultIntent.putExtra(Constants.ROUTE_NAME, routeName);
-                resultIntent.putExtra(Constants.ROUTE_ID, routeId);
-                resultIntent.putExtra(Constants.TRANSIT_TYPE, transitType);
-                resultIntent.putExtra(Constants.SERVICE_ALERT_EXPANDED, Boolean.TRUE);
-                requestCode = Constants.SYSTEM_STATUS_REQUEST;
-                break;
-
-            case DELAY:
-                title = context.getString(R.string.push_notif_rail_delay_title, routeId);
-                break;
-
-            case DETOUR:
-                title = context.getString(R.string.push_notif_detour_title, routeId);
-
-                // tapping on service alert will open system status page
-                resultIntent = new Intent(context, SystemStatusResultsActivity.class);
-                resultIntent.putExtra(Constants.ROUTE_NAME, routeId);
-                resultIntent.putExtra(Constants.ROUTE_ID, routeId);
-                resultIntent.putExtra(Constants.TRANSIT_TYPE, transitType);
-                resultIntent.putExtra(Constants.ACTIVE_DETOUR_EXPANDED, Boolean.TRUE);
-                requestCode = Constants.SYSTEM_STATUS_REQUEST;
-                break;
-        }
+    public void buildSpecialAnnouncementNotification(Context context, String message) {
+        String title = context.getString(R.string.push_notif_special_announcement_title);
 
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_launcher)
                 .setContentTitle(title)
                 .setContentText(message);
 
-        // tapping special announcements doesn't open app
-        if (notificationType != NotificationType.SPECIAL_ANNOUNCEMENT) {
-            /*
-             *  Now we will create a pending intent
-             *  The method getActivity is taking 4 parameters
-             *  All paramters are describing themselves
-             *  0 is the request code (the second parameter)
-             *  We can detect this code in the activity that will open by this we can get
-             *  Which notification opened the activity
-             * */
+        displayNotification(context, mBuilder);
+    }
+
+    public void buildServiceAlertNotification(Context context, String message, TransitType transitType, String routeId) {
+        // TODO: fix request code
+        String title = context.getString(R.string.push_notif_alert_title, routeId);
+
+        String routeName = routeId;
+        if (transitType == TransitType.RAIL) {
+            // look up line name for rail
+            routeName = getRailRouteName(context, routeId);
+        }
+
+        // tapping on service alert will open system status page
+        Intent resultIntent = new Intent(context, SystemStatusResultsActivity.class);
+        resultIntent.putExtra(Constants.ROUTE_NAME, routeName);
+        resultIntent.putExtra(Constants.ROUTE_ID, routeId);
+        resultIntent.putExtra(Constants.TRANSIT_TYPE, transitType);
+        resultIntent.putExtra(Constants.SERVICE_ALERT_EXPANDED, Boolean.TRUE);
+        int requestCode = Constants.SYSTEM_STATUS_REQUEST;
+
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_launcher)
+                .setContentTitle(title)
+                .setContentText(message);
+
+        // build back stack for click action
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+        stackBuilder.addNextIntentWithParentStack(resultIntent);
+        PendingIntent pendingIntent = stackBuilder.getPendingIntent(requestCode, PendingIntent.FLAG_UPDATE_CURRENT);
+        mBuilder.setContentIntent(pendingIntent);
+
+        displayNotification(context, mBuilder);
+    }
+
+    public void buildDetourNotification(Context context, String message, TransitType transitType, String routeId) {
+        // TODO: fix request code
+        String title = context.getString(R.string.push_notif_detour_title, routeId);
+
+        // tapping on service alert will open system status page
+        Intent resultIntent = new Intent(context, SystemStatusResultsActivity.class);
+        resultIntent.putExtra(Constants.ROUTE_NAME, routeId);
+        resultIntent.putExtra(Constants.ROUTE_ID, routeId);
+        resultIntent.putExtra(Constants.TRANSIT_TYPE, transitType);
+        resultIntent.putExtra(Constants.ACTIVE_DETOUR_EXPANDED, Boolean.TRUE);
+        int requestCode = Constants.SYSTEM_STATUS_REQUEST;
+
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_launcher)
+                .setContentTitle(title)
+                .setContentText(message);
+
+        // build back stack for click action
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+        stackBuilder.addNextIntentWithParentStack(resultIntent);
+        PendingIntent pendingIntent = stackBuilder.getPendingIntent(requestCode, PendingIntent.FLAG_UPDATE_CURRENT);
+        mBuilder.setContentIntent(pendingIntent);
+
+        displayNotification(context, mBuilder);
+    }
+
+    public void buildDelayNotification(final Context context, String message, final String routeId, final String vehicleId, String destinationStopId, DelayNotificationType delayType, String expires) {
+        final TransitType transitType = TransitType.RAIL;
+
+        String title = context.getString(R.string.push_notif_rail_delay_title, routeId);
+
+        int requestCode = 0; // TODO: fix request code
+
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_launcher)
+                .setContentTitle(title)
+                .setContentText(message);
+
+        // estimated delay notifications don't link anywhere in app, actual ones do
+        if (delayType == DelayNotificationType.ACTUAL) {
+
+            // look up destination stop
+            StopModel destStop = getRailStop(context, destinationStopId);
+
+            // look up routeName
+            String routeName = getRailRouteName(context, routeId);
+
+            // build intent for click action
+            final Intent resultIntent = new Intent(context, MainActivity.class);
+            resultIntent.putExtra(Constants.REQUEST_CODE, Constants.RAIL_DELAY_PUSH_NOTIF_REQUEST);
+            resultIntent.putExtra(Constants.DESTINATION_STATION, destStop);
+            resultIntent.putExtra(Constants.DESTINATION_STOP_ID, destinationStopId);
+            resultIntent.putExtra(Constants.VEHICLE_ID, vehicleId);
+            resultIntent.putExtra(Constants.ROUTE_ID, routeId);
+            resultIntent.putExtra(Constants.ROUTE_NAME, routeName);
+            resultIntent.putExtra(Constants.TRANSIT_TYPE, transitType);
+            // TODO: add expiration timestamp
 
             // build back stack
             TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-            // This uses android:parentActivityName and
-            // android.support.PARENT_ACTIVITY meta-data by default
             stackBuilder.addNextIntentWithParentStack(resultIntent);
-
             PendingIntent pendingIntent = stackBuilder.getPendingIntent(requestCode, PendingIntent.FLAG_UPDATE_CURRENT);
-
-            /*
-             *  Setting the pending intent to notification builder
-             */
             mBuilder.setContentIntent(pendingIntent);
         }
 
+        displayNotification(context, mBuilder);
+    }
+
+    private void displayNotification(Context context, NotificationCompat.Builder mBuilder) {
         // dismiss notification on click
         mBuilder.setAutoCancel(true);
 
@@ -322,4 +359,35 @@ public class PushNotificationManager {
         unsubscribeFromRoute(routeId, transitType);
     }
 
+    private String getRailRouteName(Context context, String routeId) {
+        DatabaseManager dbManager = DatabaseManager.getInstance(context);
+        CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier = dbManager.getRailNoDirectionRouteCursorAdapterSupplier();
+        List<Criteria> criteriaList = new ArrayList<>();
+        criteriaList.add(new Criteria("routeId", Criteria.Operation.EQ, routeId));
+        Cursor cursor = routeCursorAdapterSupplier.getCursor(context, criteriaList);
+
+        String routeName = routeId; // default route name to route ID
+        if (cursor.moveToFirst()) {
+            do {
+                RouteDirectionModel route = routeCursorAdapterSupplier.getCurrentItemFromCursor(cursor);
+                if (routeId.equals(route.getRouteId())) {
+                    routeName = route.getRouteShortName();
+                    break;
+                }
+            } while (cursor.moveToNext());
+        } else {
+            Log.e(TAG, "Could not find rail route name for route ID " + routeId);
+        }
+        return routeName;
+    }
+
+    private StopModel getRailStop(Context context, String stopId) {
+        DatabaseManager dbManager = DatabaseManager.getInstance(context);
+        CursorAdapterSupplier<StopModel> stopModelCursorAdapterSupplier = dbManager.getRailStopCursorAdapterSupplier();
+        StopModel stopModel = stopModelCursorAdapterSupplier.getItemFromId(context, stopId);
+        if (stopModel == null) {
+            Log.e(TAG, "Could not find rail stop for stop ID " + stopId);
+        }
+        return stopModel;
+    }
 }

@@ -220,6 +220,7 @@
                                 android:textColor="@android:color/black"
                                 android:textSize="14sp"
                                 app:typeface="@string/font_roboto_bold" />
+
                         </RelativeLayout>
 
                         <RelativeLayout
@@ -247,6 +248,7 @@
                                 android:textColor="@android:color/black"
                                 android:textSize="14sp"
                                 app:typeface="@string/font_roboto_bold" />
+
                         </RelativeLayout>
 
                         <RelativeLayout
@@ -315,6 +317,7 @@
                                 android:textSize="14sp"
                                 app:typeface="@string/font_roboto_bold" />
                         </RelativeLayout>
+
                     </LinearLayout>
 
                     <LinearLayout

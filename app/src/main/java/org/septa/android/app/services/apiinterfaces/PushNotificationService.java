@@ -11,6 +11,7 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 import org.septa.android.app.TransitType;
+import org.septa.android.app.notifications.DelayNotificationType;
 import org.septa.android.app.notifications.NotificationType;
 import org.septa.android.app.notifications.PushNotificationManager;
 
@@ -22,9 +23,13 @@ public class PushNotificationService extends FirebaseMessagingService {
     private static final String TAG = PushNotificationService.class.getSimpleName();
 
     private static final String NOTIFICATION_KEY_TYPE = "notificationType",
+            NOTIFICATION_KEY_TRANSIT_TYPE = "routeType",
             NOTIFICATION_KEY_ROUTE_ID = "routeId",
-            NOTIFICATION_KEY_TRANSIT_TYPE = "transitType",
-            NOTIFICATION_KEY_MESSAGE = "message";
+            NOTIFICATION_KEY_MESSAGE = "message",
+            NOTIFICATION_KEY_VEHICLE_ID = "vehicleId",
+            NOTIFICATION_KEY_DESTINATION_STOP_ID = "destinationStopId",
+            NOTIFICATION_KEY_DELAY_TYPE = "delayType",
+            NOTIFICATION_KEY_EXPIRES = "expires";
 
     @Override
     public void onNewToken(String s) {
@@ -62,18 +67,36 @@ public class PushNotificationService extends FirebaseMessagingService {
                 // get notification title / body
                 final NotificationType notificationType = NotificationType.valueOf(data.get(NOTIFICATION_KEY_TYPE));
                 final String message = data.get(NOTIFICATION_KEY_MESSAGE);
-                final String routeId = data.get(NOTIFICATION_KEY_ROUTE_ID);
 
-                TransitType transitType = null;
-                if (notificationType == NotificationType.DELAY) {
-                    transitType = TransitType.RAIL;
-                } else if (notificationType == NotificationType.ALERT || notificationType == NotificationType.DETOUR) {
-                    transitType = TransitType.valueOf(data.get(NOTIFICATION_KEY_TRANSIT_TYPE));
+                // send notification if special announcement
+                if (notificationType == NotificationType.SPECIAL_ANNOUNCEMENT) {
+                    PushNotificationManager.getInstance(getApplicationContext()).buildSpecialAnnouncementNotification(getApplicationContext(), message);
+
+                } else {
+                    // get route ID for route specific alerts
+                    final String routeId = data.get(NOTIFICATION_KEY_ROUTE_ID);
+
+                    // send notification if rail delay
+                    if (notificationType == NotificationType.DELAY) {
+                        // handle the data message
+                        final String vehicleId = data.get(NOTIFICATION_KEY_VEHICLE_ID);
+                        final String destinationStopId = data.get(NOTIFICATION_KEY_DESTINATION_STOP_ID);
+                        final String expires = data.get(NOTIFICATION_KEY_EXPIRES); // TODO: format expires timestamp
+                        final DelayNotificationType delayType = DelayNotificationType.valueOf(data.get(NOTIFICATION_KEY_DELAY_TYPE));
+
+                        PushNotificationManager.getInstance(getApplicationContext()).buildDelayNotification(getApplicationContext(), message, routeId, vehicleId, destinationStopId, delayType, expires);
+                    }
+
+                    // get transit type
+                    TransitType transitType = TransitType.valueOf(data.get(NOTIFICATION_KEY_TRANSIT_TYPE));
+
+                    if (notificationType == NotificationType.ALERT) {
+                        PushNotificationManager.getInstance(getApplicationContext()).buildServiceAlertNotification(getApplicationContext(), message, transitType, routeId);
+                    } else if (notificationType == NotificationType.DETOUR) {
+                        // TODO: parse out other values for detour
+                        PushNotificationManager.getInstance(getApplicationContext()).buildDetourNotification(getApplicationContext(), message, transitType, routeId);
+                    }
                 }
-                // TODO: handle the data message here
-
-                // send notification
-                PushNotificationManager.getInstance(getApplicationContext()).displayNotification(getApplicationContext(), notificationType, transitType, message, routeId);
             }
         }
     }

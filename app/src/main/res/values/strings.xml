@@ -352,6 +352,9 @@
     <string name="push_notif_detour_title">Detour on Route %1$s</string>
     <string name="push_notif_rail_delay_title">Train Delay on %1$s</string>
 
+    <string name="notification_expired">This notification has expired and is no longer valid.</string>
+
+
 
     <!-- In-App Ratings-->
     <string name="rating_title">How are we doing?</string>

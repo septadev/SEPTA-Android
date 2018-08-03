@@ -1,6 +1,7 @@
 package org.septa.android.app;
 
 public interface Constants {
+    String REQUEST_CODE = "request_code";
     String TRANSIT_TYPE = "transit_type";
     String ROUTE_DIRECTION_MODEL = "line_id";
     String STARTING_STATION = "starting_station";
@@ -33,4 +34,9 @@ public interface Constants {
     String TERM_TRIP = "termTrip";
     String VEHICLE_ID = "vehicleId";
     String ROUTE_DESCRIPTION = "routeDescription";
+
+    // push notification intent
+    int RAIL_DELAY_PUSH_NOTIF_REQUEST = 6;
+    String DESTINATION_STOP_ID = "destination_stop_id";
+
 }

@@ -28,6 +28,7 @@ import android.text.util.Linkify;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import org.septa.android.app.about.AboutFragment;
 import org.septa.android.app.connect.ConnectFragment;
@@ -44,11 +45,13 @@ import org.septa.android.app.fares.PerksFragment;
 import org.septa.android.app.favorites.FavoritesFragment;
 import org.septa.android.app.favorites.edit.ManageFavoritesFragment;
 import org.septa.android.app.nextarrive.NextToArriveFragment;
+import org.septa.android.app.nextarrive.NextToArriveTripDetailActivity;
 import org.septa.android.app.notifications.NotificationsManagementFragment;
 import org.septa.android.app.schedules.SchedulesFragment;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Alert;
 import org.septa.android.app.services.apiinterfaces.model.AlertDetail;
+import org.septa.android.app.services.apiinterfaces.model.NextArrivalDetails;
 import org.septa.android.app.support.AnalyticsManager;
 import org.septa.android.app.support.CrashlyticsManager;
 import org.septa.android.app.support.RouteModelComparator;
@@ -69,6 +72,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static org.septa.android.app.Constants.RAIL_DELAY_PUSH_NOTIF_REQUEST;
 import static org.septa.android.app.database.update.DatabaseSharedPrefsUtils.DEFAULT_DOWNLOAD_REF_ID;
 import static org.septa.android.app.transitview.TransitViewFragment.TRANSITVIEW_ROUTE_FIRST;
 import static org.septa.android.app.transitview.TransitViewFragment.TRANSITVIEW_ROUTE_SECOND;
@@ -379,6 +383,55 @@ public class MainActivity extends BaseActivity implements
     }
 
     @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        // ensure intent coming from valid source
+        int requestCode = intent.getIntExtra(Constants.REQUEST_CODE, -1);
+        if (RAIL_DELAY_PUSH_NOTIF_REQUEST == requestCode) {
+
+            String destinationStopId = intent.getStringExtra(Constants.DESTINATION_STOP_ID);
+            final String routeId = intent.getStringExtra(Constants.ROUTE_ID);
+            final String vehicleId = intent.getStringExtra(Constants.VEHICLE_ID);
+            final String routeName = intent.getStringExtra(Constants.ROUTE_NAME);
+
+            Bundle bundle = intent.getExtras();
+            final StopModel destStop = (StopModel) bundle.get(Constants.DESTINATION_STATION);
+            final TransitType transitType = (TransitType) bundle.get(Constants.TRANSIT_TYPE);
+
+            // to get train details, don't pass route ID to the API call
+            SeptaServiceFactory.getNextArrivalService().getNextArrivalDetails(destinationStopId, null, vehicleId).enqueue(new Callback<NextArrivalDetails>() {
+                @Override
+                public void onResponse(Call<NextArrivalDetails> call, Response<NextArrivalDetails> response) {
+                    NextArrivalDetails responseBody = response.body();
+
+                    if (responseBody != null) {
+                        Intent intent = new Intent(MainActivity.this, NextToArriveTripDetailActivity.class);
+
+                        intent.putExtra(Constants.DESTINATION_STATION, destStop);
+                        intent.putExtra(Constants.TRANSIT_TYPE, transitType);
+                        intent.putExtra(Constants.ROUTE_NAME, routeName);
+                        intent.putExtra(Constants.ROUTE_ID, routeId);
+                        intent.putExtra(Constants.TRIP_ID, vehicleId);
+                        // startingStation, vehicle ID, routeDescription will be null coming from a rail delay push notification
+
+                        startActivity(intent);
+                    } else {
+                        Log.e(TAG, "Null response body when attempting to jump to train details from push notification");
+                        showNotificationExpiredMessage();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<NextArrivalDetails> call, Throwable t) {
+                     showNotificationExpiredMessage();
+                }
+            });
+
+        }
+    }
+
+    @Override
     public void refreshFavoritesInstance() {
         CrashlyticsManager.log(Log.INFO, TAG, "refreshFavoritesInstance");
         favoritesFragment = new FavoritesFragment();
@@ -448,8 +501,7 @@ public class MainActivity extends BaseActivity implements
     }
 
     @Override
-    public void goToSchedulesForTarget(StopModel start, StopModel destination, TransitType
-            transitType, RouteDirectionModel routeDirectionModel) {
+    public void goToSchedulesForTarget(StopModel start, StopModel destination, TransitType transitType, RouteDirectionModel routeDirectionModel) {
         // navigate to schedule selection picker
         Bundle bundle = new Bundle();
         bundle.putSerializable(Constants.STARTING_STATION, start);
@@ -487,8 +539,7 @@ public class MainActivity extends BaseActivity implements
     }
 
     @Override
-    public void afterLatestDBMetadataLoad(final int latestDBVersion,
-                                          final String latestDBURL, String updatedDate) {
+    public void afterLatestDBMetadataLoad(final int latestDBVersion, final String latestDBURL, String updatedDate) {
         boolean shouldPrompt = DatabaseUpgradeUtils.decideWhetherToAskToDownload(MainActivity.this, latestDBVersion, latestDBURL, updatedDate);
 
         if (shouldPrompt) {
@@ -510,8 +561,7 @@ public class MainActivity extends BaseActivity implements
     }
 
     @Override
-    public void onRequestPermissionsResult(final int requestCode,
-                                           @NonNull final String[] permissions, @NonNull final int[] grantResults) {
+    public void onRequestPermissionsResult(final int requestCode, @NonNull final String[] permissions, @NonNull final int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         DatabaseUpgradeUtils.permissionResponseReceived(MainActivity.this, requestCode, permissions, grantResults);
@@ -563,8 +613,7 @@ public class MainActivity extends BaseActivity implements
         DatabaseUpgradeUtils.databaseUpdateComplete(MainActivity.this);
     }
 
-    private void switchToBundle(MenuItem item, Fragment targetFragment, int title,
-                                int highlightedIcon) {
+    private void switchToBundle(MenuItem item, Fragment targetFragment, int title, int highlightedIcon) {
         CrashlyticsManager.log(Log.INFO, TAG, "switchToBundle:" + item.getTitle() + ", " + targetFragment.getClass().getCanonicalName());
         if ((currentMenu != null) && item.getItemId() == currentMenu.getItemId()) {
             return;
@@ -752,6 +801,10 @@ public class MainActivity extends BaseActivity implements
         view.setVisibility(View.VISIBLE);
 
         dialog.show();
+    }
+
+    private void showNotificationExpiredMessage() {
+        Toast.makeText(MainActivity.this, R.string.notification_expired, Toast.LENGTH_LONG).show();
     }
 
     public void handleShakeEvent(int count) {

@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 
+import org.septa.android.app.BuildConfig;
 import org.septa.android.app.R;
 import org.septa.android.app.support.CrashlyticsManager;
 import org.septa.android.app.support.GeneralUtils;
@@ -18,7 +19,8 @@ public class SEPTADatabase extends SQLiteAssetHelper {
     /**
      * Current packaged DB version, update number when packaged DB changes
      */
-    private static final String LATEST_DATABASE_API_URL = "https://s3.amazonaws.com/mobiledb.septa.org/latest/latestDb.json";
+    private static final String LATEST_DATABASE_API_URL_PROD = "https://s3.amazonaws.com/mobiledb.septa.org/latest/latestDb.json";
+    private static final String LATEST_DATABASE_API_URL_NONPROD = "https://s3.amazonaws.com/mobiledb.nonprod.septa.org/latest/latestDb.json";
 
     // these are left in case the user does not have the most up to date version of the database
     // they should be set by using the method setShippedDatabase() before an instance of this class is constructed.
@@ -84,6 +86,10 @@ public class SEPTADatabase extends SQLiteAssetHelper {
     }
 
     public static String getLatestDatabaseApiUrl() {
-        return LATEST_DATABASE_API_URL;
+        if (BuildConfig.IS_NONPROD_BUILD) {
+            return LATEST_DATABASE_API_URL_NONPROD;
+        } else {
+            return LATEST_DATABASE_API_URL_PROD;
+        }
     }
 }

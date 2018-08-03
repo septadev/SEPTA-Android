@@ -75,7 +75,7 @@ public class AboutFragment extends Fragment {
         });
 
         // reset the number of app uses
-        if (BuildConfig.FORCE_CRASH_ENABLED) {
+        if (BuildConfig.IS_NONPROD_BUILD) {
             fragmentView.findViewById(R.id.septa_logo).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -91,7 +91,7 @@ public class AboutFragment extends Fragment {
         versionInfoBuilder.append(BuildConfig.VERSIONNAME);
 
         // add note if built as beta
-        if (BuildConfig.FORCE_CRASH_ENABLED) {
+        if (BuildConfig.IS_NONPROD_BUILD) {
             versionInfoBuilder.append(" (BETA)");
         }
         versionInfoBuilder.append("<br>");

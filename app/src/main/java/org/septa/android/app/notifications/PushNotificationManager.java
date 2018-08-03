@@ -43,7 +43,7 @@ public class PushNotificationManager {
     private static final String CHANNEL_ID = "SEPTA_PUSH_NOTIFICATIONS";
     private static final String TOPIC_PREFIX = "TOPIC_";
 
-    private static final String SPECIAL_ANNOUNCEMENTS = "SPECIAL_ANNOUNCEMENTS";
+    private static final String SPECIAL_ANNOUNCEMENTS = "SEPTA_ANNOUNCEMENTS";
     private static final String SERVICE_ALERT_SUFFIX = "_ALERT";
     private static final String RAIL_DELAY_SUFFIX = "_DELAY";
     private static final String DETOUR_SUFFIX = "_DETOUR";

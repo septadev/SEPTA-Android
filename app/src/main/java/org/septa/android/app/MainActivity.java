@@ -373,11 +373,7 @@ public class MainActivity extends BaseActivity implements
         }
 
         if (id == R.id.nav_elerts) {
-            // TODO: change the analytics to a menu click and the actual external link if elerts gets a landing page?
             AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_ELERTS, AnalyticsManager.CUSTOM_EVENT_ID_EXTERNAL_LINK, null);
-            // TODO: switch to elerts fragment if landing page?
-//            switchToBundle(item, transitView, R.string.transit_view, R.drawable.ic_transitview_active);
-
             jumpToElertsApp(this);
         }
         return true;

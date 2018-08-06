@@ -16,10 +16,11 @@ import org.septa.android.app.R;
 
 public abstract class RatingUtil {
 
-    public static final int MIN_USES_TO_RATE = 5; // TODO: change to 20
+    public static final int MIN_USES_TO_RATE = 20;
 
-    // TODO: change to 6 (must be one more than the number of uses)
-    public static final int MIN_CRASH_FREE_USES_TO_RATE = 3; // must be one more than the number of uses wanted
+    // must be one more than the number of uses wanted
+    // user needs 5 extra crash free uses to rate
+    public static final int MIN_CRASH_FREE_USES_TO_RATE = 6;
 
     // increment this when wanting to re-ask user for a rating
     private static final int CURRENT_RATING_ID = 0;
@@ -38,7 +39,7 @@ public abstract class RatingUtil {
                 @Override
                 public void onClick(View view) {
                     // tapping the close button force crashes the app for debug / alpha
-                    if (BuildConfig.FORCE_CRASH_ENABLED) {
+                    if (BuildConfig.IS_NONPROD_BUILD) {
                         // force crash the app
                         throw new RuntimeException("This is a forced crash");
 

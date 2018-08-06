@@ -25,7 +25,7 @@ apply plugin: 'io.fabric'
 final String CONFIG_TYPE_BOOLEAN = 'boolean'
 
 // Build config fields set by the variants
-final String CONFIG_FORCE_CRASH_ENABLED = 'FORCE_CRASH_ENABLED'
+final String CONFIG_IS_NONPROD_BUILD = 'IS_NONPROD_BUILD'
 
 // check that the SEPTA.signing gradle property exists and that its value is the filename to a file
 //  that has the extension of gradle
@@ -40,8 +40,8 @@ android {
         applicationId "org.septa.android.app"
         minSdkVersion 16
         targetSdkVersion 27
-        versionCode 293
-        versionName "2.0.293"
+        versionCode 295
+        versionName "2.0.295"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         manifestPlaceholders = [amazonawsApiKey: "${AMAZONAWS_API_KEY}", googleGeoApiKey: "${GOOGLE_GEO_API_KEY}", crashlyticsApiKey: "${CRASHLYTICS_API_KEY}"]
     }
@@ -80,7 +80,7 @@ android {
             signingConfig signingConfigs.prerelease
             versionNameSuffix "d" + "${getSprintRound}" + "${getGitHash}"
             buildConfigField "String", "VERSIONNAME", "\"${defaultConfig.versionName}-b${defaultConfig.versionCode}\""
-            buildConfigField CONFIG_TYPE_BOOLEAN, CONFIG_FORCE_CRASH_ENABLED, true.toString()
+            buildConfigField CONFIG_TYPE_BOOLEAN, CONFIG_IS_NONPROD_BUILD, true.toString()
         }
         alpha {
             minifyEnabled false
@@ -89,7 +89,7 @@ android {
             signingConfig signingConfigs.prerelease
             versionNameSuffix "a" + "${getSprintRound}" + "${getGitHash}"
             buildConfigField "String", "VERSIONNAME", "\"${defaultConfig.versionName}-b${defaultConfig.versionCode}\""
-            buildConfigField CONFIG_TYPE_BOOLEAN, CONFIG_FORCE_CRASH_ENABLED, true.toString()
+            buildConfigField CONFIG_TYPE_BOOLEAN, CONFIG_IS_NONPROD_BUILD, true.toString()
         }
         beta {
             minifyEnabled true
@@ -99,7 +99,7 @@ android {
             signingConfig signingConfigs.prerelease
             versionNameSuffix "b" + "${getSprintRound}" + "${getGitHash}"
             buildConfigField "String", "VERSIONNAME", "\"${defaultConfig.versionName}-b${defaultConfig.versionCode}\""
-            buildConfigField CONFIG_TYPE_BOOLEAN, CONFIG_FORCE_CRASH_ENABLED, true.toString()
+            buildConfigField CONFIG_TYPE_BOOLEAN, CONFIG_IS_NONPROD_BUILD, true.toString()
         }
         release {
             minifyEnabled false
@@ -108,7 +108,7 @@ android {
             zipAlignEnabled true
             signingConfig signingConfigs.prerelease
             buildConfigField "String", "VERSIONNAME", "\"${defaultConfig.versionName}\""
-            buildConfigField CONFIG_TYPE_BOOLEAN, CONFIG_FORCE_CRASH_ENABLED, false.toString()
+            buildConfigField CONFIG_TYPE_BOOLEAN, CONFIG_IS_NONPROD_BUILD, false.toString()
         }
     }
     productFlavors {

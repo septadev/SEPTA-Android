@@ -156,7 +156,7 @@ public class MainActivity extends BaseActivity implements
         }
 
         // ShakeDetector initialization
-        if (BuildConfig.FORCE_CRASH_ENABLED) {
+        if (BuildConfig.IS_NONPROD_BUILD) {
             mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
             mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
             mShakeDetector = new ShakeDetector();
@@ -174,7 +174,7 @@ public class MainActivity extends BaseActivity implements
         super.onResume();
 
         // re-register the shake detector on resume
-        if (BuildConfig.FORCE_CRASH_ENABLED) {
+        if (BuildConfig.IS_NONPROD_BUILD) {
             mSensorManager.registerListener(mShakeDetector, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
         }
 
@@ -261,7 +261,7 @@ public class MainActivity extends BaseActivity implements
         super.onPause();
 
         // unregister the shake detector on pause
-        if (BuildConfig.FORCE_CRASH_ENABLED) {
+        if (BuildConfig.IS_NONPROD_BUILD) {
             mSensorManager.unregisterListener(mShakeDetector);
         }
 

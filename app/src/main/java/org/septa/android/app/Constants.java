@@ -17,6 +17,9 @@ public interface Constants {
     int SYSTEM_STATUS_REQUEST = 3;
     int SCHEDULES_REQUEST = 4;
     int TRANSITVIEW_REQUEST = 5;
+    int PUSH_NOTIF_REQUEST_RAIL_DELAY = 6;
+    int PUSH_NOTIF_REQUEST_SERVICE_ALERT = 7;
+    int PUSH_NOTIF_REQUEST_DETOUR = 8;
 
     // result codes to access MainActivity's fragments
     int VIEW_SCHEDULE = 1;
@@ -35,9 +38,9 @@ public interface Constants {
     String VEHICLE_ID = "vehicleId";
     String ROUTE_DESCRIPTION = "routeDescription";
 
-    // push notification intent
-    int RAIL_DELAY_PUSH_NOTIF_REQUEST = 6;
+    // push notification intents request codes
     String DESTINATION_STOP_ID = "destination_stop_id";
     String EXPIRATION_TIMESTAMP = "expiration_timestamp";
+
 
 }

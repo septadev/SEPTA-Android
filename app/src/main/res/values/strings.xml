@@ -346,6 +346,8 @@
     <string name="subscribe_long_description">Subscribe to Notifications for this Route</string>
     <string name="view_notification_preferences">View Notification Preferences »</string>
     <string name="subscribe_switch">Subscribe</string>
+    <string name="notifications_permission_needed">You must allow notifications from the SEPTA app in \'System Notification Settings\' in order to receive push notifications about this route.</string>
+    <string name="notifications_not_enabled">You must enable notifications within the app in order to receive push notifications about this route.</string>
 
     <string name="push_notif_special_announcement_title">Special Announcement</string>
     <string name="push_notif_alert_title">Service Alert for Route %1$s</string>
@@ -353,7 +355,6 @@
     <string name="push_notif_rail_delay_title">Train Delay on %1$s</string>
 
     <string name="notification_expired">This notification has expired and is no longer valid.</string>
-
 
 
     <!-- In-App Ratings-->

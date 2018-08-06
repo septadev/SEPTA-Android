@@ -12,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
 import android.view.Menu;
@@ -39,6 +40,7 @@ import org.septa.android.app.favorites.DeleteFavoritesAsyncTask;
 import org.septa.android.app.favorites.edit.RenameFavoriteDialogFragment;
 import org.septa.android.app.favorites.edit.RenameFavoriteListener;
 import org.septa.android.app.nextarrive.NextToArriveResultsActivity;
+import org.septa.android.app.notifications.NotificationsManagementFragment;
 import org.septa.android.app.notifications.PushNotificationManager;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Alert;
@@ -442,6 +444,39 @@ public class ScheduleResultsActivity extends BaseActivity implements RenameFavor
                 if (isChecked) {
                     // enable notifs for route
                     PushNotificationManager.getInstance(ScheduleResultsActivity.this).createNotificationForRoute(routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName(), transitType);
+
+                    // recheck device permissions and show message if notifs not allowed or enabled
+                    boolean notifsAllowed = NotificationManagerCompat.from(ScheduleResultsActivity.this).areNotificationsEnabled(),
+                            notifsEnabled = SeptaServiceFactory.getNotificationsService().areNotificationsEnabled(ScheduleResultsActivity.this);
+                    if (!notifsAllowed) {
+                        Snackbar snackbar = Snackbar.make(findViewById(R.id.activity_schedule_results_container), R.string.notifications_permission_needed, Snackbar.LENGTH_LONG);
+                        snackbar.setAction("Settings", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                // link to system notification settings
+                                NotificationsManagementFragment.openSystemNotificationSettings(ScheduleResultsActivity.this);
+                            }
+                        });
+                        View snackbarView = snackbar.getView();
+                        android.widget.TextView tv = snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+                        tv.setMaxLines(10);
+                        snackbar.show();
+
+                    } else if (!notifsEnabled) {
+                        Snackbar snackbar = Snackbar.make(findViewById(R.id.activity_schedule_results_container), R.string.notifications_not_enabled, Snackbar.LENGTH_LONG);
+                        snackbar.setAction("Settings", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                // link to notifications management
+                                goToNotificationsManagement();
+                            }
+                        });
+                        View snackbarView = snackbar.getView();
+                        android.widget.TextView tv = snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+                        tv.setMaxLines(10);
+                        snackbar.show();
+                    }
+
                 } else {
                     // disable notifs for route
                     PushNotificationManager.getInstance(ScheduleResultsActivity.this).removeNotificationForRoute(routeDirectionModel.getRouteId(), transitType);

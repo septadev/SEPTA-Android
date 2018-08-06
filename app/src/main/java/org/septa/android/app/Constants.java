@@ -42,5 +42,4 @@ public interface Constants {
     String DESTINATION_STOP_ID = "destination_stop_id";
     String EXPIRATION_TIMESTAMP = "expiration_timestamp";
 
-
 }

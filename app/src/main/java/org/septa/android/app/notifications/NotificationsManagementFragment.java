@@ -65,7 +65,7 @@ public class NotificationsManagementFragment extends Fragment {
                         @Override
                         public void onClick(View v) {
                             // link to system notification settings
-                            openSystemNotificationSettings();
+                            openSystemNotificationSettings(context);
                         }
                     });
 
@@ -101,7 +101,7 @@ public class NotificationsManagementFragment extends Fragment {
         systemSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openSystemNotificationSettings();
+                openSystemNotificationSettings(context);
             }
         });
 
@@ -168,7 +168,7 @@ public class NotificationsManagementFragment extends Fragment {
         }
     }
 
-    private void openSystemNotificationSettings() {
+    public static void openSystemNotificationSettings(Context context) {
         Intent intent = new Intent();
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {

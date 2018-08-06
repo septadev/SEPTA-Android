@@ -363,6 +363,7 @@
     <string name="rating_no_thanks_button">No Thanks</string>
     <string name="rating_remind_me_later_button">Remind Me Later</string>
     <string name="rating_details">We\'d love your feedback on the SEPTA app</string>
+    <string name="elerts">Transit Watch</string>
 
 
     <!-- String Resources -->

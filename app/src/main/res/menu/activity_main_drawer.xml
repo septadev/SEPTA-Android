@@ -44,6 +44,11 @@
             android:id="@+id/nav_perks"
             android:icon="@drawable/ic_perks_non"
             android:title="@string/perks" />
+        <item
+            android:id="@+id/nav_elerts"
+            android:checkable="false"
+            android:icon="@drawable/ic_elerts_non"
+            android:title="@string/elerts" />
     </group>
 
     <group

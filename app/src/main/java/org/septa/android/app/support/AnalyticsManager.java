@@ -76,6 +76,7 @@ public abstract class AnalyticsManager {
     public static final String CUSTOM_EVENT_KEY_MORE = "More About SEPTA Key";
     public static final String CUSTOM_EVENT_FARES_MORE = "More About Fares";
     public static final String CUSTOM_EVENT_PERKS_MORE = "More About Perks";
+    public static final String CUSTOM_EVENT_ELERTS = "ELERTS Transit Watch";
 
     // favorites actions
     public static final String CUSTOM_EVENT_ID_FAVORITES_MANAGEMENT = "Favorites Management";

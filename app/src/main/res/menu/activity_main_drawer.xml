@@ -13,8 +13,8 @@
         <item
             android:id="@+id/nav_transitview"
             android:icon="@drawable/ic_transitview_non"
-            app:actionLayout="@layout/menu_badge"
-            android:title="@string/transit_view" />
+            android:title="@string/transit_view"
+            app:actionLayout="@layout/menu_badge" />
         <item
             android:id="@+id/nav_favorites"
             android:icon="@drawable/ic_favorites_non"
@@ -22,8 +22,8 @@
         <item
             android:id="@+id/nav_system_status"
             android:icon="@drawable/ic_status_non"
-            app:actionLayout="@layout/menu_badge"
-            android:title="@string/system_status" />
+            android:title="@string/system_status"
+            app:actionLayout="@layout/menu_badge" />
         <item
             android:id="@+id/nav_schedule"
             android:icon="@drawable/ic_schedule_non"
@@ -40,6 +40,11 @@
             android:id="@+id/nav_perks"
             android:icon="@drawable/ic_perks_non"
             android:title="@string/perks" />
+        <item
+            android:id="@+id/nav_elerts"
+            android:checkable="false"
+            android:icon="@drawable/ic_elerts_non"
+            android:title="@string/elerts" />
     </group>
 
     <group

@@ -194,9 +194,7 @@ public class NextToArriveTripDetailActivity extends BaseActivity implements OnMa
 
         View twitterView = findViewById(R.id.twitter_view);
         twitterView.setClickable(true);
-        twitterView.setOnClickListener(new View.OnClickListener()
-
-        {
+        twitterView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Uri app = Uri.parse(appUrl);
@@ -213,7 +211,6 @@ public class NextToArriveTripDetailActivity extends BaseActivity implements OnMa
                 startActivity(intent);
             }
         });
-
 
         vehicleValue.setText(vehicleId);
         refreshHandler = new Handler();

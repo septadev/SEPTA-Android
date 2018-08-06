@@ -110,7 +110,6 @@ public class PushNotificationService extends FirebaseMessagingService {
                     if (notificationType == NotificationType.ALERT) {
                         PushNotificationManager.getInstance(getApplicationContext()).buildServiceAlertNotification(getApplicationContext(), message, transitType, routeId);
                     } else if (notificationType == NotificationType.DETOUR) {
-                        // TODO: parse out other values for detour
                         PushNotificationManager.getInstance(getApplicationContext()).buildDetourNotification(getApplicationContext(), message, transitType, routeId);
                     }
                 }

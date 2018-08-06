@@ -29,7 +29,7 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
 
     // parsing time frames
     public static final String START_END_TIME_DELIM = ",";
-    private static final String DEFAULT_TIME_FRAME = "0900,1700";
+    private static final String DEFAULT_TIME_FRAME = "0600,1800";
 
     static final int MAX_TIMEFRAMES = 2;
 

@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 
@@ -49,7 +50,7 @@ public class PushNotificationManager {
     private static final String RAIL_DELAY_SUFFIX = "_DELAY";
     private static final String DETOUR_SUFFIX = "_DETOUR";
 
-    private static final DateFormat timeFormat = new SimpleDateFormat("HHmm");
+    private static final DateFormat timeFormat = new SimpleDateFormat("HHmm", Locale.US);
 
     private PushNotificationManager(Context context) {
         this.context = context;
@@ -102,8 +103,9 @@ public class PushNotificationManager {
     }
 
     public void buildServiceAlertNotification(Context context, String message, TransitType transitType, String routeId) {
-        // TODO: fix request code
         String title = context.getString(R.string.push_notif_alert_title, routeId);
+
+        // TODO: jump to MainActivity and handle in onNewIntent to use startActivityForResult()
 
         String routeName = routeId;
         if (transitType == TransitType.RAIL) {
@@ -134,8 +136,9 @@ public class PushNotificationManager {
     }
 
     public void buildDetourNotification(Context context, String message, TransitType transitType, String routeId) {
-        // TODO: fix request code
         String title = context.getString(R.string.push_notif_detour_title, routeId);
+
+        // TODO: jump to MainActivity and handle in onNewIntent to use startActivityForResult()
 
         // tapping on service alert will open system status page
         Intent resultIntent = new Intent(context, SystemStatusResultsActivity.class);
@@ -164,7 +167,7 @@ public class PushNotificationManager {
 
         String title = context.getString(R.string.push_notif_rail_delay_title, routeId);
 
-        int requestCode = 0; // TODO: fix request code
+        int requestCode = Constants.RAIL_DELAY_PUSH_NOTIF_REQUEST; // TODO: is this even used??
 
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_launcher)

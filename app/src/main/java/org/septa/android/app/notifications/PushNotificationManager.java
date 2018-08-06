@@ -108,7 +108,8 @@ public class PushNotificationManager {
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_launcher)
                 .setContentTitle(title)
-                .setContentText(message);
+                .setContentText(message)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(message));
 
         displayNotification(context, mBuilder);
     }
@@ -132,7 +133,8 @@ public class PushNotificationManager {
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_launcher)
                 .setContentTitle(title)
-                .setContentText(message);
+                .setContentText(message)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(message));
 
         // build back stack for click action
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
@@ -158,7 +160,8 @@ public class PushNotificationManager {
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_launcher)
                 .setContentTitle(title)
-                .setContentText(message);
+                .setContentText(message)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(message));
 
         // build back stack for click action
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
@@ -177,7 +180,8 @@ public class PushNotificationManager {
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_launcher)
                 .setContentTitle(title)
-                .setContentText(message);
+                .setContentText(message)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(message));
 
         // estimated delay notifications don't link anywhere in app, actual ones do
         if (delayType == DelayNotificationType.ACTUAL) {

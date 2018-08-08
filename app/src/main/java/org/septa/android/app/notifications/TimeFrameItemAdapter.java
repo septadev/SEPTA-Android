@@ -124,11 +124,6 @@ public class TimeFrameItemAdapter extends RecyclerView.Adapter<TimeFrameItemAdap
         return timeFrames.size();
     }
 
-    public void updateList(final List<String> timeFramesList) {
-        this.timeFrames = timeFramesList;
-        notifyDataSetChanged();
-    }
-
     @Override
     public void onStartTimeSet(TimePicker view, int hourOfDay, int minute, int position) {
         int newStartTime = hourOfDay * 100 + minute;
@@ -163,6 +158,11 @@ public class TimeFrameItemAdapter extends RecyclerView.Adapter<TimeFrameItemAdap
         } else {
             Toast.makeText(activity, R.string.notifications_end_time_requirement, Toast.LENGTH_LONG).show();
         }
+    }
+
+    public void updateList(final List<String> timeFramesList) {
+        this.timeFrames = timeFramesList;
+        notifyDataSetChanged();
     }
 
     class TimeFrameViewHolder extends RecyclerView.ViewHolder {

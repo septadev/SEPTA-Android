@@ -128,6 +128,7 @@ public class MainActivity extends BaseActivity implements
     @Override
     public final void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         favoritesFragment = new FavoritesFragment();
         trainview = WebViewFragment.getInstance(getResources().getString(R.string.trainview_url));
 
@@ -167,6 +168,13 @@ public class MainActivity extends BaseActivity implements
                     handleShakeEvent(count);
                 }
             });
+        }
+
+        // handle new intent
+        Intent intent = getIntent();
+        int requestCode = intent.getIntExtra(Constants.REQUEST_CODE, -1);
+        if (requestCode != -1) {
+            onNewIntent(intent);
         }
     }
 

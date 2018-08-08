@@ -15,6 +15,7 @@ import org.septa.android.app.TransitType;
 import org.septa.android.app.notifications.DelayNotificationType;
 import org.septa.android.app.notifications.NotificationType;
 import org.septa.android.app.notifications.PushNotificationManager;
+import org.septa.android.app.support.CrashlyticsManager;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -105,7 +106,8 @@ public class PushNotificationService extends FirebaseMessagingService {
                             expirationTimeStamp = df.parse(expires);
                             Log.d(TAG, "Parsing Expiration Time Stamp: " + expirationTimeStamp);
                         } catch (ParseException e) {
-                            e.printStackTrace();
+                            CrashlyticsManager.log(Log.ERROR, TAG, "Exception when parsing notification timestamp " + data.get(NOTIFICATION_KEY_EXPIRES));
+                            CrashlyticsManager.log(Log.ERROR, TAG, e.getStackTrace().toString());
                         }
 
                         PushNotificationManager.getInstance(getApplicationContext()).buildDelayNotification(getApplicationContext(), message, routeId, vehicleId, destinationStopId, delayType, expirationTimeStamp);

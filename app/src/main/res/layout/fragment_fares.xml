@@ -141,46 +141,6 @@
                     android:layout_marginTop="27dp">
 
                     <ImageView
-                        android:id="@+id/token_image"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="21dp"
-                        android:layout_marginRight="21dp"
-                        android:src="@drawable/token_icon" />
-
-                    <org.septa.android.app.view.TextView
-                        android:id="@+id/token_label"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_toEndOf="@id/token_image"
-                        android:layout_toRightOf="@id/token_image"
-                        android:letterSpacing="-0.02"
-                        android:text="Token"
-                        android:textColor="@color/text_primary"
-                        android:textSize="14sp"
-                        app:typeface="@string/font_roboto_light" />
-
-                    <org.septa.android.app.view.TextView
-                        android:id="@+id/token_text"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/token_label"
-                        android:layout_toRightOf="@id/token_image"
-                        android:text="@string/token_text"
-                        android:textColor="@android:color/black"
-                        android:textSize="12sp"
-                        app:typeface="@string/font_roboto_regular" />
-
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="14dp"
-                    android:layout_marginRight="14dp"
-                    android:layout_marginTop="27dp">
-
-                    <ImageView
                         android:id="@+id/weekly_image"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

@@ -67,7 +67,7 @@ public class PushNotificationService extends FirebaseMessagingService {
         // check notification subscription window
         if (PushNotificationManager.isWithinNotificationWindow(getApplicationContext())) {
 
-            if (remoteMessage.getData().size() > 0) {
+            if (remoteMessage.getData() != null && remoteMessage.getData().size() > 0) {
                 Map<String, String> data = remoteMessage.getData();
 
                 // get notification title / body

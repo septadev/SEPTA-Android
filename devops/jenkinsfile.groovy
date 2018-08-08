@@ -40,12 +40,12 @@ pipeline {
 
                     if (codeVersionNum < currentVersion) {
                         sh 'rm code/app/src/main/assets/databases/*.zip'
-                        httpRequest url: dbUrl, outputFile: "code/app/src/main/assets/databases/SEPTA_${currentVersion}_sqlite.zip"
+                        httpRequest url: dbUrl, outputFile: "code/app/src/main/assets/databases/SEPTA_${currentVersion}.sqlite.zip"
                         def output = "databaseVersion=${currentVersion}\ndatabaseFileName=SEPTA_${currentVersion}.sqlite"
                         writeFile file: 'code/app/src/main/assets/databases/database_version.properties', text: output
                         dir('code') {
                             sshagent(credentials: ["${env.SEPTA_KEY_CREDENTIALS_ID}"]) {
-                                sh "git add app/src/main/assets/databases/SEPTA_${currentVersion}_sqlite.zip"
+                                sh "git add app/src/main/assets/databases/SEPTA_${currentVersion}.sqlite.zip"
                                 sh "git commit -a -m \"Updated embeded database to version ${currentVersion}.\""
                                 sh 'git push '
                             }

@@ -77,7 +77,9 @@ public class TimeFrameItemAdapter extends RecyclerView.Adapter<TimeFrameItemAdap
                 int minute = startTime % 100;
 
                 TimePickerDialog timePickerDialog;
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) { // android:timePickerMode spinner and clock began in Lollipop
+                // android:timePickerMode spinner and clock began in Lollipop (21)
+                // but clock did not become default until Nougat (24+)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     timePickerDialog = new NotificationTimePickerClockDialog(activity, TimeFrameItemAdapter.this, hour, minute, false, true, holder.getAdapterPosition());
                 } else {
                     timePickerDialog = new NotificationTimePickerSpinnerDialog(activity, TimeFrameItemAdapter.this, hour, minute, false, true, holder.getAdapterPosition());
@@ -94,7 +96,9 @@ public class TimeFrameItemAdapter extends RecyclerView.Adapter<TimeFrameItemAdap
                 int minute = endTime % 100;
 
                 TimePickerDialog timePickerDialog;
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) { // android:timePickerMode spinner and clock began in Lollipop
+                // android:timePickerMode spinner and clock began in Lollipop (21)
+                // but clock did not become default until Nougat (24+)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     timePickerDialog = new NotificationTimePickerClockDialog(activity, TimeFrameItemAdapter.this, hour, minute, false, false, holder.getAdapterPosition());
                 } else {
                     timePickerDialog = new NotificationTimePickerSpinnerDialog(activity, TimeFrameItemAdapter.this, hour, minute, false, false, holder.getAdapterPosition());

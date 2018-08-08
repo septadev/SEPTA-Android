@@ -2,6 +2,7 @@ package org.septa.android.app.services.apiinterfaces;
 
 import android.app.ActivityManager;
 import android.content.Context;
+import android.os.Build;
 import android.util.Log;
 
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -91,9 +92,15 @@ public class PushNotificationService extends FirebaseMessagingService {
                         // default expiration date 3 hours from now
                         Date expirationTimeStamp = addHoursToDate(new Date(), 3);
 
-                        // parse expiration date
-                        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSXXX", Locale.US);
                         try {
+                            // parse expiration date
+                            SimpleDateFormat df;
+                            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSXXX", Locale.US);
+                            } else {
+                                df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZZZZZ", Locale.US);
+                            }
+
                             String expires = data.get(NOTIFICATION_KEY_EXPIRES);
                             expirationTimeStamp = df.parse(expires);
                             Log.d(TAG, "Parsing Expiration Time Stamp: " + expirationTimeStamp);

@@ -33,6 +33,7 @@ import org.septa.android.app.systemstatus.GoToSystemStatusResultsOnClickListener
 import org.septa.android.app.systemstatus.SystemStatusState;
 
 import java.text.DateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -207,7 +208,13 @@ public class NextToArriveTripView extends FrameLayout {
         android.widget.TextView lineNameText = convertView.findViewById(R.id.orig_line_name_text);
         lineNameText.setText(lineName);
 
-        ((ImageView) convertView.findViewById(R.id.orig_line_marker_left)).setColorFilter(ContextCompat.getColor(getContext(), transitType.getLineColor(lineId, context)));
+        try {
+            ((ImageView) convertView.findViewById(R.id.orig_line_marker_left)).setColorFilter(ContextCompat.getColor(getContext(), transitType.getLineColor(lineId, context)));
+        } catch (Throwable t) {
+            CrashlyticsManager.log(Log.ERROR, TAG, "Attempting to set color filter on bullet for " + lineId);
+            CrashlyticsManager.log(Log.ERROR, TAG, t.getMessage());
+            CrashlyticsManager.log(Log.ERROR, TAG, Arrays.toString(t.getStackTrace()));
+        }
 
         Alert alert = SystemStatusState.getAlertForLine(transitType, lineId);
 

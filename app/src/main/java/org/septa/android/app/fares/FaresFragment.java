@@ -33,7 +33,6 @@ public class FaresFragment extends Fragment {
         setHttpIntent(rootView, R.id.more_about_fares_button, getResources().getString(R.string.about_fares_url), getResources().getString(R.string.about_fares_title));
 
         formatAndSetText(rootView, R.id.cash_text, R.string.cash_text, new Object[]{getResources().getString(R.string.cash_price), getResources().getString(R.string.quick_trip_price)});
-        formatAndSetText(rootView, R.id.token_text, R.string.token_text, new Object[]{getResources().getString(R.string.token_each_price), getResources().getString(R.string.token_transfer_price)});
         formatAndSetText(rootView, R.id.weekly_text, R.string.weekly_text, new Object[]{getResources().getString(R.string.transpass_weekly_price), getResources().getString(R.string.transpass_monthly_price)});
         formatAndSetText(rootView, R.id.cross_text, R.string.cross_text, new Object[]{getResources().getString(R.string.cross_county_weekly_price), getResources().getString(R.string.cross_county_monthly_price)});
         formatAndSetText(rootView, R.id.one_day_con_text, R.string.one_day_con_text, new Object[]{getResources().getString(R.string.one_day_pass_price), getResources().getString(R.string.one_day_quantity)});

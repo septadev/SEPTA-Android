@@ -104,87 +104,52 @@ public class PushNotificationManager {
 
     public void buildSpecialAnnouncementNotification(Context context, String message) {
         String title = context.getString(R.string.push_notif_special_announcement_title);
-
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_launcher)
-                .setContentTitle(title)
-                .setContentText(message)
-                .setStyle(new NotificationCompat.BigTextStyle().bigText(message));
-
-        displayNotification(context, mBuilder);
+        displayNotification(context, title, message, null);
     }
 
-    public void buildServiceAlertNotification(Context context, String message, TransitType transitType, String routeId) {
-        String title = context.getString(R.string.push_notif_alert_title, routeId);
-
+    public void buildSystemStatusNotification(Context context, NotificationType notificationType, String message, TransitType transitType, String routeId) {
+        String title = null;
         String routeName = routeId;
-        if (transitType == TransitType.RAIL) {
+
+        Intent resultIntent = new Intent(context, MainActivity.class);
+
+        if (notificationType == NotificationType.ALERT) {
+            // build service alert
+            title = context.getString(R.string.push_notif_alert_title, routeId);
+            resultIntent.putExtra(Constants.REQUEST_CODE, Constants.PUSH_NOTIF_REQUEST_SERVICE_ALERT);
+
             // look up line name for rail
-            routeName = getRailRouteName(context, routeId);
+            if (transitType == TransitType.RAIL) {
+                routeName = getRailRouteName(context, routeId);
+            }
+        } else if (notificationType == NotificationType.DETOUR) {
+            // build detour
+            title = context.getString(R.string.push_notif_detour_title, routeId);
+            resultIntent.putExtra(Constants.REQUEST_CODE, Constants.PUSH_NOTIF_REQUEST_DETOUR);
         }
 
-        // tapping on service alert will open main activity
-        Intent resultIntent = new Intent(context, MainActivity.class);
-        resultIntent.putExtra(Constants.REQUEST_CODE, Constants.PUSH_NOTIF_REQUEST_SERVICE_ALERT);
+        // tapping on push notification will open main activity
         resultIntent.putExtra(Constants.ROUTE_NAME, routeName);
         resultIntent.putExtra(Constants.ROUTE_ID, routeId);
         resultIntent.putExtra(Constants.TRANSIT_TYPE, transitType);
 
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_launcher)
-                .setContentTitle(title)
-                .setContentText(message)
-                .setStyle(new NotificationCompat.BigTextStyle().bigText(message));
-
         // build back stack for click action
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
         stackBuilder.addNextIntentWithParentStack(resultIntent);
         PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-        mBuilder.setContentIntent(pendingIntent);
 
-        displayNotification(context, mBuilder);
+        displayNotification(context, title, message, pendingIntent);
     }
 
-    public void buildDetourNotification(Context context, String message, TransitType transitType, String routeId) {
-        String title = context.getString(R.string.push_notif_detour_title, routeId);
-
-        // tapping on service alert will open main activity
-        Intent resultIntent = new Intent(context, MainActivity.class);
-
-        // only bus and trolleys experience detours
-        resultIntent.putExtra(Constants.REQUEST_CODE, Constants.PUSH_NOTIF_REQUEST_DETOUR);
-        resultIntent.putExtra(Constants.ROUTE_NAME, routeId); // bus and trolleys use route ID for route name
-        resultIntent.putExtra(Constants.ROUTE_ID, routeId);
-        resultIntent.putExtra(Constants.TRANSIT_TYPE, transitType);
-
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_launcher)
-                .setContentTitle(title)
-                .setContentText(message)
-                .setStyle(new NotificationCompat.BigTextStyle().bigText(message));
-
-        // build back stack for click action
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-        stackBuilder.addNextIntentWithParentStack(resultIntent);
-        PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-        mBuilder.setContentIntent(pendingIntent);
-
-        displayNotification(context, mBuilder);
-    }
-
-    public void buildDelayNotification(final Context context, String message, final String routeId, final String vehicleId, String destinationStopId, DelayNotificationType delayType, Date expirationTimeStamp) {
-        final TransitType transitType = TransitType.RAIL;
-
+    public void buildRailDelayNotification(final Context context, String message, final String routeId, final String vehicleId, String destinationStopId, DelayNotificationType delayType, Date expirationTimeStamp) {
         String title = context.getString(R.string.push_notif_rail_delay_title, routeId);
 
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_launcher)
-                .setContentTitle(title)
-                .setContentText(message)
-                .setStyle(new NotificationCompat.BigTextStyle().bigText(message));
-
         // estimated delay notifications don't link anywhere in app, actual ones do
+        PendingIntent pendingIntent = null;
+
         if (delayType == DelayNotificationType.ACTUAL) {
+            // all delay notifications are rail
+            final TransitType transitType = TransitType.RAIL;
 
             // look up destination stop
             StopModel destStop = getRailStop(context, destinationStopId);
@@ -203,18 +168,28 @@ public class PushNotificationManager {
             resultIntent.putExtra(Constants.TRANSIT_TYPE, transitType);
             resultIntent.putExtra(Constants.EXPIRATION_TIMESTAMP, expirationTimeStamp);
 
-            // build back stack
+            // build back stack for click action
             TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
             stackBuilder.addNextIntentWithParentStack(resultIntent);
-            PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-            mBuilder.setContentIntent(pendingIntent);
-
+            pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
         }
 
-        displayNotification(context, mBuilder);
+        displayNotification(context, title, message, pendingIntent);
     }
 
-    private void displayNotification(Context context, NotificationCompat.Builder mBuilder) {
+    private void displayNotification(Context context, String title, String message, PendingIntent pendingIntent) {
+
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_launcher)
+                .setContentTitle(title)
+                .setContentText(message)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(message));
+
+        // add click action
+        if (pendingIntent != null) {
+            mBuilder.setContentIntent(pendingIntent);
+        }
+
         // dismiss notification on click
         mBuilder.setAutoCancel(true);
 
@@ -239,7 +214,7 @@ public class PushNotificationManager {
         Toast.makeText(context, R.string.notification_expired, Toast.LENGTH_LONG).show();
     }
 
-    public static void onServiceAlertNotificationClick(Activity activity, Intent intent) {
+    public static void onSystemStatusNotificationClick(Activity activity, Intent intent, String expandedAlert) {
         final String routeId = intent.getStringExtra(Constants.ROUTE_ID);
         final String routeName = intent.getStringExtra(Constants.ROUTE_NAME);
 
@@ -248,38 +223,16 @@ public class PushNotificationManager {
         if (bundle != null) {
             final TransitType transitType = (TransitType) bundle.get(Constants.TRANSIT_TYPE);
 
-            // tapping on detour notif will open system status results
+            // tapping on service alert notif will open system status results
             Intent resultIntent = new Intent(activity, SystemStatusResultsActivity.class);
             resultIntent.putExtra(Constants.ROUTE_NAME, routeName);
             resultIntent.putExtra(Constants.ROUTE_ID, routeId);
             resultIntent.putExtra(Constants.TRANSIT_TYPE, transitType);
-            resultIntent.putExtra(Constants.SERVICE_ALERT_EXPANDED, Boolean.TRUE);
+            resultIntent.putExtra(expandedAlert, Boolean.TRUE);
 
             activity.startActivityForResult(resultIntent, Constants.SYSTEM_STATUS_REQUEST);
         } else {
-            CrashlyticsManager.log(Log.ERROR, TAG, "Null intent bundle after tapping service alert push notification for route " + routeId);
-        }
-    }
-
-    public static void onDetourNotificationClick(Activity activity, Intent intent) {
-        final String routeId = intent.getStringExtra(Constants.ROUTE_ID);
-        final String routeName = intent.getStringExtra(Constants.ROUTE_NAME);
-
-        Bundle bundle = intent.getExtras();
-
-        if (bundle != null) {
-            final TransitType transitType = (TransitType) bundle.get(Constants.TRANSIT_TYPE);
-
-            // tapping on detour notif will open system status results
-            Intent resultIntent = new Intent(activity, SystemStatusResultsActivity.class);
-            resultIntent.putExtra(Constants.ROUTE_NAME, routeName);
-            resultIntent.putExtra(Constants.ROUTE_ID, routeId);
-            resultIntent.putExtra(Constants.TRANSIT_TYPE, transitType);
-            resultIntent.putExtra(Constants.ACTIVE_DETOUR_EXPANDED, Boolean.TRUE);
-
-            activity.startActivityForResult(resultIntent, Constants.SYSTEM_STATUS_REQUEST);
-        } else {
-            CrashlyticsManager.log(Log.ERROR, TAG, "Null intent bundle after tapping detour push notification for route " + routeId);
+            CrashlyticsManager.log(Log.ERROR, TAG, "Null intent bundle after tapping system status push notification for route " + routeId);
         }
     }
 

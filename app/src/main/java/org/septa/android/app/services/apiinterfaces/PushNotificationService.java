@@ -110,16 +110,15 @@ public class PushNotificationService extends FirebaseMessagingService {
                             CrashlyticsManager.log(Log.ERROR, TAG, e.getStackTrace().toString());
                         }
 
-                        PushNotificationManager.getInstance(getApplicationContext()).buildDelayNotification(getApplicationContext(), message, routeId, vehicleId, destinationStopId, delayType, expirationTimeStamp);
+                        PushNotificationManager.getInstance(getApplicationContext()).buildRailDelayNotification(getApplicationContext(), message, routeId, vehicleId, destinationStopId, delayType, expirationTimeStamp);
                     }
 
                     // get transit type
                     TransitType transitType = TransitType.valueOf(data.get(NOTIFICATION_KEY_TRANSIT_TYPE));
 
-                    if (notificationType == NotificationType.ALERT) {
-                        PushNotificationManager.getInstance(getApplicationContext()).buildServiceAlertNotification(getApplicationContext(), message, transitType, routeId);
-                    } else if (notificationType == NotificationType.DETOUR) {
-                        PushNotificationManager.getInstance(getApplicationContext()).buildDetourNotification(getApplicationContext(), message, transitType, routeId);
+                    // send system status push notification
+                    if (notificationType == NotificationType.ALERT || notificationType == NotificationType.DETOUR) {
+                        PushNotificationManager.getInstance(getApplicationContext()).buildSystemStatusNotification(getApplicationContext(), notificationType, message, transitType, routeId);
                     }
                 }
             }

@@ -405,10 +405,10 @@ public class MainActivity extends BaseActivity implements
                 PushNotificationManager.onRailDelayNotificationClick(MainActivity.this, intent);
                 break;
             case Constants.PUSH_NOTIF_REQUEST_SERVICE_ALERT:
-                PushNotificationManager.onServiceAlertNotificationClick(MainActivity.this, intent);
+                PushNotificationManager.onSystemStatusNotificationClick(MainActivity.this, intent, Constants.SERVICE_ALERT_EXPANDED);
                 break;
             case Constants.PUSH_NOTIF_REQUEST_DETOUR:
-                PushNotificationManager.onDetourNotificationClick(MainActivity.this, intent);
+                PushNotificationManager.onSystemStatusNotificationClick(MainActivity.this, intent, Constants.ACTIVE_DETOUR_EXPANDED);
                 break;
         }
 

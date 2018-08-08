@@ -307,7 +307,7 @@ public class PushNotificationManager {
                     public void onResponse(@NonNull Call<NextArrivalDetails> call, @NonNull Response<NextArrivalDetails> response) {
                         NextArrivalDetails responseBody = response.body();
 
-                        if (responseBody != null) {
+                        if (responseBody != null && responseBody.getResults() > 0) {
                             Intent intent = new Intent(activity, NextToArriveTripDetailActivity.class);
 
                             intent.putExtra(Constants.DESTINATION_STATION, destStop);

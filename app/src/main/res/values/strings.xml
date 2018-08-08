@@ -314,6 +314,49 @@
     <string name="title_mobile_app_alert">Mobile App Alert</string>
 
 
+    <!-- Push Notifications -->
+    <string name="notifications">Manage Notifications</string>
+
+    <string name="global_notifications_settings_heading">Global Settings</string>
+    <string name="enable_notifications">Enable Notifications</string>
+    <string name="enable_notifications_hint">Always show notifications from this app</string>
+    <string name="special_announcements">Special SEPTA Announcements</string>
+    <string name="special_announcements_hint">Get notified about major disruptions in service, weather alerts, and special events</string>
+    <string name="system_notification_settings">System Notification Settings</string>
+    <string name="my_notifications_heading">My Notifications</string>
+    <string name="my_custom_notifications">My Custom Notifications</string>
+    <string name="notifications_permission_required">You must allow notifications from the SEPTA app in \'System Notification Settings\'</string>
+
+    <string name="notifications_schedule_heading">Set Notifications Days and Times for All Transportation Modes</string>
+    <string name="notifications_end_time_requirement">End Time must be after Start Time</string>
+    <string name="notifications_start_time_requirement">Start Time must be before End Time</string>
+    <string name="notification_timeframe_number">Timeframe %1$d</string>
+    <string name="notification_add_timeframe">Add Timeframe</string>
+
+    <string name="notifications_add">Add</string>
+    <string name="notifications_edit">Edit</string>
+    <string name="notifications_done">Done</string>
+
+    <string name="no_notifications_to_edit">You have no notification subscriptions to edit!</string>
+    <string name="delete_notif_title">Delete Notification?</string>
+    <string name="delete_notif_text">Are you sure you want to remove the %1$s from your notifications subscriptions?</string>
+    <string name="delete_notif_pos_button">Delete</string>
+    <string name="delete_notif_neg_button">Cancel</string>
+
+    <string name="subscribe_long_description">Subscribe to Notifications for this Route</string>
+    <string name="view_notification_preferences">View Notification Preferences »</string>
+    <string name="subscribe_switch">Subscribe</string>
+    <string name="notifications_permission_needed">You must allow notifications from the SEPTA app in \'System Notification Settings\' in order to receive push notifications about this route.</string>
+    <string name="notifications_not_enabled">You must enable notifications within the app in order to receive push notifications about this route.</string>
+
+    <string name="push_notif_special_announcement_title">Special Announcement</string>
+    <string name="push_notif_alert_title">Service Alert for Route %1$s</string>
+    <string name="push_notif_detour_title">Detour on Route %1$s</string>
+    <string name="push_notif_rail_delay_title">Train Delay on %1$s</string>
+
+    <string name="notification_expired">This notification has expired and is no longer valid.</string>
+
+
     <!-- In-App Ratings-->
     <string name="rating_title">How are we doing?</string>
     <string name="rating_rate_button">Rate Now</string>

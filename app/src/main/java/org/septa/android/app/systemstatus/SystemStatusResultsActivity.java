@@ -5,15 +5,21 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.SwitchCompat;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
+import android.widget.CompoundButton;
 
 import org.septa.android.app.BaseActivity;
 import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
 import org.septa.android.app.domain.RouteDirectionModel;
+import org.septa.android.app.notifications.NotificationsManagementFragment;
+import org.septa.android.app.notifications.PushNotificationManager;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.AlertDetail;
 import org.septa.android.app.support.GeneralUtils;
@@ -48,6 +54,9 @@ public class SystemStatusResultsActivity extends BaseActivity {
 
     String routeId;
     String routeName;
+
+    View notificationPreferences;
+    SwitchCompat notifsSubscribeSwitch;
 
     View progressView;
 
@@ -136,6 +145,65 @@ public class SystemStatusResultsActivity extends BaseActivity {
             }
         });
 
+        // link to notification settings
+        notificationPreferences = findViewById(R.id.notification_preferences);
+        notificationPreferences.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goToNotificationsManagement();
+            }
+        });
+
+        // set initial checked state of switch
+        notifsSubscribeSwitch = findViewById(R.id.subscribe_notifications_switch);
+        notifsSubscribeSwitch.setChecked(SeptaServiceFactory.getNotificationsService().isSubscribedToRoute(SystemStatusResultsActivity.this, routeId));
+
+        // switch to create / enable notification for this route
+        notifsSubscribeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    // enable notifs for route
+                    PushNotificationManager.getInstance(SystemStatusResultsActivity.this).createNotificationForRoute(routeId, routeName, transitType);
+
+                    // recheck device permissions and show message if notifs not allowed or enabled
+                    boolean notifsAllowed = NotificationManagerCompat.from(SystemStatusResultsActivity.this).areNotificationsEnabled(),
+                            notifsEnabled = SeptaServiceFactory.getNotificationsService().areNotificationsEnabled(SystemStatusResultsActivity.this);
+                    if (!notifsAllowed) {
+                        Snackbar snackbar = Snackbar.make(findViewById(R.id.system_status_results_coordinator), R.string.notifications_permission_needed, Snackbar.LENGTH_LONG);
+                        snackbar.setAction("Settings", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                // link to system notification settings
+                                NotificationsManagementFragment.openSystemNotificationSettings(SystemStatusResultsActivity.this);
+                            }
+                        });
+                        View snackbarView = snackbar.getView();
+                        android.widget.TextView tv = snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+                        tv.setMaxLines(10);
+                        snackbar.show();
+
+                    } else if (!notifsEnabled) {
+                        Snackbar snackbar = Snackbar.make(findViewById(R.id.system_status_results_coordinator), R.string.notifications_not_enabled, Snackbar.LENGTH_LONG);
+                        snackbar.setAction("Settings", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                // link to notifications management
+                                goToNotificationsManagement();
+                            }
+                        });
+                        View snackbarView = snackbar.getView();
+                        android.widget.TextView tv = snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+                        tv.setMaxLines(10);
+                        snackbar.show();
+                    }
+
+                } else {
+                    // disable notifs for route
+                    PushNotificationManager.getInstance(SystemStatusResultsActivity.this).removeNotificationForRoute(routeId, transitType);
+                }
+            }
+        });
     }
 
     @Override
@@ -311,5 +379,10 @@ public class SystemStatusResultsActivity extends BaseActivity {
 
             weatherAlertsDetails.setHtml(GeneralUtils.updateUrls(weatherBuilder.toString()));
         }
+    }
+
+    private void goToNotificationsManagement() {
+        setResult(Constants.VIEW_NOTIFICATION_MANAGEMENT, new Intent());
+        finish();
     }
 }

@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
+import com.google.firebase.FirebaseApp;
 
 import org.septa.android.app.database.DatabaseManager;
 import org.septa.android.app.database.SEPTADatabase;
@@ -74,6 +75,8 @@ public class MainApplication extends Application implements Runnable {
             SeptaServiceFactory.setSeptaWebServicesBaseUrl(septaWebServicesBaseUrl);
 
             SeptaServiceFactory.init();
+
+            FirebaseApp.initializeApp(this);
 
             //SeptaServiceFactory.getFavoritesService().deleteAllFavorites(this);
         } catch (PackageManager.NameNotFoundException e) {

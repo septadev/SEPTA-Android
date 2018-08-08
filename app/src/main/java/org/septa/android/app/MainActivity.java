@@ -44,6 +44,8 @@ import org.septa.android.app.fares.PerksFragment;
 import org.septa.android.app.favorites.FavoritesFragment;
 import org.septa.android.app.favorites.edit.ManageFavoritesFragment;
 import org.septa.android.app.nextarrive.NextToArriveFragment;
+import org.septa.android.app.notifications.NotificationsManagementFragment;
+import org.septa.android.app.notifications.PushNotificationManager;
 import org.septa.android.app.schedules.SchedulesFragment;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Alert;
@@ -102,8 +104,8 @@ public class MainActivity extends BaseActivity implements
     Fragment faresTransitInfo = new FaresFragment();
     Fragment perks = new PerksFragment();
     Fragment systemMap = new SystemMapFragment();
-    Fragment events = null;
     Fragment trainview = null;
+    Fragment notifications = new NotificationsManagementFragment();
     Fragment transitView = new TransitViewFragment();
     Fragment connect = new ConnectFragment();
     Fragment about = new AboutFragment();
@@ -126,8 +128,8 @@ public class MainActivity extends BaseActivity implements
     @Override
     public final void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         favoritesFragment = new FavoritesFragment();
-        events = WebViewFragment.getInstance(getResources().getString(R.string.events_url));
         trainview = WebViewFragment.getInstance(getResources().getString(R.string.trainview_url));
 
         setContentView(R.layout.activity_main);
@@ -166,6 +168,13 @@ public class MainActivity extends BaseActivity implements
                     handleShakeEvent(count);
                 }
             });
+        }
+
+        // handle new intent
+        Intent intent = getIntent();
+        int requestCode = intent.getIntExtra(Constants.REQUEST_CODE, -1);
+        if (requestCode != -1) {
+            onNewIntent(intent);
         }
     }
 
@@ -352,6 +361,11 @@ public class MainActivity extends BaseActivity implements
             switchToBundle(item, systemMap, R.string.system_map, R.drawable.ic_map_active);
         }
 
+        if (id == R.id.nav_notifications) {
+            AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_MENU_NOTIFICATIONS, AnalyticsManager.CONTENT_ID_NOTIFICATIONS, null);
+            switchToBundle(item, notifications, R.string.notifications, R.drawable.ic_notifications_active);
+        }
+
         if (id == R.id.nav_connect) {
             AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_MENU_CONNECT, AnalyticsManager.CONTENT_ID_CONNECT, null);
             switchToBundle(item, connect, R.string.connect_with_septa, 0);
@@ -377,6 +391,27 @@ public class MainActivity extends BaseActivity implements
             jumpToElertsApp(this);
         }
         return true;
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        // ensure intent coming from valid source
+        int requestCode = intent.getIntExtra(Constants.REQUEST_CODE, -1);
+
+        switch (requestCode) {
+            case Constants.PUSH_NOTIF_REQUEST_RAIL_DELAY:
+                PushNotificationManager.onRailDelayNotificationClick(MainActivity.this, intent);
+                break;
+            case Constants.PUSH_NOTIF_REQUEST_SERVICE_ALERT:
+                PushNotificationManager.onSystemStatusNotificationClick(MainActivity.this, intent, Constants.SERVICE_ALERT_EXPANDED);
+                break;
+            case Constants.PUSH_NOTIF_REQUEST_DETOUR:
+                PushNotificationManager.onSystemStatusNotificationClick(MainActivity.this, intent, Constants.ACTIVE_DETOUR_EXPANDED);
+                break;
+        }
+
     }
 
     @Override
@@ -413,12 +448,33 @@ public class MainActivity extends BaseActivity implements
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         int unmaskedRequestCode = requestCode & 0x0000ffff;
-        if (unmaskedRequestCode == Constants.NTA_REQUEST) {
-            if (resultCode == Constants.VIEW_SCHEDULE) {
-                Message message = jumpToSchedulesHandler.obtainMessage();
-                message.setData(data.getExtras());
-                jumpToSchedulesHandler.sendMessage(message);
-            }
+        switch (resultCode) {
+
+            case Constants.VIEW_SCHEDULE:
+
+                // jump to schedule from NTA
+                if (unmaskedRequestCode == Constants.NTA_REQUEST) {
+                    Message message = jumpToSchedulesHandler.obtainMessage();
+                    message.setData(data.getExtras());
+                    jumpToSchedulesHandler.sendMessage(message);
+                }
+                break;
+
+            case Constants.VIEW_SYSTEM_STATUS_PICKER:
+
+                // jump to system status from notifications management
+                if (unmaskedRequestCode == Constants.NOTIFICATIONS_REQUEST) {
+                    jumpToSystemStatusHandler.sendMessage(jumpToSystemStatusHandler.obtainMessage());
+                }
+                break;
+
+            case Constants.VIEW_NOTIFICATION_MANAGEMENT:
+
+                // jump to notifications management from NTA / schedules / system status / transitview
+                if (unmaskedRequestCode == Constants.NTA_REQUEST || unmaskedRequestCode == Constants.SYSTEM_STATUS_REQUEST || unmaskedRequestCode == Constants.SCHEDULES_REQUEST || unmaskedRequestCode == Constants.TRANSITVIEW_REQUEST) {
+                    jumpToNotifsManagementHandler.sendMessage(jumpToNotifsManagementHandler.obtainMessage());
+                }
+                break;
         }
     }
 
@@ -462,7 +518,7 @@ public class MainActivity extends BaseActivity implements
         intent.putExtra(TRANSITVIEW_ROUTE_FIRST, selectedRoutes.get(0));
         intent.putExtra(TRANSITVIEW_ROUTE_SECOND, selectedRoutes.get(1));
         intent.putExtra(TRANSITVIEW_ROUTE_THIRD, selectedRoutes.get(2));
-        startActivity(intent);
+        startActivityForResult(intent, Constants.TRANSITVIEW_REQUEST);
     }
 
     @Override
@@ -590,6 +646,34 @@ public class MainActivity extends BaseActivity implements
         }
     }
 
+    public void switchToSystemStatus() {
+        if (currentMenu == null || currentMenu.getItemId() != R.id.nav_system_status) {
+            if (currentMenu != null) {
+                currentMenu.setIcon(previousIcon);
+            }
+            navigationView.setCheckedItem(R.id.nav_system_status);
+            currentMenu = navigationView.getMenu().findItem(R.id.nav_system_status);
+            previousIcon = currentMenu.getIcon();
+            currentMenu.setIcon(R.drawable.ic_status_active);
+            getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, systemStatus).commit();
+            setTitle(R.string.system_status);
+        }
+    }
+
+    public void switchToNotificationManagement() {
+        if (currentMenu == null || currentMenu.getItemId() != R.id.nav_notifications) {
+            if (currentMenu != null) {
+                currentMenu.setIcon(previousIcon);
+            }
+            navigationView.setCheckedItem(R.id.nav_notifications);
+            currentMenu = navigationView.getMenu().findItem(R.id.nav_notifications);
+            previousIcon = currentMenu.getIcon();
+            currentMenu.setIcon(R.drawable.ic_notifications_active);
+            getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, notifications).commit();
+            setTitle(R.string.notifications);
+        }
+    }
+
     public void switchToSchedules(Bundle data) {
         CrashlyticsManager.log(Log.INFO, TAG, "switchToSchedules");
 
@@ -621,6 +705,20 @@ public class MainActivity extends BaseActivity implements
         @Override
         public void handleMessage(Message msg) {
             switchToSchedules(msg.getData());
+        }
+    };
+
+    private Handler jumpToSystemStatusHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switchToSystemStatus();
+        }
+    };
+
+    private Handler jumpToNotifsManagementHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switchToNotificationManagement();
         }
     };
 

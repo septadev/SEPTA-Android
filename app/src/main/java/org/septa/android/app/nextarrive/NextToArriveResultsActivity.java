@@ -233,6 +233,16 @@ public class NextToArriveResultsActivity extends BaseActivity implements OnMapRe
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        int unmaskedRequestCode = requestCode & 0x0000ffff;
+        if (unmaskedRequestCode == Constants.SYSTEM_STATUS_REQUEST) {
+            if (resultCode == Constants.VIEW_NOTIFICATION_MANAGEMENT) {
+                goToNotificationsManagement();
+            }
+        }
+    }
+
+    @Override
     public void onMapReady(final GoogleMap googleMap) {
         this.googleMap = googleMap;
         MapStyleOptions mapStyle = MapStyleOptions.loadRawResourceStyle(this, R.raw.maps_json_styling);
@@ -667,7 +677,7 @@ public class NextToArriveResultsActivity extends BaseActivity implements OnMapRe
                         getSupportActionBar().setDisplayShowHomeEnabled(true);
                     }
 
-                    nextToArriveDetailsView.setNextToArriveData(parser);
+                    nextToArriveDetailsView.setNextToArriveData(NextToArriveResultsActivity.this, parser);
 
                     if (googleMap != null) {
                         updateMap();
@@ -868,7 +878,10 @@ public class NextToArriveResultsActivity extends BaseActivity implements OnMapRe
         setResult(Constants.VIEW_SCHEDULE, intent);
         finish();
     }
+
+    private void goToNotificationsManagement() {
+        setResult(Constants.VIEW_NOTIFICATION_MANAGEMENT, new Intent());
+        finish();
+    }
+
 }
-
-
-

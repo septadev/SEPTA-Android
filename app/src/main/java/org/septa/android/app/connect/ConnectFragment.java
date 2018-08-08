@@ -20,7 +20,7 @@ import org.septa.android.app.webview.WebViewActivity;
 
 public class ConnectFragment extends Fragment {
 
-    private static final String TAG = ConnectFragment.class.getSimpleName();
+    private static final String TAG = ConnectFragment.class.getSimpleName(), TOOLBAR_TITLE = "TOOLBAR_TITLE";
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -50,14 +50,14 @@ public class ConnectFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString("title", getActivity().getTitle().toString());
+        outState.putString(TOOLBAR_TITLE, getActivity().getTitle().toString());
     }
 
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
         if (savedInstanceState != null) {
-            String title = savedInstanceState.getString("title");
+            String title = savedInstanceState.getString(TOOLBAR_TITLE);
             if (title != null && getActivity() != null) {
                 getActivity().setTitle(title);
             }

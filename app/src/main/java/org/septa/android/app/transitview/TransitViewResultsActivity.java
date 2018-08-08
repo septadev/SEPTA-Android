@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Point;
 import android.location.Location;
@@ -42,6 +43,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.maps.android.data.kml.KmlLayer;
 
 import org.septa.android.app.BaseActivity;
+import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.database.DatabaseManager;
 import org.septa.android.app.domain.RouteDirectionModel;
@@ -167,6 +169,16 @@ public class TransitViewResultsActivity extends BaseActivity implements Runnable
             Log.w(TAG, "Exception on Backpress", e);
         }
         return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        int unmaskedRequestCode = requestCode & 0x0000ffff;
+        if (unmaskedRequestCode == Constants.SYSTEM_STATUS_REQUEST) {
+            if (resultCode == Constants.VIEW_NOTIFICATION_MANAGEMENT) {
+                goToNotificationsManagement();
+            }
+        }
     }
 
     @Override
@@ -500,7 +512,7 @@ public class TransitViewResultsActivity extends BaseActivity implements Runnable
 
         StringBuilder routeIdBuilder = new StringBuilder(firstRoute.getRouteId());
 
-        firstRouteCard = new TransitViewRouteCard(this, firstRoute, 1);
+        firstRouteCard = new TransitViewRouteCard(TransitViewResultsActivity.this, firstRoute, 1);
         firstRouteCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -529,7 +541,7 @@ public class TransitViewResultsActivity extends BaseActivity implements Runnable
         if (secondRoute != null) {
             routeIdBuilder.append(",").append(secondRoute.getRouteId());
 
-            secondRouteCard = new TransitViewRouteCard(this, secondRoute, 2);
+            secondRouteCard = new TransitViewRouteCard(TransitViewResultsActivity.this, secondRoute, 2);
             secondRouteCard.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -559,7 +571,7 @@ public class TransitViewResultsActivity extends BaseActivity implements Runnable
         if (thirdRoute != null) {
             routeIdBuilder.append(",").append(thirdRoute.getRouteId());
 
-            thirdRouteCard = new TransitViewRouteCard(this, thirdRoute, 3);
+            thirdRouteCard = new TransitViewRouteCard(TransitViewResultsActivity.this, thirdRoute, 3);
             thirdRouteCard.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -617,45 +629,50 @@ public class TransitViewResultsActivity extends BaseActivity implements Runnable
         SeptaServiceFactory.getTransitViewService().getTransitViewResults(routeIds).enqueue(new Callback<TransitViewModelResponse>() {
             @Override
             public void onResponse(Call<TransitViewModelResponse> call, @NonNull Response<TransitViewModelResponse> response) {
-                if (response.body() != null) {
+                if (response.body() != null && response.body().getResults() != null) {
 
-                    parser = new TransitViewModelResponseParser(response.body());
+                    try {
+                        parser = new TransitViewModelResponseParser(response.body());
 
-                    Map<TransitViewModelResponse.TransitViewRecord, LatLng> results = parser.getResultsForRoute(firstRoute.getRouteId());
-                    if (results != null) {
-                        Set<TransitViewModelResponse.TransitViewRecord> firstRoutesResults = results.keySet();
-                        Log.d(TAG, firstRoutesResults.toString());
-                    } else {
-                        CrashlyticsManager.log(Log.ERROR, TAG, "Could not get results from parser for first route " + firstRoute.getRouteId());
-                        CrashlyticsManager.log(Log.ERROR, TAG, "TransitView Response Body: " + response.body().toString());
-                        Log.e(TAG, "Could not get results from parser for first route " + firstRoute.getRouteId());
-                    }
-
-                    if (secondRoute != null) {
-                        results = parser.getResultsForRoute(secondRoute.getRouteId());
+                        Map<TransitViewModelResponse.TransitViewRecord, LatLng> results = parser.getResultsForRoute(firstRoute.getRouteId());
                         if (results != null) {
-                            Set<TransitViewModelResponse.TransitViewRecord> secondRoutesResults = results.keySet();
-                            Log.d(TAG, secondRoutesResults.toString());
+                            Set<TransitViewModelResponse.TransitViewRecord> firstRoutesResults = results.keySet();
+                            Log.d(TAG, firstRoutesResults.toString());
                         } else {
-                            CrashlyticsManager.log(Log.ERROR, TAG, "Could not get results from parser for second route " + secondRoute.getRouteId());
+                            CrashlyticsManager.log(Log.ERROR, TAG, "Could not get results from parser for first route " + firstRoute.getRouteId());
                             CrashlyticsManager.log(Log.ERROR, TAG, "TransitView Response Body: " + response.body().toString());
-                            Log.e(TAG, "Could not get results from parser for second route " + secondRoute.getRouteId());
+                            Log.e(TAG, "Could not get results from parser for first route " + firstRoute.getRouteId());
                         }
-                    }
 
-                    if (thirdRoute != null) {
-                        results = parser.getResultsForRoute(thirdRoute.getRouteId());
-                        if (results != null) {
-                            Set<TransitViewModelResponse.TransitViewRecord> thirdRoutesResults = results.keySet();
-                            Log.d(TAG, thirdRoutesResults.toString());
-                        } else {
-                            CrashlyticsManager.log(Log.ERROR, TAG, "Could not get results from parser for third route " + thirdRoute.getRouteId());
-                            CrashlyticsManager.log(Log.ERROR, TAG, "TransitView Response Body: " + response.body().toString());
-                            Log.e(TAG, "Could not get results from parser for third route " + thirdRoute.getRouteId());
+                        if (secondRoute != null) {
+                            results = parser.getResultsForRoute(secondRoute.getRouteId());
+                            if (results != null) {
+                                Set<TransitViewModelResponse.TransitViewRecord> secondRoutesResults = results.keySet();
+                                Log.d(TAG, secondRoutesResults.toString());
+                            } else {
+                                CrashlyticsManager.log(Log.ERROR, TAG, "Could not get results from parser for second route " + secondRoute.getRouteId());
+                                CrashlyticsManager.log(Log.ERROR, TAG, "TransitView Response Body: " + response.body().toString());
+                                Log.e(TAG, "Could not get results from parser for second route " + secondRoute.getRouteId());
+                            }
                         }
-                    }
 
-                    prepareToDrawMap();
+                        if (thirdRoute != null) {
+                            results = parser.getResultsForRoute(thirdRoute.getRouteId());
+                            if (results != null) {
+                                Set<TransitViewModelResponse.TransitViewRecord> thirdRoutesResults = results.keySet();
+                                Log.d(TAG, thirdRoutesResults.toString());
+                            } else {
+                                CrashlyticsManager.log(Log.ERROR, TAG, "Could not get results from parser for third route " + thirdRoute.getRouteId());
+                                CrashlyticsManager.log(Log.ERROR, TAG, "TransitView Response Body: " + response.body().toString());
+                                Log.e(TAG, "Could not get results from parser for third route " + thirdRoute.getRouteId());
+                            }
+                        }
+
+                        prepareToDrawMap();
+                    } catch (Exception e) {
+                        Log.e(TAG, "Failure retrieving TransitView vehicle data from server: " + routeIds);
+                        failure();
+                    }
                 } else {
                     CrashlyticsManager.log(Log.ERROR, TAG, "Null response body when fetching TransitView results for: " + routeIds);
                     Log.e(TAG, "Null response body when fetching TransitView results for: " + routeIds);
@@ -918,6 +935,11 @@ public class TransitViewResultsActivity extends BaseActivity implements Runnable
         CrashlyticsManager.log(Log.INFO, TAG, "Creating RenameFavoriteDialogFragment for TransitView favorite: " + routeIds);
         RenameFavoriteDialogFragment fragment = RenameFavoriteDialogFragment.newInstance(true, true, currentFavorite);
         fragment.show(ft, EDIT_FAVORITE_DIALOG_KEY);
+    }
+
+    private void goToNotificationsManagement() {
+        setResult(Constants.VIEW_NOTIFICATION_MANAGEMENT, new Intent());
+        finish();
     }
 
 }

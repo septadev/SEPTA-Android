@@ -26,6 +26,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.septa.android.app.Constants;
+import org.septa.android.app.MainActivity;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
 import org.septa.android.app.domain.RouteDirectionModel;
@@ -259,6 +260,24 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
     }
 
     @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Activity activity = getActivity();
+        if (activity != null && activity instanceof MainActivity) {
+
+            int unmaskedRequestCode = requestCode & 0x0000ffff;
+            if (unmaskedRequestCode == Constants.NTA_REQUEST) {
+                if (resultCode == Constants.VIEW_SCHEDULE) {
+                    ((MainActivity) activity).switchToSchedules(data.getExtras());
+
+                } else if (resultCode == Constants.VIEW_NOTIFICATION_MANAGEMENT) {
+                    ((MainActivity) activity).switchToNotificationManagement();
+                }
+            }
+        }
+    }
+
+    @Override
     public void goToSchedulesForTarget(NextArrivalFavorite nextArrivalFavorite) {
         mListener.goToSchedulesForTarget(nextArrivalFavorite.getStart(), nextArrivalFavorite.getDestination(), nextArrivalFavorite.getTransitType(), nextArrivalFavorite.getRouteDirectionModel());
         AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_SCHEDULE_FROM_FAVORITES, AnalyticsManager.CONTENT_ID_SCHEDULE, null);
@@ -435,7 +454,7 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
 
     private void setupListRecyclerView() {
         favoritesListView.setLayoutManager(new LinearLayoutManager(getContext()));
-        favoriteItemAdapter = new FavoriteItemAdapter(getContext(), favoriteStateList, this);
+        favoriteItemAdapter = new FavoriteItemAdapter(getActivity(), favoriteStateList, this);
         favoritesListView.setAdapter(favoriteItemAdapter);
         favoriteItemAdapter.updateList(favoriteStateList);
     }

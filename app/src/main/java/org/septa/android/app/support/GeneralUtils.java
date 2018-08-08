@@ -3,14 +3,18 @@ package org.septa.android.app.support;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.support.annotation.NonNull;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.DecimalFormat;
 import java.util.concurrent.TimeUnit;
 
 public abstract class GeneralUtils {
+
+    public static final String TIME_AM = "am", TIME_PM = "pm";
 
     public static String getDurationAsString(long duration, TimeUnit timeUnit) {
         long totalMinutes = TimeUnit.MINUTES.convert(
@@ -85,4 +89,53 @@ public abstract class GeneralUtils {
         }
         return false;
     }
+
+    /**
+     * get 12H am / pm time from 24H time
+     * @param time
+     */
+    @NonNull
+    public static String getTimeFromInt(int time) {
+        int hour = time / 100;
+        int minute = time % 100;
+        return getTimeFromInt(hour, minute);
+    }
+
+    /**
+     * get 12H am / pm time from 24H time
+     * @param hourOfDay
+     * @param minute
+     * @return
+     */
+    @NonNull
+    public static String getTimeFromInt(int hourOfDay, int minute) {
+        String amPm = TIME_AM;
+        if (hourOfDay > 12) {
+            hourOfDay -= 12;
+            amPm = TIME_PM;
+        } else if (hourOfDay == 12) {
+            // 1230 --> 12:30 pm
+            amPm = TIME_PM;
+        } else if (hourOfDay == 0) {
+            // 0015 --> 12:15 am
+            hourOfDay = 12;
+            amPm = TIME_AM;
+        }
+        StringBuilder time = new StringBuilder(String.valueOf(hourOfDay));
+        time.append(":")
+                .append(new DecimalFormat("00").format(minute))
+                .append(" ")
+                .append(amPm);
+        return time.toString();
+    }
+
+    public static int roundUpToNearestInterval(int minute, int interval) {
+        int minuteFloor = minute - (minute % interval);
+        minute = minuteFloor + (minute == minuteFloor + 1 ? interval : 0);
+        if (minute == 60) {
+            minute = 0;
+        }
+        return minute;
+    }
+
 }

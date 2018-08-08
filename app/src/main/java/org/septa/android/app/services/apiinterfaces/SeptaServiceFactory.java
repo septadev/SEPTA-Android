@@ -6,6 +6,8 @@ import android.util.Log;
 import android.view.View;
 
 import org.septa.android.app.R;
+import org.septa.android.app.notifications.NotificationsSharedPrefsUtils;
+import org.septa.android.app.notifications.NotificationsSharedPrefsUtilsImpl;
 import org.septa.android.app.systemstatus.SystemStatusResultsActivity;
 
 import java.io.IOException;
@@ -37,6 +39,8 @@ public class SeptaServiceFactory {
     static Retrofit septaAmazonServicesSingleton;
 
     private static FavoritesSharedPrefsUtils favoritesService = new FavoritesSharedPrefsUtilsImpl();
+
+    private static NotificationsSharedPrefsUtils notificationsService = new NotificationsSharedPrefsUtilsImpl();
 
     public static void init() {
         septaAmazonServicesSingleton = new Retrofit.Builder().client(new OkHttpClient.Builder().connectTimeout(5, TimeUnit.SECONDS).readTimeout(20, TimeUnit.SECONDS).addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)).addInterceptor(new Interceptor() {
@@ -98,6 +102,9 @@ public class SeptaServiceFactory {
         return favoritesService;
     }
 
+    public static NotificationsSharedPrefsUtils getNotificationsService() {
+        return notificationsService;
+    }
 
     public static String getAmazonawsApiKey() {
         return amazonawsApiKey;

@@ -1,6 +1,6 @@
 package org.septa.android.app.systemstatus;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
 import android.view.View;
@@ -15,15 +15,15 @@ public class GoToSystemStatusResultsOnClickListener implements View.OnClickListe
     private static final String TAG = GoToSystemStatusResultsOnClickListener.class.getSimpleName();
 
     private String statusType;
-    private Context context;
+    private Activity activity;
     private TransitType transitType;
     private String routeId;
     private String routeName;
     private ActivityClass origin;
 
-    public GoToSystemStatusResultsOnClickListener(String statusType, Context activity, TransitType transitType, String routeId, String routeName, ActivityClass origin) {
+    public GoToSystemStatusResultsOnClickListener(String statusType, Activity activity, TransitType transitType, String routeId, String routeName, ActivityClass origin) {
         this.statusType = statusType;
-        this.context = activity;
+        this.activity = activity;
         this.transitType = transitType;
         this.routeId = routeId;
         this.routeName = routeName;
@@ -32,8 +32,8 @@ public class GoToSystemStatusResultsOnClickListener implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        if (context != null) {
-            Intent intent = new Intent(context, SystemStatusResultsActivity.class);
+        if (activity != null) {
+            Intent intent = new Intent(activity, SystemStatusResultsActivity.class);
             intent.putExtra(Constants.ROUTE_NAME, routeName);
             intent.putExtra(Constants.ROUTE_ID, routeId);
             intent.putExtra(Constants.TRANSIT_TYPE, transitType);
@@ -50,7 +50,7 @@ public class GoToSystemStatusResultsOnClickListener implements View.OnClickListe
                 Log.e(TAG, String.format("Could not track event analytics for target class: %s", origin));
             }
 
-            context.startActivity(intent);
+            activity.startActivityForResult(intent, Constants.SYSTEM_STATUS_REQUEST);
         }
     }
 }

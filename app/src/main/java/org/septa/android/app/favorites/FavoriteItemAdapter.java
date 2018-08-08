@@ -1,6 +1,6 @@
 package org.septa.android.app.favorites;
 
-import android.content.Context;
+import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
@@ -43,14 +43,14 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     private static final String TAG = FavoriteItemAdapter.class.getSimpleName();
 
-    private Context context;
+    private Activity activity;
     private FavoriteItemListener mListener;
     private List<FavoriteState> mFavoriteStateList;
 
     private static final int NTA_FAVORITE = 0, TRANSITVIEW_FAVORITE = 1;
 
-    FavoriteItemAdapter(Context context, List<FavoriteState> list, FavoriteItemListener favoriteItemListener) {
-        this.context = context;
+    FavoriteItemAdapter(Activity activity, List<FavoriteState> list, FavoriteItemListener favoriteItemListener) {
+        this.activity = activity;
         this.mFavoriteStateList = list;
         mListener = favoriteItemListener;
     }
@@ -83,7 +83,7 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         final FavoriteState favoriteState = mFavoriteStateList.get(position);
         String favoriteKey = favoriteState.getFavoriteKey();
 
-        Favorite tempFavorite = SeptaServiceFactory.getFavoritesService().getFavoriteByKey(context, favoriteKey);
+        Favorite tempFavorite = SeptaServiceFactory.getFavoritesService().getFavoriteByKey(activity, favoriteKey);
 
         if (tempFavorite == null) {
             Log.e(TAG, "Favorite not found");
@@ -98,7 +98,7 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
             // transit type icon on left
             Drawable drawables[] = ntaFavoriteViewHolder.favoriteName.getCompoundDrawables();
-            ntaFavoriteViewHolder.favoriteName.setCompoundDrawablesWithIntrinsicBounds(ContextCompat.getDrawable(context,
+            ntaFavoriteViewHolder.favoriteName.setCompoundDrawablesWithIntrinsicBounds(ContextCompat.getDrawable(activity,
                     nextArrivalFavorite.getTransitType().getTabActiveImageResource()),
                     drawables[1], drawables[2], drawables[3]);
 
@@ -133,11 +133,11 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                     if (favoriteState.isExpanded()) {
                         collapseFavorite(ntaFavoriteViewHolder.resultsContainer, ntaFavoriteViewHolder.expandCollapseButton);
                         favoriteState.setExpanded(false);
-                        SeptaServiceFactory.getFavoritesService().modifyFavoriteState(context, holder.getAdapterPosition(), false);
+                        SeptaServiceFactory.getFavoritesService().modifyFavoriteState(activity, holder.getAdapterPosition(), false);
                     } else {
                         expandFavorite(ntaFavoriteViewHolder.resultsContainer, ntaFavoriteViewHolder.expandCollapseButton);
                         favoriteState.setExpanded(true);
-                        SeptaServiceFactory.getFavoritesService().modifyFavoriteState(context, holder.getAdapterPosition(), true);
+                        SeptaServiceFactory.getFavoritesService().modifyFavoriteState(activity, holder.getAdapterPosition(), true);
                     }
                 }
             });
@@ -272,7 +272,7 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                         updateViewWhenResultsFound(favoriteHeader, expandCollapseButton, noResultsMsg);
                     }
 
-                    tripView.setNextToArriveData(parser);
+                    tripView.setNextToArriveData(activity, parser);
                 }
                 progressView.setVisibility(View.GONE);
 
@@ -282,7 +282,7 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
             @Override
             public void onFailure(@NonNull Call<NextArrivalModelResponse> call, @NonNull Throwable t) {
-                tripView.setNextToArriveData(new NextArrivalModelResponseParser());
+                tripView.setNextToArriveData(activity, new NextArrivalModelResponseParser());
 
                 // show that NTA data unavailable for that favorites row
                 updateViewWhenNoResultsFound(favoriteHeader, expandCollapseButton, noResultsMsg);
@@ -300,7 +300,7 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
         // get check for alerts in first route
         String routeId = transitViewFavorite.getFirstRoute().getRouteId();
-        TransitType transitType = isTrolley(context, routeId) ? TransitType.TROLLEY : TransitType.BUS;
+        TransitType transitType = isTrolley(activity, routeId) ? TransitType.TROLLEY : TransitType.BUS;
         Alert routeAlerts = SystemStatusState.getAlertForLine(transitType, routeId);
         advisory = routeAlerts.isAdvisory();
         alert = routeAlerts.isAlert() || routeAlerts.isSuspended();
@@ -310,7 +310,7 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         // check if the 2nd route has alerts
         if (transitViewFavorite.getSecondRoute() != null) {
             routeId = transitViewFavorite.getSecondRoute().getRouteId();
-            transitType = isTrolley(context, routeId) ? TransitType.TROLLEY : TransitType.BUS;
+            transitType = isTrolley(activity, routeId) ? TransitType.TROLLEY : TransitType.BUS;
             routeAlerts = SystemStatusState.getAlertForLine(transitType, routeId);
             advisory = advisory || routeAlerts.isAdvisory();
             alert = alert || routeAlerts.isAlert() || routeAlerts.isSuspended();
@@ -320,7 +320,7 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             // check if teh 3rd route has alerts
             if (transitViewFavorite.getThirdRoute() != null) {
                 routeId = transitViewFavorite.getThirdRoute().getRouteId();
-                transitType = isTrolley(context, routeId) ? TransitType.TROLLEY : TransitType.BUS;
+                transitType = isTrolley(activity, routeId) ? TransitType.TROLLEY : TransitType.BUS;
                 routeAlerts = SystemStatusState.getAlertForLine(transitType, routeId);
                 advisory = advisory || routeAlerts.isAdvisory();
                 alert = alert || routeAlerts.isAlert() || routeAlerts.isSuspended();
@@ -380,7 +380,7 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             noResultsMsg = view.findViewById(R.id.favorite_item_no_results);
             resultsContainer = view.findViewById(R.id.next_to_arrive_trip_details);
             progressView = view.findViewById(R.id.progress_view);
-            tripView = new NextToArriveTripView(context);
+            tripView = new NextToArriveTripView(activity);
             tripView.setOriginClass(ActivityClass.MAIN);
         }
     }

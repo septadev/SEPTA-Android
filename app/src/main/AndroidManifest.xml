@@ -36,8 +36,16 @@
             android:value="${crashlyticsApiKey}" />
 
         <meta-data
-            android:name="org.septa.amazonaws.baseurl"
-            android:value="https://vnjb5kvq2b.execute-api.us-east-1.amazonaws.com" />
+            android:name="org.septa.amazonaws.baseurl.prod"
+            android:value="https://prod-mobile.septa.org/" />
+
+        <meta-data
+            android:name="org.septa.amazonaws.baseurl.qa"
+            android:value="https://qa-mobile.septa.org/" />
+
+        <meta-data
+            android:name="org.septa.amazonaws.baseurl.dev"
+            android:value="https://dev-mobile.septa.org/" />
 
         <activity
             android:name=".MainActivity"

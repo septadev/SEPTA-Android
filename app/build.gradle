@@ -43,7 +43,6 @@ android {
         versionCode 295
         versionName "2.0.295"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        manifestPlaceholders = [amazonawsApiKey: "${AMAZONAWS_API_KEY}", googleGeoApiKey: "${GOOGLE_GEO_API_KEY}", crashlyticsApiKey: "${CRASHLYTICS_API_KEY}"]
     }
 
     signingConfigs {
@@ -81,6 +80,7 @@ android {
             versionNameSuffix "d" + "${getSprintRound}" + "${getGitHash}"
             buildConfigField "String", "VERSIONNAME", "\"${defaultConfig.versionName}-b${defaultConfig.versionCode}\""
             buildConfigField CONFIG_TYPE_BOOLEAN, CONFIG_IS_NONPROD_BUILD, true.toString()
+            manifestPlaceholders = [amazonawsApiKey: "${AMAZONAWS_API_KEY_DEV}", googleGeoApiKey: "${GOOGLE_GEO_API_KEY}", crashlyticsApiKey: "${CRASHLYTICS_API_KEY}"]
         }
         alpha {
             minifyEnabled false
@@ -90,6 +90,7 @@ android {
             versionNameSuffix "a" + "${getSprintRound}" + "${getGitHash}"
             buildConfigField "String", "VERSIONNAME", "\"${defaultConfig.versionName}-b${defaultConfig.versionCode}\""
             buildConfigField CONFIG_TYPE_BOOLEAN, CONFIG_IS_NONPROD_BUILD, true.toString()
+            manifestPlaceholders = [amazonawsApiKey: "${AMAZONAWS_API_KEY_QA}", googleGeoApiKey: "${GOOGLE_GEO_API_KEY}", crashlyticsApiKey: "${CRASHLYTICS_API_KEY}"]
         }
         beta {
             minifyEnabled true
@@ -100,6 +101,7 @@ android {
             versionNameSuffix "b" + "${getSprintRound}" + "${getGitHash}"
             buildConfigField "String", "VERSIONNAME", "\"${defaultConfig.versionName}-b${defaultConfig.versionCode}\""
             buildConfigField CONFIG_TYPE_BOOLEAN, CONFIG_IS_NONPROD_BUILD, true.toString()
+            manifestPlaceholders = [amazonawsApiKey: "${AMAZONAWS_API_KEY_QA}", googleGeoApiKey: "${GOOGLE_GEO_API_KEY}", crashlyticsApiKey: "${CRASHLYTICS_API_KEY}"]
         }
         release {
             minifyEnabled false
@@ -109,6 +111,7 @@ android {
             signingConfig signingConfigs.prerelease
             buildConfigField "String", "VERSIONNAME", "\"${defaultConfig.versionName}\""
             buildConfigField CONFIG_TYPE_BOOLEAN, CONFIG_IS_NONPROD_BUILD, false.toString()
+            manifestPlaceholders = [amazonawsApiKey: "${AMAZONAWS_API_KEY_PROD}", googleGeoApiKey: "${GOOGLE_GEO_API_KEY}", crashlyticsApiKey: "${CRASHLYTICS_API_KEY}"]
         }
     }
     productFlavors {

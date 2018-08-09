@@ -333,8 +333,10 @@ public class PushNotificationManager {
             String railDelayTopicId = TOPIC_PREFIX + routeId + RAIL_DELAY_SUFFIX;
             subscribeToTopic(railDelayTopicId);
 
-        } else if (transitType == TransitType.BUS || transitType == TransitType.TROLLEY) {
-            // subscribe to bus or trolley detours
+        } else if (transitType == TransitType.BUS || transitType == TransitType.TROLLEY
+                // subscribe to bus or trolley detours
+                // MFO and BSO are type 'Subway' but can have detours because they're actually buses
+                || (transitType == TransitType.SUBWAY && ("MFO".equalsIgnoreCase(routeId) || "BSO".equalsIgnoreCase(routeId)))) {
             String detourTopicId = TOPIC_PREFIX + routeId + DETOUR_SUFFIX;
             subscribeToTopic(detourTopicId);
         }
@@ -353,8 +355,10 @@ public class PushNotificationManager {
             String railDelayTopicId = TOPIC_PREFIX + routeId + RAIL_DELAY_SUFFIX;
             unsubscribeFromTopic(railDelayTopicId);
 
-        } else if (transitType == TransitType.BUS || transitType == TransitType.TROLLEY) {
-            // unsubscribe from bus or trolley detours
+        } else if (transitType == TransitType.BUS || transitType == TransitType.TROLLEY
+                // unsubscribe to bus or trolley detours
+                // MFO and BSO are type 'Subway' but can have detours because they're actually buses
+                || (transitType == TransitType.SUBWAY && ("MFO".equalsIgnoreCase(routeId) || "BSO".equalsIgnoreCase(routeId)))) {
             String detourTopicId = TOPIC_PREFIX + routeId + DETOUR_SUFFIX;
             unsubscribeFromTopic(detourTopicId);
         }

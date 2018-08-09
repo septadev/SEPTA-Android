@@ -71,7 +71,14 @@ public class MainApplication extends Application implements Runnable {
             String septaAmazonAwsApiKey = bundle.getString("org.septa.amazonaws.x-api-key");
             SeptaServiceFactory.setAmazonawsApiKey(septaAmazonAwsApiKey);
 
-            String septaWebServicesBaseUrl = bundle.getString("org.septa.amazonaws.baseurl");
+            String septaWebServicesBaseUrl = bundle.getString("org.septa.amazonaws.baseurl.prod");
+            if (BuildConfig.IS_NONPROD_BUILD) {
+                if (BuildConfig.DEBUG) {
+                    septaWebServicesBaseUrl = bundle.getString("org.septa.amazonaws.baseurl.dev");
+                } else {
+                    septaWebServicesBaseUrl = bundle.getString("org.septa.amazonaws.baseurl.qa");
+                }
+            }
             SeptaServiceFactory.setSeptaWebServicesBaseUrl(septaWebServicesBaseUrl);
 
             SeptaServiceFactory.init();

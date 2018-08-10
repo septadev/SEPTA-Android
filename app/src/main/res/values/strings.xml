@@ -311,6 +311,7 @@
 
 
     <!-- Push Notifications -->
+    <string name="push_notifications_channel_name">Transportation</string>
     <string name="notifications">Manage Notifications</string>
 
     <string name="global_notifications_settings_heading">Global Settings</string>

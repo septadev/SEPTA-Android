@@ -106,8 +106,6 @@ pipeline {
 
                     distroText = readFile 'code/devops/email_distro.txt'
                     distroAddresses = distroText.split("\n").join(',')
-
-
                     emailext(
                             mimeType: 'text/html',
                             subject: "New SEPTA Android APK Available SUCCESSFUL [${env.BUILD_NUMBER}]'",
@@ -118,4 +116,18 @@ pipeline {
             }
         }
     }
+
+    post {
+        failure {
+            script {
+                if (currentBuild.currentResult == 'FAILURE') { // Other values: SUCCESS, UNSTABLE
+                    // Send an email only if the build status has changed from green/unstable to red
+                    emailext subject: '$DEFAULT_SUBJECT',
+                            body: '$DEFAULT_CONTENT',
+                            to: "${env.FAILURE_DISTRO_LIST}"
+                }
+            }
+        }
+    }
+
 }

@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -400,8 +399,7 @@ public class TransitViewResultsActivity extends BaseActivity implements Runnable
             isAFavorite = true;
             renameFavorite(currentFavorite);
 
-            Snackbar snackbar = Snackbar.make(findViewById(R.id.activity_transitview_results), R.string.create_fav_snackbar_text, Snackbar.LENGTH_LONG);
-            snackbar.show();
+            Toast.makeText(this, R.string.create_transitview_favorite, Toast.LENGTH_LONG).show();
         } else {
             Log.e(TAG, "Attempted to save invalid Favorite type");
         }
@@ -415,8 +413,7 @@ public class TransitViewResultsActivity extends BaseActivity implements Runnable
 
     @Override
     public void favoriteCreationFailed() {
-        Snackbar snackbar = Snackbar.make(findViewById(R.id.activity_transitview_results), R.string.create_fav_snackbar_failed, Snackbar.LENGTH_LONG);
-        snackbar.show();
+        Toast.makeText(this, R.string.create_transitview_favorite_failed, Toast.LENGTH_LONG).show();
     }
 
     @NonNull

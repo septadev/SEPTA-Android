@@ -256,7 +256,7 @@ public class ScheduleResultsActivity extends BaseActivity implements RenameFavor
             currentFavorite = (NextArrivalFavorite) favorite;
             renameFavorite(currentFavorite);
 
-            Toast.makeText(ScheduleResultsActivity.this, R.string.create_fav_snackbar_text, Toast.LENGTH_LONG).show();
+            Toast.makeText(ScheduleResultsActivity.this, R.string.create_nta_favorite, Toast.LENGTH_LONG).show();
         } else {
             Log.e(TAG, "Attempted to save invalid Favorite type");
         }
@@ -269,7 +269,7 @@ public class ScheduleResultsActivity extends BaseActivity implements RenameFavor
 
     @Override
     public void favoriteCreationFailed() {
-        Toast.makeText(ScheduleResultsActivity.this, R.string.create_fav_snackbar_failed, Toast.LENGTH_LONG).show();
+        Toast.makeText(ScheduleResultsActivity.this, R.string.create_nta_favorite_failed, Toast.LENGTH_LONG).show();
     }
 
     private void restoreState(Bundle bundle) {

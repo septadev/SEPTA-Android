@@ -9,6 +9,7 @@ import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
 
@@ -68,6 +69,11 @@ public class LocationPickerFragment extends DialogFragment implements StopPicker
         }
 
         restoreArgs();
+
+        // remove unnecessary whitespace
+        if (getDialog().getWindow() != null) {
+            getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        }
 
         if (getActivity() == null) {
             return null;

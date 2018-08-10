@@ -169,6 +169,11 @@ public class TransitViewFragment extends Fragment implements TransitViewLinePick
             }
         });
 
+        // disable other pickers and query button initially
+        disableView(secondRoutePicker);
+        disableView(thirdRoutePicker);
+        disableView(queryButton);
+
         // remember initial routes
         if (firstRoute != null) {
             addFirstRoute(firstRoute);

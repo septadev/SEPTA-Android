@@ -2,12 +2,14 @@ package org.septa.android.app.notifications;
 
 import android.app.Activity;
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
@@ -136,7 +138,7 @@ public class PushNotificationManager {
         // build back stack for click action
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
         stackBuilder.addNextIntentWithParentStack(resultIntent);
-        PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = stackBuilder.getPendingIntent((int) System.currentTimeMillis(), PendingIntent.FLAG_UPDATE_CURRENT);
 
         displayNotification(context, title, message, pendingIntent);
     }
@@ -171,7 +173,7 @@ public class PushNotificationManager {
             // build back stack for click action
             TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
             stackBuilder.addNextIntentWithParentStack(resultIntent);
-            pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+            pendingIntent = stackBuilder.getPendingIntent((int) System.currentTimeMillis(), PendingIntent.FLAG_UPDATE_CURRENT);
         }
 
         displayNotification(context, title, message, pendingIntent);
@@ -199,13 +201,16 @@ public class PushNotificationManager {
         // use timestamp to create unique notif ID
         int notifId = (int) System.currentTimeMillis();
 
-        /*
-         * The first parameter is the notification id
-         * better don't give a literal here (right now we are giving a int literal)
-         * because using this id we can modify it later
-         * */
         NotificationManager mNotifyMgr = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
         if (mNotifyMgr != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                CharSequence name = context.getString(R.string.push_notifications_channel_name);
+                int importance = NotificationManager.IMPORTANCE_DEFAULT;
+                NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
+                mNotifyMgr.createNotificationChannel(mChannel);
+            }
+
+            // send notification to tray
             mNotifyMgr.notify(notifId, mBuilder.build());
         }
     }

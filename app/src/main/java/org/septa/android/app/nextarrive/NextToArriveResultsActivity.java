@@ -15,7 +15,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -28,6 +27,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -333,8 +333,7 @@ public class NextToArriveResultsActivity extends BaseActivity implements OnMapRe
             currentFavorite = (NextArrivalFavorite) favorite;
             renameFavorite(currentFavorite);
 
-            Snackbar snackbar = Snackbar.make(containerView, R.string.create_fav_snackbar_text, Snackbar.LENGTH_LONG);
-            snackbar.show();
+            Toast.makeText(this, R.string.create_nta_favorite, Toast.LENGTH_LONG).show();
         } else {
             Log.e(TAG, "Attempted to save invalid Favorite type");
         }
@@ -348,17 +347,12 @@ public class NextToArriveResultsActivity extends BaseActivity implements OnMapRe
 
     @Override
     public void favoriteCreationFailed() {
-        Snackbar snackbar = Snackbar.make(containerView, R.string.create_fav_snackbar_failed, Snackbar.LENGTH_LONG);
-        snackbar.show();
+        Toast.makeText(this, R.string.create_nta_favorite_failed, Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void noReverseStopsFound() {
-        Snackbar snackbar = Snackbar.make(containerView, R.string.reverse_not_found, Snackbar.LENGTH_LONG);
-        View snackbarView = snackbar.getView();
-        android.widget.TextView tv = snackbarView.findViewById(android.support.design.R.id.snackbar_text);
-        tv.setMaxLines(10);
-        snackbar.show();
+        Toast.makeText(this, R.string.reverse_not_found, Toast.LENGTH_LONG).show();
     }
 
     @Override

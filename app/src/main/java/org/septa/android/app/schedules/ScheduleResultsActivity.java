@@ -26,6 +26,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Toast;
 
 import org.septa.android.app.ActivityClass;
 import org.septa.android.app.BaseActivity;
@@ -78,8 +79,6 @@ public class ScheduleResultsActivity extends BaseActivity implements RenameFavor
     CursorAdapterSupplier<ScheduleModel> scheduleCursorAdapterSupplier;
     CursorAdapterSupplier<StopModel> reverseStopCursorAdapterSupplier;
 
-    ListView scheduleResultsListView;
-
     StopModel start = null;
     StopModel destination = null;
     RouteDirectionModel routeDirectionModel;
@@ -88,9 +87,18 @@ public class ScheduleResultsActivity extends BaseActivity implements RenameFavor
     NextArrivalFavorite currentFavorite;
     Menu menu;
 
+    // layout variables
+    View lineStationLayout;
     TextView startStationText;
     TextView destinationTextView;
     View reverseTripLabel;
+    ImageView alertView;
+    ImageView advisoryView;
+    ImageView detourView;
+    ImageView weatherView;
+    SwitchCompat notifsSwitch;
+    ListView scheduleResultsListView;
+    Snackbar snackbar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -132,7 +140,8 @@ public class ScheduleResultsActivity extends BaseActivity implements RenameFavor
 
         setUpHeaders();
 
-        findViewById(R.id.line_station_layout).getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+        lineStationLayout = findViewById(R.id.line_station_layout);
+        lineStationLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
                 startStationText.setRight(reverseTripLabel.getLeft());
@@ -162,6 +171,25 @@ public class ScheduleResultsActivity extends BaseActivity implements RenameFavor
         });
 
         setUpAlertsView();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (notifsSwitch.isChecked()) {
+            showMethodPushNotifsDisabled();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        // remove message
+        if (snackbar != null && snackbar.isShown()) {
+            snackbar.dismiss();
+        }
     }
 
     @Override
@@ -228,8 +256,7 @@ public class ScheduleResultsActivity extends BaseActivity implements RenameFavor
             currentFavorite = (NextArrivalFavorite) favorite;
             renameFavorite(currentFavorite);
 
-            Snackbar snackbar = Snackbar.make(findViewById(R.id.activity_schedule_results_container), R.string.create_fav_snackbar_text, Snackbar.LENGTH_LONG);
-            snackbar.show();
+            Toast.makeText(ScheduleResultsActivity.this, R.string.create_nta_favorite, Toast.LENGTH_LONG).show();
         } else {
             Log.e(TAG, "Attempted to save invalid Favorite type");
         }
@@ -242,8 +269,7 @@ public class ScheduleResultsActivity extends BaseActivity implements RenameFavor
 
     @Override
     public void favoriteCreationFailed() {
-        Snackbar snackbar = Snackbar.make(findViewById(R.id.activity_schedule_results_container), R.string.create_fav_snackbar_failed, Snackbar.LENGTH_LONG);
-        snackbar.show();
+        Toast.makeText(ScheduleResultsActivity.this, R.string.create_nta_favorite_failed, Toast.LENGTH_LONG).show();
     }
 
     private void restoreState(Bundle bundle) {
@@ -400,11 +426,11 @@ public class ScheduleResultsActivity extends BaseActivity implements RenameFavor
     private void setUpAlertsView() {
         Alert alert = SystemStatusState.getAlertForLine(transitType, routeDirectionModel.getRouteId());
 
-        ImageView alertView = findViewById(R.id.alert_icon);
-        ImageView advisoryView = findViewById(R.id.advisory_icon);
-        ImageView detourView = findViewById(R.id.detour_icon);
-        ImageView weatherView = findViewById(R.id.weather_icon);
-        SwitchCompat notifsSwitch = findViewById(R.id.notification_route_switch);
+        alertView = findViewById(R.id.alert_icon);
+        advisoryView = findViewById(R.id.advisory_icon);
+        detourView = findViewById(R.id.detour_icon);
+        weatherView = findViewById(R.id.weather_icon);
+        notifsSwitch = findViewById(R.id.notification_route_switch);
 
         if (alert.isAdvisory()) {
             advisoryView.setImageResource(R.drawable.ic_advisory);
@@ -445,44 +471,54 @@ public class ScheduleResultsActivity extends BaseActivity implements RenameFavor
                     // enable notifs for route
                     PushNotificationManager.getInstance(ScheduleResultsActivity.this).createNotificationForRoute(routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName(), transitType);
 
-                    // recheck device permissions and show message if notifs not allowed or enabled
-                    boolean notifsAllowed = NotificationManagerCompat.from(ScheduleResultsActivity.this).areNotificationsEnabled(),
-                            notifsEnabled = SeptaServiceFactory.getNotificationsService().areNotificationsEnabled(ScheduleResultsActivity.this);
-                    if (!notifsAllowed) {
-                        Snackbar snackbar = Snackbar.make(findViewById(R.id.activity_schedule_results_container), R.string.notifications_permission_needed, Snackbar.LENGTH_LONG);
-                        snackbar.setAction("Settings", new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                // link to system notification settings
-                                NotificationsManagementFragment.openSystemNotificationSettings(ScheduleResultsActivity.this);
-                            }
-                        });
-                        View snackbarView = snackbar.getView();
-                        android.widget.TextView tv = snackbarView.findViewById(android.support.design.R.id.snackbar_text);
-                        tv.setMaxLines(10);
-                        snackbar.show();
-
-                    } else if (!notifsEnabled) {
-                        Snackbar snackbar = Snackbar.make(findViewById(R.id.activity_schedule_results_container), R.string.notifications_not_enabled, Snackbar.LENGTH_LONG);
-                        snackbar.setAction("Settings", new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                // link to notifications management
-                                goToNotificationsManagement();
-                            }
-                        });
-                        View snackbarView = snackbar.getView();
-                        android.widget.TextView tv = snackbarView.findViewById(android.support.design.R.id.snackbar_text);
-                        tv.setMaxLines(10);
-                        snackbar.show();
-                    }
+                    // show message if necessary that push notifs will not be received
+                    showMethodPushNotifsDisabled();
 
                 } else {
                     // disable notifs for route
                     PushNotificationManager.getInstance(ScheduleResultsActivity.this).removeNotificationForRoute(routeDirectionModel.getRouteId(), transitType);
+
+                    // remove message
+                    if (snackbar != null && snackbar.isShown()) {
+                        snackbar.dismiss();
+                    }
                 }
             }
         });
+    }
+
+    private void showMethodPushNotifsDisabled() {
+        // recheck device permissions and show message if notifs not allowed or enabled
+        boolean notifsAllowed = NotificationManagerCompat.from(ScheduleResultsActivity.this).areNotificationsEnabled(),
+                notifsEnabled = SeptaServiceFactory.getNotificationsService().areNotificationsEnabled(ScheduleResultsActivity.this);
+        if (!notifsAllowed) {
+            snackbar = Snackbar.make(findViewById(R.id.activity_schedule_results_container), R.string.notifications_permission_needed, Snackbar.LENGTH_INDEFINITE);
+            snackbar.setAction("Settings", new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // link to system notification settings
+                    NotificationsManagementFragment.openSystemNotificationSettings(ScheduleResultsActivity.this);
+                }
+            });
+            View snackbarView = snackbar.getView();
+            android.widget.TextView tv = snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+            tv.setMaxLines(10);
+            snackbar.show();
+
+        } else if (!notifsEnabled) {
+            snackbar = Snackbar.make(findViewById(R.id.activity_schedule_results_container), R.string.notifications_not_enabled, Snackbar.LENGTH_INDEFINITE);
+            snackbar.setAction("Settings", new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // link to notifications management
+                    goToNotificationsManagement();
+                }
+            });
+            View snackbarView = snackbar.getView();
+            android.widget.TextView tv = snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+            tv.setMaxLines(10);
+            snackbar.show();
+        }
     }
 
     private void goToNotificationsManagement() {
@@ -609,12 +645,7 @@ public class ScheduleResultsActivity extends BaseActivity implements RenameFavor
                 ScheduleResultsAsyncTask scheduleResultsAsyncTask = new ScheduleResultsAsyncTask(scheduleResultsActivity);
                 scheduleResultsAsyncTask.execute(schedule);
             } else {
-                Snackbar snackbar = Snackbar.make(scheduleResultsActivity.findViewById(R.id.activity_schedule_results_container), R.string.reverse_not_found, Snackbar.LENGTH_LONG);
-
-                View snackbarView = snackbar.getView();
-                android.widget.TextView tv = snackbarView.findViewById(android.support.design.R.id.snackbar_text);
-                tv.setMaxLines(10);
-                snackbar.show();
+                Toast.makeText(ScheduleResultsActivity.this, R.string.reverse_not_found, Toast.LENGTH_LONG).show();
             }
         }
 

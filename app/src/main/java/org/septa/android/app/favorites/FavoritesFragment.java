@@ -24,6 +24,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import org.septa.android.app.Constants;
 import org.septa.android.app.MainActivity;
@@ -202,8 +203,13 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
         } else if (item.getItemId() == R.id.edit_favorites) {
             // do not open edit mode if user has no favorites
             if (favoriteStateList.isEmpty()) {
-                Snackbar snackbar = Snackbar.make(fragmentView, R.string.no_favorites_to_edit, Snackbar.LENGTH_SHORT);
-                snackbar.show();
+
+                if (getContext() != null) {
+                    Toast.makeText(getContext(), R.string.no_favorites_to_edit, Toast.LENGTH_SHORT).show();
+                } else {
+                    Snackbar snackbar = Snackbar.make(fragmentView, R.string.no_favorites_to_edit, Snackbar.LENGTH_SHORT);
+                    snackbar.show();
+                }
 
             } else {
                 AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_EDIT_FAVORITES_BUTTON, AnalyticsManager.CUSTOM_EVENT_ID_FAVORITES_MANAGEMENT, null);

@@ -145,17 +145,17 @@
     <string name="delete_fav_modal_text">Are you sure you want to remove this from your favorites?</string>
     <string name="delete_fav_pos_button">Delete</string>
     <string name="delete_fav_neg_button">Cancel</string>
-    <string name="create_fav_snackbar_text">Trip saved to your Favorites</string>
-    <string name="create_fav_snackbar_failed">Trip could not be saved to favorites</string>
-    <string name="create_transitview_fav_snackbar">TransitView selection saved to your Favorites</string>
+    <string name="create_nta_favorite">Trip saved to your Favorites</string>
+    <string name="create_nta_favorite_failed">Trip could not be saved to Favorites</string>
+    <string name="create_transitview_favorite">TransitView selection saved to your Favorites</string>
+    <string name="create_transitview_favorite_failed">Selection could not be saved to Favorites</string>
+
     <string name="nta_favorite_icon_title_remove">Tap to remove this Next To Arrive result as a favorite</string>
     <string name="nta_favorite_icon_title_create">Tap to create a favorite from this Next To Arrive result</string>
-    <string name="transitview_favorite_icon_title_remove">Tap to remove this TransitView selection from your favorite</string>
-    <string name="transitview_favorite_icon_title_create">Tap to create a favorite from this TransitView selection</string>
-    <string name="favorite_more_button_description">Tap for more Next to Arrive details for your favorite, </string>
-
+    <string name="transitview_favorite_icon_title_remove">Tap to remove this TransitView selection from your Favorites</string>
+    <string name="transitview_favorite_icon_title_create">Tap to create a Favorite from this TransitView selection</string>
     <string name="schedule_favorite_icon_title_remove">Tap to remove this Schedule result as a favorite</string>
-    <string name="schedule_favorite_icon_title_create">Tap to create a favorite from this Schedule result</string>
+    <string name="schedule_favorite_icon_title_create">Tap to create a Favorite from this Schedule result</string>
 
     <string name="snackbar_no_connection_link_text">Schedules »</string>
     <string name="favorites_empty_results_msg">No Update</string>
@@ -311,6 +311,7 @@
 
 
     <!-- Push Notifications -->
+    <string name="push_notifications_channel_name">Transportation</string>
     <string name="notifications">Manage Notifications</string>
 
     <string name="global_notifications_settings_heading">Global Settings</string>

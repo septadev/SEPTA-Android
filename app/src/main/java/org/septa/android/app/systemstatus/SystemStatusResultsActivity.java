@@ -57,6 +57,7 @@ public class SystemStatusResultsActivity extends BaseActivity {
 
     View notificationPreferences;
     SwitchCompat notifsSubscribeSwitch;
+    Snackbar snackbar;
 
     View progressView;
 
@@ -166,44 +167,39 @@ public class SystemStatusResultsActivity extends BaseActivity {
                     // enable notifs for route
                     PushNotificationManager.getInstance(SystemStatusResultsActivity.this).createNotificationForRoute(routeId, routeName, transitType);
 
-                    // recheck device permissions and show message if notifs not allowed or enabled
-                    boolean notifsAllowed = NotificationManagerCompat.from(SystemStatusResultsActivity.this).areNotificationsEnabled(),
-                            notifsEnabled = SeptaServiceFactory.getNotificationsService().areNotificationsEnabled(SystemStatusResultsActivity.this);
-                    if (!notifsAllowed) {
-                        Snackbar snackbar = Snackbar.make(findViewById(R.id.system_status_results_coordinator), R.string.notifications_permission_needed, Snackbar.LENGTH_LONG);
-                        snackbar.setAction("Settings", new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                // link to system notification settings
-                                NotificationsManagementFragment.openSystemNotificationSettings(SystemStatusResultsActivity.this);
-                            }
-                        });
-                        View snackbarView = snackbar.getView();
-                        android.widget.TextView tv = snackbarView.findViewById(android.support.design.R.id.snackbar_text);
-                        tv.setMaxLines(10);
-                        snackbar.show();
-
-                    } else if (!notifsEnabled) {
-                        Snackbar snackbar = Snackbar.make(findViewById(R.id.system_status_results_coordinator), R.string.notifications_not_enabled, Snackbar.LENGTH_LONG);
-                        snackbar.setAction("Settings", new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                // link to notifications management
-                                goToNotificationsManagement();
-                            }
-                        });
-                        View snackbarView = snackbar.getView();
-                        android.widget.TextView tv = snackbarView.findViewById(android.support.design.R.id.snackbar_text);
-                        tv.setMaxLines(10);
-                        snackbar.show();
-                    }
+                    // show message if necessary that push notifs will not be received
+                    showMessagePushNotifsDisabled();
 
                 } else {
                     // disable notifs for route
                     PushNotificationManager.getInstance(SystemStatusResultsActivity.this).removeNotificationForRoute(routeId, transitType);
+
+                    // remove message
+                    if (snackbar != null && snackbar.isShown()) {
+                        snackbar.dismiss();
+                    }
                 }
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (notifsSubscribeSwitch.isChecked()) {
+            showMessagePushNotifsDisabled();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        // remove message
+        if (snackbar != null && snackbar.isShown()) {
+            snackbar.dismiss();
+        }
     }
 
     @Override
@@ -378,6 +374,40 @@ public class SystemStatusResultsActivity extends BaseActivity {
                     });
 
             weatherAlertsDetails.setHtml(GeneralUtils.updateUrls(weatherBuilder.toString()));
+        }
+    }
+
+    private void showMessagePushNotifsDisabled() {
+        // recheck device permissions and show message if notifs not allowed or enabled
+        boolean notifsAllowed = NotificationManagerCompat.from(SystemStatusResultsActivity.this).areNotificationsEnabled(),
+                notifsEnabled = SeptaServiceFactory.getNotificationsService().areNotificationsEnabled(SystemStatusResultsActivity.this);
+        if (!notifsAllowed) {
+            snackbar = Snackbar.make(findViewById(R.id.system_status_results_coordinator), R.string.notifications_permission_needed, Snackbar.LENGTH_INDEFINITE);
+            snackbar.setAction("Settings", new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // link to system notification settings
+                    NotificationsManagementFragment.openSystemNotificationSettings(SystemStatusResultsActivity.this);
+                }
+            });
+            View snackbarView = snackbar.getView();
+            android.widget.TextView tv = snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+            tv.setMaxLines(10);
+            snackbar.show();
+
+        } else if (!notifsEnabled) {
+            snackbar = Snackbar.make(findViewById(R.id.system_status_results_coordinator), R.string.notifications_not_enabled, Snackbar.LENGTH_INDEFINITE);
+            snackbar.setAction("Settings", new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // link to notifications management
+                    goToNotificationsManagement();
+                }
+            });
+            View snackbarView = snackbar.getView();
+            android.widget.TextView tv = snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+            tv.setMaxLines(10);
+            snackbar.show();
         }
     }
 

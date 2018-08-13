@@ -97,10 +97,10 @@ public class NotificationItemAdapter extends RecyclerView.Adapter<NotificationIt
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (isChecked) {
                         // enable notifs for route
-                        PushNotificationManager.getInstance(activity).createNotificationForRoute(routeId, routeName, transitType);
+                        PushNotificationManager.getInstance(activity).createNotificationForRoute(routeId, routeName, transitType, "My Notification Item");
                     } else {
                         // disable notifs for route
-                        PushNotificationManager.getInstance(activity).removeNotificationForRoute(routeId, transitType);
+                        PushNotificationManager.getInstance(activity).removeNotificationForRoute(routeId, transitType, "My Notification Item");
                     }
                 }
             });

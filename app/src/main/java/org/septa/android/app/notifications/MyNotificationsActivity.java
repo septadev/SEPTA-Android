@@ -20,10 +20,13 @@ import org.septa.android.app.TransitType;
 import org.septa.android.app.notifications.edit.EditNotificationsFragment;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.RouteNotificationSubscription;
+import org.septa.android.app.support.AnalyticsManager;
 import org.septa.android.app.view.TextView;
 
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.septa.android.app.notifications.NotificationsSharedPrefsUtilsImpl.MAX_TIMEFRAMES;
 
@@ -246,6 +249,11 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
     }
 
     private void deleteNotificationForRoute(int position, String routeId, TransitType transitType) {
+        Map<String, String> deletedRouteData = new HashMap<>();
+        deletedRouteData.put(Constants.TRANSIT_TYPE, String.valueOf(transitType));
+        deletedRouteData.put(Constants.ROUTE_ID, routeId);
+        AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_ROUTE_DELETE_SUBSCRIPTION, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_MANAGEMENT, deletedRouteData);
+
         PushNotificationManager.getInstance(MyNotificationsActivity.this).deleteNotificationForRoute(routeId, transitType);
 
         // update view

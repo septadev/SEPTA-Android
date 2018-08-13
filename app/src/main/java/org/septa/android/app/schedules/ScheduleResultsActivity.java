@@ -469,14 +469,14 @@ public class ScheduleResultsActivity extends BaseActivity implements RenameFavor
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     // enable notifs for route
-                    PushNotificationManager.getInstance(ScheduleResultsActivity.this).createNotificationForRoute(routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName(), transitType);
+                    PushNotificationManager.getInstance(ScheduleResultsActivity.this).createNotificationForRoute(routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName(), transitType, "Schedule Results");
 
                     // show message if necessary that push notifs will not be received
                     showMethodPushNotifsDisabled();
 
                 } else {
                     // disable notifs for route
-                    PushNotificationManager.getInstance(ScheduleResultsActivity.this).removeNotificationForRoute(routeDirectionModel.getRouteId(), transitType);
+                    PushNotificationManager.getInstance(ScheduleResultsActivity.this).removeNotificationForRoute(routeDirectionModel.getRouteId(), transitType, "Schedule Results");
 
                     // remove message
                     if (snackbar != null && snackbar.isShown()) {

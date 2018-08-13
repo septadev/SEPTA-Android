@@ -29,6 +29,7 @@ import org.septa.android.app.nextarrive.NextToArriveTripDetailActivity;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalDetails;
 import org.septa.android.app.services.apiinterfaces.model.RouteNotificationSubscription;
+import org.septa.android.app.support.AnalyticsManager;
 import org.septa.android.app.support.CrashlyticsManager;
 import org.septa.android.app.support.Criteria;
 import org.septa.android.app.support.CursorAdapterSupplier;
@@ -39,8 +40,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -383,7 +386,7 @@ public class PushNotificationManager {
         FirebaseMessaging.getInstance().subscribeToTopic(topicId);
     }
 
-    public void createNotificationForRoute(String routeId, String routeName, TransitType transitType) {
+    public void createNotificationForRoute(String routeId, String routeName, TransitType transitType, String requestCode) {
         // make NHSL chosen from trolley picker have NHSL transittype
         if ("NHSL".equalsIgnoreCase(routeId)) {
             transitType = TransitType.NHSL;
@@ -402,10 +405,17 @@ public class PushNotificationManager {
             SeptaServiceFactory.getNotificationsService().addRouteSubscription(context, routeToSubscribeTo);
         }
 
+        // analytics
+        Map<String, String> routeSubscribedTo = new HashMap<>();
+        routeSubscribedTo.put(Constants.REQUEST_CODE, requestCode);
+        routeSubscribedTo.put(Constants.TRANSIT_TYPE, String.valueOf(transitType));
+        routeSubscribedTo.put(Constants.ROUTE_ID, routeId);
+        AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_ROUTE_SUBSCRIBE, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_MANAGEMENT, routeSubscribedTo);
+
         subscribeToRoute(routeId, transitType);
     }
 
-    public void removeNotificationForRoute(String routeId, TransitType transitType) {
+    public void removeNotificationForRoute(String routeId, TransitType transitType, String requestCode) {
         // make NHSL chosen from trolley picker have NHSL transittype
         if ("NHSL".equalsIgnoreCase(routeId)) {
             transitType = TransitType.NHSL;
@@ -413,6 +423,13 @@ public class PushNotificationManager {
 
         // remember route but toggle notifications off
         SeptaServiceFactory.getNotificationsService().toggleRouteSubscription(context, routeId, false);
+
+        // analytics
+        Map<String, String> routeSubscribedTo = new HashMap<>();
+        routeSubscribedTo.put(Constants.REQUEST_CODE, requestCode);
+        routeSubscribedTo.put(Constants.TRANSIT_TYPE, String.valueOf(transitType));
+        routeSubscribedTo.put(Constants.ROUTE_ID, routeId);
+        AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_ROUTE_UNSUBSCRIBE, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_MANAGEMENT, routeSubscribedTo);
 
         unsubscribeFromRoute(routeId, transitType);
     }

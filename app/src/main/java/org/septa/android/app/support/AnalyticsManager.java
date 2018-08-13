@@ -88,6 +88,24 @@ public abstract class AnalyticsManager {
     public static final String CUSTOM_EVENT_RENAME_FAVORITE_TRANSITVIEW = "Rename TransitViewFavorite";
     public static final String CUSTOM_EVENT_DELETE_FAVORITE = "Delete a Favorite";
 
+    // push notifications actions
+    public static final String CONTENT_VIEW_EVENT_NOTIFICATIONS_FROM_SYSTEM_STATUS = "Notification Management (from System Status Results)";
+    public static final String CUSTOM_EVENT_ID_NOTIFICATION_MANAGEMENT = "Push Notification Management";
+    public static final String CUSTOM_EVENT_ENABLE_NOTIFS = "Enable Notifications";
+    public static final String CUSTOM_EVENT_DISABLE_NOTIFS = "Disable Notifications";
+    public static final String CUSTOM_EVENT_ENABLE_SPECIAL_ANNOUNCEMENTS = "Enable Special Announcements";
+    public static final String CUSTOM_EVENT_DISABLE_SPECIAL_ANNOUNCEMENTS = "Disable Special Announcements";
+
+    public static final String CUSTOM_EVENT_DAYS_OF_WEEK = "Days of Week"; // TODO:
+    public static final String CUSTOM_EVENT_TIMEFRAMES = "Notification Timeframe(s)"; // TODO: should this be one event to track with days of week?
+
+    public static final String CUSTOM_EVENT_ROUTE_SUBSCRIBE = "Subscribe to Route";
+    public static final String CUSTOM_EVENT_ROUTE_UNSUBSCRIBE = "Unsubscribe from Route";
+    public static final String CUSTOM_EVENT_ROUTE_DELETE_SUBSCRIPTION = "Delete Route Subscription";
+    public static final String CUSTOM_EVENT_NOTIF_RECEIVED = "Push Notification Received"; // TODO: notificationType, routeID
+    public static final String CUSTOM_EVENT_NOTIF_SHOWN_TO_USER = "Push Notification Shown to User"; // TODO: notificationType, routeID
+    public static final String CUSTOM_EVENT_NOTIF_CLICKED = "Push Notification Clicked"; // TODO: notificationType, routeID
+
     private static boolean initialized = false;
 
     public static void init(Context context) {

@@ -22,6 +22,7 @@ import org.septa.android.app.notifications.NotificationsManagementFragment;
 import org.septa.android.app.notifications.PushNotificationManager;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.AlertDetail;
+import org.septa.android.app.support.AnalyticsManager;
 import org.septa.android.app.support.GeneralUtils;
 import org.septa.android.app.view.TextView;
 
@@ -165,14 +166,14 @@ public class SystemStatusResultsActivity extends BaseActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     // enable notifs for route
-                    PushNotificationManager.getInstance(SystemStatusResultsActivity.this).createNotificationForRoute(routeId, routeName, transitType);
+                    PushNotificationManager.getInstance(SystemStatusResultsActivity.this).createNotificationForRoute(routeId, routeName, transitType, "System Status Results");
 
                     // show message if necessary that push notifs will not be received
                     showMessagePushNotifsDisabled();
 
                 } else {
                     // disable notifs for route
-                    PushNotificationManager.getInstance(SystemStatusResultsActivity.this).removeNotificationForRoute(routeId, transitType);
+                    PushNotificationManager.getInstance(SystemStatusResultsActivity.this).removeNotificationForRoute(routeId, transitType, "System Status Results");
 
                     // remove message
                     if (snackbar != null && snackbar.isShown()) {
@@ -412,6 +413,8 @@ public class SystemStatusResultsActivity extends BaseActivity {
     }
 
     private void goToNotificationsManagement() {
+        AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_NOTIFICATIONS_FROM_SYSTEM_STATUS, AnalyticsManager.CONTENT_ID_NOTIFICATIONS, null);
+
         setResult(Constants.VIEW_NOTIFICATION_MANAGEMENT, new Intent());
         finish();
     }

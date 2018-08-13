@@ -11,7 +11,6 @@ import com.google.firebase.iid.InstanceIdResult;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
-import org.septa.android.app.Constants;
 import org.septa.android.app.TransitType;
 import org.septa.android.app.notifications.DelayNotificationType;
 import org.septa.android.app.notifications.NotificationType;
@@ -86,11 +85,11 @@ public class PushNotificationService extends FirebaseMessagingService {
                 } else {
                     // get route ID for route specific alerts
                     final String routeId = data.get(NOTIFICATION_KEY_ROUTE_ID);
-                    notifData.put(Constants.ROUTE_ID, routeId);
+                    notifData.put("Push Notif Shown - Route ID", routeId);
 
                     // get transit type
                     TransitType transitType = TransitType.valueOf(data.get(NOTIFICATION_KEY_TRANSIT_TYPE));
-                    notifData.put(Constants.TRANSIT_TYPE, String.valueOf(transitType));
+                    notifData.put("Push Notif Shown - Transit Type", String.valueOf(transitType));
 
                     // send notification if rail delay
                     if (notificationType == NotificationType.DELAY) {
@@ -129,7 +128,7 @@ public class PushNotificationService extends FirebaseMessagingService {
                 }
 
                 // analytics push notif shown to user
-                notifData.put(NotificationType.class.getSimpleName(), String.valueOf(notificationType));
+                notifData.put("Push Notif Shown - Notification Type", String.valueOf(notificationType));
                 AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_PUSH_NOTIF_SHOWN_TO_USER, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_ENGAGEMENT, notifData);
             }
         }

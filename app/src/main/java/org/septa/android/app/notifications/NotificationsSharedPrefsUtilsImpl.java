@@ -84,6 +84,7 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
         List<Integer> daysOfWeek = getNotificationsSchedule(context);
         if (!daysOfWeek.contains(dayToAdd)) {
             daysOfWeek.add(dayToAdd);
+            Collections.sort(daysOfWeek);
             storeNotificationsSchedule(context, daysOfWeek);
         } else {
             Log.e(TAG, "Notifications are already enabled for " + dayToAdd);

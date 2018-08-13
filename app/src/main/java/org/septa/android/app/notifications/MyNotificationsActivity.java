@@ -37,6 +37,11 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
     private boolean[] daysOfWeekEnabled = new boolean[]{false, false, false, false, false, false, false};
     boolean isInEditMode;
 
+    // initial days of week and timeframe
+    private String[] daysOfWeekText = new String[]{"","Su","M", "Tu", "W", "Th", "F", "Sa"};
+    private List<Integer> initialDaysOfWeek;
+    private List<String> initialTimeFrames;
+
     // layout variables
     private TextView addTimeFramesButton, addNotifsButton, editButton;
     private SparseArray<ImageView> daysOfWeekButtons;
@@ -122,6 +127,38 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
                 }
             }
         });
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        // analytics around days of week
+        List<Integer> finalDaysOfWeek = SeptaServiceFactory.getNotificationsService().getNotificationsSchedule(this);
+        if (initialDaysOfWeek != null && !initialDaysOfWeek.equals(finalDaysOfWeek)) {
+
+            StringBuilder daysOfWeek = new StringBuilder();
+            for (Integer day : finalDaysOfWeek) {
+                daysOfWeek.append(daysOfWeekText[day]);
+            }
+
+            initialDaysOfWeek = finalDaysOfWeek;
+
+            Map<String, String> data = new HashMap<>();
+            data.put("Days of Week", daysOfWeek.toString());
+            AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_DAYS_OF_WEEK, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_MANAGEMENT, data);
+        }
+
+        // analytics around timeframes
+        List<String> finalTimeFrames = SeptaServiceFactory.getNotificationsService().getNotificationTimeFrames(this);
+        if (initialTimeFrames != null && !initialTimeFrames.equals(finalTimeFrames)) {
+
+            initialTimeFrames = finalTimeFrames;
+
+            Map<String, String> data = new HashMap<>();
+            data.put("Timeframe(s)", finalTimeFrames.toString());
+            AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_TIMEFRAMES, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_MANAGEMENT, data);
+        }
     }
 
     @Override
@@ -216,6 +253,7 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
 
         // enable button if that day is saved
         List<Integer> daysEnabled = SeptaServiceFactory.getNotificationsService().getNotificationsSchedule(this);
+        initialDaysOfWeek = daysEnabled;
         for (Integer dayofWeek : daysEnabled) {
             daysOfWeekEnabled[dayofWeek - 1] = true;
             daysOfWeekButtons.get(dayofWeek).setImageResource(getDayOfWeekImageResId(dayofWeek, true));
@@ -227,6 +265,7 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
         getSupportFragmentManager().beginTransaction().replace(R.id.my_notifications_container, activeFragment).commit();
 
         List<String> timeFramesList = SeptaServiceFactory.getNotificationsService().getNotificationTimeFrames(MyNotificationsActivity.this);
+        initialTimeFrames = timeFramesList;
 
         // only show add timeframe button if not at max
         if (timeFramesList.size() < MAX_TIMEFRAMES) {
@@ -250,8 +289,8 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
 
     private void deleteNotificationForRoute(int position, String routeId, TransitType transitType) {
         Map<String, String> deletedRouteData = new HashMap<>();
-        deletedRouteData.put(Constants.TRANSIT_TYPE, String.valueOf(transitType));
-        deletedRouteData.put(Constants.ROUTE_ID, routeId);
+        deletedRouteData.put("Deleted Subscription - Transit Type", String.valueOf(transitType));
+        deletedRouteData.put("Deleted Subscription - Route ID", routeId);
         AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_ROUTE_DELETE_SUBSCRIPTION, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_MANAGEMENT, deletedRouteData);
 
         PushNotificationManager.getInstance(MyNotificationsActivity.this).deleteNotificationForRoute(routeId, transitType);

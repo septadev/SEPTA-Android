@@ -96,8 +96,8 @@ public abstract class AnalyticsManager {
     public static final String CUSTOM_EVENT_ENABLE_SPECIAL_ANNOUNCEMENTS = "Enable Special Announcements";
     public static final String CUSTOM_EVENT_DISABLE_SPECIAL_ANNOUNCEMENTS = "Disable Special Announcements";
 
-    public static final String CUSTOM_EVENT_DAYS_OF_WEEK = "Days of Week"; // TODO:
-    public static final String CUSTOM_EVENT_TIMEFRAMES = "Notification Timeframe(s)"; // TODO: should this be one event to track with days of week?
+    public static final String CUSTOM_EVENT_DAYS_OF_WEEK = "Notification Schedule (Days of Week) Modified";
+    public static final String CUSTOM_EVENT_TIMEFRAMES = "Notification Timeframe(s) Modified";
 
     public static final String CUSTOM_EVENT_ROUTE_SUBSCRIBE = "Subscribe to Route";
     public static final String CUSTOM_EVENT_ROUTE_UNSUBSCRIBE = "Unsubscribe from Route";

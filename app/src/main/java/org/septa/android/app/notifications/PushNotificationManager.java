@@ -240,9 +240,9 @@ public class PushNotificationManager {
 
             // analytics
             Map<String, String> notifData = new HashMap<>();
-            notifData.put(NotificationType.class.getSimpleName(), String.valueOf(notificationType));
-            notifData.put(Constants.TRANSIT_TYPE, String.valueOf(transitType));
-            notifData.put(Constants.ROUTE_ID, routeId);
+            notifData.put("Push Notif Clicked - Notification Type", String.valueOf(notificationType));
+            notifData.put("Push Notif Clicked - Transit Type", String.valueOf(transitType));
+            notifData.put("Push Notif Clicked - Route ID", routeId);
             AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_PUSH_NOTIF_CLICKED, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_ENGAGEMENT, notifData);
 
             activity.startActivityForResult(resultIntent, Constants.SYSTEM_STATUS_REQUEST);
@@ -266,9 +266,9 @@ public class PushNotificationManager {
 
             // analytics
             Map<String, String> notifData = new HashMap<>();
-            notifData.put(NotificationType.class.getSimpleName(), String.valueOf(NotificationType.DELAY));
-            notifData.put(Constants.TRANSIT_TYPE, String.valueOf(transitType));
-            notifData.put(Constants.ROUTE_ID, routeId);
+            notifData.put("Push Notif Clicked - Notification Type", String.valueOf(NotificationType.DELAY));
+            notifData.put("Push Notif Clicked - Transit Type", String.valueOf(transitType));
+            notifData.put("Push Notif Clicked - Route ID", routeId);
             AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_PUSH_NOTIF_CLICKED, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_ENGAGEMENT, notifData);
 
             // show notification expired message
@@ -421,9 +421,9 @@ public class PushNotificationManager {
 
         // analytics
         Map<String, String> routeSubscribedTo = new HashMap<>();
-        routeSubscribedTo.put(Constants.REQUEST_CODE, requestCode);
-        routeSubscribedTo.put(Constants.TRANSIT_TYPE, String.valueOf(transitType));
-        routeSubscribedTo.put(Constants.ROUTE_ID, routeId);
+        routeSubscribedTo.put("Added Subscription - Request Code", requestCode);
+        routeSubscribedTo.put("Added Subscription - Transit Type", String.valueOf(transitType));
+        routeSubscribedTo.put("Added Subscription - Route ID", routeId);
         AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_ROUTE_SUBSCRIBE, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_MANAGEMENT, routeSubscribedTo);
 
         subscribeToRoute(routeId, transitType);
@@ -440,9 +440,9 @@ public class PushNotificationManager {
 
         // analytics
         Map<String, String> routeSubscribedTo = new HashMap<>();
-        routeSubscribedTo.put(Constants.REQUEST_CODE, requestCode);
-        routeSubscribedTo.put(Constants.TRANSIT_TYPE, String.valueOf(transitType));
-        routeSubscribedTo.put(Constants.ROUTE_ID, routeId);
+        routeSubscribedTo.put("Muted Subscription - Request Code", requestCode);
+        routeSubscribedTo.put("Muted Subscription - Transit Type", String.valueOf(transitType));
+        routeSubscribedTo.put("Muted Subscription - Route ID", routeId);
         AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_ROUTE_UNSUBSCRIBE, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_MANAGEMENT, routeSubscribedTo);
 
         unsubscribeFromRoute(routeId, transitType);

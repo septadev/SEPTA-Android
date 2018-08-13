@@ -78,7 +78,7 @@ public abstract class AnalyticsManager {
     public static final String CUSTOM_EVENT_PERKS_MORE = "More About Perks";
     public static final String CUSTOM_EVENT_ELERTS = "ELERTS Transit Watch";
 
-    // favorites actions
+    // favorites management actions
     public static final String CUSTOM_EVENT_ID_FAVORITES_MANAGEMENT = "Favorites Management";
     public static final String CUSTOM_EVENT_ADD_FAVORITE_BUTTON = "Tap 'Add' Favorite Button";
     public static final String CUSTOM_EVENT_EDIT_FAVORITES_BUTTON = "Tap 'Edit' Button to Switch to Edit Favorites Mode";
@@ -88,7 +88,7 @@ public abstract class AnalyticsManager {
     public static final String CUSTOM_EVENT_RENAME_FAVORITE_TRANSITVIEW = "Rename TransitViewFavorite";
     public static final String CUSTOM_EVENT_DELETE_FAVORITE = "Delete a Favorite";
 
-    // push notifications actions
+    // push notification management actions
     public static final String CONTENT_VIEW_EVENT_NOTIFICATIONS_FROM_SYSTEM_STATUS = "Notification Management (from System Status Results)";
     public static final String CUSTOM_EVENT_ID_NOTIFICATION_MANAGEMENT = "Push Notification Management";
     public static final String CUSTOM_EVENT_ENABLE_NOTIFS = "Enable Notifications";
@@ -102,9 +102,12 @@ public abstract class AnalyticsManager {
     public static final String CUSTOM_EVENT_ROUTE_SUBSCRIBE = "Subscribe to Route";
     public static final String CUSTOM_EVENT_ROUTE_UNSUBSCRIBE = "Unsubscribe from Route";
     public static final String CUSTOM_EVENT_ROUTE_DELETE_SUBSCRIPTION = "Delete Route Subscription";
-    public static final String CUSTOM_EVENT_NOTIF_RECEIVED = "Push Notification Received"; // TODO: notificationType, routeID
-    public static final String CUSTOM_EVENT_NOTIF_SHOWN_TO_USER = "Push Notification Shown to User"; // TODO: notificationType, routeID
-    public static final String CUSTOM_EVENT_NOTIF_CLICKED = "Push Notification Clicked"; // TODO: notificationType, routeID
+
+    // push notification engagement
+    public static final String CUSTOM_EVENT_ID_NOTIFICATION_ENGAGEMENT = "Push Notification Engagement";
+    public static final String CUSTOM_EVENT_PUSH_NOTIF_RECEIVED = "Push Notification Received";
+    public static final String CUSTOM_EVENT_PUSH_NOTIF_SHOWN_TO_USER = "Push Notification Shown to User";
+    public static final String CUSTOM_EVENT_PUSH_NOTIF_CLICKED = "Push Notification Clicked";
 
     private static boolean initialized = false;
 

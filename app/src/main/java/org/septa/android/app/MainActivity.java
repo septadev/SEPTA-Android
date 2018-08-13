@@ -44,6 +44,7 @@ import org.septa.android.app.fares.PerksFragment;
 import org.septa.android.app.favorites.FavoritesFragment;
 import org.septa.android.app.favorites.edit.ManageFavoritesFragment;
 import org.septa.android.app.nextarrive.NextToArriveFragment;
+import org.septa.android.app.notifications.NotificationType;
 import org.septa.android.app.notifications.NotificationsManagementFragment;
 import org.septa.android.app.notifications.PushNotificationManager;
 import org.septa.android.app.schedules.SchedulesFragment;
@@ -405,10 +406,10 @@ public class MainActivity extends BaseActivity implements
                 PushNotificationManager.onRailDelayNotificationClick(MainActivity.this, intent);
                 break;
             case Constants.PUSH_NOTIF_REQUEST_SERVICE_ALERT:
-                PushNotificationManager.onSystemStatusNotificationClick(MainActivity.this, intent, Constants.SERVICE_ALERT_EXPANDED);
+                PushNotificationManager.onSystemStatusNotificationClick(MainActivity.this, intent, Constants.SERVICE_ALERT_EXPANDED, NotificationType.ALERT);
                 break;
             case Constants.PUSH_NOTIF_REQUEST_DETOUR:
-                PushNotificationManager.onSystemStatusNotificationClick(MainActivity.this, intent, Constants.ACTIVE_DETOUR_EXPANDED);
+                PushNotificationManager.onSystemStatusNotificationClick(MainActivity.this, intent, Constants.ACTIVE_DETOUR_EXPANDED, NotificationType.DETOUR);
                 break;
         }
 

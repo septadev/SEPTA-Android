@@ -222,7 +222,7 @@ public class PushNotificationManager {
         Toast.makeText(context, R.string.notification_expired, Toast.LENGTH_LONG).show();
     }
 
-    public static void onSystemStatusNotificationClick(Activity activity, Intent intent, String expandedAlert) {
+    public static void onSystemStatusNotificationClick(Activity activity, Intent intent, String expandedAlert, NotificationType notificationType) {
         final String routeId = intent.getStringExtra(Constants.ROUTE_ID);
         final String routeName = intent.getStringExtra(Constants.ROUTE_NAME);
 
@@ -237,6 +237,13 @@ public class PushNotificationManager {
             resultIntent.putExtra(Constants.ROUTE_ID, routeId);
             resultIntent.putExtra(Constants.TRANSIT_TYPE, transitType);
             resultIntent.putExtra(expandedAlert, Boolean.TRUE);
+
+            // analytics
+            Map<String, String> notifData = new HashMap<>();
+            notifData.put(NotificationType.class.getSimpleName(), String.valueOf(notificationType));
+            notifData.put(Constants.TRANSIT_TYPE, String.valueOf(transitType));
+            notifData.put(Constants.ROUTE_ID, routeId);
+            AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_PUSH_NOTIF_CLICKED, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_ENGAGEMENT, notifData);
 
             activity.startActivityForResult(resultIntent, Constants.SYSTEM_STATUS_REQUEST);
         } else {
@@ -256,6 +263,13 @@ public class PushNotificationManager {
             final StopModel destStop = (StopModel) bundle.get(Constants.DESTINATION_STATION);
             final TransitType transitType = (TransitType) bundle.get(Constants.TRANSIT_TYPE);
             Date expirationTimestamp = (Date) bundle.get(Constants.EXPIRATION_TIMESTAMP);
+
+            // analytics
+            Map<String, String> notifData = new HashMap<>();
+            notifData.put(NotificationType.class.getSimpleName(), String.valueOf(NotificationType.DELAY));
+            notifData.put(Constants.TRANSIT_TYPE, String.valueOf(transitType));
+            notifData.put(Constants.ROUTE_ID, routeId);
+            AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_PUSH_NOTIF_CLICKED, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_ENGAGEMENT, notifData);
 
             // show notification expired message
             if (new Date().after(expirationTimestamp)) {

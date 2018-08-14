@@ -20,6 +20,7 @@ import android.widget.CompoundButton;
 import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
+import org.septa.android.app.support.AnalyticsManager;
 import org.septa.android.app.view.TextView;
 
 public class NotificationsManagementFragment extends Fragment {
@@ -28,9 +29,12 @@ public class NotificationsManagementFragment extends Fragment {
 
     private Context context;
 
+    // used to ignore switch toggles for analytics
+    private boolean ignoreGlobalSwitch = false, ignoreSpecialSwitch = false;
+
     // layout variables
-    TextView systemSettings, myNotifs;
-    SwitchCompat enableNotifs, specialAnnouncements;
+    private TextView systemSettings, myNotifs;
+    private SwitchCompat enableNotifs, specialAnnouncements;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -56,8 +60,10 @@ public class NotificationsManagementFragment extends Fragment {
 
                 if (!notifsAllowed && isChecked) {
                     // user cannot enable notifs without permissions
+                    ignoreGlobalSwitch = true;
                     enableNotifs.setChecked(false);
                     toggleNotifications(false);
+                    ignoreGlobalSwitch = false;
 
                     // show message that device permissions must be enabled
                     Snackbar snackbar = Snackbar.make(containerView, R.string.notifications_permission_required, Snackbar.LENGTH_LONG);
@@ -78,9 +84,17 @@ public class NotificationsManagementFragment extends Fragment {
                     // turn on notifications
                     toggleNotifications(true);
 
+                    if (!ignoreGlobalSwitch) {
+                        AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_ENABLE_NOTIFS, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_MANAGEMENT, null);
+                    }
+
                 } else {
                     // turn off notifications
                     toggleNotifications(false);
+
+                    if (!ignoreGlobalSwitch) {
+                        AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_DISABLE_NOTIFS, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_MANAGEMENT, null);
+                    }
                 }
             }
         });
@@ -91,8 +105,16 @@ public class NotificationsManagementFragment extends Fragment {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     PushNotificationManager.getInstance(context).subscribeToSpecialAnnouncements();
+
+                    if (!ignoreSpecialSwitch) {
+                        AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_ENABLE_SPECIAL_ANNOUNCEMENTS, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_MANAGEMENT, null);
+                    }
                 } else {
                     PushNotificationManager.getInstance(context).unsubscribeFromSpecialAnnouncements();
+
+                    if (!ignoreSpecialSwitch) {
+                        AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_DISABLE_SPECIAL_ANNOUNCEMENTS, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_MANAGEMENT, null);
+                    }
                 }
             }
         });
@@ -122,7 +144,9 @@ public class NotificationsManagementFragment extends Fragment {
         // recheck device permissions and only enable switch if allowed
         boolean notifsEnabled = SeptaServiceFactory.getNotificationsService().areNotificationsEnabled(context),
                 notifsAllowed = NotificationManagerCompat.from(context).areNotificationsEnabled();
+        ignoreGlobalSwitch = true;
         enableNotifs.setChecked(notifsEnabled && notifsAllowed);
+        ignoreGlobalSwitch = false;
 
         // disable special announcements toggle if notifs disabled
         if (!enableNotifs.isChecked()) {
@@ -154,7 +178,9 @@ public class NotificationsManagementFragment extends Fragment {
         specialAnnouncements = rootView.findViewById(R.id.special_announcements_switch);
 
         // set initial checked state of special announcements based on shared preferences
+        ignoreSpecialSwitch = true;
         specialAnnouncements.setChecked(SeptaServiceFactory.getNotificationsService().areSpecialAnnouncementsEnabled(context));
+        ignoreSpecialSwitch = false;
     }
 
     private void toggleNotifications(boolean isChecked) {

@@ -15,12 +15,14 @@ import org.septa.android.app.TransitType;
 import org.septa.android.app.notifications.DelayNotificationType;
 import org.septa.android.app.notifications.NotificationType;
 import org.septa.android.app.notifications.PushNotificationManager;
+import org.septa.android.app.support.AnalyticsManager;
 import org.septa.android.app.support.CrashlyticsManager;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -64,6 +66,7 @@ public class PushNotificationService extends FirebaseMessagingService {
         super.onMessageReceived(remoteMessage);
 
         Log.d(TAG, remoteMessage.toString());
+        Map<String, String> notifData = new HashMap<>();
 
         // check notification subscription window
         if (PushNotificationManager.isWithinNotificationWindow(getApplicationContext())) {
@@ -82,6 +85,11 @@ public class PushNotificationService extends FirebaseMessagingService {
                 } else {
                     // get route ID for route specific alerts
                     final String routeId = data.get(NOTIFICATION_KEY_ROUTE_ID);
+                    notifData.put("Push Notif Shown - Route ID", routeId);
+
+                    // get transit type
+                    TransitType transitType = TransitType.valueOf(data.get(NOTIFICATION_KEY_TRANSIT_TYPE));
+                    notifData.put("Push Notif Shown - Transit Type", String.valueOf(transitType));
 
                     // send notification if rail delay
                     if (notificationType == NotificationType.DELAY) {
@@ -111,18 +119,22 @@ public class PushNotificationService extends FirebaseMessagingService {
                         }
 
                         PushNotificationManager.getInstance(getApplicationContext()).buildRailDelayNotification(getApplicationContext(), message, routeId, vehicleId, destinationStopId, delayType, expirationTimeStamp);
-                    }
-
-                    // get transit type
-                    TransitType transitType = TransitType.valueOf(data.get(NOTIFICATION_KEY_TRANSIT_TYPE));
-
-                    // send system status push notification
-                    if (notificationType == NotificationType.ALERT || notificationType == NotificationType.DETOUR) {
-                        PushNotificationManager.getInstance(getApplicationContext()).buildSystemStatusNotification(getApplicationContext(), notificationType, message, transitType, routeId);
+                    } else {
+                        // send system status push notification
+                        if (notificationType == NotificationType.ALERT || notificationType == NotificationType.DETOUR) {
+                            PushNotificationManager.getInstance(getApplicationContext()).buildSystemStatusNotification(getApplicationContext(), notificationType, message, transitType, routeId);
+                        }
                     }
                 }
+
+                // analytics push notif shown to user
+                notifData.put("Push Notif Shown - Notification Type", String.valueOf(notificationType));
+                AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_PUSH_NOTIF_SHOWN_TO_USER, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_ENGAGEMENT, notifData);
             }
         }
+
+        // analytics push notif received
+        AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_PUSH_NOTIF_RECEIVED, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_ENGAGEMENT, null);
     }
 
     private boolean isAppInForeground(Context context) {

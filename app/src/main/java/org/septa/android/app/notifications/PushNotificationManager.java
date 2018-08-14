@@ -29,6 +29,7 @@ import org.septa.android.app.nextarrive.NextToArriveTripDetailActivity;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalDetails;
 import org.septa.android.app.services.apiinterfaces.model.RouteNotificationSubscription;
+import org.septa.android.app.support.AnalyticsManager;
 import org.septa.android.app.support.CrashlyticsManager;
 import org.septa.android.app.support.Criteria;
 import org.septa.android.app.support.CursorAdapterSupplier;
@@ -39,8 +40,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -106,7 +109,14 @@ public class PushNotificationManager {
 
     public void buildSpecialAnnouncementNotification(Context context, String message) {
         String title = context.getString(R.string.push_notif_special_announcement_title);
-        displayNotification(context, title, message, null);
+
+        // build back stack for click action
+        final Intent resultIntent = new Intent(context, MainActivity.class);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+        stackBuilder.addNextIntentWithParentStack(resultIntent);
+        PendingIntent pendingIntent = stackBuilder.getPendingIntent((int) System.currentTimeMillis(), PendingIntent.FLAG_UPDATE_CURRENT);
+
+        displayNotification(context, title, message, pendingIntent);
     }
 
     public void buildSystemStatusNotification(Context context, NotificationType notificationType, String message, TransitType transitType, String routeId) {
@@ -117,7 +127,7 @@ public class PushNotificationManager {
 
         if (notificationType == NotificationType.ALERT) {
             // build service alert
-            title = context.getString(R.string.push_notif_alert_title, routeId);
+            title = context.getString(R.string.push_notif_alert_title, routeId.toUpperCase());
             resultIntent.putExtra(Constants.REQUEST_CODE, Constants.PUSH_NOTIF_REQUEST_SERVICE_ALERT);
 
             // look up line name for rail
@@ -126,7 +136,7 @@ public class PushNotificationManager {
             }
         } else if (notificationType == NotificationType.DETOUR) {
             // build detour
-            title = context.getString(R.string.push_notif_detour_title, routeId);
+            title = context.getString(R.string.push_notif_detour_title, routeId.toUpperCase());
             resultIntent.putExtra(Constants.REQUEST_CODE, Constants.PUSH_NOTIF_REQUEST_DETOUR);
         }
 
@@ -144,15 +154,15 @@ public class PushNotificationManager {
     }
 
     public void buildRailDelayNotification(final Context context, String message, final String routeId, final String vehicleId, String destinationStopId, DelayNotificationType delayType, Date expirationTimeStamp) {
-        String title = context.getString(R.string.push_notif_rail_delay_title, routeId);
+        String title = context.getString(R.string.push_notif_rail_delay_title, routeId.toUpperCase());
+
+        // all delay notifications are rail
+        final TransitType transitType = TransitType.RAIL;
+
+        final Intent resultIntent = new Intent(context, MainActivity.class);
 
         // estimated delay notifications don't link anywhere in app, actual ones do
-        PendingIntent pendingIntent = null;
-
         if (delayType == DelayNotificationType.ACTUAL) {
-            // all delay notifications are rail
-            final TransitType transitType = TransitType.RAIL;
-
             // look up destination stop
             StopModel destStop = getRailStop(context, destinationStopId);
 
@@ -160,7 +170,6 @@ public class PushNotificationManager {
             String routeName = getRailRouteName(context, routeId);
 
             // build intent for click action
-            final Intent resultIntent = new Intent(context, MainActivity.class);
             resultIntent.putExtra(Constants.REQUEST_CODE, Constants.PUSH_NOTIF_REQUEST_RAIL_DELAY);
             resultIntent.putExtra(Constants.DESTINATION_STATION, destStop);
             resultIntent.putExtra(Constants.DESTINATION_STOP_ID, destinationStopId);
@@ -169,12 +178,12 @@ public class PushNotificationManager {
             resultIntent.putExtra(Constants.ROUTE_NAME, routeName);
             resultIntent.putExtra(Constants.TRANSIT_TYPE, transitType);
             resultIntent.putExtra(Constants.EXPIRATION_TIMESTAMP, expirationTimeStamp);
-
-            // build back stack for click action
-            TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-            stackBuilder.addNextIntentWithParentStack(resultIntent);
-            pendingIntent = stackBuilder.getPendingIntent((int) System.currentTimeMillis(), PendingIntent.FLAG_UPDATE_CURRENT);
         }
+
+        // build back stack for click action
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+        stackBuilder.addNextIntentWithParentStack(resultIntent);
+        PendingIntent pendingIntent = stackBuilder.getPendingIntent((int) System.currentTimeMillis(), PendingIntent.FLAG_UPDATE_CURRENT);
 
         displayNotification(context, title, message, pendingIntent);
     }
@@ -219,7 +228,7 @@ public class PushNotificationManager {
         Toast.makeText(context, R.string.notification_expired, Toast.LENGTH_LONG).show();
     }
 
-    public static void onSystemStatusNotificationClick(Activity activity, Intent intent, String expandedAlert) {
+    public static void onSystemStatusNotificationClick(Activity activity, Intent intent, String expandedAlert, NotificationType notificationType) {
         final String routeId = intent.getStringExtra(Constants.ROUTE_ID);
         final String routeName = intent.getStringExtra(Constants.ROUTE_NAME);
 
@@ -234,6 +243,13 @@ public class PushNotificationManager {
             resultIntent.putExtra(Constants.ROUTE_ID, routeId);
             resultIntent.putExtra(Constants.TRANSIT_TYPE, transitType);
             resultIntent.putExtra(expandedAlert, Boolean.TRUE);
+
+            // analytics
+            Map<String, String> notifData = new HashMap<>();
+            notifData.put("Push Notif Clicked - Notification Type", String.valueOf(notificationType));
+            notifData.put("Push Notif Clicked - Transit Type", String.valueOf(transitType));
+            notifData.put("Push Notif Clicked - Route ID", routeId);
+            AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_PUSH_NOTIF_CLICKED, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_ENGAGEMENT, notifData);
 
             activity.startActivityForResult(resultIntent, Constants.SYSTEM_STATUS_REQUEST);
         } else {
@@ -253,6 +269,13 @@ public class PushNotificationManager {
             final StopModel destStop = (StopModel) bundle.get(Constants.DESTINATION_STATION);
             final TransitType transitType = (TransitType) bundle.get(Constants.TRANSIT_TYPE);
             Date expirationTimestamp = (Date) bundle.get(Constants.EXPIRATION_TIMESTAMP);
+
+            // analytics
+            Map<String, String> notifData = new HashMap<>();
+            notifData.put("Push Notif Clicked - Notification Type", String.valueOf(NotificationType.DELAY));
+            notifData.put("Push Notif Clicked - Transit Type", String.valueOf(transitType));
+            notifData.put("Push Notif Clicked - Route ID", routeId);
+            AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_PUSH_NOTIF_CLICKED, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_ENGAGEMENT, notifData);
 
             // show notification expired message
             if (new Date().after(expirationTimestamp)) {
@@ -383,7 +406,7 @@ public class PushNotificationManager {
         FirebaseMessaging.getInstance().subscribeToTopic(topicId);
     }
 
-    public void createNotificationForRoute(String routeId, String routeName, TransitType transitType) {
+    public void createNotificationForRoute(String routeId, String routeName, TransitType transitType, String requestCode) {
         // make NHSL chosen from trolley picker have NHSL transittype
         if ("NHSL".equalsIgnoreCase(routeId)) {
             transitType = TransitType.NHSL;
@@ -402,10 +425,17 @@ public class PushNotificationManager {
             SeptaServiceFactory.getNotificationsService().addRouteSubscription(context, routeToSubscribeTo);
         }
 
+        // analytics
+        Map<String, String> routeSubscribedTo = new HashMap<>();
+        routeSubscribedTo.put("Added Subscription - Request Code", requestCode);
+        routeSubscribedTo.put("Added Subscription - Transit Type", String.valueOf(transitType));
+        routeSubscribedTo.put("Added Subscription - Route ID", routeId);
+        AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_ROUTE_SUBSCRIBE, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_MANAGEMENT, routeSubscribedTo);
+
         subscribeToRoute(routeId, transitType);
     }
 
-    public void removeNotificationForRoute(String routeId, TransitType transitType) {
+    public void removeNotificationForRoute(String routeId, TransitType transitType, String requestCode) {
         // make NHSL chosen from trolley picker have NHSL transittype
         if ("NHSL".equalsIgnoreCase(routeId)) {
             transitType = TransitType.NHSL;
@@ -413,6 +443,13 @@ public class PushNotificationManager {
 
         // remember route but toggle notifications off
         SeptaServiceFactory.getNotificationsService().toggleRouteSubscription(context, routeId, false);
+
+        // analytics
+        Map<String, String> routeSubscribedTo = new HashMap<>();
+        routeSubscribedTo.put("Muted Subscription - Request Code", requestCode);
+        routeSubscribedTo.put("Muted Subscription - Transit Type", String.valueOf(transitType));
+        routeSubscribedTo.put("Muted Subscription - Route ID", routeId);
+        AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_ROUTE_UNSUBSCRIBE, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_MANAGEMENT, routeSubscribedTo);
 
         unsubscribeFromRoute(routeId, transitType);
     }

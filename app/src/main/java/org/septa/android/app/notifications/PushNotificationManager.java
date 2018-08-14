@@ -127,7 +127,7 @@ public class PushNotificationManager {
 
         if (notificationType == NotificationType.ALERT) {
             // build service alert
-            title = context.getString(R.string.push_notif_alert_title, routeId);
+            title = context.getString(R.string.push_notif_alert_title, routeId.toUpperCase());
             resultIntent.putExtra(Constants.REQUEST_CODE, Constants.PUSH_NOTIF_REQUEST_SERVICE_ALERT);
 
             // look up line name for rail
@@ -136,7 +136,7 @@ public class PushNotificationManager {
             }
         } else if (notificationType == NotificationType.DETOUR) {
             // build detour
-            title = context.getString(R.string.push_notif_detour_title, routeId);
+            title = context.getString(R.string.push_notif_detour_title, routeId.toUpperCase());
             resultIntent.putExtra(Constants.REQUEST_CODE, Constants.PUSH_NOTIF_REQUEST_DETOUR);
         }
 
@@ -154,15 +154,15 @@ public class PushNotificationManager {
     }
 
     public void buildRailDelayNotification(final Context context, String message, final String routeId, final String vehicleId, String destinationStopId, DelayNotificationType delayType, Date expirationTimeStamp) {
-        String title = context.getString(R.string.push_notif_rail_delay_title, routeId);
+        String title = context.getString(R.string.push_notif_rail_delay_title, routeId.toUpperCase());
+
+        // all delay notifications are rail
+        final TransitType transitType = TransitType.RAIL;
+
+        final Intent resultIntent = new Intent(context, MainActivity.class);
 
         // estimated delay notifications don't link anywhere in app, actual ones do
-        PendingIntent pendingIntent = null;
-
         if (delayType == DelayNotificationType.ACTUAL) {
-            // all delay notifications are rail
-            final TransitType transitType = TransitType.RAIL;
-
             // look up destination stop
             StopModel destStop = getRailStop(context, destinationStopId);
 
@@ -170,7 +170,6 @@ public class PushNotificationManager {
             String routeName = getRailRouteName(context, routeId);
 
             // build intent for click action
-            final Intent resultIntent = new Intent(context, MainActivity.class);
             resultIntent.putExtra(Constants.REQUEST_CODE, Constants.PUSH_NOTIF_REQUEST_RAIL_DELAY);
             resultIntent.putExtra(Constants.DESTINATION_STATION, destStop);
             resultIntent.putExtra(Constants.DESTINATION_STOP_ID, destinationStopId);
@@ -179,12 +178,12 @@ public class PushNotificationManager {
             resultIntent.putExtra(Constants.ROUTE_NAME, routeName);
             resultIntent.putExtra(Constants.TRANSIT_TYPE, transitType);
             resultIntent.putExtra(Constants.EXPIRATION_TIMESTAMP, expirationTimeStamp);
-
-            // build back stack for click action
-            TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-            stackBuilder.addNextIntentWithParentStack(resultIntent);
-            pendingIntent = stackBuilder.getPendingIntent((int) System.currentTimeMillis(), PendingIntent.FLAG_UPDATE_CURRENT);
         }
+
+        // build back stack for click action
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+        stackBuilder.addNextIntentWithParentStack(resultIntent);
+        PendingIntent pendingIntent = stackBuilder.getPendingIntent((int) System.currentTimeMillis(), PendingIntent.FLAG_UPDATE_CURRENT);
 
         displayNotification(context, title, message, pendingIntent);
     }

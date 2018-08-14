@@ -26,8 +26,8 @@
             android:id="@+id/linearLayout1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
             android:gravity="center"
             android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -51,6 +51,7 @@
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
                 android:layout_weight="5"
+                android:textAlignment="center"
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:text="Paoli / Thorndale"
@@ -95,6 +96,7 @@
                 android:src="@drawable/ic_weather"
                 android:visibility="gone"
                 tools:visibility="visible" />
+
         </LinearLayout>
 
         <View
@@ -108,7 +110,7 @@
             app:layout_constraintLeft_toRightOf="@+id/linearLayout1"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-    </android.support.constraint.ConstraintLayout>
 
+    </android.support.constraint.ConstraintLayout>
 
 </LinearLayout>

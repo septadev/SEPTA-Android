@@ -109,7 +109,14 @@ public class PushNotificationManager {
 
     public void buildSpecialAnnouncementNotification(Context context, String message) {
         String title = context.getString(R.string.push_notif_special_announcement_title);
-        displayNotification(context, title, message, null);
+
+        // build back stack for click action
+        final Intent resultIntent = new Intent(context, MainActivity.class);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+        stackBuilder.addNextIntentWithParentStack(resultIntent);
+        PendingIntent pendingIntent = stackBuilder.getPendingIntent((int) System.currentTimeMillis(), PendingIntent.FLAG_UPDATE_CURRENT);
+
+        displayNotification(context, title, message, pendingIntent);
     }
 
     public void buildSystemStatusNotification(Context context, NotificationType notificationType, String message, TransitType transitType, String routeId) {

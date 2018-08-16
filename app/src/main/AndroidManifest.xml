@@ -54,11 +54,12 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
 
-        <activity
-            android:name=".notifications.MyNotificationsActivity"
-            android:label="@string/septa"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
+        <!-- TODO: put push notifications back in -->
+        <!--<activity-->
+            <!--android:name=".notifications.MyNotificationsActivity"-->
+            <!--android:label="@string/septa"-->
+            <!--android:screenOrientation="portrait"-->
+            <!--android:theme="@style/AppTheme" />-->
 
         <activity
             android:name=".nextarrive.NextToArriveResultsActivity"
@@ -114,11 +115,13 @@
         </activity>
 
         <!-- Firebase Messaging Class Service -->
-        <service android:name=".services.apiinterfaces.PushNotificationService">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
-            </intent-filter>
-        </service>
+        <!-- TODO: put push notifications back in -->
+        <!--<service android:name=".services.apiinterfaces.PushNotificationService">-->
+            <!--<intent-filter>-->
+                <!--<action android:name="com.google.firebase.MESSAGING_EVENT" />-->
+            <!--</intent-filter>-->
+        <!--</service>-->
 
     </application>
+
 </manifest>

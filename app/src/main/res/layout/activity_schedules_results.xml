@@ -172,21 +172,24 @@
                 android:layout_margin="10dp"
                 android:orientation="vertical">
 
-                <HorizontalScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:scrollbars="none">
+                <!-- TODO: put push notifications back in -->
+                <!--<HorizontalScrollView-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:scrollbars="none">-->
 
+                    <!-- TODO: put push notifications back in - remove weight sum from status_layout-->
                     <LinearLayout
                         android:id="@+id/status_layout"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:weightSum="6">
 
                         <org.septa.android.app.view.TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_weight="2"
                             android:letterSpacing="-0.02"
                             android:padding="5dp"
                             android:text="Status Alerts"
@@ -198,6 +201,7 @@
                             android:id="@+id/advisory_icon"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_weight="1"
                             android:padding="5dp"
                             android:src="@drawable/ic_advisory" />
 
@@ -205,6 +209,7 @@
                             android:id="@+id/alert_icon"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_weight="1"
                             android:padding="5dp"
                             android:src="@drawable/ic_alert" />
 
@@ -212,6 +217,7 @@
                             android:id="@+id/detour_icon"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_weight="1"
                             android:padding="5dp"
                             android:src="@drawable/ic_detour" />
 
@@ -219,9 +225,11 @@
                             android:id="@+id/weather_icon"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_weight="1"
                             android:padding="5dp"
                             android:src="@drawable/ic_weather" />
 
+                        <!-- TODO: put push notifications back in -->
                         <org.septa.android.app.view.TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -231,19 +239,22 @@
                             android:textAllCaps="true"
                             android:textColor="@color/light_gray"
                             android:textSize="10sp"
+                            android:visibility="gone"
                             app:typeface="@string/font_roboto_regular" />
 
+                        <!-- TODO: put push notifications back in -->
                         <android.support.v7.widget.SwitchCompat
                             android:id="@+id/notification_route_switch"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:padding="5dp"
                             android:theme="@style/AppTheme"
+                            android:visibility="gone"
                             tools:checked="true" />
 
                     </LinearLayout>
 
-                </HorizontalScrollView>
+                <!--</HorizontalScrollView> TODO: put push notifications back in -->
 
             </LinearLayout>
 

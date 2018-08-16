@@ -193,19 +193,23 @@
                         app:typeface="@string/font_roboto_light"
                         tools:visibility="visible" />
 
+                    <!-- TODO: put push notifications back in -->
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:background="@color/notification_subscribe_border"
                         android:layout_marginTop="10dp"
-                        android:layout_marginBottom="10dp" />
+                        android:layout_marginBottom="10dp"
+                        android:visibility="gone"/>
 
+                    <!-- TODO: put push notifications back in -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:padding="7dp"
-                        android:weightSum="7">
+                        android:weightSum="7"
+                        android:visibility="gone">
 
                         <LinearLayout
                             android:layout_width="0dp"

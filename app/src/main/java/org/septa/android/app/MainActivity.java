@@ -44,9 +44,6 @@ import org.septa.android.app.fares.PerksFragment;
 import org.septa.android.app.favorites.FavoritesFragment;
 import org.septa.android.app.favorites.edit.ManageFavoritesFragment;
 import org.septa.android.app.nextarrive.NextToArriveFragment;
-import org.septa.android.app.notifications.NotificationType;
-import org.septa.android.app.notifications.NotificationsManagementFragment;
-import org.septa.android.app.notifications.PushNotificationManager;
 import org.septa.android.app.schedules.SchedulesFragment;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Alert;
@@ -106,7 +103,8 @@ public class MainActivity extends BaseActivity implements
     Fragment perks = new PerksFragment();
     Fragment systemMap = new SystemMapFragment();
     Fragment trainview = null;
-    Fragment notifications = new NotificationsManagementFragment();
+    // TODO: put push notifications back in
+//    Fragment notifications = new NotificationsManagementFragment();
     Fragment transitView = new TransitViewFragment();
     Fragment connect = new ConnectFragment();
     Fragment about = new AboutFragment();
@@ -362,10 +360,11 @@ public class MainActivity extends BaseActivity implements
             switchToBundle(item, systemMap, R.string.system_map, R.drawable.ic_map_active);
         }
 
-        if (id == R.id.nav_notifications) {
-            AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_MENU_NOTIFICATIONS, AnalyticsManager.CONTENT_ID_NOTIFICATIONS, null);
-            switchToBundle(item, notifications, R.string.notifications, R.drawable.ic_notifications_active);
-        }
+        // TODO: put push notifications back in
+//        if (id == R.id.nav_notifications) {
+//            AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_MENU_NOTIFICATIONS, AnalyticsManager.CONTENT_ID_NOTIFICATIONS, null);
+//            switchToBundle(item, notifications, R.string.notifications, R.drawable.ic_notifications_active);
+//        }
 
         if (id == R.id.nav_connect) {
             AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_MENU_CONNECT, AnalyticsManager.CONTENT_ID_CONNECT, null);
@@ -399,19 +398,20 @@ public class MainActivity extends BaseActivity implements
         super.onNewIntent(intent);
 
         // ensure intent coming from valid source
-        int requestCode = intent.getIntExtra(Constants.REQUEST_CODE, -1);
-
-        switch (requestCode) {
-            case Constants.PUSH_NOTIF_REQUEST_RAIL_DELAY:
-                PushNotificationManager.onRailDelayNotificationClick(MainActivity.this, intent);
-                break;
-            case Constants.PUSH_NOTIF_REQUEST_SERVICE_ALERT:
-                PushNotificationManager.onSystemStatusNotificationClick(MainActivity.this, intent, Constants.SERVICE_ALERT_EXPANDED, NotificationType.ALERT);
-                break;
-            case Constants.PUSH_NOTIF_REQUEST_DETOUR:
-                PushNotificationManager.onSystemStatusNotificationClick(MainActivity.this, intent, Constants.ACTIVE_DETOUR_EXPANDED, NotificationType.DETOUR);
-                break;
-        }
+        // TODO: put push notifications back in
+//        int requestCode = intent.getIntExtra(Constants.REQUEST_CODE, -1);
+//
+//        switch (requestCode) {
+//            case Constants.PUSH_NOTIF_REQUEST_RAIL_DELAY:
+//                PushNotificationManager.onRailDelayNotificationClick(MainActivity.this, intent);
+//                break;
+//            case Constants.PUSH_NOTIF_REQUEST_SERVICE_ALERT:
+//                PushNotificationManager.onSystemStatusNotificationClick(MainActivity.this, intent, Constants.SERVICE_ALERT_EXPANDED, NotificationType.ALERT);
+//                break;
+//            case Constants.PUSH_NOTIF_REQUEST_DETOUR:
+//                PushNotificationManager.onSystemStatusNotificationClick(MainActivity.this, intent, Constants.ACTIVE_DETOUR_EXPANDED, NotificationType.DETOUR);
+//                break;
+//        }
 
     }
 
@@ -461,21 +461,22 @@ public class MainActivity extends BaseActivity implements
                 }
                 break;
 
-            case Constants.VIEW_SYSTEM_STATUS_PICKER:
-
-                // jump to system status from notifications management
-                if (unmaskedRequestCode == Constants.NOTIFICATIONS_REQUEST) {
-                    jumpToSystemStatusHandler.sendMessage(jumpToSystemStatusHandler.obtainMessage());
-                }
-                break;
-
-            case Constants.VIEW_NOTIFICATION_MANAGEMENT:
-
-                // jump to notifications management from NTA / schedules / system status / transitview
-                if (unmaskedRequestCode == Constants.NTA_REQUEST || unmaskedRequestCode == Constants.SYSTEM_STATUS_REQUEST || unmaskedRequestCode == Constants.SCHEDULES_REQUEST || unmaskedRequestCode == Constants.TRANSITVIEW_REQUEST) {
-                    jumpToNotifsManagementHandler.sendMessage(jumpToNotifsManagementHandler.obtainMessage());
-                }
-                break;
+            // TODO: put push notifications back in
+//            case Constants.VIEW_SYSTEM_STATUS_PICKER:
+//
+//                // jump to system status from notifications management
+//                if (unmaskedRequestCode == Constants.NOTIFICATIONS_REQUEST) {
+//                    jumpToSystemStatusHandler.sendMessage(jumpToSystemStatusHandler.obtainMessage());
+//                }
+//                break;
+//
+//            case Constants.VIEW_NOTIFICATION_MANAGEMENT:
+//
+//                // jump to notifications management from NTA / schedules / system status / transitview
+//                if (unmaskedRequestCode == Constants.NTA_REQUEST || unmaskedRequestCode == Constants.SYSTEM_STATUS_REQUEST || unmaskedRequestCode == Constants.SCHEDULES_REQUEST || unmaskedRequestCode == Constants.TRANSITVIEW_REQUEST) {
+//                    jumpToNotifsManagementHandler.sendMessage(jumpToNotifsManagementHandler.obtainMessage());
+//                }
+//                break;
         }
     }
 
@@ -661,19 +662,20 @@ public class MainActivity extends BaseActivity implements
         }
     }
 
-    public void switchToNotificationManagement() {
-        if (currentMenu == null || currentMenu.getItemId() != R.id.nav_notifications) {
-            if (currentMenu != null) {
-                currentMenu.setIcon(previousIcon);
-            }
-            navigationView.setCheckedItem(R.id.nav_notifications);
-            currentMenu = navigationView.getMenu().findItem(R.id.nav_notifications);
-            previousIcon = currentMenu.getIcon();
-            currentMenu.setIcon(R.drawable.ic_notifications_active);
-            getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, notifications).commit();
-            setTitle(R.string.notifications);
-        }
-    }
+    // TODO: put push notifications back in
+//    public void switchToNotificationManagement() {
+//        if (currentMenu == null || currentMenu.getItemId() != R.id.nav_notifications) {
+//            if (currentMenu != null) {
+//                currentMenu.setIcon(previousIcon);
+//            }
+//            navigationView.setCheckedItem(R.id.nav_notifications);
+//            currentMenu = navigationView.getMenu().findItem(R.id.nav_notifications);
+//            previousIcon = currentMenu.getIcon();
+//            currentMenu.setIcon(R.drawable.ic_notifications_active);
+//            getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, notifications).commit();
+//            setTitle(R.string.notifications);
+//        }
+//    }
 
     public void switchToSchedules(Bundle data) {
         CrashlyticsManager.log(Log.INFO, TAG, "switchToSchedules");
@@ -716,12 +718,13 @@ public class MainActivity extends BaseActivity implements
         }
     };
 
-    private Handler jumpToNotifsManagementHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switchToNotificationManagement();
-        }
-    };
+    // TODO: put push notifications back in
+//    private Handler jumpToNotifsManagementHandler = new Handler() {
+//        @Override
+//        public void handleMessage(Message msg) {
+//            switchToNotificationManagement();
+//        }
+//    };
 
     // listener for completed database downloads
     BroadcastReceiver onDBDownloadComplete = new BroadcastReceiver() {

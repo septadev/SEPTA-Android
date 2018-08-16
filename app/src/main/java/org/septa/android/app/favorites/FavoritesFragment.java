@@ -276,9 +276,12 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
                 if (resultCode == Constants.VIEW_SCHEDULE) {
                     ((MainActivity) activity).switchToSchedules(data.getExtras());
 
-                } else if (resultCode == Constants.VIEW_NOTIFICATION_MANAGEMENT) {
-                    ((MainActivity) activity).switchToNotificationManagement();
                 }
+
+                // TODO: put push notifications back in
+//                else if (resultCode == Constants.VIEW_NOTIFICATION_MANAGEMENT) {
+//                    ((MainActivity) activity).switchToNotificationManagement();
+//                }
             }
         }
     }

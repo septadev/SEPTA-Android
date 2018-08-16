@@ -563,7 +563,7 @@ public class MainActivity extends BaseActivity implements
     public void clearCorruptedDownloadRefId() {
         long downloadRefId = DatabaseSharedPrefsUtils.getDownloadRefId(MainActivity.this);
         if (downloadRefId != DEFAULT_DOWNLOAD_REF_ID) {
-            downloadManager.remove();
+            downloadManager.remove(downloadRefId);
         }
     }
 

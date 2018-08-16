@@ -13,6 +13,7 @@ import com.google.firebase.FirebaseApp;
 import org.septa.android.app.database.DatabaseManager;
 import org.septa.android.app.database.SEPTADatabase;
 import org.septa.android.app.database.update.DatabaseSharedPrefsUtils;
+import org.septa.android.app.notifications.RefreshAdvertisingId;
 import org.septa.android.app.rating.RatingUtil;
 import org.septa.android.app.rating.SharedPreferencesRatingUtil;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
@@ -85,7 +86,9 @@ public class MainApplication extends Application implements Runnable {
 
             FirebaseApp.initializeApp(this);
 
-            //SeptaServiceFactory.getFavoritesService().deleteAllFavorites(this);
+            RefreshAdvertisingId refreshAdvertisingId = new RefreshAdvertisingId(getApplicationContext());
+            refreshAdvertisingId.execute();
+
         } catch (PackageManager.NameNotFoundException e) {
             Log.e(TAG, "Failed to load meta-data, NameNotFound: " + e.getMessage());
         } catch (NullPointerException e) {

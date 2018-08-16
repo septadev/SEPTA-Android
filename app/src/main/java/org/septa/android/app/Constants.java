@@ -24,7 +24,7 @@ public interface Constants {
     // result codes to access MainActivity's fragments
     int VIEW_SCHEDULE = 1;
     int VIEW_SYSTEM_STATUS_PICKER = 2;
-//    int VIEW_NOTIFICATION_MANAGEMENT = 3; // TODO: put push notifications back in
+    int VIEW_NOTIFICATION_MANAGEMENT = 3;
 
     String SERVICE_ADVISORY_EXPANDED = "service_advisory_expanded";
     String SERVICE_ALERT_EXPANDED = "service_alert_expanded";

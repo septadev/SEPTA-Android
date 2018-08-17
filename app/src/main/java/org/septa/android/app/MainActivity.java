@@ -1,6 +1,5 @@
 package org.septa.android.app;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
@@ -527,15 +526,12 @@ public class MainActivity extends BaseActivity implements
 
     @Override
     public void afterLatestDBMetadataLoad(final int latestDBVersion, final String latestDBURL, String updatedDate) {
-        Activity activity = getParent();
-
-// if (activity != null && !activity.isFinishing()) {
-        if (activity != null) {
-            boolean shouldPrompt = DatabaseUpgradeUtils.decideWhetherToAskToDownload(activity, latestDBVersion, latestDBURL, updatedDate);
+        if (!isFinishing()) {
+            boolean shouldPrompt = DatabaseUpgradeUtils.decideWhetherToAskToDownload(MainActivity.this, latestDBVersion, latestDBURL, updatedDate);
 
             if (shouldPrompt) {
                 // prompt user to download new database
-                AlertDialog dialog = DatabaseUpgradeUtils.promptToDownload(activity);
+                AlertDialog dialog = DatabaseUpgradeUtils.promptToDownload(MainActivity.this);
 
                 // only show prompt once
                 if (promptDownloadDB != null && promptDownloadDB.isShowing()) {
@@ -550,14 +546,13 @@ public class MainActivity extends BaseActivity implements
                     try {
                         promptDownloadDB.show();
                     } catch (WindowManager.BadTokenException e) {
-                        CrashlyticsManager.log(Log.ERROR, TAG, "Could not show prompt to download DB with parent activity " + activity.toString());
-                        CrashlyticsManager.log(Log.ERROR, TAG, "Activity finishing? " + activity.isFinishing());
+                        CrashlyticsManager.log(Log.ERROR, TAG, "Could not show prompt to download DB with parent activity " + MainActivity.this.toString());
                         CrashlyticsManager.logException(TAG, e);
                     }
                 }
             }
         } else {
-            CrashlyticsManager.log(Log.ERROR, TAG, "Could not show prompt to download DB because parent activity was null");
+            CrashlyticsManager.log(Log.ERROR, TAG, "Could not show prompt to download DB because parent activity was finishing");
         }
     }
 
@@ -593,12 +588,9 @@ public class MainActivity extends BaseActivity implements
 
     @Override
     public void notifyNewDatabaseReady() {
-        Activity activity = getParent();
-
-// if (activity != null && !activity.isFinishing()) {
-        if (activity != null) {
+        if (!isFinishing()) {
             // only show that new database ready if not already using most up to date version of database
-            AlertDialog dialog = DatabaseUpgradeUtils.buildNewDatabaseReadyPopUp(activity);
+            AlertDialog dialog = DatabaseUpgradeUtils.buildNewDatabaseReadyPopUp(MainActivity.this);
 
             // only show prompt once
             if (acknowledgeNewDatabaseReady != null && acknowledgeNewDatabaseReady.isShowing()) {
@@ -613,13 +605,12 @@ public class MainActivity extends BaseActivity implements
                 try {
                     acknowledgeNewDatabaseReady.show();
                 } catch (WindowManager.BadTokenException e) {
-                    CrashlyticsManager.log(Log.ERROR, TAG, "Could not show prompt that new DB ready with parent activity " + activity.toString());
-                    CrashlyticsManager.log(Log.ERROR, TAG, "Activity finishing? " + activity.isFinishing());
+                    CrashlyticsManager.log(Log.ERROR, TAG, "Could not show prompt that new DB ready with parent activity " + MainActivity.this.toString());
                     CrashlyticsManager.logException(TAG, e);
                 }
             }
         } else {
-            CrashlyticsManager.log(Log.ERROR, TAG, "Could not show prompt that new DB ready because parent activity was null");
+            CrashlyticsManager.log(Log.ERROR, TAG, "Could not show prompt that new DB ready because parent activity was finishing");
         }
     }
 

@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.view.View;
 
 import org.septa.android.app.BaseActivity;
@@ -16,6 +17,8 @@ import org.septa.android.app.TransitType;
 import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.AlertDetail;
+import org.septa.android.app.support.AnalyticsManager;
+import org.septa.android.app.support.CrashlyticsManager;
 import org.septa.android.app.support.GeneralUtils;
 import org.septa.android.app.view.TextView;
 
@@ -93,8 +96,12 @@ public class SystemStatusResultsActivity extends BaseActivity {
         try {
             color = ContextCompat.getColor(this, transitType.getLineColor(routeId, this));
         } catch (Exception e) {
+            CrashlyticsManager.log(Log.ERROR, TAG, "Could not retrieve route color for " + routeId);
+            CrashlyticsManager.logException(TAG, e);
+
             color = ContextCompat.getColor(this, R.color.default_line_color);
         }
+
         Drawable[] drawables = title.getCompoundDrawables();
         Drawable bullet = drawables[2];
         bullet.setColorFilter(color, PorterDuff.Mode.SRC);

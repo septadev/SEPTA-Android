@@ -28,6 +28,7 @@ import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.AlertDetail;
 import org.septa.android.app.support.AnalyticsManager;
 import org.septa.android.app.support.BaseTabActivityHandler;
+import org.septa.android.app.support.CrashlyticsManager;
 import org.septa.android.app.support.CursorAdapterSupplier;
 import org.septa.android.app.support.GeneralUtils;
 
@@ -266,9 +267,11 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
                 try {
                     color = ContextCompat.getColor(context, transitType.getLineColor(routeDirectionModel.getRouteId(), getContext()));
                 } catch (Exception e) {
+                    CrashlyticsManager.log(Log.ERROR, TAG, "Could not retrieve route color for " + routeDirectionModel.getRouteId());
+                    CrashlyticsManager.logException(TAG, e);
+
                     color = ContextCompat.getColor(context, R.color.default_line_color);
                 }
-
 
                 Drawable[] drawables = lineText.getCompoundDrawables();
                 Drawable bullet = ContextCompat.getDrawable(context, R.drawable.shape_line_marker);

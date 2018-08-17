@@ -134,7 +134,9 @@ public enum TransitType implements Serializable {
             try {
                 return context.getResources().getIdentifier("line_color_" + lineId.toLowerCase(), "color", R.class.getPackage().getName());
             } catch (Exception e) {
-                Log.e(TAG, e.toString());
+                CrashlyticsManager.log(Log.ERROR, TAG, "Could not retrieve route color for " + lineId.toLowerCase());
+                CrashlyticsManager.logException(TAG, e);
+
                 return R.color.default_line_color;
             }
         }

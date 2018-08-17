@@ -26,6 +26,7 @@ import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.support.AnalyticsManager;
 import org.septa.android.app.support.BaseTabActivityHandler;
+import org.septa.android.app.support.CrashlyticsManager;
 import org.septa.android.app.support.Criteria;
 import org.septa.android.app.support.CursorAdapterSupplier;
 
@@ -291,6 +292,9 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
             try {
                 color = ContextCompat.getColor(getContext(), transitType.getLineColor(var1.getRouteId(), getContext()));
             } catch (Exception e) {
+                CrashlyticsManager.log(Log.ERROR, TAG, "Could not retrieve route color for " + var1.getRouteId());
+                CrashlyticsManager.logException(TAG, e);
+
                 color = ContextCompat.getColor(getContext(), R.color.default_line_color);
             }
 

@@ -28,6 +28,7 @@ import android.text.util.Linkify;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 
 import org.septa.android.app.about.AboutFragment;
 import org.septa.android.app.connect.ConnectFragment;
@@ -523,23 +524,33 @@ public class MainActivity extends BaseActivity implements
 
     @Override
     public void afterLatestDBMetadataLoad(final int latestDBVersion, final String latestDBURL, String updatedDate) {
-        boolean shouldPrompt = DatabaseUpgradeUtils.decideWhetherToAskToDownload(MainActivity.this, latestDBVersion, latestDBURL, updatedDate);
+        if (!isFinishing()) {
+            boolean shouldPrompt = DatabaseUpgradeUtils.decideWhetherToAskToDownload(MainActivity.this, latestDBVersion, latestDBURL, updatedDate);
 
-        if (shouldPrompt) {
-            // prompt user to download new database
-            AlertDialog dialog = DatabaseUpgradeUtils.promptToDownload(MainActivity.this);
+            if (shouldPrompt) {
+                // prompt user to download new database
+                AlertDialog dialog = DatabaseUpgradeUtils.promptToDownload(MainActivity.this);
 
-            // only show prompt once
-            if (promptDownloadDB != null && promptDownloadDB.isShowing()) {
-                promptDownloadDB.dismiss();
-                promptDownloadDB = null;
+                // only show prompt once
+                if (promptDownloadDB != null && promptDownloadDB.isShowing()) {
+                    promptDownloadDB.dismiss();
+                    promptDownloadDB = null;
+                }
+                promptDownloadDB = dialog;
+
+                // show prompt
+                if (promptDownloadDB != null) {
+
+                    try {
+                        promptDownloadDB.show();
+                    } catch (WindowManager.BadTokenException e) {
+                        CrashlyticsManager.log(Log.ERROR, TAG, "Could not show prompt to download DB with parent activity " + MainActivity.this.toString());
+                        CrashlyticsManager.logException(TAG, e);
+                    }
+                }
             }
-            promptDownloadDB = dialog;
-
-            // show prompt
-            if (promptDownloadDB != null) {
-                promptDownloadDB.show();
-            }
+        } else {
+            CrashlyticsManager.log(Log.ERROR, TAG, "Could not show prompt to download DB because parent activity was finishing");
         }
     }
 
@@ -575,19 +586,29 @@ public class MainActivity extends BaseActivity implements
 
     @Override
     public void notifyNewDatabaseReady() {
-        // only show that new database ready if not already using most up to date version of database
-        AlertDialog dialog = DatabaseUpgradeUtils.buildNewDatabaseReadyPopUp(MainActivity.this);
+        if (!isFinishing()) {
+            // only show that new database ready if not already using most up to date version of database
+            AlertDialog dialog = DatabaseUpgradeUtils.buildNewDatabaseReadyPopUp(MainActivity.this);
 
-        // only show prompt once
-        if (acknowledgeNewDatabaseReady != null && acknowledgeNewDatabaseReady.isShowing()) {
-            acknowledgeNewDatabaseReady.dismiss();
-            acknowledgeNewDatabaseReady = null;
-        }
-        acknowledgeNewDatabaseReady = dialog;
+            // only show prompt once
+            if (acknowledgeNewDatabaseReady != null && acknowledgeNewDatabaseReady.isShowing()) {
+                acknowledgeNewDatabaseReady.dismiss();
+                acknowledgeNewDatabaseReady = null;
+            }
+            acknowledgeNewDatabaseReady = dialog;
 
-        // show prompt
-        if (acknowledgeNewDatabaseReady != null) {
-            acknowledgeNewDatabaseReady.show();
+            // show prompt
+            if (acknowledgeNewDatabaseReady != null) {
+
+                try {
+                    acknowledgeNewDatabaseReady.show();
+                } catch (WindowManager.BadTokenException e) {
+                    CrashlyticsManager.log(Log.ERROR, TAG, "Could not show prompt that new DB ready with parent activity " + MainActivity.this.toString());
+                    CrashlyticsManager.logException(TAG, e);
+                }
+            }
+        } else {
+            CrashlyticsManager.log(Log.ERROR, TAG, "Could not show prompt that new DB ready because parent activity was finishing");
         }
     }
 

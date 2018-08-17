@@ -1,5 +1,6 @@
 package org.septa.android.app;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
@@ -28,6 +29,7 @@ import android.text.util.Linkify;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 
 import org.septa.android.app.about.AboutFragment;
 import org.septa.android.app.connect.ConnectFragment;
@@ -525,23 +527,37 @@ public class MainActivity extends BaseActivity implements
 
     @Override
     public void afterLatestDBMetadataLoad(final int latestDBVersion, final String latestDBURL, String updatedDate) {
-        boolean shouldPrompt = DatabaseUpgradeUtils.decideWhetherToAskToDownload(MainActivity.this, latestDBVersion, latestDBURL, updatedDate);
+        Activity activity = getParent();
 
-        if (shouldPrompt) {
-            // prompt user to download new database
-            AlertDialog dialog = DatabaseUpgradeUtils.promptToDownload(MainActivity.this);
+// if (activity != null && !activity.isFinishing()) {
+        if (activity != null) {
+            boolean shouldPrompt = DatabaseUpgradeUtils.decideWhetherToAskToDownload(activity, latestDBVersion, latestDBURL, updatedDate);
 
-            // only show prompt once
-            if (promptDownloadDB != null && promptDownloadDB.isShowing()) {
-                promptDownloadDB.dismiss();
-                promptDownloadDB = null;
+            if (shouldPrompt) {
+                // prompt user to download new database
+                AlertDialog dialog = DatabaseUpgradeUtils.promptToDownload(activity);
+
+                // only show prompt once
+                if (promptDownloadDB != null && promptDownloadDB.isShowing()) {
+                    promptDownloadDB.dismiss();
+                    promptDownloadDB = null;
+                }
+                promptDownloadDB = dialog;
+
+                // show prompt
+                if (promptDownloadDB != null) {
+
+                    try {
+                        promptDownloadDB.show();
+                    } catch (WindowManager.BadTokenException e) {
+                        CrashlyticsManager.log(Log.ERROR, TAG, "Could not show prompt to download DB with parent activity " + activity.toString());
+                        CrashlyticsManager.log(Log.ERROR, TAG, "Activity finishing? " + activity.isFinishing());
+                        CrashlyticsManager.logException(TAG, e);
+                    }
+                }
             }
-            promptDownloadDB = dialog;
-
-            // show prompt
-            if (promptDownloadDB != null) {
-                promptDownloadDB.show();
-            }
+        } else {
+            CrashlyticsManager.log(Log.ERROR, TAG, "Could not show prompt to download DB because parent activity was null");
         }
     }
 
@@ -577,19 +593,33 @@ public class MainActivity extends BaseActivity implements
 
     @Override
     public void notifyNewDatabaseReady() {
-        // only show that new database ready if not already using most up to date version of database
-        AlertDialog dialog = DatabaseUpgradeUtils.buildNewDatabaseReadyPopUp(MainActivity.this);
+        Activity activity = getParent();
 
-        // only show prompt once
-        if (acknowledgeNewDatabaseReady != null && acknowledgeNewDatabaseReady.isShowing()) {
-            acknowledgeNewDatabaseReady.dismiss();
-            acknowledgeNewDatabaseReady = null;
-        }
-        acknowledgeNewDatabaseReady = dialog;
+// if (activity != null && !activity.isFinishing()) {
+        if (activity != null) {
+            // only show that new database ready if not already using most up to date version of database
+            AlertDialog dialog = DatabaseUpgradeUtils.buildNewDatabaseReadyPopUp(activity);
 
-        // show prompt
-        if (acknowledgeNewDatabaseReady != null) {
-            acknowledgeNewDatabaseReady.show();
+            // only show prompt once
+            if (acknowledgeNewDatabaseReady != null && acknowledgeNewDatabaseReady.isShowing()) {
+                acknowledgeNewDatabaseReady.dismiss();
+                acknowledgeNewDatabaseReady = null;
+            }
+            acknowledgeNewDatabaseReady = dialog;
+
+            // show prompt
+            if (acknowledgeNewDatabaseReady != null) {
+
+                try {
+                    acknowledgeNewDatabaseReady.show();
+                } catch (WindowManager.BadTokenException e) {
+                    CrashlyticsManager.log(Log.ERROR, TAG, "Could not show prompt that new DB ready with parent activity " + activity.toString());
+                    CrashlyticsManager.log(Log.ERROR, TAG, "Activity finishing? " + activity.isFinishing());
+                    CrashlyticsManager.logException(TAG, e);
+                }
+            }
+        } else {
+            CrashlyticsManager.log(Log.ERROR, TAG, "Could not show prompt that new DB ready because parent activity was null");
         }
     }
 

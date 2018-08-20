@@ -19,7 +19,7 @@ import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
 import org.septa.android.app.notifications.edit.EditNotificationsFragment;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
-import org.septa.android.app.services.apiinterfaces.model.RouteNotificationSubscription;
+import org.septa.android.app.services.apiinterfaces.model.RouteSubscription;
 import org.septa.android.app.support.AnalyticsManager;
 import org.septa.android.app.view.TextView;
 
@@ -117,7 +117,7 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
                 if (isInEditMode) {
                     closeEditMode();
                 } else {
-                    List<RouteNotificationSubscription> routesList = SeptaServiceFactory.getNotificationsService().getRoutesSubscribedTo(MyNotificationsActivity.this);
+                    List<RouteSubscription> routesList = SeptaServiceFactory.getNotificationsService().getRoutesSubscribedTo(MyNotificationsActivity.this);
                     if (routesList.isEmpty()) {
                         // user must have some notifications in order to switch to edit mode
                         Toast.makeText(MyNotificationsActivity.this, R.string.no_notifications_to_edit, Toast.LENGTH_SHORT).show();

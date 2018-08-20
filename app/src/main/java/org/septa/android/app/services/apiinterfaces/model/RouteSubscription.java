@@ -6,7 +6,7 @@ import org.septa.android.app.TransitType;
 
 import java.io.Serializable;
 
-public class RouteNotificationSubscription implements Serializable, Comparable<RouteNotificationSubscription> {
+public class RouteSubscription implements Serializable, Comparable<RouteSubscription> {
 
     private String routeId;
 
@@ -16,7 +16,7 @@ public class RouteNotificationSubscription implements Serializable, Comparable<R
 
     private boolean isEnabled;
 
-    public RouteNotificationSubscription(String routeId, String routeName, TransitType transitType) {
+    public RouteSubscription(String routeId, String routeName, TransitType transitType) {
         this.routeId = routeId;
         this.routeName = routeName;
         this.transitType = transitType;
@@ -64,7 +64,7 @@ public class RouteNotificationSubscription implements Serializable, Comparable<R
             return false;
         }
 
-        RouteNotificationSubscription that = (RouteNotificationSubscription) o;
+        RouteSubscription that = (RouteSubscription) o;
 
         if (!routeId.equals(that.routeId)) {
             return false;
@@ -85,7 +85,7 @@ public class RouteNotificationSubscription implements Serializable, Comparable<R
 
     @Override
     public String toString() {
-        return "RouteNotificationSubscription{" +
+        return "RouteSubscription{" +
                 "routeId='" + routeId + '\'' +
                 ", routeName='" + routeName + '\'' +
                 ", transitType=" + transitType +
@@ -99,7 +99,7 @@ public class RouteNotificationSubscription implements Serializable, Comparable<R
      * @return
      */
     @Override
-    public int compareTo(@NonNull RouteNotificationSubscription other) {
+    public int compareTo(@NonNull RouteSubscription other) {
         int i = this.transitType.compareTo(other.transitType);
         if (i != 0) {
             return i;

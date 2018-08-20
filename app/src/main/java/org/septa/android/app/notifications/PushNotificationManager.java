@@ -28,7 +28,7 @@ import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.nextarrive.NextToArriveTripDetailActivity;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalDetails;
-import org.septa.android.app.services.apiinterfaces.model.RouteNotificationSubscription;
+import org.septa.android.app.services.apiinterfaces.model.RouteSubscription;
 import org.septa.android.app.support.AnalyticsManager;
 import org.septa.android.app.support.CrashlyticsManager;
 import org.septa.android.app.support.Criteria;
@@ -320,8 +320,8 @@ public class PushNotificationManager {
         SeptaServiceFactory.getNotificationsService().setNotificationsEnabled(context, false);
 
         // unsubscribe from all topics
-        List<RouteNotificationSubscription> routesToUnsubscribeFrom = SeptaServiceFactory.getNotificationsService().getRoutesSubscribedTo(context);
-        for (RouteNotificationSubscription route : routesToUnsubscribeFrom) {
+        List<RouteSubscription> routesToUnsubscribeFrom = SeptaServiceFactory.getNotificationsService().getRoutesSubscribedTo(context);
+        for (RouteSubscription route : routesToUnsubscribeFrom) {
             unsubscribeFromRoute(route.getRouteId(), route.getTransitType());
         }
 
@@ -332,8 +332,8 @@ public class PushNotificationManager {
         SeptaServiceFactory.getNotificationsService().setNotificationsEnabled(context, true);
 
         // resubscribe user to their previously saved topics
-        List<RouteNotificationSubscription> routesSubscribedTo = SeptaServiceFactory.getNotificationsService().getRoutesSubscribedTo(context);
-        for (RouteNotificationSubscription route : routesSubscribedTo) {
+        List<RouteSubscription> routesSubscribedTo = SeptaServiceFactory.getNotificationsService().getRoutesSubscribedTo(context);
+        for (RouteSubscription route : routesSubscribedTo) {
             if (route.isEnabled()) {
                 subscribeToRoute(route.getRouteId(), route.getTransitType());
             }
@@ -413,8 +413,8 @@ public class PushNotificationManager {
         }
 
         // add route to subscription list
-        List<RouteNotificationSubscription> notificationSubscriptions = SeptaServiceFactory.getNotificationsService().getRoutesSubscribedTo(context);
-        RouteNotificationSubscription routeToSubscribeTo = new RouteNotificationSubscription(routeId, routeName, transitType);
+        List<RouteSubscription> notificationSubscriptions = SeptaServiceFactory.getNotificationsService().getRoutesSubscribedTo(context);
+        RouteSubscription routeToSubscribeTo = new RouteSubscription(routeId, routeName, transitType);
 
         if (notificationSubscriptions.contains(routeToSubscribeTo)) {
             // turn notifications on for that route

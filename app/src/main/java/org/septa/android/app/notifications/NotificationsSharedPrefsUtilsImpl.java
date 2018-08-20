@@ -8,7 +8,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
-import org.septa.android.app.services.apiinterfaces.model.RouteNotificationSubscription;
+import org.septa.android.app.services.apiinterfaces.model.RouteSubscription;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -216,7 +216,7 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
     }
 
     @Override
-    public List<RouteNotificationSubscription> getRoutesSubscribedTo(Context context) {
+    public List<RouteSubscription> getRoutesSubscribedTo(Context context) {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
         String preferencesJson = sharedPreferences.getString(ROUTE_NOTIFICATION_SUBSCRIPTION, null);
 
@@ -226,7 +226,7 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
 
         Gson gson = new Gson();
         try {
-            return gson.fromJson(preferencesJson, new TypeToken<List<RouteNotificationSubscription>>() {
+            return gson.fromJson(preferencesJson, new TypeToken<List<RouteSubscription>>() {
             }.getType());
         } catch (JsonSyntaxException e) {
             Log.e(TAG, e.toString());
@@ -237,8 +237,8 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
 
     @Override
     public boolean isSubscribedToRoute(Context context, String routeId) {
-        List<RouteNotificationSubscription> routeList = getRoutesSubscribedTo(context);
-        for (RouteNotificationSubscription route : routeList) {
+        List<RouteSubscription> routeList = getRoutesSubscribedTo(context);
+        for (RouteSubscription route : routeList) {
             if (routeId.equalsIgnoreCase(route.getRouteId()) && route.isEnabled()) {
                 return true;
             }
@@ -247,12 +247,12 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
     }
 
     @Override
-    public void addRouteSubscription(Context context, RouteNotificationSubscription routeToAdd) {
+    public void addRouteSubscription(Context context, RouteSubscription routeToAdd) {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
-        List<RouteNotificationSubscription> routeList = getRoutesSubscribedTo(context);
+        List<RouteSubscription> routeList = getRoutesSubscribedTo(context);
         boolean found = false;
 
-        for (RouteNotificationSubscription route : routeList) {
+        for (RouteSubscription route : routeList) {
             if (routeToAdd.getRouteId().equalsIgnoreCase(route.getRouteId())) {
                 Log.e(TAG, "Already subscribed to route: " + route.getRouteId());
                 found = true;
@@ -270,10 +270,10 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
     @Override
     public void toggleRouteSubscription(Context context, String routeId, boolean isEnabled) {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
-        List<RouteNotificationSubscription> routeList = getRoutesSubscribedTo(context);
+        List<RouteSubscription> routeList = getRoutesSubscribedTo(context);
         boolean success = false;
 
-        for (RouteNotificationSubscription route : routeList) {
+        for (RouteSubscription route : routeList) {
             if (routeId.equalsIgnoreCase(route.getRouteId())) {
                 route.setEnabled(isEnabled);
                 success = true;
@@ -291,7 +291,7 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
     @Override
     public void removeRouteSubscription(Context context, String routeId) {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
-        List<RouteNotificationSubscription> routesList = getRoutesSubscribedTo(context);
+        List<RouteSubscription> routesList = getRoutesSubscribedTo(context);
         int indexToRemove = -1;
         for (int i = 0; i < routesList.size(); i++) {
             if (routeId.equalsIgnoreCase(routesList.get(i).getRouteId())) {
@@ -307,7 +307,7 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
         }
     }
 
-    private void storeRoutesSubscribedTo(SharedPreferences sharedPreferences, List<RouteNotificationSubscription> routeList) {
+    private void storeRoutesSubscribedTo(SharedPreferences sharedPreferences, List<RouteSubscription> routeList) {
         Gson gson = new Gson();
         String routesListJson = gson.toJson(routeList);
         sharedPreferences.edit().putString(ROUTE_NOTIFICATION_SUBSCRIPTION, routesListJson).apply();

@@ -2,7 +2,7 @@ package org.septa.android.app.notifications;
 
 import android.content.Context;
 
-import org.septa.android.app.services.apiinterfaces.model.RouteNotificationSubscription;
+import org.septa.android.app.services.apiinterfaces.model.RouteSubscription;
 
 import java.util.List;
 
@@ -32,11 +32,11 @@ public interface NotificationsSharedPrefsUtils {
 
     List<String> removeNotificationTimeFrame(Context context, int windowToDelete);
 
-    List<RouteNotificationSubscription> getRoutesSubscribedTo(Context context);
+    List<RouteSubscription> getRoutesSubscribedTo(Context context);
 
     boolean isSubscribedToRoute(Context context, String routeId);
 
-    void addRouteSubscription(Context context, RouteNotificationSubscription route);
+    void addRouteSubscription(Context context, RouteSubscription route);
 
     void toggleRouteSubscription(Context context, String routeId, boolean isEnabled);
 

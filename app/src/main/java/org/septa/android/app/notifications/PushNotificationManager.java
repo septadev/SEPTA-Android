@@ -16,8 +16,6 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.google.firebase.messaging.FirebaseMessaging;
-
 import org.septa.android.app.Constants;
 import org.septa.android.app.MainActivity;
 import org.septa.android.app.R;
@@ -28,11 +26,16 @@ import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.nextarrive.NextToArriveTripDetailActivity;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalDetails;
+import org.septa.android.app.services.apiinterfaces.model.PushNotifSubscriptionRequest;
+import org.septa.android.app.services.apiinterfaces.model.PushNotifSubscriptionResponse;
+import org.septa.android.app.services.apiinterfaces.model.RouteNotifSubscription;
 import org.septa.android.app.services.apiinterfaces.model.RouteSubscription;
+import org.septa.android.app.services.apiinterfaces.model.TimeSlot;
 import org.septa.android.app.support.AnalyticsManager;
 import org.septa.android.app.support.CrashlyticsManager;
 import org.septa.android.app.support.Criteria;
 import org.septa.android.app.support.CursorAdapterSupplier;
+import org.septa.android.app.support.GeneralUtils;
 import org.septa.android.app.systemstatus.SystemStatusResultsActivity;
 
 import java.text.DateFormat;
@@ -59,12 +62,6 @@ public class PushNotificationManager {
     private static PushNotificationManager mInstance;
 
     private static final String CHANNEL_ID = "SEPTA_PUSH_NOTIFICATIONS";
-    private static final String TOPIC_PREFIX = "TOPIC_";
-
-    private static final String SEPTA_ANNOUNCEMENTS = "SEPTA_ANNOUNCEMENTS";
-    private static final String SERVICE_ALERT_SUFFIX = "_ALERT";
-    private static final String RAIL_DELAY_SUFFIX = "_DELAY";
-    private static final String DETOUR_SUFFIX = "_DETOUR";
 
     private static final DateFormat timeFormat = new SimpleDateFormat("HHmm", Locale.US);
 
@@ -316,94 +313,229 @@ public class PushNotificationManager {
         }
     }
 
-    public void unsubscribeFromAllTopics() {
-        SeptaServiceFactory.getNotificationsService().setNotificationsEnabled(context, false);
+    public static void updateNotifSubscription(final Context context, final Runnable successTask, final Runnable failureTask) {
+        if (SeptaServiceFactory.getNotificationsService().areNotificationsEnabled(context)) {
+            RefreshAdvertisingId refreshAdvertisingId = new RefreshAdvertisingId(context, new Runnable() {
+                @Override
+                public void run() {
+                    CrashlyticsManager.log(Log.ERROR, TAG, "Failed to retrieve advertising ID");
+                    displaySubscriptionFailureMessage(context);
+                    if (failureTask != null) {
+                        failureTask.run();
+                    }
+                }
+            }, new Runnable() {
+                @Override
+                public void run() {
+                    final PushNotifSubscriptionRequest request = buildSubscriptionRequest(context);
 
-        // unsubscribe from all topics
-        List<RouteSubscription> routesToUnsubscribeFrom = SeptaServiceFactory.getNotificationsService().getRoutesSubscribedTo(context);
-        for (RouteSubscription route : routesToUnsubscribeFrom) {
-            unsubscribeFromRoute(route.getRouteId(), route.getTransitType());
+                    Log.e(TAG, request.toString()); // TODO: remove
+
+                    SeptaServiceFactory.getPushNotificationService().setNotificationSubscription(request).enqueue(new Callback<PushNotifSubscriptionResponse>() {
+                        @Override
+                        public void onResponse(Call<PushNotifSubscriptionResponse> call, Response<PushNotifSubscriptionResponse> response) {
+                            PushNotifSubscriptionResponse responseBody = response.body();
+
+                            if (responseBody != null) {
+                                boolean success = response.isSuccessful() && responseBody.isSuccess();
+
+                                if (success) {
+                                    // TODO: update timestamp of last keep alive call
+
+                                    Toast.makeText(context, R.string.subscription_success, Toast.LENGTH_LONG).show();
+                                    if (successTask != null) {
+                                        successTask.run();
+                                    }
+                                } else {
+                                    CrashlyticsManager.log(Log.ERROR, TAG, "Could not remove push notification subscription: " + response.message());
+                                    CrashlyticsManager.log(Log.ERROR, TAG, "Push Notification Subscription Request " + request);
+
+                                    displaySubscriptionFailureMessage(context);
+                                    if (failureTask != null) {
+                                        failureTask.run();
+                                    }
+                                }
+                            } else {
+                                CrashlyticsManager.log(Log.ERROR, TAG, "Could not update push notification subscription - response body was null: " + response.message());
+                                CrashlyticsManager.log(Log.ERROR, TAG, "Push Notification Subscription Request " + request);
+
+                                displaySubscriptionFailureMessage(context);
+                                if (failureTask != null) {
+                                    failureTask.run();
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<PushNotifSubscriptionResponse> call, Throwable t) {
+                            CrashlyticsManager.log(Log.ERROR, TAG, "Failed to Update Push Notification Subscription Request " + request);
+                            CrashlyticsManager.logException(TAG, t);
+
+                            displaySubscriptionFailureMessage(context);
+                            if (failureTask != null) {
+                                failureTask.run();
+                            }
+                        }
+                    });
+                }
+            });
+            refreshAdvertisingId.execute();
+
+        } else {
+            removeNotifSubscription(context, successTask, failureTask);
         }
-
-        // topics subscribed to are still remembered because shared preferences untouched
     }
 
-    public void resubscribeToTopics() {
-        SeptaServiceFactory.getNotificationsService().setNotificationsEnabled(context, true);
+    public static void removeNotifSubscription(final Context context, final Runnable successTask, final Runnable failureTask) {
+        final PushNotifSubscriptionRequest request = buildNullSubscriptionRequest(context);
 
-        // resubscribe user to their previously saved topics
+        Log.e(TAG, request.toString()); // TODO: remove
+
+        SeptaServiceFactory.getPushNotificationService().setNotificationSubscription(request).enqueue(new Callback<PushNotifSubscriptionResponse>() {
+            @Override
+            public void onResponse(Call<PushNotifSubscriptionResponse> call, Response<PushNotifSubscriptionResponse> response) {
+                PushNotifSubscriptionResponse responseBody = response.body();
+
+                if (responseBody != null) {
+                    boolean success = response.isSuccessful() && responseBody.isSuccess();
+
+                    if (success) {
+                        // TODO: update timestamp of last keep alive call
+
+                        Toast.makeText(context, R.string.subscription_success, Toast.LENGTH_LONG).show();
+
+                        if (successTask != null) {
+                            successTask.run();
+                        }
+                    } else {
+                        CrashlyticsManager.log(Log.ERROR, TAG, "Could not remove push notification subscription: " + response.message());
+                        CrashlyticsManager.log(Log.ERROR, TAG, "Push Notification Subscription Request " + request);
+
+                        displaySubscriptionFailureMessage(context);
+                        if (failureTask != null) {
+                            failureTask.run();
+                        }
+                    }
+
+                } else {
+                    CrashlyticsManager.log(Log.ERROR, TAG, "Could not remove push notification subscription - response body was null");
+                    CrashlyticsManager.log(Log.ERROR, TAG, "Push Notification Subscription Request " + request);
+
+                    displaySubscriptionFailureMessage(context);
+                    if (failureTask != null) {
+                        failureTask.run();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<PushNotifSubscriptionResponse> call, Throwable t) {
+                CrashlyticsManager.log(Log.ERROR, TAG, "Failed to Update Push Notification Subscription Request " + request);
+                CrashlyticsManager.logException(TAG, t);
+
+                displaySubscriptionFailureMessage(context);
+                if (failureTask != null) {
+                    failureTask.run();
+                }
+            }
+        });
+    }
+
+    @NonNull
+    private static PushNotifSubscriptionRequest buildSubscriptionRequest(Context context) {
+        // generate days of week list
+        List<Integer> daysEnabled = SeptaServiceFactory.getNotificationsService().getNotificationsSchedule(context);
+        if (daysEnabled.isEmpty()) {
+            return buildNullSubscriptionRequest(context);
+        }
+        int[] daysOfWeek = new int[daysEnabled.size()];
+        for (int i = 0; i < daysEnabled.size(); i++) {
+            daysOfWeek[i] = daysEnabled.get(i);
+        }
+
+        // generate time frames
+        List<String> timeFrames = SeptaServiceFactory.getNotificationsService().getNotificationTimeFrames(context);
+        TimeSlot[] timeSlots = new TimeSlot[timeFrames.size()];
+
+        for (int i = 0; i < timeFrames.size(); i++) {
+            String timeFrame = timeFrames.get(i);
+
+            StringBuilder startTime = new StringBuilder(timeFrame.substring(0, 2));
+            startTime.append(":").append(timeFrame.substring(2, 4)).append(":00");
+
+            StringBuilder endTime = new StringBuilder(timeFrame.substring(5, 7));
+            endTime.append(":").append(timeFrame.substring(7,9)).append(":00");
+
+            TimeSlot newTimeSlot = new TimeSlot(startTime.toString(), endTime.toString(), daysOfWeek);
+
+            timeSlots[i] = newTimeSlot;
+        }
+
+        // generate list of routes subscribed to
         List<RouteSubscription> routesSubscribedTo = SeptaServiceFactory.getNotificationsService().getRoutesSubscribedTo(context);
-        for (RouteSubscription route : routesSubscribedTo) {
+        List<RouteNotifSubscription> temp = new ArrayList<>();
+        for (int i = 0; i < routesSubscribedTo.size(); i++) {
+            RouteSubscription route = routesSubscribedTo.get(i);
             if (route.isEnabled()) {
-                subscribeToRoute(route.getRouteId(), route.getTransitType());
+                String routeId = route.getRouteId();
+                RouteNotifSubscription newRouteSubscription = new RouteNotifSubscription(routeId);
+                temp.add(newRouteSubscription);
             }
         }
+        RouteNotifSubscription[] routeSubscriptions = new RouteNotifSubscription[temp.size()];
+        routeSubscriptions = temp.toArray(routeSubscriptions);
+
+        String regToken = SeptaServiceFactory.getNotificationsService().getRegistrationToken(context);
+        String deviceId = SeptaServiceFactory.getNotificationsService().getDeviceId(context);
+        boolean specialAnnouncements = SeptaServiceFactory.getNotificationsService().areSpecialAnnouncementsEnabled(context);
+
+        return new PushNotifSubscriptionRequest(deviceId, regToken, specialAnnouncements, timeSlots, routeSubscriptions);
+    }
+
+    @NonNull
+    private static PushNotifSubscriptionRequest buildNullSubscriptionRequest(Context context) {
+        String deviceId = SeptaServiceFactory.getNotificationsService().getDeviceId(context);
+        return new PushNotifSubscriptionRequest(deviceId);
+    }
+
+    private static void displaySubscriptionFailureMessage(Context context) {
+        if (GeneralUtils.isConnectedToInternet(context)) {
+            Toast.makeText(context, R.string.subscription_failed, Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(context, R.string.subscription_failed_no_connection, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public void unsubscribeFromPushNotifs() {
+        SeptaServiceFactory.getNotificationsService().setNotificationsEnabled(context, false);
+
+        // send subscription removal to server and handle response
+        removeNotifSubscription(context, null, null);
+    }
+
+    public void resubscribeToPushNotifs() {
+        SeptaServiceFactory.getNotificationsService().setNotificationsEnabled(context, true);
+
+        // send subscription update to server and handle response
+        updateNotifSubscription(context, null, null);
     }
 
     public void subscribeToSpecialAnnouncements() {
         Log.d(TAG, "Subscribing to SEPTA Special Announcements");
-        FirebaseMessaging.getInstance().subscribeToTopic(TOPIC_PREFIX + SEPTA_ANNOUNCEMENTS);
+
         SeptaServiceFactory.getNotificationsService().setSpecialAnnouncementsEnabled(context, true);
+
+        // send subscription update to server and handle response
+        updateNotifSubscription(context, null, null);
     }
 
     public void unsubscribeFromSpecialAnnouncements() {
         Log.d(TAG, "Unsubscribing from SEPTA Special Announcements");
-        FirebaseMessaging.getInstance().unsubscribeFromTopic(TOPIC_PREFIX + SEPTA_ANNOUNCEMENTS);
+
         SeptaServiceFactory.getNotificationsService().setSpecialAnnouncementsEnabled(context, false);
-    }
 
-    private void subscribeToRoute(String routeId, TransitType transitType) {
-        routeId = routeId.toUpperCase();
-        Log.d(TAG, "Subscribing to alerts for route: " + routeId);
-
-        if (transitType == TransitType.RAIL) {
-            // subscribe to rail delays
-            String railDelayTopicId = TOPIC_PREFIX + routeId + RAIL_DELAY_SUFFIX;
-            subscribeToTopic(railDelayTopicId);
-
-        } else if (transitType == TransitType.BUS || transitType == TransitType.TROLLEY
-                // subscribe to bus or trolley detours
-                // MFO and BSO are type 'Subway' but can have detours because they're actually buses
-                || (transitType == TransitType.SUBWAY && ("MFO".equalsIgnoreCase(routeId) || "BSO".equalsIgnoreCase(routeId)))) {
-            String detourTopicId = TOPIC_PREFIX + routeId + DETOUR_SUFFIX;
-            subscribeToTopic(detourTopicId);
-        }
-
-        // subscribe to all service alerts
-        String serviceAlertTopicId = TOPIC_PREFIX + routeId + SERVICE_ALERT_SUFFIX;
-        subscribeToTopic(serviceAlertTopicId);
-    }
-
-    private void unsubscribeFromRoute(String routeId, TransitType transitType) {
-        routeId = routeId.toUpperCase();
-        Log.d(TAG, "Unsubscribing from alerts for route: " + routeId);
-
-        if (transitType == TransitType.RAIL) {
-            // unsubscribe from rail delays
-            String railDelayTopicId = TOPIC_PREFIX + routeId + RAIL_DELAY_SUFFIX;
-            unsubscribeFromTopic(railDelayTopicId);
-
-        } else if (transitType == TransitType.BUS || transitType == TransitType.TROLLEY
-                // unsubscribe to bus or trolley detours
-                // MFO and BSO are type 'Subway' but can have detours because they're actually buses
-                || (transitType == TransitType.SUBWAY && ("MFO".equalsIgnoreCase(routeId) || "BSO".equalsIgnoreCase(routeId)))) {
-            String detourTopicId = TOPIC_PREFIX + routeId + DETOUR_SUFFIX;
-            unsubscribeFromTopic(detourTopicId);
-        }
-
-        // unsubscribe from all service alerts
-        String serviceAlertTopicId = TOPIC_PREFIX + routeId + SERVICE_ALERT_SUFFIX;
-        unsubscribeFromTopic(serviceAlertTopicId);
-    }
-
-    private void unsubscribeFromTopic(String topicId) {
-        // unsubscribe from Firebase topic
-        FirebaseMessaging.getInstance().unsubscribeFromTopic(topicId);
-    }
-
-    private void subscribeToTopic(String topicId) {
-        // subscribe to firebase topic
-        FirebaseMessaging.getInstance().subscribeToTopic(topicId);
+        // send subscription update to server and handle response
+        updateNotifSubscription(context, null, null);
     }
 
     public void createNotificationForRoute(String routeId, String routeName, TransitType transitType, String requestCode) {
@@ -431,8 +563,6 @@ public class PushNotificationManager {
         routeSubscribedTo.put("Added Subscription - Transit Type", String.valueOf(transitType));
         routeSubscribedTo.put("Added Subscription - Route ID", routeId);
         AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_ROUTE_SUBSCRIBE, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_MANAGEMENT, routeSubscribedTo);
-
-        subscribeToRoute(routeId, transitType);
     }
 
     public void removeNotificationForRoute(String routeId, TransitType transitType, String requestCode) {
@@ -450,20 +580,11 @@ public class PushNotificationManager {
         routeSubscribedTo.put("Muted Subscription - Transit Type", String.valueOf(transitType));
         routeSubscribedTo.put("Muted Subscription - Route ID", routeId);
         AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_ROUTE_UNSUBSCRIBE, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_MANAGEMENT, routeSubscribedTo);
-
-        unsubscribeFromRoute(routeId, transitType);
     }
 
-    public void deleteNotificationForRoute(String routeId, TransitType transitType) {
-        // make NHSL chosen from trolley picker have NHSL transittype
-        if ("NHSL".equalsIgnoreCase(routeId)) {
-            transitType = TransitType.NHSL;
-        }
-
+    public void deleteNotificationForRoute(String routeId) {
         // delete notification
         SeptaServiceFactory.getNotificationsService().removeRouteSubscription(context, routeId);
-
-        unsubscribeFromRoute(routeId, transitType);
     }
 
     private String getRailRouteName(Context context, String routeId) {

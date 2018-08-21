@@ -47,15 +47,31 @@ public class PushNotificationService extends FirebaseMessagingService {
         FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
             @Override
             public void onSuccess(InstanceIdResult instanceIdResult) {
-                String token = instanceIdResult.getToken();
-                // Do whatever you want with your token now
-                // i.e. store it on SharedPreferences or DB
-                // or directly send it to server
+                String newToken = instanceIdResult.getToken();
+                String tokenId = instanceIdResult.getId();
 
-                //for now we are displaying the token in the log
-                //copy it as this method is called only when the new token is generated
-                //and usually new token is only generated when the app is reinstalled or the data is cleared
-                Log.d(TAG, "TOKEN: " + token);
+                // usually new token is only generated when the app is reinstalled or the data is cleared
+                Log.d(TAG, "FCM Token: " + newToken);
+
+                String oldToken = SeptaServiceFactory.getNotificationsService().getRegistrationToken(getApplicationContext());
+                if (!oldToken.isEmpty() && !oldToken.equals(newToken)) {
+                    // a new FCM token was generated
+
+                    // TODO: unsubscribe old FCM token
+//                    PushNotificationManager.updateNotifSubscription(getApplicationContext());
+
+                    // save registration token
+                    SeptaServiceFactory.getNotificationsService().setRegistrationToken(getApplicationContext(), newToken);
+
+                    // TODO: subscribe new FCM token
+//                    PushNotificationManager.updateNotifSubscription(getApplicationContext());
+
+                } else if (oldToken.isEmpty()) {
+                    // save registration token
+                    SeptaServiceFactory.getNotificationsService().setRegistrationToken(getApplicationContext(), newToken);
+                }
+
+                Log.d(TAG, "Instance ID: " + tokenId); // this is a shortcutted version of the token
             }
         });
     }

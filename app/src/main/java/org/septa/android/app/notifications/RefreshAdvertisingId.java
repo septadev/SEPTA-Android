@@ -7,10 +7,8 @@ import android.util.Log;
 import com.google.android.gms.ads.identifier.AdvertisingIdClient;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.InstanceIdResult;
 
+import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.support.CrashlyticsManager;
 
 import java.io.IOException;
@@ -21,10 +19,14 @@ public class RefreshAdvertisingId extends AsyncTask<Object, Object, Void> {
     private static final String TAG = RefreshAdvertisingId.class.getSimpleName();
 
     private Context context;
+    private Runnable onCancel;
+    private Runnable onPostExecute;
     private String id = null;
 
-    public RefreshAdvertisingId(Context context) {
+    public RefreshAdvertisingId(Context context, Runnable onCancel, Runnable onPostExecute) {
         this.context = context;
+        this.onCancel = onCancel;
+        this.onPostExecute = onPostExecute;
     }
 
     @Override
@@ -52,23 +54,8 @@ public class RefreshAdvertisingId extends AsyncTask<Object, Object, Void> {
 
             Log.d(TAG, "Advertising ID: " + id);
 
-            FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
-                @Override
-                public void onSuccess(InstanceIdResult instanceIdResult) {
-                    String token = instanceIdResult.getToken();
-                    String id = instanceIdResult.getId();
-                    // Do whatever you want with your token now
-                    // i.e. store it on SharedPreferences or DB
-                    // or directly send it to server
-
-                    //for now we are displaying the token in the log
-                    //copy it as this method is called only when the new token is generated
-                    //and usually new token is only generated when the app is reinstalled or the data is cleared
-                    Log.d(TAG, "FCM Token: " + token); // TODO: THIS IS THE ONE WE WANT
-
-                    Log.d(TAG, "Instance ID: " + id); // this is a shortcutted version of the token
-                }
-            });
+            // save google play advertising ID as unique device ID
+            SeptaServiceFactory.getNotificationsService().setDeviceId(context, id);
         }
 
         return null;
@@ -77,12 +64,22 @@ public class RefreshAdvertisingId extends AsyncTask<Object, Object, Void> {
     @Override
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
+        if (id == null) {
+            String token = SeptaServiceFactory.getNotificationsService().getRegistrationToken(context);
+            if (!token.isEmpty()) {
+                CrashlyticsManager.log(Log.ERROR, TAG, "Unable to fetch Advertising ID for FCM token: " + token);
+            } else {
+                CrashlyticsManager.log(Log.ERROR, TAG, "Unable to fetch Advertising ID");
+            }
 
-        boolean success = id != null;
-
-        if (!success) {
-            CrashlyticsManager.log(Log.ERROR, TAG, "Unable to fetch Advertising ID: ");
+        } else {
+            onPostExecute.run();
         }
     }
 
+    @Override
+    protected void onCancelled() {
+        super.onCancelled();
+        onCancel.run();
+    }
 }

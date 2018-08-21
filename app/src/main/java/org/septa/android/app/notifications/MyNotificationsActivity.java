@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -38,7 +39,7 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
     boolean isInEditMode;
 
     // initial days of week and timeframe
-    private String[] daysOfWeekText = new String[]{"","Su","M", "Tu", "W", "Th", "F", "Sa"};
+    private String[] daysOfWeekText = new String[]{"", "Su", "M", "Tu", "W", "Th", "F", "Sa"};
     private List<Integer> initialDaysOfWeek;
     private List<String> initialTimeFrames;
 
@@ -48,6 +49,7 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
     private RecyclerView timeFramesRecyclerView;
     private TimeFrameItemAdapter timeFrameItemAdapter;
     private android.support.v4.app.Fragment activeFragment;
+    private FloatingActionButton saveButton;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -127,6 +129,26 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
                 }
             }
         });
+
+        // save button is clickable
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // send subscription update to server and handle response
+                PushNotificationManager.updateNotifSubscription(MyNotificationsActivity.this, new Runnable() {
+                    @Override
+                    public void run() {
+                        disableView(saveButton);
+                    }
+                }, new Runnable() {
+                    @Override
+                    public void run() {
+                        activateView(saveButton);
+                    }
+                });
+
+            }
+        });
     }
 
     @Override
@@ -169,6 +191,13 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
             Log.w(TAG, "Exception on Backpress", e);
         }
         return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        // TODO: show warning about leaving page and prompt to confirm -- if not saved
+
+        super.onBackPressed();
     }
 
     @Override
@@ -241,6 +270,7 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
         addTimeFramesButton = findViewById(R.id.add_timeframe_button);
         addNotifsButton = findViewById(R.id.add_notifications);
         editButton = findViewById(R.id.edit_notifications);
+        saveButton = findViewById(R.id.save_notif_settings);
 
         daysOfWeekButtons = new SparseArray<>();
         daysOfWeekButtons.put(Calendar.SUNDAY, (ImageView) findViewById(R.id.button_sunday));
@@ -280,6 +310,9 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
         timeFrameItemAdapter = new TimeFrameItemAdapter(MyNotificationsActivity.this, timeFramesList);
         timeFramesRecyclerView.setAdapter(timeFrameItemAdapter);
         timeFrameItemAdapter.updateList(timeFramesList);
+
+        // disable save button
+        disableView(saveButton);
     }
 
     private void goToSystemStatusPicker() {
@@ -293,7 +326,7 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
         deletedRouteData.put("Deleted Subscription - Route ID", routeId);
         AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_ROUTE_DELETE_SUBSCRIPTION, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_MANAGEMENT, deletedRouteData);
 
-        PushNotificationManager.getInstance(MyNotificationsActivity.this).deleteNotificationForRoute(routeId, transitType);
+        PushNotificationManager.getInstance(MyNotificationsActivity.this).deleteNotificationForRoute(routeId);
 
         // update view
         EditNotificationsFragment editFragment = (EditNotificationsFragment) activeFragment;
@@ -346,6 +379,16 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
                     return R.drawable.ic_saturday_disabled;
                 }
         }
+    }
+
+    private void disableView(View view) {
+        view.setAlpha((float) .5);
+        view.setClickable(false);
+    }
+
+    private void activateView(View view) {
+        view.setAlpha(1);
+        view.setClickable(true);
     }
 
 }

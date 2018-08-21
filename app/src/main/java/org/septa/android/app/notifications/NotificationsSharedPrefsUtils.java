@@ -42,4 +42,12 @@ public interface NotificationsSharedPrefsUtils {
 
     void removeRouteSubscription(Context context, String routeId);
 
+    String getDeviceId(Context context);
+
+    void setDeviceId(Context context, String deviceId);
+
+    String getRegistrationToken(Context context);
+
+    void setRegistrationToken(Context context, String token);
+
 }

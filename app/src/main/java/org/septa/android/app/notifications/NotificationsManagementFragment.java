@@ -188,9 +188,9 @@ public class NotificationsManagementFragment extends Fragment {
         specialAnnouncements.setEnabled(isChecked);
 
         if (isChecked) {
-            PushNotificationManager.getInstance(context).resubscribeToTopics();
+            PushNotificationManager.getInstance(context).resubscribeToPushNotifs();
         } else {
-            PushNotificationManager.getInstance(context).unsubscribeFromAllTopics();
+            PushNotificationManager.getInstance(context).unsubscribeFromPushNotifs();
         }
     }
 

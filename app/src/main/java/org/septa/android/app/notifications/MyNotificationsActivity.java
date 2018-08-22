@@ -160,6 +160,9 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
             public void onClick(View v) {
                 disableView(saveButton);
 
+                // send analytics about timeframe(s) / DOW
+                trackNotifScheduleAnalytics();
+
                 // send subscription update to server and handle response
                 PushNotificationManager.updateNotifSubscription(MyNotificationsActivity.this, new Runnable() {
                     @Override
@@ -170,38 +173,6 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
 
             }
         });
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        // analytics around days of week
-        List<Integer> finalDaysOfWeek = SeptaServiceFactory.getNotificationsService().getNotificationsSchedule(this);
-        if (initialDaysOfWeek != null && !initialDaysOfWeek.equals(finalDaysOfWeek)) {
-
-            StringBuilder daysOfWeek = new StringBuilder();
-            for (Integer day : finalDaysOfWeek) {
-                daysOfWeek.append(daysOfWeekText[day]);
-            }
-
-            initialDaysOfWeek = finalDaysOfWeek;
-
-            Map<String, String> data = new HashMap<>();
-            data.put("Days of Week", daysOfWeek.toString());
-            AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_DAYS_OF_WEEK, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_MANAGEMENT, data);
-        }
-
-        // analytics around timeframes
-        List<String> finalTimeFrames = SeptaServiceFactory.getNotificationsService().getNotificationTimeFrames(this);
-        if (initialTimeFrames != null && !initialTimeFrames.equals(finalTimeFrames)) {
-
-            initialTimeFrames = finalTimeFrames;
-
-            Map<String, String> data = new HashMap<>();
-            data.put("Timeframe(s)", finalTimeFrames.toString());
-            AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_TIMEFRAMES, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_MANAGEMENT, data);
-        }
     }
 
     @Override
@@ -453,6 +424,35 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
         view.setAlpha(1);
         view.setEnabled(true);
         view.setClickable(true);
+    }
+
+    private void trackNotifScheduleAnalytics() {
+        // analytics around days of week
+        List<Integer> finalDaysOfWeek = SeptaServiceFactory.getNotificationsService().getNotificationsSchedule(this);
+        if (initialDaysOfWeek != null && !initialDaysOfWeek.equals(finalDaysOfWeek)) {
+
+            StringBuilder daysOfWeek = new StringBuilder();
+            for (Integer day : finalDaysOfWeek) {
+                daysOfWeek.append(daysOfWeekText[day]);
+            }
+
+            initialDaysOfWeek = finalDaysOfWeek;
+
+            Map<String, String> data = new HashMap<>();
+            data.put("Days of Week", daysOfWeek.toString());
+            AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_DAYS_OF_WEEK, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_MANAGEMENT, data);
+        }
+
+        // analytics around timeframes
+        List<String> finalTimeFrames = SeptaServiceFactory.getNotificationsService().getNotificationTimeFrames(this);
+        if (initialTimeFrames != null && !initialTimeFrames.equals(finalTimeFrames)) {
+
+            initialTimeFrames = finalTimeFrames;
+
+            Map<String, String> data = new HashMap<>();
+            data.put("Timeframe(s)", finalTimeFrames.toString());
+            AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_TIMEFRAMES, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_MANAGEMENT, data);
+        }
     }
 
 }

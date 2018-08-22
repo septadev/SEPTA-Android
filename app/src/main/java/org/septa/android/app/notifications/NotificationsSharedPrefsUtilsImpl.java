@@ -21,6 +21,7 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
 
     // database shared preferences
     private static final String SHARED_PREFERENCES_NOTIFICATIONS = "SHARED_PREFERENCES_NOTIFICATIONS";
+    private static final String NOTIF_PREFS_SAVED = "NOTIF_PREFS_SAVED";
     private static final String NOTIFICATIONS_ENABlED = "NOTIFICATIONS_ENABlED";
     private static final String SPECIAL_ANNOUNCEMENTS = "SPECIAL_ANNOUNCEMENTS";
     private static final String ROUTE_NOTIFICATION_SUBSCRIPTION = "ROUTE_NOTIFICATION_SUBSCRIPTION";
@@ -36,6 +37,16 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
     static final int MAX_TIMEFRAMES = 2;
 
     // NOTE: using commit() instead of apply() so changes are saved immediately
+
+    @Override
+    public boolean areNotifPrefsSaved(Context context) {
+        return getSharedPreferences(context).getBoolean(NOTIF_PREFS_SAVED, false);
+    }
+
+    @Override
+    public void setNotifPrefsSaved(Context context, boolean isSaved) {
+        getSharedPreferences(context).edit().putBoolean(NOTIF_PREFS_SAVED, isSaved).commit();
+    }
 
     @Override
     public boolean areNotificationsEnabled(Context context) {

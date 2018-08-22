@@ -84,6 +84,9 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
                     }
 
                     daysOfWeekEnabled[dayOfWeek - 1] = !isEnabled;
+
+                    // show changes have not been saved
+                    enableSaveButton();
                 }
             });
         }
@@ -101,6 +104,9 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
                     addTimeFramesButton.setVisibility(View.GONE);
                 }
                 timeFrameItemAdapter.updateList(timeFramesList);
+
+                // show changes have not been saved
+                enableSaveButton();
             }
         });
 
@@ -134,16 +140,13 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                disableView(saveButton);
+
                 // send subscription update to server and handle response
                 PushNotificationManager.updateNotifSubscription(MyNotificationsActivity.this, new Runnable() {
                     @Override
                     public void run() {
-                        disableView(saveButton);
-                    }
-                }, new Runnable() {
-                    @Override
-                    public void run() {
-                        activateView(saveButton);
+                        enableSaveButton();
                     }
                 });
 
@@ -211,6 +214,9 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
             addTimeFramesButton.setVisibility(View.GONE);
         }
 
+        // show changes have not been saved
+        enableSaveButton();
+
         return timeFramesList;
     }
 
@@ -240,6 +246,12 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
         } else {
             Log.e(TAG, "Invalid attempt to delete a notification subscription");
         }
+    }
+
+    @Override
+    public void enableSaveButton() {
+        SeptaServiceFactory.getNotificationsService().setNotifPrefsSaved(MyNotificationsActivity.this, false);
+        activateView(saveButton);
     }
 
     @Override
@@ -312,7 +324,12 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
         timeFrameItemAdapter.updateList(timeFramesList);
 
         // disable save button
-        disableView(saveButton);
+        boolean notifsSaved = SeptaServiceFactory.getNotificationsService().areNotifPrefsSaved(MyNotificationsActivity.this);
+        if (notifsSaved) {
+            disableView(saveButton);
+        } else {
+            activateView(saveButton);
+        }
     }
 
     private void goToSystemStatusPicker() {
@@ -331,6 +348,9 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
         // update view
         EditNotificationsFragment editFragment = (EditNotificationsFragment) activeFragment;
         editFragment.deleteNotificationAtPosition(position);
+
+        // show changes have not been saved
+        enableSaveButton();
     }
 
     private int getDayOfWeekImageResId(int dayOfWeek, boolean enabled) {

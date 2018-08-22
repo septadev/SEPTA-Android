@@ -313,7 +313,7 @@ public class PushNotificationManager {
         }
     }
 
-    public static void updateNotifSubscription(final Context context, final Runnable successTask, final Runnable failureTask) {
+    public static void updateNotifSubscription(final Context context, final Runnable failureTask) {
         if (SeptaServiceFactory.getNotificationsService().areNotificationsEnabled(context)) {
             RefreshAdvertisingId refreshAdvertisingId = new RefreshAdvertisingId(context, new Runnable() {
                 @Override
@@ -342,10 +342,9 @@ public class PushNotificationManager {
                                 if (success) {
                                     // TODO: update timestamp of last keep alive call
 
+                                    SeptaServiceFactory.getNotificationsService().setNotifPrefsSaved(context, true);
+
                                     Toast.makeText(context, R.string.subscription_success, Toast.LENGTH_LONG).show();
-                                    if (successTask != null) {
-                                        successTask.run();
-                                    }
                                 } else {
                                     CrashlyticsManager.log(Log.ERROR, TAG, "Could not remove push notification subscription: " + response.message());
                                     CrashlyticsManager.log(Log.ERROR, TAG, "Push Notification Subscription Request " + request);
@@ -382,11 +381,11 @@ public class PushNotificationManager {
             refreshAdvertisingId.execute();
 
         } else {
-            removeNotifSubscription(context, successTask, failureTask);
+            removeNotifSubscription(context, failureTask);
         }
     }
 
-    public static void removeNotifSubscription(final Context context, final Runnable successTask, final Runnable failureTask) {
+    public static void removeNotifSubscription(final Context context, final Runnable failureTask) {
         final PushNotifSubscriptionRequest request = buildNullSubscriptionRequest(context);
 
         Log.e(TAG, request.toString()); // TODO: remove
@@ -402,11 +401,9 @@ public class PushNotificationManager {
                     if (success) {
                         // TODO: update timestamp of last keep alive call
 
-                        Toast.makeText(context, R.string.subscription_success, Toast.LENGTH_LONG).show();
+                        SeptaServiceFactory.getNotificationsService().setNotifPrefsSaved(context, true);
 
-                        if (successTask != null) {
-                            successTask.run();
-                        }
+                        Toast.makeText(context, R.string.subscription_success, Toast.LENGTH_LONG).show();
                     } else {
                         CrashlyticsManager.log(Log.ERROR, TAG, "Could not remove push notification subscription: " + response.message());
                         CrashlyticsManager.log(Log.ERROR, TAG, "Push Notification Subscription Request " + request);
@@ -510,14 +507,14 @@ public class PushNotificationManager {
         SeptaServiceFactory.getNotificationsService().setNotificationsEnabled(context, false);
 
         // send subscription removal to server and handle response
-        removeNotifSubscription(context, null, null);
+        removeNotifSubscription(context, null);
     }
 
     public void resubscribeToPushNotifs() {
         SeptaServiceFactory.getNotificationsService().setNotificationsEnabled(context, true);
 
         // send subscription update to server and handle response
-        updateNotifSubscription(context, null, null);
+        updateNotifSubscription(context, null);
     }
 
     public void subscribeToSpecialAnnouncements() {
@@ -526,7 +523,7 @@ public class PushNotificationManager {
         SeptaServiceFactory.getNotificationsService().setSpecialAnnouncementsEnabled(context, true);
 
         // send subscription update to server and handle response
-        updateNotifSubscription(context, null, null);
+        updateNotifSubscription(context, null);
     }
 
     public void unsubscribeFromSpecialAnnouncements() {
@@ -535,7 +532,7 @@ public class PushNotificationManager {
         SeptaServiceFactory.getNotificationsService().setSpecialAnnouncementsEnabled(context, false);
 
         // send subscription update to server and handle response
-        updateNotifSubscription(context, null, null);
+        updateNotifSubscription(context, null);
     }
 
     public void createNotificationForRoute(String routeId, String routeName, TransitType transitType, String requestCode) {

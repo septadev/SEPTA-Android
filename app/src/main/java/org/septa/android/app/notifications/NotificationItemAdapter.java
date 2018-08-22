@@ -102,6 +102,8 @@ public class NotificationItemAdapter extends RecyclerView.Adapter<NotificationIt
                         // disable notifs for route
                         PushNotificationManager.getInstance(activity).removeNotificationForRoute(routeId, transitType, "My Notification Item");
                     }
+
+                    mListener.enableSaveButton();
                 }
             });
         }
@@ -137,5 +139,6 @@ public class NotificationItemAdapter extends RecyclerView.Adapter<NotificationIt
 
     public interface NotificationItemListener {
         void promptToDeleteNotification(int position, String routeId, String routeName, TransitType transitType);
+        void enableSaveButton();
     }
 }

@@ -8,6 +8,10 @@ import java.util.List;
 
 public interface NotificationsSharedPrefsUtils {
 
+    boolean areNotifPrefsSaved(Context context);
+
+    void setNotifPrefsSaved(Context context, boolean isSaved);
+
     boolean areNotificationsEnabled(Context context);
 
     void setNotificationsEnabled(Context context, boolean isEnabled);

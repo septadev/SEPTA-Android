@@ -332,8 +332,6 @@ public class PushNotificationManager {
                 public void run() {
                     final PushNotifSubscriptionRequest request = buildSubscriptionRequest(context);
 
-                    Log.e(TAG, request.toString()); // TODO: remove
-
                     SeptaServiceFactory.getPushNotificationService().setNotificationSubscription(request).enqueue(new Callback<PushNotifSubscriptionResponse>() {
                         @Override
                         public void onResponse(Call<PushNotifSubscriptionResponse> call, Response<PushNotifSubscriptionResponse> response) {
@@ -343,11 +341,9 @@ public class PushNotificationManager {
                                 boolean success = response.isSuccessful() && responseBody.isSuccess();
 
                                 if (success) {
-                                    // TODO: update timestamp of last keep alive call
-
                                     SeptaServiceFactory.getNotificationsService().setNotifPrefsSaved(context, true);
 
-                                    Toast.makeText(context, R.string.subscription_success, Toast.LENGTH_LONG).show();
+                                    Toast.makeText(context, R.string.subscription_success, Toast.LENGTH_SHORT).show();
                                 } else {
                                     CrashlyticsManager.log(Log.ERROR, TAG, "Could not remove push notification subscription: " + response.message());
                                     failure(request);
@@ -389,8 +385,6 @@ public class PushNotificationManager {
     public static void removeNotifSubscription(final Context context, final Runnable failureTask) {
         final PushNotifSubscriptionRequest request = buildNullSubscriptionRequest(context);
 
-        Log.e(TAG, request.toString()); // TODO: remove
-
         SeptaServiceFactory.getPushNotificationService().setNotificationSubscription(request).enqueue(new Callback<PushNotifSubscriptionResponse>() {
             @Override
             public void onResponse(Call<PushNotifSubscriptionResponse> call, Response<PushNotifSubscriptionResponse> response) {
@@ -405,7 +399,7 @@ public class PushNotificationManager {
 
                         SeptaServiceFactory.getNotificationsService().setNotifPrefsSaved(context, true);
 
-                        Toast.makeText(context, R.string.subscription_success, Toast.LENGTH_LONG).show();
+                        Toast.makeText(context, R.string.subscription_success, Toast.LENGTH_SHORT).show();
                     } else {
                         CrashlyticsManager.log(Log.ERROR, TAG, "Could not remove push notification subscription: " + response.message());
                         failure(request);
@@ -497,9 +491,9 @@ public class PushNotificationManager {
 
     private static void displaySubscriptionFailureMessage(Context context) {
         if (GeneralUtils.isConnectedToInternet(context)) {
-            Toast.makeText(context, R.string.subscription_failed, Toast.LENGTH_LONG).show();
+            Toast.makeText(context, R.string.subscription_failed, Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(context, R.string.subscription_failed_no_connection, Toast.LENGTH_LONG).show();
+            Toast.makeText(context, R.string.subscription_failed_no_connection, Toast.LENGTH_SHORT).show();
         }
     }
 

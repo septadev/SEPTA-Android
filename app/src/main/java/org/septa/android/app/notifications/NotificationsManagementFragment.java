@@ -84,17 +84,9 @@ public class NotificationsManagementFragment extends Fragment {
                     // turn on notifications
                     toggleNotifications(true);
 
-                    if (!ignoreGlobalSwitch) {
-                        AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_ENABLE_NOTIFS, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_MANAGEMENT, null);
-                    }
-
                 } else {
                     // turn off notifications
                     toggleNotifications(false);
-
-                    if (!ignoreGlobalSwitch) {
-                        AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_DISABLE_NOTIFS, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_MANAGEMENT, null);
-                    }
                 }
             }
         });
@@ -103,16 +95,14 @@ public class NotificationsManagementFragment extends Fragment {
         specialAnnouncements.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    PushNotificationManager.getInstance(context).subscribeToSpecialAnnouncements();
+                if (!ignoreSpecialSwitch) {
+                    if (isChecked) {
+                        PushNotificationManager.getInstance(context).subscribeToSpecialAnnouncements();
 
-                    if (!ignoreSpecialSwitch) {
                         AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_ENABLE_SPECIAL_ANNOUNCEMENTS, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_MANAGEMENT, null);
-                    }
-                } else {
-                    PushNotificationManager.getInstance(context).unsubscribeFromSpecialAnnouncements();
+                    } else {
+                        PushNotificationManager.getInstance(context).unsubscribeFromSpecialAnnouncements();
 
-                    if (!ignoreSpecialSwitch) {
                         AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_DISABLE_SPECIAL_ANNOUNCEMENTS, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_MANAGEMENT, null);
                     }
                 }
@@ -147,11 +137,6 @@ public class NotificationsManagementFragment extends Fragment {
         ignoreGlobalSwitch = true;
         enableNotifs.setChecked(notifsEnabled && notifsAllowed);
         ignoreGlobalSwitch = false;
-
-        // disable special announcements toggle if notifs disabled
-        if (!enableNotifs.isChecked()) {
-            toggleNotifications(false);
-        }
     }
 
     @Override
@@ -187,10 +172,14 @@ public class NotificationsManagementFragment extends Fragment {
         // disable other switches but remember their value
         specialAnnouncements.setEnabled(isChecked);
 
-        if (isChecked) {
-            PushNotificationManager.getInstance(context).resubscribeToPushNotifs();
-        } else {
-            PushNotificationManager.getInstance(context).unsubscribeFromPushNotifs();
+        if (!ignoreGlobalSwitch) {
+            if (isChecked) {
+                PushNotificationManager.getInstance(context).resubscribeToPushNotifs();
+                AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_ENABLE_NOTIFS, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_MANAGEMENT, null);
+            } else {
+                PushNotificationManager.getInstance(context).unsubscribeFromPushNotifs();
+                AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_DISABLE_NOTIFS, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_MANAGEMENT, null);
+            }
         }
     }
 

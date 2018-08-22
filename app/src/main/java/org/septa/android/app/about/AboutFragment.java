@@ -20,6 +20,7 @@ import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.database.DatabaseManager;
 import org.septa.android.app.rating.SharedPreferencesRatingUtil;
+import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.support.AnalyticsManager;
 import org.septa.android.app.view.TextView;
 import org.septa.android.app.webview.WebViewActivity;
@@ -45,6 +46,14 @@ public class AboutFragment extends Fragment {
 
         View fragmentView = inflater.inflate(R.layout.fragment_about, null);
 
+        activity = getActivity();
+        if (activity == null) {
+            return fragmentView;
+        }
+
+        String deviceId = SeptaServiceFactory.getNotificationsService().getDeviceId(activity);
+        ((TextView) fragmentView.findViewById(R.id.device_id)).setText(getString(R.string.device_id, deviceId));
+
         attribListView = fragmentView.findViewById(R.id.attrib_list);
         for (String s : getResources().getStringArray(R.array.about_attributions_listview_items_texts)) {
             TextView attribLine = (TextView) inflater.inflate(R.layout.item_about_attribute, null);
@@ -59,14 +68,14 @@ public class AboutFragment extends Fragment {
                 if (!attribExpanded) {
                     Drawable[] drawables = attribTitle.getCompoundDrawables();
                     attribTitle.setCompoundDrawablesWithIntrinsicBounds(drawables[0], drawables[1],
-                            ContextCompat.getDrawable(getContext(), R.drawable.alert_toggle_open), drawables[3]);
+                            ContextCompat.getDrawable(activity, R.drawable.alert_toggle_open), drawables[3]);
                     attribListView.setVisibility(View.VISIBLE);
                     attribExpanded = true;
                     attribTitle.setText("Hide Attributions");
                 } else {
                     Drawable[] drawables = attribTitle.getCompoundDrawables();
                     attribTitle.setCompoundDrawablesWithIntrinsicBounds(drawables[0], drawables[1],
-                            ContextCompat.getDrawable(getContext(), R.drawable.alert_toggle_closed), drawables[3]);
+                            ContextCompat.getDrawable(activity, R.drawable.alert_toggle_closed), drawables[3]);
                     attribListView.setVisibility(View.GONE);
                     attribTitle.setText("View Attributions");
                     attribExpanded = false;
@@ -79,9 +88,9 @@ public class AboutFragment extends Fragment {
             fragmentView.findViewById(R.id.septa_logo).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    SharedPreferencesRatingUtil.setAppRated(getContext(), false);
-                    SharedPreferencesRatingUtil.setNumberOfUses(getContext(), 0);
-                    Toast.makeText(getContext(), "App Rating Reset", Toast.LENGTH_SHORT).show();
+                    SharedPreferencesRatingUtil.setAppRated(activity, false);
+                    SharedPreferencesRatingUtil.setNumberOfUses(activity, 0);
+                    Toast.makeText(activity, "App Rating Reset", Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -99,11 +108,6 @@ public class AboutFragment extends Fragment {
         SimpleDateFormat formatter = (SimpleDateFormat) SimpleDateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
         formatter.setTimeZone(TimeZone.getTimeZone("gmt"));
 
-        activity = getActivity();
-        if (activity == null) {
-            return fragmentView;
-        }
-
         try {
             ApplicationInfo ai = activity.getPackageManager().getApplicationInfo(activity.getPackageName(), 0);
 
@@ -113,7 +117,7 @@ public class AboutFragment extends Fragment {
         } catch (Exception e) {
         }
 
-        versionInfoBuilder.append("Database Version: ").append(DatabaseManager.getDatabase(getContext()).getVersion()).append("<br>");
+        versionInfoBuilder.append("Database Version: ").append(DatabaseManager.getDatabase(activity).getVersion()).append("<br>");
 
         try {
             File dbFile = new File(DatabaseManager.getDatabase().getPath());
@@ -122,10 +126,10 @@ public class AboutFragment extends Fragment {
         } catch (Exception e) {
         }
 
-
         ((TextView) fragmentView.findViewById(R.id.build_info)).setHtml(versionInfoBuilder.toString());
 
         setHttpIntent(fragmentView, R.id.feedback_button, getResources().getString(R.string.comment_url), getResources().getString(R.string.comment_title));
+
         return fragmentView;
     }
 

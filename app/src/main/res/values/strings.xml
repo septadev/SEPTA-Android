@@ -336,9 +336,13 @@
     <string name="notifications_done">Done</string>
 
     <string name="subscription_success">Your notification preferences have been updated.</string>
-    <string name="subscription_warning">Are you sure you want to leave? Your notification preferences will NOT be saved.</string>
     <string name="subscription_failed_no_connection">Your notification preferences cannot be saved. Please make sure you are connected to the internet.</string>
     <string name="subscription_failed">Your notification preferences cannot be saved right now. Please try again in a few minutes.</string>
+
+    <string name="subscription_warning_title">Unsaved Changes</string>
+    <string name="subscription_warning">Are you sure you want to leave? Your notification preferences will NOT be saved.</string>
+    <string name="notif_warning_pos_button">Leave</string>
+    <string name="notif_warning_neg_button">Cancel</string>
 
     <string name="no_notifications_to_edit">You have no notification subscriptions to edit!</string>
     <string name="delete_notif_title">Delete Notification?</string>

@@ -3,6 +3,7 @@ package org.septa.android.app.notifications;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -198,9 +199,33 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
 
     @Override
     public void onBackPressed() {
-        // TODO: show warning about leaving page and prompt to confirm -- if not saved
-
-        super.onBackPressed();
+        boolean notifsSaved = SeptaServiceFactory.getNotificationsService().areNotifPrefsSaved(MyNotificationsActivity.this);
+        if (!notifsSaved) {
+            final AlertDialog dialog = new AlertDialog.Builder(MyNotificationsActivity.this).setCancelable(true).setTitle(R.string.subscription_warning_title)
+                    .setMessage(R.string.subscription_warning)
+                    .setPositiveButton(R.string.notif_warning_pos_button, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            MyNotificationsActivity.super.onBackPressed();
+                        }
+                    })
+                    .setNegativeButton(R.string.notif_warning_neg_button, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .create();
+            dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                @Override
+                public void onShow(DialogInterface arg0) {
+                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.RED);
+                }
+            });
+            dialog.show();
+        } else {
+            super.onBackPressed();
+        }
     }
 
     @Override
@@ -403,11 +428,13 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
 
     private void disableView(View view) {
         view.setAlpha((float) .5);
+        view.setEnabled(false);
         view.setClickable(false);
     }
 
     private void activateView(View view) {
         view.setAlpha(1);
+        view.setEnabled(true);
         view.setClickable(true);
     }
 

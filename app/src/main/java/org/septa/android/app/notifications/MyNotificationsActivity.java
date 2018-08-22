@@ -30,7 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.septa.android.app.notifications.NotificationsSharedPrefsUtilsImpl.MAX_TIMEFRAMES;
+import static org.septa.android.app.services.apiinterfaces.NotificationsSharedPrefsUtilsImpl.MAX_TIMEFRAMES;
 
 public class MyNotificationsActivity extends BaseActivity implements EditNotificationsFragment.EditNotificationsFragmentListener, NotificationItemAdapter.NotificationItemListener, TimeFrameItemAdapter.TimeFrameItemListener {
 

@@ -1,4 +1,4 @@
-package org.septa.android.app.notifications;
+package org.septa.android.app.services.apiinterfaces;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -13,6 +13,7 @@ import org.septa.android.app.services.apiinterfaces.model.RouteSubscription;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPrefsUtils {
@@ -29,12 +30,13 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
     private static final String NOTIFICATIONS_TIME_FRAME = "NOTIFICATIONS_TIME_FRAME";
     private static final String DEVICE_ID = "DEVICE_ID";
     private static final String REGISTRATION_TOKEN = "REGISTRATION_TOKEN";
+    private static final String AUTO_SUBSCRIPTION_TIME = "AUTO_SUBSCRIPTION_TIME";
 
     // parsing time frames
     public static final String START_END_TIME_DELIM = ",";
     private static final String DEFAULT_TIME_FRAME = "0600,1800";
 
-    static final int MAX_TIMEFRAMES = 2;
+    public static final int MAX_TIMEFRAMES = 2;
 
     // NOTE: using commit() instead of apply() so changes are saved immediately
 
@@ -340,6 +342,16 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
     @Override
     public void setRegistrationToken(Context context, String token) {
         getSharedPreferences(context).edit().putString(REGISTRATION_TOKEN, token).commit();
+    }
+
+    @Override
+    public Long getNextAutoSubscriptionTime(Context context) {
+        return getSharedPreferences(context).getLong(AUTO_SUBSCRIPTION_TIME, new Date().getTime());
+    }
+
+    @Override
+    public void setNextAutoSubscriptionTime(Context context, Long subscriptionTime) {
+        getSharedPreferences(context).edit().putLong(AUTO_SUBSCRIPTION_TIME, subscriptionTime).commit();
     }
 
     private void storeRoutesSubscribedTo(SharedPreferences sharedPreferences, List<RouteSubscription> routeList) {

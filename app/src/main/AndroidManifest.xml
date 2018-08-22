@@ -119,6 +119,7 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+        <service android:name=".notifications.subscription.AutoSubscriptionService" />
 
     </application>
 

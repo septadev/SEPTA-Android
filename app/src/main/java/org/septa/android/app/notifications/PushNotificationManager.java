@@ -24,6 +24,9 @@ import org.septa.android.app.database.DatabaseManager;
 import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.nextarrive.NextToArriveTripDetailActivity;
+import org.septa.android.app.notifications.subscription.AutoSubscriptionReceiver;
+import org.septa.android.app.notifications.subscription.RefreshAdvertisingId;
+import org.septa.android.app.services.apiinterfaces.NotificationsSharedPrefsUtilsImpl;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalDetails;
 import org.septa.android.app.services.apiinterfaces.model.PushNotifSubscriptionRequest;
@@ -347,38 +350,36 @@ public class PushNotificationManager {
                                     Toast.makeText(context, R.string.subscription_success, Toast.LENGTH_LONG).show();
                                 } else {
                                     CrashlyticsManager.log(Log.ERROR, TAG, "Could not remove push notification subscription: " + response.message());
-                                    CrashlyticsManager.log(Log.ERROR, TAG, "Push Notification Subscription Request " + request);
-
-                                    displaySubscriptionFailureMessage(context);
-                                    if (failureTask != null) {
-                                        failureTask.run();
-                                    }
+                                    failure(request);
                                 }
                             } else {
                                 CrashlyticsManager.log(Log.ERROR, TAG, "Could not update push notification subscription - response body was null: " + response.message());
-                                CrashlyticsManager.log(Log.ERROR, TAG, "Push Notification Subscription Request " + request);
-
-                                displaySubscriptionFailureMessage(context);
-                                if (failureTask != null) {
-                                    failureTask.run();
-                                }
+                                failure(request);
                             }
                         }
 
                         @Override
                         public void onFailure(Call<PushNotifSubscriptionResponse> call, Throwable t) {
-                            CrashlyticsManager.log(Log.ERROR, TAG, "Failed to Update Push Notification Subscription Request " + request);
+                            CrashlyticsManager.log(Log.ERROR, TAG, "Failed to Update Push Notification Subscription Request");
                             CrashlyticsManager.logException(TAG, t);
-
-                            displaySubscriptionFailureMessage(context);
-                            if (failureTask != null) {
-                                failureTask.run();
-                            }
+                            failure(request);
                         }
                     });
                 }
+
+                private void failure(PushNotifSubscriptionRequest request) {
+                    CrashlyticsManager.log(Log.ERROR, TAG, request.toString());
+
+                    displaySubscriptionFailureMessage(context);
+                    if (failureTask != null) {
+                        failureTask.run();
+                    }
+                }
             });
             refreshAdvertisingId.execute();
+
+            // set up auto-subscription
+            AutoSubscriptionReceiver.scheduleSubscriptionUpdate(context, false);
 
         } else {
             removeNotifSubscription(context, failureTask);
@@ -399,41 +400,40 @@ public class PushNotificationManager {
                     boolean success = response.isSuccessful() && responseBody.isSuccess();
 
                     if (success) {
-                        // TODO: update timestamp of last keep alive call
+                        // cancel auto-subscription
+                        AutoSubscriptionReceiver.cancelSubscriptionUpdate(context);
 
                         SeptaServiceFactory.getNotificationsService().setNotifPrefsSaved(context, true);
 
                         Toast.makeText(context, R.string.subscription_success, Toast.LENGTH_LONG).show();
                     } else {
                         CrashlyticsManager.log(Log.ERROR, TAG, "Could not remove push notification subscription: " + response.message());
-                        CrashlyticsManager.log(Log.ERROR, TAG, "Push Notification Subscription Request " + request);
-
-                        displaySubscriptionFailureMessage(context);
-                        if (failureTask != null) {
-                            failureTask.run();
-                        }
+                        failure(request);
                     }
 
                 } else {
                     CrashlyticsManager.log(Log.ERROR, TAG, "Could not remove push notification subscription - response body was null");
-                    CrashlyticsManager.log(Log.ERROR, TAG, "Push Notification Subscription Request " + request);
-
-                    displaySubscriptionFailureMessage(context);
-                    if (failureTask != null) {
-                        failureTask.run();
-                    }
+                    failure(request);
                 }
             }
 
             @Override
             public void onFailure(Call<PushNotifSubscriptionResponse> call, Throwable t) {
-                CrashlyticsManager.log(Log.ERROR, TAG, "Failed to Update Push Notification Subscription Request " + request);
+                CrashlyticsManager.log(Log.ERROR, TAG, "Failed to Update Push Notification Subscription Request");
                 CrashlyticsManager.logException(TAG, t);
+                failure(request);
+            }
+
+            private void failure(PushNotifSubscriptionRequest request) {
+                CrashlyticsManager.log(Log.ERROR, TAG, request.toString());
 
                 displaySubscriptionFailureMessage(context);
                 if (failureTask != null) {
                     failureTask.run();
                 }
+
+                // continue auto-subscription since this failed
+                AutoSubscriptionReceiver.scheduleSubscriptionUpdate(context, false);
             }
         });
     }

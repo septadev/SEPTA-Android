@@ -27,8 +27,8 @@ public class PushNotifSubscriptionRequest implements Serializable {
 
     public PushNotifSubscriptionRequest(String deviceId) {
         this.deviceId = deviceId;
-        this.regToken = "";
-        this.specialAnnouncements = false;
+        this.regToken = null;
+        this.specialAnnouncements = null;
         this.timeWindows = null;
         this.routeSubscriptions = null;
     }

@@ -1,4 +1,4 @@
-package org.septa.android.app.notifications;
+package org.septa.android.app.notifications.subscription;
 
 import android.content.Context;
 import android.os.AsyncTask;

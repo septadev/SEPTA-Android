@@ -1,4 +1,4 @@
-package org.septa.android.app.notifications;
+package org.septa.android.app.services.apiinterfaces;
 
 import android.content.Context;
 
@@ -54,4 +54,7 @@ public interface NotificationsSharedPrefsUtils {
 
     void setRegistrationToken(Context context, String token);
 
+    Long getNextAutoSubscriptionTime(Context context);
+
+    void setNextAutoSubscriptionTime(Context context, Long subscriptionTime);
 }

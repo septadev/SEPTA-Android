@@ -6,8 +6,6 @@ import android.util.Log;
 import android.view.View;
 
 import org.septa.android.app.R;
-import org.septa.android.app.notifications.NotificationsSharedPrefsUtils;
-import org.septa.android.app.notifications.NotificationsSharedPrefsUtilsImpl;
 import org.septa.android.app.systemstatus.SystemStatusResultsActivity;
 
 import java.io.IOException;

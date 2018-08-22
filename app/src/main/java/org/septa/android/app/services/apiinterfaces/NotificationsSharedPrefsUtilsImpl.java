@@ -76,13 +76,7 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
         String preferencesJson = sharedPreferences.getString(NOTIFICATIONS_SCHEDULE_DAYS_OF_WEEK, null);
 
         if (preferencesJson == null) {
-            List<Integer> defaultSchedule = new ArrayList<>();
-            defaultSchedule.add(Calendar.MONDAY);
-            defaultSchedule.add(Calendar.TUESDAY);
-            defaultSchedule.add(Calendar.WEDNESDAY);
-            defaultSchedule.add(Calendar.THURSDAY);
-            defaultSchedule.add(Calendar.FRIDAY);
-            return defaultSchedule;
+            return getDefaultDaysOfWeek();
         }
 
         Gson gson = new Gson();
@@ -92,7 +86,7 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
         } catch (JsonSyntaxException e) {
             Log.e(TAG, e.toString());
             sharedPreferences.edit().remove(NOTIFICATIONS_SCHEDULE_DAYS_OF_WEEK).commit();
-            return new ArrayList<>();
+            return getDefaultDaysOfWeek();
         }
     }
 
@@ -352,6 +346,16 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
     @Override
     public void setNextAutoSubscriptionTime(Context context, Long subscriptionTime) {
         getSharedPreferences(context).edit().putLong(AUTO_SUBSCRIPTION_TIME, subscriptionTime).commit();
+    }
+
+    private List<Integer> getDefaultDaysOfWeek() {
+        List<Integer> defaultSchedule = new ArrayList<>();
+        defaultSchedule.add(Calendar.MONDAY);
+        defaultSchedule.add(Calendar.TUESDAY);
+        defaultSchedule.add(Calendar.WEDNESDAY);
+        defaultSchedule.add(Calendar.THURSDAY);
+        defaultSchedule.add(Calendar.FRIDAY);
+        return defaultSchedule;
     }
 
     private void storeRoutesSubscribedTo(SharedPreferences sharedPreferences, List<RouteSubscription> routeList) {

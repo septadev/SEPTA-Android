@@ -326,6 +326,7 @@
     <string name="notifications_permission_required">You must allow notifications from the SEPTA app in \'System Notification Settings\'</string>
 
     <string name="notifications_schedule_heading">Set Notifications Days and Times for All Transportation Modes</string>
+    <string name="notifications_days_of_week_requirement">Notifications must be enabled for at least ONE day. Turn off all notifications using the \'Global Settings\' switch.</string>
     <string name="notifications_end_time_requirement">End Time must be after Start Time</string>
     <string name="notifications_start_time_requirement">Start Time must be before End Time</string>
     <string name="notification_timeframe_number">Timeframe %1$d</string>

@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -73,21 +74,37 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
                 public void onClick(View v) {
                     boolean isEnabled = daysOfWeekEnabled[dayOfWeek - 1];
 
-                    // toggle icon
-                    button.setImageResource(getDayOfWeekImageResId(dayOfWeek, !isEnabled));
+                    // enforce that at least one DOW selected
+                    if (isEnabled && SeptaServiceFactory.getNotificationsService().getNotificationsSchedule(MyNotificationsActivity.this).size() == 1) {
+                        Snackbar snackbar = Snackbar.make(findViewById(R.id.activity_my_notifications), R.string.notifications_days_of_week_requirement, Snackbar.LENGTH_SHORT);
+                        snackbar.setAction("Show Me", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                onBackPressed();
+                            }
+                        });
+                        View snackbarView = snackbar.getView();
+                        android.widget.TextView tv = snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+                        tv.setMaxLines(10);
+                        snackbar.show();
 
-                    if (isEnabled) {
-                        // disable notifications for that day
-                        SeptaServiceFactory.getNotificationsService().removeDayOfWeekFromSchedule(MyNotificationsActivity.this, dayOfWeek);
                     } else {
-                        // enable notifications for that day
-                        SeptaServiceFactory.getNotificationsService().addDayOfWeekToSchedule(MyNotificationsActivity.this, dayOfWeek);
+                        // toggle icon
+                        button.setImageResource(getDayOfWeekImageResId(dayOfWeek, !isEnabled));
+
+                        if (isEnabled) {
+                            // disable notifications for that day
+                            SeptaServiceFactory.getNotificationsService().removeDayOfWeekFromSchedule(MyNotificationsActivity.this, dayOfWeek);
+                        } else {
+                            // enable notifications for that day
+                            SeptaServiceFactory.getNotificationsService().addDayOfWeekToSchedule(MyNotificationsActivity.this, dayOfWeek);
+                        }
+
+                        daysOfWeekEnabled[dayOfWeek - 1] = !isEnabled;
+
+                        // show changes have not been saved
+                        enableSaveButton();
                     }
-
-                    daysOfWeekEnabled[dayOfWeek - 1] = !isEnabled;
-
-                    // show changes have not been saved
-                    enableSaveButton();
                 }
             });
         }

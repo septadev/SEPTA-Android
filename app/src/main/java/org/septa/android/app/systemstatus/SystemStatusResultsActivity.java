@@ -153,48 +153,56 @@ public class SystemStatusResultsActivity extends BaseActivity {
             }
         });
 
-        // link to notification settings
-        notificationPreferences = findViewById(R.id.notification_preferences);
-        notificationPreferences.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                goToNotificationsManagement();
-            }
-        });
+        // users cannot subscribe to push notifications from glenside combined
+        if (routeId.equalsIgnoreCase("GC")) {
+            findViewById(R.id.notifications_settings_container).setVisibility(View.GONE);
 
-        // set initial checked state of switch
-        notifsSubscribeSwitch = findViewById(R.id.subscribe_notifications_switch);
-        notifsSubscribeSwitch.setChecked(SeptaServiceFactory.getNotificationsService().isSubscribedToRoute(SystemStatusResultsActivity.this, routeId));
+        } else {
+            findViewById(R.id.notifications_settings_container).setVisibility(View.VISIBLE);
 
-        // switch to create / enable notification for this route
-        notifsSubscribeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    // enable notifs for route
-                    PushNotificationManager.getInstance(SystemStatusResultsActivity.this).createNotificationForRoute(routeId, routeName, transitType, "System Status Results");
+            // link to notification settings
+            notificationPreferences = findViewById(R.id.notification_preferences);
+            notificationPreferences.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    goToNotificationsManagement();
+                }
+            });
 
-                    // show message if necessary that push notifs will not be received
-                    showMessagePushNotifsDisabled();
+            // set initial checked state of switch
+            notifsSubscribeSwitch = findViewById(R.id.subscribe_notifications_switch);
+            notifsSubscribeSwitch.setChecked(SeptaServiceFactory.getNotificationsService().isSubscribedToRoute(SystemStatusResultsActivity.this, routeId));
 
-                } else {
-                    // disable notifs for route
-                    PushNotificationManager.getInstance(SystemStatusResultsActivity.this).removeNotificationForRoute(routeId, transitType, "System Status Results");
+            // switch to create / enable notification for this route
+            notifsSubscribeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (isChecked) {
+                        // enable notifs for route
+                        PushNotificationManager.getInstance(SystemStatusResultsActivity.this).createNotificationForRoute(routeId, routeName, transitType, "System Status Results");
 
-                    // remove message
-                    if (snackbar != null && snackbar.isShown()) {
-                        snackbar.dismiss();
+                        // show message if necessary that push notifs will not be received
+                        showMessagePushNotifsDisabled();
+
+                    } else {
+                        // disable notifs for route
+                        PushNotificationManager.getInstance(SystemStatusResultsActivity.this).removeNotificationForRoute(routeId, transitType, "System Status Results");
+
+                        // remove message
+                        if (snackbar != null && snackbar.isShown()) {
+                            snackbar.dismiss();
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        if (notifsSubscribeSwitch.isChecked()) {
+        if (notifsSubscribeSwitch != null && notifsSubscribeSwitch.isChecked()) {
             showMessagePushNotifsDisabled();
         }
     }

@@ -177,19 +177,19 @@ public class ScheduleResultsActivity extends BaseActivity implements RenameFavor
     protected void onResume() {
         super.onResume();
 
-//        if (notifsSwitch.isChecked()) {
-//            showMethodPushNotifsDisabled();
-//        }
+        if (notifsSwitch != null && notifsSwitch.isChecked()) {
+            showMethodPushNotifsDisabled();
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
 
-//        // remove message
-//        if (snackbar != null && snackbar.isShown()) {
-//            snackbar.dismiss();
-//        }
+        // remove message
+        if (snackbar != null && snackbar.isShown()) {
+            snackbar.dismiss();
+        }
     }
 
     @Override
@@ -461,31 +461,41 @@ public class ScheduleResultsActivity extends BaseActivity implements RenameFavor
             weatherView.setImageResource(R.drawable.ic_weather_inactive);
         }
 
-        // set intial checked state of switch
-        notifsSwitch.setChecked(SeptaServiceFactory.getNotificationsService().isSubscribedToRoute(ScheduleResultsActivity.this, routeDirectionModel.getRouteId()));
+        // users cannot subscribe to push notifications from glenside combined
+        if (routeDirectionModel.getRouteId().equalsIgnoreCase("GC")) {
+            findViewById(R.id.notification_route_switch_label).setVisibility(View.GONE);
+            notifsSwitch.setVisibility(View.GONE);
 
-        // switch to create / enable notification for this route
-        notifsSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    // enable notifs for route
-                    PushNotificationManager.getInstance(ScheduleResultsActivity.this).createNotificationForRoute(routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName(), transitType, "Schedule Results");
+        } else {
+            findViewById(R.id.notification_route_switch_label).setVisibility(View.VISIBLE);
+            notifsSwitch.setVisibility(View.VISIBLE);
 
-                    // show message if necessary that push notifs will not be received
-                    showMethodPushNotifsDisabled();
+            // set intial checked state of switch
+            notifsSwitch.setChecked(SeptaServiceFactory.getNotificationsService().isSubscribedToRoute(ScheduleResultsActivity.this, routeDirectionModel.getRouteId()));
 
-                } else {
-                    // disable notifs for route
-                    PushNotificationManager.getInstance(ScheduleResultsActivity.this).removeNotificationForRoute(routeDirectionModel.getRouteId(), transitType, "Schedule Results");
+            // switch to create / enable notification for this route
+            notifsSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (isChecked) {
+                        // enable notifs for route
+                        PushNotificationManager.getInstance(ScheduleResultsActivity.this).createNotificationForRoute(routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName(), transitType, "Schedule Results");
 
-                    // remove message
-                    if (snackbar != null && snackbar.isShown()) {
-                        snackbar.dismiss();
+                        // show message if necessary that push notifs will not be received
+                        showMethodPushNotifsDisabled();
+
+                    } else {
+                        // disable notifs for route
+                        PushNotificationManager.getInstance(ScheduleResultsActivity.this).removeNotificationForRoute(routeDirectionModel.getRouteId(), transitType, "Schedule Results");
+
+                        // remove message
+                        if (snackbar != null && snackbar.isShown()) {
+                            snackbar.dismiss();
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
     }
 
     private void showMethodPushNotifsDisabled() {

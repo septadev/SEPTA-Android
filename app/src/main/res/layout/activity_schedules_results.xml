@@ -223,6 +223,7 @@
                             android:src="@drawable/ic_weather" />
 
                         <org.septa.android.app.view.TextView
+                            android:id="@+id/notification_route_switch_label"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="10dp"

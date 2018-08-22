@@ -201,6 +201,7 @@
                         android:background="@color/notification_subscribe_border" />
 
                     <LinearLayout
+                        android:id="@+id/notifications_settings_container"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"

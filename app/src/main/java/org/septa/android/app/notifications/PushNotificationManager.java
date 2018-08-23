@@ -26,7 +26,6 @@ import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.nextarrive.NextToArriveTripDetailActivity;
 import org.septa.android.app.notifications.subscription.AutoSubscriptionReceiver;
 import org.septa.android.app.notifications.subscription.RefreshAdvertisingId;
-import org.septa.android.app.services.apiinterfaces.NotificationsSharedPrefsUtilsImpl;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalDetails;
 import org.septa.android.app.services.apiinterfaces.model.PushNotifSubscriptionRequest;
@@ -44,8 +43,6 @@ import org.septa.android.app.systemstatus.SystemStatusResultsActivity;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -77,34 +74,6 @@ public class PushNotificationManager {
             mInstance = new PushNotificationManager(context);
         }
         return mInstance;
-    }
-
-    public static boolean isWithinNotificationWindow(Context context) {
-        List<Integer> daysEnabled = SeptaServiceFactory.getNotificationsService().getNotificationsSchedule(context);
-
-        // check day of week
-        Calendar calendar = Calendar.getInstance();
-        int day = calendar.get(Calendar.DAY_OF_WEEK);
-        if (daysEnabled.contains(day)) {
-
-            // parse multiple timeframes
-            List<String> timeFrames = SeptaServiceFactory.getNotificationsService().getNotificationTimeFrames(context);
-
-            // check against time frames
-            for (String window : timeFrames) {
-                String[] startEndTimes = window.split(NotificationsSharedPrefsUtilsImpl.START_END_TIME_DELIM);
-                int startTime = Integer.parseInt(startEndTimes[0]);
-                int endTime = Integer.parseInt(startEndTimes[1]);
-
-                // get current time in 24H format
-                int currentTime = Integer.parseInt(timeFormat.format(calendar.getTime()));
-                if (currentTime >= startTime && currentTime <= endTime) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
     }
 
     public void buildSpecialAnnouncementNotification(Context context, String message) {
@@ -153,7 +122,7 @@ public class PushNotificationManager {
         displayNotification(context, title, message, pendingIntent);
     }
 
-    public void buildRailDelayNotification(final Context context, String message, final String routeId, final String vehicleId, String destinationStopId, DelayNotificationType delayType, Date expirationTimeStamp) {
+    public void buildRailDelayNotification(final Context context, String message, final String routeId, final String vehicleId, String destinationStopId, DelayNotificationType delayType) {
         String title = context.getString(R.string.push_notif_rail_delay_title, routeId.toUpperCase());
 
         // all delay notifications are rail
@@ -177,7 +146,6 @@ public class PushNotificationManager {
             resultIntent.putExtra(Constants.ROUTE_ID, routeId);
             resultIntent.putExtra(Constants.ROUTE_NAME, routeName);
             resultIntent.putExtra(Constants.TRANSIT_TYPE, transitType);
-            resultIntent.putExtra(Constants.EXPIRATION_TIMESTAMP, expirationTimeStamp);
         }
 
         // build back stack for click action
@@ -268,7 +236,6 @@ public class PushNotificationManager {
         if (bundle != null) {
             final StopModel destStop = (StopModel) bundle.get(Constants.DESTINATION_STATION);
             final TransitType transitType = (TransitType) bundle.get(Constants.TRANSIT_TYPE);
-            Date expirationTimestamp = (Date) bundle.get(Constants.EXPIRATION_TIMESTAMP);
 
             // analytics
             Map<String, String> notifData = new HashMap<>();
@@ -277,40 +244,34 @@ public class PushNotificationManager {
             notifData.put("Push Notif Clicked - Route ID", routeId);
             AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_PUSH_NOTIF_CLICKED, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_ENGAGEMENT, notifData);
 
-            // show notification expired message
-            if (new Date().after(expirationTimestamp)) {
-                showNotificationExpiredMessage(activity);
+            // to get train details, don't pass route ID to the API call
+            SeptaServiceFactory.getNextArrivalService().getNextArrivalDetails(destinationStopId, null, vehicleId).enqueue(new Callback<NextArrivalDetails>() {
+                @Override
+                public void onResponse(@NonNull Call<NextArrivalDetails> call, @NonNull Response<NextArrivalDetails> response) {
+                    NextArrivalDetails responseBody = response.body();
 
-            } else {
-                // to get train details, don't pass route ID to the API call
-                SeptaServiceFactory.getNextArrivalService().getNextArrivalDetails(destinationStopId, null, vehicleId).enqueue(new Callback<NextArrivalDetails>() {
-                    @Override
-                    public void onResponse(@NonNull Call<NextArrivalDetails> call, @NonNull Response<NextArrivalDetails> response) {
-                        NextArrivalDetails responseBody = response.body();
+                    if (responseBody != null && responseBody.getResults() > 0) {
+                        Intent intent = new Intent(activity, NextToArriveTripDetailActivity.class);
 
-                        if (responseBody != null && responseBody.getResults() > 0) {
-                            Intent intent = new Intent(activity, NextToArriveTripDetailActivity.class);
+                        intent.putExtra(Constants.DESTINATION_STATION, destStop);
+                        intent.putExtra(Constants.TRANSIT_TYPE, transitType);
+                        intent.putExtra(Constants.ROUTE_NAME, routeName);
+                        intent.putExtra(Constants.ROUTE_ID, routeId);
+                        intent.putExtra(Constants.TRIP_ID, vehicleId);
+                        // startingStation, vehicle ID, routeDescription will be null coming from a rail delay push notification
 
-                            intent.putExtra(Constants.DESTINATION_STATION, destStop);
-                            intent.putExtra(Constants.TRANSIT_TYPE, transitType);
-                            intent.putExtra(Constants.ROUTE_NAME, routeName);
-                            intent.putExtra(Constants.ROUTE_ID, routeId);
-                            intent.putExtra(Constants.TRIP_ID, vehicleId);
-                            // startingStation, vehicle ID, routeDescription will be null coming from a rail delay push notification
-
-                            activity.startActivity(intent);
-                        } else {
-                            CrashlyticsManager.log(Log.ERROR, TAG, "Null response body when attempting to jump to train details from push notification");
-                            showNotificationExpiredMessage(activity);
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<NextArrivalDetails> call, Throwable t) {
+                        activity.startActivity(intent);
+                    } else {
+                        CrashlyticsManager.log(Log.ERROR, TAG, "Null response body when attempting to jump to train details from push notification");
                         showNotificationExpiredMessage(activity);
                     }
-                });
-            }
+                }
+
+                @Override
+                public void onFailure(Call<NextArrivalDetails> call, Throwable t) {
+                    showNotificationExpiredMessage(activity);
+                }
+            });
         } else {
             CrashlyticsManager.log(Log.ERROR, TAG, "Null intent bundle after tapping rail delay push notification for route " + routeId);
         }
@@ -455,7 +416,7 @@ public class PushNotificationManager {
             startTime.append(":").append(timeFrame.substring(2, 4)).append(":00");
 
             StringBuilder endTime = new StringBuilder(timeFrame.substring(5, 7));
-            endTime.append(":").append(timeFrame.substring(7,9)).append(":00");
+            endTime.append(":").append(timeFrame.substring(7, 9)).append(":00");
 
             TimeSlot newTimeSlot = new TimeSlot(startTime.toString(), endTime.toString(), daysOfWeek);
 

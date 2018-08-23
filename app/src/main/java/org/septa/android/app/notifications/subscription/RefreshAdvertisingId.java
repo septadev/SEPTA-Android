@@ -71,6 +71,7 @@ public class RefreshAdvertisingId extends AsyncTask<Object, Object, Void> {
             } else {
                 CrashlyticsManager.log(Log.ERROR, TAG, "Unable to fetch Advertising ID");
             }
+            onCancel.run();
 
         } else {
             onPostExecute.run();

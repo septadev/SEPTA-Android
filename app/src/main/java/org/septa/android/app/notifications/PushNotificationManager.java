@@ -282,55 +282,23 @@ public class PushNotificationManager {
             RefreshAdvertisingId refreshAdvertisingId = new RefreshAdvertisingId(context, new Runnable() {
                 @Override
                 public void run() {
-                    CrashlyticsManager.log(Log.ERROR, TAG, "Failed to retrieve advertising ID");
-                    displaySubscriptionFailureMessage(context);
-                    if (failureTask != null) {
-                        failureTask.run();
+                    String deviceId = SeptaServiceFactory.getNotificationsService().getDeviceId(context);
+                    if (deviceId.isEmpty()) {
+                        CrashlyticsManager.log(Log.ERROR, TAG, "Failed to retrieve advertising ID");
+                        displaySubscriptionFailureMessage(context);
+                        if (failureTask != null) {
+                            failureTask.run();
+                        }
+
+                    } else {
+                        // use old device ID
+                        submitNotifPrefs(context, failureTask);
                     }
                 }
             }, new Runnable() {
                 @Override
                 public void run() {
-                    final PushNotifSubscriptionRequest request = buildSubscriptionRequest(context);
-
-                    SeptaServiceFactory.getPushNotificationService().setNotificationSubscription(request).enqueue(new Callback<PushNotifSubscriptionResponse>() {
-                        @Override
-                        public void onResponse(Call<PushNotifSubscriptionResponse> call, Response<PushNotifSubscriptionResponse> response) {
-                            PushNotifSubscriptionResponse responseBody = response.body();
-
-                            if (responseBody != null) {
-                                boolean success = response.isSuccessful() && responseBody.isSuccess();
-
-                                if (success) {
-                                    SeptaServiceFactory.getNotificationsService().setNotifPrefsSaved(context, true);
-
-                                    Toast.makeText(context, R.string.subscription_success, Toast.LENGTH_SHORT).show();
-                                } else {
-                                    CrashlyticsManager.log(Log.ERROR, TAG, "Could not remove push notification subscription: " + response.message());
-                                    failure(request);
-                                }
-                            } else {
-                                CrashlyticsManager.log(Log.ERROR, TAG, "Could not update push notification subscription - response body was null: " + response.message());
-                                failure(request);
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<PushNotifSubscriptionResponse> call, Throwable t) {
-                            CrashlyticsManager.log(Log.ERROR, TAG, "Failed to Update Push Notification Subscription Request");
-                            CrashlyticsManager.logException(TAG, t);
-                            failure(request);
-                        }
-                    });
-                }
-
-                private void failure(PushNotifSubscriptionRequest request) {
-                    CrashlyticsManager.log(Log.ERROR, TAG, request.toString());
-
-                    displaySubscriptionFailureMessage(context);
-                    if (failureTask != null) {
-                        failureTask.run();
-                    }
+                    submitNotifPrefs(context, failureTask);
                 }
             });
             refreshAdvertisingId.execute();
@@ -341,6 +309,40 @@ public class PushNotificationManager {
         } else {
             removeNotifSubscription(context, failureTask);
         }
+    }
+
+    private static void submitNotifPrefs(final Context context, final Runnable failureTask) {
+        final PushNotifSubscriptionRequest request = buildSubscriptionRequest(context);
+
+        SeptaServiceFactory.getPushNotificationService().setNotificationSubscription(request).enqueue(new Callback<PushNotifSubscriptionResponse>() {
+            @Override
+            public void onResponse(Call<PushNotifSubscriptionResponse> call, Response<PushNotifSubscriptionResponse> response) {
+                PushNotifSubscriptionResponse responseBody = response.body();
+
+                if (responseBody != null) {
+                    boolean success = response.isSuccessful() && responseBody.isSuccess();
+
+                    if (success) {
+                        SeptaServiceFactory.getNotificationsService().setNotifPrefsSaved(context, true);
+
+                        Toast.makeText(context, R.string.subscription_success, Toast.LENGTH_SHORT).show();
+                    } else {
+                        CrashlyticsManager.log(Log.ERROR, TAG, "Could not remove push notification subscription: " + response.message());
+                        failureToUpdatePrefs(context, request, failureTask);
+                    }
+                } else {
+                    CrashlyticsManager.log(Log.ERROR, TAG, "Could not update push notification subscription - response body was null: " + response.message());
+                    failureToUpdatePrefs(context, request, failureTask);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<PushNotifSubscriptionResponse> call, Throwable t) {
+                CrashlyticsManager.log(Log.ERROR, TAG, "Failed to Update Push Notification Subscription Request");
+                CrashlyticsManager.logException(TAG, t);
+                failureToUpdatePrefs(context, request, failureTask);
+            }
+        });
     }
 
     public static void removeNotifSubscription(final Context context, final Runnable failureTask) {
@@ -363,34 +365,38 @@ public class PushNotificationManager {
                         Toast.makeText(context, R.string.subscription_success, Toast.LENGTH_SHORT).show();
                     } else {
                         CrashlyticsManager.log(Log.ERROR, TAG, "Could not remove push notification subscription: " + response.message());
-                        failure(request);
+                        failureToUpdatePrefs(context, request, failureTask);
+
+                        // continue auto-subscription since this failed
+                        AutoSubscriptionReceiver.scheduleSubscriptionUpdate(context, false);
                     }
 
                 } else {
                     CrashlyticsManager.log(Log.ERROR, TAG, "Could not remove push notification subscription - response body was null");
-                    failure(request);
-                }
+                    failureToUpdatePrefs(context, request, failureTask);
+
+                    // continue auto-subscription since this failed
+                    AutoSubscriptionReceiver.scheduleSubscriptionUpdate(context, false);                }
             }
 
             @Override
             public void onFailure(Call<PushNotifSubscriptionResponse> call, Throwable t) {
                 CrashlyticsManager.log(Log.ERROR, TAG, "Failed to Update Push Notification Subscription Request");
                 CrashlyticsManager.logException(TAG, t);
-                failure(request);
-            }
-
-            private void failure(PushNotifSubscriptionRequest request) {
-                CrashlyticsManager.log(Log.ERROR, TAG, request.toString());
-
-                displaySubscriptionFailureMessage(context);
-                if (failureTask != null) {
-                    failureTask.run();
-                }
+                failureToUpdatePrefs(context, request, failureTask);
 
                 // continue auto-subscription since this failed
-                AutoSubscriptionReceiver.scheduleSubscriptionUpdate(context, false);
-            }
+                AutoSubscriptionReceiver.scheduleSubscriptionUpdate(context, false);            }
         });
+    }
+
+    private static void failureToUpdatePrefs(Context context, PushNotifSubscriptionRequest request, Runnable failureTask) {
+        CrashlyticsManager.log(Log.ERROR, TAG, request.toString());
+
+        displaySubscriptionFailureMessage(context);
+        if (failureTask != null) {
+            failureTask.run();
+        }
     }
 
     @NonNull

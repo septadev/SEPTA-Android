@@ -24,6 +24,7 @@ import org.septa.android.app.notifications.edit.EditNotificationsFragment;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.RouteSubscription;
 import org.septa.android.app.support.AnalyticsManager;
+import org.septa.android.app.support.GeneralUtils;
 import org.septa.android.app.view.TextView;
 
 import java.util.Calendar;
@@ -158,19 +159,24 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                disableView(saveButton);
+                if (GeneralUtils.isConnectedToInternet(MyNotificationsActivity.this)) {
+                    disableView(saveButton);
 
-                // send analytics about timeframe(s) / DOW
-                trackNotifScheduleAnalytics();
+                    // send analytics about timeframe(s) / DOW
+                    trackNotifScheduleAnalytics();
 
-                // send subscription update to server and handle response
-                PushNotificationManager.updateNotifSubscription(MyNotificationsActivity.this, new Runnable() {
-                    @Override
-                    public void run() {
-                        enableSaveButton();
-                    }
-                });
+                    // send subscription update to server and handle response
+                    PushNotificationManager.updateNotifSubscription(MyNotificationsActivity.this, new Runnable() {
+                        @Override
+                        public void run() {
+                            enableSaveButton();
+                        }
+                    });
 
+                } else {
+                    // handle no network connection
+                    Toast.makeText(MyNotificationsActivity.this, R.string.subscription_need_connection, Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }

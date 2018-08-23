@@ -13,6 +13,7 @@ import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.Toast;
 
 import org.septa.android.app.BaseActivity;
 import org.septa.android.app.Constants;
@@ -61,6 +62,9 @@ public class SystemStatusResultsActivity extends BaseActivity {
     View notificationPreferences;
     SwitchCompat notifsSubscribeSwitch;
     Snackbar snackbar;
+
+    // used to ignore notif toggles due to failed subscription POSTs
+    private boolean ignoreSwitch = false;
 
     View progressView;
 
@@ -176,22 +180,41 @@ public class SystemStatusResultsActivity extends BaseActivity {
             // switch to create / enable notification for this route
             notifsSubscribeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    if (isChecked) {
-                        // enable notifs for route
-                        PushNotificationManager.getInstance(SystemStatusResultsActivity.this).createNotificationForRoute(routeId, routeName, transitType, "System Status Results");
+                public void onCheckedChanged(CompoundButton buttonView, final boolean isChecked) {
+                    if (GeneralUtils.isConnectedToInternet(SystemStatusResultsActivity.this)) {
+                        if (isChecked) {
+                            // enable notifs for route
+                            PushNotificationManager.getInstance(SystemStatusResultsActivity.this).createNotificationForRoute(routeId, routeName, transitType, "System Status Results");
 
-                        // show message if necessary that push notifs will not be received
-                        showMessagePushNotifsDisabled();
+                            // show message if necessary that push notifs will not be received
+                            showMessagePushNotifsDisabled();
 
-                    } else {
-                        // disable notifs for route
-                        PushNotificationManager.getInstance(SystemStatusResultsActivity.this).removeNotificationForRoute(routeId, transitType, "System Status Results");
+                        } else {
+                            // disable notifs for route
+                            PushNotificationManager.getInstance(SystemStatusResultsActivity.this).removeNotificationForRoute(routeId, transitType, "System Status Results");
 
-                        // remove message
-                        if (snackbar != null && snackbar.isShown()) {
-                            snackbar.dismiss();
+                            // remove message
+                            if (snackbar != null && snackbar.isShown()) {
+                                snackbar.dismiss();
+                            }
                         }
+
+                        if (!ignoreSwitch) {
+                            PushNotificationManager.updateNotifSubscription(getApplicationContext(), new Runnable() {
+                                @Override
+                                public void run() {
+                                    String deviceId = SeptaServiceFactory.getNotificationsService().getDeviceId(getApplicationContext());
+                                    CrashlyticsManager.log(Log.ERROR, TAG, "Unable to subscribe device ID: " + deviceId + " to push notifs for route " + routeId);
+
+                                    failureToToggleRouteSubscription(isChecked);
+                                }
+                            });
+                        }
+                    } else {
+                        Toast.makeText(SystemStatusResultsActivity.this, R.string.subscription_need_connection, Toast.LENGTH_SHORT).show();
+
+                        // handle no network connection
+                        failureToToggleRouteSubscription(isChecked);
                     }
                 }
             });
@@ -432,4 +455,11 @@ public class SystemStatusResultsActivity extends BaseActivity {
         setResult(Constants.VIEW_NOTIFICATION_MANAGEMENT, new Intent());
         finish();
     }
+
+    private void failureToToggleRouteSubscription(boolean isChecked) {
+        ignoreSwitch = true;
+        notifsSubscribeSwitch.setChecked(!isChecked);
+        ignoreSwitch = false;
+    }
+
 }

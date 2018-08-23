@@ -464,38 +464,6 @@ public class PushNotificationManager {
         }
     }
 
-    public void unsubscribeFromPushNotifs() {
-        SeptaServiceFactory.getNotificationsService().setNotificationsEnabled(context, false);
-
-        // send subscription removal to server and handle response
-        removeNotifSubscription(context, null);
-    }
-
-    public void resubscribeToPushNotifs() {
-        SeptaServiceFactory.getNotificationsService().setNotificationsEnabled(context, true);
-
-        // send subscription update to server and handle response
-        updateNotifSubscription(context, null);
-    }
-
-    public void subscribeToSpecialAnnouncements() {
-        Log.d(TAG, "Subscribing to SEPTA Special Announcements");
-
-        SeptaServiceFactory.getNotificationsService().setSpecialAnnouncementsEnabled(context, true);
-
-        // send subscription update to server and handle response
-        updateNotifSubscription(context, null);
-    }
-
-    public void unsubscribeFromSpecialAnnouncements() {
-        Log.d(TAG, "Unsubscribing from SEPTA Special Announcements");
-
-        SeptaServiceFactory.getNotificationsService().setSpecialAnnouncementsEnabled(context, false);
-
-        // send subscription update to server and handle response
-        updateNotifSubscription(context, null);
-    }
-
     public void createNotificationForRoute(String routeId, String routeName, TransitType transitType, String requestCode) {
         // make NHSL chosen from trolley picker have NHSL transittype
         if ("NHSL".equalsIgnoreCase(routeId)) {

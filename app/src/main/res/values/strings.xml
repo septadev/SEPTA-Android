@@ -336,6 +336,7 @@
     <string name="notifications_edit">Edit</string>
     <string name="notifications_done">Done</string>
 
+    <string name="subscription_need_connection">You must have a network connection in order to change your notification preferences.</string>
     <string name="subscription_success">Your notification preferences have been updated.</string>
     <string name="subscription_failed_no_connection">Your notification preferences cannot be saved. Please make sure you are connected to the internet.</string>
     <string name="subscription_failed">Your notification preferences cannot be saved right now. Please try again in a few minutes.</string>

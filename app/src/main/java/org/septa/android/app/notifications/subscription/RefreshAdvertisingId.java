@@ -32,30 +32,37 @@ public class RefreshAdvertisingId extends AsyncTask<Object, Object, Void> {
     @Override
     protected Void doInBackground(Object... voids) {
 
-        AdvertisingIdClient.Info adInfo = null;
+        AdvertisingIdClient.Info adInfo;
         try {
             adInfo = AdvertisingIdClient.getAdvertisingIdInfo(context);
 
-        } catch (IOException e) {
-            // Unrecoverable error connecting to Google Play services (e.g.,
-            // the old version of the service doesn't support getting AdvertisingId).
-
-//        } catch (GooglePlayServicesAvailabilityException e) {
-            // Encountered a recoverable error connecting to Google Play services.
-
-        } catch (GooglePlayServicesNotAvailableException e) {
-            // Google Play services is not available entirely.
-        } catch (GooglePlayServicesRepairableException e) {
-            e.printStackTrace();
-        }
-
-        if (adInfo != null) {
             id = adInfo.getId();
 
             Log.d(TAG, "Advertising ID: " + id);
 
             // save google play advertising ID as unique device ID
             SeptaServiceFactory.getNotificationsService().setDeviceId(context, id);
+
+        } catch (IOException e) {
+            // Unrecoverable error connecting to Google Play services (e.g.,
+            // the old version of the service doesn't support getting AdvertisingId).
+            CrashlyticsManager.logException(TAG, e);
+
+//        } catch (GooglePlayServicesAvailabilityException e) {
+            // Encountered a recoverable error connecting to Google Play services.
+
+        } catch (GooglePlayServicesNotAvailableException e) {
+            // Google Play services is not available entirely.
+            CrashlyticsManager.logException(TAG, e);
+
+        } catch (GooglePlayServicesRepairableException e) {
+            CrashlyticsManager.logException(TAG, e);
+            CrashlyticsManager.log(Log.ERROR, TAG, e.getMessage());
+
+        } catch (Exception e) {
+            CrashlyticsManager.logException(TAG, e);
+            CrashlyticsManager.log(Log.ERROR, TAG, e.getMessage());
+
         }
 
         return null;

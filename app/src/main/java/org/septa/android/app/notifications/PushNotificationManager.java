@@ -327,7 +327,7 @@ public class PushNotificationManager {
 
                         Toast.makeText(context, R.string.subscription_success, Toast.LENGTH_SHORT).show();
                     } else {
-                        CrashlyticsManager.log(Log.ERROR, TAG, "Could not remove push notification subscription: " + response.message());
+                        CrashlyticsManager.log(Log.ERROR, TAG, "Could not update push notification subscription: " + response.message());
                         failureToUpdatePrefs(context, request, failureTask);
                     }
                 } else {
@@ -381,7 +381,7 @@ public class PushNotificationManager {
 
             @Override
             public void onFailure(Call<PushNotifSubscriptionResponse> call, Throwable t) {
-                CrashlyticsManager.log(Log.ERROR, TAG, "Failed to Update Push Notification Subscription Request");
+                CrashlyticsManager.log(Log.ERROR, TAG, "Failed to Remove Push Notification Subscription Request");
                 CrashlyticsManager.logException(TAG, t);
                 failureToUpdatePrefs(context, request, failureTask);
 

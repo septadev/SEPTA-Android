@@ -19,6 +19,7 @@ import org.septa.android.app.R;
 import org.septa.android.app.notifications.timepicker.NotificationTimePickerClockDialog;
 import org.septa.android.app.notifications.timepicker.NotificationTimePickerDialogListener;
 import org.septa.android.app.notifications.timepicker.NotificationTimePickerSpinnerDialog;
+import org.septa.android.app.services.apiinterfaces.NotificationsSharedPrefsUtilsImpl;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.support.CrashlyticsManager;
 import org.septa.android.app.support.GeneralUtils;
@@ -141,6 +142,8 @@ public class TimeFrameItemAdapter extends RecyclerView.Adapter<TimeFrameItemAdap
 
             // show changes in view
             updateList(SeptaServiceFactory.getNotificationsService().getNotificationTimeFrames(activity));
+
+            mListener.enableSaveButton();
         } else {
             Toast.makeText(activity, R.string.notifications_start_time_requirement, Toast.LENGTH_LONG).show();
         }
@@ -159,6 +162,8 @@ public class TimeFrameItemAdapter extends RecyclerView.Adapter<TimeFrameItemAdap
 
             // show changes in view
             updateList(SeptaServiceFactory.getNotificationsService().getNotificationTimeFrames(activity));
+
+            mListener.enableSaveButton();
         } else {
             Toast.makeText(activity, R.string.notifications_end_time_requirement, Toast.LENGTH_LONG).show();
         }
@@ -186,6 +191,7 @@ public class TimeFrameItemAdapter extends RecyclerView.Adapter<TimeFrameItemAdap
 
     interface TimeFrameItemListener {
         List<String> deleteTimeFrame(int position);
+        void enableSaveButton();
     }
 
 }

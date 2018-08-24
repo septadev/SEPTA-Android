@@ -84,8 +84,6 @@ public class MainApplication extends Application implements Runnable {
             SeptaServiceFactory.init();
 
             FirebaseApp.initializeApp(this);
-
-            //SeptaServiceFactory.getFavoritesService().deleteAllFavorites(this);
         } catch (PackageManager.NameNotFoundException e) {
             Log.e(TAG, "Failed to load meta-data, NameNotFound: " + e.getMessage());
         } catch (NullPointerException e) {

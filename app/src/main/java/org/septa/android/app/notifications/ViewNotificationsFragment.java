@@ -12,13 +12,13 @@ import android.view.ViewGroup;
 
 import org.septa.android.app.R;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
-import org.septa.android.app.services.apiinterfaces.model.RouteNotificationSubscription;
+import org.septa.android.app.services.apiinterfaces.model.RouteSubscription;
 
 import java.util.List;
 
 public class ViewNotificationsFragment extends android.support.v4.app.Fragment {
 
-    private List<RouteNotificationSubscription> routesList;
+    private List<RouteSubscription> routesList;
 
     private RecyclerView notificationRecyclerView;
     private NotificationItemAdapter notificationItemAdapter;

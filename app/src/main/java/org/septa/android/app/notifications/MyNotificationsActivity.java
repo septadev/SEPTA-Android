@@ -3,8 +3,11 @@ package org.septa.android.app.notifications;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -19,8 +22,9 @@ import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
 import org.septa.android.app.notifications.edit.EditNotificationsFragment;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
-import org.septa.android.app.services.apiinterfaces.model.RouteNotificationSubscription;
+import org.septa.android.app.services.apiinterfaces.model.RouteSubscription;
 import org.septa.android.app.support.AnalyticsManager;
+import org.septa.android.app.support.GeneralUtils;
 import org.septa.android.app.view.TextView;
 
 import java.util.Calendar;
@@ -28,7 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.septa.android.app.notifications.NotificationsSharedPrefsUtilsImpl.MAX_TIMEFRAMES;
+import static org.septa.android.app.services.apiinterfaces.NotificationsSharedPrefsUtilsImpl.MAX_TIMEFRAMES;
 
 public class MyNotificationsActivity extends BaseActivity implements EditNotificationsFragment.EditNotificationsFragmentListener, NotificationItemAdapter.NotificationItemListener, TimeFrameItemAdapter.TimeFrameItemListener {
 
@@ -38,7 +42,7 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
     boolean isInEditMode;
 
     // initial days of week and timeframe
-    private String[] daysOfWeekText = new String[]{"","Su","M", "Tu", "W", "Th", "F", "Sa"};
+    private String[] daysOfWeekText = new String[]{"", "Su", "M", "Tu", "W", "Th", "F", "Sa"};
     private List<Integer> initialDaysOfWeek;
     private List<String> initialTimeFrames;
 
@@ -48,6 +52,7 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
     private RecyclerView timeFramesRecyclerView;
     private TimeFrameItemAdapter timeFrameItemAdapter;
     private android.support.v4.app.Fragment activeFragment;
+    private FloatingActionButton saveButton;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -70,18 +75,37 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
                 public void onClick(View v) {
                     boolean isEnabled = daysOfWeekEnabled[dayOfWeek - 1];
 
-                    // toggle icon
-                    button.setImageResource(getDayOfWeekImageResId(dayOfWeek, !isEnabled));
+                    // enforce that at least one DOW selected
+                    if (isEnabled && SeptaServiceFactory.getNotificationsService().getNotificationsSchedule(MyNotificationsActivity.this).size() == 1) {
+                        Snackbar snackbar = Snackbar.make(findViewById(R.id.activity_my_notifications), R.string.notifications_days_of_week_requirement, Snackbar.LENGTH_SHORT);
+                        snackbar.setAction("Show Me", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                onBackPressed();
+                            }
+                        });
+                        View snackbarView = snackbar.getView();
+                        android.widget.TextView tv = snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+                        tv.setMaxLines(10);
+                        snackbar.show();
 
-                    if (isEnabled) {
-                        // disable notifications for that day
-                        SeptaServiceFactory.getNotificationsService().removeDayOfWeekFromSchedule(MyNotificationsActivity.this, dayOfWeek);
                     } else {
-                        // enable notifications for that day
-                        SeptaServiceFactory.getNotificationsService().addDayOfWeekToSchedule(MyNotificationsActivity.this, dayOfWeek);
-                    }
+                        // toggle icon
+                        button.setImageResource(getDayOfWeekImageResId(dayOfWeek, !isEnabled));
 
-                    daysOfWeekEnabled[dayOfWeek - 1] = !isEnabled;
+                        if (isEnabled) {
+                            // disable notifications for that day
+                            SeptaServiceFactory.getNotificationsService().removeDayOfWeekFromSchedule(MyNotificationsActivity.this, dayOfWeek);
+                        } else {
+                            // enable notifications for that day
+                            SeptaServiceFactory.getNotificationsService().addDayOfWeekToSchedule(MyNotificationsActivity.this, dayOfWeek);
+                        }
+
+                        daysOfWeekEnabled[dayOfWeek - 1] = !isEnabled;
+
+                        // show changes have not been saved
+                        enableSaveButton();
+                    }
                 }
             });
         }
@@ -99,6 +123,9 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
                     addTimeFramesButton.setVisibility(View.GONE);
                 }
                 timeFrameItemAdapter.updateList(timeFramesList);
+
+                // show changes have not been saved
+                enableSaveButton();
             }
         });
 
@@ -117,7 +144,7 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
                 if (isInEditMode) {
                     closeEditMode();
                 } else {
-                    List<RouteNotificationSubscription> routesList = SeptaServiceFactory.getNotificationsService().getRoutesSubscribedTo(MyNotificationsActivity.this);
+                    List<RouteSubscription> routesList = SeptaServiceFactory.getNotificationsService().getRoutesSubscribedTo(MyNotificationsActivity.this);
                     if (routesList.isEmpty()) {
                         // user must have some notifications in order to switch to edit mode
                         Toast.makeText(MyNotificationsActivity.this, R.string.no_notifications_to_edit, Toast.LENGTH_SHORT).show();
@@ -127,38 +154,31 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
                 }
             }
         });
-    }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
+        // save button is clickable
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (GeneralUtils.isConnectedToInternet(MyNotificationsActivity.this)) {
+                    disableView(saveButton);
 
-        // analytics around days of week
-        List<Integer> finalDaysOfWeek = SeptaServiceFactory.getNotificationsService().getNotificationsSchedule(this);
-        if (initialDaysOfWeek != null && !initialDaysOfWeek.equals(finalDaysOfWeek)) {
+                    // send analytics about timeframe(s) / DOW
+                    trackNotifScheduleAnalytics();
 
-            StringBuilder daysOfWeek = new StringBuilder();
-            for (Integer day : finalDaysOfWeek) {
-                daysOfWeek.append(daysOfWeekText[day]);
+                    // send subscription update to server and handle response
+                    PushNotificationManager.updateNotifSubscription(MyNotificationsActivity.this, new Runnable() {
+                        @Override
+                        public void run() {
+                            enableSaveButton();
+                        }
+                    });
+
+                } else {
+                    // handle no network connection
+                    Toast.makeText(MyNotificationsActivity.this, R.string.subscription_need_connection, Toast.LENGTH_SHORT).show();
+                }
             }
-
-            initialDaysOfWeek = finalDaysOfWeek;
-
-            Map<String, String> data = new HashMap<>();
-            data.put("Days of Week", daysOfWeek.toString());
-            AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_DAYS_OF_WEEK, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_MANAGEMENT, data);
-        }
-
-        // analytics around timeframes
-        List<String> finalTimeFrames = SeptaServiceFactory.getNotificationsService().getNotificationTimeFrames(this);
-        if (initialTimeFrames != null && !initialTimeFrames.equals(finalTimeFrames)) {
-
-            initialTimeFrames = finalTimeFrames;
-
-            Map<String, String> data = new HashMap<>();
-            data.put("Timeframe(s)", finalTimeFrames.toString());
-            AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_TIMEFRAMES, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_MANAGEMENT, data);
-        }
+        });
     }
 
     @Override
@@ -172,6 +192,37 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
     }
 
     @Override
+    public void onBackPressed() {
+        boolean notifsSaved = SeptaServiceFactory.getNotificationsService().areNotifPrefsSaved(MyNotificationsActivity.this);
+        if (!notifsSaved) {
+            final AlertDialog dialog = new AlertDialog.Builder(MyNotificationsActivity.this).setCancelable(true).setTitle(R.string.subscription_warning_title)
+                    .setMessage(R.string.subscription_warning)
+                    .setPositiveButton(R.string.notif_warning_pos_button, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            MyNotificationsActivity.super.onBackPressed();
+                        }
+                    })
+                    .setNegativeButton(R.string.notif_warning_neg_button, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .create();
+            dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                @Override
+                public void onShow(DialogInterface arg0) {
+                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.RED);
+                }
+            });
+            dialog.show();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
     public List<String> deleteTimeFrame(int position) {
         List<String> timeFramesList = SeptaServiceFactory.getNotificationsService().removeNotificationTimeFrame(MyNotificationsActivity.this, position);
 
@@ -181,6 +232,9 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
         } else {
             addTimeFramesButton.setVisibility(View.GONE);
         }
+
+        // show changes have not been saved
+        enableSaveButton();
 
         return timeFramesList;
     }
@@ -214,6 +268,12 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
     }
 
     @Override
+    public void enableSaveButton() {
+        SeptaServiceFactory.getNotificationsService().setNotifPrefsSaved(MyNotificationsActivity.this, false);
+        activateView(saveButton);
+    }
+
+    @Override
     public void closeEditMode() {
         // switch to viewing fragment
         activeFragment = new ViewNotificationsFragment();
@@ -241,6 +301,7 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
         addTimeFramesButton = findViewById(R.id.add_timeframe_button);
         addNotifsButton = findViewById(R.id.add_notifications);
         editButton = findViewById(R.id.edit_notifications);
+        saveButton = findViewById(R.id.save_notif_settings);
 
         daysOfWeekButtons = new SparseArray<>();
         daysOfWeekButtons.put(Calendar.SUNDAY, (ImageView) findViewById(R.id.button_sunday));
@@ -280,6 +341,14 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
         timeFrameItemAdapter = new TimeFrameItemAdapter(MyNotificationsActivity.this, timeFramesList);
         timeFramesRecyclerView.setAdapter(timeFrameItemAdapter);
         timeFrameItemAdapter.updateList(timeFramesList);
+
+        // disable save button
+        boolean notifsSaved = SeptaServiceFactory.getNotificationsService().areNotifPrefsSaved(MyNotificationsActivity.this);
+        if (notifsSaved) {
+            disableView(saveButton);
+        } else {
+            activateView(saveButton);
+        }
     }
 
     private void goToSystemStatusPicker() {
@@ -293,11 +362,14 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
         deletedRouteData.put("Deleted Subscription - Route ID", routeId);
         AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_ROUTE_DELETE_SUBSCRIPTION, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_MANAGEMENT, deletedRouteData);
 
-        PushNotificationManager.getInstance(MyNotificationsActivity.this).deleteNotificationForRoute(routeId, transitType);
+        PushNotificationManager.getInstance(MyNotificationsActivity.this).deleteNotificationForRoute(routeId);
 
         // update view
         EditNotificationsFragment editFragment = (EditNotificationsFragment) activeFragment;
         editFragment.deleteNotificationAtPosition(position);
+
+        // show changes have not been saved
+        enableSaveButton();
     }
 
     private int getDayOfWeekImageResId(int dayOfWeek, boolean enabled) {
@@ -345,6 +417,47 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
                 } else {
                     return R.drawable.ic_saturday_disabled;
                 }
+        }
+    }
+
+    private void disableView(View view) {
+        view.setAlpha((float) .5);
+        view.setEnabled(false);
+        view.setClickable(false);
+    }
+
+    private void activateView(View view) {
+        view.setAlpha(1);
+        view.setEnabled(true);
+        view.setClickable(true);
+    }
+
+    private void trackNotifScheduleAnalytics() {
+        // analytics around days of week
+        List<Integer> finalDaysOfWeek = SeptaServiceFactory.getNotificationsService().getNotificationsSchedule(this);
+        if (initialDaysOfWeek != null && !initialDaysOfWeek.equals(finalDaysOfWeek)) {
+
+            StringBuilder daysOfWeek = new StringBuilder();
+            for (Integer day : finalDaysOfWeek) {
+                daysOfWeek.append(daysOfWeekText[day]);
+            }
+
+            initialDaysOfWeek = finalDaysOfWeek;
+
+            Map<String, String> data = new HashMap<>();
+            data.put("Days of Week", daysOfWeek.toString());
+            AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_DAYS_OF_WEEK, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_MANAGEMENT, data);
+        }
+
+        // analytics around timeframes
+        List<String> finalTimeFrames = SeptaServiceFactory.getNotificationsService().getNotificationTimeFrames(this);
+        if (initialTimeFrames != null && !initialTimeFrames.equals(finalTimeFrames)) {
+
+            initialTimeFrames = finalTimeFrames;
+
+            Map<String, String> data = new HashMap<>();
+            data.put("Timeframe(s)", finalTimeFrames.toString());
+            AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_TIMEFRAMES, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_MANAGEMENT, data);
         }
     }
 

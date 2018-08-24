@@ -1,4 +1,4 @@
-package org.septa.android.app.notifications;
+package org.septa.android.app.services.apiinterfaces;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -8,11 +8,12 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
-import org.septa.android.app.services.apiinterfaces.model.RouteNotificationSubscription;
+import org.septa.android.app.services.apiinterfaces.model.RouteSubscription;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPrefsUtils {
@@ -21,17 +22,33 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
 
     // database shared preferences
     private static final String SHARED_PREFERENCES_NOTIFICATIONS = "SHARED_PREFERENCES_NOTIFICATIONS";
+    private static final String NOTIF_PREFS_SAVED = "NOTIF_PREFS_SAVED";
     private static final String NOTIFICATIONS_ENABlED = "NOTIFICATIONS_ENABlED";
     private static final String SPECIAL_ANNOUNCEMENTS = "SPECIAL_ANNOUNCEMENTS";
     private static final String ROUTE_NOTIFICATION_SUBSCRIPTION = "ROUTE_NOTIFICATION_SUBSCRIPTION";
     private static final String NOTIFICATIONS_SCHEDULE_DAYS_OF_WEEK = "NOTIFICATIONS_SCHEDULE_DAYS_OF_WEEK";
     private static final String NOTIFICATIONS_TIME_FRAME = "NOTIFICATIONS_TIME_FRAME";
+    private static final String DEVICE_ID = "DEVICE_ID";
+    private static final String REGISTRATION_TOKEN = "REGISTRATION_TOKEN";
+    private static final String AUTO_SUBSCRIPTION_TIME = "AUTO_SUBSCRIPTION_TIME";
 
     // parsing time frames
     public static final String START_END_TIME_DELIM = ",";
     private static final String DEFAULT_TIME_FRAME = "0600,1800";
 
-    static final int MAX_TIMEFRAMES = 2;
+    public static final int MAX_TIMEFRAMES = 2;
+
+    // NOTE: using commit() instead of apply() so changes are saved immediately
+
+    @Override
+    public boolean areNotifPrefsSaved(Context context) {
+        return getSharedPreferences(context).getBoolean(NOTIF_PREFS_SAVED, false);
+    }
+
+    @Override
+    public void setNotifPrefsSaved(Context context, boolean isSaved) {
+        getSharedPreferences(context).edit().putBoolean(NOTIF_PREFS_SAVED, isSaved).commit();
+    }
 
     @Override
     public boolean areNotificationsEnabled(Context context) {
@@ -40,7 +57,7 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
 
     @Override
     public void setNotificationsEnabled(Context context, boolean isEnabled) {
-        getSharedPreferences(context).edit().putBoolean(NOTIFICATIONS_ENABlED, isEnabled).apply();
+        getSharedPreferences(context).edit().putBoolean(NOTIFICATIONS_ENABlED, isEnabled).commit();
     }
 
     @Override
@@ -50,7 +67,7 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
 
     @Override
     public void setSpecialAnnouncementsEnabled(Context context, boolean subscribed) {
-        getSharedPreferences(context).edit().putBoolean(SPECIAL_ANNOUNCEMENTS, subscribed).apply();
+        getSharedPreferences(context).edit().putBoolean(SPECIAL_ANNOUNCEMENTS, subscribed).commit();
     }
 
     @Override
@@ -59,13 +76,7 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
         String preferencesJson = sharedPreferences.getString(NOTIFICATIONS_SCHEDULE_DAYS_OF_WEEK, null);
 
         if (preferencesJson == null) {
-            List<Integer> defaultSchedule = new ArrayList<>();
-            defaultSchedule.add(Calendar.MONDAY);
-            defaultSchedule.add(Calendar.TUESDAY);
-            defaultSchedule.add(Calendar.WEDNESDAY);
-            defaultSchedule.add(Calendar.THURSDAY);
-            defaultSchedule.add(Calendar.FRIDAY);
-            return defaultSchedule;
+            return getDefaultDaysOfWeek();
         }
 
         Gson gson = new Gson();
@@ -74,8 +85,8 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
             }.getType());
         } catch (JsonSyntaxException e) {
             Log.e(TAG, e.toString());
-            sharedPreferences.edit().remove(NOTIFICATIONS_SCHEDULE_DAYS_OF_WEEK).apply();
-            return new ArrayList<>();
+            sharedPreferences.edit().remove(NOTIFICATIONS_SCHEDULE_DAYS_OF_WEEK).commit();
+            return getDefaultDaysOfWeek();
         }
     }
 
@@ -113,7 +124,7 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
         SharedPreferences sharedPreferences = getSharedPreferences(context);
         Gson gson = new Gson();
         String scheduleJson = gson.toJson(schedule);
-        sharedPreferences.edit().putString(NOTIFICATIONS_SCHEDULE_DAYS_OF_WEEK, scheduleJson).apply();
+        sharedPreferences.edit().putString(NOTIFICATIONS_SCHEDULE_DAYS_OF_WEEK, scheduleJson).commit();
     }
 
     @Override
@@ -139,7 +150,7 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
             return timeFramesList;
         } catch (JsonSyntaxException e) {
             Log.e(TAG, e.toString());
-            sharedPreferences.edit().remove(NOTIFICATIONS_TIME_FRAME).apply();
+            sharedPreferences.edit().remove(NOTIFICATIONS_TIME_FRAME).commit();
             List<String> defaultTimeFrame = new ArrayList<>();
             defaultTimeFrame.add(DEFAULT_TIME_FRAME);
             return defaultTimeFrame;
@@ -149,7 +160,7 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
     private void storeNotificationTimeFrames(SharedPreferences sharedPreferences, List<String> timeFrames) {
         Gson gson = new Gson();
         String timeFramesListJson = gson.toJson(timeFrames);
-        sharedPreferences.edit().putString(NOTIFICATIONS_TIME_FRAME, timeFramesListJson).apply();
+        sharedPreferences.edit().putString(NOTIFICATIONS_TIME_FRAME, timeFramesListJson).commit();
     }
 
     @Override
@@ -216,7 +227,7 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
     }
 
     @Override
-    public List<RouteNotificationSubscription> getRoutesSubscribedTo(Context context) {
+    public List<RouteSubscription> getRoutesSubscribedTo(Context context) {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
         String preferencesJson = sharedPreferences.getString(ROUTE_NOTIFICATION_SUBSCRIPTION, null);
 
@@ -226,19 +237,19 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
 
         Gson gson = new Gson();
         try {
-            return gson.fromJson(preferencesJson, new TypeToken<List<RouteNotificationSubscription>>() {
+            return gson.fromJson(preferencesJson, new TypeToken<List<RouteSubscription>>() {
             }.getType());
         } catch (JsonSyntaxException e) {
             Log.e(TAG, e.toString());
-            sharedPreferences.edit().remove(ROUTE_NOTIFICATION_SUBSCRIPTION).apply();
+            sharedPreferences.edit().remove(ROUTE_NOTIFICATION_SUBSCRIPTION).commit();
             return new ArrayList<>();
         }
     }
 
     @Override
     public boolean isSubscribedToRoute(Context context, String routeId) {
-        List<RouteNotificationSubscription> routeList = getRoutesSubscribedTo(context);
-        for (RouteNotificationSubscription route : routeList) {
+        List<RouteSubscription> routeList = getRoutesSubscribedTo(context);
+        for (RouteSubscription route : routeList) {
             if (routeId.equalsIgnoreCase(route.getRouteId()) && route.isEnabled()) {
                 return true;
             }
@@ -247,12 +258,12 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
     }
 
     @Override
-    public void addRouteSubscription(Context context, RouteNotificationSubscription routeToAdd) {
+    public void addRouteSubscription(Context context, RouteSubscription routeToAdd) {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
-        List<RouteNotificationSubscription> routeList = getRoutesSubscribedTo(context);
+        List<RouteSubscription> routeList = getRoutesSubscribedTo(context);
         boolean found = false;
 
-        for (RouteNotificationSubscription route : routeList) {
+        for (RouteSubscription route : routeList) {
             if (routeToAdd.getRouteId().equalsIgnoreCase(route.getRouteId())) {
                 Log.e(TAG, "Already subscribed to route: " + route.getRouteId());
                 found = true;
@@ -270,10 +281,10 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
     @Override
     public void toggleRouteSubscription(Context context, String routeId, boolean isEnabled) {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
-        List<RouteNotificationSubscription> routeList = getRoutesSubscribedTo(context);
+        List<RouteSubscription> routeList = getRoutesSubscribedTo(context);
         boolean success = false;
 
-        for (RouteNotificationSubscription route : routeList) {
+        for (RouteSubscription route : routeList) {
             if (routeId.equalsIgnoreCase(route.getRouteId())) {
                 route.setEnabled(isEnabled);
                 success = true;
@@ -291,7 +302,7 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
     @Override
     public void removeRouteSubscription(Context context, String routeId) {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
-        List<RouteNotificationSubscription> routesList = getRoutesSubscribedTo(context);
+        List<RouteSubscription> routesList = getRoutesSubscribedTo(context);
         int indexToRemove = -1;
         for (int i = 0; i < routesList.size(); i++) {
             if (routeId.equalsIgnoreCase(routesList.get(i).getRouteId())) {
@@ -307,10 +318,50 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
         }
     }
 
-    private void storeRoutesSubscribedTo(SharedPreferences sharedPreferences, List<RouteNotificationSubscription> routeList) {
+    @Override
+    public String getDeviceId(Context context) {
+        return getSharedPreferences(context).getString(DEVICE_ID, "");
+    }
+
+    @Override
+    public void setDeviceId(Context context, String deviceId) {
+        getSharedPreferences(context).edit().putString(DEVICE_ID, deviceId).commit();
+    }
+
+    @Override
+    public String getRegistrationToken(Context context) {
+        return getSharedPreferences(context).getString(REGISTRATION_TOKEN, "");
+    }
+
+    @Override
+    public void setRegistrationToken(Context context, String token) {
+        getSharedPreferences(context).edit().putString(REGISTRATION_TOKEN, token).commit();
+    }
+
+    @Override
+    public Long getNextAutoSubscriptionTime(Context context) {
+        return getSharedPreferences(context).getLong(AUTO_SUBSCRIPTION_TIME, new Date().getTime());
+    }
+
+    @Override
+    public void setNextAutoSubscriptionTime(Context context, Long subscriptionTime) {
+        getSharedPreferences(context).edit().putLong(AUTO_SUBSCRIPTION_TIME, subscriptionTime).commit();
+    }
+
+    private List<Integer> getDefaultDaysOfWeek() {
+        List<Integer> defaultSchedule = new ArrayList<>();
+        defaultSchedule.add(Calendar.MONDAY);
+        defaultSchedule.add(Calendar.TUESDAY);
+        defaultSchedule.add(Calendar.WEDNESDAY);
+        defaultSchedule.add(Calendar.THURSDAY);
+        defaultSchedule.add(Calendar.FRIDAY);
+        return defaultSchedule;
+    }
+
+    private void storeRoutesSubscribedTo(SharedPreferences sharedPreferences, List<RouteSubscription> routeList) {
         Gson gson = new Gson();
         String routesListJson = gson.toJson(routeList);
-        sharedPreferences.edit().putString(ROUTE_NOTIFICATION_SUBSCRIPTION, routesListJson).apply();
+        sharedPreferences.edit().putString(ROUTE_NOTIFICATION_SUBSCRIPTION, routesListJson).commit();
     }
 
     private SharedPreferences getSharedPreferences(Context context) {

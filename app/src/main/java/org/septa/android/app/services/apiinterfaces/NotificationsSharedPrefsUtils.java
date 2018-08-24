@@ -1,12 +1,16 @@
-package org.septa.android.app.notifications;
+package org.septa.android.app.services.apiinterfaces;
 
 import android.content.Context;
 
-import org.septa.android.app.services.apiinterfaces.model.RouteNotificationSubscription;
+import org.septa.android.app.services.apiinterfaces.model.RouteSubscription;
 
 import java.util.List;
 
 public interface NotificationsSharedPrefsUtils {
+
+    boolean areNotifPrefsSaved(Context context);
+
+    void setNotifPrefsSaved(Context context, boolean isSaved);
 
     boolean areNotificationsEnabled(Context context);
 
@@ -32,14 +36,25 @@ public interface NotificationsSharedPrefsUtils {
 
     List<String> removeNotificationTimeFrame(Context context, int windowToDelete);
 
-    List<RouteNotificationSubscription> getRoutesSubscribedTo(Context context);
+    List<RouteSubscription> getRoutesSubscribedTo(Context context);
 
     boolean isSubscribedToRoute(Context context, String routeId);
 
-    void addRouteSubscription(Context context, RouteNotificationSubscription route);
+    void addRouteSubscription(Context context, RouteSubscription route);
 
     void toggleRouteSubscription(Context context, String routeId, boolean isEnabled);
 
     void removeRouteSubscription(Context context, String routeId);
 
+    String getDeviceId(Context context);
+
+    void setDeviceId(Context context, String deviceId);
+
+    String getRegistrationToken(Context context);
+
+    void setRegistrationToken(Context context, String token);
+
+    Long getNextAutoSubscriptionTime(Context context);
+
+    void setNextAutoSubscriptionTime(Context context, Long subscriptionTime);
 }

@@ -15,7 +15,7 @@ import android.view.ViewGroup;
 import org.septa.android.app.R;
 import org.septa.android.app.notifications.NotificationItemAdapter;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
-import org.septa.android.app.services.apiinterfaces.model.RouteNotificationSubscription;
+import org.septa.android.app.services.apiinterfaces.model.RouteSubscription;
 
 import java.util.List;
 
@@ -24,7 +24,7 @@ public class EditNotificationsFragment extends android.support.v4.app.Fragment {
     private static final String TAG = EditNotificationsFragment.class.getSimpleName();
 
     private EditNotificationsFragmentListener mListener;
-    private List<RouteNotificationSubscription> routesList;
+    private List<RouteSubscription> routesList;
 
     // layout variables
     private RecyclerView notificationRecyclerView;

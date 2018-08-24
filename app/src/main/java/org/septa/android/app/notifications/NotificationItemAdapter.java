@@ -20,7 +20,7 @@ import android.widget.TextView;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
 import org.septa.android.app.notifications.edit.NotificationDiffCallback;
-import org.septa.android.app.services.apiinterfaces.model.RouteNotificationSubscription;
+import org.septa.android.app.services.apiinterfaces.model.RouteSubscription;
 import org.septa.android.app.support.CrashlyticsManager;
 
 import java.util.List;
@@ -31,10 +31,10 @@ public class NotificationItemAdapter extends RecyclerView.Adapter<NotificationIt
 
     private Activity activity;
     private NotificationItemListener mListener;
-    private List<RouteNotificationSubscription> mRoutesList;
+    private List<RouteSubscription> mRoutesList;
     private boolean isInEditMode;
 
-    public NotificationItemAdapter(Activity activity, List<RouteNotificationSubscription> routesList, boolean isInEditMode) {
+    public NotificationItemAdapter(Activity activity, List<RouteSubscription> routesList, boolean isInEditMode) {
         this.activity = activity;
         if (activity instanceof NotificationItemListener) {
             this.mListener = (NotificationItemListener) activity;
@@ -56,7 +56,7 @@ public class NotificationItemAdapter extends RecyclerView.Adapter<NotificationIt
 
     @Override
     public void onBindViewHolder(@NonNull final NotificationViewHolder holder, int position) {
-        final RouteNotificationSubscription route = mRoutesList.get(position);
+        final RouteSubscription route = mRoutesList.get(position);
         final String routeId = route.getRouteId();
         final String routeName = route.getRouteName();
         final TransitType transitType = route.getTransitType();
@@ -102,6 +102,8 @@ public class NotificationItemAdapter extends RecyclerView.Adapter<NotificationIt
                         // disable notifs for route
                         PushNotificationManager.getInstance(activity).removeNotificationForRoute(routeId, transitType, "My Notification Item");
                     }
+
+                    mListener.enableSaveButton();
                 }
             });
         }
@@ -112,7 +114,7 @@ public class NotificationItemAdapter extends RecyclerView.Adapter<NotificationIt
         return mRoutesList.size();
     }
 
-    public void updateList(List<RouteNotificationSubscription> routesList) {
+    public void updateList(List<RouteSubscription> routesList) {
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new NotificationDiffCallback(this.mRoutesList, routesList));
         this.mRoutesList = routesList;
 
@@ -137,5 +139,6 @@ public class NotificationItemAdapter extends RecyclerView.Adapter<NotificationIt
 
     public interface NotificationItemListener {
         void promptToDeleteNotification(int position, String routeId, String routeName, TransitType transitType);
+        void enableSaveButton();
     }
 }

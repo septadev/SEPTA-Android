@@ -10,7 +10,10 @@ import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.NotificationManagerCompat;
+import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ArrayAdapter;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RadioButton;
@@ -37,6 +41,8 @@ import org.septa.android.app.favorites.DeleteFavoritesAsyncTask;
 import org.septa.android.app.favorites.edit.RenameFavoriteDialogFragment;
 import org.septa.android.app.favorites.edit.RenameFavoriteListener;
 import org.septa.android.app.nextarrive.NextToArriveResultsActivity;
+import org.septa.android.app.notifications.NotificationsManagementFragment;
+import org.septa.android.app.notifications.PushNotificationManager;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Alert;
 import org.septa.android.app.services.apiinterfaces.model.Favorite;
@@ -45,6 +51,7 @@ import org.septa.android.app.support.AnalyticsManager;
 import org.septa.android.app.support.CrashlyticsManager;
 import org.septa.android.app.support.Criteria;
 import org.septa.android.app.support.CursorAdapterSupplier;
+import org.septa.android.app.support.GeneralUtils;
 import org.septa.android.app.systemstatus.GoToSystemStatusResultsOnClickListener;
 import org.septa.android.app.systemstatus.SystemStatusState;
 import org.septa.android.app.view.TextView;
@@ -90,9 +97,12 @@ public class ScheduleResultsActivity extends BaseActivity implements RenameFavor
     ImageView advisoryView;
     ImageView detourView;
     ImageView weatherView;
-//    SwitchCompat notifsSwitch; // TODO: put push notifications back in
+    SwitchCompat notifsSwitch;
     ListView scheduleResultsListView;
-//    Snackbar snackbar; // TODO: put push notifications back in
+    Snackbar snackbar;
+
+    // used to ignore notif toggles due to failed subscription POSTs
+    private boolean ignoreSwitch = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -171,19 +181,19 @@ public class ScheduleResultsActivity extends BaseActivity implements RenameFavor
     protected void onResume() {
         super.onResume();
 
-//        if (notifsSwitch.isChecked()) {
-//            showMethodPushNotifsDisabled();
-//        }
+        if (notifsSwitch != null && notifsSwitch.isChecked()) {
+            showMethodPushNotifsDisabled();
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
 
-//        // remove message
-//        if (snackbar != null && snackbar.isShown()) {
-//            snackbar.dismiss();
-//        }
+        // remove message
+        if (snackbar != null && snackbar.isShown()) {
+            snackbar.dismiss();
+        }
     }
 
     @Override
@@ -238,12 +248,11 @@ public class ScheduleResultsActivity extends BaseActivity implements RenameFavor
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         int unmaskedRequestCode = requestCode & 0x0000ffff;
 
-        // TODO: put push notifications back in
-//        if (unmaskedRequestCode == Constants.NTA_REQUEST || unmaskedRequestCode == Constants.SYSTEM_STATUS_REQUEST) {
-//            if (resultCode == Constants.VIEW_NOTIFICATION_MANAGEMENT) {
-//                goToNotificationsManagement();
-//            }
-//        }
+        if (unmaskedRequestCode == Constants.NTA_REQUEST || unmaskedRequestCode == Constants.SYSTEM_STATUS_REQUEST) {
+            if (resultCode == Constants.VIEW_NOTIFICATION_MANAGEMENT) {
+                goToNotificationsManagement();
+            }
+        }
     }
 
     @Override
@@ -426,7 +435,7 @@ public class ScheduleResultsActivity extends BaseActivity implements RenameFavor
         advisoryView = findViewById(R.id.advisory_icon);
         detourView = findViewById(R.id.detour_icon);
         weatherView = findViewById(R.id.weather_icon);
-//        notifsSwitch = findViewById(R.id.notification_route_switch); // TODO: put push notifications back in
+        notifsSwitch = findViewById(R.id.notification_route_switch);
 
         if (alert.isAdvisory()) {
             advisoryView.setImageResource(R.drawable.ic_advisory);
@@ -456,73 +465,106 @@ public class ScheduleResultsActivity extends BaseActivity implements RenameFavor
             weatherView.setImageResource(R.drawable.ic_weather_inactive);
         }
 
-        // TODO: put push notifications back in
-//        // set intial checked state of switch
-//        notifsSwitch.setChecked(SeptaServiceFactory.getNotificationsService().isSubscribedToRoute(ScheduleResultsActivity.this, routeDirectionModel.getRouteId()));
-//
-//        // switch to create / enable notification for this route
-//        notifsSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//                if (isChecked) {
-//                    // enable notifs for route
-//                    PushNotificationManager.getInstance(ScheduleResultsActivity.this).createNotificationForRoute(routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName(), transitType, "Schedule Results");
-//
-//                    // show message if necessary that push notifs will not be received
-//                    showMethodPushNotifsDisabled();
-//
-//                } else {
-//                    // disable notifs for route
-//                    PushNotificationManager.getInstance(ScheduleResultsActivity.this).removeNotificationForRoute(routeDirectionModel.getRouteId(), transitType, "Schedule Results");
-//
-//                    // remove message
-//                    if (snackbar != null && snackbar.isShown()) {
-//                        snackbar.dismiss();
-//                    }
-//                }
-//            }
-//        });
+        // users cannot subscribe to push notifications from glenside combined
+        if (routeDirectionModel.getRouteId().equalsIgnoreCase("GC")) {
+            findViewById(R.id.notification_route_switch_label).setVisibility(View.GONE);
+            notifsSwitch.setVisibility(View.GONE);
+
+        } else {
+            findViewById(R.id.notification_route_switch_label).setVisibility(View.VISIBLE);
+            notifsSwitch.setVisibility(View.VISIBLE);
+
+            // set intial checked state of switch
+            notifsSwitch.setChecked(SeptaServiceFactory.getNotificationsService().isSubscribedToRoute(ScheduleResultsActivity.this, routeDirectionModel.getRouteId()));
+
+            // switch to create / enable notification for this route
+            notifsSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, final boolean isChecked) {
+                    if (GeneralUtils.isConnectedToInternet(ScheduleResultsActivity.this)) {
+                        if (isChecked) {
+                            // enable notifs for route
+                            PushNotificationManager.getInstance(ScheduleResultsActivity.this).createNotificationForRoute(routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName(), transitType, "Schedule Results");
+
+                            // show message if necessary that push notifs will not be received
+                            showMethodPushNotifsDisabled();
+
+                        } else {
+                            // disable notifs for route
+                            PushNotificationManager.getInstance(ScheduleResultsActivity.this).removeNotificationForRoute(routeDirectionModel.getRouteId(), transitType, "Schedule Results");
+
+                            // remove message
+                            if (snackbar != null && snackbar.isShown()) {
+                                snackbar.dismiss();
+                            }
+                        }
+
+                        if (!ignoreSwitch) {
+                            PushNotificationManager.updateNotifSubscription(getApplicationContext(), new Runnable() {
+                                @Override
+                                public void run() {
+                                    String deviceId = SeptaServiceFactory.getNotificationsService().getDeviceId(getApplicationContext());
+                                    CrashlyticsManager.log(Log.ERROR, TAG, "Unable to subscribe device ID: " + deviceId + " to push notifs for route " + routeDirectionModel.getRouteId());
+
+                                    failureToToggleRouteSubscription(isChecked);
+                                }
+                            });
+                        }
+                    } else {
+                        Toast.makeText(ScheduleResultsActivity.this, R.string.subscription_need_connection, Toast.LENGTH_SHORT).show();
+
+                        // handle no network connection
+                        failureToToggleRouteSubscription(isChecked);
+                    }
+                }
+            });
+        }
     }
 
-    // TODO: put push notifications back in
-//    private void showMethodPushNotifsDisabled() {
-//        // recheck device permissions and show message if notifs not allowed or enabled
-//        boolean notifsAllowed = NotificationManagerCompat.from(ScheduleResultsActivity.this).areNotificationsEnabled(),
-//                notifsEnabled = SeptaServiceFactory.getNotificationsService().areNotificationsEnabled(ScheduleResultsActivity.this);
-//        if (!notifsAllowed) {
-//            snackbar = Snackbar.make(findViewById(R.id.activity_schedule_results_container), R.string.notifications_permission_needed, Snackbar.LENGTH_INDEFINITE);
-//            snackbar.setAction("Settings", new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    // link to system notification settings
-//                    NotificationsManagementFragment.openSystemNotificationSettings(ScheduleResultsActivity.this);
-//                }
-//            });
-//            View snackbarView = snackbar.getView();
-//            android.widget.TextView tv = snackbarView.findViewById(android.support.design.R.id.snackbar_text);
-//            tv.setMaxLines(10);
-//            snackbar.show();
-//
-//        } else if (!notifsEnabled) {
-//            snackbar = Snackbar.make(findViewById(R.id.activity_schedule_results_container), R.string.notifications_not_enabled, Snackbar.LENGTH_INDEFINITE);
-//            snackbar.setAction("Settings", new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    // link to notifications management
-//                    goToNotificationsManagement();
-//                }
-//            });
-//            View snackbarView = snackbar.getView();
-//            android.widget.TextView tv = snackbarView.findViewById(android.support.design.R.id.snackbar_text);
-//            tv.setMaxLines(10);
-//            snackbar.show();
-//        }
-//    }
-//
-//    private void goToNotificationsManagement() {
-//        setResult(Constants.VIEW_NOTIFICATION_MANAGEMENT, new Intent());
-//        finish();
-//    }
+    private void failureToToggleRouteSubscription(boolean isChecked) {
+        ignoreSwitch = true;
+        notifsSwitch.setChecked(!isChecked);
+        ignoreSwitch = false;
+    }
+
+    private void showMethodPushNotifsDisabled() {
+        // recheck device permissions and show message if notifs not allowed or enabled
+        boolean notifsAllowed = NotificationManagerCompat.from(ScheduleResultsActivity.this).areNotificationsEnabled(),
+                notifsEnabled = SeptaServiceFactory.getNotificationsService().areNotificationsEnabled(ScheduleResultsActivity.this);
+        if (!notifsAllowed) {
+            snackbar = Snackbar.make(findViewById(R.id.activity_schedule_results_container), R.string.notifications_permission_needed, Snackbar.LENGTH_INDEFINITE);
+            snackbar.setAction("Settings", new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // link to system notification settings
+                    NotificationsManagementFragment.openSystemNotificationSettings(ScheduleResultsActivity.this);
+                }
+            });
+            View snackbarView = snackbar.getView();
+            android.widget.TextView tv = snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+            tv.setMaxLines(10);
+            snackbar.show();
+
+        } else if (!notifsEnabled) {
+            snackbar = Snackbar.make(findViewById(R.id.activity_schedule_results_container), R.string.notifications_not_enabled, Snackbar.LENGTH_INDEFINITE);
+            snackbar.setAction("Settings", new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // link to notifications management
+                    goToNotificationsManagement();
+                }
+            });
+            View snackbarView = snackbar.getView();
+            android.widget.TextView tv = snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+            tv.setMaxLines(10);
+            snackbar.show();
+        }
+    }
+
+    private void goToNotificationsManagement() {
+        setResult(Constants.VIEW_NOTIFICATION_MANAGEMENT, new Intent());
+        finish();
+    }
 
     class ScheduleResultsAsyncTask extends AsyncTask<Integer, Void, List<ScheduleModel>> {
         ScheduleResultsActivity scheduleResultsActivity;

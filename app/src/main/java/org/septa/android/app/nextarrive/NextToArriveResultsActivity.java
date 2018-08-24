@@ -234,13 +234,12 @@ public class NextToArriveResultsActivity extends BaseActivity implements OnMapRe
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // TODO: put push notifications back in
-//        int unmaskedRequestCode = requestCode & 0x0000ffff;
-//        if (unmaskedRequestCode == Constants.SYSTEM_STATUS_REQUEST) {
-//            if (resultCode == Constants.VIEW_NOTIFICATION_MANAGEMENT) {
-//                goToNotificationsManagement();
-//            }
-//        }
+        int unmaskedRequestCode = requestCode & 0x0000ffff;
+        if (unmaskedRequestCode == Constants.SYSTEM_STATUS_REQUEST) {
+            if (resultCode == Constants.VIEW_NOTIFICATION_MANAGEMENT) {
+                goToNotificationsManagement();
+            }
+        }
     }
 
     @Override
@@ -874,10 +873,9 @@ public class NextToArriveResultsActivity extends BaseActivity implements OnMapRe
         finish();
     }
 
-    // TODO: put push notifications back in
-//    private void goToNotificationsManagement() {
-//        setResult(Constants.VIEW_NOTIFICATION_MANAGEMENT, new Intent());
-//        finish();
-//    }
+    private void goToNotificationsManagement() {
+        setResult(Constants.VIEW_NOTIFICATION_MANAGEMENT, new Intent());
+        finish();
+    }
 
 }

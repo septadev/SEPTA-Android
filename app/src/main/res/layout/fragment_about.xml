@@ -65,6 +65,22 @@
                     app:typeface="@string/font_roboto_bold" />
 
                 <org.septa.android.app.view.TextView
+                    android:id="@+id/device_id"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="13dp"
+                    android:fontFamily="sans-serif-light"
+                    android:letterSpacing="-0.03"
+                    android:lineSpacingExtra="10sp"
+                    android:paddingLeft="15dp"
+                    android:ellipsize="end"
+                    android:paddingRight="15dp"
+                    android:text="Device ID: 53b82a2d-0088-4728-915e-5562f0ef39ea"
+                    android:textColor="@color/text_primary"
+                    android:textSize="14sp"
+                    app:typeface="@string/font_roboto_light" />
+
+                <org.septa.android.app.view.TextView
                     android:id="@+id/build_info"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

@@ -31,7 +31,7 @@ public class TransitViewModelResponseParser {
                 }
             }
 
-            results.put(routeId, vehicleCoordinatesOnRoute);
+            results.put(routeId.toUpperCase(), vehicleCoordinatesOnRoute);
         }
     }
 
@@ -40,6 +40,6 @@ public class TransitViewModelResponseParser {
     }
 
     public Map<TransitViewModelResponse.TransitViewRecord, LatLng> getResultsForRoute(String routeId) {
-        return results.get(routeId);
+        return results.get(routeId.toUpperCase());
     }
 }

@@ -7,11 +7,8 @@ import org.septa.android.app.services.apiinterfaces.model.Alerts;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by jkampf on 9/12/17.
- */
-
 public class SystemStatusState {
+
     private static Map<String, Alert> map = new HashMap<String, Alert>();
 
     private static boolean initialized = false;
@@ -52,6 +49,5 @@ public class SystemStatusState {
     public static Alert getAlertForApp() {
         return map.get(MOBILE_APP_ALERT_ROUTE_ID);
     }
-
 
 }

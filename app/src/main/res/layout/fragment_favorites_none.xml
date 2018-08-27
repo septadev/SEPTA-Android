@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/favorites_none_message"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/full_page_gradient_background"
     android:orientation="vertical">
-
 
     <org.septa.android.app.view.TextView
         android:layout_width="match_parent"
@@ -14,77 +14,79 @@
         android:gravity="center"
         android:text="Love your favorite trips!"
         android:textAlignment="center"
-        android:textColor="#144b88"
+        android:textColor="@color/text_primary"
         android:textSize="18sp"
-        app:font="@string/font_roboto_medium" />
+        app:typeface="@string/font_roboto_medium" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="41dp"
+        android:layout_marginRight="41dp"
         android:layout_marginTop="29dp"
         android:orientation="horizontal"
-        android:layout_marginLeft="41dp"
-        android:layout_marginRight="41dp">
+        android:weightSum="5">
 
         <org.septa.android.app.view.TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:drawablePadding="4dp"
             android:drawableTop="@drawable/ic_bus_blue"
             android:text="Bus"
             android:textAlignment="center"
-            android:textColor="#144b88"
+            android:textColor="@color/text_primary"
             android:textSize="12sp"
-            app:font="@string/font_roboto_medium" />
+            app:typeface="@string/font_roboto_medium" />
 
         <org.septa.android.app.view.TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:drawablePadding="4dp"
             android:drawableTop="@drawable/ic_rail_blue"
             android:text="Rail"
             android:textAlignment="center"
-            android:textColor="#144b88"
+            android:textColor="@color/text_primary"
             android:textSize="12sp"
-            app:font="@string/font_roboto_medium" />
+            app:typeface="@string/font_roboto_medium" />
 
         <org.septa.android.app.view.TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:drawablePadding="4dp"
             android:drawableTop="@drawable/ic_subway_blue"
             android:text="Subway"
             android:textAlignment="center"
-            android:textColor="#144b88"
+            android:textColor="@color/text_primary"
             android:textSize="12sp"
-            app:font="@string/font_roboto_medium" />
+            app:typeface="@string/font_roboto_medium" />
 
         <org.septa.android.app.view.TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:drawablePadding="4dp"
             android:drawableTop="@drawable/ic_trolley_blue"
             android:text="Trolley"
             android:textAlignment="center"
-            android:textColor="#144b88"
+            android:textColor="@color/text_primary"
             android:textSize="12sp"
-            app:font="@string/font_roboto_medium" />
+            app:typeface="@string/font_roboto_medium" />
 
         <org.septa.android.app.view.TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:drawablePadding="4dp"
             android:drawableTop="@drawable/ic_nhsl_blue"
             android:text="NHSL"
             android:textAlignment="center"
-            android:textColor="#144b88"
+            android:textColor="@color/text_primary"
             android:textSize="12sp"
-            app:font="@string/font_roboto_medium" />
+            app:typeface="@string/font_roboto_medium" />
+
     </LinearLayout>
 
     <org.septa.android.app.view.TextView
@@ -96,9 +98,9 @@
         android:gravity="center"
         android:text="Save your SEPTA trips as a favorite to get &lt;b>immediate access&lt;/b> to the Next to Arrive transit, and route schedule."
         android:textAlignment="center"
-        android:textColor="#144b88"
+        android:textColor="@color/text_primary"
         android:textSize="16sp"
-        app:font="@string/font_roboto_medium" />
+        app:typeface="@string/font_roboto_medium" />
 
     <org.septa.android.app.view.TextView
         android:layout_width="match_parent"
@@ -108,12 +110,11 @@
         android:layout_marginTop="23dp"
         android:drawableLeft="@drawable/ic_favorite_available"
         android:drawablePadding="13dp"
-        android:drawableTint="#144b88"
+        android:drawableTint="@color/text_primary"
         android:text="Find a trip, then use the favorite icon to add it to your Favorites."
-        android:textColor="#144b88"
+        android:textColor="@color/text_primary"
         android:textSize="16sp"
-        app:font="@string/font_roboto_light" />
-
+        app:typeface="@string/font_roboto_light" />
 
     <org.septa.android.app.view.TextView
         android:id="@+id/add_favorite_button"
@@ -125,9 +126,8 @@
         android:gravity="center"
         android:text="Add Favorite"
         android:textAlignment="center"
-        android:textColor="#ffffff"
+        android:textColor="@android:color/white"
         android:textSize="16sp"
-        app:font="@string/font_roboto_medium" />
-
+        app:typeface="@string/font_roboto_medium" />
 
 </LinearLayout>

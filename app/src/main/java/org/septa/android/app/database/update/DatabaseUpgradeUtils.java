@@ -23,7 +23,7 @@ import org.septa.android.app.support.GeneralUtils;
 import java.io.File;
 import java.util.Arrays;
 
-public class DatabaseUpgradeUtils {
+public abstract class DatabaseUpgradeUtils {
 
     private static String TAG = DatabaseUpgradeUtils.class.getSimpleName();
 
@@ -130,11 +130,21 @@ public class DatabaseUpgradeUtils {
     }
 
     public static AlertDialog promptToDownload(final Context context) {
+        String downloadNow = context.getString(R.string.prompt_download_button_positive_download_now),
+                remindMeLater = context.getString(R.string.prompt_download_button_negative_remind_later),
+                goToNTA = context.getString(R.string.prompt_download_button_neutral_nta);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            downloadNow = downloadNow.replace("\n", "");
+            remindMeLater = remindMeLater.replace("\n", "");
+            goToNTA = goToNTA.replace("\n", "");
+        }
+
         final AlertDialog dialog = new AlertDialog.Builder(context).setCancelable(true).setTitle(R.string.prompt_download_database_title)
                 .setMessage(R.string.prompt_download_database_description)
 
                 // approved download
-                .setPositiveButton(R.string.prompt_download_button_positive_download_now, new DialogInterface.OnClickListener() {
+                .setPositiveButton(downloadNow, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // ask for run time permission if running sdk 23+
@@ -156,7 +166,7 @@ public class DatabaseUpgradeUtils {
                 })
 
                 // remind of download later
-                .setNegativeButton(R.string.prompt_download_button_negative_remind_later, new DialogInterface.OnClickListener() {
+                .setNegativeButton(remindMeLater, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
@@ -164,7 +174,7 @@ public class DatabaseUpgradeUtils {
                 })
 
                 // link to NTA
-                .setNeutralButton(R.string.prompt_download_button_neutral_nta, new DialogInterface.OnClickListener() {
+                .setNeutralButton(goToNTA, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();

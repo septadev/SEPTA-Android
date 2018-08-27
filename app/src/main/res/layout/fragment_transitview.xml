@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/full_page_gradient_background">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/full_page_gradient_background"
+        android:orientation="vertical">
+
+        <org.septa.android.app.view.TextView
+            android:id="@+id/transitview_picker_header_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="13dp"
+            android:layout_marginLeft="12dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="12dp"
+            android:text="@string/transitview_heading"
+            android:textColor="#144b88"
+            android:textSize="20sp"
+            app:typeface="@string/font_roboto_bold" />
+
+        <LinearLayout
+            android:id="@+id/transitview_top"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@android:color/white"
+            android:elevation="@dimen/white_box_elevation"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <org.septa.android.app.view.TextView
+                    android:id="@+id/reset_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_marginTop="13dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:text="Reset"
+                    android:textColor="@color/light_gray"
+                    android:textSize="12sp"
+                    app:typeface="@string/font_roboto_regular" />
+
+            </RelativeLayout>
+
+            <org.septa.android.app.view.TextView
+                android:id="@+id/transitview_line_picker_first"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginTop="7dp"
+                android:background="@drawable/line_picker_background"
+                android:drawableEnd="@drawable/ic_line_picker"
+                android:drawablePadding="10dp"
+                android:drawableRight="@drawable/ic_line_picker"
+                android:ellipsize="end"
+                android:paddingBottom="14dp"
+                android:paddingEnd="13dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="13dp"
+                android:paddingStart="10dp"
+                android:paddingTop="15dp"
+                android:text="@string/transitview_line_picker_first_text" />
+
+            <org.septa.android.app.view.TextView
+                android:id="@+id/transitview_line_picker_second"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginTop="10dp"
+                android:alpha=".3"
+                android:background="@drawable/line_picker_background"
+                android:drawableEnd="@drawable/ic_line_picker"
+                android:drawablePadding="10dp"
+                android:drawableRight="@drawable/ic_line_picker"
+                android:paddingBottom="14dp"
+                android:paddingEnd="13dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="13dp"
+                android:paddingStart="10dp"
+                android:paddingTop="15dp"
+                android:text="@string/transitview_line_picker_second_text" />
+
+            <org.septa.android.app.view.TextView
+                android:id="@+id/transitview_line_picker_third"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginTop="10dp"
+                android:alpha=".3"
+                android:background="@drawable/line_picker_background"
+                android:drawableEnd="@drawable/ic_line_picker"
+                android:drawablePadding="10dp"
+                android:drawableRight="@drawable/ic_line_picker"
+                android:paddingBottom="14dp"
+                android:paddingEnd="13dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="13dp"
+                android:paddingStart="10dp"
+                android:paddingTop="15dp"
+                android:text="@string/transitview_line_picker_third_text" />
+
+            <Button
+                android:id="@+id/view_map"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginBottom="15dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginTop="30dp"
+                android:alpha=".3"
+                android:background="@drawable/button_gradient_background"
+                android:clickable="false"
+                android:text="@string/transitview_query_button_text"
+                android:textColor="@android:color/white" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/progress_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/progress_background"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone"
+        tools:alpha=".3"
+        tools:visibility="visible">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminate="true"
+            android:indeterminateDrawable="@drawable/basic_progress" />
+
+    </FrameLayout>
+
+</FrameLayout>

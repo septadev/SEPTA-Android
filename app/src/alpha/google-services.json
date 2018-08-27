@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "189807233998",
+    "firebase_url": "https://nonprod-septa-mobile-apps.firebaseio.com",
+    "project_id": "nonprod-septa-mobile-apps",
+    "storage_bucket": "nonprod-septa-mobile-apps.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:189807233998:android:81c2b9c055b8bd1d",
+        "android_client_info": {
+          "package_name": "org.septa.android.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "189807233998-vbded7j597d38c9l5rge943c8j479cua.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyACpNMHUTLVLk37d9G-qKXfzf5UpIg8z2g"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

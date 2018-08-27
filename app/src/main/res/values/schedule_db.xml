@@ -15,7 +15,7 @@ FROM
 stop_times_{4} ST
 JOIN trips_{4} T
 ON ST.trip_id = T.trip_id
-WHERE ST.stop_id = {0} and T.direction_id = {2} and T.service_id in (select service_id from calendar_bus C where days &amp; {1})) Start
+WHERE ST.stop_id = {0} and T.route_id = \"{5}\" and T.direction_id = {2} and T.service_id in (select service_id from calendar_bus C where days &amp; {1})) Start
 
 JOIN (SELECT
 T.trip_id, T.direction_id, T.service_id,
@@ -24,7 +24,7 @@ FROM
 stop_times_{4}  ST
 JOIN trips_{4} T
 ON ST.trip_id = T.trip_id
-WHERE  stop_id = {3} and T.direction_id = {2} and T.service_id in (select service_id from calendar_bus C where days &amp; {1})) Stop
+WHERE  stop_id = {3} and T.route_id = \"{5}\" and T.direction_id = {2} and T.service_id in (select service_id from calendar_bus C where days &amp; {1})) Stop
 ON start.trip_id = stop.trip_id
 group by start.arrival_time, Stop.arrival_time
 ORDER BY DepartureTime;
@@ -70,7 +70,8 @@ SELECT
   cast(S.stop_lon AS DECIMAL) stopLongitude,
   CASE WHEN S.wheelchair_boarding = \'1\'
     THEN 1
-  ELSE 0 END                  wheelchairBoarding
+  ELSE 0 END                  wheelchairBoarding,
+  sequence
 FROM
   stops_rail S
 JOIN routes_rail_stops RRS on S.stop_id = RRS.stop_id
@@ -81,17 +82,19 @@ WHERE RRS.route_id = \"{0}\" AND RRS.direction_id = \"{1}\"
     <!--route_id={0}, direction_id={1}, stop_id={2} -->
     <string name="rail_trip_end">
 SELECT
-  S.stop_id                   stopId,
-  S.stop_name                 stopName,
-  cast(S.stop_lat AS DECIMAL) stopLatitude,
-  cast(S.stop_lon AS DECIMAL) stopLongitude,
-  CASE WHEN S.wheelchair_boarding = \'1\'
-    THEN 1
-  ELSE 0 END                  wheelchairBoarding
+	S.stop_id 					stopId,
+	S.stop_name					stopName,
+	cast(S.stop_lat AS DECIMAL) 	stopLatitude,
+	cast(S.stop_lon AS DECIMAL) 	stopLongitude,
+	CASE WHEN S.wheelchair_boarding = \'1\'
+    		THEN 1 ELSE 0 END 		wheelchairBoarding,
+	sequence
 FROM
-  stops_rail S
+	stops_rail S
 JOIN routes_rail_stops RRS on S.stop_id = RRS.stop_id
-JOIN routes_rail_stops RRS2 on RRS2.sequence &lt; RRS.sequence
-WHERE RRS.route_id = \"{0}\" AND RRS.direction_id = \"{1}\" and RRS2.stop_id = {2} and RRS2.route_id = \"{0}\" AND RRS2.direction_id = \"{1}\"
+WHERE route_id = \"{0}\" AND direction_id = \"{1}\" AND sequence >
+	(SELECT sequence
+	FROM routes_rail_stops
+	WHERE route_id = \"{0}\" AND direction_id = \"{1}\" AND stop_id = {2})
     </string>
 </resources>

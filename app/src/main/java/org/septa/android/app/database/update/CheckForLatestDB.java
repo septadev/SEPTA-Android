@@ -15,20 +15,16 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-/**
- * Created by mluansing on 9/20/17.
- */
-
 public class CheckForLatestDB extends AsyncTask<Object, Object, Void> {
 
     // tag for logging purposes
     private static final String TAG = CheckForLatestDB.class.getSimpleName();
 
     private CheckForLatestDBListener mListener;
-    Integer latestDBVersion;
-    String latestDBURL, updatedDate;
+    private Integer latestDBVersion;
+    private String latestDBURL, updatedDate;
 
-    public CheckForLatestDB(CheckForLatestDBListener listener) {
+    CheckForLatestDB(CheckForLatestDBListener listener) {
         this.mListener = listener;
     }
 

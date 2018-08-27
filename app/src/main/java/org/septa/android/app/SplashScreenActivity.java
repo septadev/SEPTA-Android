@@ -2,11 +2,12 @@ package org.septa.android.app;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Window;
 import android.widget.ImageView;
 
 import org.septa.android.app.database.DatabaseManager;
+import org.septa.android.app.rating.SharedPreferencesRatingUtil;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Alerts;
 import org.septa.android.app.support.CursorAdapterSupplier;
@@ -19,7 +20,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class SplashScreenActivity extends AppCompatActivity {
+public class SplashScreenActivity extends BaseActivity {
 
     public static final String TAG = SplashScreenActivity.class.getSimpleName();
 
@@ -31,7 +32,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_splash_screen);
 
-        ImageView image = (ImageView) findViewById(R.id.splash_image);
+        ImageView image = findViewById(R.id.splash_image);
 
         Calendar date = Calendar.getInstance();
 
@@ -43,6 +44,10 @@ public class SplashScreenActivity extends AppCompatActivity {
         }
 
         final long timestamp = System.currentTimeMillis();
+
+        // increment number of times app used
+        SharedPreferencesRatingUtil.incrementNumberOfUses(getApplicationContext());
+        Log.d(TAG, "Number of App Uses: " + SharedPreferencesRatingUtil.getNumberOfUses(getApplicationContext()));
 
         SeptaServiceFactory.getAlertsService().getAlerts().enqueue(new Callback<Alerts>() {
             @Override

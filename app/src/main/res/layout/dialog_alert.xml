@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/dialog_alert_message"
         android:textSize="16sp"
-        app:font="@string/font_roboto_regular"
+        app:typeface="@string/font_roboto_regular"
         android:padding="@dimen/dialog_alert_padding"
         />
 

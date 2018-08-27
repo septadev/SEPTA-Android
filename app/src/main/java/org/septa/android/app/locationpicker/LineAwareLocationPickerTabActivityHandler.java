@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -17,38 +18,40 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import org.septa.android.app.ActivityClass;
 import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
 import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.domain.StopModel;
+import org.septa.android.app.support.AnalyticsManager;
 import org.septa.android.app.support.BaseTabActivityHandler;
+import org.septa.android.app.support.CrashlyticsManager;
 import org.septa.android.app.support.Criteria;
 import org.septa.android.app.support.CursorAdapterSupplier;
 
 import java.util.ArrayList;
 import java.util.List;
 
-
-/**
- * Created by jkampf on 7/29/17.
- */
-
 public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHandler {
-    CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier;
-    CursorAdapterSupplier<StopModel> stopCursorAdapterSupplier;
-    CursorAdapterSupplier<StopModel> busStopAfterCursorAdapterSupplier;
-    String headerStringName;
-    TransitType transitType;
-    Class targetClass;
-    String buttonText;
-    Bundle prepopulate;
+
+    private static final String TAG = LineAwareLocationPickerTabActivityHandler.class.getSimpleName();
+
+    private CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier;
+    private CursorAdapterSupplier<StopModel> stopCursorAdapterSupplier;
+    private CursorAdapterSupplier<StopModel> busStopAfterCursorAdapterSupplier;
+    private String headerStringName;
+    private TransitType transitType;
+    private Class targetClass;
+    private ActivityClass target;
+    private String buttonText;
+    private Bundle prepopulate;
 
     private static final int LINE_PICKER_ID = 1;
     private static final int START_MODEL_ID = 2;
     private static final int DEST_MODEL_ID = 3;
 
-    public LineAwareLocationPickerTabActivityHandler(String title, String headerStringName, String buttonText, TransitType transitType, CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier, CursorAdapterSupplier<StopModel> busStopCursorAdapterSupplier, CursorAdapterSupplier<StopModel> busStopAfterCursorAdapterSupplier, Class targetClass) {
+    public LineAwareLocationPickerTabActivityHandler(String title, String headerStringName, String buttonText, TransitType transitType, CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier, CursorAdapterSupplier<StopModel> busStopCursorAdapterSupplier, CursorAdapterSupplier<StopModel> busStopAfterCursorAdapterSupplier, Class targetClass, ActivityClass target) {
         super(title, transitType.getTabInactiveImageResource(), transitType.getTabActiveImageResource());
         this.routeCursorAdapterSupplier = routeCursorAdapterSupplier;
         this.stopCursorAdapterSupplier = busStopCursorAdapterSupplier;
@@ -57,11 +60,12 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
         this.targetClass = targetClass;
         this.headerStringName = headerStringName;
         this.buttonText = buttonText;
+        this.target = target;
     }
 
     @Override
     public Fragment getFragment() {
-        LineAwareLocationPickerTabActivityHandler.PlaceholderFragment fragment = LineAwareLocationPickerTabActivityHandler.PlaceholderFragment.newInstance(headerStringName, buttonText, transitType, routeCursorAdapterSupplier, stopCursorAdapterSupplier, busStopAfterCursorAdapterSupplier, targetClass, prepopulate);
+        LineAwareLocationPickerTabActivityHandler.PlaceholderFragment fragment = LineAwareLocationPickerTabActivityHandler.PlaceholderFragment.newInstance(headerStringName, buttonText, transitType, routeCursorAdapterSupplier, stopCursorAdapterSupplier, busStopAfterCursorAdapterSupplier, targetClass, prepopulate, target);
         return fragment;
     }
 
@@ -75,6 +79,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
         CursorAdapterSupplier<StopModel> stopAfterCursorAdapterSupplier;
         TransitType transitType;
         Class targetClass;
+        ActivityClass target;
         String headerStringName;
         String buttonText;
 
@@ -90,7 +95,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
 
         boolean prePopulated = false;
 
-        public static PlaceholderFragment newInstance(String headerStringName, String buttonText, TransitType transitType, CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier, CursorAdapterSupplier<StopModel> busStopCursorAdapterSupplier, CursorAdapterSupplier<StopModel> busStopAfterCursorAdapterSupplier, Class targetClass, Bundle prepopulate) {
+        public static PlaceholderFragment newInstance(String headerStringName, String buttonText, TransitType transitType, CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier, CursorAdapterSupplier<StopModel> busStopCursorAdapterSupplier, CursorAdapterSupplier<StopModel> busStopAfterCursorAdapterSupplier, Class targetClass, Bundle prepopulate, ActivityClass target) {
             PlaceholderFragment fragment = new PlaceholderFragment();
             Bundle args;
             if (prepopulate == null) {
@@ -103,6 +108,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
 
             args.putSerializable("transitType", transitType);
             args.putSerializable("targetClass", targetClass);
+            args.putSerializable("target", target);
             args.putString("headerStringName", headerStringName);
             args.putString("buttonText", buttonText);
 
@@ -119,6 +125,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
         private void restoreArguments() {
             transitType = (TransitType) getArguments().getSerializable("transitType");
             targetClass = (Class) getArguments().getSerializable("targetClass");
+            target = (ActivityClass) getArguments().getSerializable("target");
             headerStringName = getArguments().getString("headerStringName");
             buttonText = getArguments().getString("buttonText");
 
@@ -133,8 +140,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
         }
 
         @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             restoreArguments();
 
             View rootView = inflater.inflate(R.layout.line_aware_next_to_arrive_search, container, false);
@@ -143,18 +149,18 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                 return rootView;
             }
 
-            TextView pickerHeaderText = (TextView) rootView.findViewById(R.id.picker_header_text);
+            TextView pickerHeaderText = rootView.findViewById(R.id.picker_header_text);
             pickerHeaderText.setText(transitType.getString(headerStringName, getContext()));
 
             ((TextView) rootView.findViewById(R.id.line_label)).setText(transitType.getString("line_label", getContext()));
             ((TextView) rootView.findViewById(R.id.line_text)).setText(transitType.getString("line_text", getContext()));
 
 
-            lineText = (TextView) rootView.findViewById(R.id.line_text);
+            lineText = rootView.findViewById(R.id.line_text);
             lineText.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    FragmentTransaction ft = getChildFragmentManager().beginTransaction();
+                    FragmentTransaction ft = getFragmentManager().beginTransaction();
 
                     LinePickerFragment newFragment = LinePickerFragment.newInstance(routeCursorAdapterSupplier, transitType);
                     newFragment.setTargetFragment(PlaceholderFragment.this, LINE_PICKER_ID);
@@ -163,17 +169,16 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
             });
             progressView = rootView.findViewById(R.id.progress_view);
 
-            startingStopEditText = (TextView) rootView.findViewById(R.id.starting_stop);
+            startingStopEditText = rootView.findViewById(R.id.starting_stop);
             startingStopEditText.setText(transitType.getString("start_stop_text", getContext()));
 
-            destinationStopEditText = (TextView) rootView.findViewById(R.id.destination_stop);
+            destinationStopEditText = rootView.findViewById(R.id.destination_stop);
             destinationStopEditText.setText(transitType.getString("dest_stop_text", getContext()));
-
 
             startingStopEditText.setOnTouchListener(new StopPickerOnTouchListener(this, START_MODEL_ID, stopCursorAdapterSupplier, false));
             destinationStopEditText.setOnTouchListener(new StopPickerOnTouchListener(this, DEST_MODEL_ID, stopAfterCursorAdapterSupplier, true));
 
-            queryButton = (Button) rootView.findViewById(R.id.view_buses_button);
+            queryButton = rootView.findViewById(R.id.view_buses_button);
             queryButton.setText(buttonText);
             queryButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -182,8 +187,9 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                         return;
                     }
 
-                    if (getActivity() == null)
+                    if (getActivity() == null) {
                         return;
+                    }
 
                     Intent intent = new Intent(getActivity(), targetClass);
                     intent.putExtra(Constants.STARTING_STATION, startingStation);
@@ -191,7 +197,17 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                     intent.putExtra(Constants.TRANSIT_TYPE, transitType);
                     intent.putExtra(Constants.ROUTE_DIRECTION_MODEL, selectedRoute);
 
-                    getActivity().startActivityForResult(intent, Constants.NTA_REQUEST);
+                    if (ActivityClass.NEXT_TO_ARRIVE.equals(target)) {
+                        AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_NTA_FROM_PICKER, AnalyticsManager.CONTENT_ID_NEXT_TO_ARRIVE, null);
+                        getActivity().startActivityForResult(intent, Constants.NTA_REQUEST);
+
+                    } else if (ActivityClass.SCHEDULES.equals(target)) {
+                        AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_SCHEDULE_FROM_PICKER, AnalyticsManager.CONTENT_ID_SCHEDULE, null);
+                        getActivity().startActivityForResult(intent, Constants.SCHEDULES_REQUEST);
+
+                    } else {
+                        Log.e(TAG, String.format("Could not track event analytics for target class: %s", target));
+                    }
                 }
             });
             queryButton.setClickable(false);
@@ -202,7 +218,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                 public void onClick(View view) {
                     selectedRoute = null;
                     lineText.setText(transitType.getString("line_text", getContext()));
-                    lineText.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
+                    lineText.setCompoundDrawablesWithIntrinsicBounds(null, null, ContextCompat.getDrawable(getContext(), R.drawable.ic_line_picker), null);
                     startingStation = null;
                     disableView(startingStopEditText);
                     startingStopEditText.setText(transitType.getString("start_stop_text", getContext()));
@@ -237,7 +253,8 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
         @Override
         public void onActivityResult(int requestCode, int resultCode, Intent data) {
             super.onActivityResult(requestCode, resultCode, data);
-            //do what ever you want here, and get the result from intent like below
+
+            // route was picked
             if (requestCode == LINE_PICKER_ID && resultCode == LinePickerFragment.SUCCESS) {
                 RouteDirectionModel var1 = (RouteDirectionModel) data.getSerializableExtra(LinePickerFragment.ROUTE_DIRECTION_MODEL);
                 if (var1 != null) {
@@ -246,6 +263,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                 return;
             }
 
+            // start stop was picked
             if (requestCode == START_MODEL_ID && resultCode == LocationPickerFragment.SUCCESS) {
                 StopModel var1 = (StopModel) data.getSerializableExtra(LocationPickerFragment.STOP_MODEL);
                 if (var1 != null) {
@@ -254,6 +272,7 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                 return;
             }
 
+            // destination stop was picked
             if (requestCode == DEST_MODEL_ID && resultCode == LocationPickerFragment.SUCCESS) {
                 StopModel var1 = (StopModel) data.getSerializableExtra(LocationPickerFragment.STOP_MODEL);
                 if (var1 != null) {
@@ -266,13 +285,16 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
         @Override
         public void setRoute(RouteDirectionModel var1) {
             selectedRoute = var1;
-            if (getContext() == null)
+            if (getContext() == null) {
                 return;
-            //lineText.setText(selectedRoute.getRouteLongName());
+            }
             int color;
             try {
                 color = ContextCompat.getColor(getContext(), transitType.getLineColor(var1.getRouteId(), getContext()));
             } catch (Exception e) {
+                CrashlyticsManager.log(Log.ERROR, TAG, "Could not retrieve route color for " + var1.getRouteId());
+                CrashlyticsManager.logException(TAG, e);
+
                 color = ContextCompat.getColor(getContext(), R.color.default_line_color);
             }
 
@@ -280,13 +302,12 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
             Drawable bullet = ContextCompat.getDrawable(getContext(), R.drawable.shape_line_marker);
             bullet.setColorFilter(color, PorterDuff.Mode.SRC);
 
-            lineText.setCompoundDrawablesWithIntrinsicBounds(bullet, drawables[1],
-                    drawables[2], drawables[3]);
+            lineText.setCompoundDrawablesWithIntrinsicBounds(bullet, drawables[1], drawables[2], drawables[3]);
 
             if (transitType == TransitType.RAIL) {
-                lineText.setText(selectedRoute.getRouteId() + " " + selectedRoute.getDirectionDescription());
+                lineText.setText(getString(R.string.line_picker_selection, selectedRoute.getRouteId(), selectedRoute.getDirectionDescription()));
             } else {
-                lineText.setText(selectedRoute.getRouteShortName() + ": to " + selectedRoute.getDirectionDescription());
+                lineText.setText(getString(R.string.line_picker_selection_direction, selectedRoute.getRouteShortName(), selectedRoute.getDirectionDescription()));
             }
             startingStation = null;
             activateView(startingStopEditText);
@@ -324,25 +345,30 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
         }
 
         private void restoreSavedState(Bundle outState) {
-            if (outState == null)
+            if (outState == null) {
                 return;
+            }
 
             selectedRoute = (RouteDirectionModel) outState.getSerializable("selectedRoute");
-            if (selectedRoute != null)
+            if (selectedRoute != null) {
                 setRoute(selectedRoute);
-            else return;
+            } else {
+                return;
+            }
 
             startingStation = (StopModel) outState.getSerializable("startingStation");
-            if (startingStation != null)
+            if (startingStation != null) {
                 setStartingStation(startingStation);
-            else return;
+            } else {
+                return;
+            }
 
             destinationStation = (StopModel) outState.getSerializable("destinationStation");
-            if (destinationStation != null)
+            if (destinationStation != null) {
                 setDestinationStop(destinationStation);
+            }
         }
     }
-
 
     public static class StopPickerOnTouchListener implements View.OnTouchListener {
         private PlaceholderFragment parent;
@@ -361,25 +387,22 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
         public boolean onTouch(View view, MotionEvent motionEvent) {
             int action = motionEvent.getActionMasked();
             if (action == MotionEvent.ACTION_UP) {
-                if (userAfter && parent.startingStation == null)
+                if (userAfter && parent.startingStation == null) {
                     return true;
+                }
 
                 FragmentTransaction ft = parent.getFragmentManager().beginTransaction();
-                Fragment prev = parent.getFragmentManager().findFragmentByTag("dialog");
-                if (prev != null) {
-                    ft.remove(prev);
-                }
-                ft.addToBackStack(null);
 
                 String stopId = null;
-                if (parent.startingStation != null)
+                if (parent.startingStation != null) {
                     stopId = parent.startingStation.getStopId();
+                }
                 CursorAdapterSupplier<StopModel> routeSpecificCursorAdapterSupplier =
                         new RouteSpecificCursorAdapterSupplier(cursorAdapterSupplier, parent.selectedRoute.getRouteId(),
                                 parent.selectedRoute.getDirectionCode(), stopId, userAfter);
 
                 // Create and show the dialog.
-                LocationPickerFragment newFragment = LocationPickerFragment.newInstance(routeSpecificCursorAdapterSupplier);
+                LocationPickerFragment newFragment = LocationPickerFragment.newInstance(routeSpecificCursorAdapterSupplier, true);
                 newFragment.setTargetFragment(parent, requestCode);
                 newFragment.show(ft, "dialog");
 
@@ -407,9 +430,8 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
 
         @Override
         public Cursor getCursor(Context context, List<Criteria> whereClause) {
-            StringBuilder whereClauseBuilder = new StringBuilder();
             if (whereClause == null) {
-                whereClause = new ArrayList<Criteria>();
+                whereClause = new ArrayList<>();
             }
             whereClause.add(new Criteria("route_id", Criteria.Operation.EQ, routeId));
             whereClause.add(new Criteria("direction_id", Criteria.Operation.EQ, routeDesc));
@@ -452,8 +474,9 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
             StopModel inDest = (StopModel) params[0].get(Constants.DESTINATION_STATION);
             StopModel inStart = (StopModel) params[0].get(Constants.STARTING_STATION);
             RouteDirectionModel inputRoute = (RouteDirectionModel) params[0].get(Constants.ROUTE_DIRECTION_MODEL);
-            if (inputRoute == null)
+            if (inputRoute == null) {
                 return returnBundle;
+            }
 
             RouteDirectionModel foundRoute = null;
             StopModel foundStart = null;
@@ -469,8 +492,9 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
 
                 } while (routeCursor.moveToNext());
 
-                if (foundRoute == null)
+                if (foundRoute == null) {
                     return new Bundle();
+                }
             }
 
             returnBundle.putSerializable(Constants.ROUTE_DIRECTION_MODEL, foundRoute);
@@ -488,8 +512,9 @@ public class LineAwareLocationPickerTabActivityHandler extends BaseTabActivityHa
                 } while (startCursor.moveToNext());
             }
 
-            if (foundStart == null)
+            if (foundStart == null) {
                 return returnBundle;
+            }
 
             returnBundle.putSerializable(Constants.STARTING_STATION, foundStart);
             RouteSpecificCursorAdapterSupplier cursorAdapterStopAfterSupplier = new RouteSpecificCursorAdapterSupplier(fragment.stopAfterCursorAdapterSupplier, foundRoute.getRouteId(),

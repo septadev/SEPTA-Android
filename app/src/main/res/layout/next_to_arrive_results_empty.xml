@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
-        android:background="#fff6f4"
+        android:background="@color/no_results_found"
         android:gravity="center"
         android:orientation="vertical"
         android:padding="@dimen/dialog_alert_padding">
@@ -35,7 +35,7 @@
             android:paddingRight="15dp"
             android:paddingTop="12dp"
             android:text="@string/schedule_query_button_text"
-            android:textColor="#ffffff"
+            android:textColor="@android:color/white"
             android:textSize="14sp" />
 
     </LinearLayout>

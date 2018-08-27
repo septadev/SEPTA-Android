@@ -8,6 +8,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -18,7 +20,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.SpannableString;
@@ -27,6 +28,7 @@ import android.text.util.Linkify;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 
 import org.septa.android.app.about.AboutFragment;
 import org.septa.android.app.connect.ConnectFragment;
@@ -39,6 +41,7 @@ import org.septa.android.app.database.update.ExpandDBZip;
 import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.fares.FaresFragment;
+import org.septa.android.app.fares.PerksFragment;
 import org.septa.android.app.favorites.FavoritesFragment;
 import org.septa.android.app.favorites.edit.ManageFavoritesFragment;
 import org.septa.android.app.nextarrive.NextToArriveFragment;
@@ -46,24 +49,42 @@ import org.septa.android.app.schedules.SchedulesFragment;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Alert;
 import org.septa.android.app.services.apiinterfaces.model.AlertDetail;
-import org.septa.android.app.services.apiinterfaces.model.Favorite;
 import org.septa.android.app.support.AnalyticsManager;
 import org.septa.android.app.support.CrashlyticsManager;
+import org.septa.android.app.support.RouteModelComparator;
+import org.septa.android.app.support.ShakeDetector;
 import org.septa.android.app.systemmap.SystemMapFragment;
 import org.septa.android.app.systemstatus.SystemStatusFragment;
 import org.septa.android.app.systemstatus.SystemStatusState;
+import org.septa.android.app.transitview.TransitViewFragment;
+import org.septa.android.app.transitview.TransitViewResultsActivity;
 import org.septa.android.app.view.TextView;
 import org.septa.android.app.webview.WebViewFragment;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static org.septa.android.app.connect.ElertsUtils.jumpToElertsApp;
 import static org.septa.android.app.database.update.DatabaseSharedPrefsUtils.DEFAULT_DOWNLOAD_REF_ID;
+import static org.septa.android.app.transitview.TransitViewFragment.TRANSITVIEW_ROUTE_FIRST;
+import static org.septa.android.app.transitview.TransitViewFragment.TRANSITVIEW_ROUTE_SECOND;
+import static org.septa.android.app.transitview.TransitViewFragment.TRANSITVIEW_ROUTE_THIRD;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, FavoritesFragment.FavoritesFragmentListener, ManageFavoritesFragment.ManageFavoritesFragmentListener, SeptaServiceFactory.SeptaServiceFactoryCallBacks, CheckForLatestDB.CheckForLatestDBListener, DownloadNewDB.DownloadNewDBListener, ExpandDBZip.ExpandDBZipListener, CleanOldDB.CleanOldDBListener {
+public class MainActivity extends BaseActivity implements
+        NavigationView.OnNavigationItemSelectedListener,
+        FavoritesFragment.FavoritesFragmentListener,
+        ManageFavoritesFragment.ManageFavoritesFragmentListener,
+        TransitViewFragment.TransitViewFragmentListener,
+        SeptaServiceFactory.SeptaServiceFactoryCallBacks,
+        CheckForLatestDB.CheckForLatestDBListener,
+        DownloadNewDB.DownloadNewDBListener,
+        ExpandDBZip.ExpandDBZipListener,
+        CleanOldDB.CleanOldDBListener {
 
     public static final String TAG = MainActivity.class.getSimpleName();
     NextToArriveFragment nextToArriveFragment = new NextToArriveFragment();
@@ -80,10 +101,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     SystemStatusFragment systemStatus = new SystemStatusFragment();
     Fragment faresTransitInfo = new FaresFragment();
+    Fragment perks = new PerksFragment();
     Fragment systemMap = new SystemMapFragment();
-    Fragment events = null;
     Fragment trainview = null;
-    Fragment transitview = null;
+    // TODO: put push notifications back in
+//    Fragment notifications = new NotificationsManagementFragment();
+    Fragment transitView = new TransitViewFragment();
     Fragment connect = new ConnectFragment();
     Fragment about = new AboutFragment();
 
@@ -91,11 +114,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     DownloadManager downloadManager;
     AlertDialog promptDownloadDB, acknowledgeNewDatabaseReady;
 
-    // shake detector used for crashing the app purposefully
-    // TODO: comment out when releasing to production
-//    private SensorManager mSensorManager;
-//    private Sensor mAccelerometer;
-//    private ShakeDetector mShakeDetector;
+    // shake detector used for crashing the app purposefully -- only in debug and alpha
+    private SensorManager mSensorManager;
+    private Sensor mAccelerometer;
+    private ShakeDetector mShakeDetector;
 
     public static final String MOBILE_APP_ALERT_ROUTE_NAME = "Mobile APP",
             MOBILE_APP_ALERT_MODE = "MOBILE",
@@ -106,20 +128,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public final void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        favoritesFragment = FavoritesFragment.newInstance();
-        events = WebViewFragment.getInstance(getResources().getString(R.string.events_url));
+
+        favoritesFragment = new FavoritesFragment();
         trainview = WebViewFragment.getInstance(getResources().getString(R.string.trainview_url));
-        transitview = WebViewFragment.getInstance(getResources().getString(R.string.transitview_url));
 
         setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.setItemIconTintList(null);
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -129,33 +150,42 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         registerReceiver(onDBDownloadComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
         downloadManager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
         if (savedInstanceState == null) {
-            if (SeptaServiceFactory.getFavoritesService().getFavorites(this).size() > 0) {
+            if (SeptaServiceFactory.getFavoritesService().getNTAFavorites(this).size() > 0) {
                 switchToFavorites();
             } else {
                 addNewFavorite();
             }
         }
 
-        // TODO: comment out when releasing to production
         // ShakeDetector initialization
-//        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-//        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-//        mShakeDetector = new ShakeDetector();
-//        mShakeDetector.setOnShakeListener(new ShakeDetector.OnShakeListener() {
-//            @Override
-//            public void onShake(int count) {
-//                handleShakeEvent(count);
-//            }
-//        });
+        if (BuildConfig.IS_NONPROD_BUILD) {
+            mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+            mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+            mShakeDetector = new ShakeDetector();
+            mShakeDetector.setOnShakeListener(new ShakeDetector.OnShakeListener() {
+                @Override
+                public void onShake(int count) {
+                    handleShakeEvent(count);
+                }
+            });
+        }
+
+        // handle new intent
+        Intent intent = getIntent();
+        int requestCode = intent.getIntExtra(Constants.REQUEST_CODE, -1);
+        if (requestCode != -1) {
+            onNewIntent(intent);
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        // TODO: comment out when releasing to production
         // re-register the shake detector on resume
-//        mSensorManager.registerListener(mShakeDetector, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
+        if (BuildConfig.IS_NONPROD_BUILD) {
+            mSensorManager.registerListener(mShakeDetector, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
+        }
 
         // note that generic alert will show up before mobile app alert bc it was the most recently added
 
@@ -239,9 +269,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onPause() {
         super.onPause();
 
-        // TODO: comment out when releasing to production
         // unregister the shake detector on pause
-//        mSensorManager.unregisterListener(mShakeDetector);
+        if (BuildConfig.IS_NONPROD_BUILD) {
+            mSensorManager.unregisterListener(mShakeDetector);
+        }
 
         // prevent stacking alertdialogs
         if (genericAlert != null) {
@@ -277,7 +308,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -292,76 +323,110 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
         Log.d(TAG, "onNavigationItemSelected Selected:" + item.getTitle());
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
 
         if (id == R.id.nav_next_to_arrive) {
-            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_NEXT_TO_ARRIVE, null, null);
+            AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_MENU_NEXT_TO_ARRIVE, AnalyticsManager.CONTENT_ID_NEXT_TO_ARRIVE, null);
             switchToBundle(item, nextToArriveFragment, R.string.next_to_arrive, R.drawable.ic_nta_active);
         }
 
         if (id == R.id.nav_schedule) {
-            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_SCHEDULE, null, null);
+            AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_MENU_SCHEDULE, AnalyticsManager.CONTENT_ID_SCHEDULE, null);
             switchToBundle(item, schedules, R.string.schedule, R.drawable.ic_schedule_active);
         }
 
         if (id == R.id.nav_favorites) {
-            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_FAVORITES, null, null);
+            AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_MENU_FAVORITES, AnalyticsManager.CONTENT_ID_FAVORITES, null);
             switchToBundle(item, favoritesFragment, R.string.favorites, R.drawable.ic_favorites_active);
         }
 
         if (id == R.id.nav_system_status) {
-            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_SYSTEM_STATUS, null, null);
+            AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_MENU_SYSTEM_STATUS, AnalyticsManager.CONTENT_ID_SYSTEM_STATUS, null);
             switchToBundle(item, systemStatus, R.string.system_status, R.drawable.ic_status_active);
         }
 
         if (id == R.id.nav_fares_transit_info) {
-            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_FARES_TRANSIT, null, null);
+            AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_MENU_FARES, AnalyticsManager.CONTENT_ID_FARES_TRANSIT, null);
             switchToBundle(item, faresTransitInfo, R.string.fares_and_transit_info, R.drawable.ic_fares_active);
         }
 
+        if (id == R.id.nav_perks) {
+            AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_MENU_PERKS, AnalyticsManager.CONTENT_ID_PERKS, null);
+            switchToBundle(item, perks, R.string.perks, R.drawable.ic_perks_active);
+        }
+
         if (id == R.id.nav_system_map) {
-            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_SYSTEM_MAP, null, null);
+            AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_MENU_SYSTEM_MAP, AnalyticsManager.CONTENT_ID_SYSTEM_MAP, null);
             switchToBundle(item, systemMap, R.string.system_map, R.drawable.ic_map_active);
         }
 
-        if (id == R.id.nav_events) {
-            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_SPECIAL_EVENTS, null, null);
-            switchToBundle(item, events, R.string.events, R.drawable.ic_calendar_active);
-        }
+        // TODO: put push notifications back in
+//        if (id == R.id.nav_notifications) {
+//            AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_MENU_NOTIFICATIONS, AnalyticsManager.CONTENT_ID_NOTIFICATIONS, null);
+//            switchToBundle(item, notifications, R.string.notifications, R.drawable.ic_notifications_active);
+//        }
 
         if (id == R.id.nav_connect) {
-            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_CONNECT, null, null);
+            AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_MENU_CONNECT, AnalyticsManager.CONTENT_ID_CONNECT, null);
             switchToBundle(item, connect, R.string.connect_with_septa, 0);
         }
 
         if (id == R.id.nav_about_app) {
-            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_ABOUT, null, null);
+            AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_MENU_ABOUT, AnalyticsManager.CONTENT_ID_ABOUT, null);
             switchToBundle(item, about, R.string.about_the_septa_app, 0);
         }
 
         if (id == R.id.nav_trainview) {
-            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_TRAIN_VIEW, null, null);
+            AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_MENU_TRAINVIEW, AnalyticsManager.CONTENT_ID_TRAINVIEW, null);
             switchToBundle(item, trainview, R.string.train_view, 0);
         }
 
         if (id == R.id.nav_transitview) {
-            AnalyticsManager.logContentType(TAG, AnalyticsManager.CUSTOM_EVENT_TRANSIT_VIEW, null, null);
-            switchToBundle(item, transitview, R.string.transit_view, 0);
+            AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_MENU_TRANSITVIEW, AnalyticsManager.CONTENT_ID_TRANSITVIEW, null);
+            switchToBundle(item, transitView, R.string.transit_view, R.drawable.ic_transitview_active);
+        }
+
+        if (id == R.id.nav_elerts) {
+            AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_ELERTS, AnalyticsManager.CUSTOM_EVENT_ID_EXTERNAL_LINK, null);
+            jumpToElertsApp(this);
         }
         return true;
     }
 
     @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        // ensure intent coming from valid source
+        // TODO: put push notifications back in
+//        int requestCode = intent.getIntExtra(Constants.REQUEST_CODE, -1);
+//
+//        switch (requestCode) {
+//            case Constants.PUSH_NOTIF_REQUEST_RAIL_DELAY:
+//                PushNotificationManager.onRailDelayNotificationClick(MainActivity.this, intent);
+//                break;
+//            case Constants.PUSH_NOTIF_REQUEST_SERVICE_ALERT:
+//                PushNotificationManager.onSystemStatusNotificationClick(MainActivity.this, intent, Constants.SERVICE_ALERT_EXPANDED, NotificationType.ALERT);
+//                break;
+//            case Constants.PUSH_NOTIF_REQUEST_DETOUR:
+//                PushNotificationManager.onSystemStatusNotificationClick(MainActivity.this, intent, Constants.ACTIVE_DETOUR_EXPANDED, NotificationType.DETOUR);
+//                break;
+//        }
+
+    }
+
+    @Override
     public void refreshFavoritesInstance() {
         CrashlyticsManager.log(Log.INFO, TAG, "refreshFavoritesInstance");
-        favoritesFragment = FavoritesFragment.newInstance();
+        favoritesFragment = new FavoritesFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, favoritesFragment).commit();
     }
 
     @Override
     public void addNewFavorite() {
-        CrashlyticsManager.log(Log.INFO, TAG, "addNewFavorite");
+        AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_ADD_FAVORITE_BUTTON, AnalyticsManager.CUSTOM_EVENT_ID_FAVORITES_MANAGEMENT, null);
+
         switchToNextToArrive();
     }
 
@@ -371,15 +436,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if (isInEditMode) {
             // switch to favorites fragment
-            favoritesFragment = FavoritesFragment.newInstance();
+            favoritesFragment = new FavoritesFragment();
             activeFragment = favoritesFragment;
             getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, activeFragment).commit();
         } else {
-            // open edit mode
-            List<Favorite> favoriteList = favoritesFragment.openEditMode();
-
             // switch to manage favorites fragment
-            manageFavoritesFragment = ManageFavoritesFragment.newInstance(favoriteList);
+            manageFavoritesFragment = new ManageFavoritesFragment();
             activeFragment = manageFavoritesFragment;
             getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, activeFragment).commit();
         }
@@ -388,19 +450,40 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         int unmaskedRequestCode = requestCode & 0x0000ffff;
-        if (unmaskedRequestCode == Constants.NTA_REQUEST) {
-            if (resultCode == Constants.VIEW_SCHEDULE) {
-                Message message = jumpToSchedulesHandler.obtainMessage();
-                message.setData(data.getExtras());
-                jumpToSchedulesHandler.sendMessage(message);
-            }
+        switch (resultCode) {
+
+            case Constants.VIEW_SCHEDULE:
+
+                // jump to schedule from NTA
+                if (unmaskedRequestCode == Constants.NTA_REQUEST) {
+                    Message message = jumpToSchedulesHandler.obtainMessage();
+                    message.setData(data.getExtras());
+                    jumpToSchedulesHandler.sendMessage(message);
+                }
+                break;
+
+            // TODO: put push notifications back in
+//            case Constants.VIEW_SYSTEM_STATUS_PICKER:
+//
+//                // jump to system status from notifications management
+//                if (unmaskedRequestCode == Constants.NOTIFICATIONS_REQUEST) {
+//                    jumpToSystemStatusHandler.sendMessage(jumpToSystemStatusHandler.obtainMessage());
+//                }
+//                break;
+//
+//            case Constants.VIEW_NOTIFICATION_MANAGEMENT:
+//
+//                // jump to notifications management from NTA / schedules / system status / transitview
+//                if (unmaskedRequestCode == Constants.NTA_REQUEST || unmaskedRequestCode == Constants.SYSTEM_STATUS_REQUEST || unmaskedRequestCode == Constants.SCHEDULES_REQUEST || unmaskedRequestCode == Constants.TRANSITVIEW_REQUEST) {
+//                    jumpToNotifsManagementHandler.sendMessage(jumpToNotifsManagementHandler.obtainMessage());
+//                }
+//                break;
         }
     }
 
     @Override
     public void gotoSchedules() {
         switchToSchedules(null);
-        //switchToBundle(navigationView.getMenu().findItem(R.id.nav_schedule), schedules, R.string.schedule, R.drawable.ic_schedule_active);
     }
 
     @Override
@@ -418,24 +501,58 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
+    public void goToTransitViewResults(RouteDirectionModel firstRoute, RouteDirectionModel secondRoute, RouteDirectionModel thirdRoute) {
+        Intent intent = new Intent(this, TransitViewResultsActivity.class);
+
+        // sort the routes and append null routes to the end
+        List<RouteDirectionModel> selectedRoutes = new ArrayList<>();
+        selectedRoutes.add(firstRoute);
+        if (secondRoute != null) {
+            selectedRoutes.add(secondRoute);
+        }
+        if (thirdRoute != null) {
+            selectedRoutes.add(thirdRoute);
+        }
+        Collections.sort(selectedRoutes, new RouteModelComparator());
+        while (selectedRoutes.size() < 3) {
+            selectedRoutes.add(null);
+        }
+
+        intent.putExtra(TRANSITVIEW_ROUTE_FIRST, selectedRoutes.get(0));
+        intent.putExtra(TRANSITVIEW_ROUTE_SECOND, selectedRoutes.get(1));
+        intent.putExtra(TRANSITVIEW_ROUTE_THIRD, selectedRoutes.get(2));
+        startActivityForResult(intent, Constants.TRANSITVIEW_REQUEST);
+    }
+
+    @Override
     public void afterLatestDBMetadataLoad(final int latestDBVersion, final String latestDBURL, String updatedDate) {
-        boolean shouldPrompt = DatabaseUpgradeUtils.decideWhetherToAskToDownload(MainActivity.this, latestDBVersion, latestDBURL, updatedDate);
+        if (!isFinishing()) {
+            boolean shouldPrompt = DatabaseUpgradeUtils.decideWhetherToAskToDownload(MainActivity.this, latestDBVersion, latestDBURL, updatedDate);
 
-        if (shouldPrompt) {
-            // prompt user to download new database
-            AlertDialog dialog = DatabaseUpgradeUtils.promptToDownload(MainActivity.this);
+            if (shouldPrompt) {
+                // prompt user to download new database
+                AlertDialog dialog = DatabaseUpgradeUtils.promptToDownload(MainActivity.this);
 
-            // only show prompt once
-            if (promptDownloadDB != null && promptDownloadDB.isShowing()) {
-                promptDownloadDB.dismiss();
-                promptDownloadDB = null;
+                // only show prompt once
+                if (promptDownloadDB != null && promptDownloadDB.isShowing()) {
+                    promptDownloadDB.dismiss();
+                    promptDownloadDB = null;
+                }
+                promptDownloadDB = dialog;
+
+                // show prompt
+                if (promptDownloadDB != null) {
+
+                    try {
+                        promptDownloadDB.show();
+                    } catch (WindowManager.BadTokenException e) {
+                        CrashlyticsManager.log(Log.ERROR, TAG, "Could not show prompt to download DB with parent activity " + MainActivity.this.toString());
+                        CrashlyticsManager.logException(TAG, e);
+                    }
+                }
             }
-            promptDownloadDB = dialog;
-
-            // show prompt
-            if (promptDownloadDB != null) {
-                promptDownloadDB.show();
-            }
+        } else {
+            CrashlyticsManager.log(Log.ERROR, TAG, "Could not show prompt to download DB because parent activity was finishing");
         }
     }
 
@@ -457,7 +574,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void clearCorruptedDownloadRefId() {
         long downloadRefId = DatabaseSharedPrefsUtils.getDownloadRefId(MainActivity.this);
         if (downloadRefId != DEFAULT_DOWNLOAD_REF_ID) {
-            downloadManager.remove();
+            downloadManager.remove(downloadRefId);
         }
     }
 
@@ -471,19 +588,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void notifyNewDatabaseReady() {
-        // only show that new database ready if not already using most up to date version of database
-        AlertDialog dialog = DatabaseUpgradeUtils.buildNewDatabaseReadyPopUp(MainActivity.this);
+        if (!isFinishing()) {
+            // only show that new database ready if not already using most up to date version of database
+            AlertDialog dialog = DatabaseUpgradeUtils.buildNewDatabaseReadyPopUp(MainActivity.this);
 
-        // only show prompt once
-        if (acknowledgeNewDatabaseReady != null && acknowledgeNewDatabaseReady.isShowing()) {
-            acknowledgeNewDatabaseReady.dismiss();
-            acknowledgeNewDatabaseReady = null;
-        }
-        acknowledgeNewDatabaseReady = dialog;
+            // only show prompt once
+            if (acknowledgeNewDatabaseReady != null && acknowledgeNewDatabaseReady.isShowing()) {
+                acknowledgeNewDatabaseReady.dismiss();
+                acknowledgeNewDatabaseReady = null;
+            }
+            acknowledgeNewDatabaseReady = dialog;
 
-        // show prompt
-        if (acknowledgeNewDatabaseReady != null) {
-            acknowledgeNewDatabaseReady.show();
+            // show prompt
+            if (acknowledgeNewDatabaseReady != null) {
+
+                try {
+                    acknowledgeNewDatabaseReady.show();
+                } catch (WindowManager.BadTokenException e) {
+                    CrashlyticsManager.log(Log.ERROR, TAG, "Could not show prompt that new DB ready with parent activity " + MainActivity.this.toString());
+                    CrashlyticsManager.logException(TAG, e);
+                }
+            }
+        } else {
+            CrashlyticsManager.log(Log.ERROR, TAG, "Could not show prompt that new DB ready because parent activity was finishing");
         }
     }
 
@@ -494,8 +621,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void switchToBundle(MenuItem item, Fragment targetFragment, int title, int highlightedIcon) {
         CrashlyticsManager.log(Log.INFO, TAG, "switchToBundle:" + item.getTitle() + ", " + targetFragment.getClass().getCanonicalName());
-        if ((currentMenu != null) && item.getItemId() == currentMenu.getItemId())
+        if ((currentMenu != null) && item.getItemId() == currentMenu.getItemId()) {
             return;
+        }
 
         if (previousIcon != null) {
             currentMenu.setIcon(previousIcon);
@@ -541,6 +669,35 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    public void switchToSystemStatus() {
+        if (currentMenu == null || currentMenu.getItemId() != R.id.nav_system_status) {
+            if (currentMenu != null) {
+                currentMenu.setIcon(previousIcon);
+            }
+            navigationView.setCheckedItem(R.id.nav_system_status);
+            currentMenu = navigationView.getMenu().findItem(R.id.nav_system_status);
+            previousIcon = currentMenu.getIcon();
+            currentMenu.setIcon(R.drawable.ic_status_active);
+            getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, systemStatus).commit();
+            setTitle(R.string.system_status);
+        }
+    }
+
+    // TODO: put push notifications back in
+//    public void switchToNotificationManagement() {
+//        if (currentMenu == null || currentMenu.getItemId() != R.id.nav_notifications) {
+//            if (currentMenu != null) {
+//                currentMenu.setIcon(previousIcon);
+//            }
+//            navigationView.setCheckedItem(R.id.nav_notifications);
+//            currentMenu = navigationView.getMenu().findItem(R.id.nav_notifications);
+//            previousIcon = currentMenu.getIcon();
+//            currentMenu.setIcon(R.drawable.ic_notifications_active);
+//            getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_content, notifications).commit();
+//            setTitle(R.string.notifications);
+//        }
+//    }
+
     public void switchToSchedules(Bundle data) {
         CrashlyticsManager.log(Log.INFO, TAG, "switchToSchedules");
 
@@ -575,6 +732,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     };
 
+    private Handler jumpToSystemStatusHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switchToSystemStatus();
+        }
+    };
+
+    // TODO: put push notifications back in
+//    private Handler jumpToNotifsManagementHandler = new Handler() {
+//        @Override
+//        public void handleMessage(Message msg) {
+//            switchToNotificationManagement();
+//        }
+//    };
+
     // listener for completed database downloads
     BroadcastReceiver onDBDownloadComplete = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
@@ -601,12 +773,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void showAlert(String alert, Boolean isGenericAlert) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-        if (isGenericAlert) builder.setTitle(R.string.title_generic_alert);
-        else builder.setTitle(R.string.title_mobile_app_alert);
+        if (isGenericAlert) {
+            builder.setTitle(R.string.title_generic_alert);
+        } else {
+            builder.setTitle(R.string.title_mobile_app_alert);
+        }
 
         // make message HTML enabled and allow for anchor links
         View alertView = getLayoutInflater().inflate(R.layout.dialog_alert, null);
-        TextView message = (TextView) alertView.findViewById(R.id.dialog_alert_message);
+        TextView message = alertView.findViewById(R.id.dialog_alert_message);
         final SpannableString s = new SpannableString(alert);
         message.setText(Html.fromHtml(s.toString()));
         message.setMovementMethod(LinkMovementMethod.getInstance());

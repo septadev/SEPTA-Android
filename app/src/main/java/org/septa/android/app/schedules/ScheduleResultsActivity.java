@@ -10,8 +10,8 @@ import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,12 +19,13 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.RelativeLayout;
+import android.widget.Toast;
 
+import org.septa.android.app.ActivityClass;
+import org.septa.android.app.BaseActivity;
 import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
@@ -33,11 +34,15 @@ import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.domain.ScheduleModel;
 import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.favorites.DeleteFavoritesAsyncTask;
-import org.septa.android.app.favorites.SaveFavoritesAsyncTask;
+import org.septa.android.app.favorites.edit.RenameFavoriteDialogFragment;
+import org.septa.android.app.favorites.edit.RenameFavoriteListener;
 import org.septa.android.app.nextarrive.NextToArriveResultsActivity;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Alert;
 import org.septa.android.app.services.apiinterfaces.model.Favorite;
+import org.septa.android.app.services.apiinterfaces.model.NextArrivalFavorite;
+import org.septa.android.app.support.AnalyticsManager;
+import org.septa.android.app.support.CrashlyticsManager;
 import org.septa.android.app.support.Criteria;
 import org.septa.android.app.support.CursorAdapterSupplier;
 import org.septa.android.app.systemstatus.GoToSystemStatusResultsOnClickListener;
@@ -49,12 +54,13 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- * Created by ttuggerson on 9/13/17.
- */
+import static org.septa.android.app.favorites.edit.RenameFavoriteDialogFragment.EDIT_FAVORITE_DIALOG_KEY;
 
-public class ScheduleResultsActivity extends AppCompatActivity {
+public class ScheduleResultsActivity extends BaseActivity implements RenameFavoriteListener {
 
+    private static final String TAG = ScheduleResultsActivity.class.getSimpleName();
+
+    private ActivityClass originClass = ActivityClass.SCHEDULES;
     private static final int RAIL_MON_THUR = 8;
     private static final int WEEK_DAY = 32;
     private static final int RAIL_FRIDAY = 2;
@@ -63,50 +69,41 @@ public class ScheduleResultsActivity extends AppCompatActivity {
     private static final int RAIL_SUNDAY = 64;
     private static final int SUNDAY = 64;
 
-
-    private DatabaseManager dbManager = null;
     private RadioGroup radioGroup = null;
     CursorAdapterSupplier<ScheduleModel> scheduleCursorAdapterSupplier;
     CursorAdapterSupplier<StopModel> reverseStopCursorAdapterSupplier;
-
-    ListView scheduleResultsListView;
 
     StopModel start = null;
     StopModel destination = null;
     RouteDirectionModel routeDirectionModel;
     TransitType transitType;
     CursorAdapterSupplier<RouteDirectionModel> reverseRouteCursorAdapterSupplier;
-    Favorite currentFavorite;
+    NextArrivalFavorite currentFavorite;
     Menu menu;
 
+    // layout variables
+    View lineStationLayout;
     TextView startStationText;
     TextView destinationTextView;
-    TextView reverseTripLabel;
+    View reverseTripLabel;
+    ImageView alertView;
+    ImageView advisoryView;
+    ImageView detourView;
+    ImageView weatherView;
+//    SwitchCompat notifsSwitch; // TODO: put push notifications back in
+    ListView scheduleResultsListView;
+//    Snackbar snackbar; // TODO: put push notifications back in
 
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitle("Schedules");
 
-        //-----------------------------------------------------------------------------------------
-        // note to self
-        // start the schedules activity
-        // Step 1: pieces of information necessary for the schedules activity
-        //         Transit Type
-        //         Line ID
-        //         Start Location
-        //         Stop Location
-        // Step 2: Query the database for the necessary schedule information
-        // Step 3: Create Array Result set and then
-        // Step 4: Inflate custom View and bind Data with list adapter
-        // * Note: Will have to create a special case with the Rail line due to (M-TH) Fri Sat Sunday option
-        // _________________________________________________________________________________________
-
         setContentView(R.layout.activity_schedules_results);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-
-        dbManager = DatabaseManager.getInstance(this);
-
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
 
         if (savedInstanceState != null) {
             restoreState(savedInstanceState);
@@ -123,10 +120,10 @@ public class ScheduleResultsActivity extends AppCompatActivity {
             reverseRouteCursorAdapterSupplier = DatabaseManager.getInstance(this).getNonRailReverseRouteCursorAdapterSupplier();
         }
 
-        startStationText = (TextView) findViewById(R.id.start_station_text);
-        destinationTextView = (TextView) findViewById(R.id.destination_station_text);
+        startStationText = findViewById(R.id.start_station_text);
+        destinationTextView = findViewById(R.id.destination_station_text);
 
-        reverseTripLabel = (TextView) findViewById(R.id.reverse_trip_label);
+        reverseTripLabel = findViewById(R.id.button_reverse_schedule_trip);
         reverseTripLabel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -137,7 +134,8 @@ public class ScheduleResultsActivity extends AppCompatActivity {
 
         setUpHeaders();
 
-        ((RelativeLayout) findViewById(R.id.line_station_layout)).getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+        lineStationLayout = findViewById(R.id.line_station_layout);
+        lineStationLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
                 startStationText.setRight(reverseTripLabel.getLeft());
@@ -149,7 +147,7 @@ public class ScheduleResultsActivity extends AppCompatActivity {
 
         initRadioButtonGroup();
 
-        scheduleResultsListView = (ListView) findViewById(R.id.schedule_list_view);
+        scheduleResultsListView = findViewById(R.id.schedule_list_view);
 
         View ntaLink = findViewById(R.id.nta_link);
         ntaLink.setOnClickListener(new View.OnClickListener() {
@@ -161,75 +159,31 @@ public class ScheduleResultsActivity extends AppCompatActivity {
                 intent.putExtra(Constants.TRANSIT_TYPE, transitType);
                 intent.putExtra(Constants.ROUTE_DIRECTION_MODEL, routeDirectionModel);
 
+                AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_NTA_FROM_SCHEDULE, AnalyticsManager.CONTENT_ID_NEXT_TO_ARRIVE, null);
                 startActivityForResult(intent, Constants.NTA_REQUEST);
             }
         });
 
-        Alert alert = SystemStatusState.getAlertForLine(transitType, routeDirectionModel.getRouteId());
-
-        boolean displayAlerts = false;
-
-
-        View alertView = findViewById(R.id.service_alert);
-        if (alert.isAlert()) {
-            alertView.setVisibility(View.VISIBLE);
-            alertView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ALERT_EXPANDED, this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName()));
-            displayAlerts = true;
-        } else {
-            LinearLayout.LayoutParams loparams = (LinearLayout.LayoutParams) alertView.getLayoutParams();
-            loparams.height = 0;
-            loparams.weight = 1;
-            alertView.setLayoutParams(loparams);
-        }
-
-        View advisoryView = findViewById(R.id.service_advisory);
-        if (alert.isAdvisory()) {
-            advisoryView.setVisibility(View.VISIBLE);
-            advisoryView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ADVISORY_EXPANDED, this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName()));
-            displayAlerts = true;
-        } else {
-            LinearLayout.LayoutParams loparams = (LinearLayout.LayoutParams) advisoryView.getLayoutParams();
-            loparams.height = 0;
-            loparams.weight = 1;
-            advisoryView.setLayoutParams(loparams);
-        }
-
-        View detourView = findViewById(R.id.active_detour);
-        if (alert.isDetour()) {
-            advisoryView.setVisibility(View.VISIBLE);
-            detourView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.ACTIVE_DETOUR_EXPANDED, this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName()));
-            displayAlerts = true;
-        } else {
-            LinearLayout.LayoutParams loparams = (LinearLayout.LayoutParams) detourView.getLayoutParams();
-            loparams.height = 0;
-            loparams.weight = 1;
-            detourView.setLayoutParams(loparams);
-        }
-
-        View weatherView = findViewById(R.id.weather_alerts);
-        if (alert.isSnow()) {
-            weatherView.setVisibility(View.VISIBLE);
-            weatherView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.WEATHER_ALERTS_EXPANDED, this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName()));
-            displayAlerts = true;
-        } else {
-            LinearLayout.LayoutParams loparams = (LinearLayout.LayoutParams) weatherView.getLayoutParams();
-            loparams.height = 0;
-            loparams.weight = 1;
-            weatherView.setLayoutParams(loparams);
-        }
-
-        if (displayAlerts) {
-            findViewById(R.id.alert_view).setVisibility(View.VISIBLE);
-        }
-
-
+        setUpAlertsView();
     }
 
-    private void restoreState(Bundle bundle) {
-        destination = (StopModel) bundle.get(Constants.DESTINATION_STATION);
-        start = (StopModel) bundle.get(Constants.STARTING_STATION);
-        transitType = (TransitType) bundle.get(Constants.TRANSIT_TYPE);
-        routeDirectionModel = (RouteDirectionModel) bundle.get(Constants.ROUTE_DIRECTION_MODEL);
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+//        if (notifsSwitch.isChecked()) {
+//            showMethodPushNotifsDisabled();
+//        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+//        // remove message
+//        if (snackbar != null && snackbar.isShown()) {
+//            snackbar.dismiss();
+//        }
     }
 
     @Override
@@ -243,13 +197,91 @@ public class ScheduleResultsActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        invalidateOptionsMenu();
+
+        this.menu = menu;
+        getMenuInflater().inflate(R.menu.favorite_menu, menu);
+
+        if (currentFavorite != null) {
+            menu.findItem(R.id.create_favorite).setIcon(R.drawable.ic_favorite_made);
+            menu.findItem(R.id.create_favorite).setTitle(R.string.schedule_favorite_icon_title_remove);
+        } else {
+            menu.findItem(R.id.create_favorite).setTitle(R.string.schedule_favorite_icon_title_create);
+        }
+
+        // hide refresh icon -- refresh only needed in NTA Results Activity
+        menu.findItem(R.id.refresh_results).setVisible(false);
+
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.create_favorite:
+                saveAsFavorite(item);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        int unmaskedRequestCode = requestCode & 0x0000ffff;
+
+        // TODO: put push notifications back in
+//        if (unmaskedRequestCode == Constants.NTA_REQUEST || unmaskedRequestCode == Constants.SYSTEM_STATUS_REQUEST) {
+//            if (resultCode == Constants.VIEW_NOTIFICATION_MANAGEMENT) {
+//                goToNotificationsManagement();
+//            }
+//        }
+    }
+
+    @Override
+    public void updateFavorite(Favorite favorite) {
+        if (favorite instanceof NextArrivalFavorite) {
+            currentFavorite = (NextArrivalFavorite) favorite;
+            renameFavorite(currentFavorite);
+
+            Toast.makeText(ScheduleResultsActivity.this, R.string.create_nta_favorite, Toast.LENGTH_LONG).show();
+        } else {
+            Log.e(TAG, "Attempted to save invalid Favorite type");
+        }
+    }
+
+    @Override
+    public void renameFavorite(Favorite favorite) {
+        invalidateOptionsMenu();
+    }
+
+    @Override
+    public void favoriteCreationFailed() {
+        Toast.makeText(ScheduleResultsActivity.this, R.string.create_nta_favorite_failed, Toast.LENGTH_LONG).show();
+    }
+
+    private void restoreState(Bundle bundle) {
+        destination = (StopModel) bundle.get(Constants.DESTINATION_STATION);
+        start = (StopModel) bundle.get(Constants.STARTING_STATION);
+        transitType = (TransitType) bundle.get(Constants.TRANSIT_TYPE);
+        routeDirectionModel = (RouteDirectionModel) bundle.get(Constants.ROUTE_DIRECTION_MODEL);
+    }
+
     private void initRadioButtonGroup() {
-        radioGroup = (RadioGroup) findViewById(R.id.day_of_week_button_group);
+        radioGroup = findViewById(R.id.day_of_week_button_group);
         radioGroup.clearCheck(); //must clear the defaults otherwise event wont fire
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, @IdRes int checkedID) {
-                RadioButton rb = (RadioButton) radioGroup.findViewById(checkedID);
+                RadioButton rb = radioGroup.findViewById(checkedID);
                 if (rb.isChecked()) {
                     ScheduleResultsAsyncTask task = new ScheduleResultsAsyncTask(ScheduleResultsActivity.this);
                     task.execute(mapRadioButtonIdtoSchedule(checkedID, routeDirectionModel.getRouteId()));
@@ -262,40 +294,45 @@ public class ScheduleResultsActivity extends AppCompatActivity {
             findViewById(R.id.weekday_button).setVisibility(View.GONE);
             findViewById(R.id.mon_thurs_button).setVisibility(View.VISIBLE);
             findViewById(R.id.friday_button).setVisibility(View.VISIBLE);
-            RadioButton rb = (RadioButton) radioGroup.findViewById(R.id.mon_thurs_button);
+            RadioButton rb = radioGroup.findViewById(R.id.mon_thurs_button);
             rb.setChecked(true);
         } else
 
         {
-            RadioButton rb = (RadioButton) radioGroup.findViewById(R.id.weekday_button);
+            RadioButton rb = radioGroup.findViewById(R.id.weekday_button);
             rb.setChecked(true);
         }
 
     }
 
     private void setUpHeaders() {
-        TextView routeNameTextView = (TextView) findViewById(R.id.route_name_text);
+        TextView routeNameTextView = findViewById(R.id.route_name_text);
         routeNameTextView.setText(routeDirectionModel.getRouteLongName());
 
-        TextView routeTitleDescription = (TextView) findViewById(R.id.route_description_text);
+        TextView routeTitleDescription = findViewById(R.id.route_description_text);
         if (transitType == TransitType.RAIL) {
             routeTitleDescription.setText(routeDirectionModel.getDirectionDescription());
-        } else routeTitleDescription.setText("to " + routeDirectionModel.getDirectionDescription());
-
+        } else {
+            routeTitleDescription.setText("to " + routeDirectionModel.getDirectionDescription());
+        }
 
         startStationText.setText(start.getStopName());
         destinationTextView.setText(destination.getStopName());
 
-        ImageView transitTypeImageView = (ImageView) findViewById(R.id.transit_type_image);
+        ImageView transitTypeImageView = findViewById(R.id.transit_type_image);
         transitTypeImageView.setImageResource(transitType.getIconForLine(routeDirectionModel.getRouteId(), this));
 
-        String favKey = Favorite.generateKey(start, destination, transitType, routeDirectionModel);
-        currentFavorite = SeptaServiceFactory.getFavoritesService().getFavoriteByKey(this, favKey);
+        String favKey = NextArrivalFavorite.generateKey(start, destination, transitType, routeDirectionModel);
+        // currentFavorite can be null if the current selection is not a favorite
+        currentFavorite = (NextArrivalFavorite) SeptaServiceFactory.getFavoritesService().getFavoriteByKey(this, favKey);
 
+        // check if already a favorite
         if (menu != null) {
             if (currentFavorite != null) {
                 menu.findItem(R.id.create_favorite).setIcon(R.drawable.ic_favorite_made);
-            } else menu.findItem(R.id.create_favorite).setIcon(R.drawable.ic_favorite_available);
+            } else {
+                menu.findItem(R.id.create_favorite).setIcon(R.drawable.ic_favorite_available);
+            }
         }
     }
 
@@ -313,24 +350,179 @@ public class ScheduleResultsActivity extends AppCompatActivity {
             case R.id.saturday_button:
                 if (transitType == TransitType.RAIL) {
                     return RAIL_SATURDAY;
-                } else
+                } else {
                     return SATURDAY;
+                }
 
             case R.id.sunday_button:
                 if (transitType == TransitType.RAIL) {
                     return RAIL_SUNDAY;
-                } else
+                } else {
                     return SUNDAY;
+                }
         }
         return 0;
     }
 
-    @Override
-    public boolean onSupportNavigateUp() {
-        onBackPressed();
-        return true;
+    public void saveAsFavorite(final MenuItem item) {
+        if (!item.isEnabled()) {
+            return;
+        }
+
+        item.setEnabled(false);
+
+        if (start != null && destination != null && transitType != null) {
+            if (currentFavorite == null) {
+                // prompt to save favorite
+                final NextArrivalFavorite nextArrivalFavorite = new NextArrivalFavorite(start, destination, transitType, routeDirectionModel);
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                CrashlyticsManager.log(Log.INFO, TAG, "Creating initial RenameFavoriteDialogFragment for:" + nextArrivalFavorite.toString());
+                RenameFavoriteDialogFragment fragment = RenameFavoriteDialogFragment.newInstance(false, false, nextArrivalFavorite);
+                fragment.show(ft, EDIT_FAVORITE_DIALOG_KEY);
+
+                item.setEnabled(true);
+
+            } else {
+                new AlertDialog.Builder(this).setCancelable(true).setTitle(R.string.delete_fav_modal_title)
+                        .setMessage(R.string.delete_fav_modal_text)
+                        .setPositiveButton(R.string.delete_fav_pos_button, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                DeleteFavoritesAsyncTask task = new DeleteFavoritesAsyncTask(ScheduleResultsActivity.this, new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        item.setEnabled(true);
+                                    }
+                                }, new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        item.setEnabled(true);
+                                        item.setIcon(R.drawable.ic_favorite_available);
+                                        currentFavorite = null;
+                                    }
+                                });
+
+                                AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_DELETE_FAVORITE, AnalyticsManager.CUSTOM_EVENT_ID_FAVORITES_MANAGEMENT, null);
+
+                                task.execute(currentFavorite.getKey());
+                            }
+                        }).setNegativeButton(R.string.delete_fav_neg_button, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        item.setEnabled(true);
+                    }
+                }).create().show();
+            }
+
+        } else {
+            item.setEnabled(true);
+        }
     }
 
+    private void setUpAlertsView() {
+        Alert alert = SystemStatusState.getAlertForLine(transitType, routeDirectionModel.getRouteId());
+
+        alertView = findViewById(R.id.alert_icon);
+        advisoryView = findViewById(R.id.advisory_icon);
+        detourView = findViewById(R.id.detour_icon);
+        weatherView = findViewById(R.id.weather_icon);
+//        notifsSwitch = findViewById(R.id.notification_route_switch); // TODO: put push notifications back in
+
+        if (alert.isAdvisory()) {
+            advisoryView.setImageResource(R.drawable.ic_advisory);
+            advisoryView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ADVISORY_EXPANDED, ScheduleResultsActivity.this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName(), originClass));
+        } else {
+            advisoryView.setImageResource(R.drawable.ic_advisory_inactive);
+        }
+
+        if (alert.isAlert()) {
+            alertView.setImageResource(R.drawable.ic_alert);
+            alertView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ALERT_EXPANDED, ScheduleResultsActivity.this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName(), originClass));
+        } else {
+            alertView.setImageResource(R.drawable.ic_alert_inactive);
+        }
+
+        if (alert.isDetour()) {
+            detourView.setImageResource(R.drawable.ic_detour);
+            detourView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.ACTIVE_DETOUR_EXPANDED, ScheduleResultsActivity.this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName(), originClass));
+        } else {
+            detourView.setImageResource(R.drawable.ic_detour_inactive);
+        }
+
+        if (alert.isSnow()) {
+            weatherView.setImageResource(R.drawable.ic_weather);
+            weatherView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.WEATHER_ALERTS_EXPANDED, ScheduleResultsActivity.this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName(), originClass));
+        } else {
+            weatherView.setImageResource(R.drawable.ic_weather_inactive);
+        }
+
+        // TODO: put push notifications back in
+//        // set intial checked state of switch
+//        notifsSwitch.setChecked(SeptaServiceFactory.getNotificationsService().isSubscribedToRoute(ScheduleResultsActivity.this, routeDirectionModel.getRouteId()));
+//
+//        // switch to create / enable notification for this route
+//        notifsSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                if (isChecked) {
+//                    // enable notifs for route
+//                    PushNotificationManager.getInstance(ScheduleResultsActivity.this).createNotificationForRoute(routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName(), transitType, "Schedule Results");
+//
+//                    // show message if necessary that push notifs will not be received
+//                    showMethodPushNotifsDisabled();
+//
+//                } else {
+//                    // disable notifs for route
+//                    PushNotificationManager.getInstance(ScheduleResultsActivity.this).removeNotificationForRoute(routeDirectionModel.getRouteId(), transitType, "Schedule Results");
+//
+//                    // remove message
+//                    if (snackbar != null && snackbar.isShown()) {
+//                        snackbar.dismiss();
+//                    }
+//                }
+//            }
+//        });
+    }
+
+    // TODO: put push notifications back in
+//    private void showMethodPushNotifsDisabled() {
+//        // recheck device permissions and show message if notifs not allowed or enabled
+//        boolean notifsAllowed = NotificationManagerCompat.from(ScheduleResultsActivity.this).areNotificationsEnabled(),
+//                notifsEnabled = SeptaServiceFactory.getNotificationsService().areNotificationsEnabled(ScheduleResultsActivity.this);
+//        if (!notifsAllowed) {
+//            snackbar = Snackbar.make(findViewById(R.id.activity_schedule_results_container), R.string.notifications_permission_needed, Snackbar.LENGTH_INDEFINITE);
+//            snackbar.setAction("Settings", new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    // link to system notification settings
+//                    NotificationsManagementFragment.openSystemNotificationSettings(ScheduleResultsActivity.this);
+//                }
+//            });
+//            View snackbarView = snackbar.getView();
+//            android.widget.TextView tv = snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+//            tv.setMaxLines(10);
+//            snackbar.show();
+//
+//        } else if (!notifsEnabled) {
+//            snackbar = Snackbar.make(findViewById(R.id.activity_schedule_results_container), R.string.notifications_not_enabled, Snackbar.LENGTH_INDEFINITE);
+//            snackbar.setAction("Settings", new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    // link to notifications management
+//                    goToNotificationsManagement();
+//                }
+//            });
+//            View snackbarView = snackbar.getView();
+//            android.widget.TextView tv = snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+//            tv.setMaxLines(10);
+//            snackbar.show();
+//        }
+//    }
+//
+//    private void goToNotificationsManagement() {
+//        setResult(Constants.VIEW_NOTIFICATION_MANAGEMENT, new Intent());
+//        finish();
+//    }
 
     class ScheduleResultsAsyncTask extends AsyncTask<Integer, Void, List<ScheduleModel>> {
         ScheduleResultsActivity scheduleResultsActivity;
@@ -349,14 +541,14 @@ public class ScheduleResultsActivity extends AppCompatActivity {
 
         @Override
         protected List<ScheduleModel> doInBackground(Integer... params) {
-            List<Criteria> criteriaList = new LinkedList<Criteria>();
+            List<Criteria> criteriaList = new LinkedList<>();
             criteriaList.add(new Criteria("start_stop_id", Criteria.Operation.EQ, scheduleResultsActivity.start.getStopId()));
             criteriaList.add(new Criteria("service_id", Criteria.Operation.EQ, params[0]));
             criteriaList.add(new Criteria("direction_id", Criteria.Operation.EQ, scheduleResultsActivity.routeDirectionModel.getDirectionCode()));
             criteriaList.add(new Criteria("end_stop_id", Criteria.Operation.EQ, scheduleResultsActivity.destination.getStopId()));
             criteriaList.add(new Criteria("route_id", Criteria.Operation.EQ, scheduleResultsActivity.routeDirectionModel.getRouteId()));
 
-            List<ScheduleModel> returnList = new ArrayList<ScheduleModel>();
+            List<ScheduleModel> returnList = new ArrayList<>();
             Cursor cursor = scheduleResultsActivity.scheduleCursorAdapterSupplier.getCursor(scheduleResultsActivity, criteriaList);
             if (cursor.moveToFirst()) {
                 do {
@@ -384,17 +576,17 @@ public class ScheduleResultsActivity extends AppCompatActivity {
 
             DateFormat timeFormat = DateFormat.getTimeInstance(DateFormat.SHORT);
 
-            TextView departureTime = (TextView) convertView.findViewById(R.id.departure_text);
+            TextView departureTime = convertView.findViewById(R.id.departure_text);
             departureTime.setText(timeFormat.format(scheduleModel.getDepartureDate()));
 
-            TextView arrivalTime = (TextView) convertView.findViewById(R.id.arrival_text);
+            TextView arrivalTime = convertView.findViewById(R.id.arrival_text);
             arrivalTime.setText(timeFormat.format(scheduleModel.getArrivalDate()));
 
-            TextView duration = (TextView) convertView.findViewById(R.id.duration_text);
+            TextView duration = convertView.findViewById(R.id.duration_text);
             duration.setText(scheduleModel.getDurationAsString());
             duration.setContentDescription(scheduleModel.getDurationAsLongString());
 
-            TextView blockText = (TextView) convertView.findViewById(R.id.block_text);
+            TextView blockText = convertView.findViewById(R.id.block_text);
             blockText.setHtml(transitType.getString("schedule_trip_prefix", getContext()) + "<b>" + scheduleModel.getBlockId() + "</b>");
 
             return convertView;
@@ -419,8 +611,6 @@ public class ScheduleResultsActivity extends AppCompatActivity {
 
                 if (newDest != null && newStart != null) {
                     found = true;
-                    scheduleResultsActivity.destination = newDest;
-                    scheduleResultsActivity.start = newStart;
                 }
             } else {
                 found = true;
@@ -453,103 +643,22 @@ public class ScheduleResultsActivity extends AppCompatActivity {
                 ScheduleResultsAsyncTask scheduleResultsAsyncTask = new ScheduleResultsAsyncTask(scheduleResultsActivity);
                 scheduleResultsAsyncTask.execute(schedule);
             } else {
-                Snackbar snackbar = Snackbar.make(scheduleResultsActivity.findViewById(R.id.schedule_results_coordinator), R.string.reverse_not_found, Snackbar.LENGTH_INDEFINITE);
-
-                View snackbarView = snackbar.getView();
-                android.widget.TextView tv = (android.widget.TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
-                tv.setMaxLines(10);
-                snackbar.show();
+                Toast.makeText(ScheduleResultsActivity.this, R.string.reverse_not_found, Toast.LENGTH_LONG).show();
             }
         }
 
         StopModel getReverse(String stopId, String routeShortName) {
-            List<Criteria> criteria = new ArrayList<Criteria>(2);
+            List<Criteria> criteria = new ArrayList<>(2);
             criteria.add(new Criteria("route_short_name", Criteria.Operation.EQ, routeShortName));
             criteria.add(new Criteria("stop_id", Criteria.Operation.EQ, stopId));
             Cursor cursor = scheduleResultsActivity.reverseStopCursorAdapterSupplier.getCursor(scheduleResultsActivity, criteria);
             if (cursor.moveToFirst()) {
                 return scheduleResultsActivity.reverseStopCursorAdapterSupplier.getCurrentItemFromCursor(cursor);
-            } else return null;
-        }
-
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        this.menu = menu;
-        getMenuInflater().inflate(R.menu.favorite_menu, menu);
-
-        if (currentFavorite != null) {
-            menu.findItem(R.id.create_favorite).setIcon(R.drawable.ic_favorite_made);
-            menu.findItem(R.id.create_favorite).setTitle(R.string.schedule_favorite_icon_title_remove);
-        } else {
-            menu.findItem(R.id.create_favorite).setTitle(R.string.schedule_favorite_icon_title_create);
-        }
-
-        return true;
-    }
-
-    public void saveAsFavorite(final MenuItem item) {
-        if (!item.isEnabled())
-            return;
-
-        item.setEnabled(false);
-
-        if (start != null && destination != null && transitType != null) {
-            if (currentFavorite == null) {
-                final Favorite favorite = new Favorite(start, destination, transitType, routeDirectionModel);
-                SaveFavoritesAsyncTask task = new SaveFavoritesAsyncTask(this, new Runnable() {
-                    @Override
-                    public void run() {
-                        item.setEnabled(true);
-                    }
-                }, new Runnable() {
-                    @Override
-                    public void run() {
-                        item.setEnabled(true);
-                        item.setIcon(R.drawable.ic_favorite_made);
-                        currentFavorite = favorite;
-                    }
-                });
-
-                task.execute(favorite);
-                Snackbar snackbar = Snackbar
-                        .make(findViewById(R.id.schedule_results_coordinator), R.string.create_fav_snackbar_text, Snackbar.LENGTH_LONG);
-
-                snackbar.show();
             } else {
-                new AlertDialog.Builder(this).setCancelable(true).setTitle(R.string.delete_fav_modal_title)
-                        .setMessage(R.string.delete_fav_modal_text)
-                        .setPositiveButton(R.string.delete_fav_pos_button, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                DeleteFavoritesAsyncTask task = new DeleteFavoritesAsyncTask(ScheduleResultsActivity.this, new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        item.setEnabled(true);
-                                    }
-                                }, new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        item.setEnabled(true);
-                                        item.setIcon(R.drawable.ic_favorite_available);
-                                        currentFavorite = null;
-                                    }
-                                });
-
-                                task.execute(currentFavorite.getKey());
-                            }
-                        }).setNegativeButton(R.string.delete_fav_neg_button, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        item.setEnabled(true);
-                    }
-                }).create().show();
+                return null;
             }
+        }
 
-        } else item.setEnabled(true);
     }
-
 
 }

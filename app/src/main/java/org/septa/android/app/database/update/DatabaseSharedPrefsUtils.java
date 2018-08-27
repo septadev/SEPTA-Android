@@ -4,7 +4,7 @@ import android.content.Context;
 
 import org.septa.android.app.database.SEPTADatabase;
 
-public class DatabaseSharedPrefsUtils {
+public abstract class DatabaseSharedPrefsUtils {
 
     // database shared preferences
     private static final String SHARED_PREFERENCES_DATABASE = "SHARED_PREFERENCES_DATABASE";
@@ -20,7 +20,7 @@ public class DatabaseSharedPrefsUtils {
     // default -10 instead of -1 just to ensure it won't be mistaken as in progress download
     public static final long DEFAULT_DOWNLOAD_REF_ID = -10;
 
-    // using commit() instead of apply() so that the values are immediately written to memory before the restart
+    // using commit() instead of apply() so that the values are immediately written to memory
 
     public static int getLatestVersionAvailable(Context context) {
         return context.getSharedPreferences(SHARED_PREFERENCES_DATABASE, Context.MODE_PRIVATE).getInt(NEWEST_DB_VERSION_AVAILABLE, SEPTADatabase.getDatabaseVersion());

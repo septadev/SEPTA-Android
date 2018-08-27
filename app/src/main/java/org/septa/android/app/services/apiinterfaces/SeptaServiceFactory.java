@@ -6,6 +6,8 @@ import android.util.Log;
 import android.view.View;
 
 import org.septa.android.app.R;
+import org.septa.android.app.notifications.NotificationsSharedPrefsUtils;
+import org.septa.android.app.notifications.NotificationsSharedPrefsUtilsImpl;
 import org.septa.android.app.systemstatus.SystemStatusResultsActivity;
 
 import java.io.IOException;
@@ -20,11 +22,8 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-/**
- * Created by jkampf on 8/10/17.
- */
-
 public class SeptaServiceFactory {
+
     public static final String TAG = SeptaServiceFactory.class.getSimpleName();
 
     private static String googleKey;
@@ -39,7 +38,9 @@ public class SeptaServiceFactory {
 
     static Retrofit septaAmazonServicesSingleton;
 
-    private static Favorites favoritesService = new FavoritesImpl();
+    private static FavoritesSharedPrefsUtils favoritesService = new FavoritesSharedPrefsUtilsImpl();
+
+    private static NotificationsSharedPrefsUtils notificationsService = new NotificationsSharedPrefsUtilsImpl();
 
     public static void init() {
         septaAmazonServicesSingleton = new Retrofit.Builder().client(new OkHttpClient.Builder().connectTimeout(5, TimeUnit.SECONDS).readTimeout(20, TimeUnit.SECONDS).addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)).addInterceptor(new Interceptor() {
@@ -89,15 +90,21 @@ public class SeptaServiceFactory {
         return septaAmazonServicesSingleton.create(AlertsService.class);
     }
 
+    public static TransitViewService getTransitViewService() {
+        return septaAmazonServicesSingleton.create(TransitViewService.class);
+    }
 
     public static GooglePlaceAutoCompleteService getAutoCompletePlaceService() {
         return googleSingleton.create(GooglePlaceAutoCompleteService.class);
     }
 
-    public static Favorites getFavoritesService() {
+    public static FavoritesSharedPrefsUtils getFavoritesService() {
         return favoritesService;
     }
 
+    public static NotificationsSharedPrefsUtils getNotificationsService() {
+        return notificationsService;
+    }
 
     public static String getAmazonawsApiKey() {
         return amazonawsApiKey;
@@ -132,7 +139,7 @@ public class SeptaServiceFactory {
     }
 
     public static void displayWebServiceError(View rootView, final Activity activity) {
-        Snackbar snackbar = Snackbar.make(rootView, R.string.realtime_failure_message, Snackbar.LENGTH_INDEFINITE);
+        Snackbar snackbar = Snackbar.make(rootView, R.string.realtime_failure_message, Snackbar.LENGTH_LONG);
 
         // redirect to schedules
         if (activity instanceof SeptaServiceFactoryCallBacks) {
@@ -161,7 +168,7 @@ public class SeptaServiceFactory {
         }
 
         View snackbarView = snackbar.getView();
-        android.widget.TextView tv = (android.widget.TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+        android.widget.TextView tv = snackbarView.findViewById(android.support.design.R.id.snackbar_text);
         tv.setMaxLines(10);
         snackbar.show();
     }

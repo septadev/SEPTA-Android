@@ -22,18 +22,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import org.septa.android.app.ActivityClass;
 import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
 import org.septa.android.app.database.DatabaseManager;
 import org.septa.android.app.locationpicker.LineAwareLocationPickerTabActivityHandler;
+import org.septa.android.app.rating.RatingUtil;
 
 import java.util.List;
-
-/************************************************************************************************************
- * Class: SchedulesFragment
- * Purpose: The Schedule adapter class manages the Transit Schedules Fragment in the application
- */
 
 public class SchedulesFragment extends Fragment {
 
@@ -45,8 +42,8 @@ public class SchedulesFragment extends Fragment {
             HOLIDAY_SCHEDULE_URL = "https://www.septa.org/schedules/modified-mobile",
             HOLIDAY_SCHEDULE_URL_RAIL = "https://septa.org/schedules/rail/special/holidays-mobile.html";
 
+    private ActivityClass target = ActivityClass.SCHEDULES;
     private SchedulesFragment.SectionsPagerAdapter mSectionsPagerAdapter;
-    private ViewPager mViewPager;
     private TabLayout tabLayout;
     LineAwareLocationPickerTabActivityHandler tabActivityHandlers[];
     int startingIndex = 0;
@@ -55,8 +52,7 @@ public class SchedulesFragment extends Fragment {
     AlertDialog holidayAlert;
 
     public static SchedulesFragment newInstance() {
-        SchedulesFragment instance = new SchedulesFragment();
-        return instance;
+        return new SchedulesFragment();
     }
 
     @Nullable
@@ -71,11 +67,11 @@ public class SchedulesFragment extends Fragment {
         DatabaseManager dbManager = DatabaseManager.getInstance(getActivity());
 
         tabActivityHandlers = new LineAwareLocationPickerTabActivityHandler[5];
-        tabActivityHandlers[1] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_rail), TAB_HEADER_STRING_NAME, getString(R.string.schedule_query_button_text), TransitType.RAIL, dbManager.getRailRouteCursorAdapterSupplier(), dbManager.getLineAwareRailStopCursorAdapterSupplier(), dbManager.getLineAwareRailStopAfterCursorAdapterSupplier(), ScheduleResultsActivity.class);
-        tabActivityHandlers[0] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_bus), TAB_HEADER_STRING_NAME, getString(R.string.schedule_query_button_text), TransitType.BUS, dbManager.getBusRouteCursorAdapterSupplier(), dbManager.getBusStopCursorAdapterSupplier(), dbManager.getBusStopAfterCursorAdapterSupplier(), ScheduleResultsActivity.class);
-        tabActivityHandlers[3] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_trolley), TAB_HEADER_STRING_NAME, getString(R.string.schedule_query_button_text), TransitType.TROLLEY, dbManager.getTrolleyRouteCursorAdapterSupplier(), dbManager.getTrolleyStopCursorAdapterSupplier(), dbManager.getTrolleyStopAfterCursorAdapterSupplier(), ScheduleResultsActivity.class);
-        tabActivityHandlers[2] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_subway), TAB_HEADER_STRING_NAME, getString(R.string.schedule_query_button_text), TransitType.SUBWAY, dbManager.getSubwayRouteCursorAdapterSupplier(), dbManager.getSubwayStopCursorAdapterSupplier(), dbManager.getSubwayStopAfterCursorAdapterSupplier(), ScheduleResultsActivity.class);
-        tabActivityHandlers[4] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_nhsl), TAB_HEADER_STRING_NAME, getString(R.string.schedule_query_button_text), TransitType.NHSL, dbManager.getNHSLRouteCursorAdapterSupplier(), dbManager.getBusStopCursorAdapterSupplier(), dbManager.getBusStopAfterCursorAdapterSupplier(), ScheduleResultsActivity.class);
+        tabActivityHandlers[1] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_rail), TAB_HEADER_STRING_NAME, getString(R.string.schedule_query_button_text), TransitType.RAIL, dbManager.getRailRouteCursorAdapterSupplier(), dbManager.getLineAwareRailStopCursorAdapterSupplier(), dbManager.getLineAwareRailStopAfterCursorAdapterSupplier(), ScheduleResultsActivity.class, target);
+        tabActivityHandlers[0] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_bus), TAB_HEADER_STRING_NAME, getString(R.string.schedule_query_button_text), TransitType.BUS, dbManager.getBusRouteCursorAdapterSupplier(), dbManager.getBusStopCursorAdapterSupplier(), dbManager.getBusStopAfterCursorAdapterSupplier(), ScheduleResultsActivity.class, target);
+        tabActivityHandlers[3] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_trolley), TAB_HEADER_STRING_NAME, getString(R.string.schedule_query_button_text), TransitType.TROLLEY, dbManager.getTrolleyRouteCursorAdapterSupplier(), dbManager.getTrolleyStopCursorAdapterSupplier(), dbManager.getTrolleyStopAfterCursorAdapterSupplier(), ScheduleResultsActivity.class, target);
+        tabActivityHandlers[2] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_subway), TAB_HEADER_STRING_NAME, getString(R.string.schedule_query_button_text), TransitType.SUBWAY, dbManager.getSubwayRouteCursorAdapterSupplier(), dbManager.getSubwayStopCursorAdapterSupplier(), dbManager.getSubwayStopAfterCursorAdapterSupplier(), ScheduleResultsActivity.class, target);
+        tabActivityHandlers[4] = new LineAwareLocationPickerTabActivityHandler(getString(R.string.tab_nhsl), TAB_HEADER_STRING_NAME, getString(R.string.schedule_query_button_text), TransitType.NHSL, dbManager.getNHSLRouteCursorAdapterSupplier(), dbManager.getBusStopCursorAdapterSupplier(), dbManager.getBusStopAfterCursorAdapterSupplier(), ScheduleResultsActivity.class, target);
 
         if (prePopulated != null) {
             tabActivityHandlers[startingIndex].setPrepopulate(prePopulated);
@@ -91,10 +87,10 @@ public class SchedulesFragment extends Fragment {
         mSectionsPagerAdapter = new SchedulesFragment.SectionsPagerAdapter(getChildFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) fragmentView.findViewById(R.id.schedule_fragment_container);
+        ViewPager mViewPager = fragmentView.findViewById(R.id.schedule_fragment_container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
-        tabLayout = (TabLayout) fragmentView.findViewById(R.id.schedule_fragment_tabs);
+        tabLayout = fragmentView.findViewById(R.id.schedule_fragment_tabs);
         tabLayout.setupWithViewPager(mViewPager);
         setUpTabs(tabLayout, inflater);
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -116,8 +112,15 @@ public class SchedulesFragment extends Fragment {
 
         tabLayout.getTabAt(startingIndex).select();
 
+        // ask to rate app
+        if (RatingUtil.shouldShowDialog(getContext())) {
+            RatingUtil.showRatingDialog(getContext());
+        }
+
         return fragmentView;
     }
+
+
 
     @Override
     public void onResume() {
@@ -148,7 +151,7 @@ public class SchedulesFragment extends Fragment {
                     }
                 });
 
-                if (holidayTransitTypes.contains(TransitType.BUS) || holidayTransitTypes.contains(TransitType.TROLLEY) || holidayTransitTypes.contains(TransitType.SUBWAY) || holidayTransitTypes.contains(TransitType.NHSL))
+                if (holidayTransitTypes.contains(TransitType.BUS) || holidayTransitTypes.contains(TransitType.TROLLEY) || holidayTransitTypes.contains(TransitType.SUBWAY) || holidayTransitTypes.contains(TransitType.NHSL)) {
                     builder.setPositiveButton(R.string.holiday_alert_button_text, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -159,8 +162,9 @@ public class SchedulesFragment extends Fragment {
                             }
                         }
                     });
+                }
 
-                if (holidayTransitTypes.contains(TransitType.RAIL))
+                if (holidayTransitTypes.contains(TransitType.RAIL)) {
                     builder.setNegativeButton(R.string.holiday_alert_button_text_rail, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -171,6 +175,7 @@ public class SchedulesFragment extends Fragment {
                             }
                         }
                     });
+                }
 
 
                 AlertDialog dialog = builder.create();

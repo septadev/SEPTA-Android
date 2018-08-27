@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/item_notification_timeframe"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_margin="15dp"
+        android:background="@color/manage_notifications_border" />
+
+    <ImageView
+        android:id="@+id/timeframe_delete_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:layout_marginBottom="-20dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="-10dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:padding="5dp"
+        android:src="@drawable/ic_close" />
+
+    <org.septa.android.app.view.TextView
+        android:id="@+id/timeframe_number"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:letterSpacing="0.01"
+        android:lineSpacingExtra="10sp"
+        android:textAlignment="center"
+        android:textColor="@android:color/black"
+        android:textSize="14sp"
+        app:typeface="@string/font_roboto_bold"
+        tools:text="Timeframe 1" />
+
+    <LinearLayout
+        android:id="@+id/notification_time_picker_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:orientation="horizontal"
+        android:weightSum="10">
+
+        <org.septa.android.app.view.TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:letterSpacing="0.01"
+            android:lineSpacingExtra="10sp"
+            android:text="Start:"
+            android:textAlignment="center"
+            android:textColor="@android:color/black"
+            android:textSize="14sp"
+            app:typeface="@string/font_roboto_regular" />
+
+        <org.septa.android.app.view.TextView
+            android:id="@+id/notification_schedule_start_picker"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:background="?android:attr/selectableItemBackground"
+            android:padding="3dp"
+            android:text="12:00 am"
+            android:textAlignment="center"
+            android:textColor="@color/text_primary"
+            android:textSize="14sp"
+            app:typeface="@string/font_roboto_bold" />
+
+        <org.septa.android.app.view.TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:letterSpacing="0.01"
+            android:lineSpacingExtra="10sp"
+            android:text="Until:"
+            android:textAlignment="center"
+            android:textColor="@android:color/black"
+            android:textSize="14sp"
+            app:typeface="@string/font_roboto_regular" />
+
+        <org.septa.android.app.view.TextView
+            android:id="@+id/notification_schedule_end_picker"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:background="?android:attr/selectableItemBackground"
+            android:padding="3dp"
+            android:text="12:30 pm"
+            android:textAlignment="center"
+            android:textColor="@color/text_primary"
+            android:textSize="14sp"
+            app:typeface="@string/font_roboto_bold" />
+
+    </LinearLayout>
+
+</LinearLayout>

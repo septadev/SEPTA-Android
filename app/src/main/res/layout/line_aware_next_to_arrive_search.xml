@@ -5,9 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/full_page_gradient_background"
@@ -22,9 +20,9 @@
             android:layout_marginStart="12dp"
             android:layout_marginTop="12dp"
             android:text="Regional Rail Schedules"
-            android:textColor="#144b88"
+            android:textColor="@color/text_primary"
             android:textSize="20sp"
-            app:font="@string/font_roboto_bold" />
+            app:typeface="@string/font_roboto_bold" />
 
         <LinearLayout
             android:id="@+id/top"
@@ -53,7 +51,7 @@
                     android:text="Line"
                     android:textColor="@color/light_gray"
                     android:textSize="12sp"
-                    app:font="@string/font_roboto_regular" />
+                    app:typeface="@string/font_roboto_regular" />
 
                 <org.septa.android.app.view.TextView
                     android:id="@+id/reset_button"
@@ -69,7 +67,7 @@
                     android:text="Reset"
                     android:textColor="@color/light_gray"
                     android:textSize="12sp"
-                    app:font="@string/font_roboto_regular" />
+                    app:typeface="@string/font_roboto_regular" />
 
             </RelativeLayout>
 

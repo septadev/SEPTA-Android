@@ -13,16 +13,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Created by jkampf on 9/8/17.
- */
-
 public class NextArrivalModelResponseParser {
 
-    private Map<LatLng, NextArrivalModelResponse.NextArrivalRecord> origLatLngMap = new HashMap<LatLng, NextArrivalModelResponse.NextArrivalRecord>();
-    private Map<LatLng, NextArrivalModelResponse.NextArrivalRecord> termLatLngMap = new HashMap<LatLng, NextArrivalModelResponse.NextArrivalRecord>();
+    private Map<LatLng, NextArrivalModelResponse.NextArrivalRecord> origLatLngMap = new HashMap<>();
+    private Map<LatLng, NextArrivalModelResponse.NextArrivalRecord> termLatLngMap = new HashMap<>();
 
-    private Set<String> routeIdSet = new HashSet<String>();
+    private Set<String> routeIdSet = new HashSet<>();
     List<NextArrivalModelResponse.NextArrivalRecord> results;
 
     public NextArrivalModelResponseParser() {
@@ -36,7 +32,9 @@ public class NextArrivalModelResponseParser {
             @Override
             public int compare(NextArrivalModelResponse.NextArrivalRecord o1, NextArrivalModelResponse.NextArrivalRecord o2) {
                 int result = o1.getOrigDepartureTime().compareTo(o2.getOrigDepartureTime());
-                if (result != 0) return result;
+                if (result != 0) {
+                    return result;
+                }
                 result = o1.getOrigArrivalTime().compareTo(o2.getOrigArrivalTime());
                 return result;
             }

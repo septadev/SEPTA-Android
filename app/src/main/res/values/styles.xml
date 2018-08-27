@@ -5,8 +5,11 @@
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
         <item name="android:actionMenuTextAppearance">@style/MyMenuTextAppearance</item>
+
+        <!-- switch colors -->
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorSwitchThumbNormal">@android:color/white</item>
     </style>
 
     <style name="MyMenuTextAppearance" parent="android:TextAppearance.Holo.Widget.ActionBar.Menu">
@@ -34,5 +37,6 @@
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowContentOverlay">@null</item>
     </style>
+
 
 </resources>

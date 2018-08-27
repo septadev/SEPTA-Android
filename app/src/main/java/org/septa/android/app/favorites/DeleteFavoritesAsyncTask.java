@@ -5,15 +5,11 @@ import android.os.AsyncTask;
 
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 
-/**
- * Created by jkampf on 9/7/17.
- */
-
 public class DeleteFavoritesAsyncTask extends AsyncTask<String, Void, Void> {
 
-    Runnable onCancel;
-    Runnable onPostExecute;
-    Context context;
+    private Runnable onCancel;
+    private Runnable onPostExecute;
+    private Context context;
 
     public DeleteFavoritesAsyncTask(Context context) {
         this.context = context;

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -12,11 +13,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import org.septa.android.app.BuildConfig;
 import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.database.DatabaseManager;
+import org.septa.android.app.rating.SharedPreferencesRatingUtil;
+import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
+import org.septa.android.app.support.AnalyticsManager;
 import org.septa.android.app.view.TextView;
 import org.septa.android.app.webview.WebViewActivity;
 
@@ -25,45 +30,52 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
-/**
- * Created by jkampf on 9/5/17.
- */
-
 public class AboutFragment extends Fragment {
-    boolean attribExpanded = false;
-    TextView attribTitle;
-    LinearLayout attribListView;
+
+    private static final String TAG = AboutFragment.class.getSimpleName();
+    private Activity activity;
+
+    private boolean attribExpanded = false;
+    private TextView attribTitle;
+    private LinearLayout attribListView;
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
         View fragmentView = inflater.inflate(R.layout.fragment_about, null);
 
-        attribListView = (LinearLayout) fragmentView.findViewById(R.id.attrib_list);
+        activity = getActivity();
+        if (activity == null) {
+            return fragmentView;
+        }
+
+        String deviceId = SeptaServiceFactory.getNotificationsService().getDeviceId(activity);
+        ((TextView) fragmentView.findViewById(R.id.device_id)).setText(getString(R.string.device_id, deviceId));
+
+        attribListView = fragmentView.findViewById(R.id.attrib_list);
         for (String s : getResources().getStringArray(R.array.about_attributions_listview_items_texts)) {
             TextView attribLine = (TextView) inflater.inflate(R.layout.item_about_attribute, null);
             attribLine.setHtml(s);
             attribListView.addView(attribLine);
-
         }
 
-        attribTitle = (TextView) fragmentView.findViewById(R.id.attrib_title);
+        attribTitle = fragmentView.findViewById(R.id.attrib_title);
         attribTitle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (!attribExpanded) {
                     Drawable[] drawables = attribTitle.getCompoundDrawables();
                     attribTitle.setCompoundDrawablesWithIntrinsicBounds(drawables[0], drawables[1],
-                            ContextCompat.getDrawable(getContext(), R.drawable.alert_toggle_open), drawables[3]);
+                            ContextCompat.getDrawable(activity, R.drawable.alert_toggle_open), drawables[3]);
                     attribListView.setVisibility(View.VISIBLE);
                     attribExpanded = true;
                     attribTitle.setText("Hide Attributions");
                 } else {
                     Drawable[] drawables = attribTitle.getCompoundDrawables();
                     attribTitle.setCompoundDrawablesWithIntrinsicBounds(drawables[0], drawables[1],
-                            ContextCompat.getDrawable(getContext(), R.drawable.alert_toggle_closed), drawables[3]);
+                            ContextCompat.getDrawable(activity, R.drawable.alert_toggle_closed), drawables[3]);
                     attribListView.setVisibility(View.GONE);
                     attribTitle.setText("View Attributions");
                     attribExpanded = false;
@@ -71,18 +83,33 @@ public class AboutFragment extends Fragment {
             }
         });
 
+        // reset the number of app uses
+        if (BuildConfig.IS_NONPROD_BUILD) {
+            fragmentView.findViewById(R.id.septa_logo).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    SharedPreferencesRatingUtil.setAppRated(activity, false);
+                    SharedPreferencesRatingUtil.setNumberOfUses(activity, 0);
+                    Toast.makeText(activity, "App Rating Reset", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
+        // version number
         StringBuilder versionInfoBuilder = new StringBuilder("App Version: ");
-        versionInfoBuilder.append(BuildConfig.VERSIONNAME).append("<br>");
+        versionInfoBuilder.append(BuildConfig.VERSIONNAME);
+
+        // add note if built as beta
+        if (BuildConfig.IS_NONPROD_BUILD) {
+            versionInfoBuilder.append(" (BETA)");
+        }
+        versionInfoBuilder.append("<br>");
 
         SimpleDateFormat formatter = (SimpleDateFormat) SimpleDateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
         formatter.setTimeZone(TimeZone.getTimeZone("gmt"));
 
-
-        if (getActivity() == null)
-            return fragmentView;
-
         try {
-            ApplicationInfo ai = getActivity().getPackageManager().getApplicationInfo(getActivity().getPackageName(), 0);
+            ApplicationInfo ai = activity.getPackageManager().getApplicationInfo(activity.getPackageName(), 0);
 
             long time = new File(ai.sourceDir).lastModified();
             String s = formatter.format(new java.util.Date(time));
@@ -90,7 +117,7 @@ public class AboutFragment extends Fragment {
         } catch (Exception e) {
         }
 
-        versionInfoBuilder.append("Database Version: ").append(DatabaseManager.getDatabase(getContext()).getVersion()).append("<br>");
+        versionInfoBuilder.append("Database Version: ").append(DatabaseManager.getDatabase(activity).getVersion()).append("<br>");
 
         try {
             File dbFile = new File(DatabaseManager.getDatabase().getPath());
@@ -99,34 +126,17 @@ public class AboutFragment extends Fragment {
         } catch (Exception e) {
         }
 
-
         ((TextView) fragmentView.findViewById(R.id.build_info)).setHtml(versionInfoBuilder.toString());
 
         setHttpIntent(fragmentView, R.id.feedback_button, getResources().getString(R.string.comment_url), getResources().getString(R.string.comment_title));
+
         return fragmentView;
-
-    }
-
-    private void setHttpIntent(View rootView, int viewId, final String url, final String title) {
-        View twitterLink = rootView.findViewById(viewId);
-        twitterLink.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Activity activity = getActivity();
-                if (activity != null) {
-                    Intent intent = new Intent(activity, WebViewActivity.class);
-                    intent.putExtra(Constants.TARGET_URL, url);
-                    intent.putExtra(Constants.TITLE, title);
-                    startActivity(intent);
-                }
-            }
-        });
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString("title", getActivity().getTitle().toString());
+        outState.putString("title", activity.getTitle().toString());
     }
 
     @Override
@@ -134,8 +144,27 @@ public class AboutFragment extends Fragment {
         super.onViewStateRestored(savedInstanceState);
         if (savedInstanceState != null) {
             String title = savedInstanceState.getString("title");
-            if (title != null && getActivity() != null)
-                getActivity().setTitle(title);
+            if (title != null && activity != null) {
+                activity.setTitle(title);
+            }
         }
     }
+
+    private void setHttpIntent(View rootView, int viewId, final String url, final String title) {
+        View link = rootView.findViewById(viewId);
+        link.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (activity != null) {
+                    Intent intent = new Intent(activity, WebViewActivity.class);
+                    intent.putExtra(Constants.TARGET_URL, url);
+                    intent.putExtra(Constants.TITLE, title);
+
+                    AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_APP_FEEDBACK, AnalyticsManager.CUSTOM_EVENT_ID_EXTERNAL_LINK, null);
+                    startActivity(intent);
+                }
+            }
+        });
+    }
+
 }

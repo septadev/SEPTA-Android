@@ -7,23 +7,26 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Created by jkampf on 8/20/17.
- */
-
 public class NextArrivalModelResponse implements Serializable {
+
     @SerializedName("origin")
     private int startStationId;
+
     @SerializedName("destination")
     private int destStationId;
+
     @SerializedName("type")
     private String transType;
+
     @SerializedName("route")
     private String routeId;
+
     @SerializedName("success")
     private boolean success;
+
     @SerializedName("status")
     private int status;
+
     @SerializedName("arrivals")
     private List<NextArrivalRecord> nextArrivalRecords = new ArrayList<>();
 
@@ -69,69 +72,99 @@ public class NextArrivalModelResponse implements Serializable {
     }
 
     public class NextArrivalRecord implements Serializable {
+
         @SerializedName("orig_line_route_id")
         private String origRouteId;
+
         @SerializedName("orig_line_route_name")
         private String origRouteName;
+
         @SerializedName("term_line_route_id")
         private String termRouteId;
+
         @SerializedName("term_line_route_name")
         private String termRouteName;
+
         @SerializedName("connection_station_id")
         private Integer connectionStationId;
+
         @SerializedName("connection_station_name")
         private String connectionStationName;
+
         @SerializedName("orig_line_trip_id")
         private String origLineTripId;
+
         @SerializedName("term_line_trip_id")
         private String termLineTripId;
+
         @SerializedName("orig_departure_time")
         private Date origDepartureTime;
+
         @SerializedName("orig_arrival_time")
         private Date origArrivalTime;
+
         @SerializedName("term_departure_time")
         private Date termDepartureTime;
+
         @SerializedName("term_arrival_time")
         private Date termArrivalTime;
+
         @SerializedName("orig_delay_minutes")
         private int origDelayMinutes;
+
         @SerializedName("term_delay_minutes")
         private int termDelayMinutes;
+
         @SerializedName("orig_last_stop_id")
         private int origLastStopId;
+
         @SerializedName("orig_last_stop_name")
         private String origLastStopName;
+
         @SerializedName("term_last_stop_id")
         private int termLastStopId;
+
         @SerializedName("term_last_stop_name")
         private String termLastStopName;
+
         @SerializedName("orig_line_direction")
         private String origLineDirection;
+
         @SerializedName("term_line_direction")
         private String termLineDirection;
+
         @SerializedName("orig_vehicle_lat")
         private Double origVehicleLat;
+
         @SerializedName("orig_vehicle_lon")
         private Double origVehicleLon;
+
         @SerializedName("term_vehicle_lat")
         private Double termVehicleLat;
+
         @SerializedName("term_vehicle_lon")
         private Double termVehicleLon;
+
         @SerializedName("orig_vehicle_id")
         private String origVehicleId;
+
         @SerializedName("term_vehicle_id")
         private String termVehicleId;
-        @SerializedName("orig_vehicle_line")
-        String origVehicleLine;
-        @SerializedName("term_vehicle_line")
-        String termVehicleLine;
-        @SerializedName("orig_realtime")
-        boolean origRealtime = false;
-        @SerializedName("term_realtime")
-        boolean termRealtime = false;
-        @SerializedName("consist")
-        List<String> consist = new ArrayList<String>();
 
+        @SerializedName("orig_vehicle_line")
+        private String origVehicleLine;
+
+        @SerializedName("term_vehicle_line")
+        private String termVehicleLine;
+
+        @SerializedName("orig_realtime")
+        private boolean origRealtime = false;
+
+        @SerializedName("term_realtime")
+        private boolean termRealtime = false;
+
+        @SerializedName("consist")
+        private List<String> consist = new ArrayList<String>();
 
         public String getOrigRouteId() {
             return origRouteId;

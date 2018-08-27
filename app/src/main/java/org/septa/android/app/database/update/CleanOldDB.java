@@ -6,10 +6,6 @@ import android.util.Log;
 
 import java.io.File;
 
-/**
- * Created by mluansing on 9/20/17.
- */
-
 public class CleanOldDB extends AsyncTask<Object, Object, Void> {
 
     // tag for logging purposes
@@ -19,7 +15,7 @@ public class CleanOldDB extends AsyncTask<Object, Object, Void> {
     private CleanOldDBListener mListener;
     private int version;
 
-    public CleanOldDB(Context context, CleanOldDBListener listener, int version) {
+    CleanOldDB(Context context, CleanOldDBListener listener, int version) {
         this.context = context;
         this.mListener = listener;
         this.version = version;

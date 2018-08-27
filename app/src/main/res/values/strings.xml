@@ -16,10 +16,11 @@
     <string name="system_status">System Status</string>
     <string name="schedule">Schedule</string>
     <string name="fares_and_transit_info">Fares and Transit Info</string>
+    <string name="perks">Perks</string>
     <string name="connect_with_septa">Connect With SEPTA</string>
     <string name="train_view">TrainView</string>
     <string name="transit_view">TransitView</string>
-
+    <string name="transit_view_beta">TransitView (Beta)</string>
 
     <!-- Transit Type Tab Names -->
     <string name="tab_rail">Rail</string>
@@ -49,7 +50,6 @@
 
 
     <string name="system_map">System Map</string>
-    <string name="events">Special Events</string>
 
 
     <!-- Line Picker -->
@@ -80,6 +80,8 @@
     <string name="location_picker_by_address_hint">Type address and select</string>
     <string name="location_picker_by_stop_hint">Type stop name or select</string>
     <string name="line_picker_hint">Type line name or select</string>
+    <string name="line_picker_selection_direction">%1$s: to %2$s</string>
+    <string name="line_picker_selection">%1$s: %2$s</string>
 
 
     <!-- Next to Arrive String by Transit Type -->
@@ -126,28 +128,47 @@
     <string name="nta_refresh">Refresh</string>
 
 
+    <!-- Vehicle Details on Map -->
+    <string name="heading_rail">Train: </string>
+    <string name="heading_bus">Bus: </string>
+    <string name="heading_trolley">Trolley: </string>
+    <string name="heading_destination"> to %1$s</string>
+    <string name="heading_vehicle_number">Vehicle Number: </string>
+    <string name="heading_block_id">Block ID: </string>
+    <string name="heading_status">Status: </string>
+    <string name="heading_status_delay">%1$s late</string>
+    <string name="heading_rail_number_cars"># of Train Cars: </string>
+
+
     <!-- Favorite -->
     <string name="delete_fav_modal_title">Delete Favorite?</string>
-    <string name="delete_fav_modal_text">Are you sure you want to remove this trip from your favorites?</string>
+    <string name="delete_fav_modal_text">Are you sure you want to remove this from your favorites?</string>
     <string name="delete_fav_pos_button">Delete</string>
     <string name="delete_fav_neg_button">Cancel</string>
-    <string name="create_fav_snackbar_text">Trip saved to your Favorites</string>
+    <string name="create_nta_favorite">Trip saved to your Favorites</string>
+    <string name="create_nta_favorite_failed">Trip could not be saved to Favorites</string>
+    <string name="create_transitview_favorite">TransitView selection saved to your Favorites</string>
+    <string name="create_transitview_favorite_failed">Selection could not be saved to Favorites</string>
+
     <string name="nta_favorite_icon_title_remove">Tap to remove this Next To Arrive result as a favorite</string>
     <string name="nta_favorite_icon_title_create">Tap to create a favorite from this Next To Arrive result</string>
-    <string name="favorite_more_button_description">Tap for more Next to Arrive details for your favorite, </string>
-
+    <string name="transitview_favorite_icon_title_remove">Tap to remove this TransitView selection from your Favorites</string>
+    <string name="transitview_favorite_icon_title_create">Tap to create a Favorite from this TransitView selection</string>
     <string name="schedule_favorite_icon_title_remove">Tap to remove this Schedule result as a favorite</string>
-    <string name="schedule_favorite_icon_title_create">Tap to create a favorite from this Schedule result</string>
+    <string name="schedule_favorite_icon_title_create">Tap to create a Favorite from this Schedule result</string>
 
     <string name="snackbar_no_connection_link_text">Schedules »</string>
     <string name="favorites_empty_results_msg">No Update</string>
     <string name="favorites_view_schedules_msg">View Schedules »</string>
+    <string name="favorites_view_transitview">View »</string>
 
     <string name="favorites_menu_item_add">Add</string>
     <string name="favorites_menu_item_edit">Edit</string>
     <string name="favorites_menu_item_done">Done</string>
     <string name="favorites_add_new">Add a Favorite</string>
     <string name="no_favorites_to_edit">You have no favorites to edit!</string>
+    <string name="rename_favorite_nta">Edit Favorite Trip</string>
+    <string name="rename_favorite_transitview">Edit TransitView Favorite</string>
 
 
     <!-- System Status -->
@@ -162,6 +183,20 @@
     <string name="system_status_results_title_subway">System Status: Subway</string>
     <string name="system_status_results_title_trolley">System Status: Trolley</string>
     <string name="system_status_results_title_nhsl">System Status: NHSL</string>
+
+
+    <!-- TransitView -->
+    <string name="transitview_heading">Select Up to 3 Routes</string>
+    <string name="transitview_query_button_text">View Map</string>
+    <string name="transitview_line_picker_first_text">Select a Bus Route or Trolley Line</string>
+    <string name="transitview_line_picker_second_text">Select a Second Bus Route or Trolley Line</string>
+    <string name="transitview_line_picker_third_text">Select a Third Bus Route or Trolley Line</string>
+
+    <string name="transitview_add_route">You must select a bus or trolley route to view TransitView results!</string>
+    <string name="transitview_remove_route_title">Remove Route %1$s?</string>
+    <string name="transitview_remove_route_text">Would you like to remove this route from your current TransitView selection?</string>
+    <string name="transitview_remove_route_pos_button">Remove</string>
+    <string name="transitview_remove_route_neg_button">Cancel</string>
 
 
     <!-- Schedules -->
@@ -179,9 +214,9 @@
     <!-- In-App Database Update-->
     <string name="prompt_download_database_title">New Schedules Available</string>
     <string name="prompt_download_database_description">Would you like to download them now?\n\nIf you choose to wait until later, you can still view Next To Arrive information.</string>
-    <string name="prompt_download_button_positive_download_now">Download Now</string>
-    <string name="prompt_download_button_negative_remind_later">Remind Me Later</string>
-    <string name="prompt_download_button_neutral_nta">Go to Next to Arrive</string>
+    <string name="prompt_download_button_positive_download_now">Download\n Now</string>
+    <string name="prompt_download_button_negative_remind_later">Remind \nMe Later</string>
+    <string name="prompt_download_button_neutral_nta">Go to Next\n to Arrive</string>
 
     <string name="download_permission_needed">We need your permission before we can download the new database onto your device.</string>
 
@@ -201,6 +236,8 @@
     <string name="comment_url">http://www3.septa.org/customerservice/VeritasFormMobile</string>
     <string name="tdd_phone_content">TDD/TTY (215)-580-7853</string>
     <string name="voice_line_content">Call (215)-580-7800</string>
+
+    <string name="fragment_connect_rate_app">Rate the SEPTA Transit App</string>
 
     <string name="twitter_app_url_air">twitter://user?user_id=381660241</string>
     <string name="twitter_app_url_che">twitter://user?user_id=381664276</string>
@@ -232,10 +269,6 @@
     <string name="quick_trip_price">$2.50</string>
     <string name="cash_text"><![CDATA[Cash: <b>{0}</b><br>SEPTA Key Card Quick Trip: <b>{1}</b>]]></string>
 
-    <string name="token_each_price">$2.00</string>
-    <string name="token_transfer_price">$1.00</string>
-    <string name="token_text"><![CDATA[Tokens: <b>{0} each</b><br>Transfer: <b>{1}</b><br>SEPTA Key Card Travel Wallet]]></string>
-
     <string name="transpass_weekly_price">$25.50</string>
     <string name="transpass_monthly_price">$96.00</string>
     <string name="weekly_text"><![CDATA[Weekly: <b>{0}</b><br>Monthly: <b>{1}</b><br>Load Pass on SEPTA Key Card]]></string>
@@ -262,6 +295,7 @@
 
 
     <!-- About -->
+    <string name="device_id">Device ID: %1$s</string>
     <string name="activity_about_attributions">View Attributions</string>
     <string name="activity_about_credits">Source code to the SEPTA Android application is available under an open source license, but the graphics are not.  \n\nThe graphics are subject to the following Copyright and Trademark terms: http://septa.org/site/copyright.html.  \n\nThe source code is available at: https://github.com/septadev/SEPTA-Android.</string>
 
@@ -277,8 +311,73 @@
     <string name="title_mobile_app_alert">Mobile App Alert</string>
 
 
+    <!-- Push Notifications -->
+    <string name="push_notifications_channel_name">Transportation</string>
+    <string name="notifications">Manage Notifications</string>
+
+    <string name="global_notifications_settings_heading">Global Settings</string>
+    <string name="enable_notifications">Enable Notifications</string>
+    <string name="enable_notifications_hint">Always show notifications from this app</string>
+    <string name="special_announcements">Special SEPTA Announcements</string>
+    <string name="special_announcements_hint">Get notified about major disruptions in service, weather alerts, and special events</string>
+    <string name="system_notification_settings">System Notification Settings</string>
+    <string name="my_notifications_heading">My Notifications</string>
+    <string name="my_custom_notifications">My Custom Notifications</string>
+    <string name="notifications_permission_required">You must allow notifications from the SEPTA app in \'System Notification Settings\' in order to change your preferences.</string>
+
+    <string name="notifications_schedule_heading">Set Notifications Days and Times for All Transportation Modes</string>
+    <string name="notifications_days_of_week_requirement">Notifications must be enabled for at least ONE day. Turn off all notifications using the \'Global Settings\' switch.</string>
+    <string name="notifications_end_time_requirement">End Time must be after Start Time</string>
+    <string name="notifications_start_time_requirement">Start Time must be before End Time</string>
+    <string name="notification_timeframe_number">Timeframe %1$d</string>
+    <string name="notification_add_timeframe">Add Timeframe</string>
+
+    <string name="notifications_add">Add</string>
+    <string name="notifications_edit">Edit</string>
+    <string name="notifications_done">Done</string>
+
+    <string name="subscription_need_connection">You must have a network connection in order to change your notification preferences.</string>
+    <string name="subscription_success">Your notification preferences have been updated.</string>
+    <string name="subscription_failed_no_connection">Your notification preferences cannot be saved. Please make sure you are connected to the internet.</string>
+    <string name="subscription_failed">Your notification preferences cannot be saved right now. Please try again in a few minutes.</string>
+
+    <string name="subscription_warning_title">Unsaved Changes</string>
+    <string name="subscription_warning">Are you sure you want to leave? Your notification preferences will NOT be saved.</string>
+    <string name="notif_warning_pos_button">Leave</string>
+    <string name="notif_warning_neg_button">Cancel</string>
+
+    <string name="no_notifications_to_edit">You have no notification subscriptions to edit!</string>
+    <string name="delete_notif_title">Delete Notification?</string>
+    <string name="delete_notif_text">Are you sure you want to remove the %1$s from your notifications subscriptions?</string>
+    <string name="delete_notif_pos_button">Delete</string>
+    <string name="delete_notif_neg_button">Cancel</string>
+
+    <string name="subscribe_long_description">Subscribe to Notifications for this Route</string>
+    <string name="view_notification_preferences">View Notification Preferences »</string>
+    <string name="subscribe_switch">Subscribe</string>
+    <string name="notifications_permission_needed">You must allow notifications from the SEPTA app in \'System Notification Settings\' in order to receive push notifications about this route.</string>
+    <string name="notifications_not_enabled">You must enable notifications within the app in order to receive push notifications about this route.</string>
+
+    <string name="push_notif_special_announcement_title">Special Announcement</string>
+    <string name="push_notif_alert_title">Service Alert for Route %1$s</string>
+    <string name="push_notif_detour_title">Detour on Route %1$s</string>
+    <string name="push_notif_rail_delay_title">Train Delay on %1$s</string>
+
+    <string name="notification_expired">This notification has expired and is no longer valid.</string>
+
+
+    <!-- In-App Ratings-->
+    <string name="rating_title">How are we doing?</string>
+    <string name="rating_rate_button">Rate Now</string>
+    <string name="rating_no_thanks_button">No Thanks</string>
+    <string name="rating_remind_me_later_button">Remind Me Later</string>
+    <string name="rating_details">We\'d love your feedback on the SEPTA app</string>
+    <string name="elerts">Report Crime or Nuisance</string>
+
+
     <!-- String Resources -->
     <string name="button_ok">Okay</string>
     <string name="empty_string"></string>
+
 
 </resources>

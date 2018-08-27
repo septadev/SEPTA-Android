@@ -5,7 +5,7 @@
     android:id="@+id/bottomSheetLayout"
     android:layout_width="match_parent"
     android:layout_height="10dp"
-    android:background="#ffffff"
+    android:background="@android:color/white"
     app:behavior_hideable="false"
     app:behavior_peekHeight="10dp"
     app:layout_behavior="@string/bottom_sheet_behavior">
@@ -58,14 +58,16 @@
                     android:text="Next Trains To Arrive"
                     android:textAlignment="center"
                     android:textSize="12pt"
-                    app:font="@string/font_roboto_bold" />
+                    app:typeface="@string/font_roboto_bold" />
 
                 <org.septa.android.app.nextarrive.NextToArriveTripView
                     android:id="@+id/next_to_arrive_trip_details"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="23dp" />
+
             </LinearLayout>
+
         </android.support.v4.widget.NestedScrollView>
 
         <RelativeLayout
@@ -86,7 +88,7 @@
                 android:text="@string/need_to_see_rail"
                 android:textColor="#d73a11"
                 android:textSize="14sp"
-                app:font="@string/font_roboto_bold" />
+                app:typeface="@string/font_roboto_bold" />
 
             <ImageView
                 android:id="@+id/chevron_image"
@@ -108,7 +110,7 @@
                 android:layout_toLeftOf="@id/chevron_image"
                 android:text="@string/schedule_query_button_text"
                 android:textSize="12sp"
-                app:font="@string/font_roboto_regular" />
+                app:typeface="@string/font_roboto_regular" />
 
             <ImageView
                 android:id="@+id/schedules_logo_image"
@@ -119,6 +121,7 @@
                 android:src="@drawable/schedules_orange" />
 
         </RelativeLayout>
+
     </LinearLayout>
 
     <FrameLayout
@@ -136,5 +139,7 @@
             android:layout_gravity="center"
             android:indeterminate="true"
             android:indeterminateDrawable="@drawable/basic_progress" />
+
     </FrameLayout>
+
 </FrameLayout>

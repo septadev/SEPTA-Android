@@ -1,15 +1,10 @@
 package org.septa.android.app.support;
 
-/**
- * Created by jkampf on 8/16/17.
- */
-
 public class Criteria {
 
     private Operation operation;
     private String fieldName;
     private Object value;
-
 
     public Criteria(String fieldName, Operation operation, Object value) {
         this.operation = operation;
@@ -47,6 +42,5 @@ public class Criteria {
             return opText;
         }
     }
-
 
 }

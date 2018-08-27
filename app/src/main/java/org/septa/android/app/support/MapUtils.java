@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
@@ -41,11 +42,8 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-/**
- * Created by jkampf on 8/10/17.
- */
+public abstract class MapUtils {
 
-public class MapUtils {
     private static final String TAG = MapUtils.class.getSimpleName();
 
     public static KmlLayer getKMLByLineId(Context context, GoogleMap googleMap, String lineId, TransitType transitType) {
@@ -63,6 +61,16 @@ public class MapUtils {
         }
 
         String colorValue = Integer.toHexString(ContextCompat.getColor(context, transitType.getLineColor(modifiedLineId, context)));
+        return getKmlLayer(context, googleMap, resourceId, colorValue);
+    }
+
+    public static KmlLayer getKMLByLineIdWithColor(Context context, GoogleMap googleMap, String lineId, int colorId) {
+        int resourceId = context.getResources().getIdentifier("kml_" + lineId.toLowerCase(), "raw", R.class.getPackage().getName());
+        return getKmlLayer(context, googleMap, resourceId, Integer.toHexString(ContextCompat.getColor(context, colorId)));
+    }
+
+    @Nullable
+    private static KmlLayer getKmlLayer(Context context, GoogleMap googleMap, int resourceId, String colorValue) {
         InputStream raw = null;
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -113,10 +121,12 @@ public class MapUtils {
         } catch (TransformerException e) {
             Log.e(TAG, e.toString());
         } finally {
-            if (raw != null) try {
-                raw.close();
-            } catch (IOException e) {
-                Log.e(TAG, e.toString());
+            if (raw != null) {
+                try {
+                    raw.close();
+                } catch (IOException e) {
+                    Log.e(TAG, e.toString());
+                }
             }
         }
         return null;

@@ -8,15 +8,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Created by jkampf on 9/14/17.
- */
-
 public class ScheduleModel implements Comparable<ScheduleModel> {
-    Date departureDate;
-    Date arrivalDate;
-    String blockId;
 
+    private Date departureDate;
+    private Date arrivalDate;
+    private String blockId;
 
     public ScheduleModel(String blockId, int arrivalTime, int departureTime) {
         this.blockId = blockId;
@@ -38,12 +34,14 @@ public class ScheduleModel implements Comparable<ScheduleModel> {
     @Override
     public int compareTo(@NonNull ScheduleModel o) {
         int arrivalCompare = arrivalDate.compareTo(o.arrivalDate);
-        if (arrivalCompare != 0)
+        if (arrivalCompare != 0) {
             return arrivalCompare;
+        }
 
         int departureCompare = departureDate.compareTo(o.departureDate);
-        if (departureCompare != 0)
+        if (departureCompare != 0) {
             return departureCompare;
+        }
 
         return blockId.compareTo(o.blockId);
     }

@@ -32,7 +32,7 @@ public class FontManager {
         return getTypeface(context, customFontName);
     }
 
-    public Typeface getTypeface(Context context, String customFontName) {
+    private Typeface getTypeface(Context context, String customFontName) {
         Typeface typeface = typefaceCache.get(customFontName);
         if (typeface == null) {
             typeface = Typeface.createFromAsset(context.getAssets(), customFontName);
@@ -60,9 +60,9 @@ public class FontManager {
         textView.setTypeface(typeface);
     }
 
-    public static String getFontName(Context c, AttributeSet attrs) {
+    private static String getFontName(Context c, AttributeSet attrs) {
         TypedArray typedArray = c.obtainStyledAttributes(attrs, R.styleable.CustomFonts);
-        String customFontName = typedArray.getString(R.styleable.CustomFonts_font);
+        String customFontName = typedArray.getString(R.styleable.CustomFonts_typeface);
         typedArray.recycle();
         return customFontName;
     }

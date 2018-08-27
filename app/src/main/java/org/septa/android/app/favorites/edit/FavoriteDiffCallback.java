@@ -2,15 +2,15 @@ package org.septa.android.app.favorites.edit;
 
 import android.support.v7.util.DiffUtil;
 
-import org.septa.android.app.services.apiinterfaces.model.Favorite;
+import org.septa.android.app.favorites.FavoriteState;
 
 import java.util.List;
 
 class FavoriteDiffCallback extends DiffUtil.Callback {
 
-    public List<Favorite> oldFavorites, newFavorites;
+    private List<FavoriteState> oldFavorites, newFavorites;
 
-    public FavoriteDiffCallback(List<Favorite> mItemList, List<Favorite> favoriteStateList) {
+    FavoriteDiffCallback(List<FavoriteState> mItemList, List<FavoriteState> favoriteStateList) {
         this.newFavorites = favoriteStateList;
         this.oldFavorites = mItemList;
     }
@@ -27,7 +27,7 @@ class FavoriteDiffCallback extends DiffUtil.Callback {
 
     @Override
     public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-        return oldFavorites.get(oldItemPosition).getKey() == newFavorites.get(newItemPosition).getKey();
+        return oldFavorites.get(oldItemPosition).getFavoriteKey() == newFavorites.get(newItemPosition).getFavoriteKey();
     }
 
     @Override

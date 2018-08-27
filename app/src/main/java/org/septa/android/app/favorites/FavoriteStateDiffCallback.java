@@ -6,9 +6,9 @@ import java.util.List;
 
 class FavoriteStateDiffCallback extends DiffUtil.Callback {
 
-    public List<FavoriteState> oldFavoriteStates, newFavoriteStates;
+    private List<FavoriteState> oldFavoriteStates, newFavoriteStates;
 
-    public FavoriteStateDiffCallback(List<FavoriteState> mItemList, List<FavoriteState> favoriteStateList) {
+    FavoriteStateDiffCallback(List<FavoriteState> mItemList, List<FavoriteState> favoriteStateList) {
         this.newFavoriteStates = favoriteStateList;
         this.oldFavoriteStates = mItemList;
     }
@@ -25,7 +25,7 @@ class FavoriteStateDiffCallback extends DiffUtil.Callback {
 
     @Override
     public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-        return oldFavoriteStates.get(oldItemPosition).getFavoriteKey() == newFavoriteStates.get(newItemPosition).getFavoriteKey();
+        return oldFavoriteStates.get(oldItemPosition).getFavoriteKey().equalsIgnoreCase(newFavoriteStates.get(newItemPosition).getFavoriteKey());
     }
 
     @Override

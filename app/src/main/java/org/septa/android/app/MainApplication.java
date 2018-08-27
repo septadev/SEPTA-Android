@@ -8,9 +8,13 @@ import android.os.Handler;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
+import com.google.firebase.FirebaseApp;
 
 import org.septa.android.app.database.DatabaseManager;
+import org.septa.android.app.database.SEPTADatabase;
 import org.septa.android.app.database.update.DatabaseSharedPrefsUtils;
+import org.septa.android.app.rating.RatingUtil;
+import org.septa.android.app.rating.SharedPreferencesRatingUtil;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Alerts;
 import org.septa.android.app.support.AnalyticsManager;
@@ -32,6 +36,7 @@ public class MainApplication extends Application implements Runnable {
     public void onCreate() {
         super.onCreate();
 
+        SEPTADatabase.setShippedDatabase(this);
         // update database version if manually incremented
         int currentDBVersion = DatabaseManager.getDatabase(getApplicationContext()).getVersion();
         if (currentDBVersion > DatabaseSharedPrefsUtils.getVersionInstalled(MainApplication.this)) {
@@ -66,12 +71,19 @@ public class MainApplication extends Application implements Runnable {
             String septaAmazonAwsApiKey = bundle.getString("org.septa.amazonaws.x-api-key");
             SeptaServiceFactory.setAmazonawsApiKey(septaAmazonAwsApiKey);
 
-            String septaWebServicesBaseUrl = bundle.getString("org.septa.amazonaws.baseurl");
+            String septaWebServicesBaseUrl = bundle.getString("org.septa.amazonaws.baseurl.prod");
+            if (BuildConfig.IS_NONPROD_BUILD) {
+                if (BuildConfig.DEBUG) {
+                    septaWebServicesBaseUrl = bundle.getString("org.septa.amazonaws.baseurl.dev");
+                } else {
+                    septaWebServicesBaseUrl = bundle.getString("org.septa.amazonaws.baseurl.qa");
+                }
+            }
             SeptaServiceFactory.setSeptaWebServicesBaseUrl(septaWebServicesBaseUrl);
 
             SeptaServiceFactory.init();
 
-            //SeptaServiceFactory.getFavoritesService().deleteAllFavorites(this);
+            FirebaseApp.initializeApp(this);
         } catch (PackageManager.NameNotFoundException e) {
             Log.e(TAG, "Failed to load meta-data, NameNotFound: " + e.getMessage());
         } catch (NullPointerException e) {
@@ -80,6 +92,43 @@ public class MainApplication extends Application implements Runnable {
 
         refreshHandler = new Handler();
         refreshHandler.postDelayed(this, 1);
+
+        if (SharedPreferencesRatingUtil.getAppJustCrashed(getApplicationContext())) {
+            SharedPreferencesRatingUtil.setAppJustCrashed(getApplicationContext(), false);
+
+            // require more crash free uses before prompting
+            int numberUses = SharedPreferencesRatingUtil.getNumberOfUses(getApplicationContext());
+            int crashFreeUsesRequired = RatingUtil.MIN_USES_TO_RATE - RatingUtil.MIN_CRASH_FREE_USES_TO_RATE;
+            if (numberUses > crashFreeUsesRequired) {
+                SharedPreferencesRatingUtil.setNumberOfUses(getApplicationContext(), crashFreeUsesRequired);
+            }
+        }
+
+        // handler for uncaught exceptions
+        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+            @Override
+            public void uncaughtException(Thread thread, Throwable e) {
+                handleUncaughtException(thread, e);
+            }
+        });
+    }
+
+    public void handleUncaughtException(Thread thread, Throwable e) {
+        e.printStackTrace(); // not all Android versions will print the stack trace automatically
+
+        SharedPreferencesRatingUtil.setAppJustCrashed(getApplicationContext(), true);
+
+        // require more crash free uses before prompting
+        int numberUses = SharedPreferencesRatingUtil.getNumberOfUses(getApplicationContext());
+        int crashFreeUsesRequired = RatingUtil.MIN_USES_TO_RATE - RatingUtil.MIN_CRASH_FREE_USES_TO_RATE;
+        if (numberUses > crashFreeUsesRequired) {
+            SharedPreferencesRatingUtil.setNumberOfUses(getApplicationContext(), crashFreeUsesRequired);
+        }
+
+        Log.e(TAG, "The SEPTA app just crashed");
+
+        // close app
+        System.exit(1);
     }
 
     @Override

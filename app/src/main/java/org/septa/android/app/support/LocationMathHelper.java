@@ -2,16 +2,10 @@ package org.septa.android.app.support;
 
 import com.google.android.gms.maps.model.LatLng;
 
-/**
- * Created by jkampf on 8/7/17.
- */
-
-
 public class LocationMathHelper {
 
-
-    //Miles
-    public final static double EARTH_RADIUS = 3959;
+    // miles
+    private final static double EARTH_RADIUS = 3959;
 
     /**
      * Calculate the distance between 2 points in Miles
@@ -24,7 +18,6 @@ public class LocationMathHelper {
         return distance(location1.latitude, location1.longitude, location2.latitude, location2.longitude);
     }
 
-
     /**
      *
      * Calculate the distance between 2 points in Miles
@@ -35,7 +28,7 @@ public class LocationMathHelper {
      * @param lon2 Second Longitude
      * @return
      */
-    public static double distance(double lat1, double lon1, double lat2, double lon2) {
+    private static double distance(double lat1, double lon1, double lat2, double lon2) {
         double theta = lon1 - lon2;
         double dist = Math.sin(Math.toRadians(lat1)) * Math.sin(Math.toRadians(lat2)) + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) * Math.cos(Math.toRadians(theta));
         dist = Math.acos(dist);
@@ -43,8 +36,6 @@ public class LocationMathHelper {
         dist = dist * 60 * 1.1515;
         return (dist);
     }
-
-
 
     /**
      * Calculates the end-point from a given source at a given range (meters)
@@ -59,9 +50,7 @@ public class LocationMathHelper {
      *            Bearing in degrees
      * @return End-point from the source given the desired range and bearing.
      */
-    public static LatLng calculateDerivedPosition(LatLng point,
-                                                  double range, double bearing)
-    {
+    public static LatLng calculateDerivedPosition(LatLng point, double range, double bearing) {
         double latA = Math.toRadians(point.latitude);
         double lonA = Math.toRadians(point.longitude);
         double angularDistance = range / EARTH_RADIUS;
@@ -82,10 +71,7 @@ public class LocationMathHelper {
         lat = Math.toDegrees(lat);
         lon = Math.toDegrees(lon);
 
-        LatLng newPoint = new LatLng((float) lat, (float) lon);
-
-        return newPoint;
-
+        return new LatLng((float) lat, (float) lon);
     }
 
 }

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -13,20 +14,29 @@ import android.view.ViewGroup;
 
 import org.septa.android.app.Constants;
 import org.septa.android.app.R;
+import org.septa.android.app.rating.RatingUtil;
+import org.septa.android.app.support.AnalyticsManager;
 import org.septa.android.app.webview.WebViewActivity;
-
-/**
- * Created by jkampf on 9/29/17.
- */
 
 public class ConnectFragment extends Fragment {
 
-    private static final String TAG = ConnectFragment.class.getSimpleName();
+    private static final String TAG = ConnectFragment.class.getSimpleName(), TOOLBAR_TITLE = "TOOLBAR_TITLE";
 
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
         View rootView = inflater.inflate(R.layout.fragment_connect, container, false);
+
+        // user can rate the app
+        View rateTheApp = rootView.findViewById(R.id.rate_the_app);
+        rateTheApp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // send user to playstore to rate app
+                RatingUtil.rateAppInPlayStore(getContext());
+            }
+        });
 
         setAppIntent(rootView, R.id.facebook_arrow, getResources().getString(R.string.facebook_url), getResources().getString(R.string.facebook_app_url));
         setAppIntent(rootView, R.id.twitter_arrow, getResources().getString(R.string.twitter_url), getResources().getString(R.string.twitter_app_url));
@@ -37,9 +47,26 @@ public class ConnectFragment extends Fragment {
         return rootView;
     }
 
-    private void setAppIntent(View rootView, int viewId, final String url, final String appUrl) {
-        View twitterLink = rootView.findViewById(viewId);
-        twitterLink.setOnClickListener(new View.OnClickListener() {
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(TOOLBAR_TITLE, getActivity().getTitle().toString());
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if (savedInstanceState != null) {
+            String title = savedInstanceState.getString(TOOLBAR_TITLE);
+            if (title != null && getActivity() != null) {
+                getActivity().setTitle(title);
+            }
+        }
+    }
+
+    private void setAppIntent(View rootView, final int viewId, final String url, final String appUrl) {
+        View link = rootView.findViewById(viewId);
+        link.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Activity activity = getActivity();
@@ -55,16 +82,24 @@ public class ConnectFragment extends Fragment {
                         }
                     }
 
+                    // analytics
+                    if (viewId == R.id.facebook_arrow) {
+                        AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_FACEBOOK, AnalyticsManager.CUSTOM_EVENT_ID_EXTERNAL_LINK, null);
+                    } else if (viewId == R.id.twitter_arrow) {
+                        AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_TWITTER, AnalyticsManager.CUSTOM_EVENT_ID_EXTERNAL_LINK, null);
+                    } else {
+                        Log.e(TAG, String.format("Could not track event analytics for url: %s", url));
+                    }
+
                     startActivity(intent);
                 }
             }
         });
     }
 
-
-    private void setHttpIntent(View rootView, int viewId, final String url, final String title) {
-        View twitterLink = rootView.findViewById(viewId);
-        twitterLink.setOnClickListener(new View.OnClickListener() {
+    private void setHttpIntent(View rootView, final int viewId, final String url, final String title) {
+        View link = rootView.findViewById(viewId);
+        link.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Activity activity = getActivity();
@@ -72,25 +107,20 @@ public class ConnectFragment extends Fragment {
                     Intent intent = new Intent(activity, WebViewActivity.class);
                     intent.putExtra(Constants.TARGET_URL, url);
                     intent.putExtra(Constants.TITLE, title);
+
+                    // analytics
+                    if (viewId == R.id.chat_arrow) {
+                        AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_LIVE_CHAT, AnalyticsManager.CUSTOM_EVENT_ID_EXTERNAL_LINK, null);
+                    } else if (viewId == R.id.comment_arrow) {
+                        AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_SEND_COMMENT, AnalyticsManager.CUSTOM_EVENT_ID_EXTERNAL_LINK, null);
+                    } else {
+                        Log.e(TAG, String.format("Could not track event analytics for url: %s", url));
+                    }
+
                     startActivity(intent);
                 }
             }
         });
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString("title", getActivity().getTitle().toString());
-    }
-
-    @Override
-    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-        super.onViewStateRestored(savedInstanceState);
-        if (savedInstanceState != null) {
-            String title = savedInstanceState.getString("title");
-            if (title != null && getActivity() != null)
-                getActivity().setTitle(title);
-        }
-    }
 }

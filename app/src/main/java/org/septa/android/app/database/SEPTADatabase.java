@@ -6,9 +6,12 @@ import android.util.Log;
 
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 
+import org.septa.android.app.BuildConfig;
 import org.septa.android.app.R;
 import org.septa.android.app.support.CrashlyticsManager;
 import org.septa.android.app.support.GeneralUtils;
+
+import java.util.Properties;
 
 public class SEPTADatabase extends SQLiteAssetHelper {
     private static String TAG = SEPTADatabase.class.getSimpleName();
@@ -16,16 +19,16 @@ public class SEPTADatabase extends SQLiteAssetHelper {
     /**
      * Current packaged DB version, update number when packaged DB changes
      */
-    private static final String LATEST_DATABASE_API_URL = "https://s3.amazonaws.com/mobiledb.septa.org/latest/latestDb.json";
+    private static final String LATEST_DATABASE_API_URL_PROD = "https://s3.amazonaws.com/mobiledb.septa.org/latest/latestDb.json";
+    private static final String LATEST_DATABASE_API_URL_NONPROD = "https://s3.amazonaws.com/mobiledb.nonprod.septa.org/latest/latestDb.json";
 
     // these are left in case the user does not have the most up to date version of the database
-    // modify databaseVersion and databaseFileName when pushing out a new release with a new DB
-    private static int databaseVersion = 1;
-    private static String databaseFileName = "SEPTA_1.sqlite";
+    // they should be set by using the method setShippedDatabase() before an instance of this class is constructed.
+    private static int databaseVersion;
+    private static String databaseFileName;
 
     public SEPTADatabase(Context context, int databaseVersion, String databaseFileName) {
         super(context, databaseFileName, null, databaseVersion);
-
         setDatabaseVersion(databaseVersion);
 
         CrashlyticsManager.log(Log.INFO, TAG, "Initializing DB: " + databaseVersion);
@@ -58,6 +61,22 @@ public class SEPTADatabase extends SQLiteAssetHelper {
         setDatabaseFileName(newDatabaseFilename);
     }
 
+    /**
+     *
+     *  This method needs to be run before the constructor can be executed successfully.
+     *
+     * */
+    public static void setShippedDatabase(Context context) {
+        try {
+            Properties properties = new Properties();
+            properties.load(context.getAssets().open("databases/database_version.properties"));
+            databaseVersion = Integer.parseInt(properties.getProperty("databaseVersion"));
+            databaseFileName = properties.getProperty("databaseFileName");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public static String getDatabaseFileName() {
         return databaseFileName;
     }
@@ -67,6 +86,10 @@ public class SEPTADatabase extends SQLiteAssetHelper {
     }
 
     public static String getLatestDatabaseApiUrl() {
-        return LATEST_DATABASE_API_URL;
+        if (BuildConfig.IS_NONPROD_BUILD) {
+            return LATEST_DATABASE_API_URL_NONPROD;
+        } else {
+            return LATEST_DATABASE_API_URL_PROD;
+        }
     }
 }

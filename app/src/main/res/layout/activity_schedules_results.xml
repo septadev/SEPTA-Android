@@ -2,7 +2,7 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/schedule_results_coordinator"
+    android:id="@+id/activity_schedule_results_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/full_page_gradient_background"
@@ -21,12 +21,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
             android:layout_marginTop="10dp"
             android:letterSpacing="-0.02"
             android:text="Paoli/Thorndale"
-            android:textColor="#144b88"
+            android:textColor="@color/text_primary"
             android:textSize="20sp"
-            app:font="@string/font_roboto_bold" />
+            app:typeface="@string/font_roboto_bold" />
 
         <org.septa.android.app.view.TextView
             android:id="@+id/route_description_text"
@@ -35,27 +36,27 @@
             android:layout_below="@+id/route_name_text"
             android:letterSpacing="-0.02"
             android:text="to/from Center City Philadelphia"
-            android:textColor="#144b88"
+            android:textColor="@color/text_primary"
             android:textSize="12sp"
-            app:font="@string/font_roboto_medium" />
+            app:typeface="@string/font_roboto_medium" />
 
         <ImageView
             android:id="@+id/transit_type_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_marginTop="15dp"
             android:src="@drawable/ic_line_air" />
 
-
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        <LinearLayout
             android:id="@+id/results_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/route_description_text"
             android:layout_marginBottom="10dp"
             android:layout_marginTop="10dp"
-            android:background="#ffff"
+            android:background="@android:color/white"
             android:orientation="vertical">
 
             <RelativeLayout
@@ -63,14 +64,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-
                 <ImageView
                     android:id="@+id/circle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginEnd="8dp"
                     android:layout_marginLeft="15dp"
                     android:layout_marginRight="8dp"
+                    android:layout_marginStart="15dp"
                     android:layout_marginTop="18dp"
                     android:src="@drawable/multi_stop_start_circle" />
 
@@ -79,6 +82,7 @@
                     android:layout_width="50dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
+                    android:layout_toEndOf="@id/circle"
                     android:layout_toRightOf="@id/circle"
                     android:ellipsize="end"
                     android:letterSpacing="-0.02"
@@ -86,16 +90,19 @@
                     android:text="Jefferson Station"
                     android:textColor="@android:color/black"
                     android:textSize="12sp"
-                    app:font="@string/font_roboto_medium" />
+                    app:typeface="@string/font_roboto_medium" />
 
                 <ImageView
                     android:id="@+id/pin"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
                     android:layout_below="@id/circle"
+                    android:layout_marginEnd="8dp"
                     android:layout_marginLeft="15dp"
                     android:layout_marginRight="8dp"
+                    android:layout_marginStart="15dp"
                     android:layout_marginTop="17dp"
                     android:src="@drawable/ic_destination_pin" />
 
@@ -112,27 +119,22 @@
                     android:text="Paoli Station"
                     android:textColor="@android:color/black"
                     android:textSize="12sp"
-                    app:font="@string/font_roboto_medium" />
+                    app:typeface="@string/font_roboto_medium" />
 
-                <org.septa.android.app.view.TextView
-                    android:id="@+id/reverse_trip_label"
+                <ImageView
+                    android:id="@+id/button_reverse_schedule_trip"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginRight="13dp"
-                    android:layout_marginTop="20dp"
-                    android:contentDescription="Reverse Trip"
-                    android:drawablePadding="8dp"
-                    android:drawableRight="@drawable/reverse_icon"
-                    android:letterSpacing="-0.02"
-                    android:paddingLeft="5dp"
-                    android:text="Reverse&lt;br&gt;Trip"
-                    android:textColor="#144b88"
-                    android:textSize="10sp"
-                    app:font="@string/font_roboto_medium" />
-            </RelativeLayout>
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="14dp"
+                    android:layout_marginRight="14dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:src="@drawable/ic_reverse_blue" />
 
+            </RelativeLayout>
 
             <LinearLayout
                 android:id="@+id/line_status_layout"
@@ -146,6 +148,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="15dp"
+                    android:layout_marginStart="15dp"
                     android:layout_marginTop="5dp"
                     android:fontFamily="sans-serif-medium"
                     android:letterSpacing="-0.02"
@@ -153,110 +156,108 @@
                     android:textColor="@android:color/black"
                     android:textSize="12sp"
                     android:textStyle="normal" />
+
             </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="15dp"
+                android:background="@color/notification_subscribe_border" />
 
             <LinearLayout
                 android:id="@+id/alert_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/bg_alerts_in_schedule"
-                android:orientation="vertical"
-                android:paddingBottom="12dp"
-                android:visibility="gone"
-                tools:visibility="visible">
+                android:layout_margin="10dp"
+                android:orientation="vertical">
 
-                <org.septa.android.app.view.TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:letterSpacing="-0.02"
-                    android:text="Line Status"
-                    android:textColor="@android:color/black"
-                    android:textSize="12sp"
-                    app:font="@string/font_roboto_bold" />
-
-                <LinearLayout
-                    android:id="@+id/status_layout"
+                <HorizontalScrollView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp">
+                    android:scrollbars="none">
 
-                    <org.septa.android.app.view.TextView
-                        android:id="@+id/service_advisory"
+                    <LinearLayout
+                        android:id="@+id/status_layout"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_weight="1"
-                        android:drawableLeft="@drawable/ic_advisory"
-                        android:drawablePadding="7dp"
-                        android:letterSpacing="-0.02"
-                        android:text="Advisory"
-                        android:textColor="@android:color/black"
-                        android:textSize="12sp"
-                        android:visibility="gone"
-                        app:font="@string/font_roboto_light"
-                        tools:visibility="visible" />
+                        android:orientation="horizontal"
+                        android:layout_gravity="center">
 
-                    <org.septa.android.app.view.TextView
-                        android:id="@+id/service_alert"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:drawableLeft="@drawable/ic_alert"
-                        android:drawablePadding="7dp"
-                        android:gravity="center_vertical"
-                        android:letterSpacing="-0.02"
-                        android:text="Alert"
-                        android:textColor="@android:color/black"
-                        android:textSize="12sp"
-                        android:visibility="gone"
-                        app:font="@string/font_roboto_light" />
+                        <org.septa.android.app.view.TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:letterSpacing="-0.02"
+                            android:padding="5dp"
+                            android:text="Status Alerts"
+                            android:textColor="@android:color/black"
+                            android:textSize="12sp"
+                            app:typeface="@string/font_roboto_bold" />
 
-                    <org.septa.android.app.view.TextView
-                        android:id="@+id/active_detour"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:drawableLeft="@drawable/ic_detour"
-                        android:drawablePadding="7dp"
-                        android:gravity="center_vertical"
-                        android:letterSpacing="-0.02"
-                        android:text="Detour"
-                        android:textColor="@android:color/black"
-                        android:textSize="12sp"
-                        android:visibility="gone"
-                        app:font="@string/font_roboto_light" />
+                        <ImageView
+                            android:id="@+id/advisory_icon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="5dp"
+                            android:src="@drawable/ic_advisory" />
 
-                    <org.septa.android.app.view.TextView
-                        android:id="@+id/weather_alerts"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:drawableLeft="@drawable/ic_weather"
-                        android:drawablePadding="7dp"
-                        android:gravity="center_vertical"
-                        android:letterSpacing="-0.02"
-                        android:text="Weather"
-                        android:textColor="@android:color/black"
-                        android:textSize="12sp"
-                        android:visibility="gone"
-                        app:font="@string/font_roboto_light" />
+                        <ImageView
+                            android:id="@+id/alert_icon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="5dp"
+                            android:src="@drawable/ic_alert" />
 
-                </LinearLayout>
+                        <ImageView
+                            android:id="@+id/detour_icon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="5dp"
+                            android:src="@drawable/ic_detour" />
 
+                        <ImageView
+                            android:id="@+id/weather_icon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="5dp"
+                            android:src="@drawable/ic_weather" />
+
+                        <org.septa.android.app.view.TextView
+                            android:id="@+id/notification_route_switch_label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:letterSpacing="-0.02"
+                            android:text="@string/subscribe_switch"
+                            android:textAllCaps="true"
+                            android:textColor="@color/light_gray"
+                            android:textSize="10sp"
+                            app:typeface="@string/font_roboto_regular" />
+
+                        <android.support.v7.widget.SwitchCompat
+                            android:id="@+id/notification_route_switch"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="5dp"
+                            android:theme="@style/AppTheme"
+                            tools:checked="true" />
+
+                    </LinearLayout>
+
+                </HorizontalScrollView>
 
             </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/notification_subscribe_border" />
 
             <RadioGroup
                 android:id="@+id/day_of_week_button_group"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginTop="14dp"
-
+                android:layout_margin="10dp"
                 android:orientation="horizontal">
 
                 <org.septa.android.app.view.RadioButton
@@ -273,7 +274,7 @@
                     android:text="Weekday"
                     android:textColor="@drawable/radio_btn_font_color_selector"
                     android:textSize="13sp"
-                    app:font="@string/font_roboto_regular" />
+                    app:typeface="@string/font_roboto_regular" />
 
                 <org.septa.android.app.view.RadioButton
                     android:id="@+id/mon_thurs_button"
@@ -290,7 +291,7 @@
                     android:textColor="@drawable/radio_btn_font_color_selector"
                     android:textSize="13sp"
                     android:visibility="gone"
-                    app:font="@string/font_roboto_regular" />
+                    app:typeface="@string/font_roboto_regular" />
 
                 <org.septa.android.app.view.RadioButton
                     android:id="@+id/friday_button"
@@ -307,7 +308,7 @@
                     android:textColor="@drawable/radio_btn_font_color_selector"
                     android:textSize="13sp"
                     android:visibility="gone"
-                    app:font="@string/font_roboto_regular" />
+                    app:typeface="@string/font_roboto_regular" />
 
                 <org.septa.android.app.view.RadioButton
                     android:id="@+id/saturday_button"
@@ -323,7 +324,7 @@
                     android:text="Saturday"
                     android:textColor="@drawable/radio_btn_font_color_selector"
                     android:textSize="13sp"
-                    app:font="@string/font_roboto_regular" />
+                    app:typeface="@string/font_roboto_regular" />
 
                 <org.septa.android.app.view.RadioButton
                     android:id="@+id/sunday_button"
@@ -339,7 +340,8 @@
                     android:text="Sunday"
                     android:textColor="@drawable/radio_btn_font_color_selector"
                     android:textSize="13sp"
-                    app:font="@string/font_roboto_regular" />
+                    app:typeface="@string/font_roboto_regular" />
+
             </RadioGroup>
 
             <LinearLayout
@@ -375,20 +377,24 @@
                         android:text="Next to Arrive for this Route"
                         android:textColor="@android:color/white"
                         android:textSize="14sp"
-                        app:font="@string/font_roboto_medium" />
+                        app:typeface="@string/font_roboto_medium" />
 
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
+                        android:layout_marginEnd="8dp"
                         android:layout_marginRight="8dp"
                         android:layout_toLeftOf="@id/nta_textview"
+                        android:layout_toStartOf="@id/nta_textview"
                         android:src="@drawable/ic_nta_internal_nav" />
-                </RelativeLayout>
-            </LinearLayout>
 
+                </RelativeLayout>
+
+            </LinearLayout>
 
         </LinearLayout>
 
     </RelativeLayout>
+
 </android.support.design.widget.CoordinatorLayout>

@@ -22,9 +22,9 @@
             android:layout_marginStart="12dp"
             android:layout_marginTop="12dp"
             android:text="Regional Rail"
-            android:textColor="#144b88"
+            android:textColor="@color/text_primary"
             android:textSize="20sp"
-            app:font="@string/font_roboto_bold" />
+            app:typeface="@string/font_roboto_bold" />
 
         <LinearLayout
             android:id="@+id/top"
@@ -32,7 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:background="#ffffff"
+            android:background="@android:color/white"
             android:elevation="@dimen/white_box_elevation"
             android:orientation="vertical">
 
@@ -47,7 +47,7 @@
                 android:text="Select your stations to see Next To Arrive Trains."
                 android:textColor="@color/light_gray"
                 android:textSize="12sp"
-                app:font="@string/font_roboto_regular" />
+                app:typeface="@string/font_roboto_regular" />
 
             <org.septa.android.app.view.TextView
                 android:id="@+id/starting_stop"
@@ -103,7 +103,7 @@
                 android:elevation="4dp"
                 android:focusable="true"
                 android:text="@string/schedule_query_button_text"
-                android:textColor="#ffffff" />
+                android:textColor="@android:color/white" />
         </LinearLayout>
 
     </LinearLayout>

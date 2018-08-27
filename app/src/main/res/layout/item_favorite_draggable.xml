@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:layout_marginBottom="@dimen/favorite_item_margin"
     android:layout_marginTop="@dimen/favorite_item_margin"
-    android:background="#ffffff"
+    android:background="@android:color/white"
     android:elevation="@dimen/white_box_elevation"
     android:orientation="vertical"
     app:swipeViewId="@+id/favorite_item_drag_handle">
@@ -23,7 +23,7 @@
             android:layout_gravity="center"
             android:layout_marginLeft="@dimen/favorite_item_margin"
             android:layout_marginStart="@dimen/favorite_item_margin"
-            android:background="#ffffff"
+            android:background="@android:color/white"
             android:padding="8dp"
             android:src="@drawable/ic_drag_handle" />
 
@@ -32,7 +32,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="8dp"
-            android:src="@drawable/rail_active_final" />
+            android:src="@drawable/ic_rail_circle" />
 
         <org.septa.android.app.view.TextView
             android:id="@+id/favorite_title_text"
@@ -49,7 +49,7 @@
             android:text="Office Commute"
             android:textColor="@color/colorPrimary"
             android:textSize="16sp"
-            app:font="@string/font_roboto_bold" />
+            app:typeface="@string/font_roboto_bold" />
 
         <ImageButton
             android:id="@+id/favorite_item_delete_button"

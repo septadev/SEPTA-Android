@@ -26,7 +26,6 @@ This file is read by Android Studio upon startup
 2. In this file, create one line, which will look like below:
 
 	SEPTA.signing = /Users/&lt;username&gt;/.signing/SEPTASigning
-	android.enableAapt2 = false
 		
 3. Create a directory titled <code>.signing</code>.
 4. Create a file titled <code>SEPTASigning.gradle</code>.
@@ -48,7 +47,9 @@ This file is read by Android Studio upon startup
             SPRINT_ROUND = '8'
 
 	    	GOOGLE_GEO_API_KEY = 'na'
-            AMAZONAWS_API_KEY = 'na'
+            AMAZONAWS_API_KEY_PROD = 'na'
+            AMAZONAWS_API_KEY_QA = 'na'
+            AMAZONAWS_API_KEY_DEV = 'na'            
     		CRASHLYTICS_API_KEY = 'na'
 
 		}
@@ -93,6 +94,8 @@ Once you have created the keystore files, add the password to the <code>SEPTASig
             SPRINT_ROUND = '8'
 
 	    	GOOGLE_GEO_API_KEY = 'na'
-            AMAZONAWS_API_KEY = 'na'
+            AMAZONAWS_API_KEY_PROD = 'na'
+            AMAZONAWS_API_KEY_QA = 'na'
+            AMAZONAWS_API_KEY_DEV = 'na'  
     		CRASHLYTICS_API_KEY = 'na'
 		}

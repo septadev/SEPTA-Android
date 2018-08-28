@@ -40,12 +40,9 @@ import org.septa.android.app.support.CursorAdapterSupplier;
 import org.septa.android.app.support.GeneralUtils;
 import org.septa.android.app.systemstatus.SystemStatusResultsActivity;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import retrofit2.Call;
@@ -62,8 +59,6 @@ public class PushNotificationManager {
     private static PushNotificationManager mInstance;
 
     private static final String CHANNEL_ID = "SEPTA_PUSH_NOTIFICATIONS";
-
-    private static final DateFormat timeFormat = new SimpleDateFormat("HHmm", Locale.US);
 
     private PushNotificationManager(Context context) {
         this.context = context;
@@ -107,6 +102,8 @@ public class PushNotificationManager {
             // build detour
             title = context.getString(R.string.push_notif_detour_title, routeId.toUpperCase());
             resultIntent.putExtra(Constants.REQUEST_CODE, Constants.PUSH_NOTIF_REQUEST_DETOUR);
+        } else {
+            CrashlyticsManager.log(Log.ERROR, TAG, "Invalid notificationType for System Status notification: " + notificationType);
         }
 
         // tapping on push notification will open main activity

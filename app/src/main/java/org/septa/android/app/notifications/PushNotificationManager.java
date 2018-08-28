@@ -5,7 +5,6 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -74,13 +73,16 @@ public class PushNotificationManager {
     public void buildSpecialAnnouncementNotification(Context context, String message) {
         String title = context.getString(R.string.push_notif_special_announcement_title);
 
+        // create unique notif ID
+        int notifId = (int) System.currentTimeMillis();
+
         // build back stack for click action
         final Intent resultIntent = new Intent(context, MainActivity.class);
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-        stackBuilder.addNextIntentWithParentStack(resultIntent);
-        PendingIntent pendingIntent = stackBuilder.getPendingIntent((int) System.currentTimeMillis(), PendingIntent.FLAG_UPDATE_CURRENT);
+        resultIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-        displayNotification(context, title, message, pendingIntent);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, notifId, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        displayNotification(notifId, context, title, message, pendingIntent);
     }
 
     public void buildSystemStatusNotification(Context context, NotificationType notificationType, String message, TransitType transitType, String routeId) {
@@ -88,6 +90,7 @@ public class PushNotificationManager {
         String routeName = routeId;
 
         Intent resultIntent = new Intent(context, MainActivity.class);
+        resultIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         if (notificationType == NotificationType.ALERT) {
             // build service alert
@@ -111,12 +114,12 @@ public class PushNotificationManager {
         resultIntent.putExtra(Constants.ROUTE_ID, routeId);
         resultIntent.putExtra(Constants.TRANSIT_TYPE, transitType);
 
-        // build back stack for click action
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-        stackBuilder.addNextIntentWithParentStack(resultIntent);
-        PendingIntent pendingIntent = stackBuilder.getPendingIntent((int) System.currentTimeMillis(), PendingIntent.FLAG_UPDATE_CURRENT);
+        // create unique notif ID
+        int notifId = (int) System.currentTimeMillis();
 
-        displayNotification(context, title, message, pendingIntent);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, notifId, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        displayNotification(notifId, context, title, message, pendingIntent);
     }
 
     public void buildRailDelayNotification(final Context context, String message, final String routeId, final String vehicleId, String destinationStopId, DelayNotificationType delayType) {
@@ -126,6 +129,7 @@ public class PushNotificationManager {
         final TransitType transitType = TransitType.RAIL;
 
         final Intent resultIntent = new Intent(context, MainActivity.class);
+        resultIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         // estimated delay notifications don't link anywhere in app, actual ones do
         if (delayType == DelayNotificationType.ACTUAL) {
@@ -145,15 +149,15 @@ public class PushNotificationManager {
             resultIntent.putExtra(Constants.TRANSIT_TYPE, transitType);
         }
 
-        // build back stack for click action
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-        stackBuilder.addNextIntentWithParentStack(resultIntent);
-        PendingIntent pendingIntent = stackBuilder.getPendingIntent((int) System.currentTimeMillis(), PendingIntent.FLAG_UPDATE_CURRENT);
+        // create unique notif ID
+        int notifId = (int) System.currentTimeMillis();
 
-        displayNotification(context, title, message, pendingIntent);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, notifId, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        displayNotification(notifId, context, title, message, pendingIntent);
     }
 
-    private void displayNotification(Context context, String title, String message, PendingIntent pendingIntent) {
+    private void displayNotification(int notifId, Context context, String title, String message, PendingIntent pendingIntent) {
 
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_launcher)
@@ -171,9 +175,6 @@ public class PushNotificationManager {
 
         // add sound / vibrate based on current user settings
         mBuilder.setDefaults(Notification.DEFAULT_ALL);
-
-        // use timestamp to create unique notif ID
-        int notifId = (int) System.currentTimeMillis();
 
         NotificationManager mNotifyMgr = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
         if (mNotifyMgr != null) {

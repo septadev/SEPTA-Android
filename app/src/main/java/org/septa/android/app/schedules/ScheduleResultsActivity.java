@@ -182,7 +182,7 @@ public class ScheduleResultsActivity extends BaseActivity implements RenameFavor
         super.onResume();
 
         if (notifsSwitch != null && notifsSwitch.isChecked()) {
-            showMethodPushNotifsDisabled();
+            checkIfPushNotifsDisabled();
         }
     }
 
@@ -482,38 +482,38 @@ public class ScheduleResultsActivity extends BaseActivity implements RenameFavor
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, final boolean isChecked) {
                     if (GeneralUtils.isConnectedToInternet(ScheduleResultsActivity.this)) {
-                        if (isChecked) {
-                            // enable notifs for route
-                            PushNotificationManager.getInstance(ScheduleResultsActivity.this).createNotificationForRoute(routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName(), transitType, "Schedule Results");
 
-                            // show message if necessary that push notifs will not be received
-                            showMethodPushNotifsDisabled();
+                        boolean notifsAllowed = NotificationManagerCompat.from(ScheduleResultsActivity.this).areNotificationsEnabled(),
+                                notifsEnabled = SeptaServiceFactory.getNotificationsService().areNotificationsEnabled(ScheduleResultsActivity.this);
 
-                        } else {
-                            // disable notifs for route
-                            PushNotificationManager.getInstance(ScheduleResultsActivity.this).removeNotificationForRoute(routeDirectionModel.getRouteId(), transitType, "Schedule Results");
-
-                            // remove message
-                            if (snackbar != null && snackbar.isShown()) {
-                                snackbar.dismiss();
+                        if (notifsAllowed && notifsEnabled) {
+                            if (isChecked) {
+                                // enable notifs for route
+                                PushNotificationManager.getInstance(ScheduleResultsActivity.this).createNotificationForRoute(routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName(), transitType, "Schedule Results");
+                            } else {
+                                // disable notifs for route
+                                PushNotificationManager.getInstance(ScheduleResultsActivity.this).removeNotificationForRoute(routeDirectionModel.getRouteId(), transitType, "Schedule Results");
                             }
-                        }
 
-                        if (!ignoreSwitch) {
-                            PushNotificationManager.updateNotifSubscription(getApplicationContext(), new Runnable() {
-                                @Override
-                                public void run() {
-                                    String deviceId = SeptaServiceFactory.getNotificationsService().getDeviceId(getApplicationContext());
-                                    CrashlyticsManager.log(Log.ERROR, TAG, "Unable to subscribe device ID: " + deviceId + " to push notifs for route " + routeDirectionModel.getRouteId());
+                            if (!ignoreSwitch) {
+                                PushNotificationManager.updateNotifSubscription(getApplicationContext(), new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        String deviceId = SeptaServiceFactory.getNotificationsService().getDeviceId(getApplicationContext());
+                                        CrashlyticsManager.log(Log.ERROR, TAG, "Unable to subscribe device ID: " + deviceId + " to push notifs for route " + routeDirectionModel.getRouteId());
 
-                                    failureToToggleRouteSubscription(isChecked);
-                                }
-                            });
+                                        failureToToggleRouteSubscription(isChecked);
+                                    }
+                                });
+                            }
+                        } else {
+                            // handle lack of permissions
+                            showPushNotifsDisabled(notifsAllowed, notifsEnabled);
+                            failureToToggleRouteSubscription(isChecked);
                         }
                     } else {
-                        Toast.makeText(ScheduleResultsActivity.this, R.string.subscription_need_connection, Toast.LENGTH_SHORT).show();
-
                         // handle no network connection
+                        Toast.makeText(ScheduleResultsActivity.this, R.string.subscription_need_connection, Toast.LENGTH_SHORT).show();
                         failureToToggleRouteSubscription(isChecked);
                     }
                 }
@@ -527,10 +527,17 @@ public class ScheduleResultsActivity extends BaseActivity implements RenameFavor
         ignoreSwitch = false;
     }
 
-    private void showMethodPushNotifsDisabled() {
+    private void checkIfPushNotifsDisabled() {
         // recheck device permissions and show message if notifs not allowed or enabled
         boolean notifsAllowed = NotificationManagerCompat.from(ScheduleResultsActivity.this).areNotificationsEnabled(),
                 notifsEnabled = SeptaServiceFactory.getNotificationsService().areNotificationsEnabled(ScheduleResultsActivity.this);
+
+        if (!notifsAllowed || !notifsEnabled) {
+            showPushNotifsDisabled(notifsAllowed, notifsEnabled);
+        }
+    }
+
+    private void showPushNotifsDisabled(boolean notifsAllowed, boolean notifsEnabled) {
         if (!notifsAllowed) {
             snackbar = Snackbar.make(findViewById(R.id.activity_schedule_results_container), R.string.notifications_permission_needed, Snackbar.LENGTH_INDEFINITE);
             snackbar.setAction("Settings", new View.OnClickListener() {

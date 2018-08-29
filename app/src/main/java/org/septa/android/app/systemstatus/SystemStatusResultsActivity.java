@@ -182,35 +182,38 @@ public class SystemStatusResultsActivity extends BaseActivity {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, final boolean isChecked) {
                     if (GeneralUtils.isConnectedToInternet(SystemStatusResultsActivity.this)) {
-                        if (isChecked) {
-                            // enable notifs for route
-                            PushNotificationManager.getInstance(SystemStatusResultsActivity.this).createNotificationForRoute(routeId, routeName, transitType, "System Status Results");
 
-                            // show message if necessary that push notifs will not be received
-                            showMessagePushNotifsDisabled();
+                        boolean notifsAllowed = NotificationManagerCompat.from(SystemStatusResultsActivity.this).areNotificationsEnabled(),
+                                notifsEnabled = SeptaServiceFactory.getNotificationsService().areNotificationsEnabled(SystemStatusResultsActivity.this);
 
-                        } else {
-                            // disable notifs for route
-                            PushNotificationManager.getInstance(SystemStatusResultsActivity.this).removeNotificationForRoute(routeId, transitType, "System Status Results");
-
-                            // remove message
-                            if (snackbar != null && snackbar.isShown()) {
-                                snackbar.dismiss();
+                        if (notifsAllowed && notifsEnabled) {
+                            if (isChecked) {
+                                // enable notifs for route
+                                PushNotificationManager.getInstance(SystemStatusResultsActivity.this).createNotificationForRoute(routeId, routeName, transitType, "System Status Results");
+                            } else {
+                                // disable notifs for route
+                                PushNotificationManager.getInstance(SystemStatusResultsActivity.this).removeNotificationForRoute(routeId, transitType, "System Status Results");
                             }
-                        }
 
-                        if (!ignoreSwitch) {
-                            PushNotificationManager.updateNotifSubscription(getApplicationContext(), new Runnable() {
-                                @Override
-                                public void run() {
-                                    String deviceId = SeptaServiceFactory.getNotificationsService().getDeviceId(getApplicationContext());
-                                    CrashlyticsManager.log(Log.ERROR, TAG, "Unable to subscribe device ID: " + deviceId + " to push notifs for route " + routeId);
+                            if (!ignoreSwitch) {
+                                PushNotificationManager.updateNotifSubscription(getApplicationContext(), new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        String deviceId = SeptaServiceFactory.getNotificationsService().getDeviceId(getApplicationContext());
+                                        CrashlyticsManager.log(Log.ERROR, TAG, "Unable to subscribe device ID: " + deviceId + " to push notifs for route " + routeId);
 
-                                    failureToToggleRouteSubscription(isChecked);
-                                }
-                            });
+                                        failureToToggleRouteSubscription(isChecked);
+                                    }
+                                });
+                            }
+                        } else {
+                            // handle lack of permissions
+                            showPushNotifsDisabled(notifsAllowed, notifsEnabled);
+                            failureToToggleRouteSubscription(isChecked);
                         }
-                    } else {
+                    } else
+
+                    {
                         Toast.makeText(SystemStatusResultsActivity.this, R.string.subscription_need_connection, Toast.LENGTH_SHORT).show();
 
                         // handle no network connection
@@ -219,6 +222,7 @@ public class SystemStatusResultsActivity extends BaseActivity {
                 }
             });
         }
+
     }
 
     @Override
@@ -226,7 +230,7 @@ public class SystemStatusResultsActivity extends BaseActivity {
         super.onResume();
 
         if (notifsSubscribeSwitch != null && notifsSubscribeSwitch.isChecked()) {
-            showMessagePushNotifsDisabled();
+            checkIfPushNotifsDisabled();
         }
     }
 
@@ -415,10 +419,17 @@ public class SystemStatusResultsActivity extends BaseActivity {
         }
     }
 
-    private void showMessagePushNotifsDisabled() {
+    private void checkIfPushNotifsDisabled() {
         // recheck device permissions and show message if notifs not allowed or enabled
         boolean notifsAllowed = NotificationManagerCompat.from(SystemStatusResultsActivity.this).areNotificationsEnabled(),
                 notifsEnabled = SeptaServiceFactory.getNotificationsService().areNotificationsEnabled(SystemStatusResultsActivity.this);
+
+        if (!notifsAllowed || !notifsEnabled) {
+            showPushNotifsDisabled(notifsAllowed, notifsEnabled);
+        }
+    }
+
+    private void showPushNotifsDisabled(boolean notifsAllowed, boolean notifsEnabled) {
         if (!notifsAllowed) {
             snackbar = Snackbar.make(findViewById(R.id.system_status_results_coordinator), R.string.notifications_permission_needed, Snackbar.LENGTH_INDEFINITE);
             snackbar.setAction("Settings", new View.OnClickListener() {

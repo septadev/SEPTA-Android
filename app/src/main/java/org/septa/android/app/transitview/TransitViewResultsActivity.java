@@ -326,17 +326,15 @@ public class TransitViewResultsActivity extends BaseActivity implements Runnable
 
         // map must include vehicles on active route when automatically moving camera
         Map<TransitViewModelResponse.TransitViewRecord, LatLng> results = parser.getResultsForRoute(activeRouteId);
-        if (results != null) {
+        if (results == null) {
+            CrashlyticsManager.log(Log.ERROR, TAG, "Failed to get results in onMapReady for active route: " + activeRouteId);
+            moveCameraToDefaultLocation(builder);
+        } else if (results.isEmpty()) {
+            moveCameraToDefaultLocation(builder);
+        } else {
             for (Map.Entry<TransitViewModelResponse.TransitViewRecord, LatLng> entry : results.entrySet()) {
                 builder.include(entry.getValue());
             }
-        } else {
-            CrashlyticsManager.log(Log.ERROR, TAG, "Could not get results for active route: " + activeRouteId);
-            Log.e(TAG, "Could not get results for active route: " + activeRouteId + ". Moving camera to default location over Philly");
-            final LatLng northPhilly = new LatLng(39.979822, -75.157954);
-            final LatLng southPhilly = new LatLng(39.925151, -75.170484);
-            builder.include(northPhilly);
-            builder.include(southPhilly);
         }
         final LatLngBounds bounds = builder.build();
 
@@ -795,6 +793,14 @@ public class TransitViewResultsActivity extends BaseActivity implements Runnable
         progressView.setVisibility(View.GONE);
         noResultsMsg.setVisibility(View.GONE);
         mapContainerView.setVisibility(View.VISIBLE);
+    }
+
+    private void moveCameraToDefaultLocation(LatLngBounds.Builder builder) {
+        Log.d(TAG, "No vehicle data for active route: " + activeRouteId + ". Moving camera to default location over Philly");
+        final LatLng northPhilly = new LatLng(39.979822, -75.157954);
+        final LatLng southPhilly = new LatLng(39.925151, -75.170484);
+        builder.include(northPhilly);
+        builder.include(southPhilly);
     }
 
     private void checkForLocationEnabled(final GoogleMap googleMap) {

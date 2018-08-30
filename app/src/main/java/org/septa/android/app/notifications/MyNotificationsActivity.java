@@ -200,20 +200,23 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
                     .setPositiveButton(R.string.notif_warning_pos_button, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+                            // save and go back
+                            saveButton.performClick();
                             MyNotificationsActivity.super.onBackPressed();
                         }
                     })
                     .setNegativeButton(R.string.notif_warning_neg_button, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
+                            // go back without saving to server
+                            MyNotificationsActivity.super.onBackPressed();
                         }
                     })
                     .create();
             dialog.setOnShowListener(new DialogInterface.OnShowListener() {
                 @Override
                 public void onShow(DialogInterface arg0) {
-                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.RED);
+                    dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.RED);
                 }
             });
             dialog.show();
@@ -348,6 +351,19 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
             disableView(saveButton);
         } else {
             activateView(saveButton);
+
+            // show message only when starting activity that there are unsaved changes
+            Snackbar snackbar = Snackbar.make(findViewById(R.id.activity_my_notifications), R.string.unsaved_notif_prefs, Snackbar.LENGTH_LONG);
+            snackbar.setAction("Save", new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    saveButton.performClick();
+                }
+            });
+            View snackbarView = snackbar.getView();
+            android.widget.TextView tv = snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+            tv.setMaxLines(10);
+            snackbar.show();
         }
     }
 

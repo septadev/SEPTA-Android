@@ -2,20 +2,27 @@ package org.septa.android.app.services.apiinterfaces.model;
 
 import android.support.annotation.NonNull;
 
+import org.parceler.Parcel;
+import org.parceler.ParcelConstructor;
 import org.septa.android.app.TransitType;
 
 import java.io.Serializable;
 
+@Parcel
 public class RouteSubscription implements Serializable, Comparable<RouteSubscription> {
 
-    private String routeId;
+    String routeId;
 
-    private String routeName;
+    String routeName;
 
-    private TransitType transitType;
+    TransitType transitType;
 
-    private boolean isEnabled;
+    boolean isEnabled;
 
+    public RouteSubscription() {
+    }
+
+    @ParcelConstructor
     public RouteSubscription(String routeId, String routeName, TransitType transitType) {
         this.routeId = routeId;
         this.routeName = routeName;

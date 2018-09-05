@@ -345,7 +345,7 @@
     <string name="subscription_warning_title">Unsaved Changes</string>
     <string name="subscription_warning">Are you sure you want to leave? Your notification preferences will NOT be saved.</string>
     <string name="notif_warning_pos_button">Save</string>
-    <string name="notif_warning_neg_button">Leave</string>
+    <string name="notif_warning_neg_button">Discard</string>
 
     <string name="no_notifications_to_edit">You have no notification subscriptions to edit!</string>
     <string name="delete_notif_title">Delete Notification?</string>

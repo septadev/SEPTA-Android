@@ -13,18 +13,15 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
 import org.septa.android.app.R;
 import org.septa.android.app.notifications.timepicker.NotificationTimePickerClockDialog;
 import org.septa.android.app.notifications.timepicker.NotificationTimePickerDialogListener;
 import org.septa.android.app.notifications.timepicker.NotificationTimePickerSpinnerDialog;
 import org.septa.android.app.services.apiinterfaces.NotificationsSharedPrefsUtilsImpl;
-import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.support.CrashlyticsManager;
 import org.septa.android.app.support.GeneralUtils;
 
-import java.text.DecimalFormat;
 import java.util.List;
 
 public class TimeFrameItemAdapter extends RecyclerView.Adapter<TimeFrameItemAdapter.TimeFrameViewHolder> implements NotificationTimePickerDialogListener {
@@ -34,8 +31,6 @@ public class TimeFrameItemAdapter extends RecyclerView.Adapter<TimeFrameItemAdap
     private Activity activity;
     private TimeFrameItemListener mListener;
     private List<String> timeFrames;
-
-    private static final DecimalFormat FORMATTER = new DecimalFormat("0000");
 
     TimeFrameItemAdapter(Activity activity, List<String> timeFrames) {
         this.activity = activity;
@@ -131,42 +126,12 @@ public class TimeFrameItemAdapter extends RecyclerView.Adapter<TimeFrameItemAdap
 
     @Override
     public void onStartTimeSet(TimePicker view, int hourOfDay, int minute, int position) {
-        int newStartTime = hourOfDay * 100 + minute;
-
-        int endTime = Integer.parseInt(SeptaServiceFactory.getNotificationsService().getNotificationTimeFrame(activity, position, false));
-
-        // start time must be before end time
-        if (newStartTime < endTime) {
-            // save start time
-            SeptaServiceFactory.getNotificationsService().changeNotificationTimeFrame(activity, position, true, FORMATTER.format(newStartTime));
-
-            // show changes in view
-            updateList(SeptaServiceFactory.getNotificationsService().getNotificationTimeFrames(activity));
-
-            mListener.enableSaveButton();
-        } else {
-            Toast.makeText(activity, R.string.notifications_start_time_requirement, Toast.LENGTH_LONG).show();
-        }
+        mListener.setStartTime(position, hourOfDay * 100 + minute);
     }
 
     @Override
     public void onEndTimeSet(TimePicker view, int hourOfDay, int minute, int position) {
-        int newEndTime = hourOfDay * 100 + minute;
-
-        int startTime = Integer.parseInt(SeptaServiceFactory.getNotificationsService().getNotificationTimeFrame(activity, position, true));
-
-        // end time must be after start time
-        if (newEndTime > startTime) {
-            // save end time
-            SeptaServiceFactory.getNotificationsService().changeNotificationTimeFrame(activity, position, false, FORMATTER.format(newEndTime));
-
-            // show changes in view
-            updateList(SeptaServiceFactory.getNotificationsService().getNotificationTimeFrames(activity));
-
-            mListener.enableSaveButton();
-        } else {
-            Toast.makeText(activity, R.string.notifications_end_time_requirement, Toast.LENGTH_LONG).show();
-        }
+        mListener.setEndTime(position, hourOfDay * 100 + minute);
     }
 
     public void updateList(final List<String> timeFramesList) {
@@ -192,6 +157,8 @@ public class TimeFrameItemAdapter extends RecyclerView.Adapter<TimeFrameItemAdap
     interface TimeFrameItemListener {
         List<String> deleteTimeFrame(int position);
         void enableSaveButton();
+        void setStartTime(int position, int newStartTime);
+        void setEndTime(int position, int newEndTime);
     }
 
 }

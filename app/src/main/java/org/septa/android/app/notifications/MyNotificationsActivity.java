@@ -22,6 +22,7 @@ import org.septa.android.app.R;
 import org.septa.android.app.TransitType;
 import org.septa.android.app.notifications.edit.EditNotificationsFragment;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
+import org.septa.android.app.services.apiinterfaces.model.PushNotifSubscriptionRequest;
 import org.septa.android.app.services.apiinterfaces.model.RouteSubscription;
 import org.septa.android.app.support.AnalyticsManager;
 import org.septa.android.app.support.CrashlyticsManager;
@@ -195,19 +196,23 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
                 if (GeneralUtils.isConnectedToInternet(MyNotificationsActivity.this)) {
                     disableView(saveButton);
 
+                    // build request
+                    PushNotifSubscriptionRequest request = PushNotificationManager.buildSubscriptionRequest(MyNotificationsActivity.this, modifiedDaysOfWeek, modifiedTimeFrames, modifiedRouteSubscriptions);
+
                     // send subscription update to server and handle response
-                    PushNotificationManager.updateNotifSubscription(MyNotificationsActivity.this, new Runnable() {
-                        @Override
-                        public void run() {
-                            enableSaveButton();
-                        }
-                    }, new Runnable() {
-                        @Override
-                        public void run() {
-                            // save settings to shared preferences
-                            savePrefsLocally();
-                        }
-                    });
+                    PushNotificationManager.updateNotifSubscription(MyNotificationsActivity.this, request,
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    enableSaveButton();
+                                }
+                            }, new Runnable() {
+                                @Override
+                                public void run() {
+                                    // save settings to shared preferences
+                                    savePrefsLocally();
+                                }
+                            });
 
                 } else {
                     // handle no network connection

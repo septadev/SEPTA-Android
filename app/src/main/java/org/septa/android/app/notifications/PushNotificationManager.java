@@ -276,10 +276,11 @@ public class PushNotificationManager {
     }
 
     public static void updateNotifSubscription(Context context, Runnable failureTask) {
-        updateNotifSubscription(context, failureTask, null);
+        final PushNotifSubscriptionRequest request = buildSubscriptionRequest(context, null, null, null);
+        updateNotifSubscription(context, request, failureTask, null);
     }
 
-    public static void updateNotifSubscription(final Context context, final Runnable failureTask, final Runnable successTask) {
+    public static void updateNotifSubscription(final Context context, final PushNotifSubscriptionRequest request, final Runnable failureTask, final Runnable successTask) {
         if (SeptaServiceFactory.getNotificationsService().areNotificationsEnabled(context)) {
             RefreshAdvertisingId refreshAdvertisingId = new RefreshAdvertisingId(context, new Runnable() {
                 @Override
@@ -294,13 +295,13 @@ public class PushNotificationManager {
 
                     } else {
                         // use old device ID
-                        submitNotifPrefs(context, failureTask, successTask);
+                        submitNotifPrefs(context, request, failureTask, successTask);
                     }
                 }
             }, new Runnable() {
                 @Override
                 public void run() {
-                    submitNotifPrefs(context, failureTask, successTask);
+                    submitNotifPrefs(context, request, failureTask, successTask);
                 }
             });
             refreshAdvertisingId.execute();
@@ -313,9 +314,7 @@ public class PushNotificationManager {
         }
     }
 
-    private static void submitNotifPrefs(final Context context, final Runnable failureTask, final Runnable successTask) {
-        final PushNotifSubscriptionRequest request = buildSubscriptionRequest(context);
-
+    private static void submitNotifPrefs(final Context context, final PushNotifSubscriptionRequest request, final Runnable failureTask, final Runnable successTask) {
         SeptaServiceFactory.getPushNotificationService().setNotificationSubscription(request).enqueue(new Callback<PushNotifSubscriptionResponse>() {
             @Override
             public void onResponse(Call<PushNotifSubscriptionResponse> call, Response<PushNotifSubscriptionResponse> response) {
@@ -415,22 +414,31 @@ public class PushNotificationManager {
         }
     }
 
-    @NonNull
-    private static PushNotifSubscriptionRequest buildSubscriptionRequest(Context context) {
-        // generate days of week list
-        List<Integer> daysEnabled = SeptaServiceFactory.getNotificationsService().getNotificationsSchedule(context);
+    public static PushNotifSubscriptionRequest buildSubscriptionRequest(Context context, List<Integer> daysEnabled, List<String> timeFrames, List<RouteSubscription> routesSubscribedTo) {
+
+        // pull days of week from shared prefs
+        if (daysEnabled == null) {
+            daysEnabled = SeptaServiceFactory.getNotificationsService().getNotificationsSchedule(context);
+        }
+
+        // send off signal if no days are selected
         if (daysEnabled.isEmpty()) {
             return buildNullSubscriptionRequest(context);
         }
+
+        // generate days of week request format
         int[] daysOfWeek = new int[daysEnabled.size()];
         for (int i = 0; i < daysEnabled.size(); i++) {
             daysOfWeek[i] = daysEnabled.get(i);
         }
 
-        // generate time frames
-        List<String> timeFrames = SeptaServiceFactory.getNotificationsService().getNotificationTimeFrames(context);
-        TimeSlot[] timeSlots = new TimeSlot[timeFrames.size()];
+        // pull time frames from shared prefs
+        if (timeFrames == null) {
+            timeFrames = SeptaServiceFactory.getNotificationsService().getNotificationTimeFrames(context);
+        }
 
+        // generate request timestamp format
+        TimeSlot[] timeSlots = new TimeSlot[timeFrames.size()];
         for (int i = 0; i < timeFrames.size(); i++) {
             String timeFrame = timeFrames.get(i);
 
@@ -445,8 +453,12 @@ public class PushNotificationManager {
             timeSlots[i] = newTimeSlot;
         }
 
-        // generate list of routes subscribed to
-        List<RouteSubscription> routesSubscribedTo = SeptaServiceFactory.getNotificationsService().getRoutesSubscribedTo(context);
+        // pull route subscription list from shared prefs
+        if (routesSubscribedTo == null) {
+            routesSubscribedTo = SeptaServiceFactory.getNotificationsService().getRoutesSubscribedTo(context);
+        }
+
+        // generate route subscription request format
         List<RouteNotifSubscription> temp = new ArrayList<>();
         for (int i = 0; i < routesSubscribedTo.size(); i++) {
             RouteSubscription route = routesSubscribedTo.get(i);
@@ -459,6 +471,7 @@ public class PushNotificationManager {
         RouteNotifSubscription[] routeSubscriptions = new RouteNotifSubscription[temp.size()];
         routeSubscriptions = temp.toArray(routeSubscriptions);
 
+        // pull registration token, device ID, and special announcements from shared prefs
         String regToken = SeptaServiceFactory.getNotificationsService().getRegistrationToken(context);
         String deviceId = SeptaServiceFactory.getNotificationsService().getDeviceId(context);
         boolean specialAnnouncements = SeptaServiceFactory.getNotificationsService().areSpecialAnnouncementsEnabled(context);
@@ -522,11 +535,6 @@ public class PushNotificationManager {
         routeSubscribedTo.put("Muted Subscription - Transit Type", String.valueOf(transitType));
         routeSubscribedTo.put("Muted Subscription - Route ID", routeId);
         AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_ROUTE_UNSUBSCRIBE, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_MANAGEMENT, routeSubscribedTo);
-    }
-
-    public void deleteNotificationForRoute(String routeId) {
-        // delete notification
-        SeptaServiceFactory.getNotificationsService().removeRouteSubscription(context, routeId);
     }
 
     private String getRailRouteName(Context context, String routeId) {

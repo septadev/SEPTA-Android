@@ -53,7 +53,7 @@ public class NotificationTimePickerClockDialog extends TimePickerDialog {
             return;
         }
 
-        if (minute % TIME_PICKER_INTERVAL != 0) {
+        if (minute >= 0 && minute % TIME_PICKER_INTERVAL != 0) {
             minute = GeneralUtils.roundUpToNearestInterval(minute, TIME_PICKER_INTERVAL);
             mIgnoreEvent = true;
             view.setCurrentMinute(minute);

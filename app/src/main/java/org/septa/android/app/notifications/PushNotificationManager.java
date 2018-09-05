@@ -275,7 +275,11 @@ public class PushNotificationManager {
         }
     }
 
-    public static void updateNotifSubscription(final Context context, final Runnable failureTask) {
+    public static void updateNotifSubscription(Context context, Runnable failureTask) {
+        updateNotifSubscription(context, failureTask, null);
+    }
+
+    public static void updateNotifSubscription(final Context context, final Runnable failureTask, final Runnable successTask) {
         if (SeptaServiceFactory.getNotificationsService().areNotificationsEnabled(context)) {
             RefreshAdvertisingId refreshAdvertisingId = new RefreshAdvertisingId(context, new Runnable() {
                 @Override
@@ -290,13 +294,13 @@ public class PushNotificationManager {
 
                     } else {
                         // use old device ID
-                        submitNotifPrefs(context, failureTask);
+                        submitNotifPrefs(context, failureTask, successTask);
                     }
                 }
             }, new Runnable() {
                 @Override
                 public void run() {
-                    submitNotifPrefs(context, failureTask);
+                    submitNotifPrefs(context, failureTask, successTask);
                 }
             });
             refreshAdvertisingId.execute();
@@ -305,11 +309,11 @@ public class PushNotificationManager {
             AutoSubscriptionReceiver.scheduleSubscriptionUpdate(context, false);
 
         } else {
-            removeNotifSubscription(context, failureTask);
+            removeNotifSubscription(context, failureTask, successTask);
         }
     }
 
-    private static void submitNotifPrefs(final Context context, final Runnable failureTask) {
+    private static void submitNotifPrefs(final Context context, final Runnable failureTask, final Runnable successTask) {
         final PushNotifSubscriptionRequest request = buildSubscriptionRequest(context);
 
         SeptaServiceFactory.getPushNotificationService().setNotificationSubscription(request).enqueue(new Callback<PushNotifSubscriptionResponse>() {
@@ -324,6 +328,10 @@ public class PushNotificationManager {
                         SeptaServiceFactory.getNotificationsService().setNotifPrefsSaved(context, true);
 
                         Toast.makeText(context, R.string.subscription_success, Toast.LENGTH_SHORT).show();
+
+                        if (successTask != null) {
+                            successTask.run();
+                        }
                     } else {
                         CrashlyticsManager.log(Log.ERROR, TAG, "Could not update push notification subscription: " + response.message());
                         failureToUpdatePrefs(context, request, failureTask);
@@ -343,7 +351,11 @@ public class PushNotificationManager {
         });
     }
 
-    public static void removeNotifSubscription(final Context context, final Runnable failureTask) {
+    public static void removeNotifSubscription(Context context, Runnable failureTask) {
+        removeNotifSubscription(context, failureTask, null);
+    }
+
+    public static void removeNotifSubscription(final Context context, final Runnable failureTask, final Runnable successTask) {
         final PushNotifSubscriptionRequest request = buildNullSubscriptionRequest(context);
 
         SeptaServiceFactory.getPushNotificationService().setNotificationSubscription(request).enqueue(new Callback<PushNotifSubscriptionResponse>() {
@@ -361,6 +373,10 @@ public class PushNotificationManager {
                         SeptaServiceFactory.getNotificationsService().setNotifPrefsSaved(context, true);
 
                         Toast.makeText(context, R.string.subscription_success, Toast.LENGTH_SHORT).show();
+
+                        if (successTask != null) {
+                            successTask.run();
+                        }
                     } else {
                         CrashlyticsManager.log(Log.ERROR, TAG, "Could not remove push notification subscription: " + response.message());
                         failureToUpdatePrefs(context, request, failureTask);
@@ -374,7 +390,8 @@ public class PushNotificationManager {
                     failureToUpdatePrefs(context, request, failureTask);
 
                     // continue auto-subscription since this failed
-                    AutoSubscriptionReceiver.scheduleSubscriptionUpdate(context, false);                }
+                    AutoSubscriptionReceiver.scheduleSubscriptionUpdate(context, false);
+                }
             }
 
             @Override
@@ -384,7 +401,8 @@ public class PushNotificationManager {
                 failureToUpdatePrefs(context, request, failureTask);
 
                 // continue auto-subscription since this failed
-                AutoSubscriptionReceiver.scheduleSubscriptionUpdate(context, false);            }
+                AutoSubscriptionReceiver.scheduleSubscriptionUpdate(context, false);
+            }
         });
     }
 

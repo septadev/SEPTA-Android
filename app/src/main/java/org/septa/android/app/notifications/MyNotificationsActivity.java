@@ -195,14 +195,17 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
                 if (GeneralUtils.isConnectedToInternet(MyNotificationsActivity.this)) {
                     disableView(saveButton);
 
-                    // save settings to shared preferences
-                    savePrefsLocally();
-
                     // send subscription update to server and handle response
                     PushNotificationManager.updateNotifSubscription(MyNotificationsActivity.this, new Runnable() {
                         @Override
                         public void run() {
                             enableSaveButton();
+                        }
+                    }, new Runnable() {
+                        @Override
+                        public void run() {
+                            // save settings to shared preferences
+                            savePrefsLocally();
                         }
                     });
 
@@ -301,7 +304,7 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
 
     @Override
     public void setEndTime(int position, int newEndTime) {
-        int startTime = Integer.parseInt(modifiedTimeFrames.get(position).substring(0, 5));
+        int startTime = Integer.parseInt(modifiedTimeFrames.get(position).substring(0, 4));
 
         // end time must be after start time
         if (newEndTime > startTime) {
@@ -577,8 +580,6 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
     }
 
     private void savePrefsLocally() {
-        // TODO: all toggles / buttons on this screen should NOT save to shared pref
-
         if (initialDaysOfWeek != null && !initialDaysOfWeek.equals(modifiedDaysOfWeek)) {
             // save changes to days of week
             SeptaServiceFactory.getNotificationsService().setNotificationsSchedule(MyNotificationsActivity.this, modifiedDaysOfWeek);

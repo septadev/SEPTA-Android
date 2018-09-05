@@ -271,7 +271,6 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
                     .setNegativeButton(R.string.notif_warning_neg_button, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            // TODO: discard changes and go back -- should not need to do anything else here?
                             SeptaServiceFactory.getNotificationsService().setNotifPrefsSaved(MyNotificationsActivity.this, true);
                             MyNotificationsActivity.super.onBackPressed();
                         }
@@ -388,7 +387,9 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
         Log.e(TAG, "Timeframe changes? " + !initialTimeFrames.equals(modifiedTimeFrames)); // TODO: remove
         Log.e(TAG, "initial Timeframes " + initialTimeFrames.toString()); // TODO: remove
         Log.e(TAG, "modified Timeframes " + modifiedTimeFrames.toString()); // TODO: remove
-        Log.e(TAG, "Route Subscription changes? " + !initialRouteSubscriptions.equals(modifiedRouteSubscriptions)); // TODO: remove
+
+        boolean routeSubscriptionChanges = didRouteSubscriptionsChange();
+        Log.e(TAG, "Route Subscription changes? " + routeSubscriptionChanges); // TODO: remove
         Log.e(TAG, "initial Route Subscriptions " + initialRouteSubscriptions.toString()); // TODO: remove
         Log.e(TAG, "modified Route Subscriptions " + modifiedRouteSubscriptions.toString()); // TODO: remove
 
@@ -403,7 +404,8 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
             if (initialRouteSubscriptions == null) {
                 CrashlyticsManager.log(Log.ERROR, TAG, "route subscriptions is null");
             }
-        } else if (initialDaysOfWeek.equals(modifiedDaysOfWeek) && initialTimeFrames.equals(modifiedTimeFrames) && initialRouteSubscriptions.equals(modifiedRouteSubscriptions)) {
+        } else if (initialDaysOfWeek.equals(modifiedDaysOfWeek) && initialTimeFrames.equals(modifiedTimeFrames) && !routeSubscriptionChanges) {
+            SeptaServiceFactory.getNotificationsService().setNotifPrefsSaved(MyNotificationsActivity.this, true);
             disableView(saveButton);
         } else {
             SeptaServiceFactory.getNotificationsService().setNotifPrefsSaved(MyNotificationsActivity.this, false);
@@ -440,7 +442,10 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
 
         modifiedDaysOfWeek = new ArrayList<>(initialDaysOfWeek);
         modifiedTimeFrames = new ArrayList<>(initialTimeFrames);
-        modifiedRouteSubscriptions = new ArrayList<>(initialRouteSubscriptions);
+        modifiedRouteSubscriptions = new ArrayList<>();
+        for (RouteSubscription routeSubscription : initialRouteSubscriptions) {
+            modifiedRouteSubscriptions.add(routeSubscription.clone());
+        }
     }
 
     private void initializeView() {
@@ -590,7 +595,7 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
             SeptaServiceFactory.getNotificationsService().setNotificationsSchedule(MyNotificationsActivity.this, modifiedDaysOfWeek);
 
             // reset initial list of days of week
-            initialDaysOfWeek = modifiedDaysOfWeek;
+            initialDaysOfWeek = new ArrayList<>(modifiedDaysOfWeek);
 
             // analytics around days of week
             StringBuilder daysOfWeek = new StringBuilder();
@@ -607,7 +612,7 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
             SeptaServiceFactory.getNotificationsService().setNotificationTimeFrames(MyNotificationsActivity.this, modifiedTimeFrames);
 
             // reset initial list of time frames
-            initialTimeFrames = modifiedTimeFrames;
+            initialTimeFrames = new ArrayList<>(modifiedTimeFrames);
 
             // analytics around timeframes
             Map<String, String> data = new HashMap<>();
@@ -615,18 +620,34 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
             AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_TIMEFRAMES, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_MANAGEMENT, data);
         }
 
-        if (initialRouteSubscriptions != null && !initialRouteSubscriptions.equals(modifiedRouteSubscriptions)) {
+        if (didRouteSubscriptionsChange()) {
             // save changes to route subscriptions
             SeptaServiceFactory.getNotificationsService().setRoutesSubscribedTo(MyNotificationsActivity.this, modifiedRouteSubscriptions);
 
-            // reset initial list of time frames
-            initialRouteSubscriptions = modifiedRouteSubscriptions;
+            // reset initial list of route subscriptions
+            initialRouteSubscriptions.clear();
+            for (RouteSubscription routeSubscription : modifiedRouteSubscriptions) {
+                initialRouteSubscriptions.add(routeSubscription.clone());
+            }
 
             // TODO: analytics around route subscriptions
 //            Map<String, String> data = new HashMap<>();
-//            data.put("Timeframe(s)", modifiedTimeFrames.toString());
+//            data.put("Route Subscriptions", modifiedRouteSubscriptions.toString());
 //            AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_ROUTE_UPDATES, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_MANAGEMENT, data);
         }
+    }
+
+    private boolean didRouteSubscriptionsChange() {
+        boolean routeSubscriptionChanges = false;
+        for (RouteSubscription i : initialRouteSubscriptions) {
+            for (RouteSubscription j : modifiedRouteSubscriptions) {
+                if (i.getRouteId().equals(j.getRouteId()) && i.compareTo(j) != 0) {
+                    routeSubscriptionChanges = true;
+                    break;
+                }
+            }
+        }
+        return routeSubscriptionChanges;
     }
 
 }

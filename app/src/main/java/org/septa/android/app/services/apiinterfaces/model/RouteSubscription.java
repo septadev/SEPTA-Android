@@ -9,7 +9,7 @@ import org.septa.android.app.TransitType;
 import java.io.Serializable;
 
 @Parcel
-public class RouteSubscription implements Serializable, Comparable<RouteSubscription> {
+public class RouteSubscription implements Serializable, Comparable<RouteSubscription>, Cloneable {
 
     String routeId;
 
@@ -63,22 +63,25 @@ public class RouteSubscription implements Serializable, Comparable<RouteSubscrip
     }
 
     @Override
+    public RouteSubscription clone() {
+        RouteSubscription r = new RouteSubscription();
+        r.routeId = this.routeId;
+        r.routeName = this.routeName;
+        r.transitType = this.transitType;
+        r.isEnabled = this.isEnabled;
+        return r;
+    }
+
+    @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
         RouteSubscription that = (RouteSubscription) o;
 
-        if (!routeId.equals(that.routeId)) {
+        if (!routeId.equals(that.routeId)) return false;
+        if (routeName != null ? !routeName.equals(that.routeName) : that.routeName != null)
             return false;
-        }
-        if (!routeName.equals(that.routeName)) {
-            return false;
-        }
         return transitType == that.transitType;
     }
 
@@ -118,7 +121,17 @@ public class RouteSubscription implements Serializable, Comparable<RouteSubscrip
         }
 
         i = this.routeName.compareTo(other.routeName);
-        return i;
+        if (i != 0) {
+            return i;
+        }
+
+        if (isEnabled == other.isEnabled) {
+            return 0;
+        }
+        if (isEnabled) {
+            return 1;
+        }
+        return -1;
     }
 
 }

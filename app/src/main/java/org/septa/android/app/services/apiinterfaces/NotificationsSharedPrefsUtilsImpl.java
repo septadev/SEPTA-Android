@@ -222,25 +222,6 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
     }
 
     @Override
-    public void removeRouteSubscription(Context context, String routeId) {
-        SharedPreferences sharedPreferences = getSharedPreferences(context);
-        List<RouteSubscription> routesList = getRoutesSubscribedTo(context);
-        int indexToRemove = -1;
-        for (int i = 0; i < routesList.size(); i++) {
-            if (routeId.equalsIgnoreCase(routesList.get(i).getRouteId())) {
-                indexToRemove = i;
-                break;
-            }
-        }
-        if (indexToRemove != -1) {
-            routesList.remove(indexToRemove);
-            storeRoutesSubscribedTo(sharedPreferences, routesList);
-        } else {
-            Log.e(TAG, "Could not remove route subscription with ID: " + routeId);
-        }
-    }
-
-    @Override
     public String getDeviceId(Context context) {
         return getSharedPreferences(context).getString(DEVICE_ID, "");
     }

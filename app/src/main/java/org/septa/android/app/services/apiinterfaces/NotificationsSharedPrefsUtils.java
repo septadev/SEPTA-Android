@@ -38,8 +38,6 @@ public interface NotificationsSharedPrefsUtils {
 
     void toggleRouteSubscription(Context context, String routeId, boolean isEnabled);
 
-    void removeRouteSubscription(Context context, String routeId);
-
     String getDeviceId(Context context);
 
     void setDeviceId(Context context, String deviceId);

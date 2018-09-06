@@ -15,6 +15,10 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
+
 import org.septa.android.app.Constants;
 import org.septa.android.app.MainActivity;
 import org.septa.android.app.R;
@@ -68,6 +72,47 @@ public class PushNotificationManager {
             mInstance = new PushNotificationManager(context);
         }
         return mInstance;
+    }
+
+    public static void refreshFCMToken(final Context context) {
+        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
+            @Override
+            public void onSuccess(InstanceIdResult instanceIdResult) {
+                final String newToken = instanceIdResult.getToken();
+                String tokenId = instanceIdResult.getId();
+
+                // usually new token is only generated when the app is reinstalled or the data is cleared
+                Log.d(TAG, "FCM Token: " + newToken);
+
+                // a new FCM token was generated
+                final String oldToken = SeptaServiceFactory.getNotificationsService().getRegistrationToken(context);
+                if (!oldToken.isEmpty() && !oldToken.equals(newToken)) {
+
+                    // save registration token
+                    SeptaServiceFactory.getNotificationsService().setRegistrationToken(context, newToken);
+
+                    // register new FCM token
+                    PushNotificationManager.updateNotifSubscription(context, new Runnable() {
+                        @Override
+                        public void run() {
+                            CrashlyticsManager.log(Log.ERROR, TAG, "Could not register new FCM token: " + newToken + " and unregister old FCM token: " + oldToken);
+
+                            SeptaServiceFactory.getNotificationsService().setNotifPrefsSaved(context, false);
+                        }
+                    });
+
+                } else if (oldToken.isEmpty()) {
+                    Log.d(TAG, "Saving FCM token for first time");
+
+                    // save registration token
+                    SeptaServiceFactory.getNotificationsService().setRegistrationToken(context, newToken);
+                } else {
+                    Log.d(TAG, "No changes to FCM token");
+                }
+
+                Log.d(TAG, "Instance ID: " + tokenId); // this is a shortcutted version of the token
+            }
+        });
     }
 
     public void buildSpecialAnnouncementNotification(Context context, String message) {

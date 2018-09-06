@@ -4,9 +4,6 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.util.Log;
 
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.InstanceIdResult;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -15,7 +12,6 @@ import org.septa.android.app.notifications.DelayNotificationType;
 import org.septa.android.app.notifications.NotificationType;
 import org.septa.android.app.notifications.PushNotificationManager;
 import org.septa.android.app.support.AnalyticsManager;
-import org.septa.android.app.support.CrashlyticsManager;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -33,49 +29,12 @@ public class PushNotificationService extends FirebaseMessagingService {
             NOTIFICATION_KEY_MESSAGE = "message",
             NOTIFICATION_KEY_VEHICLE_ID = "vehicleId",
             NOTIFICATION_KEY_DESTINATION_STOP_ID = "destinationStopId",
-            NOTIFICATION_KEY_DELAY_TYPE = "delayType",
-            NOTIFICATION_KEY_EXPIRES = "expires";
+            NOTIFICATION_KEY_DELAY_TYPE = "delayType";
 
     @Override
     public void onNewToken(String s) {
         super.onNewToken(s);
-
-        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
-            @Override
-            public void onSuccess(InstanceIdResult instanceIdResult) {
-                final String newToken = instanceIdResult.getToken();
-                String tokenId = instanceIdResult.getId();
-
-                // usually new token is only generated when the app is reinstalled or the data is cleared
-                Log.d(TAG, "FCM Token: " + newToken);
-
-                // a new FCM token was generated
-                final String oldToken = SeptaServiceFactory.getNotificationsService().getRegistrationToken(getApplicationContext());
-                if (!oldToken.isEmpty() && !oldToken.equals(newToken)) {
-
-                    // save registration token
-                    SeptaServiceFactory.getNotificationsService().setRegistrationToken(getApplicationContext(), newToken);
-
-                    // register new FCM token
-                    PushNotificationManager.updateNotifSubscription(getApplicationContext(), new Runnable() {
-                        @Override
-                        public void run() {
-                            CrashlyticsManager.log(Log.ERROR, TAG, "Could not register new FCM token: " + newToken + " and unregister old FCM token: " + oldToken);
-
-                            SeptaServiceFactory.getNotificationsService().setNotifPrefsSaved(getApplicationContext(), false);
-                        }
-                    });
-
-                } else if (oldToken.isEmpty()) {
-                    Log.d(TAG, "Saving FCM token for first time");
-
-                    // save registration token
-                    SeptaServiceFactory.getNotificationsService().setRegistrationToken(getApplicationContext(), newToken);
-                }
-
-                Log.d(TAG, "Instance ID: " + tokenId); // this is a shortcutted version of the token
-            }
-        });
+        PushNotificationManager.refreshFCMToken(getApplicationContext());
     }
 
     @Override

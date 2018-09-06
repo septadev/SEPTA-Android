@@ -8,6 +8,7 @@ import com.google.android.gms.ads.identifier.AdvertisingIdClient;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 
+import org.septa.android.app.notifications.PushNotificationManager;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.support.CrashlyticsManager;
 
@@ -42,6 +43,9 @@ public class RefreshAdvertisingId extends AsyncTask<Object, Object, Void> {
 
             // save google play advertising ID as unique device ID
             SeptaServiceFactory.getNotificationsService().setDeviceId(context, id);
+
+            // refresh FCM token
+            PushNotificationManager.refreshFCMToken(context);
 
         } catch (IOException e) {
             // Unrecoverable error connecting to Google Play services (e.g.,

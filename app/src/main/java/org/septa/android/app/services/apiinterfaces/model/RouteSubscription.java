@@ -79,6 +79,7 @@ public class RouteSubscription implements Serializable, Comparable<RouteSubscrip
 
         RouteSubscription that = (RouteSubscription) o;
 
+        if (isEnabled != that.isEnabled) return false;
         if (!routeId.equals(that.routeId)) return false;
         if (routeName != null ? !routeName.equals(that.routeName) : that.routeName != null)
             return false;
@@ -88,8 +89,9 @@ public class RouteSubscription implements Serializable, Comparable<RouteSubscrip
     @Override
     public int hashCode() {
         int result = routeId.hashCode();
-        result = 31 * result + routeName.hashCode();
-        result = 31 * result + transitType.hashCode();
+        result = 31 * result + (routeName != null ? routeName.hashCode() : 0);
+        result = 31 * result + (transitType != null ? transitType.hashCode() : 0);
+        result = 31 * result + (isEnabled ? 1 : 0);
         return result;
     }
 

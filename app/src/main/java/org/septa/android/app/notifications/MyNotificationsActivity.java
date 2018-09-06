@@ -388,7 +388,7 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
         Log.e(TAG, "initial Timeframes " + initialTimeFrames.toString()); // TODO: remove
         Log.e(TAG, "modified Timeframes " + modifiedTimeFrames.toString()); // TODO: remove
 
-        boolean routeSubscriptionChanges = didRouteSubscriptionsChange();
+        boolean routeSubscriptionChanges = !initialRouteSubscriptions.equals(modifiedRouteSubscriptions);
         Log.e(TAG, "Route Subscription changes? " + routeSubscriptionChanges); // TODO: remove
         Log.e(TAG, "initial Route Subscriptions " + initialRouteSubscriptions.toString()); // TODO: remove
         Log.e(TAG, "modified Route Subscriptions " + modifiedRouteSubscriptions.toString()); // TODO: remove
@@ -620,7 +620,7 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
             AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_TIMEFRAMES, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_MANAGEMENT, data);
         }
 
-        if (didRouteSubscriptionsChange()) {
+        if (!initialRouteSubscriptions.equals(modifiedRouteSubscriptions)) {
             // save changes to route subscriptions
             SeptaServiceFactory.getNotificationsService().setRoutesSubscribedTo(MyNotificationsActivity.this, modifiedRouteSubscriptions);
 
@@ -635,19 +635,6 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
 //            data.put("Route Subscriptions", modifiedRouteSubscriptions.toString());
 //            AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_ROUTE_UPDATES, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_MANAGEMENT, data);
         }
-    }
-
-    private boolean didRouteSubscriptionsChange() {
-        boolean routeSubscriptionChanges = false;
-        for (RouteSubscription i : initialRouteSubscriptions) {
-            for (RouteSubscription j : modifiedRouteSubscriptions) {
-                if (i.getRouteId().equals(j.getRouteId()) && i.compareTo(j) != 0) {
-                    routeSubscriptionChanges = true;
-                    break;
-                }
-            }
-        }
-        return routeSubscriptionChanges;
     }
 
 }

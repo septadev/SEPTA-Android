@@ -503,7 +503,15 @@ public class PushNotificationManager {
         List<RouteSubscription> notificationSubscriptions = SeptaServiceFactory.getNotificationsService().getRoutesSubscribedTo(context);
         RouteSubscription routeToSubscribeTo = new RouteSubscription(routeId, routeName, transitType);
 
-        if (notificationSubscriptions.contains(routeToSubscribeTo)) {
+        boolean isAlreadySubscribed = false;
+        for (RouteSubscription routeSubscription : notificationSubscriptions) {
+            if (routeToSubscribeTo.getRouteId().equals(routeSubscription.getRouteId())) {
+                isAlreadySubscribed = true;
+                break;
+            }
+        }
+
+        if (isAlreadySubscribed) {
             // turn notifications on for that route
             SeptaServiceFactory.getNotificationsService().toggleRouteSubscription(context, routeId, true);
 

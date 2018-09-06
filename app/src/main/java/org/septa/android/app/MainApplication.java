@@ -13,6 +13,7 @@ import com.google.firebase.FirebaseApp;
 import org.septa.android.app.database.DatabaseManager;
 import org.septa.android.app.database.SEPTADatabase;
 import org.septa.android.app.database.update.DatabaseSharedPrefsUtils;
+import org.septa.android.app.notifications.PushNotificationManager;
 import org.septa.android.app.rating.RatingUtil;
 import org.septa.android.app.rating.SharedPreferencesRatingUtil;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
@@ -84,6 +85,10 @@ public class MainApplication extends Application implements Runnable {
             SeptaServiceFactory.init();
 
             FirebaseApp.initializeApp(this);
+
+            // refresh FCM token
+            PushNotificationManager.refreshFCMToken(getApplicationContext());
+
         } catch (PackageManager.NameNotFoundException e) {
             Log.e(TAG, "Failed to load meta-data, NameNotFound: " + e.getMessage());
         } catch (NullPointerException e) {

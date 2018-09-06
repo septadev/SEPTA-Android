@@ -15,6 +15,10 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
+
 import org.septa.android.app.Constants;
 import org.septa.android.app.MainActivity;
 import org.septa.android.app.R;
@@ -68,6 +72,47 @@ public class PushNotificationManager {
             mInstance = new PushNotificationManager(context);
         }
         return mInstance;
+    }
+
+    public static void refreshFCMToken(final Context context) {
+        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
+            @Override
+            public void onSuccess(InstanceIdResult instanceIdResult) {
+                final String newToken = instanceIdResult.getToken();
+                String tokenId = instanceIdResult.getId();
+
+                // usually new token is only generated when the app is reinstalled or the data is cleared
+                Log.d(TAG, "FCM Token: " + newToken);
+
+                // a new FCM token was generated
+                final String oldToken = SeptaServiceFactory.getNotificationsService().getRegistrationToken(context);
+                if (!oldToken.isEmpty() && !oldToken.equals(newToken)) {
+
+                    // save registration token
+                    SeptaServiceFactory.getNotificationsService().setRegistrationToken(context, newToken);
+
+                    // register new FCM token
+                    PushNotificationManager.updateNotifSubscription(context, new Runnable() {
+                        @Override
+                        public void run() {
+                            CrashlyticsManager.log(Log.ERROR, TAG, "Could not register new FCM token: " + newToken + " and unregister old FCM token: " + oldToken);
+
+                            SeptaServiceFactory.getNotificationsService().setNotifPrefsSaved(context, false);
+                        }
+                    });
+
+                } else if (oldToken.isEmpty()) {
+                    Log.d(TAG, "Saving FCM token for first time");
+
+                    // save registration token
+                    SeptaServiceFactory.getNotificationsService().setRegistrationToken(context, newToken);
+                } else {
+                    Log.d(TAG, "No changes to FCM token");
+                }
+
+                Log.d(TAG, "Instance ID: " + tokenId); // this is a shortcutted version of the token
+            }
+        });
     }
 
     public void buildSpecialAnnouncementNotification(Context context, String message) {
@@ -275,7 +320,12 @@ public class PushNotificationManager {
         }
     }
 
-    public static void updateNotifSubscription(final Context context, final Runnable failureTask) {
+    public static void updateNotifSubscription(Context context, Runnable failureTask) {
+        final PushNotifSubscriptionRequest request = buildSubscriptionRequest(context, null, null, null);
+        updateNotifSubscription(context, request, failureTask, null);
+    }
+
+    public static void updateNotifSubscription(final Context context, final PushNotifSubscriptionRequest request, final Runnable failureTask, final Runnable successTask) {
         if (SeptaServiceFactory.getNotificationsService().areNotificationsEnabled(context)) {
             RefreshAdvertisingId refreshAdvertisingId = new RefreshAdvertisingId(context, new Runnable() {
                 @Override
@@ -290,13 +340,13 @@ public class PushNotificationManager {
 
                     } else {
                         // use old device ID
-                        submitNotifPrefs(context, failureTask);
+                        submitNotifPrefs(context, request, failureTask, successTask);
                     }
                 }
             }, new Runnable() {
                 @Override
                 public void run() {
-                    submitNotifPrefs(context, failureTask);
+                    submitNotifPrefs(context, request, failureTask, successTask);
                 }
             });
             refreshAdvertisingId.execute();
@@ -305,13 +355,11 @@ public class PushNotificationManager {
             AutoSubscriptionReceiver.scheduleSubscriptionUpdate(context, false);
 
         } else {
-            removeNotifSubscription(context, failureTask);
+            removeNotifSubscription(context, failureTask, successTask);
         }
     }
 
-    private static void submitNotifPrefs(final Context context, final Runnable failureTask) {
-        final PushNotifSubscriptionRequest request = buildSubscriptionRequest(context);
-
+    private static void submitNotifPrefs(final Context context, final PushNotifSubscriptionRequest request, final Runnable failureTask, final Runnable successTask) {
         SeptaServiceFactory.getPushNotificationService().setNotificationSubscription(request).enqueue(new Callback<PushNotifSubscriptionResponse>() {
             @Override
             public void onResponse(Call<PushNotifSubscriptionResponse> call, Response<PushNotifSubscriptionResponse> response) {
@@ -324,6 +372,10 @@ public class PushNotificationManager {
                         SeptaServiceFactory.getNotificationsService().setNotifPrefsSaved(context, true);
 
                         Toast.makeText(context, R.string.subscription_success, Toast.LENGTH_SHORT).show();
+
+                        if (successTask != null) {
+                            successTask.run();
+                        }
                     } else {
                         CrashlyticsManager.log(Log.ERROR, TAG, "Could not update push notification subscription: " + response.message());
                         failureToUpdatePrefs(context, request, failureTask);
@@ -343,7 +395,11 @@ public class PushNotificationManager {
         });
     }
 
-    public static void removeNotifSubscription(final Context context, final Runnable failureTask) {
+    public static void removeNotifSubscription(Context context, Runnable failureTask) {
+        removeNotifSubscription(context, failureTask, null);
+    }
+
+    public static void removeNotifSubscription(final Context context, final Runnable failureTask, final Runnable successTask) {
         final PushNotifSubscriptionRequest request = buildNullSubscriptionRequest(context);
 
         SeptaServiceFactory.getPushNotificationService().setNotificationSubscription(request).enqueue(new Callback<PushNotifSubscriptionResponse>() {
@@ -361,6 +417,10 @@ public class PushNotificationManager {
                         SeptaServiceFactory.getNotificationsService().setNotifPrefsSaved(context, true);
 
                         Toast.makeText(context, R.string.subscription_success, Toast.LENGTH_SHORT).show();
+
+                        if (successTask != null) {
+                            successTask.run();
+                        }
                     } else {
                         CrashlyticsManager.log(Log.ERROR, TAG, "Could not remove push notification subscription: " + response.message());
                         failureToUpdatePrefs(context, request, failureTask);
@@ -374,7 +434,8 @@ public class PushNotificationManager {
                     failureToUpdatePrefs(context, request, failureTask);
 
                     // continue auto-subscription since this failed
-                    AutoSubscriptionReceiver.scheduleSubscriptionUpdate(context, false);                }
+                    AutoSubscriptionReceiver.scheduleSubscriptionUpdate(context, false);
+                }
             }
 
             @Override
@@ -384,7 +445,8 @@ public class PushNotificationManager {
                 failureToUpdatePrefs(context, request, failureTask);
 
                 // continue auto-subscription since this failed
-                AutoSubscriptionReceiver.scheduleSubscriptionUpdate(context, false);            }
+                AutoSubscriptionReceiver.scheduleSubscriptionUpdate(context, false);
+            }
         });
     }
 
@@ -397,22 +459,31 @@ public class PushNotificationManager {
         }
     }
 
-    @NonNull
-    private static PushNotifSubscriptionRequest buildSubscriptionRequest(Context context) {
-        // generate days of week list
-        List<Integer> daysEnabled = SeptaServiceFactory.getNotificationsService().getNotificationsSchedule(context);
+    public static PushNotifSubscriptionRequest buildSubscriptionRequest(Context context, List<Integer> daysEnabled, List<String> timeFrames, List<RouteSubscription> routesSubscribedTo) {
+
+        // pull days of week from shared prefs
+        if (daysEnabled == null) {
+            daysEnabled = SeptaServiceFactory.getNotificationsService().getNotificationsSchedule(context);
+        }
+
+        // send off signal if no days are selected
         if (daysEnabled.isEmpty()) {
             return buildNullSubscriptionRequest(context);
         }
+
+        // generate days of week request format
         int[] daysOfWeek = new int[daysEnabled.size()];
         for (int i = 0; i < daysEnabled.size(); i++) {
             daysOfWeek[i] = daysEnabled.get(i);
         }
 
-        // generate time frames
-        List<String> timeFrames = SeptaServiceFactory.getNotificationsService().getNotificationTimeFrames(context);
-        TimeSlot[] timeSlots = new TimeSlot[timeFrames.size()];
+        // pull time frames from shared prefs
+        if (timeFrames == null) {
+            timeFrames = SeptaServiceFactory.getNotificationsService().getNotificationTimeFrames(context);
+        }
 
+        // generate request timestamp format
+        TimeSlot[] timeSlots = new TimeSlot[timeFrames.size()];
         for (int i = 0; i < timeFrames.size(); i++) {
             String timeFrame = timeFrames.get(i);
 
@@ -427,8 +498,12 @@ public class PushNotificationManager {
             timeSlots[i] = newTimeSlot;
         }
 
-        // generate list of routes subscribed to
-        List<RouteSubscription> routesSubscribedTo = SeptaServiceFactory.getNotificationsService().getRoutesSubscribedTo(context);
+        // pull route subscription list from shared prefs
+        if (routesSubscribedTo == null) {
+            routesSubscribedTo = SeptaServiceFactory.getNotificationsService().getRoutesSubscribedTo(context);
+        }
+
+        // generate route subscription request format
         List<RouteNotifSubscription> temp = new ArrayList<>();
         for (int i = 0; i < routesSubscribedTo.size(); i++) {
             RouteSubscription route = routesSubscribedTo.get(i);
@@ -441,6 +516,7 @@ public class PushNotificationManager {
         RouteNotifSubscription[] routeSubscriptions = new RouteNotifSubscription[temp.size()];
         routeSubscriptions = temp.toArray(routeSubscriptions);
 
+        // pull registration token, device ID, and special announcements from shared prefs
         String regToken = SeptaServiceFactory.getNotificationsService().getRegistrationToken(context);
         String deviceId = SeptaServiceFactory.getNotificationsService().getDeviceId(context);
         boolean specialAnnouncements = SeptaServiceFactory.getNotificationsService().areSpecialAnnouncementsEnabled(context);
@@ -472,7 +548,15 @@ public class PushNotificationManager {
         List<RouteSubscription> notificationSubscriptions = SeptaServiceFactory.getNotificationsService().getRoutesSubscribedTo(context);
         RouteSubscription routeToSubscribeTo = new RouteSubscription(routeId, routeName, transitType);
 
-        if (notificationSubscriptions.contains(routeToSubscribeTo)) {
+        boolean isAlreadySubscribed = false;
+        for (RouteSubscription routeSubscription : notificationSubscriptions) {
+            if (routeToSubscribeTo.getRouteId().equals(routeSubscription.getRouteId())) {
+                isAlreadySubscribed = true;
+                break;
+            }
+        }
+
+        if (isAlreadySubscribed) {
             // turn notifications on for that route
             SeptaServiceFactory.getNotificationsService().toggleRouteSubscription(context, routeId, true);
 
@@ -504,11 +588,6 @@ public class PushNotificationManager {
         routeSubscribedTo.put("Muted Subscription - Transit Type", String.valueOf(transitType));
         routeSubscribedTo.put("Muted Subscription - Route ID", routeId);
         AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_ROUTE_UNSUBSCRIBE, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_MANAGEMENT, routeSubscribedTo);
-    }
-
-    public void deleteNotificationForRoute(String routeId) {
-        // delete notification
-        SeptaServiceFactory.getNotificationsService().removeRouteSubscription(context, routeId);
     }
 
     private String getRailRouteName(Context context, String routeId) {

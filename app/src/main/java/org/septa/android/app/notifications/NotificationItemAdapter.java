@@ -96,11 +96,9 @@ public class NotificationItemAdapter extends RecyclerView.Adapter<NotificationIt
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (isChecked) {
-                        // enable notifs for route
-                        PushNotificationManager.getInstance(activity).createNotificationForRoute(routeId, routeName, transitType, "My Notification Item");
+                        mListener.enableNotifsForRoute(holder.getAdapterPosition());
                     } else {
-                        // disable notifs for route
-                        PushNotificationManager.getInstance(activity).removeNotificationForRoute(routeId, transitType, "My Notification Item");
+                        mListener.disableNotifsForRoute(holder.getAdapterPosition());
                     }
 
                     mListener.enableSaveButton();
@@ -140,5 +138,7 @@ public class NotificationItemAdapter extends RecyclerView.Adapter<NotificationIt
     public interface NotificationItemListener {
         void promptToDeleteNotification(int position, String routeId, String routeName, TransitType transitType);
         void enableSaveButton();
+        void enableNotifsForRoute(int position);
+        void disableNotifsForRoute(int position);
     }
 }

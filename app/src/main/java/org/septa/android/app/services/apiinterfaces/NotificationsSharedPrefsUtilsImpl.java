@@ -34,7 +34,8 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
 
     // parsing time frames
     public static final String START_END_TIME_DELIM = ",";
-    private static final String DEFAULT_TIME_FRAME = "0600,1800";
+
+    public static final String DEFAULT_TIME_FRAME = "0600,1800";
 
     public static final int MAX_TIMEFRAMES = 2;
 
@@ -91,36 +92,7 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
     }
 
     @Override
-    public void addDayOfWeekToSchedule(Context context, int dayToAdd) {
-        List<Integer> daysOfWeek = getNotificationsSchedule(context);
-        if (!daysOfWeek.contains(dayToAdd)) {
-            daysOfWeek.add(dayToAdd);
-            Collections.sort(daysOfWeek);
-            storeNotificationsSchedule(context, daysOfWeek);
-        } else {
-            Log.e(TAG, "Notifications are already enabled for " + dayToAdd);
-        }
-    }
-
-    @Override
-    public void removeDayOfWeekFromSchedule(Context context, int dayToRemove) {
-        List<Integer> daysOfWeek = getNotificationsSchedule(context);
-        int indexToRemove = -1;
-        for (int i = 0; i < daysOfWeek.size(); i++) {
-            if (dayToRemove == daysOfWeek.get(i)) {
-                indexToRemove = i;
-                break;
-            }
-        }
-        if (indexToRemove != -1) {
-            daysOfWeek.remove(indexToRemove);
-        } else {
-            Log.e(TAG, "Notifications are already disabled for " + dayToRemove);
-        }
-        storeNotificationsSchedule(context, daysOfWeek);
-    }
-
-    private void storeNotificationsSchedule(Context context, List<Integer> schedule) {
+    public void setNotificationsSchedule(Context context, List<Integer> schedule) {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
         Gson gson = new Gson();
         String scheduleJson = gson.toJson(schedule);
@@ -157,73 +129,17 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
         }
     }
 
+    @Override
+    public void setNotificationTimeFrames(Context context, List<String> timeFrames) {
+        SharedPreferences sharedPreferences = getSharedPreferences(context);
+        storeNotificationTimeFrames(sharedPreferences, timeFrames);
+    }
+
     private void storeNotificationTimeFrames(SharedPreferences sharedPreferences, List<String> timeFrames) {
+        // TODO: clean this up?
         Gson gson = new Gson();
         String timeFramesListJson = gson.toJson(timeFrames);
         sharedPreferences.edit().putString(NOTIFICATIONS_TIME_FRAME, timeFramesListJson).commit();
-    }
-
-    @Override
-    public String getNotificationTimeFrame(Context context, int windowNumber, boolean isStartTime) {
-        List<String> timeFramesList = getNotificationTimeFrames(context);
-        if (windowNumber >= 0 && windowNumber < timeFramesList.size()) {
-            String[] timeWindow = timeFramesList.get(windowNumber).split(START_END_TIME_DELIM);
-
-            if (isStartTime) {
-                return timeWindow[0];
-            } else {
-                return timeWindow[1];
-            }
-        } else {
-            Log.e(TAG, "Invalid attempt to get time frame #" + windowNumber + " but timeFrames size is only " + timeFramesList.size());
-        }
-        return null;
-    }
-
-    @Override
-    public void changeNotificationTimeFrame(Context context, int windowNumber, boolean isStartTime, String newTime) {
-        SharedPreferences sharedPreferences = getSharedPreferences(context);
-        List<String> timeFramesList = getNotificationTimeFrames(context);
-
-        // change notification for time frame
-        if (windowNumber >= 0 && windowNumber < timeFramesList.size()) {
-            String currentTimeWindow = timeFramesList.get(windowNumber);
-
-            if (isStartTime) {
-                currentTimeWindow = newTime + currentTimeWindow.substring(4);
-            } else {
-                currentTimeWindow = currentTimeWindow.substring(0, 5) + newTime;
-            }
-
-            timeFramesList.set(windowNumber, currentTimeWindow);
-        } else {
-            Log.e(TAG, "Invalid attempt to change notification time frame at " + windowNumber + " but timeFrames size is only " + timeFramesList.size());
-        }
-
-        storeNotificationTimeFrames(sharedPreferences, timeFramesList);
-    }
-
-    @Override
-    public List<String> addNotificationTimeFrame(Context context) {
-        SharedPreferences sharedPreferences = getSharedPreferences(context);
-        List<String> timeFrames = getNotificationTimeFrames(context);
-        timeFrames.add(DEFAULT_TIME_FRAME);
-        storeNotificationTimeFrames(sharedPreferences, timeFrames);
-        return timeFrames;
-    }
-
-    @Override
-    public List<String> removeNotificationTimeFrame(Context context, int windowToDelete) {
-        SharedPreferences sharedPreferences = getSharedPreferences(context);
-        List<String> timeFrames = getNotificationTimeFrames(context);
-
-        if (windowToDelete >= 0 && windowToDelete < timeFrames.size()) {
-            timeFrames.remove(windowToDelete);
-            storeNotificationTimeFrames(sharedPreferences, timeFrames);
-        } else {
-            Log.e(TAG, "Could not remove notification timeframe #" + windowToDelete);
-        }
-        return timeFrames;
     }
 
     @Override
@@ -244,6 +160,12 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
             sharedPreferences.edit().remove(ROUTE_NOTIFICATION_SUBSCRIPTION).commit();
             return new ArrayList<>();
         }
+    }
+
+    @Override
+    public void setRoutesSubscribedTo(Context context, List<RouteSubscription> routeSubscriptions) {
+        SharedPreferences sharedPreferences = getSharedPreferences(context);
+        storeRoutesSubscribedTo(sharedPreferences, routeSubscriptions);
     }
 
     @Override
@@ -296,25 +218,6 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
             storeRoutesSubscribedTo(sharedPreferences, routeList);
         } else {
             Log.e(TAG, "Could not toggle notification subscription for route " + routeId);
-        }
-    }
-
-    @Override
-    public void removeRouteSubscription(Context context, String routeId) {
-        SharedPreferences sharedPreferences = getSharedPreferences(context);
-        List<RouteSubscription> routesList = getRoutesSubscribedTo(context);
-        int indexToRemove = -1;
-        for (int i = 0; i < routesList.size(); i++) {
-            if (routeId.equalsIgnoreCase(routesList.get(i).getRouteId())) {
-                indexToRemove = i;
-                break;
-            }
-        }
-        if (indexToRemove != -1) {
-            routesList.remove(indexToRemove);
-            storeRoutesSubscribedTo(sharedPreferences, routesList);
-        } else {
-            Log.e(TAG, "Could not remove route subscription with ID: " + routeId);
         }
     }
 

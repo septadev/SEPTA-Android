@@ -211,9 +211,7 @@ public class SystemStatusResultsActivity extends BaseActivity {
                             showPushNotifsDisabled(notifsAllowed, notifsEnabled);
                             failureToToggleRouteSubscription(isChecked);
                         }
-                    } else
-
-                    {
+                    } else {
                         Toast.makeText(SystemStatusResultsActivity.this, R.string.subscription_need_connection, Toast.LENGTH_SHORT).show();
 
                         // handle no network connection

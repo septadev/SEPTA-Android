@@ -2,20 +2,27 @@ package org.septa.android.app.services.apiinterfaces.model;
 
 import android.support.annotation.NonNull;
 
+import org.parceler.Parcel;
+import org.parceler.ParcelConstructor;
 import org.septa.android.app.TransitType;
 
 import java.io.Serializable;
 
-public class RouteSubscription implements Serializable, Comparable<RouteSubscription> {
+@Parcel
+public class RouteSubscription implements Serializable, Comparable<RouteSubscription>, Cloneable {
 
-    private String routeId;
+    String routeId;
 
-    private String routeName;
+    String routeName;
 
-    private TransitType transitType;
+    TransitType transitType;
 
-    private boolean isEnabled;
+    boolean isEnabled;
 
+    public RouteSubscription() {
+    }
+
+    @ParcelConstructor
     public RouteSubscription(String routeId, String routeName, TransitType transitType) {
         this.routeId = routeId;
         this.routeName = routeName;
@@ -56,30 +63,35 @@ public class RouteSubscription implements Serializable, Comparable<RouteSubscrip
     }
 
     @Override
+    public RouteSubscription clone() {
+        RouteSubscription r = new RouteSubscription();
+        r.routeId = this.routeId;
+        r.routeName = this.routeName;
+        r.transitType = this.transitType;
+        r.isEnabled = this.isEnabled;
+        return r;
+    }
+
+    @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
         RouteSubscription that = (RouteSubscription) o;
 
-        if (!routeId.equals(that.routeId)) {
+        if (isEnabled != that.isEnabled) return false;
+        if (!routeId.equals(that.routeId)) return false;
+        if (routeName != null ? !routeName.equals(that.routeName) : that.routeName != null)
             return false;
-        }
-        if (!routeName.equals(that.routeName)) {
-            return false;
-        }
         return transitType == that.transitType;
     }
 
     @Override
     public int hashCode() {
         int result = routeId.hashCode();
-        result = 31 * result + routeName.hashCode();
-        result = 31 * result + transitType.hashCode();
+        result = 31 * result + (routeName != null ? routeName.hashCode() : 0);
+        result = 31 * result + (transitType != null ? transitType.hashCode() : 0);
+        result = 31 * result + (isEnabled ? 1 : 0);
         return result;
     }
 
@@ -111,7 +123,17 @@ public class RouteSubscription implements Serializable, Comparable<RouteSubscrip
         }
 
         i = this.routeName.compareTo(other.routeName);
-        return i;
+        if (i != 0) {
+            return i;
+        }
+
+        if (isEnabled == other.isEnabled) {
+            return 0;
+        }
+        if (isEnabled) {
+            return 1;
+        }
+        return -1;
     }
 
 }

@@ -1,7 +1,5 @@
 package org.septa.android.app.services.apiinterfaces;
 
-import android.app.ActivityManager;
-import android.content.Context;
 import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -13,17 +11,14 @@ import org.septa.android.app.notifications.NotificationType;
 import org.septa.android.app.notifications.PushNotificationManager;
 import org.septa.android.app.support.AnalyticsManager;
 
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class PushNotificationService extends FirebaseMessagingService {
 
     private static final String TAG = PushNotificationService.class.getSimpleName();
 
-    private static final String NOTIFICATION_KEY_TYPE = "notificationType",
+    public static final String NOTIFICATION_KEY_TYPE = "notificationType",
             NOTIFICATION_KEY_TRANSIT_TYPE = "routeType",
             NOTIFICATION_KEY_ROUTE_ID = "routeId",
             NOTIFICATION_KEY_MESSAGE = "message",
@@ -42,6 +37,7 @@ public class PushNotificationService extends FirebaseMessagingService {
         super.onMessageReceived(remoteMessage);
 
         Log.d(TAG, remoteMessage.toString());
+
         Map<String, String> notifData = new HashMap<>();
 
         if (remoteMessage.getData() != null && remoteMessage.getData().size() > 0) {
@@ -89,25 +85,4 @@ public class PushNotificationService extends FirebaseMessagingService {
         AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_PUSH_NOTIF_RECEIVED, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_ENGAGEMENT, null);
     }
 
-    private boolean isAppInForeground(Context context) {
-        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
-        if (appProcesses == null) {
-            return false;
-        }
-        final String packageName = context.getPackageName();
-        for (ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
-            if (appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND && appProcess.processName.equals(packageName)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private Date addHoursToDate(Date date, int hours) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        calendar.add(Calendar.HOUR_OF_DAY, hours);
-        return calendar.getTime();
-    }
 }

@@ -7,6 +7,7 @@ import android.view.Window;
 import android.widget.ImageView;
 
 import org.septa.android.app.database.DatabaseManager;
+import org.septa.android.app.notifications.PushNotificationManager;
 import org.septa.android.app.rating.SharedPreferencesRatingUtil;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Alerts;
@@ -62,8 +63,8 @@ public class SplashScreenActivity extends BaseActivity {
             }
 
             private void complete() {
-                Intent intent = new Intent(SplashScreenActivity.this, MainActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_TASK_ON_HOME);
+                // if the app is opening via push notification click, prepare intent to bring user to relevant screen
+                Intent intent = PushNotificationManager.addPushNotifClickIntent(SplashScreenActivity.this, getIntent().getExtras());
 
                 if (!BuildConfig.DEBUG) {
                     while (System.currentTimeMillis() - timestamp < 2000) {

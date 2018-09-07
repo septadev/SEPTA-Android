@@ -247,12 +247,13 @@ public class PushNotificationManager {
 
     public static Intent addPushNotifClickIntent(Context context, Bundle notificationData) {
         Intent intent = new Intent(context, MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_TASK_ON_HOME);
-
         if (notificationData == null) {
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_TASK_ON_HOME);
             Log.d(TAG, "Intent extras null, opening MainActivity as usual");
 
         } else {
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
             StringBuilder builder = new StringBuilder("Clicked Notification Data:\n");
             for (String key : notificationData.keySet()) {
                 Object value = notificationData.get(key);
@@ -274,6 +275,7 @@ public class PushNotificationManager {
                 final DelayNotificationType delayType = DelayNotificationType.valueOf(notificationData.getString(NOTIFICATION_KEY_DELAY_TYPE));
 
                 if (delayType == DelayNotificationType.ACTUAL) {
+
                     String vehicleId = notificationData.getString(NOTIFICATION_KEY_VEHICLE_ID);
                     String destinationStopId = notificationData.getString(NOTIFICATION_KEY_DESTINATION_STOP_ID);
 

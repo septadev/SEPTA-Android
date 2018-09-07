@@ -136,7 +136,6 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
     }
 
     private void storeNotificationTimeFrames(SharedPreferences sharedPreferences, List<String> timeFrames) {
-        // TODO: clean this up?
         Gson gson = new Gson();
         String timeFramesListJson = gson.toJson(timeFrames);
         sharedPreferences.edit().putString(NOTIFICATIONS_TIME_FRAME, timeFramesListJson).commit();

@@ -381,18 +381,6 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
 
     @Override
     public void enableSaveButton() {
-        Log.e(TAG, "DoW changes? " + !initialDaysOfWeek.equals(modifiedDaysOfWeek)); // TODO: remove
-        Log.e(TAG, "initial DoW " + initialDaysOfWeek.toString()); // TODO: remove
-        Log.e(TAG, "modified DoW " + modifiedDaysOfWeek.toString()); // TODO: remove
-        Log.e(TAG, "Timeframe changes? " + !initialTimeFrames.equals(modifiedTimeFrames)); // TODO: remove
-        Log.e(TAG, "initial Timeframes " + initialTimeFrames.toString()); // TODO: remove
-        Log.e(TAG, "modified Timeframes " + modifiedTimeFrames.toString()); // TODO: remove
-
-        boolean routeSubscriptionChanges = !initialRouteSubscriptions.equals(modifiedRouteSubscriptions);
-        Log.e(TAG, "Route Subscription changes? " + routeSubscriptionChanges); // TODO: remove
-        Log.e(TAG, "initial Route Subscriptions " + initialRouteSubscriptions.toString()); // TODO: remove
-        Log.e(TAG, "modified Route Subscriptions " + modifiedRouteSubscriptions.toString()); // TODO: remove
-
         if (initialDaysOfWeek == null || initialTimeFrames == null || initialRouteSubscriptions == null) {
             CrashlyticsManager.log(Log.ERROR, TAG, "Initial user notification preferences is null: ");
             if (initialDaysOfWeek == null) {
@@ -404,7 +392,7 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
             if (initialRouteSubscriptions == null) {
                 CrashlyticsManager.log(Log.ERROR, TAG, "route subscriptions is null");
             }
-        } else if (initialDaysOfWeek.equals(modifiedDaysOfWeek) && initialTimeFrames.equals(modifiedTimeFrames) && !routeSubscriptionChanges) {
+        } else if (initialDaysOfWeek.equals(modifiedDaysOfWeek) && initialTimeFrames.equals(modifiedTimeFrames) && initialRouteSubscriptions.equals(modifiedRouteSubscriptions)) {
             SeptaServiceFactory.getNotificationsService().setNotifPrefsSaved(MyNotificationsActivity.this, true);
             disableView(saveButton);
         } else {

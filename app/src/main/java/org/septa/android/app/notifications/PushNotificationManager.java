@@ -53,6 +53,12 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
+import static org.septa.android.app.services.apiinterfaces.PushNotificationService.NOTIFICATION_KEY_DELAY_TYPE;
+import static org.septa.android.app.services.apiinterfaces.PushNotificationService.NOTIFICATION_KEY_DESTINATION_STOP_ID;
+import static org.septa.android.app.services.apiinterfaces.PushNotificationService.NOTIFICATION_KEY_ROUTE_ID;
+import static org.septa.android.app.services.apiinterfaces.PushNotificationService.NOTIFICATION_KEY_TRANSIT_TYPE;
+import static org.septa.android.app.services.apiinterfaces.PushNotificationService.NOTIFICATION_KEY_TYPE;
+import static org.septa.android.app.services.apiinterfaces.PushNotificationService.NOTIFICATION_KEY_VEHICLE_ID;
 
 public class PushNotificationManager {
 
@@ -237,6 +243,83 @@ public class PushNotificationManager {
 
     private static void showNotificationExpiredMessage(Context context) {
         Toast.makeText(context, R.string.notification_expired, Toast.LENGTH_LONG).show();
+    }
+
+    public static Intent addPushNotifClickIntent(Context context, Bundle notificationData) {
+        Intent intent = new Intent(context, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_TASK_ON_HOME);
+
+        if (notificationData == null) {
+            Log.d(TAG, "Intent extras null, opening MainActivity as usual");
+
+        } else {
+            StringBuilder builder = new StringBuilder("Clicked Notification Data:\n");
+            for (String key : notificationData.keySet()) {
+                Object value = notificationData.get(key);
+                builder.append(key).append(": ").append(value).append("\n");
+            }
+            Log.d(TAG, builder.toString());
+
+            NotificationType notificationType = NotificationType.valueOf(notificationData.getString(NOTIFICATION_KEY_TYPE));
+            // special announcements go to favorites
+            if (notificationType == NotificationType.SPECIAL_ANNOUNCEMENT) {
+                return intent;
+            }
+
+            // pass relevant data to activity
+            final String routeId = notificationData.getString(NOTIFICATION_KEY_ROUTE_ID);
+            TransitType transitType = TransitType.valueOf(notificationData.getString(NOTIFICATION_KEY_TRANSIT_TYPE));
+
+            if (notificationType == NotificationType.DELAY) {
+                final DelayNotificationType delayType = DelayNotificationType.valueOf(notificationData.getString(NOTIFICATION_KEY_DELAY_TYPE));
+
+                if (delayType == DelayNotificationType.ACTUAL) {
+                    String vehicleId = notificationData.getString(NOTIFICATION_KEY_VEHICLE_ID);
+                    String destinationStopId = notificationData.getString(NOTIFICATION_KEY_DESTINATION_STOP_ID);
+
+                    // look up destination stop and rote name
+                    StopModel destStop = getRailStop(context, destinationStopId);
+                    String routeName = getRailRouteName(context, routeId);
+
+                    intent.putExtra(Constants.REQUEST_CODE, Constants.PUSH_NOTIF_REQUEST_RAIL_DELAY);
+                    intent.putExtra(Constants.DESTINATION_STATION, destStop);
+                    intent.putExtra(Constants.DESTINATION_STOP_ID, destinationStopId);
+                    intent.putExtra(Constants.VEHICLE_ID, vehicleId);
+                    intent.putExtra(Constants.ROUTE_ID, routeId);
+                    intent.putExtra(Constants.ROUTE_NAME, routeName);
+                    intent.putExtra(Constants.TRANSIT_TYPE, transitType);
+
+                } else {
+                    // estimated delays go to favorites
+                    return intent;
+                }
+
+            } else if (notificationType == NotificationType.ALERT) {
+                String routeName = routeId;
+
+                // look up line name for rail
+                if (transitType == TransitType.RAIL) {
+                    routeName = getRailRouteName(context, routeId);
+                }
+
+                intent.putExtra(Constants.REQUEST_CODE, Constants.PUSH_NOTIF_REQUEST_SERVICE_ALERT);
+                intent.putExtra(Constants.ROUTE_NAME, routeName);
+                intent.putExtra(Constants.ROUTE_ID, routeId);
+                intent.putExtra(Constants.TRANSIT_TYPE, transitType);
+
+            } else if (notificationType == NotificationType.DETOUR) {
+                String routeName = routeId;
+
+                intent.putExtra(Constants.REQUEST_CODE, Constants.PUSH_NOTIF_REQUEST_DETOUR);
+                intent.putExtra(Constants.ROUTE_NAME, routeName);
+                intent.putExtra(Constants.ROUTE_ID, routeId);
+                intent.putExtra(Constants.TRANSIT_TYPE, transitType);
+            } else {
+                CrashlyticsManager.log(Log.ERROR, TAG, "Invalid notification type when opening app from push notification click: " + builder.toString());
+            }
+        }
+
+        return intent;
     }
 
     public static void onSystemStatusNotificationClick(Activity activity, Intent intent, String expandedAlert, NotificationType notificationType) {
@@ -590,7 +673,7 @@ public class PushNotificationManager {
         AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_ROUTE_UNSUBSCRIBE, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_MANAGEMENT, routeSubscribedTo);
     }
 
-    private String getRailRouteName(Context context, String routeId) {
+    private static String getRailRouteName(Context context, String routeId) {
         DatabaseManager dbManager = DatabaseManager.getInstance(context);
         CursorAdapterSupplier<RouteDirectionModel> routeCursorAdapterSupplier = dbManager.getRailNoDirectionRouteCursorAdapterSupplier();
         List<Criteria> criteriaList = new ArrayList<>();
@@ -612,7 +695,7 @@ public class PushNotificationManager {
         return routeName;
     }
 
-    private StopModel getRailStop(Context context, String stopId) {
+    private static StopModel getRailStop(Context context, String stopId) {
         DatabaseManager dbManager = DatabaseManager.getInstance(context);
         CursorAdapterSupplier<StopModel> stopModelCursorAdapterSupplier = dbManager.getRailStopCursorAdapterSupplier();
         StopModel stopModel = stopModelCursorAdapterSupplier.getItemFromId(context, stopId);

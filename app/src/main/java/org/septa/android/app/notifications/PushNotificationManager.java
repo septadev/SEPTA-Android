@@ -247,11 +247,7 @@ public class PushNotificationManager {
 
     public static Intent addPushNotifClickIntent(Context context, Bundle notificationData) {
         Intent intent = new Intent(context, MainActivity.class);
-        if (notificationData == null) {
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_TASK_ON_HOME);
-            Log.d(TAG, "Intent extras null, opening MainActivity as usual");
-
-        } else {
+        if (notificationData != null && notificationData.getString(NOTIFICATION_KEY_TYPE) != null) {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
             StringBuilder builder = new StringBuilder("Clicked Notification Data:\n");
@@ -319,6 +315,10 @@ public class PushNotificationManager {
             } else {
                 CrashlyticsManager.log(Log.ERROR, TAG, "Invalid notification type when opening app from push notification click: " + builder.toString());
             }
+        } else {
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_TASK_ON_HOME);
+            Log.d(TAG, "Intent extras null, opening MainActivity as usual");
+
         }
 
         return intent;

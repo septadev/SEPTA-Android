@@ -1,8 +1,6 @@
 package org.septa.android.app.notifications;
 
 import android.app.Activity;
-import android.app.TimePickerDialog;
-import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -15,9 +13,8 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import org.septa.android.app.R;
-import org.septa.android.app.notifications.timepicker.NotificationTimePickerClockDialog;
 import org.septa.android.app.notifications.timepicker.NotificationTimePickerDialogListener;
-import org.septa.android.app.notifications.timepicker.NotificationTimePickerSpinnerDialog;
+import org.septa.android.app.notifications.timepicker.TimePickerDialog;
 import org.septa.android.app.services.apiinterfaces.NotificationsSharedPrefsUtilsImpl;
 import org.septa.android.app.support.CrashlyticsManager;
 import org.septa.android.app.support.GeneralUtils;
@@ -72,14 +69,7 @@ public class TimeFrameItemAdapter extends RecyclerView.Adapter<TimeFrameItemAdap
                 int hour = startTime / 100;
                 int minute = startTime % 100;
 
-                TimePickerDialog timePickerDialog;
-                // android:timePickerMode spinner and clock began in Lollipop (21)
-                // but clock did not become default until Nougat (24+)
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    timePickerDialog = new NotificationTimePickerClockDialog(activity, TimeFrameItemAdapter.this, hour, minute, false, true, holder.getAdapterPosition());
-                } else {
-                    timePickerDialog = new NotificationTimePickerSpinnerDialog(activity, TimeFrameItemAdapter.this, hour, minute, false, true, holder.getAdapterPosition());
-                }
+                TimePickerDialog timePickerDialog = new TimePickerDialog(activity, TimeFrameItemAdapter.this, hour, minute, true, holder.getAdapterPosition());
                 timePickerDialog.show();
             }
         });
@@ -91,14 +81,7 @@ public class TimeFrameItemAdapter extends RecyclerView.Adapter<TimeFrameItemAdap
                 int hour = endTime / 100;
                 int minute = endTime % 100;
 
-                TimePickerDialog timePickerDialog;
-                // android:timePickerMode spinner and clock began in Lollipop (21)
-                // but clock did not become default until Nougat (24+)
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    timePickerDialog = new NotificationTimePickerClockDialog(activity, TimeFrameItemAdapter.this, hour, minute, false, false, holder.getAdapterPosition());
-                } else {
-                    timePickerDialog = new NotificationTimePickerSpinnerDialog(activity, TimeFrameItemAdapter.this, hour, minute, false, false, holder.getAdapterPosition());
-                }
+                TimePickerDialog timePickerDialog = new TimePickerDialog(activity, TimeFrameItemAdapter.this, hour, minute, false, holder.getAdapterPosition());
                 timePickerDialog.show();
             }
         });
@@ -156,8 +139,11 @@ public class TimeFrameItemAdapter extends RecyclerView.Adapter<TimeFrameItemAdap
 
     interface TimeFrameItemListener {
         List<String> deleteTimeFrame(int position);
+
         void enableSaveButton();
+
         void setStartTime(int position, int newStartTime);
+
         void setEndTime(int position, int newEndTime);
     }
 

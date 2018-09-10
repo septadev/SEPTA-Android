@@ -49,7 +49,8 @@ public class AutoSubscriptionReceiver extends BroadcastReceiver {
                 // set new alarm time
                 try {
                     startTime.setTimeInMillis(System.currentTimeMillis());
-                    startTime.add(Calendar.DAY_OF_MONTH, NUM_DAYS_BEFORE_AUTOSUBSCRIBING);
+                    startTime.add(Calendar.HOUR_OF_DAY, 1); // TODO: switch back
+//                    startTime.add(Calendar.DAY_OF_MONTH, NUM_DAYS_BEFORE_AUTOSUBSCRIBING); // TODO: put back
                 } catch (NumberFormatException e) {
                     Log.w(TAG, "Unable to determine alarm start time", e);
                     return;
@@ -59,7 +60,8 @@ public class AutoSubscriptionReceiver extends BroadcastReceiver {
             SeptaServiceFactory.getNotificationsService().setNextAutoSubscriptionTime(context, startTime.getTimeInMillis());
 
             Log.d(TAG, "Scheduling auto-subscription alarm: " + startTime.getTime().toString() + " onBoot: " + onBoot);
-            manager.setRepeating(AlarmManager.RTC_WAKEUP, startTime.getTimeInMillis(), AlarmManager.INTERVAL_DAY * NUM_DAYS_BEFORE_AUTOSUBSCRIBING, operation);
+//            manager.setRepeating(AlarmManager.RTC_WAKEUP, startTime.getTimeInMillis(), AlarmManager.INTERVAL_DAY * NUM_DAYS_BEFORE_AUTOSUBSCRIBING, operation); // TODO: put back
+            manager.setRepeating(AlarmManager.RTC_WAKEUP, startTime.getTimeInMillis(), AlarmManager.INTERVAL_HOUR * NUM_DAYS_BEFORE_AUTOSUBSCRIBING, operation); // TODO: remove
         } else {
             cancelSubscriptionUpdate(context);
         }

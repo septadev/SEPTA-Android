@@ -377,6 +377,7 @@
 
 
     <!-- String Resources -->
+    <string name="button_save">Save</string>
     <string name="button_ok">Okay</string>
     <string name="empty_string"></string>
 

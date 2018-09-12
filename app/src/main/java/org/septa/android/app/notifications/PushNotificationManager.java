@@ -27,7 +27,6 @@ import org.septa.android.app.database.DatabaseManager;
 import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.nextarrive.NextToArriveTripDetailActivity;
-import org.septa.android.app.notifications.subscription.AutoSubscriptionReceiver;
 import org.septa.android.app.notifications.subscription.RefreshAdvertisingId;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalDetails;
@@ -44,6 +43,7 @@ import org.septa.android.app.support.GeneralUtils;
 import org.septa.android.app.systemstatus.SystemStatusResultsActivity;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,6 +63,8 @@ import static org.septa.android.app.services.apiinterfaces.PushNotificationServi
 public class PushNotificationManager {
 
     private static final String TAG = PushNotificationManager.class.getSimpleName();
+
+    private static final int NUM_DAYS_BEFORE_AUTOSUBSCRIBING = 5;
 
     private Context context;
     private static PushNotificationManager mInstance;
@@ -436,9 +438,6 @@ public class PushNotificationManager {
             });
             refreshAdvertisingId.execute();
 
-            // set up auto-subscription
-            AutoSubscriptionReceiver.scheduleSubscriptionUpdate(context, false);
-
         } else {
             removeNotifSubscription(context, failureTask, successTask);
         }
@@ -455,11 +454,13 @@ public class PushNotificationManager {
 
                     if (success) {
                         SeptaServiceFactory.getNotificationsService().setNotifPrefsSaved(context, true);
-
-                        Toast.makeText(context, R.string.subscription_success, Toast.LENGTH_SHORT).show();
+                        SeptaServiceFactory.getNotificationsService().setLastUpdatedTime(context, Calendar.getInstance().getTimeInMillis());
 
                         if (successTask != null) {
                             successTask.run();
+                        } else {
+                            // only when success task is null will a success message show
+                            Toast.makeText(context, R.string.subscription_success, Toast.LENGTH_SHORT).show();
                         }
                     } else {
                         CrashlyticsManager.log(Log.ERROR, TAG, "Could not update push notification subscription: " + response.message());
@@ -496,30 +497,22 @@ public class PushNotificationManager {
                     boolean success = response.isSuccessful() && responseBody.isSuccess();
 
                     if (success) {
-                        // cancel auto-subscription
-                        AutoSubscriptionReceiver.cancelSubscriptionUpdate(context);
-
                         SeptaServiceFactory.getNotificationsService().setNotifPrefsSaved(context, true);
-
-                        Toast.makeText(context, R.string.subscription_success, Toast.LENGTH_SHORT).show();
 
                         if (successTask != null) {
                             successTask.run();
+                        } else {
+                            // only when success task is null will a success message show
+                            Toast.makeText(context, R.string.subscription_success, Toast.LENGTH_SHORT).show();
                         }
                     } else {
                         CrashlyticsManager.log(Log.ERROR, TAG, "Could not remove push notification subscription: " + response.message());
                         failureToUpdatePrefs(context, request, failureTask);
-
-                        // continue auto-subscription since this failed
-                        AutoSubscriptionReceiver.scheduleSubscriptionUpdate(context, false);
                     }
 
                 } else {
                     CrashlyticsManager.log(Log.ERROR, TAG, "Could not remove push notification subscription - response body was null");
                     failureToUpdatePrefs(context, request, failureTask);
-
-                    // continue auto-subscription since this failed
-                    AutoSubscriptionReceiver.scheduleSubscriptionUpdate(context, false);
                 }
             }
 
@@ -528,9 +521,6 @@ public class PushNotificationManager {
                 CrashlyticsManager.log(Log.ERROR, TAG, "Failed to Remove Push Notification Subscription Request");
                 CrashlyticsManager.logException(TAG, t);
                 failureToUpdatePrefs(context, request, failureTask);
-
-                // continue auto-subscription since this failed
-                AutoSubscriptionReceiver.scheduleSubscriptionUpdate(context, false);
             }
         });
     }
@@ -707,4 +697,45 @@ public class PushNotificationManager {
         return stopModel;
     }
 
+    public static void autoUpdateNotifPrefs(final Context context) {
+        boolean notifsEnabled = SeptaServiceFactory.getNotificationsService().areNotificationsEnabled(context);
+
+        if (notifsEnabled) {
+            Calendar lastUpdated = Calendar.getInstance();
+            lastUpdated.setTimeInMillis(SeptaServiceFactory.getNotificationsService().getLastUpdatedTime(context));
+            lastUpdated.add(Calendar.MINUTE, 5); // TODO: switch back to 5 days after doing 5 minutes
+//        lastUpdated.add(Calendar.DAY_OF_MONTH, NUM_DAYS_BEFORE_AUTOSUBSCRIBING); // TODO: put back
+
+            long updateFromThisTimeOnwards = lastUpdated.getTimeInMillis();
+            final long currentTime = Calendar.getInstance().getTimeInMillis();
+
+            if (currentTime >= updateFromThisTimeOnwards) {
+                final PushNotifSubscriptionRequest request = buildSubscriptionRequest(context, null, null, null);
+
+                // silently resubmit push notif preferences
+                updateNotifSubscription(context, request, new Runnable() {
+                    @Override
+                    public void run() {
+                        String regToken = SeptaServiceFactory.getNotificationsService().getRegistrationToken(context);
+                        String deviceId = SeptaServiceFactory.getNotificationsService().getDeviceId(context);
+
+                        CrashlyticsManager.log(Log.ERROR, TAG, "Unable to auto-submit user notification preferences for device ID: " + deviceId + " with FCM token: " + regToken);
+
+                        // TODO: failures to auto-subscribe should be silent
+                    }
+                }, new Runnable() {
+                    @Override
+                    public void run() {
+                        // successful resubscription will not show message to user
+                        Log.d(TAG, "Successfully auto-submitted user notif prefs to server");
+                        SeptaServiceFactory.getNotificationsService().setLastUpdatedTime(context, currentTime);
+                    }
+                });
+            } else {
+                Log.d(TAG, "Not enough time elapsed since last notification preferences update");
+            }
+        } else {
+            Log.d(TAG, "Notifications not enabled, not auto-subscribing");
+        }
+    }
 }

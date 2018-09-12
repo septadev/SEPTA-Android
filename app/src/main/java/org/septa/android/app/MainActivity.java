@@ -189,82 +189,16 @@ public class MainActivity extends BaseActivity implements
             mSensorManager.registerListener(mShakeDetector, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
         }
 
-        // note that generic alert will show up before mobile app alert bc it was the most recently added
-
-        // if mobile app alert(s) exist then pop those up
-        if (SystemStatusState.getAlertForApp() != null) {
-            final Alert mobileAppAlert = SystemStatusState.getAlertForApp();
-
-            // validate correct alert
-            if (MOBILE_APP_ALERT_ROUTE_NAME.equals(mobileAppAlert.getRouteName()) && MOBILE_APP_ALERT_MODE.equals(mobileAppAlert.getMode())) {
-
-                // get alert details
-                SeptaServiceFactory.getAlertDetailsService().getAlertDetails(mobileAppAlert.getRouteId()).enqueue(new Callback<AlertDetail>() {
-                    @Override
-                    public void onResponse(Call<AlertDetail> call, Response<AlertDetail> response) {
-                        if (response.body() != null || mobileAppAlert.isAlert()) {
-                            AlertDetail alertDetail = response.body();
-
-                            StringBuilder announcement = new StringBuilder();
-
-                            for (AlertDetail.Detail detail : alertDetail.getAlerts()) {
-                                announcement.append(detail.getMessage());
-                            }
-
-                            // show mobile app alert if current_message not blank
-                            if (!announcement.toString().isEmpty()) {
-                                showAlert(announcement.toString(), false);
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<AlertDetail> call, Throwable t) {
-                        SeptaServiceFactory.displayWebServiceError(findViewById(R.id.drawer_layout), MainActivity.this);
-                    }
-                });
-            }
-        }
-
-        // if general transit alert(s) exist then pop up global alert(s)
-        if (SystemStatusState.getGenericAlert() != null) {
-            final Alert genericAlert = SystemStatusState.getGenericAlert();
-
-            if (GENERIC_ALERT_ROUTE_NAME.equals(genericAlert.getRouteName()) && GENERIC_ALERT_MODE.equals(genericAlert.getMode())) {
-
-                // get alert details
-                SeptaServiceFactory.getAlertDetailsService().getAlertDetails(genericAlert.getRouteId()).enqueue(new Callback<AlertDetail>() {
-                    @Override
-                    public void onResponse(Call<AlertDetail> call, Response<AlertDetail> response) {
-                        if (response.body() != null || genericAlert.isAlert()) {
-                            AlertDetail alertDetail = response.body();
-
-                            StringBuilder announcement = new StringBuilder();
-
-                            for (AlertDetail.Detail detail : alertDetail.getAlerts()) {
-                                announcement.append(detail.getMessage());
-                            }
-
-                            // show generic alert if current_message not blank
-                            if (!announcement.toString().isEmpty()) {
-                                showAlert(announcement.toString(), true);
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<AlertDetail> call, Throwable t) {
-                        SeptaServiceFactory.displayWebServiceError(findViewById(R.id.drawer_layout), MainActivity.this);
-                    }
-                });
-            }
-        }
+        checkGeneralOrMobileAlert();
 
         // check if in-app DB update
         DatabaseUpgradeUtils.checkForNewDatabase(MainActivity.this);
 
         // prep for new DB if not already installed
         DatabaseUpgradeUtils.prepareForNewDatabase(MainActivity.this);
+
+        // resubmit user push notification preferences to server
+        PushNotificationManager.autoUpdateNotifPrefs(MainActivity.this);
     }
 
     @Override
@@ -276,24 +210,7 @@ public class MainActivity extends BaseActivity implements
             mSensorManager.unregisterListener(mShakeDetector);
         }
 
-        // prevent stacking alertdialogs
-        if (genericAlert != null) {
-            genericAlert.dismiss();
-        }
-
-        if (mobileAlert != null) {
-            mobileAlert.dismiss();
-        }
-
-        if (promptDownloadDB != null) {
-            promptDownloadDB.dismiss();
-            promptDownloadDB = null;
-        }
-
-        if (acknowledgeNewDatabaseReady != null) {
-            acknowledgeNewDatabaseReady.dismiss();
-            acknowledgeNewDatabaseReady = null;
-        }
+        dismissPrompts();
 
         // hide menu badge icon
         View view = navigationView.getMenu().findItem(R.id.nav_system_status).getActionView();
@@ -766,6 +683,79 @@ public class MainActivity extends BaseActivity implements
         }
     };
 
+    private void checkGeneralOrMobileAlert() {
+        // note that generic alert will show up before mobile app alert bc it was the most recently added
+
+        // if mobile app alert(s) exist then pop those up
+        if (SystemStatusState.getAlertForApp() != null) {
+            final Alert mobileAppAlert = SystemStatusState.getAlertForApp();
+
+            // validate correct alert
+            if (MOBILE_APP_ALERT_ROUTE_NAME.equals(mobileAppAlert.getRouteName()) && MOBILE_APP_ALERT_MODE.equals(mobileAppAlert.getMode())) {
+
+                // get alert details
+                SeptaServiceFactory.getAlertDetailsService().getAlertDetails(mobileAppAlert.getRouteId()).enqueue(new Callback<AlertDetail>() {
+                    @Override
+                    public void onResponse(Call<AlertDetail> call, Response<AlertDetail> response) {
+                        if (response.body() != null || mobileAppAlert.isAlert()) {
+                            AlertDetail alertDetail = response.body();
+
+                            StringBuilder announcement = new StringBuilder();
+
+                            for (AlertDetail.Detail detail : alertDetail.getAlerts()) {
+                                announcement.append(detail.getMessage());
+                            }
+
+                            // show mobile app alert if current_message not blank
+                            if (!announcement.toString().isEmpty()) {
+                                showAlert(announcement.toString(), false);
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<AlertDetail> call, Throwable t) {
+                        SeptaServiceFactory.displayWebServiceError(findViewById(R.id.drawer_layout), MainActivity.this);
+                    }
+                });
+            }
+        }
+
+        // if general transit alert(s) exist then pop up global alert(s)
+        if (SystemStatusState.getGenericAlert() != null) {
+            final Alert genericAlert = SystemStatusState.getGenericAlert();
+
+            if (GENERIC_ALERT_ROUTE_NAME.equals(genericAlert.getRouteName()) && GENERIC_ALERT_MODE.equals(genericAlert.getMode())) {
+
+                // get alert details
+                SeptaServiceFactory.getAlertDetailsService().getAlertDetails(genericAlert.getRouteId()).enqueue(new Callback<AlertDetail>() {
+                    @Override
+                    public void onResponse(Call<AlertDetail> call, Response<AlertDetail> response) {
+                        if (response.body() != null || genericAlert.isAlert()) {
+                            AlertDetail alertDetail = response.body();
+
+                            StringBuilder announcement = new StringBuilder();
+
+                            for (AlertDetail.Detail detail : alertDetail.getAlerts()) {
+                                announcement.append(detail.getMessage());
+                            }
+
+                            // show generic alert if current_message not blank
+                            if (!announcement.toString().isEmpty()) {
+                                showAlert(announcement.toString(), true);
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<AlertDetail> call, Throwable t) {
+                        SeptaServiceFactory.displayWebServiceError(findViewById(R.id.drawer_layout), MainActivity.this);
+                    }
+                });
+            }
+        }
+    }
+
     public void showAlert(String alert, Boolean isGenericAlert) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
@@ -805,6 +795,29 @@ public class MainActivity extends BaseActivity implements
         view.setVisibility(View.VISIBLE);
 
         dialog.show();
+    }
+
+    private void dismissPrompts() {
+        // prevent stacking alertdialogs
+        if (genericAlert != null) {
+            genericAlert.dismiss();
+            genericAlert = null;
+        }
+
+        if (mobileAlert != null) {
+            mobileAlert.dismiss();
+            mobileAlert = null;
+        }
+
+        if (promptDownloadDB != null) {
+            promptDownloadDB.dismiss();
+            promptDownloadDB = null;
+        }
+
+        if (acknowledgeNewDatabaseReady != null) {
+            acknowledgeNewDatabaseReady.dismiss();
+            acknowledgeNewDatabaseReady = null;
+        }
     }
 
     public void handleShakeEvent(int count) {

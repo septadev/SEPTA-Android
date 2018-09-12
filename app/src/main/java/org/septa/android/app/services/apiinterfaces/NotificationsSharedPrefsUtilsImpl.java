@@ -30,7 +30,7 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
     private static final String NOTIFICATIONS_TIME_FRAME = "NOTIFICATIONS_TIME_FRAME";
     private static final String DEVICE_ID = "DEVICE_ID";
     private static final String REGISTRATION_TOKEN = "REGISTRATION_TOKEN";
-    private static final String AUTO_SUBSCRIPTION_TIME = "AUTO_SUBSCRIPTION_TIME";
+    private static final String LAST_SUBSCRIPTION_UPDATE_TIME = "LAST_SUBSCRIPTION_UPDATE_TIME";
 
     // parsing time frames
     public static final String START_END_TIME_DELIM = ",";
@@ -241,13 +241,13 @@ public class NotificationsSharedPrefsUtilsImpl implements NotificationsSharedPre
     }
 
     @Override
-    public Long getNextAutoSubscriptionTime(Context context) {
-        return getSharedPreferences(context).getLong(AUTO_SUBSCRIPTION_TIME, new Date().getTime());
+    public Long getLastUpdatedTime(Context context) {
+        return getSharedPreferences(context).getLong(LAST_SUBSCRIPTION_UPDATE_TIME, new Date().getTime());
     }
 
     @Override
-    public void setNextAutoSubscriptionTime(Context context, Long subscriptionTime) {
-        getSharedPreferences(context).edit().putLong(AUTO_SUBSCRIPTION_TIME, subscriptionTime).commit();
+    public void setLastUpdatedTime(Context context, Long lastUpdatedTime) {
+        getSharedPreferences(context).edit().putLong(LAST_SUBSCRIPTION_UPDATE_TIME, lastUpdatedTime).commit();
     }
 
     private List<Integer> getDefaultDaysOfWeek() {

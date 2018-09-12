@@ -209,6 +209,9 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
                             }, new Runnable() {
                                 @Override
                                 public void run() {
+                                    // show success message
+                                    Toast.makeText(MyNotificationsActivity.this, R.string.subscription_success, Toast.LENGTH_SHORT).show();
+
                                     // save settings to shared preferences
                                     savePrefsLocally();
                                 }

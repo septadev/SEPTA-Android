@@ -46,7 +46,7 @@ public interface NotificationsSharedPrefsUtils {
 
     void setRegistrationToken(Context context, String token);
 
-    Long getNextAutoSubscriptionTime(Context context);
+    Long getLastUpdatedTime(Context context);
 
-    void setNextAutoSubscriptionTime(Context context, Long subscriptionTime);
+    void setLastUpdatedTime(Context context, Long lastUpdatedTime);
 }

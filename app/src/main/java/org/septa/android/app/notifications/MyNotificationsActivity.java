@@ -215,7 +215,7 @@ public class MyNotificationsActivity extends BaseActivity implements EditNotific
                                     // save settings to shared preferences
                                     savePrefsLocally();
                                 }
-                            });
+                            }, false);
 
                 } else {
                     // handle no network connection

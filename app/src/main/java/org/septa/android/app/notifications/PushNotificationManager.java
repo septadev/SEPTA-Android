@@ -64,6 +64,8 @@ public class PushNotificationManager {
 
     private static final String TAG = PushNotificationManager.class.getSimpleName();
 
+    // app will silently resubmit user's notification preferences
+    // to the server after this many days when opening the app
     private static final int NUM_DAYS_BEFORE_AUTOSUBSCRIBING = 5;
 
     private Context context;
@@ -99,15 +101,17 @@ public class PushNotificationManager {
                     // save registration token
                     SeptaServiceFactory.getNotificationsService().setRegistrationToken(context, newToken);
 
+                    final PushNotifSubscriptionRequest request = buildSubscriptionRequest(context, null, null, null);
+
                     // register new FCM token
-                    PushNotificationManager.updateNotifSubscription(context, new Runnable() {
+                    PushNotificationManager.updateNotifSubscription(context, request, new Runnable() {
                         @Override
                         public void run() {
                             CrashlyticsManager.log(Log.ERROR, TAG, "Could not register new FCM token: " + newToken + " and unregister old FCM token: " + oldToken);
 
                             SeptaServiceFactory.getNotificationsService().setNotifPrefsSaved(context, false);
                         }
-                    });
+                    }, null, true);
 
                 } else if (oldToken.isEmpty()) {
                     Log.d(TAG, "Saving FCM token for first time");
@@ -409,10 +413,10 @@ public class PushNotificationManager {
 
     public static void updateNotifSubscription(Context context, Runnable failureTask) {
         final PushNotifSubscriptionRequest request = buildSubscriptionRequest(context, null, null, null);
-        updateNotifSubscription(context, request, failureTask, null);
+        updateNotifSubscription(context, request, failureTask, null, false);
     }
 
-    public static void updateNotifSubscription(final Context context, final PushNotifSubscriptionRequest request, final Runnable failureTask, final Runnable successTask) {
+    public static void updateNotifSubscription(final Context context, final PushNotifSubscriptionRequest request, final Runnable failureTask, final Runnable successTask, final boolean isSilent) {
         if (SeptaServiceFactory.getNotificationsService().areNotificationsEnabled(context)) {
             RefreshAdvertisingId refreshAdvertisingId = new RefreshAdvertisingId(context, new Runnable() {
                 @Override
@@ -427,23 +431,23 @@ public class PushNotificationManager {
 
                     } else {
                         // use old device ID
-                        submitNotifPrefs(context, request, failureTask, successTask);
+                        submitNotifPrefs(context, request, failureTask, successTask, isSilent);
                     }
                 }
             }, new Runnable() {
                 @Override
                 public void run() {
-                    submitNotifPrefs(context, request, failureTask, successTask);
+                    submitNotifPrefs(context, request, failureTask, successTask, isSilent);
                 }
             });
             refreshAdvertisingId.execute();
 
         } else {
-            removeNotifSubscription(context, failureTask, successTask);
+            removeNotifSubscription(context, failureTask, successTask, isSilent);
         }
     }
 
-    private static void submitNotifPrefs(final Context context, final PushNotifSubscriptionRequest request, final Runnable failureTask, final Runnable successTask) {
+    private static void submitNotifPrefs(final Context context, final PushNotifSubscriptionRequest request, final Runnable failureTask, final Runnable successTask, final boolean isSilent) {
         SeptaServiceFactory.getPushNotificationService().setNotificationSubscription(request).enqueue(new Callback<PushNotifSubscriptionResponse>() {
             @Override
             public void onResponse(Call<PushNotifSubscriptionResponse> call, Response<PushNotifSubscriptionResponse> response) {
@@ -458,17 +462,17 @@ public class PushNotificationManager {
 
                         if (successTask != null) {
                             successTask.run();
-                        } else {
-                            // only when success task is null will a success message show
+                        } else if (!isSilent) {
+                            // only when success task is null and isSilent is false will a success message show
                             Toast.makeText(context, R.string.subscription_success, Toast.LENGTH_SHORT).show();
                         }
                     } else {
                         CrashlyticsManager.log(Log.ERROR, TAG, "Could not update push notification subscription: " + response.message());
-                        failureToUpdatePrefs(context, request, failureTask);
+                        failureToUpdatePrefs(context, request, failureTask, isSilent);
                     }
                 } else {
                     CrashlyticsManager.log(Log.ERROR, TAG, "Could not update push notification subscription - response body was null: " + response.message());
-                    failureToUpdatePrefs(context, request, failureTask);
+                    failureToUpdatePrefs(context, request, failureTask, isSilent);
                 }
             }
 
@@ -476,16 +480,16 @@ public class PushNotificationManager {
             public void onFailure(Call<PushNotifSubscriptionResponse> call, Throwable t) {
                 CrashlyticsManager.log(Log.ERROR, TAG, "Failed to Update Push Notification Subscription Request");
                 CrashlyticsManager.logException(TAG, t);
-                failureToUpdatePrefs(context, request, failureTask);
+                failureToUpdatePrefs(context, request, failureTask, isSilent);
             }
         });
     }
 
     public static void removeNotifSubscription(Context context, Runnable failureTask) {
-        removeNotifSubscription(context, failureTask, null);
+        removeNotifSubscription(context, failureTask, null, false);
     }
 
-    public static void removeNotifSubscription(final Context context, final Runnable failureTask, final Runnable successTask) {
+    public static void removeNotifSubscription(final Context context, final Runnable failureTask, final Runnable successTask, final boolean isSilent) {
         final PushNotifSubscriptionRequest request = buildNullSubscriptionRequest(context);
 
         SeptaServiceFactory.getPushNotificationService().setNotificationSubscription(request).enqueue(new Callback<PushNotifSubscriptionResponse>() {
@@ -507,12 +511,12 @@ public class PushNotificationManager {
                         }
                     } else {
                         CrashlyticsManager.log(Log.ERROR, TAG, "Could not remove push notification subscription: " + response.message());
-                        failureToUpdatePrefs(context, request, failureTask);
+                        failureToUpdatePrefs(context, request, failureTask, isSilent);
                     }
 
                 } else {
                     CrashlyticsManager.log(Log.ERROR, TAG, "Could not remove push notification subscription - response body was null");
-                    failureToUpdatePrefs(context, request, failureTask);
+                    failureToUpdatePrefs(context, request, failureTask, isSilent);
                 }
             }
 
@@ -520,15 +524,17 @@ public class PushNotificationManager {
             public void onFailure(Call<PushNotifSubscriptionResponse> call, Throwable t) {
                 CrashlyticsManager.log(Log.ERROR, TAG, "Failed to Remove Push Notification Subscription Request");
                 CrashlyticsManager.logException(TAG, t);
-                failureToUpdatePrefs(context, request, failureTask);
+                failureToUpdatePrefs(context, request, failureTask, isSilent);
             }
         });
     }
 
-    private static void failureToUpdatePrefs(Context context, PushNotifSubscriptionRequest request, Runnable failureTask) {
+    private static void failureToUpdatePrefs(Context context, PushNotifSubscriptionRequest request, Runnable failureTask, boolean isSilent) {
         CrashlyticsManager.log(Log.ERROR, TAG, request.toString());
 
-        displaySubscriptionFailureMessage(context);
+        if (!isSilent) {
+            displaySubscriptionFailureMessage(context);
+        }
         if (failureTask != null) {
             failureTask.run();
         }
@@ -720,8 +726,6 @@ public class PushNotificationManager {
                         String deviceId = SeptaServiceFactory.getNotificationsService().getDeviceId(context);
 
                         CrashlyticsManager.log(Log.ERROR, TAG, "Unable to auto-submit user notification preferences for device ID: " + deviceId + " with FCM token: " + regToken);
-
-                        // TODO: failures to auto-subscribe should be silent
                     }
                 }, new Runnable() {
                     @Override
@@ -730,7 +734,7 @@ public class PushNotificationManager {
                         Log.d(TAG, "Successfully auto-submitted user notif prefs to server");
                         SeptaServiceFactory.getNotificationsService().setLastUpdatedTime(context, currentTime);
                     }
-                });
+                }, true);
             } else {
                 Log.d(TAG, "Not enough time elapsed since last notification preferences update");
             }

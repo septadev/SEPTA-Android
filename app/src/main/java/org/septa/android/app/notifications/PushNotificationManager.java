@@ -424,11 +424,12 @@ public class PushNotificationManager {
                     String deviceId = SeptaServiceFactory.getNotificationsService().getDeviceId(context);
                     if (deviceId.isEmpty()) {
                         CrashlyticsManager.log(Log.ERROR, TAG, "Failed to retrieve advertising ID");
-                        displaySubscriptionFailureMessage(context);
                         if (failureTask != null) {
                             failureTask.run();
                         }
-
+                        if (!isSilent) {
+                            displaySubscriptionFailureMessage(context);
+                        }
                     } else {
                         // use old device ID
                         submitNotifPrefs(context, request, failureTask, successTask, isSilent);

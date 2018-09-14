@@ -710,8 +710,7 @@ public class PushNotificationManager {
         if (notifsEnabled) {
             Calendar lastUpdated = Calendar.getInstance();
             lastUpdated.setTimeInMillis(SeptaServiceFactory.getNotificationsService().getLastUpdatedTime(context));
-            lastUpdated.add(Calendar.MINUTE, 5); // TODO: switch back to 5 days after doing 5 minutes
-//        lastUpdated.add(Calendar.DAY_OF_MONTH, NUM_DAYS_BEFORE_AUTOSUBSCRIBING); // TODO: put back
+            lastUpdated.add(Calendar.DAY_OF_MONTH, NUM_DAYS_BEFORE_AUTOSUBSCRIBING);
 
             long updateFromThisTimeOnwards = lastUpdated.getTimeInMillis();
             final long currentTime = Calendar.getInstance().getTimeInMillis();

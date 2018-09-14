@@ -278,10 +278,9 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
 
                 }
 
-                // TODO: put push notifications back in
-//                else if (resultCode == Constants.VIEW_NOTIFICATION_MANAGEMENT) {
-//                    ((MainActivity) activity).switchToNotificationManagement();
-//                }
+                else if (resultCode == Constants.VIEW_NOTIFICATION_MANAGEMENT) {
+                    ((MainActivity) activity).switchToNotificationManagement();
+                }
             }
         }
     }

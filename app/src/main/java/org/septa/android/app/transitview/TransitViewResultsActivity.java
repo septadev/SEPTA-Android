@@ -42,6 +42,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.maps.android.data.kml.KmlLayer;
 
 import org.septa.android.app.BaseActivity;
+import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.database.DatabaseManager;
 import org.septa.android.app.domain.RouteDirectionModel;
@@ -173,12 +174,11 @@ public class TransitViewResultsActivity extends BaseActivity implements Runnable
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         int unmaskedRequestCode = requestCode & 0x0000ffff;
 
-        // TODO: put push notifications back in
-//        if (unmaskedRequestCode == Constants.SYSTEM_STATUS_REQUEST) {
-//            if (resultCode == Constants.VIEW_NOTIFICATION_MANAGEMENT) {
-//                goToNotificationsManagement();
-//            }
-//        }
+        if (unmaskedRequestCode == Constants.SYSTEM_STATUS_REQUEST) {
+            if (resultCode == Constants.VIEW_NOTIFICATION_MANAGEMENT) {
+                goToNotificationsManagement();
+            }
+        }
     }
 
     @Override
@@ -941,10 +941,9 @@ public class TransitViewResultsActivity extends BaseActivity implements Runnable
         fragment.show(ft, EDIT_FAVORITE_DIALOG_KEY);
     }
 
-    // TODO: put push notifications back in
-//    private void goToNotificationsManagement() {
-//        setResult(Constants.VIEW_NOTIFICATION_MANAGEMENT, new Intent());
-//        finish();
-//    }
+    private void goToNotificationsManagement() {
+        setResult(Constants.VIEW_NOTIFICATION_MANAGEMENT, new Intent());
+        finish();
+    }
 
 }

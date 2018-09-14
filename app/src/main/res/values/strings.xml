@@ -295,6 +295,7 @@
 
 
     <!-- About -->
+    <string name="device_id">Device ID: %1$s</string>
     <string name="activity_about_attributions">View Attributions</string>
     <string name="activity_about_credits">Source code to the SEPTA Android application is available under an open source license, but the graphics are not.  \n\nThe graphics are subject to the following Copyright and Trademark terms: http://septa.org/site/copyright.html.  \n\nThe source code is available at: https://github.com/septadev/SEPTA-Android.</string>
 
@@ -322,9 +323,10 @@
     <string name="system_notification_settings">System Notification Settings</string>
     <string name="my_notifications_heading">My Notifications</string>
     <string name="my_custom_notifications">My Custom Notifications</string>
-    <string name="notifications_permission_required">You must allow notifications from the SEPTA app in \'System Notification Settings\'</string>
+    <string name="notifications_permission_required">You must allow notifications from the SEPTA app in \'System Notification Settings\' in order to change your preferences.</string>
 
     <string name="notifications_schedule_heading">Set Notifications Days and Times for All Transportation Modes</string>
+    <string name="notifications_days_of_week_requirement">Notifications must be enabled for at least ONE day. Turn off all notifications using the \'Global Settings\' switch.</string>
     <string name="notifications_end_time_requirement">End Time must be after Start Time</string>
     <string name="notifications_start_time_requirement">Start Time must be before End Time</string>
     <string name="notification_timeframe_number">Timeframe %1$d</string>
@@ -333,6 +335,17 @@
     <string name="notifications_add">Add</string>
     <string name="notifications_edit">Edit</string>
     <string name="notifications_done">Done</string>
+
+    <string name="subscription_need_connection">You must have a network connection in order to change your notification preferences.</string>
+    <string name="subscription_success">Your notification preferences have been updated.</string>
+    <string name="subscription_failed_no_connection">Your notification preferences cannot be saved. Please make sure you are connected to the internet.</string>
+    <string name="subscription_failed">Your notification preferences cannot be saved right now. Please try again in a few minutes.</string>
+
+    <string name="unsaved_notif_prefs">You have some unsaved changes. Here\'s where you left off.</string>
+    <string name="subscription_warning_title">Unsaved Changes</string>
+    <string name="subscription_warning">Are you sure you want to leave? Your notification preferences will NOT be saved.</string>
+    <string name="notif_warning_pos_button">Save</string>
+    <string name="notif_warning_neg_button">Discard</string>
 
     <string name="no_notifications_to_edit">You have no notification subscriptions to edit!</string>
     <string name="delete_notif_title">Delete Notification?</string>
@@ -364,6 +377,7 @@
 
 
     <!-- String Resources -->
+    <string name="button_save">Save</string>
     <string name="button_ok">Okay</string>
     <string name="empty_string"></string>
 

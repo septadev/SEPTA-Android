@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Window;
-import android.widget.ImageView;
 
 import org.septa.android.app.database.DatabaseManager;
 import org.septa.android.app.notifications.PushNotificationManager;
@@ -14,7 +13,6 @@ import org.septa.android.app.services.apiinterfaces.model.Alerts;
 import org.septa.android.app.support.CursorAdapterSupplier;
 import org.septa.android.app.systemstatus.SystemStatusState;
 
-import java.util.Calendar;
 import java.util.Date;
 
 import retrofit2.Call;
@@ -25,24 +23,11 @@ public class SplashScreenActivity extends BaseActivity {
 
     public static final String TAG = SplashScreenActivity.class.getSimpleName();
 
-    int[] images = new int[]{R.drawable.bus_image, R.drawable.bg_trolley_image, R.drawable.subway_septa};
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_splash_screen);
-
-        ImageView image = findViewById(R.id.splash_image);
-
-        Calendar date = Calendar.getInstance();
-
-        for (int i = images.length - 1; i >= 0; i--) {
-            if (date.get(Calendar.SECOND) % (i + 1) == 0) {
-                image.setImageResource(images[i]);
-                break;
-            }
-        }
 
         final long timestamp = System.currentTimeMillis();
 

@@ -40,8 +40,8 @@ android {
         applicationId "org.septa.android.app"
         minSdkVersion 16
         targetSdkVersion 27
-        versionCode 299
-        versionName "2.0.299"
+        versionCode 300
+        versionName "2.0.300"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 

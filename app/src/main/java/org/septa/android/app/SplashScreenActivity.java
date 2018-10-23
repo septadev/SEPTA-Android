@@ -4,16 +4,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Window;
-import android.widget.ImageView;
 
 import org.septa.android.app.database.DatabaseManager;
+import org.septa.android.app.notifications.PushNotificationManager;
 import org.septa.android.app.rating.SharedPreferencesRatingUtil;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Alerts;
 import org.septa.android.app.support.CursorAdapterSupplier;
 import org.septa.android.app.systemstatus.SystemStatusState;
 
-import java.util.Calendar;
 import java.util.Date;
 
 import retrofit2.Call;
@@ -24,24 +23,11 @@ public class SplashScreenActivity extends BaseActivity {
 
     public static final String TAG = SplashScreenActivity.class.getSimpleName();
 
-    int[] images = new int[]{R.drawable.bus_image, R.drawable.bg_trolley_image, R.drawable.subway_septa};
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_splash_screen);
-
-        ImageView image = findViewById(R.id.splash_image);
-
-        Calendar date = Calendar.getInstance();
-
-        for (int i = images.length - 1; i >= 0; i--) {
-            if (date.get(Calendar.SECOND) % (i + 1) == 0) {
-                image.setImageResource(images[i]);
-                break;
-            }
-        }
 
         final long timestamp = System.currentTimeMillis();
 
@@ -62,8 +48,8 @@ public class SplashScreenActivity extends BaseActivity {
             }
 
             private void complete() {
-                Intent intent = new Intent(SplashScreenActivity.this, MainActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_TASK_ON_HOME);
+                // if the app is opening via push notification click, prepare intent to bring user to relevant screen
+                Intent intent = PushNotificationManager.addPushNotifClickIntent(SplashScreenActivity.this, getIntent().getExtras());
 
                 if (!BuildConfig.DEBUG) {
                     while (System.currentTimeMillis() - timestamp < 2000) {

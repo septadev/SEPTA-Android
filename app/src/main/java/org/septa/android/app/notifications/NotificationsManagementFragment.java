@@ -12,15 +12,19 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.widget.SwitchCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import android.widget.Toast;
 
 import org.septa.android.app.Constants;
 import org.septa.android.app.R;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.support.AnalyticsManager;
+import org.septa.android.app.support.CrashlyticsManager;
+import org.septa.android.app.support.GeneralUtils;
 import org.septa.android.app.view.TextView;
 
 public class NotificationsManagementFragment extends Fragment {
@@ -33,6 +37,7 @@ public class NotificationsManagementFragment extends Fragment {
     private boolean ignoreGlobalSwitch = false, ignoreSpecialSwitch = false;
 
     // layout variables
+    private View containerView;
     private TextView systemSettings, myNotifs;
     private SwitchCompat enableNotifs, specialAnnouncements;
 
@@ -49,52 +54,34 @@ public class NotificationsManagementFragment extends Fragment {
 
         initializeView(rootView);
 
-        final View containerView = rootView;
+        containerView = rootView;
 
         // enable or disable push notifications
         enableNotifs.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                // check for device permission to send notifications about the app before enabling
-                boolean notifsAllowed = NotificationManagerCompat.from(context).areNotificationsEnabled();
+                if (GeneralUtils.isConnectedToInternet(context)) {
+                    if (!ignoreGlobalSwitch) {
+                        if (isChecked) {
+                            // turn on notifications
+                            toggleNotifications(true);
 
-                if (!notifsAllowed && isChecked) {
-                    // user cannot enable notifs without permissions
-                    ignoreGlobalSwitch = true;
-                    enableNotifs.setChecked(false);
-                    toggleNotifications(false);
-                    ignoreGlobalSwitch = false;
-
-                    // show message that device permissions must be enabled
-                    Snackbar snackbar = Snackbar.make(containerView, R.string.notifications_permission_required, Snackbar.LENGTH_LONG);
-                    snackbar.setAction("Settings", new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            // link to system notification settings
-                            openSystemNotificationSettings(context);
+                        } else {
+                            // turn off notifications
+                            toggleNotifications(false);
                         }
-                    });
-
-                    View snackbarView = snackbar.getView();
-                    android.widget.TextView tv = snackbarView.findViewById(android.support.design.R.id.snackbar_text);
-                    tv.setMaxLines(10);
-                    snackbar.show();
-
-                } else if (notifsAllowed && isChecked) {
-                    // turn on notifications
-                    toggleNotifications(true);
-
-                    if (!ignoreGlobalSwitch) {
-                        AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_ENABLE_NOTIFS, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_MANAGEMENT, null);
+                    } else if (!isChecked) {
+                        specialAnnouncements.setEnabled(false);
+                    } else {
+                        specialAnnouncements.setEnabled(true);
                     }
-
                 } else {
-                    // turn off notifications
-                    toggleNotifications(false);
+                    Toast.makeText(context, R.string.subscription_need_connection, Toast.LENGTH_SHORT).show();
 
-                    if (!ignoreGlobalSwitch) {
-                        AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_DISABLE_NOTIFS, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_MANAGEMENT, null);
-                    }
+                    // handle no network connection
+                    ignoreGlobalSwitch = true;
+                    enableNotifs.setChecked(!isChecked);
+                    ignoreGlobalSwitch = false;
                 }
             }
         });
@@ -102,19 +89,22 @@ public class NotificationsManagementFragment extends Fragment {
         // enable or disable special announcements
         specialAnnouncements.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    PushNotificationManager.getInstance(context).subscribeToSpecialAnnouncements();
-
+            public void onCheckedChanged(CompoundButton buttonView, final boolean isChecked) {
+                if (GeneralUtils.isConnectedToInternet(context)) {
                     if (!ignoreSpecialSwitch) {
-                        AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_ENABLE_SPECIAL_ANNOUNCEMENTS, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_MANAGEMENT, null);
+                        if (isChecked) {
+                            subscribeToSpecialAnnouncements();
+                        } else {
+                            unsubscribeFromSpecialAnnouncements();
+                        }
                     }
                 } else {
-                    PushNotificationManager.getInstance(context).unsubscribeFromSpecialAnnouncements();
+                    Toast.makeText(context, R.string.subscription_need_connection, Toast.LENGTH_SHORT).show();
 
-                    if (!ignoreSpecialSwitch) {
-                        AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_DISABLE_SPECIAL_ANNOUNCEMENTS, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_MANAGEMENT, null);
-                    }
+                    // handle no network connection
+                    ignoreSpecialSwitch = true;
+                    specialAnnouncements.setChecked(!isChecked);
+                    ignoreSpecialSwitch = false;
                 }
             }
         });
@@ -142,15 +132,26 @@ public class NotificationsManagementFragment extends Fragment {
         super.onResume();
 
         // recheck device permissions and only enable switch if allowed
-        boolean notifsEnabled = SeptaServiceFactory.getNotificationsService().areNotificationsEnabled(context),
-                notifsAllowed = NotificationManagerCompat.from(context).areNotificationsEnabled();
-        ignoreGlobalSwitch = true;
-        enableNotifs.setChecked(notifsEnabled && notifsAllowed);
-        ignoreGlobalSwitch = false;
+        boolean notifsAllowed = NotificationManagerCompat.from(context).areNotificationsEnabled();
 
-        // disable special announcements toggle if notifs disabled
-        if (!enableNotifs.isChecked()) {
-            toggleNotifications(false);
+        enableNotifs.setEnabled(notifsAllowed);
+        specialAnnouncements.setEnabled(notifsAllowed && enableNotifs.isChecked());
+
+        if (!notifsAllowed) {
+            // show message that device permissions must be enabled in order to toggle preferences
+            Snackbar snackbar = Snackbar.make(containerView, R.string.notifications_permission_required, Snackbar.LENGTH_LONG);
+            snackbar.setAction("Settings", new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // link to system notification settings
+                    openSystemNotificationSettings(context);
+                }
+            });
+
+            View snackbarView = snackbar.getView();
+            android.widget.TextView tv = snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+            tv.setMaxLines(10);
+            snackbar.show();
         }
     }
 
@@ -177,10 +178,13 @@ public class NotificationsManagementFragment extends Fragment {
         enableNotifs = rootView.findViewById(R.id.enable_notifications_switch);
         specialAnnouncements = rootView.findViewById(R.id.special_announcements_switch);
 
-        // set initial checked state of special announcements based on shared preferences
+        // set initial checked state of toggles based on shared preferences
+        ignoreGlobalSwitch = true;
         ignoreSpecialSwitch = true;
+        enableNotifs.setChecked(SeptaServiceFactory.getNotificationsService().areNotificationsEnabled(context));
         specialAnnouncements.setChecked(SeptaServiceFactory.getNotificationsService().areSpecialAnnouncementsEnabled(context));
         ignoreSpecialSwitch = false;
+        ignoreGlobalSwitch = false;
     }
 
     private void toggleNotifications(boolean isChecked) {
@@ -188,10 +192,86 @@ public class NotificationsManagementFragment extends Fragment {
         specialAnnouncements.setEnabled(isChecked);
 
         if (isChecked) {
-            PushNotificationManager.getInstance(context).resubscribeToTopics();
+            SeptaServiceFactory.getNotificationsService().setNotificationsEnabled(context, true);
+
+            // send subscription update to server and handle response
+            PushNotificationManager.updateNotifSubscription(context, new Runnable() {
+                @Override
+                public void run() {
+                    String deviceId = SeptaServiceFactory.getNotificationsService().getDeviceId(context);
+                    CrashlyticsManager.log(Log.ERROR, TAG, "Unable to turn on notifications for device ID: " + deviceId);
+
+                    failureToToggleNotifSubscription(true);
+                }
+            });
+
+            AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_ENABLE_NOTIFS, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_MANAGEMENT, null);
         } else {
-            PushNotificationManager.getInstance(context).unsubscribeFromAllTopics();
+            SeptaServiceFactory.getNotificationsService().setNotificationsEnabled(context, false);
+
+            // send subscription removal to server and handle response
+            PushNotificationManager.removeNotifSubscription(context, new Runnable() {
+                @Override
+                public void run() {
+                    String deviceId = SeptaServiceFactory.getNotificationsService().getDeviceId(context);
+                    CrashlyticsManager.log(Log.ERROR, TAG, "Unable to turn off notifications for device ID: " + deviceId);
+
+                    failureToToggleNotifSubscription(false);
+                }
+            });
+
+            AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_DISABLE_NOTIFS, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_MANAGEMENT, null);
         }
+    }
+
+    private void subscribeToSpecialAnnouncements() {
+        Log.d(TAG, "Subscribing to SEPTA Special Announcements");
+
+        SeptaServiceFactory.getNotificationsService().setSpecialAnnouncementsEnabled(context, true);
+
+        // send subscription update to server and handle response
+        PushNotificationManager.updateNotifSubscription(context, new Runnable() {
+            @Override
+            public void run() {
+                String deviceId = SeptaServiceFactory.getNotificationsService().getDeviceId(context);
+                CrashlyticsManager.log(Log.ERROR, TAG, "Unable to subscribe to special announcements for device ID: " + deviceId);
+
+                failureToToggleSpecialAnnouncements(true);
+            }
+        });
+
+        AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_ENABLE_SPECIAL_ANNOUNCEMENTS, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_MANAGEMENT, null);
+    }
+
+    private void unsubscribeFromSpecialAnnouncements() {
+        SeptaServiceFactory.getNotificationsService().setSpecialAnnouncementsEnabled(context, false);
+
+        // send subscription update to server and handle response
+        PushNotificationManager.updateNotifSubscription(context, new Runnable() {
+            @Override
+            public void run() {
+                String deviceId = SeptaServiceFactory.getNotificationsService().getDeviceId(context);
+                CrashlyticsManager.log(Log.ERROR, TAG, "Unable to unsubscribe from special announcements for device ID: " + deviceId);
+
+                failureToToggleSpecialAnnouncements(false);
+            }
+        });
+
+        AnalyticsManager.logCustomEvent(TAG, AnalyticsManager.CUSTOM_EVENT_DISABLE_SPECIAL_ANNOUNCEMENTS, AnalyticsManager.CUSTOM_EVENT_ID_NOTIFICATION_MANAGEMENT, null);
+    }
+
+    private void failureToToggleNotifSubscription(boolean isChecked) {
+        ignoreGlobalSwitch = true;
+        enableNotifs.setChecked(!isChecked);
+        SeptaServiceFactory.getNotificationsService().setNotificationsEnabled(context, !isChecked);
+        ignoreGlobalSwitch = false;
+    }
+
+    private void failureToToggleSpecialAnnouncements(boolean isChecked) {
+        ignoreSpecialSwitch = true;
+        specialAnnouncements.setChecked(!isChecked);
+        SeptaServiceFactory.getNotificationsService().setSpecialAnnouncementsEnabled(context, !isChecked);
+        ignoreSpecialSwitch = false;
     }
 
     public static void openSystemNotificationSettings(Context context) {

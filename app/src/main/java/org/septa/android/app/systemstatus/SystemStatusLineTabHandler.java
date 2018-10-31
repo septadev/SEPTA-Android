@@ -293,7 +293,8 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
                 boolean found = false;
                 StringBuilder alertText = new StringBuilder();
 
-                if (globalAlertDetail != null && globalAlertDetail.getAlerts().size() > 0 &&
+                if (globalAlertDetail != null && GLOBAL_ALERT_ROUTE_ID.equals(globalAlertDetail.getRoute())
+                        && globalAlertDetail.getAlerts().size() > 0 &&
                         globalAlertDetail.getAlerts().get(0).getMessage() != null &&
                         !globalAlertDetail.getAlerts().get(0).getMessage().trim().isEmpty()) {
                     globalAlertView.setVisibility(View.VISIBLE);
@@ -333,7 +334,8 @@ public class SystemStatusLineTabHandler extends BaseTabActivityHandler {
                 boolean found = false;
                 StringBuilder alertText = new StringBuilder();
 
-                if (mobileAlertDetail != null && mobileAlertDetail.getAlerts().size() > 0 &&
+                if (mobileAlertDetail != null && MOBILE_ALERT_ROUTE_ID.equals(mobileAlertDetail.getRoute())
+                        && mobileAlertDetail.getAlerts().size() > 0 &&
                         mobileAlertDetail.getAlerts().get(0).getMessage() != null &&
                         !mobileAlertDetail.getAlerts().get(0).getMessage().trim().isEmpty()) {
                     mobileAlertView.setVisibility(View.VISIBLE);

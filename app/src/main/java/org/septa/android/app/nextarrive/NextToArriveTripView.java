@@ -445,7 +445,7 @@ public class NextToArriveTripView extends FrameLayout {
                     intent.putExtra(Constants.ROUTE_NAME, item.getOrigRouteName());
                     if (routeDirectionModel != null) {
                         CrashlyticsManager.log(Log.INFO, TAG, routeDirectionModel.getDirectionDescription());
-                        intent.putExtra(Constants.ROUTE_ID, routeDirectionModel.getRouteShortName());
+                        intent.putExtra(Constants.ROUTE_ID, routeDirectionModel.getRouteId());
                     } else {
                         CrashlyticsManager.log(Log.INFO, TAG, item.getOrigRouteId());
                         intent.putExtra(Constants.ROUTE_ID, item.getOrigRouteId());

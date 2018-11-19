@@ -57,6 +57,7 @@ public class NextToArriveTripView extends FrameLayout {
     private Alert routeAlert;
     private boolean isSuspended;
     private static final int SUSPENDED_VEHICLES_NUMBER = 3;
+    private Map<String, Integer> suspendedVehiclesDrawn = new HashMap<>();
 
     private Consumer<Integer> onFirstElementHeight;
 
@@ -136,15 +137,8 @@ public class NextToArriveTripView extends FrameLayout {
             data = data.subList(0, (maxResults <= data.size()) ? maxResults : data.size() - 1);
         }
 
-        // check for line suspension
-        routeAlert = SystemStatusState.getAlertForLine(transitType, routeDirectionModel.getRouteId());
-        isSuspended = routeAlert.isSuspended();
-
-        // TODO: remove hard coded suspension later
-        String[] testSuspended = {"19", "47M", "PAO", "FOX"};
-        if (Arrays.asList(testSuspended).contains(routeDirectionModel.getRouteId())) {
-            isSuspended = !isSuspended;
-        }
+        // reset suspended vehicles counter
+        suspendedVehiclesDrawn.clear();
 
         String currentLine = null;
         boolean firstPos = true;
@@ -175,14 +169,24 @@ public class NextToArriveTripView extends FrameLayout {
             } else {
                 if (currentLine == null || !currentLine.equals(item.getOrigRouteId())) {
                     currentLine = item.getOrigRouteId();
+
+                    // check for line suspension
+                    routeAlert = SystemStatusState.getAlertForLine(transitType, currentLine);
+                    isSuspended = routeAlert.isSuspended();
+
+                    // TODO: remove hard coded suspension later
+                    String[] testSuspended = {"19", "47M", "WAR", "FOX"};
+                    if (Arrays.asList(testSuspended).contains(currentLine)) {
+                        isSuspended = true;
+                    }
+
                     View headerView = getLineHeader(activity, currentLine, item.getOrigRouteName());
                     if (firstPos) {
                         peakViews.add(headerView);
                     }
                     listView.addView(headerView);
                 }
-                int tripsLoaded = listView.getChildCount() - 1; // child views contain route header as well
-                final View singleView = getSingleStopTripView(item, tripsLoaded);
+                final View singleView = getSingleStopTripView(item);
                 if (firstPos && onFirstElementHeight != null) {
                     peakViews.add(singleView);
                     singleView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
@@ -265,7 +269,7 @@ public class NextToArriveTripView extends FrameLayout {
         return convertView;
     }
 
-    private View getSingleStopTripView(final NextArrivalRecord unit, int tripsLoaded) {
+    private View getSingleStopTripView(final NextArrivalRecord unit) {
 
         View line = LayoutInflater.from(getContext()).inflate(R.layout.item_next_to_arrive_unit, this, false);
 
@@ -295,11 +299,16 @@ public class NextToArriveTripView extends FrameLayout {
         View origDepartingBorder = line.findViewById(R.id.orig_departing_border);
 
         // show this trip as 'suspended'
-        if (isSuspended && tripsLoaded < SUSPENDED_VEHICLES_NUMBER) {
+        Integer numSuspendedDrawn = suspendedVehiclesDrawn.get(unit.getOrigRouteId());
+        if (numSuspendedDrawn == null) {
+            numSuspendedDrawn = 0;
+        }
+        if (isSuspended && numSuspendedDrawn < SUSPENDED_VEHICLES_NUMBER) {
             origTardyText.setText(R.string.nta_suspended);
             origTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.delay_minutes));
             origDepartingBorder.setVisibility(View.INVISIBLE);
             enableClick = false;
+            suspendedVehiclesDrawn.put(unit.getOrigRouteId(), numSuspendedDrawn + 1);
 
         } else if (unit.getOrigDelayMinutes() > 0) {
             // show this trip as delayed

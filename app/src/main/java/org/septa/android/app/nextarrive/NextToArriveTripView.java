@@ -33,6 +33,7 @@ import org.septa.android.app.systemstatus.GoToSystemStatusResultsOnClickListener
 import org.septa.android.app.systemstatus.SystemStatusState;
 
 import java.text.DateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -52,6 +53,10 @@ public class NextToArriveTripView extends FrameLayout {
     private StopModel destination;
     private RouteDirectionModel routeDirectionModel;
     private ActivityClass originClass = ActivityClass.NEXT_TO_ARRIVE;
+
+    private Alert routeAlert;
+    private boolean isSuspended;
+    private static final int SUSPENDED_VEHICLES_NUMBER = 3;
 
     private Consumer<Integer> onFirstElementHeight;
 
@@ -131,6 +136,16 @@ public class NextToArriveTripView extends FrameLayout {
             data = data.subList(0, (maxResults <= data.size()) ? maxResults : data.size() - 1);
         }
 
+        // check for line suspension
+        routeAlert = SystemStatusState.getAlertForLine(transitType, routeDirectionModel.getRouteId());
+        isSuspended = routeAlert.isSuspended();
+
+        // TODO: remove hard coded suspension later
+        String[] testSuspended = {"19", "47M", "PAO", "FOX"};
+        if (Arrays.asList(testSuspended).contains(routeDirectionModel.getRouteId())) {
+            isSuspended = !isSuspended;
+        }
+
         String currentLine = null;
         boolean firstPos = true;
         final List<View> peakViews = new LinkedList<>();
@@ -166,7 +181,8 @@ public class NextToArriveTripView extends FrameLayout {
                     }
                     listView.addView(headerView);
                 }
-                final View singleView = getSingleStopTripView(item);
+                int tripsLoaded = listView.getChildCount() - 1; // child views contain route header as well
+                final View singleView = getSingleStopTripView(item, tripsLoaded);
                 if (firstPos && onFirstElementHeight != null) {
                     peakViews.add(singleView);
                     singleView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
@@ -249,7 +265,7 @@ public class NextToArriveTripView extends FrameLayout {
         return convertView;
     }
 
-    private View getSingleStopTripView(final NextArrivalRecord unit) {
+    private View getSingleStopTripView(final NextArrivalRecord unit, int tripsLoaded) {
 
         View line = LayoutInflater.from(getContext()).inflate(R.layout.item_next_to_arrive_unit, this, false);
 
@@ -276,14 +292,27 @@ public class NextToArriveTripView extends FrameLayout {
 
         boolean enableClick = true;
         android.widget.TextView origTardyText = line.findViewById(R.id.orig_tardy_text);
-        if (unit.getOrigDelayMinutes() > 0) {
+        View origDepartingBorder = line.findViewById(R.id.orig_departing_border);
+
+        // show this trip as 'suspended'
+        if (isSuspended && tripsLoaded < SUSPENDED_VEHICLES_NUMBER) {
+            origTardyText.setText(R.string.nta_suspended);
+            origTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.delay_minutes));
+            origDepartingBorder.setVisibility(View.INVISIBLE);
+            enableClick = false;
+
+        } else if (unit.getOrigDelayMinutes() > 0) {
+            // show this trip as delayed
             origTardyText.setText(GeneralUtils.getDurationAsString(unit.getOrigDelayMinutes(), TimeUnit.MINUTES) + " late.");
             origTardyText.setContentDescription(GeneralUtils.getDurationAsLongString(unit.getOrigDelayMinutes(), TimeUnit.MINUTES) + " late.");
             origTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.delay_minutes));
-            View origDepartingBorder = line.findViewById(R.id.orig_departing_border);
+            origDepartingBorder.setVisibility(View.VISIBLE);
             origDepartingBorder.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.late_boarder));
             origDepartureTime.setTextColor(ContextCompat.getColor(getContext(), R.color.late_departing));
+
         } else {
+            // show trip as on time or scheduled
+            origDepartingBorder.setVisibility(View.VISIBLE);
             if (unit.isOrigRealtime()) {
                 origTardyText.setText(R.string.nta_on_time);
                 origTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.no_delay_minutes));

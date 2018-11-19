@@ -73,6 +73,7 @@ public class NextToArriveTripDetailActivity extends BaseActivity implements OnMa
     private TextView lineValue;
     private TextView lineLabel;
     private TextView typeValue;
+    private TextView numTrainsLabel;
     private TextView trainsIdValue;
     private TextView numTrainsValue;
     private TextView destStationValue;
@@ -233,6 +234,7 @@ public class NextToArriveTripDetailActivity extends BaseActivity implements OnMa
         lineLabel = findViewById(R.id.line_label);
         originStationValue = findViewById(R.id.origin_station_value);
         destStationValue = findViewById(R.id.dest_station_value);
+        numTrainsLabel = findViewById(R.id.num_trains_label);
         numTrainsValue = findViewById(R.id.num_trains_value);
         trainsIdValue = findViewById(R.id.trains_id_value);
         typeValue = findViewById(R.id.type_value);
@@ -350,8 +352,11 @@ public class NextToArriveTripDetailActivity extends BaseActivity implements OnMa
                         // number of train details
                         if (details.getConsist() != null && details.getConsist().size() > 0) {
                             if (details.getConsist().size() == 1 && details.getConsist().get(0).trim().isEmpty()) {
-                                numTrainsValue.setText(R.string.empty_string);
+                                hideNumberOfTrainsDetails();
                             } else {
+                                numTrainsLabel.setVisibility(View.VISIBLE);
+                                numTrainsValue.setVisibility(View.VISIBLE);
+                                trainsIdValue.setVisibility(View.VISIBLE);
                                 numTrainsValue.setText(details.getConsist().size() + " - ");
                                 StringBuilder trainsId = new StringBuilder();
                                 boolean first = true;
@@ -365,7 +370,7 @@ public class NextToArriveTripDetailActivity extends BaseActivity implements OnMa
                                 trainsIdValue.setText(trainsId.toString());
                             }
                         } else {
-                            numTrainsValue.setText(R.string.empty_string);
+                            hideNumberOfTrainsDetails();
                         }
                     }
 
@@ -504,6 +509,15 @@ public class NextToArriveTripDetailActivity extends BaseActivity implements OnMa
             }
         });
     }
+
+    private void hideNumberOfTrainsDetails() {
+        numTrainsLabel.setVisibility(View.GONE);
+        numTrainsValue.setVisibility(View.GONE);
+        trainsIdValue.setVisibility(View.GONE);
+        numTrainsValue.setText(R.string.empty_string);
+        trainsIdValue.setText(R.string.empty_string);
+    }
+
 }
 
 

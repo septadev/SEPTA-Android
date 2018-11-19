@@ -29,6 +29,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.CheckBox;
 
 import org.septa.android.app.about.AboutFragment;
 import org.septa.android.app.connect.ConnectFragment;
@@ -57,6 +58,7 @@ import org.septa.android.app.support.CrashlyticsManager;
 import org.septa.android.app.support.RouteModelComparator;
 import org.septa.android.app.support.ShakeDetector;
 import org.septa.android.app.systemmap.SystemMapFragment;
+import org.septa.android.app.systemstatus.SharedPreferencesAlertUtil;
 import org.septa.android.app.systemstatus.SystemStatusFragment;
 import org.septa.android.app.systemstatus.SystemStatusState;
 import org.septa.android.app.transitview.TransitViewFragment;
@@ -693,31 +695,35 @@ public class MainActivity extends BaseActivity implements
             // validate correct alert
             if (MOBILE_APP_ALERT_ROUTE_NAME.equals(mobileAppAlert.getRouteName()) && MOBILE_APP_ALERT_MODE.equals(mobileAppAlert.getMode())) {
 
-                // get alert details
-                SeptaServiceFactory.getAlertDetailsService().getAlertDetails(mobileAppAlert.getRouteId()).enqueue(new Callback<AlertDetail>() {
-                    @Override
-                    public void onResponse(Call<AlertDetail> call, Response<AlertDetail> response) {
-                        if (response.body() != null || mobileAppAlert.isAlert()) {
-                            AlertDetail alertDetail = response.body();
+                // check if this alert has been snoozed by user
+                if (!mobileAppAlert.getLastUpdate().equals(SharedPreferencesAlertUtil.getHiddenMobileAlertTimestamp(MainActivity.this))) {
 
-                            StringBuilder announcement = new StringBuilder();
+                    // get alert details
+                    SeptaServiceFactory.getAlertDetailsService().getAlertDetails(mobileAppAlert.getRouteId()).enqueue(new Callback<AlertDetail>() {
+                        @Override
+                        public void onResponse(Call<AlertDetail> call, Response<AlertDetail> response) {
+                            if (response.body() != null || mobileAppAlert.isAlert()) {
+                                AlertDetail alertDetail = response.body();
 
-                            for (AlertDetail.Detail detail : alertDetail.getAlerts()) {
-                                announcement.append(detail.getMessage());
-                            }
+                                StringBuilder announcement = new StringBuilder();
 
-                            // show mobile app alert if current_message not blank
-                            if (!announcement.toString().isEmpty()) {
-                                showAlert(announcement.toString(), false);
+                                for (AlertDetail.Detail detail : alertDetail.getAlerts()) {
+                                    announcement.append(detail.getMessage());
+                                }
+
+                                // show mobile app alert if current_message not blank
+                                if (!announcement.toString().isEmpty()) {
+                                    showAlert(announcement.toString(), false, mobileAppAlert.getLastUpdate());
+                                }
                             }
                         }
-                    }
 
-                    @Override
-                    public void onFailure(Call<AlertDetail> call, Throwable t) {
-                        SeptaServiceFactory.displayWebServiceError(findViewById(R.id.drawer_layout), MainActivity.this);
-                    }
-                });
+                        @Override
+                        public void onFailure(Call<AlertDetail> call, Throwable t) {
+                            SeptaServiceFactory.displayWebServiceError(findViewById(R.id.drawer_layout), MainActivity.this);
+                        }
+                    });
+                }
             }
         }
 
@@ -727,36 +733,40 @@ public class MainActivity extends BaseActivity implements
 
             if (GENERIC_ALERT_ROUTE_NAME.equals(genericAlert.getRouteName()) && GENERIC_ALERT_MODE.equals(genericAlert.getMode())) {
 
-                // get alert details
-                SeptaServiceFactory.getAlertDetailsService().getAlertDetails(genericAlert.getRouteId()).enqueue(new Callback<AlertDetail>() {
-                    @Override
-                    public void onResponse(Call<AlertDetail> call, Response<AlertDetail> response) {
-                        if (response.body() != null || genericAlert.isAlert()) {
-                            AlertDetail alertDetail = response.body();
+                // check if this alert has been snoozed by user
+                if (!genericAlert.getLastUpdate().equals(SharedPreferencesAlertUtil.getHiddenGlobalAlertTimestamp(MainActivity.this))) {
 
-                            StringBuilder announcement = new StringBuilder();
+                    // get alert details
+                    SeptaServiceFactory.getAlertDetailsService().getAlertDetails(genericAlert.getRouteId()).enqueue(new Callback<AlertDetail>() {
+                        @Override
+                        public void onResponse(Call<AlertDetail> call, Response<AlertDetail> response) {
+                            if (response.body() != null || genericAlert.isAlert()) {
+                                AlertDetail alertDetail = response.body();
 
-                            for (AlertDetail.Detail detail : alertDetail.getAlerts()) {
-                                announcement.append(detail.getMessage());
-                            }
+                                StringBuilder announcement = new StringBuilder();
 
-                            // show generic alert if current_message not blank
-                            if (!announcement.toString().isEmpty()) {
-                                showAlert(announcement.toString(), true);
+                                for (AlertDetail.Detail detail : alertDetail.getAlerts()) {
+                                    announcement.append(detail.getMessage());
+                                }
+
+                                // show generic alert if current_message not blank
+                                if (!announcement.toString().isEmpty()) {
+                                    showAlert(announcement.toString(), true, genericAlert.getLastUpdate());
+                                }
                             }
                         }
-                    }
 
-                    @Override
-                    public void onFailure(Call<AlertDetail> call, Throwable t) {
-                        SeptaServiceFactory.displayWebServiceError(findViewById(R.id.drawer_layout), MainActivity.this);
-                    }
-                });
+                        @Override
+                        public void onFailure(Call<AlertDetail> call, Throwable t) {
+                            SeptaServiceFactory.displayWebServiceError(findViewById(R.id.drawer_layout), MainActivity.this);
+                        }
+                    });
+                }
             }
         }
     }
 
-    public void showAlert(String alert, Boolean isGenericAlert) {
+    public void showAlert(String alert, final Boolean isGenericAlert, final String alertTimestamp) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
         if (isGenericAlert) {
@@ -768,6 +778,16 @@ public class MainActivity extends BaseActivity implements
         // make message HTML enabled and allow for anchor links
         View alertView = getLayoutInflater().inflate(R.layout.dialog_alert, null);
         TextView message = alertView.findViewById(R.id.dialog_alert_message);
+        View dontShow = alertView.findViewById(R.id.dialog_alert_dont_show_again);
+        final CheckBox checkBoxDontShow = alertView.findViewById(R.id.dialog_alert_dont_show_again_checkbox);
+
+        dontShow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                checkBoxDontShow.setChecked(!checkBoxDontShow.isChecked());
+            }
+        });
+
         final SpannableString s = new SpannableString(alert);
         message.setText(Html.fromHtml(s.toString()));
         message.setMovementMethod(LinkMovementMethod.getInstance());
@@ -778,6 +798,15 @@ public class MainActivity extends BaseActivity implements
         builder.setNeutralButton(R.string.button_ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                if (checkBoxDontShow.isChecked()) {
+                    // save alert timestamp to sharedpref as "unique alert"
+                    if (isGenericAlert) {
+                        SharedPreferencesAlertUtil.setHiddenGlobalAlertTimestamp(MainActivity.this, alertTimestamp);
+                    } else {
+                        SharedPreferencesAlertUtil.setHiddenMobileAlertTimestamp(MainActivity.this, alertTimestamp);
+                    }
+                }
+
                 dialog.dismiss();
             }
         });

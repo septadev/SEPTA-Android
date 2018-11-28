@@ -124,6 +124,7 @@
     <string name="nta_on_time">On Time</string>
     <string name="nta_now">Now</string>
     <string name="nta_scheduled">Scheduled</string>
+    <string name="nta_suspended">Suspended</string>
 
     <string name="nta_refresh">Refresh</string>
 
@@ -309,7 +310,7 @@
     <!-- Alerts -->
     <string name="title_generic_alert">General SEPTA Alert</string>
     <string name="title_mobile_app_alert">Mobile App Alert</string>
-
+    <string name="alert_dismiss_checkbox_label"><![CDATA[Don\'t show <b>this alert</b> again]]></string>
 
     <!-- Push Notifications -->
     <string name="push_notifications_channel_name">Transportation</string>
@@ -380,6 +381,5 @@
     <string name="button_save">Save</string>
     <string name="button_ok">Okay</string>
     <string name="empty_string"></string>
-
 
 </resources>

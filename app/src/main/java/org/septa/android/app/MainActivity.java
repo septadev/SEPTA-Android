@@ -788,7 +788,13 @@ public class MainActivity extends BaseActivity implements
             }
         });
 
+        // append raw timestamp to pop-up
+        if (BuildConfig.IS_NONPROD_BUILD) {
+            alert = alert + "<br/><br/>" + alertTimestamp;
+        }
+
         final SpannableString s = new SpannableString(alert);
+
         message.setText(Html.fromHtml(s.toString()));
         message.setMovementMethod(LinkMovementMethod.getInstance());
         Linkify.addLinks(message, Linkify.WEB_URLS);

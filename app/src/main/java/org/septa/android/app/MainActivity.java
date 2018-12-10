@@ -695,6 +695,8 @@ public class MainActivity extends BaseActivity implements
             // validate correct alert
             if (MOBILE_APP_ALERT_ROUTE_NAME.equals(mobileAppAlert.getRouteName()) && MOBILE_APP_ALERT_MODE.equals(mobileAppAlert.getMode())) {
 
+                showMenuAlertBadgeIcon();
+
                 // check if this alert has been snoozed by user
                 if (!mobileAppAlert.getLastUpdate().equals(SharedPreferencesAlertUtil.getHiddenMobileAlertTimestamp(MainActivity.this))) {
 
@@ -731,7 +733,10 @@ public class MainActivity extends BaseActivity implements
         if (SystemStatusState.getGenericAlert() != null) {
             final Alert genericAlert = SystemStatusState.getGenericAlert();
 
+            // validate correct alert
             if (GENERIC_ALERT_ROUTE_NAME.equals(genericAlert.getRouteName()) && GENERIC_ALERT_MODE.equals(genericAlert.getMode())) {
+
+                showMenuAlertBadgeIcon();
 
                 // check if this alert has been snoozed by user
                 if (!genericAlert.getLastUpdate().equals(SharedPreferencesAlertUtil.getHiddenGlobalAlertTimestamp(MainActivity.this))) {
@@ -764,6 +769,12 @@ public class MainActivity extends BaseActivity implements
                 }
             }
         }
+    }
+
+    private void showMenuAlertBadgeIcon() {
+        // show badge icon in menu here
+        View view = navigationView.getMenu().findItem(R.id.nav_system_status).getActionView();
+        view.setVisibility(View.VISIBLE);
     }
 
     public void showAlert(String alert, final Boolean isGenericAlert, final String alertTimestamp) {
@@ -824,10 +835,6 @@ public class MainActivity extends BaseActivity implements
         } else {
             mobileAlert = dialog;
         }
-
-        // show badge icon in menu here
-        View view = navigationView.getMenu().findItem(R.id.nav_system_status).getActionView();
-        view.setVisibility(View.VISIBLE);
 
         dialog.show();
     }

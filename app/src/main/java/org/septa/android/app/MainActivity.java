@@ -697,35 +697,37 @@ public class MainActivity extends BaseActivity implements
 
                 showMenuAlertBadgeIcon();
 
-                // check if this alert has been snoozed by user
-                if (!mobileAppAlert.getLastUpdate().equals(SharedPreferencesAlertUtil.getHiddenMobileAlertTimestamp(MainActivity.this))) {
+                // get alert details
+                SeptaServiceFactory.getAlertDetailsService().getAlertDetails(mobileAppAlert.getRouteId()).enqueue(new Callback<AlertDetail>() {
+                    @Override
+                    public void onResponse(Call<AlertDetail> call, Response<AlertDetail> response) {
+                        if (response.body() != null || mobileAppAlert.isAlert()) {
+                            AlertDetail alertDetail = response.body();
 
-                    // get alert details
-                    SeptaServiceFactory.getAlertDetailsService().getAlertDetails(mobileAppAlert.getRouteId()).enqueue(new Callback<AlertDetail>() {
-                        @Override
-                        public void onResponse(Call<AlertDetail> call, Response<AlertDetail> response) {
-                            if (response.body() != null || mobileAppAlert.isAlert()) {
-                                AlertDetail alertDetail = response.body();
+                            StringBuilder announcement = new StringBuilder();
+                            StringBuilder alertTimestamps = new StringBuilder();
 
-                                StringBuilder announcement = new StringBuilder();
+                            for (AlertDetail.Detail detail : alertDetail.getAlerts()) {
+                                announcement.append(detail.getMessage());
+                                alertTimestamps.append(detail.getLastUpdated());
+                            }
 
-                                for (AlertDetail.Detail detail : alertDetail.getAlerts()) {
-                                    announcement.append(detail.getMessage());
-                                }
+                            // check if this alert has been snoozed by user
+                            if (!alertTimestamps.toString().equals(SharedPreferencesAlertUtil.getHiddenMobileAlertTimestamp(MainActivity.this))) {
 
                                 // show mobile app alert if current_message not blank
                                 if (!announcement.toString().isEmpty()) {
-                                    showAlert(announcement.toString(), false, mobileAppAlert.getLastUpdate());
+                                    showAlert(announcement.toString(), false, alertTimestamps.toString());
                                 }
                             }
                         }
+                    }
 
-                        @Override
-                        public void onFailure(Call<AlertDetail> call, Throwable t) {
-                            SeptaServiceFactory.displayWebServiceError(findViewById(R.id.drawer_layout), MainActivity.this);
-                        }
-                    });
-                }
+                    @Override
+                    public void onFailure(Call<AlertDetail> call, Throwable t) {
+                        SeptaServiceFactory.displayWebServiceError(findViewById(R.id.drawer_layout), MainActivity.this);
+                    }
+                });
             }
         }
 
@@ -738,36 +740,39 @@ public class MainActivity extends BaseActivity implements
 
                 showMenuAlertBadgeIcon();
 
-                // check if this alert has been snoozed by user
-                if (!genericAlert.getLastUpdate().equals(SharedPreferencesAlertUtil.getHiddenGlobalAlertTimestamp(MainActivity.this))) {
+                // get alert details
+                SeptaServiceFactory.getAlertDetailsService().getAlertDetails(genericAlert.getRouteId()).enqueue(new Callback<AlertDetail>() {
+                    @Override
+                    public void onResponse(Call<AlertDetail> call, Response<AlertDetail> response) {
+                        if (response.body() != null || genericAlert.isAlert()) {
+                            AlertDetail alertDetail = response.body();
 
-                    // get alert details
-                    SeptaServiceFactory.getAlertDetailsService().getAlertDetails(genericAlert.getRouteId()).enqueue(new Callback<AlertDetail>() {
-                        @Override
-                        public void onResponse(Call<AlertDetail> call, Response<AlertDetail> response) {
-                            if (response.body() != null || genericAlert.isAlert()) {
-                                AlertDetail alertDetail = response.body();
+                            StringBuilder announcement = new StringBuilder();
+                            StringBuilder alertTimestamps = new StringBuilder();
 
-                                StringBuilder announcement = new StringBuilder();
+                            for (AlertDetail.Detail detail : alertDetail.getAlerts()) {
+                                announcement.append(detail.getMessage());
+                                alertTimestamps.append(detail.getLastUpdated());
+                            }
 
-                                for (AlertDetail.Detail detail : alertDetail.getAlerts()) {
-                                    announcement.append(detail.getMessage());
-                                }
+                            // check if this alert has been snoozed by user
+                            if (!alertTimestamps.toString().equals(SharedPreferencesAlertUtil.getHiddenGlobalAlertTimestamp(MainActivity.this))) {
 
                                 // show generic alert if current_message not blank
                                 if (!announcement.toString().isEmpty()) {
-                                    showAlert(announcement.toString(), true, genericAlert.getLastUpdate());
+                                    showAlert(announcement.toString(), true, alertTimestamps.toString());
                                 }
                             }
                         }
+                    }
 
-                        @Override
-                        public void onFailure(Call<AlertDetail> call, Throwable t) {
-                            SeptaServiceFactory.displayWebServiceError(findViewById(R.id.drawer_layout), MainActivity.this);
-                        }
-                    });
-                }
+                    @Override
+                    public void onFailure(Call<AlertDetail> call, Throwable t) {
+                        SeptaServiceFactory.displayWebServiceError(findViewById(R.id.drawer_layout), MainActivity.this);
+                    }
+                });
             }
+
         }
     }
 

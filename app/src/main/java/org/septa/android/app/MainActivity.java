@@ -695,8 +695,6 @@ public class MainActivity extends BaseActivity implements
             // validate correct alert
             if (MOBILE_APP_ALERT_ROUTE_NAME.equals(mobileAppAlert.getRouteName()) && MOBILE_APP_ALERT_MODE.equals(mobileAppAlert.getMode())) {
 
-                showMenuAlertBadgeIcon();
-
                 // get alert details
                 SeptaServiceFactory.getAlertDetailsService().getAlertDetails(mobileAppAlert.getRouteId()).enqueue(new Callback<AlertDetail>() {
                     @Override
@@ -712,11 +710,13 @@ public class MainActivity extends BaseActivity implements
                                 alertTimestamps.append(detail.getLastUpdated());
                             }
 
-                            // check if this alert has been snoozed by user
-                            if (!alertTimestamps.toString().equals(SharedPreferencesAlertUtil.getHiddenMobileAlertTimestamp(MainActivity.this))) {
+                            // there is a mobile app alert if current_message not blank
+                            if (!announcement.toString().isEmpty()) {
 
-                                // show mobile app alert if current_message not blank
-                                if (!announcement.toString().isEmpty()) {
+                                showMenuAlertBadgeIcon();
+
+                                // check if this alert has been snoozed by user
+                                if (!alertTimestamps.toString().equals(SharedPreferencesAlertUtil.getHiddenMobileAlertTimestamp(MainActivity.this))) {
                                     showAlert(announcement.toString(), false, alertTimestamps.toString());
                                 }
                             }
@@ -738,8 +738,6 @@ public class MainActivity extends BaseActivity implements
             // validate correct alert
             if (GENERIC_ALERT_ROUTE_NAME.equals(genericAlert.getRouteName()) && GENERIC_ALERT_MODE.equals(genericAlert.getMode())) {
 
-                showMenuAlertBadgeIcon();
-
                 // get alert details
                 SeptaServiceFactory.getAlertDetailsService().getAlertDetails(genericAlert.getRouteId()).enqueue(new Callback<AlertDetail>() {
                     @Override
@@ -755,11 +753,13 @@ public class MainActivity extends BaseActivity implements
                                 alertTimestamps.append(detail.getLastUpdated());
                             }
 
-                            // check if this alert has been snoozed by user
-                            if (!alertTimestamps.toString().equals(SharedPreferencesAlertUtil.getHiddenGlobalAlertTimestamp(MainActivity.this))) {
+                            // there is a generic alert if current_message not blank
+                            if (!announcement.toString().isEmpty()) {
 
-                                // show generic alert if current_message not blank
-                                if (!announcement.toString().isEmpty()) {
+                                showMenuAlertBadgeIcon();
+
+                                // check if this alert has been snoozed by user
+                                if (!alertTimestamps.toString().equals(SharedPreferencesAlertUtil.getHiddenGlobalAlertTimestamp(MainActivity.this))) {
                                     showAlert(announcement.toString(), true, alertTimestamps.toString());
                                 }
                             }

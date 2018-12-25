@@ -22,6 +22,7 @@ import org.septa.android.app.database.DatabaseManager;
 import org.septa.android.app.rating.SharedPreferencesRatingUtil;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.support.AnalyticsManager;
+import org.septa.android.app.systemstatus.SharedPreferencesAlertUtil;
 import org.septa.android.app.view.TextView;
 import org.septa.android.app.webview.WebViewActivity;
 
@@ -83,14 +84,16 @@ public class AboutFragment extends Fragment {
             }
         });
 
-        // reset the number of app uses
+        // reset the number of app uses / pop up alert snoozing
         if (BuildConfig.IS_NONPROD_BUILD) {
             fragmentView.findViewById(R.id.septa_logo).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     SharedPreferencesRatingUtil.setAppRated(activity, false);
                     SharedPreferencesRatingUtil.setNumberOfUses(activity, 0);
-                    Toast.makeText(activity, "App Rating Reset", Toast.LENGTH_SHORT).show();
+                    SharedPreferencesAlertUtil.setHiddenMobileAlertTimestamp(activity, "");
+                    SharedPreferencesAlertUtil.setHiddenGlobalAlertTimestamp(activity, "");
+                    Toast.makeText(activity, "Resetting  App Rating and Hidden Pop-Up Alerts", Toast.LENGTH_SHORT).show();
                 }
             });
         }

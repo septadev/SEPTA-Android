@@ -29,6 +29,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.CheckBox;
 
 import org.septa.android.app.about.AboutFragment;
 import org.septa.android.app.connect.ConnectFragment;
@@ -57,6 +58,7 @@ import org.septa.android.app.support.CrashlyticsManager;
 import org.septa.android.app.support.RouteModelComparator;
 import org.septa.android.app.support.ShakeDetector;
 import org.septa.android.app.systemmap.SystemMapFragment;
+import org.septa.android.app.systemstatus.SharedPreferencesAlertUtil;
 import org.septa.android.app.systemstatus.SystemStatusFragment;
 import org.septa.android.app.systemstatus.SystemStatusState;
 import org.septa.android.app.transitview.TransitViewFragment;
@@ -701,14 +703,22 @@ public class MainActivity extends BaseActivity implements
                             AlertDetail alertDetail = response.body();
 
                             StringBuilder announcement = new StringBuilder();
+                            StringBuilder alertTimestamps = new StringBuilder();
 
                             for (AlertDetail.Detail detail : alertDetail.getAlerts()) {
                                 announcement.append(detail.getMessage());
+                                alertTimestamps.append(detail.getLastUpdated());
                             }
 
-                            // show mobile app alert if current_message not blank
+                            // there is a mobile app alert if current_message not blank
                             if (!announcement.toString().isEmpty()) {
-                                showAlert(announcement.toString(), false);
+
+                                showMenuAlertBadgeIcon();
+
+                                // check if this alert has been snoozed by user
+                                if (!alertTimestamps.toString().equals(SharedPreferencesAlertUtil.getHiddenMobileAlertTimestamp(MainActivity.this))) {
+                                    showAlert(announcement.toString(), false, alertTimestamps.toString());
+                                }
                             }
                         }
                     }
@@ -725,6 +735,7 @@ public class MainActivity extends BaseActivity implements
         if (SystemStatusState.getGenericAlert() != null) {
             final Alert genericAlert = SystemStatusState.getGenericAlert();
 
+            // validate correct alert
             if (GENERIC_ALERT_ROUTE_NAME.equals(genericAlert.getRouteName()) && GENERIC_ALERT_MODE.equals(genericAlert.getMode())) {
 
                 // get alert details
@@ -735,14 +746,22 @@ public class MainActivity extends BaseActivity implements
                             AlertDetail alertDetail = response.body();
 
                             StringBuilder announcement = new StringBuilder();
+                            StringBuilder alertTimestamps = new StringBuilder();
 
                             for (AlertDetail.Detail detail : alertDetail.getAlerts()) {
                                 announcement.append(detail.getMessage());
+                                alertTimestamps.append(detail.getLastUpdated());
                             }
 
-                            // show generic alert if current_message not blank
+                            // there is a generic alert if current_message not blank
                             if (!announcement.toString().isEmpty()) {
-                                showAlert(announcement.toString(), true);
+
+                                showMenuAlertBadgeIcon();
+
+                                // check if this alert has been snoozed by user
+                                if (!alertTimestamps.toString().equals(SharedPreferencesAlertUtil.getHiddenGlobalAlertTimestamp(MainActivity.this))) {
+                                    showAlert(announcement.toString(), true, alertTimestamps.toString());
+                                }
                             }
                         }
                     }
@@ -753,10 +772,17 @@ public class MainActivity extends BaseActivity implements
                     }
                 });
             }
+
         }
     }
 
-    public void showAlert(String alert, Boolean isGenericAlert) {
+    private void showMenuAlertBadgeIcon() {
+        // show badge icon in menu here
+        View view = navigationView.getMenu().findItem(R.id.nav_system_status).getActionView();
+        view.setVisibility(View.VISIBLE);
+    }
+
+    public void showAlert(String alert, final Boolean isGenericAlert, final String alertTimestamp) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
         if (isGenericAlert) {
@@ -768,7 +794,23 @@ public class MainActivity extends BaseActivity implements
         // make message HTML enabled and allow for anchor links
         View alertView = getLayoutInflater().inflate(R.layout.dialog_alert, null);
         TextView message = alertView.findViewById(R.id.dialog_alert_message);
+        View dontShow = alertView.findViewById(R.id.dialog_alert_dont_show_again);
+        final CheckBox checkBoxDontShow = alertView.findViewById(R.id.dialog_alert_dont_show_again_checkbox);
+
+        dontShow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                checkBoxDontShow.setChecked(!checkBoxDontShow.isChecked());
+            }
+        });
+
+        // append raw timestamp to pop-up
+        if (BuildConfig.IS_NONPROD_BUILD) {
+            alert = alert + "<br/><br/>" + alertTimestamp;
+        }
+
         final SpannableString s = new SpannableString(alert);
+
         message.setText(Html.fromHtml(s.toString()));
         message.setMovementMethod(LinkMovementMethod.getInstance());
         Linkify.addLinks(message, Linkify.WEB_URLS);
@@ -778,6 +820,15 @@ public class MainActivity extends BaseActivity implements
         builder.setNeutralButton(R.string.button_ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                if (checkBoxDontShow.isChecked()) {
+                    // save alert timestamp to sharedpref as "unique alert"
+                    if (isGenericAlert) {
+                        SharedPreferencesAlertUtil.setHiddenGlobalAlertTimestamp(MainActivity.this, alertTimestamp);
+                    } else {
+                        SharedPreferencesAlertUtil.setHiddenMobileAlertTimestamp(MainActivity.this, alertTimestamp);
+                    }
+                }
+
                 dialog.dismiss();
             }
         });
@@ -789,10 +840,6 @@ public class MainActivity extends BaseActivity implements
         } else {
             mobileAlert = dialog;
         }
-
-        // show badge icon in menu here
-        View view = navigationView.getMenu().findItem(R.id.nav_system_status).getActionView();
-        view.setVisibility(View.VISIBLE);
 
         dialog.show();
     }

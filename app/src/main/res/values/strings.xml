@@ -309,7 +309,7 @@
     <!-- Alerts -->
     <string name="title_generic_alert">General SEPTA Alert</string>
     <string name="title_mobile_app_alert">Mobile App Alert</string>
-
+    <string name="alert_dismiss_checkbox_label"><![CDATA[Don\'t show <b>this alert</b> again]]></string>
 
     <!-- Push Notifications -->
     <string name="push_notifications_channel_name">Transportation</string>

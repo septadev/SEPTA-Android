@@ -695,37 +695,39 @@ public class MainActivity extends BaseActivity implements
             // validate correct alert
             if (MOBILE_APP_ALERT_ROUTE_NAME.equals(mobileAppAlert.getRouteName()) && MOBILE_APP_ALERT_MODE.equals(mobileAppAlert.getMode())) {
 
-                showMenuAlertBadgeIcon();
+                // get alert details
+                SeptaServiceFactory.getAlertDetailsService().getAlertDetails(mobileAppAlert.getRouteId()).enqueue(new Callback<AlertDetail>() {
+                    @Override
+                    public void onResponse(Call<AlertDetail> call, Response<AlertDetail> response) {
+                        if (response.body() != null || mobileAppAlert.isAlert()) {
+                            AlertDetail alertDetail = response.body();
 
-                // check if this alert has been snoozed by user
-                if (!mobileAppAlert.getLastUpdate().equals(SharedPreferencesAlertUtil.getHiddenMobileAlertTimestamp(MainActivity.this))) {
+                            StringBuilder announcement = new StringBuilder();
+                            StringBuilder alertTimestamps = new StringBuilder();
 
-                    // get alert details
-                    SeptaServiceFactory.getAlertDetailsService().getAlertDetails(mobileAppAlert.getRouteId()).enqueue(new Callback<AlertDetail>() {
-                        @Override
-                        public void onResponse(Call<AlertDetail> call, Response<AlertDetail> response) {
-                            if (response.body() != null || mobileAppAlert.isAlert()) {
-                                AlertDetail alertDetail = response.body();
+                            for (AlertDetail.Detail detail : alertDetail.getAlerts()) {
+                                announcement.append(detail.getMessage());
+                                alertTimestamps.append(detail.getLastUpdated());
+                            }
 
-                                StringBuilder announcement = new StringBuilder();
+                            // there is a mobile app alert if current_message not blank
+                            if (!announcement.toString().isEmpty()) {
 
-                                for (AlertDetail.Detail detail : alertDetail.getAlerts()) {
-                                    announcement.append(detail.getMessage());
-                                }
+                                showMenuAlertBadgeIcon();
 
-                                // show mobile app alert if current_message not blank
-                                if (!announcement.toString().isEmpty()) {
-                                    showAlert(announcement.toString(), false, mobileAppAlert.getLastUpdate());
+                                // check if this alert has been snoozed by user
+                                if (!alertTimestamps.toString().equals(SharedPreferencesAlertUtil.getHiddenMobileAlertTimestamp(MainActivity.this))) {
+                                    showAlert(announcement.toString(), false, alertTimestamps.toString());
                                 }
                             }
                         }
+                    }
 
-                        @Override
-                        public void onFailure(Call<AlertDetail> call, Throwable t) {
-                            SeptaServiceFactory.displayWebServiceError(findViewById(R.id.drawer_layout), MainActivity.this);
-                        }
-                    });
-                }
+                    @Override
+                    public void onFailure(Call<AlertDetail> call, Throwable t) {
+                        SeptaServiceFactory.displayWebServiceError(findViewById(R.id.drawer_layout), MainActivity.this);
+                    }
+                });
             }
         }
 
@@ -736,38 +738,41 @@ public class MainActivity extends BaseActivity implements
             // validate correct alert
             if (GENERIC_ALERT_ROUTE_NAME.equals(genericAlert.getRouteName()) && GENERIC_ALERT_MODE.equals(genericAlert.getMode())) {
 
-                showMenuAlertBadgeIcon();
+                // get alert details
+                SeptaServiceFactory.getAlertDetailsService().getAlertDetails(genericAlert.getRouteId()).enqueue(new Callback<AlertDetail>() {
+                    @Override
+                    public void onResponse(Call<AlertDetail> call, Response<AlertDetail> response) {
+                        if (response.body() != null || genericAlert.isAlert()) {
+                            AlertDetail alertDetail = response.body();
 
-                // check if this alert has been snoozed by user
-                if (!genericAlert.getLastUpdate().equals(SharedPreferencesAlertUtil.getHiddenGlobalAlertTimestamp(MainActivity.this))) {
+                            StringBuilder announcement = new StringBuilder();
+                            StringBuilder alertTimestamps = new StringBuilder();
 
-                    // get alert details
-                    SeptaServiceFactory.getAlertDetailsService().getAlertDetails(genericAlert.getRouteId()).enqueue(new Callback<AlertDetail>() {
-                        @Override
-                        public void onResponse(Call<AlertDetail> call, Response<AlertDetail> response) {
-                            if (response.body() != null || genericAlert.isAlert()) {
-                                AlertDetail alertDetail = response.body();
+                            for (AlertDetail.Detail detail : alertDetail.getAlerts()) {
+                                announcement.append(detail.getMessage());
+                                alertTimestamps.append(detail.getLastUpdated());
+                            }
 
-                                StringBuilder announcement = new StringBuilder();
+                            // there is a generic alert if current_message not blank
+                            if (!announcement.toString().isEmpty()) {
 
-                                for (AlertDetail.Detail detail : alertDetail.getAlerts()) {
-                                    announcement.append(detail.getMessage());
-                                }
+                                showMenuAlertBadgeIcon();
 
-                                // show generic alert if current_message not blank
-                                if (!announcement.toString().isEmpty()) {
-                                    showAlert(announcement.toString(), true, genericAlert.getLastUpdate());
+                                // check if this alert has been snoozed by user
+                                if (!alertTimestamps.toString().equals(SharedPreferencesAlertUtil.getHiddenGlobalAlertTimestamp(MainActivity.this))) {
+                                    showAlert(announcement.toString(), true, alertTimestamps.toString());
                                 }
                             }
                         }
+                    }
 
-                        @Override
-                        public void onFailure(Call<AlertDetail> call, Throwable t) {
-                            SeptaServiceFactory.displayWebServiceError(findViewById(R.id.drawer_layout), MainActivity.this);
-                        }
-                    });
-                }
+                    @Override
+                    public void onFailure(Call<AlertDetail> call, Throwable t) {
+                        SeptaServiceFactory.displayWebServiceError(findViewById(R.id.drawer_layout), MainActivity.this);
+                    }
+                });
             }
+
         }
     }
 

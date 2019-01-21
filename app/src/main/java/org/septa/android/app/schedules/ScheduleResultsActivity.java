@@ -444,7 +444,10 @@ public class ScheduleResultsActivity extends BaseActivity implements RenameFavor
             advisoryView.setImageResource(R.drawable.ic_advisory_inactive);
         }
 
-        if (alert.isAlert()) {
+        if (alert.isSuspended()) {
+            alertView.setImageResource(R.drawable.ic_suspension);
+            alertView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ALERT_EXPANDED, ScheduleResultsActivity.this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName(), originClass));
+        } else if (alert.isAlert()) {
             alertView.setImageResource(R.drawable.ic_alert);
             alertView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ALERT_EXPANDED, ScheduleResultsActivity.this, transitType, routeDirectionModel.getRouteId(), routeDirectionModel.getRouteShortName(), originClass));
         } else {

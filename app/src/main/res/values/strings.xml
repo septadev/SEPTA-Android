@@ -116,6 +116,7 @@
     <string name="text_empty_trips">No recent trips</string>
     <string name="nta_empty_results">No results found for the next 5 hours. \n\nThis could be due to operating hours having already ended or not yet begun, or a service outage on this route. \n\nPlease refer to Schedules for the next arrival times.</string>
 
+    <string name="suspension_icon_content_description_prefix">Suspension on route:</string>
     <string name="alert_icon_content_description_prefix">Service Alert on route:</string>
     <string name="advisory_icon_content_description_prefix">Advisory alert on route:</string>
     <string name="detour_icon_content_description_prefix">Detour on route:</string>

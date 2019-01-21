@@ -244,11 +244,18 @@ public class NextToArriveTripView extends FrameLayout {
 
         Alert alert = SystemStatusState.getAlertForLine(transitType, lineId);
 
-        if (alert.isAlert()) {
-            View targetView = convertView.findViewById(R.id.orig_line_alert_icon);
+        // during active suspension, replace service alert icon with suspension icon
+        if (isSuspended || alert.isAlert()) {
+            ImageView targetView = convertView.findViewById(R.id.orig_line_alert_icon);
             targetView.setVisibility(VISIBLE);
             targetView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ALERT_EXPANDED, activity, transitType, lineId, routeNameForSystemStatus, originClass));
-            targetView.setContentDescription(R.string.alert_icon_content_description_prefix + routeNameForSystemStatus);
+            if (isSuspended) {
+                targetView.setImageResource(R.drawable.ic_suspension);
+                targetView.setContentDescription(R.string.suspension_icon_content_description_prefix + routeNameForSystemStatus);
+            } else {
+                targetView.setImageResource(R.drawable.ic_alert);
+                targetView.setContentDescription(R.string.alert_icon_content_description_prefix + routeNameForSystemStatus);
+            }
         }
         if (alert.isAdvisory()) {
             View targetView = convertView.findViewById(R.id.orig_line_advisory_icon);
@@ -399,11 +406,18 @@ public class NextToArriveTripView extends FrameLayout {
             isSuspended = true;
         }
 
-        if (origAlert.isAlert()) {
-            View targetView = convertView.findViewById(R.id.orig_line_alert_icon);
+        // during active suspension, replace service alert icon with suspension icon
+        if (isSuspended || origAlert.isAlert()) {
+            ImageView targetView = convertView.findViewById(R.id.orig_line_alert_icon);
             targetView.setVisibility(VISIBLE);
             targetView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ALERT_EXPANDED, activity, transitType, item.getOrigRouteId(), item.getOrigRouteName(), originClass));
-            targetView.setContentDescription(R.string.alert_icon_content_description_prefix + item.getOrigRouteName());
+            if (isSuspended) {
+                targetView.setImageResource(R.drawable.ic_suspension);
+                targetView.setContentDescription(R.string.suspension_icon_content_description_prefix + item.getOrigRouteName());
+            } else {
+                targetView.setImageResource(R.drawable.ic_alert);
+                targetView.setContentDescription(R.string.alert_icon_content_description_prefix + item.getOrigRouteName());
+            }
         }
         if (origAlert.isAdvisory()) {
             View targetView = convertView.findViewById(R.id.orig_line_advisory_icon);
@@ -539,11 +553,18 @@ public class NextToArriveTripView extends FrameLayout {
             isSuspended = true;
         }
 
-        if (alert.isAlert()) {
-            View targetView = convertView.findViewById(R.id.term_line_alert_icon);
+        // during active suspension, replace service alert icon with suspension icon
+        if (isSuspended || alert.isAlert()) {
+            ImageView targetView = convertView.findViewById(R.id.term_line_alert_icon);
             targetView.setVisibility(VISIBLE);
             targetView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ALERT_EXPANDED, activity, transitType, item.getTermRouteId(), item.getTermRouteName(), originClass));
-            targetView.setContentDescription(R.string.alert_icon_content_description_prefix + item.getTermRouteName());
+            if (isSuspended) {
+                targetView.setImageResource(R.drawable.ic_suspension);
+                targetView.setContentDescription(R.string.suspension_icon_content_description_prefix + item.getTermRouteName());
+            } else {
+                targetView.setImageResource(R.drawable.ic_alert);
+                targetView.setContentDescription(R.string.alert_icon_content_description_prefix + item.getTermRouteName());
+            }
         }
         if (alert.isAdvisory()) {
             View targetView = convertView.findViewById(R.id.term_line_advisory_icon);

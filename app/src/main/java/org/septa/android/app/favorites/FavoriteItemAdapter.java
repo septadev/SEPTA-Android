@@ -296,14 +296,15 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     private void refreshTransitViewFavorite(TransitViewFavorite transitViewFavorite, TransitViewFavoriteViewHolder transitViewFavoriteViewHolder) {
         // show transitview alert icons if any of the 3 lines have that detour
-        boolean advisory, alert, detour, weather;
+        boolean advisory, alert, suspended, detour, weather;
 
         // get check for alerts in first route
         String routeId = transitViewFavorite.getFirstRoute().getRouteId();
         TransitType transitType = isTrolley(activity, routeId) ? TransitType.TROLLEY : TransitType.BUS;
         Alert routeAlerts = SystemStatusState.getAlertForLine(transitType, routeId);
         advisory = routeAlerts.isAdvisory();
-        alert = routeAlerts.isAlert() || routeAlerts.isSuspended();
+        alert = routeAlerts.isAlert();
+        suspended = routeAlerts.isSuspended();
         detour = routeAlerts.isDetour();
         weather = routeAlerts.isSnow();
 
@@ -313,7 +314,8 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             transitType = isTrolley(activity, routeId) ? TransitType.TROLLEY : TransitType.BUS;
             routeAlerts = SystemStatusState.getAlertForLine(transitType, routeId);
             advisory = advisory || routeAlerts.isAdvisory();
-            alert = alert || routeAlerts.isAlert() || routeAlerts.isSuspended();
+            alert = alert || routeAlerts.isAlert();
+            suspended = suspended || routeAlerts.isSuspended();
             detour = detour || routeAlerts.isDetour();
             weather = weather || routeAlerts.isSnow();
 
@@ -323,7 +325,8 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 transitType = isTrolley(activity, routeId) ? TransitType.TROLLEY : TransitType.BUS;
                 routeAlerts = SystemStatusState.getAlertForLine(transitType, routeId);
                 advisory = advisory || routeAlerts.isAdvisory();
-                alert = alert || routeAlerts.isAlert() || routeAlerts.isSuspended();
+                alert = alert || routeAlerts.isAlert();
+                suspended = suspended || routeAlerts.isSuspended();
                 detour = detour || routeAlerts.isDetour();
                 weather = weather || routeAlerts.isSnow();
             }
@@ -335,7 +338,11 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             transitViewFavoriteViewHolder.advisoryIcon.setVisibility(View.GONE);
         }
 
-        if (alert) {
+        if (suspended) {
+            transitViewFavoriteViewHolder.alertIcon.setImageResource(R.drawable.ic_suspension);
+            transitViewFavoriteViewHolder.alertIcon.setVisibility(View.VISIBLE);
+        } else if (alert) {
+            transitViewFavoriteViewHolder.alertIcon.setImageResource(R.drawable.ic_alert);
             transitViewFavoriteViewHolder.alertIcon.setVisibility(View.VISIBLE);
         } else {
             transitViewFavoriteViewHolder.alertIcon.setVisibility(View.GONE);

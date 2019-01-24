@@ -21,7 +21,7 @@ public class SystemStatusState {
         }
 
         for (Alert alert : alerts.getAlerts()) {
-            map.put(alert.getRouteId(), alert);
+            map.put(alert.getRouteId().toLowerCase(), alert);
         }
 
         initialized = true;
@@ -32,7 +32,7 @@ public class SystemStatusState {
     }
 
     public static Alert getAlertForLine(TransitType transitType, String lineId) {
-        String alertId = transitType.getAlertId(lineId);
+        String alertId = transitType.getAlertId(lineId).toLowerCase();
         Alert returnAlert = map.get(alertId);
         if (returnAlert == null) {
             returnAlert = new Alert();

@@ -22,7 +22,6 @@ import org.septa.android.app.nextarrive.NextArrivalModelResponseParser;
 import org.septa.android.app.nextarrive.NextToArriveTripView;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
 import org.septa.android.app.services.apiinterfaces.model.Alert;
-import org.septa.android.app.services.apiinterfaces.model.Alerts;
 import org.septa.android.app.services.apiinterfaces.model.Favorite;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalFavorite;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalModelResponse;
@@ -171,28 +170,6 @@ class FavoriteItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 public void onClick(View v) {
                     AnalyticsManager.logContentViewEvent(TAG, AnalyticsManager.CONTENT_VIEW_EVENT_TRANSITVIEW_FROM_FAVORITES, AnalyticsManager.CONTENT_ID_TRANSITVIEW, null);
                     mListener.goToTransitView(transitViewFavorite);
-                }
-            });
-
-            // refresh alerts
-            SeptaServiceFactory.getAlertsService().getAlerts().enqueue(new Callback<Alerts>() {
-                @Override
-                public void onResponse(Call<Alerts> call, Response<Alerts> response) {
-                    SystemStatusState.update(response.body());
-
-                    // show alert changes in favorite
-                    refreshTransitViewFavorite(transitViewFavorite, transitViewFavoriteViewHolder);
-                }
-
-                @Override
-                public void onFailure(Call<Alerts> call, Throwable t) {
-                    t.printStackTrace();
-
-                    // hide alerts when no connection
-                    transitViewFavoriteViewHolder.advisoryIcon.setVisibility(View.GONE);
-                    transitViewFavoriteViewHolder.alertIcon.setVisibility(View.GONE);
-                    transitViewFavoriteViewHolder.detourIcon.setVisibility(View.GONE);
-                    transitViewFavoriteViewHolder.weatherIcon.setVisibility(View.GONE);
                 }
             });
 

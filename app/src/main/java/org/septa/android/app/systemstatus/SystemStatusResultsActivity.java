@@ -95,7 +95,7 @@ public class SystemStatusResultsActivity extends BaseActivity {
             onBackPressed();
         }
 
-        setTitle(transitType.getString("system_status_results_title", this));
+        setTitle(transitType.getString("system_status_results_title", SystemStatusResultsActivity.this));
 
         TextView title = findViewById(R.id.line_title);
         title.setText(routeName + " Status");
@@ -103,12 +103,12 @@ public class SystemStatusResultsActivity extends BaseActivity {
         // add line color bullet
         int color;
         try {
-            color = ContextCompat.getColor(this, transitType.getLineColor(routeId, this));
+            color = ContextCompat.getColor(SystemStatusResultsActivity.this, transitType.getLineColor(routeId, this));
         } catch (Exception e) {
             CrashlyticsManager.log(Log.ERROR, TAG, "Could not retrieve route color for " + routeId);
             CrashlyticsManager.logException(TAG, e);
 
-            color = ContextCompat.getColor(this, R.color.default_line_color);
+            color = ContextCompat.getColor(SystemStatusResultsActivity.this, R.color.default_line_color);
         }
 
         Drawable[] drawables = title.getCompoundDrawables();
@@ -116,7 +116,7 @@ public class SystemStatusResultsActivity extends BaseActivity {
         bullet.setColorFilter(color, PorterDuff.Mode.SRC);
         title.setCompoundDrawablesWithIntrinsicBounds(null, null, bullet, null);
 
-        Drawable inactiveToggle = ContextCompat.getDrawable(this, R.drawable.alert_toggle_closed).mutate();
+        Drawable inactiveToggle = ContextCompat.getDrawable(SystemStatusResultsActivity.this, R.drawable.alert_toggle_closed).mutate();
         inactiveToggle.setAlpha(77);
 
         serviceAdvisory = findViewById(R.id.service_advisory);
@@ -129,7 +129,14 @@ public class SystemStatusResultsActivity extends BaseActivity {
         serviceAlertDetails = findViewById(R.id.service_alert_details);
         serviceAlertDetails.setMovementMethod(LinkMovementMethod.getInstance());
         Drawable[] serviceAlertDrawables = serviceAlert.getCompoundDrawables();
-        serviceAlert.setCompoundDrawablesWithIntrinsicBounds(serviceAlertDrawables[0], serviceAlertDrawables[1], inactiveToggle, serviceAlertDrawables[3]);
+        // replace alert icon with suspension icon when active suspension
+        Drawable suspensionOrAlertIcon;
+        if (SystemStatusState.getAlertForLine(transitType, routeId).isSuspended()) {
+            suspensionOrAlertIcon = ContextCompat.getDrawable(SystemStatusResultsActivity.this, R.drawable.ic_suspension);
+        } else {
+            suspensionOrAlertIcon = ContextCompat.getDrawable(SystemStatusResultsActivity.this, R.drawable.ic_alert);
+        }
+        serviceAlert.setCompoundDrawablesWithIntrinsicBounds(suspensionOrAlertIcon, serviceAlertDrawables[1], inactiveToggle, serviceAlertDrawables[3]);
 
         activeDetour = findViewById(R.id.active_detour);
         activeDetourDetails = findViewById(R.id.active_detour_details);
@@ -362,8 +369,12 @@ public class SystemStatusResultsActivity extends BaseActivity {
         }
 
         if (alertCount > 0) {
+            if (SystemStatusState.getAlertForLine(transitType, routeId).isSuspended()) {
+                serviceAlert.setHtml("Suspension: <b>" + alertCount + "</b>");
+            } else {
+                serviceAlert.setHtml("Service Detail: <b>" + alertCount + "</b>");
+            }
             serviceAlert.setClickable(true);
-            serviceAlert.setHtml("Service Detail: <b>" + alertCount + "</b>");
             Drawable[] drawables = serviceAlert.getCompoundDrawables();
             serviceAlert.setCompoundDrawablesWithIntrinsicBounds(drawables[0], drawables[1], active_toggle, drawables[3]);
             handleExpand(!serviceAlertExpanded, serviceAlert, serviceAlertDetails);

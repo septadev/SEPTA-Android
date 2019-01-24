@@ -369,8 +369,12 @@ public class SystemStatusResultsActivity extends BaseActivity {
         }
 
         if (alertCount > 0) {
+            if (SystemStatusState.getAlertForLine(transitType, routeId).isSuspended()) {
+                serviceAlert.setHtml("Suspension: <b>" + alertCount + "</b>");
+            } else {
+                serviceAlert.setHtml("Service Detail: <b>" + alertCount + "</b>");
+            }
             serviceAlert.setClickable(true);
-            serviceAlert.setHtml("Service Detail: <b>" + alertCount + "</b>");
             Drawable[] drawables = serviceAlert.getCompoundDrawables();
             serviceAlert.setCompoundDrawablesWithIntrinsicBounds(drawables[0], drawables[1], active_toggle, drawables[3]);
             handleExpand(!serviceAlertExpanded, serviceAlert, serviceAlertDetails);

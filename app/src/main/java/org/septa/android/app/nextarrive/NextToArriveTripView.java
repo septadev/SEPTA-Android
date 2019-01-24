@@ -175,12 +175,6 @@ public class NextToArriveTripView extends FrameLayout {
                     routeAlert = SystemStatusState.getAlertForLine(transitType, currentLine);
                     isSuspended = routeAlert.isSuspended();
 
-                    // TODO: remove hard coded suspension later
-                    String[] testSuspended = {"19", "47M", "WAR", "FOX"};
-                    if (Arrays.asList(testSuspended).contains(currentLine)) {
-                        isSuspended = true;
-                    }
-
                     View headerView = getLineHeader(activity, currentLine, item.getOrigRouteName());
                     if (firstPos) {
                         peakViews.add(headerView);
@@ -400,12 +394,6 @@ public class NextToArriveTripView extends FrameLayout {
         // check for line suspension
         isSuspended = origAlert.isSuspended();
 
-        // TODO: remove hard coded suspension
-        String[] testSuspended = {"19", "47M", "WAR", "FOX"};
-        if (Arrays.asList(testSuspended).contains(item.getOrigRouteId())) {
-            isSuspended = true;
-        }
-
         // during active suspension, replace service alert icon with suspension icon
         if (isSuspended || origAlert.isAlert()) {
             ImageView targetView = convertView.findViewById(R.id.orig_line_alert_icon);
@@ -547,11 +535,6 @@ public class NextToArriveTripView extends FrameLayout {
 
         // check for line suspension
         isSuspended = alert.isSuspended();
-
-        // TODO: remove hard coded suspension later
-        if (Arrays.asList(testSuspended).contains(item.getTermRouteId())) {
-            isSuspended = true;
-        }
 
         // during active suspension, replace service alert icon with suspension icon
         if (isSuspended || alert.isAlert()) {

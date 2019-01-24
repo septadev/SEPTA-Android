@@ -7,33 +7,27 @@ import java.util.List;
 
 public class AlertDetail implements Serializable {
 
-    @SerializedName("route")
     private String route;
 
     @SerializedName("route_name")
     private String routeName;
 
-    @SerializedName("results")
     private int results;
 
-    @SerializedName("alerts")
     private List<Detail> alerts;
 
     public class Detail implements Serializable {
 
-        @SerializedName("message")
         private String message;
 
         @SerializedName("advisory_message")
         private String advisoryMessage;
 
-        @SerializedName("detour")
         private Detour detour;
 
         @SerializedName("last_updated")
         private String lastUpdated;
 
-        @SerializedName("snow")
         private boolean snow;
 
         public String getMessage() {
@@ -91,7 +85,6 @@ public class AlertDetail implements Serializable {
 
     public class Detour implements Serializable {
 
-        @SerializedName("message")
         String message;
 
         @SerializedName("start_location")
@@ -103,7 +96,6 @@ public class AlertDetail implements Serializable {
         @SerializedName("end_date_time")
         String endDateTime;
 
-        @SerializedName("reason")
         String reason;
 
         public String getMessage() {

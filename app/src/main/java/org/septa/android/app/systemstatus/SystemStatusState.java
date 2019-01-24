@@ -4,13 +4,12 @@ import org.septa.android.app.TransitType;
 import org.septa.android.app.services.apiinterfaces.model.Alert;
 import org.septa.android.app.services.apiinterfaces.model.Alerts;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 public class SystemStatusState {
 
-    private static Map<String, Alert> map = new HashMap<String, Alert>();
+    private static Map<String, Alert> map = new HashMap<>();
 
     private static boolean initialized = false;
 
@@ -38,12 +37,6 @@ public class SystemStatusState {
         if (returnAlert == null) {
             returnAlert = new Alert();
             returnAlert.setRouteId(alertId);
-        }
-
-        // TODO: remove hard coded suspensions
-        String[] testSuspended = {"19", "47M", "CHE", "WAR", "FOX"};
-        if (Arrays.asList(testSuspended).contains(lineId)) {
-            returnAlert.setSuspended(true);
         }
 
         return returnAlert;

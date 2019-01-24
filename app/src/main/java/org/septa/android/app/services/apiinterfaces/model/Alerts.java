@@ -6,7 +6,6 @@ import java.util.List;
 
 public class Alerts {
 
-    @SerializedName("alerts")
     List<Alert> alerts;
 
     @SerializedName("results")

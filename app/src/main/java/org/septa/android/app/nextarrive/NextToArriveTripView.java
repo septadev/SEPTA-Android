@@ -33,7 +33,6 @@ import org.septa.android.app.systemstatus.GoToSystemStatusResultsOnClickListener
 import org.septa.android.app.systemstatus.SystemStatusState;
 
 import java.text.DateFormat;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -56,8 +55,6 @@ public class NextToArriveTripView extends FrameLayout {
 
     private Alert routeAlert;
     private boolean isSuspended;
-    private static final int SUSPENDED_VEHICLES_NUMBER = 3;
-    private Map<String, Integer> suspendedVehiclesDrawn = new HashMap<>();
 
     private Consumer<Integer> onFirstElementHeight;
 
@@ -136,9 +133,6 @@ public class NextToArriveTripView extends FrameLayout {
         if (maxResults != null && data.size() > 0) {
             data = data.subList(0, (maxResults <= data.size()) ? maxResults : data.size() - 1);
         }
-
-        // reset suspended vehicles counter
-        suspendedVehiclesDrawn.clear();
 
         String currentLine = null;
         boolean firstPos = true;
@@ -302,19 +296,7 @@ public class NextToArriveTripView extends FrameLayout {
         android.widget.TextView origTardyText = line.findViewById(R.id.orig_tardy_text);
         View origDepartingBorder = line.findViewById(R.id.orig_departing_border);
 
-        // show this trip as 'suspended'
-        Integer numSuspendedDrawn = suspendedVehiclesDrawn.get(unit.getOrigRouteId());
-        if (numSuspendedDrawn == null) {
-            numSuspendedDrawn = 0;
-        }
-        if (isSuspended && numSuspendedDrawn < SUSPENDED_VEHICLES_NUMBER) {
-            origTardyText.setText(R.string.nta_suspended);
-            origTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.delay_minutes));
-            origDepartingBorder.setVisibility(View.INVISIBLE);
-            enableClick = false;
-            suspendedVehiclesDrawn.put(unit.getOrigRouteId(), numSuspendedDrawn + 1);
-
-        } else if (unit.getOrigDelayMinutes() > 0) {
+        if (unit.getOrigDelayMinutes() > 0) {
             // show this trip as delayed
             origTardyText.setText(GeneralUtils.getDurationAsString(unit.getOrigDelayMinutes(), TimeUnit.MINUTES) + " late.");
             origTardyText.setContentDescription(GeneralUtils.getDurationAsLongString(unit.getOrigDelayMinutes(), TimeUnit.MINUTES) + " late.");
@@ -451,19 +433,7 @@ public class NextToArriveTripView extends FrameLayout {
         android.widget.TextView origTardyText = convertView.findViewById(R.id.orig_tardy_text);
         View origDepartingBorder = convertView.findViewById(R.id.orig_departing_border);
 
-        // show this trip as 'suspended'
-        Integer numSuspendedDrawn = suspendedVehiclesDrawn.get(item.getOrigRouteId());
-        if (numSuspendedDrawn == null) {
-            numSuspendedDrawn = 0;
-        }
-        if (isSuspended && numSuspendedDrawn < SUSPENDED_VEHICLES_NUMBER) {
-            origTardyText.setText(R.string.nta_suspended);
-            origTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.delay_minutes));
-            origDepartingBorder.setVisibility(View.INVISIBLE);
-            enableOrigClick = false;
-            suspendedVehiclesDrawn.put(item.getOrigRouteId(), numSuspendedDrawn + 1);
-
-        } else if (item.getOrigDelayMinutes() > 0) {
+        if (item.getOrigDelayMinutes() > 0) {
             origDepartingBorder.setVisibility(View.VISIBLE);
             origTardyText.setText(GeneralUtils.getDurationAsString(item.getOrigDelayMinutes(), TimeUnit.MINUTES) + " late.");
             origTardyText.setContentDescription(GeneralUtils.getDurationAsLongString(item.getOrigDelayMinutes(), TimeUnit.MINUTES) + " late.");
@@ -593,19 +563,7 @@ public class NextToArriveTripView extends FrameLayout {
         android.widget.TextView termTardyText = convertView.findViewById(R.id.term_tardy_text);
         View termDepartingBorder = convertView.findViewById(R.id.term_departing_border);
 
-        // show this trip as 'suspended'
-        numSuspendedDrawn = suspendedVehiclesDrawn.get(item.getTermRouteId());
-        if (numSuspendedDrawn == null) {
-            numSuspendedDrawn = 0;
-        }
-        if (isSuspended && numSuspendedDrawn < SUSPENDED_VEHICLES_NUMBER) {
-            termTardyText.setText(R.string.nta_suspended);
-            termTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.delay_minutes));
-            termDepartingBorder.setVisibility(View.INVISIBLE);
-            termEnableClick = false;
-            suspendedVehiclesDrawn.put(item.getTermRouteId(), numSuspendedDrawn + 1);
-
-        } else if (item.getTermDelayMinutes() > 0) {
+        if (item.getTermDelayMinutes() > 0) {
             termTardyText.setText(GeneralUtils.getDurationAsString(item.getTermDelayMinutes(), TimeUnit.MINUTES) + " late.");
             termTardyText.setContentDescription(GeneralUtils.getDurationAsLongString(item.getTermDelayMinutes(), TimeUnit.MINUTES) + " late.");
             termTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.delay_minutes));

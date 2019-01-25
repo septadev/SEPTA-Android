@@ -299,7 +299,7 @@
     <!-- About -->
     <string name="device_id">Device ID: %1$s</string>
     <string name="activity_about_attributions">View Attributions</string>
-    <string name="activity_about_credits">Source code to the SEPTA Android application is available under an open source license, but the graphics are not.  \n\nThe graphics are subject to the following Copyright and Trademark terms: http://septa.org/site/copyright.html.  \n\nThe source code is available at: https://github.com/septadev/SEPTA-Android.</string>
+    <string name="activity_about_credits">Source code to the SEPTA Android application is available under an open source license, but the graphics are not.  \n\nThe graphics are subject to the following Copyright and Trademark terms: http://septa.org/site/copyright.html.  \n\nThe source code is available at: https://github.com/septadev/SEPTA-Android</string>
 
 
     <!-- Holiday Schedule -->

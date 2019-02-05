@@ -116,6 +116,7 @@
     <string name="text_empty_trips">No recent trips</string>
     <string name="nta_empty_results">No results found for the next 5 hours. \n\nThis could be due to operating hours having already ended or not yet begun, or a service outage on this route. \n\nPlease refer to Schedules for the next arrival times.</string>
 
+    <string name="suspension_icon_content_description_prefix">Suspension on route:</string>
     <string name="alert_icon_content_description_prefix">Service Alert on route:</string>
     <string name="advisory_icon_content_description_prefix">Advisory alert on route:</string>
     <string name="detour_icon_content_description_prefix">Detour on route:</string>
@@ -124,6 +125,7 @@
     <string name="nta_on_time">On Time</string>
     <string name="nta_now">Now</string>
     <string name="nta_scheduled">Scheduled</string>
+    <string name="nta_suspended">Suspended</string>
 
     <string name="nta_refresh">Refresh</string>
 
@@ -297,7 +299,7 @@
     <!-- About -->
     <string name="device_id">Device ID: %1$s</string>
     <string name="activity_about_attributions">View Attributions</string>
-    <string name="activity_about_credits">Source code to the SEPTA Android application is available under an open source license, but the graphics are not.  \n\nThe graphics are subject to the following Copyright and Trademark terms: http://septa.org/site/copyright.html.  \n\nThe source code is available at: https://github.com/septadev/SEPTA-Android.</string>
+    <string name="activity_about_credits">Source code to the SEPTA Android application is available under an open source license, but the graphics are not.  \n\nThe graphics are subject to the following Copyright and Trademark terms: http://septa.org/site/copyright.html.  \n\nThe source code is available at: https://github.com/septadev/SEPTA-Android</string>
 
 
     <!-- Holiday Schedule -->
@@ -380,6 +382,5 @@
     <string name="button_save">Save</string>
     <string name="button_ok">Okay</string>
     <string name="empty_string"></string>
-
 
 </resources>

@@ -34,15 +34,21 @@ import org.septa.android.app.domain.RouteDirectionModel;
 import org.septa.android.app.domain.StopModel;
 import org.septa.android.app.nextarrive.NextToArriveResultsActivity;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
+import org.septa.android.app.services.apiinterfaces.model.Alerts;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalFavorite;
 import org.septa.android.app.services.apiinterfaces.model.TransitViewFavorite;
 import org.septa.android.app.support.AnalyticsManager;
 import org.septa.android.app.support.SwipeController;
+import org.septa.android.app.systemstatus.SystemStatusState;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class FavoritesFragment extends Fragment implements Runnable, FavoriteItemAdapter.FavoriteItemListener, SwipeController.SwipeControllerListener {
     private static final String TAG = FavoritesFragment.class.getSimpleName();
@@ -470,6 +476,19 @@ public class FavoritesFragment extends Fragment implements Runnable, FavoriteIte
     private void refreshFavorites() {
         if (getContext() != null) {
             favoriteItemAdapter.refreshFavorites(SeptaServiceFactory.getFavoritesService().getFavoriteStates(getContext()));
+
+            // refresh alerts
+            SeptaServiceFactory.getAlertsService().getAlerts().enqueue(new Callback<Alerts>() {
+                @Override
+                public void onResponse(Call<Alerts> call, Response<Alerts> response) {
+                    SystemStatusState.update(response.body());
+                }
+
+                @Override
+                public void onFailure(Call<Alerts> call, Throwable t) {
+                    t.printStackTrace();
+                }
+            });
 
             // postpone next refresh to after 30 secs
             refreshHandler.postDelayed(this, REFRESH_DELAY_SECONDS * 1000);

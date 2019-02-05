@@ -543,17 +543,21 @@ abstract class CursorSuppliers implements Serializable {
         public RouteDirectionModel getCurrentItemFromCursor(Cursor cursor) {
 
             String id = cursor.getString(0);
-
             String longName = cursor.getString(2);
 
-            if ("BSL".equals(id)) {
-                longName = "Broad Street Line";
-            } else if ("MFL".equals(id)) {
-                longName = "Market Frankford Line";
-            } else if ("BSO".equals(id)) {
-                longName = "Broad Street Overnight";
-            } else if ("MFO".equals(id)) {
-                longName = "Market Frankford Overnight";
+            switch (id) {
+                case "BSL":
+                    longName = "Broad Street Line";
+                    break;
+                case "MFL":
+                    longName = "Market Frankford Line";
+                    break;
+                case "BSO":
+                    longName = "Broad Street Overnight";
+                    break;
+                case "MFO":
+                    longName = "Market Frankford Overnight";
+                    break;
             }
 
             return new RouteDirectionModel(cursor.getString(0), cursor.getString(1), longName, cursor.getString(3), cursor.getString(4), cursor.getInt(5));
@@ -643,7 +647,25 @@ abstract class CursorSuppliers implements Serializable {
 
         @Override
         public RouteDirectionModel getCurrentItemFromCursor(Cursor cursor) {
-            return new RouteDirectionModel(cursor.getString(0), cursor.getString(1), cursor.getString(2), null, null, cursor.getInt(3));
+            String id = cursor.getString(0);
+            String longName = cursor.getString(2);
+
+            switch (id) {
+                case "BSL":
+                    longName = "Broad Street Line";
+                    break;
+                case "MFL":
+                    longName = "Market Frankford Line";
+                    break;
+                case "BSO":
+                    longName = "Broad Street Overnight";
+                    break;
+                case "MFO":
+                    longName = "Market Frankford Overnight";
+                    break;
+            }
+
+            return new RouteDirectionModel(cursor.getString(0), cursor.getString(1), longName, null, null, cursor.getInt(3));
         }
 
         @Override
@@ -674,7 +696,7 @@ abstract class CursorSuppliers implements Serializable {
                         direction_id = c.getValue().toString();
                     } else if ("end_stop_id".equals(c.getFieldName())) {
                         end_stop_id = c.getValue().toString();
-                    } else if ("route_id".equals(c.getFieldName())){
+                    } else if ("route_id".equals(c.getFieldName())) {
                         route_id = c.getValue().toString();
                     }
                 }

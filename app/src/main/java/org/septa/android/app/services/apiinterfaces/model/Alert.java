@@ -10,28 +10,21 @@ public class Alert {
     @SerializedName("route_name")
     private String routeName;
 
-    @SerializedName("mode")
     private String mode;
 
-    @SerializedName("advisory")
     private boolean advisory;
 
-    @SerializedName("detour")
     private boolean detour;
 
-    @SerializedName("alert")
     private boolean alert;
 
-    @SerializedName("suppend")
     private boolean suspended;
 
     @SerializedName("last_updated")
     private String lastUpdate;
 
-    @SerializedName("snow")
     private boolean snow;
 
-    @SerializedName("description")
     private String description;
 
     public String getRouteId() {

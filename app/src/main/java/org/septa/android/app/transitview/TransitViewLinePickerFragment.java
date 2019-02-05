@@ -225,10 +225,17 @@ public class TransitViewLinePickerFragment extends DialogFragment {
                         }
 
                         Alert alert = SystemStatusState.getAlertForLine(transitType, route.getRouteId());
-                        if (alert.isAlert()) {
-                            convertView.findViewById(R.id.alert_icon).setVisibility(View.VISIBLE);
+
+                        // replace alert icon with suspension icon during active suspension
+                        ImageView alertIcon = convertView.findViewById(R.id.alert_icon);
+                        if (alert.isSuspended()) {
+                            alertIcon.setImageResource(R.drawable.ic_suspension);
+                            alertIcon.setVisibility(View.VISIBLE);
+                        } else if (alert.isAlert()) {
+                            alertIcon.setImageResource(R.drawable.ic_alert);
+                            alertIcon.setVisibility(View.VISIBLE);
                         } else {
-                            convertView.findViewById(R.id.alert_icon).setVisibility(View.GONE);
+                            alertIcon.setVisibility(View.GONE);
                         }
                         if (alert.isAdvisory()) {
                             convertView.findViewById(R.id.advisory_icon).setVisibility(View.VISIBLE);

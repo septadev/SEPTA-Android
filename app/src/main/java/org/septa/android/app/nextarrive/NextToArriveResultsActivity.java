@@ -56,6 +56,7 @@ import org.septa.android.app.favorites.DeleteFavoritesAsyncTask;
 import org.septa.android.app.favorites.edit.RenameFavoriteDialogFragment;
 import org.septa.android.app.favorites.edit.RenameFavoriteListener;
 import org.septa.android.app.services.apiinterfaces.SeptaServiceFactory;
+import org.septa.android.app.services.apiinterfaces.model.Alerts;
 import org.septa.android.app.services.apiinterfaces.model.Favorite;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalDetails;
 import org.septa.android.app.services.apiinterfaces.model.NextArrivalFavorite;
@@ -66,6 +67,7 @@ import org.septa.android.app.support.CrashlyticsManager;
 import org.septa.android.app.support.Criteria;
 import org.septa.android.app.support.CursorAdapterSupplier;
 import org.septa.android.app.support.MapUtils;
+import org.septa.android.app.systemstatus.SystemStatusState;
 import org.septa.android.app.view.TextView;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -690,6 +692,19 @@ public class NextToArriveResultsActivity extends BaseActivity implements OnMapRe
                     refreshHandler.removeCallbacks(NextToArriveResultsActivity.this);
                     refreshHandler.postDelayed(NextToArriveResultsActivity.this, REFRESH_DELAY_SECONDS * 1000);
                     showNoResultsFoundErrorMessage();
+                }
+            });
+
+            // refresh alerts
+            SeptaServiceFactory.getAlertsService().getAlerts().enqueue(new Callback<Alerts>() {
+                @Override
+                public void onResponse(Call<Alerts> call, Response<Alerts> response) {
+                    SystemStatusState.update(response.body());
+                }
+
+                @Override
+                public void onFailure(Call<Alerts> call, Throwable t) {
+                    t.printStackTrace();
                 }
             });
         }

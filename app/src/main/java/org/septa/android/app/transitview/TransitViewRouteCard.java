@@ -29,7 +29,7 @@ public class TransitViewRouteCard extends LinearLayout {
     private TransitViewRouteCardListener mListener;
     private RouteDirectionModel route;
     private int sequence;
-    private boolean isAdvisory, isAlert, isDetour, isWeather;
+    private boolean isAdvisory, isAlert, isSuspended, isDetour, isWeather;
     private ActivityClass originClass = ActivityClass.TRANSITVIEW;
 
     // layout variables
@@ -37,7 +37,7 @@ public class TransitViewRouteCard extends LinearLayout {
     private ImageView deleteButton;
     private TextView routeIdText;
     private View line;
-    private ImageView advisoryIcon, alertIcon, detourIcon, weatherIcon;
+    private ImageView advisoryIcon, alertIcon, suspensionIcon, detourIcon, weatherIcon;
 
     public TransitViewRouteCard(@NonNull Activity activity, RouteDirectionModel route, int sequence) {
         super(activity);
@@ -65,6 +65,7 @@ public class TransitViewRouteCard extends LinearLayout {
         line = rootView.findViewById(R.id.transitview_card_line);
         advisoryIcon = rootView.findViewById(R.id.advisory_icon);
         alertIcon = rootView.findViewById(R.id.alert_icon);
+        suspensionIcon = rootView.findViewById(R.id.suspension_icon);
         detourIcon = rootView.findViewById(R.id.detour_icon);
         weatherIcon = rootView.findViewById(R.id.weather_icon);
 
@@ -90,6 +91,10 @@ public class TransitViewRouteCard extends LinearLayout {
         alertIcon.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ALERT_EXPANDED, activity, transitType, route.getRouteId(), route.getRouteShortName(), originClass));
         alertIcon.setContentDescription(R.string.alert_icon_content_description_prefix + route.getRouteShortName());
 
+        // clicking on suspension icon links to system status
+        suspensionIcon.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ALERT_EXPANDED, activity, transitType, route.getRouteId(), route.getRouteShortName(), originClass));
+        suspensionIcon.setContentDescription(R.string.suspension_icon_content_description_prefix + route.getRouteShortName());
+
         // clicking on detour icon links to system status
         detourIcon.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.ACTIVE_DETOUR_EXPANDED, activity, transitType, route.getRouteId(), route.getRouteShortName(), originClass));
         detourIcon.setContentDescription(R.string.detour_icon_content_description_prefix + route.getRouteShortName());
@@ -105,7 +110,8 @@ public class TransitViewRouteCard extends LinearLayout {
         TransitType transitType = isTrolley(activity, route.getRouteId()) ? TransitType.TROLLEY : TransitType.BUS;
         Alert routeAlerts = SystemStatusState.getAlertForLine(transitType, route.getRouteId());
         isAdvisory = routeAlerts.isAdvisory();
-        isAlert = routeAlerts.isAlert() || routeAlerts.isSuspended();
+        isAlert = routeAlerts.isAlert();
+        isSuspended = routeAlerts.isSuspended();
         isDetour = routeAlerts.isDetour();
         isWeather = routeAlerts.isSnow();
 
@@ -115,10 +121,16 @@ public class TransitViewRouteCard extends LinearLayout {
             advisoryIcon.setVisibility(View.GONE);
         }
 
-        if (isAlert) {
+        // suspension replaces service alert icon
+        if (isSuspended) {
+            suspensionIcon.setVisibility(View.VISIBLE);
+            alertIcon.setVisibility(View.GONE);
+        } else if (isAlert) {
             alertIcon.setVisibility(View.VISIBLE);
+            suspensionIcon.setVisibility(View.GONE);
         } else {
             alertIcon.setVisibility(View.GONE);
+            suspensionIcon.setVisibility(View.GONE);
         }
 
         if (isDetour) {
@@ -137,6 +149,7 @@ public class TransitViewRouteCard extends LinearLayout {
     public void hideAlertIcons() {
         advisoryIcon.setVisibility(View.GONE);
         alertIcon.setVisibility(View.GONE);
+        suspensionIcon.setVisibility(View.GONE);
         detourIcon.setVisibility(View.GONE);
         weatherIcon.setVisibility(View.GONE);
     }
@@ -157,6 +170,7 @@ public class TransitViewRouteCard extends LinearLayout {
         // make alert icons clickable
         advisoryIcon.setClickable(true);
         alertIcon.setClickable(true);
+        suspensionIcon.setClickable(true);
         detourIcon.setClickable(true);
         weatherIcon.setClickable(true);
     }
@@ -177,6 +191,7 @@ public class TransitViewRouteCard extends LinearLayout {
         // disable alert icons
         advisoryIcon.setClickable(false);
         alertIcon.setClickable(false);
+        suspensionIcon.setClickable(false);
         detourIcon.setClickable(false);
         weatherIcon.setClickable(false);
     }

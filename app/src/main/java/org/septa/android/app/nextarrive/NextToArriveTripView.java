@@ -53,6 +53,9 @@ public class NextToArriveTripView extends FrameLayout {
     private RouteDirectionModel routeDirectionModel;
     private ActivityClass originClass = ActivityClass.NEXT_TO_ARRIVE;
 
+    private Alert routeAlert;
+    private boolean isSuspended;
+
     private Consumer<Integer> onFirstElementHeight;
 
     private TimeUnit resultsTimeUnit;
@@ -158,14 +161,22 @@ public class NextToArriveTripView extends FrameLayout {
                 }
                 listView.addView(multiView);
             } else {
+                // if this trip's route is not the same as the one before
                 if (currentLine == null || !currentLine.equals(item.getOrigRouteId())) {
                     currentLine = item.getOrigRouteId();
+
+                    // check for line suspension
+                    routeAlert = SystemStatusState.getAlertForLine(transitType, currentLine);
+                    isSuspended = routeAlert.isSuspended();
+
                     View headerView = getLineHeader(activity, currentLine, item.getOrigRouteName());
                     if (firstPos) {
                         peakViews.add(headerView);
                     }
                     listView.addView(headerView);
                 }
+
+                // add trip results to view
                 final View singleView = getSingleStopTripView(item);
                 if (firstPos && onFirstElementHeight != null) {
                     peakViews.add(singleView);
@@ -221,11 +232,18 @@ public class NextToArriveTripView extends FrameLayout {
 
         Alert alert = SystemStatusState.getAlertForLine(transitType, lineId);
 
-        if (alert.isAlert()) {
-            View targetView = convertView.findViewById(R.id.orig_line_alert_icon);
+        // during active suspension, replace service alert icon with suspension icon
+        if (isSuspended || alert.isAlert()) {
+            ImageView targetView = convertView.findViewById(R.id.orig_line_alert_icon);
             targetView.setVisibility(VISIBLE);
             targetView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ALERT_EXPANDED, activity, transitType, lineId, routeNameForSystemStatus, originClass));
-            targetView.setContentDescription(R.string.alert_icon_content_description_prefix + routeNameForSystemStatus);
+            if (isSuspended) {
+                targetView.setImageResource(R.drawable.ic_suspension);
+                targetView.setContentDescription(R.string.suspension_icon_content_description_prefix + routeNameForSystemStatus);
+            } else {
+                targetView.setImageResource(R.drawable.ic_alert);
+                targetView.setContentDescription(R.string.alert_icon_content_description_prefix + routeNameForSystemStatus);
+            }
         }
         if (alert.isAdvisory()) {
             View targetView = convertView.findViewById(R.id.orig_line_advisory_icon);
@@ -276,14 +294,20 @@ public class NextToArriveTripView extends FrameLayout {
 
         boolean enableClick = true;
         android.widget.TextView origTardyText = line.findViewById(R.id.orig_tardy_text);
+        View origDepartingBorder = line.findViewById(R.id.orig_departing_border);
+
         if (unit.getOrigDelayMinutes() > 0) {
+            // show this trip as delayed
             origTardyText.setText(GeneralUtils.getDurationAsString(unit.getOrigDelayMinutes(), TimeUnit.MINUTES) + " late.");
             origTardyText.setContentDescription(GeneralUtils.getDurationAsLongString(unit.getOrigDelayMinutes(), TimeUnit.MINUTES) + " late.");
             origTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.delay_minutes));
-            View origDepartingBorder = line.findViewById(R.id.orig_departing_border);
+            origDepartingBorder.setVisibility(View.VISIBLE);
             origDepartingBorder.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.late_boarder));
             origDepartureTime.setTextColor(ContextCompat.getColor(getContext(), R.color.late_departing));
+
         } else {
+            // show trip as on time or scheduled
+            origDepartingBorder.setVisibility(View.VISIBLE);
             if (unit.isOrigRealtime()) {
                 origTardyText.setText(R.string.nta_on_time);
                 origTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.no_delay_minutes));
@@ -347,33 +371,42 @@ public class NextToArriveTripView extends FrameLayout {
         origLineNameText.setText(item.getOrigRouteName());
 
         ((ImageView) convertView.findViewById(R.id.orig_line_marker_left)).setColorFilter(ContextCompat.getColor(getContext(), transitType.getLineColor(item.getOrigRouteId(), getContext())));
-        Alert orig_alert = SystemStatusState.getAlertForLine(transitType, item.getOrigRouteId());
+        Alert origAlert = SystemStatusState.getAlertForLine(transitType, item.getOrigRouteId());
 
-        if (orig_alert.isAlert()) {
-            View targetView = convertView.findViewById(R.id.orig_line_alert_icon);
+        // check for line suspension
+        isSuspended = origAlert.isSuspended();
+
+        // during active suspension, replace service alert icon with suspension icon
+        if (isSuspended || origAlert.isAlert()) {
+            ImageView targetView = convertView.findViewById(R.id.orig_line_alert_icon);
             targetView.setVisibility(VISIBLE);
             targetView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ALERT_EXPANDED, activity, transitType, item.getOrigRouteId(), item.getOrigRouteName(), originClass));
-            targetView.setContentDescription(R.string.alert_icon_content_description_prefix + item.getOrigRouteName());
+            if (isSuspended) {
+                targetView.setImageResource(R.drawable.ic_suspension);
+                targetView.setContentDescription(R.string.suspension_icon_content_description_prefix + item.getOrigRouteName());
+            } else {
+                targetView.setImageResource(R.drawable.ic_alert);
+                targetView.setContentDescription(R.string.alert_icon_content_description_prefix + item.getOrigRouteName());
+            }
         }
-        if (orig_alert.isAdvisory()) {
+        if (origAlert.isAdvisory()) {
             View targetView = convertView.findViewById(R.id.orig_line_advisory_icon);
             targetView.setVisibility(VISIBLE);
             targetView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ADVISORY_EXPANDED, activity, transitType, item.getOrigRouteId(), item.getOrigRouteName(), originClass));
             targetView.setContentDescription(R.string.advisory_icon_content_description_prefix + item.getOrigRouteName());
         }
-        if (orig_alert.isDetour()) {
+        if (origAlert.isDetour()) {
             View targetView = convertView.findViewById(R.id.orig_line_detour_icon);
             targetView.setVisibility(VISIBLE);
             targetView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.ACTIVE_DETOUR_EXPANDED, activity, transitType, item.getOrigRouteId(), item.getOrigRouteName(), originClass));
             targetView.setContentDescription(R.string.detour_icon_content_description_prefix + item.getOrigRouteName());
         }
-        if (orig_alert.isSnow()) {
+        if (origAlert.isSnow()) {
             View targetView = convertView.findViewById(R.id.orig_line_weather_icon);
             targetView.setVisibility(VISIBLE);
             targetView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.WEATHER_ALERTS_EXPANDED, activity, transitType, item.getOrigRouteId(), item.getOrigRouteName(), originClass));
             targetView.setContentDescription(R.string.weather_icon_content_description_prefix + item.getOrigRouteName());
         }
-
 
         android.widget.TextView origArrivalTimeText = convertView.findViewById(R.id.orig_arrival_time_text);
         origArrivalTimeText.setText(dateFormat.format(item.getOrigDepartureTime()) + " - " + dateFormat.format(item.getOrigArrivalTime()));
@@ -398,14 +431,17 @@ public class NextToArriveTripView extends FrameLayout {
         boolean enableOrigClick = true;
         View origTripView = convertView.findViewById(R.id.orig_trip_layout);
         android.widget.TextView origTardyText = convertView.findViewById(R.id.orig_tardy_text);
+        View origDepartingBorder = convertView.findViewById(R.id.orig_departing_border);
+
         if (item.getOrigDelayMinutes() > 0) {
+            origDepartingBorder.setVisibility(View.VISIBLE);
             origTardyText.setText(GeneralUtils.getDurationAsString(item.getOrigDelayMinutes(), TimeUnit.MINUTES) + " late.");
             origTardyText.setContentDescription(GeneralUtils.getDurationAsLongString(item.getOrigDelayMinutes(), TimeUnit.MINUTES) + " late.");
             origTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.delay_minutes));
-            View origDepartingBorder = convertView.findViewById(R.id.orig_departing_border);
             origDepartingBorder.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.late_boarder));
             origDepartureTime.setTextColor(ContextCompat.getColor(getContext(), R.color.late_departing));
         } else {
+            origDepartingBorder.setVisibility(View.VISIBLE);
             if (item.isOrigRealtime()) {
                 origTardyText.setText(R.string.nta_on_time);
                 origTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.no_delay_minutes));
@@ -416,7 +452,6 @@ public class NextToArriveTripView extends FrameLayout {
             }
             origDepartureTime.setTextColor(ContextCompat.getColor(getContext(), R.color.on_time_departing));
         }
-
 
         if (transitType == TransitType.SUBWAY || transitType == TransitType.NHSL) {
             enableOrigClick = false;
@@ -466,13 +501,23 @@ public class NextToArriveTripView extends FrameLayout {
         termLineNameText.setText(item.getTermRouteName());
 
         ((ImageView) convertView.findViewById(R.id.term_line_marker_left)).setColorFilter(ContextCompat.getColor(getContext(), transitType.getLineColor(item.getTermRouteId(), getContext())));
-        Alert alert = SystemStatusState.getAlertForLine(transitType, item.getOrigRouteId());
+        Alert alert = SystemStatusState.getAlertForLine(transitType, item.getTermRouteId());
 
-        if (alert.isAlert()) {
-            View targetView = convertView.findViewById(R.id.term_line_alert_icon);
+        // check for line suspension
+        isSuspended = alert.isSuspended();
+
+        // during active suspension, replace service alert icon with suspension icon
+        if (isSuspended || alert.isAlert()) {
+            ImageView targetView = convertView.findViewById(R.id.term_line_alert_icon);
             targetView.setVisibility(VISIBLE);
             targetView.setOnClickListener(new GoToSystemStatusResultsOnClickListener(Constants.SERVICE_ALERT_EXPANDED, activity, transitType, item.getTermRouteId(), item.getTermRouteName(), originClass));
-            targetView.setContentDescription(R.string.alert_icon_content_description_prefix + item.getTermRouteName());
+            if (isSuspended) {
+                targetView.setImageResource(R.drawable.ic_suspension);
+                targetView.setContentDescription(R.string.suspension_icon_content_description_prefix + item.getTermRouteName());
+            } else {
+                targetView.setImageResource(R.drawable.ic_alert);
+                targetView.setContentDescription(R.string.alert_icon_content_description_prefix + item.getTermRouteName());
+            }
         }
         if (alert.isAdvisory()) {
             View targetView = convertView.findViewById(R.id.term_line_advisory_icon);
@@ -516,11 +561,12 @@ public class NextToArriveTripView extends FrameLayout {
         boolean termEnableClick = true;
         View termTripView = convertView.findViewById(R.id.term_trip_layout);
         android.widget.TextView termTardyText = convertView.findViewById(R.id.term_tardy_text);
+        View termDepartingBorder = convertView.findViewById(R.id.term_departing_border);
+
         if (item.getTermDelayMinutes() > 0) {
             termTardyText.setText(GeneralUtils.getDurationAsString(item.getTermDelayMinutes(), TimeUnit.MINUTES) + " late.");
             termTardyText.setContentDescription(GeneralUtils.getDurationAsLongString(item.getTermDelayMinutes(), TimeUnit.MINUTES) + " late.");
             termTardyText.setTextColor(ContextCompat.getColor(getContext(), R.color.delay_minutes));
-            View termDepartingBorder = convertView.findViewById(R.id.orig_departing_border);
             termDepartingBorder.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.late_boarder));
             termDepartureTime.setTextColor(ContextCompat.getColor(getContext(), R.color.late_departing));
         } else {

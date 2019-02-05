@@ -76,6 +76,16 @@
             tools:visibility="visible" />
 
         <ImageView
+            android:id="@+id/suspension_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:layout_weight="1"
+            android:src="@drawable/ic_suspension"
+            android:visibility="gone"
+            tools:visibility="gone" />
+
+        <ImageView
             android:id="@+id/detour_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
